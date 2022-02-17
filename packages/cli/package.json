@@ -6,6 +6,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -18,10 +21,10 @@
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "scripts": {
-    "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "clean": "backstage-cli clean",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "start": "nodemon --"
   },
   "bin": {
@@ -48,8 +51,8 @@
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/plugin-jsx": "6.2.x",
     "@svgr/plugin-svgo": "6.2.x",
-    "@svgr/rollup": "5.5.x",
-    "@svgr/webpack": "5.5.x",
+    "@svgr/rollup": "6.2.x",
+    "@svgr/webpack": "6.2.x",
     "@types/webpack-env": "^1.15.2",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
@@ -138,6 +141,7 @@
     "@types/recursive-readdir": "^2.2.0",
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",
     "@types/rollup-plugin-postcss": "^2.0.0",
+    "@types/svgo": "^2.6.2",
     "@types/tar": "^6.1.1",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/yarnpkg__lockfile": "^1.1.4",

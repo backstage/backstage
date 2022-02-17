@@ -19,6 +19,7 @@ import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
+  ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -42,7 +43,7 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
  **/
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
@@ -62,7 +63,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   }
 
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   }) {

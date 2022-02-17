@@ -16,8 +16,8 @@
 
 import {
   Entity,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
@@ -53,8 +53,8 @@ function useColocated(entity: Entity): {
 } {
   const catalogApi = useApi(catalogApiRef);
   const currentEntityRef = stringifyEntityRef(entity);
-  const location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-  const origin = entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+  const location = entity.metadata.annotations?.[ANNOTATION_LOCATION];
+  const origin = entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
 
   const { loading, error, value } = useAsync(async () => {
     if (!location && !origin) {
@@ -63,10 +63,10 @@ function useColocated(entity: Entity): {
     const response = await catalogApi.getEntities({
       filter: [
         ...(location
-          ? [{ [`metadata.annotations.${LOCATION_ANNOTATION}`]: location }]
+          ? [{ [`metadata.annotations.${ANNOTATION_LOCATION}`]: location }]
           : []),
         ...(origin
-          ? [{ [`metadata.annotations.${ORIGIN_LOCATION_ANNOTATION}`]: origin }]
+          ? [{ [`metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`]: origin }]
           : []),
       ],
     });
@@ -128,11 +128,11 @@ function Contents(props: { entity: Entity }) {
   }
 
   const atLocation = colocatedEntities.filter(
-    e => e.metadata.annotations?.[LOCATION_ANNOTATION] === location,
+    e => e.metadata.annotations?.[ANNOTATION_LOCATION] === location,
   );
   const atOrigin = colocatedEntities.filter(
     e =>
-      e.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION] === originLocation,
+      e.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION] === originLocation,
   );
 
   return (

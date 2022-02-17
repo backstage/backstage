@@ -145,8 +145,16 @@ export const SearchContextProvider: ({
   initialState,
   children,
 }: React_2.PropsWithChildren<{
-  initialState?: SettableSearchContext | undefined;
+  initialState?: SearchContextState | undefined;
 }>) => JSX.Element;
+
+// @public
+export type SearchContextState = {
+  term: string;
+  types: string[];
+  filters: JsonObject;
+  pageCursor?: string;
+};
 
 // Warning: (ae-missing-release-tag) "SearchFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -201,6 +209,7 @@ export type SearchFilterWrapperProps = SearchFilterComponentProps & {
 // @public (undocumented)
 export const SearchModal: ({
   open,
+  hidden,
   toggleModal,
 }: SearchModalProps) => JSX.Element;
 
@@ -208,9 +217,8 @@ export const SearchModal: ({
 //
 // @public (undocumented)
 export interface SearchModalProps {
-  // (undocumented)
+  hidden?: boolean;
   open?: boolean;
-  // (undocumented)
   toggleModal: () => void;
 }
 
@@ -320,7 +328,13 @@ export type SidebarSearchProps = {
 // @public (undocumented)
 export const useSearch: () => SearchContextValue;
 
-// Warnings were encountered during analysis:
-//
-// src/components/SearchContext/SearchContext.d.ts:23:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
+// @public
+export function useSearchModal(initialState?: boolean): {
+  state: {
+    hidden: boolean;
+    open: boolean;
+  };
+  toggleModal: () => void;
+  setOpen: (open: boolean) => void;
+};
 ```

@@ -236,8 +236,6 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
             logger: taskLogger,
             logStream: stream,
             input,
-            // this token is deprecated, and will be removed in favour of secrets.backstageToken instead.
-            token: task.secrets?.token,
             secrets: task.secrets ?? {},
             workspacePath,
             async createTemporaryDirectory() {

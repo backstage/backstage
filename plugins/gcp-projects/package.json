@@ -10,6 +10,9 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -21,14 +24,14 @@
     "google cloud"
   ],
   "scripts": {
-    "build": "backstage-cli plugin:build",
-    "start": "backstage-cli plugin:serve",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
+    "build": "backstage-cli package build",
+    "start": "backstage-cli package start",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
     "diff": "backstage-cli plugin:diff",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
   },
   "dependencies": {
     "@backstage/core-components": "^0.8.8",
@@ -38,7 +41,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^17.2.4"
+    "@react-hookz/web": "^12.3.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"

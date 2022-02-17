@@ -23,7 +23,7 @@ import { ExtendedPackage } from '../../lib/monorepo/PackageGraph';
 import { runParallelWorkers } from '../../lib/parallel';
 import { paths } from '../../lib/paths';
 import { detectRoleFromPackage } from '../../lib/role';
-import { buildApp } from '../build/buildApp';
+import { buildFrontend } from '../build/buildFrontend';
 import { buildBackend } from '../build/buildBackend';
 
 function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
@@ -43,7 +43,9 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
   }
 
   if (!targetCmd) {
-    throw new Error(`Could not find script command '${commandPath.join(' ')}'`);
+    throw new Error(
+      `Could not find package command '${commandPath.join(' ')}'`,
+    );
   }
   const cmd = targetCmd;
 
@@ -80,7 +82,7 @@ export async function command(cmd: Command): Promise<void> {
   const apps = new Array<ExtendedPackage>();
   const backends = new Array<ExtendedPackage>();
 
-  const parseBuildScript = createScriptOptionsParser(cmd, ['script', 'build']);
+  const parseBuildScript = createScriptOptionsParser(cmd, ['package', 'build']);
 
   const options = packages.flatMap(pkg => {
     const role =
@@ -90,7 +92,7 @@ export async function command(cmd: Command): Promise<void> {
       return [];
     }
 
-    if (role === 'app') {
+    if (role === 'frontend') {
       apps.push(pkg);
       return [];
     } else if (role === 'backend') {
@@ -137,7 +139,7 @@ export async function command(cmd: Command): Promise<void> {
           );
           return;
         }
-        await buildApp({
+        await buildFrontend({
           targetDir: pkg.dir,
           configPaths: (buildOptions.config as string[]) ?? [],
           writeStats: Boolean(buildOptions.stats),

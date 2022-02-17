@@ -58,7 +58,9 @@ export const runCommand = async ({
 
     process.on('close', code => {
       if (code !== 0) {
-        return reject(`Command ${command} failed, exit code: ${code}`);
+        return reject(
+          new Error(`Command ${command} failed, exit code: ${code}`),
+        );
       }
       return resolve();
     });

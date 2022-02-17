@@ -27,10 +27,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { Progress, Link } from '@backstage/core-components';
-import {
-  ENTITY_DEFAULT_NAMESPACE,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';
 
 export const IncidentActionsMenu = ({
   incident,
@@ -71,7 +68,7 @@ export const IncidentActionsMenu = ({
       const { userEntityRef } = await identityApi.getBackstageIdentity();
       const { name: userName } = parseEntityRef(userEntityRef, {
         defaultKind: 'User',
-        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+        defaultNamespace: DEFAULT_NAMESPACE,
       });
       const newIncident = await ilertApi.acceptIncident(incident, userName);
       alertApi.post({ message: 'Incident accepted.' });
@@ -91,7 +88,7 @@ export const IncidentActionsMenu = ({
       const { userEntityRef } = await identityApi.getBackstageIdentity();
       const { name: userName } = parseEntityRef(userEntityRef, {
         defaultKind: 'User',
-        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+        defaultNamespace: DEFAULT_NAMESPACE,
       });
       const newIncident = await ilertApi.resolveIncident(incident, userName);
       alertApi.post({ message: 'Incident resolved.' });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
@@ -61,7 +61,7 @@ export function entityRouteParams(entity: Entity) {
     kind: entity.kind.toLocaleLowerCase('en-US'),
     namespace:
       entity.metadata.namespace?.toLocaleLowerCase('en-US') ??
-      ENTITY_DEFAULT_NAMESPACE,
+      DEFAULT_NAMESPACE,
     name: entity.metadata.name,
   } as const;
 }

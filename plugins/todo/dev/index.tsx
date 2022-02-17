@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { Entity, ANNOTATION_LOCATION } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import OnlineIcon from '@material-ui/icons/Cloud';
@@ -31,7 +31,7 @@ const entity: Entity = {
   metadata: {
     name: 'backstage',
     annotations: {
-      [LOCATION_ANNOTATION]:
+      [ANNOTATION_LOCATION]:
         'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
     },
   },

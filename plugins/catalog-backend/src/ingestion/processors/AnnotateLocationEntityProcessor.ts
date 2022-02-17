@@ -15,14 +15,14 @@
  */
 
 import {
-  EDIT_URL_ANNOTATION,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  ANNOTATION_SOURCE_LOCATION,
+  ANNOTATION_VIEW_URL,
   Entity,
   LocationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
-  SOURCE_LOCATION_ANNOTATION,
-  stringifyLocationReference,
-  VIEW_URL_ANNOTATION,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { identity, merge, pickBy } from 'lodash';
@@ -58,7 +58,7 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
       });
 
       if (sourceUrl) {
-        sourceLocation = stringifyLocationReference({
+        sourceLocation = stringifyLocationRef({
           type: 'url',
           target: sourceUrl,
         });
@@ -70,12 +70,12 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
         metadata: {
           annotations: pickBy(
             {
-              [LOCATION_ANNOTATION]: stringifyLocationReference(location),
-              [ORIGIN_LOCATION_ANNOTATION]:
-                stringifyLocationReference(originLocation),
-              [VIEW_URL_ANNOTATION]: viewUrl,
-              [EDIT_URL_ANNOTATION]: editUrl,
-              [SOURCE_LOCATION_ANNOTATION]: sourceLocation,
+              [ANNOTATION_LOCATION]: stringifyLocationRef(location),
+              [ANNOTATION_ORIGIN_LOCATION]:
+                stringifyLocationRef(originLocation),
+              [ANNOTATION_VIEW_URL]: viewUrl,
+              [ANNOTATION_EDIT_URL]: editUrl,
+              [ANNOTATION_SOURCE_LOCATION]: sourceLocation,
             },
             identity,
           ),

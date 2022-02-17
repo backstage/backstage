@@ -23,6 +23,9 @@ export type {
   Identified,
   PermissionCondition,
   PermissionCriteria,
+  AllOfCriteria,
+  AnyOfCriteria,
+  NotCriteria,
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export type {

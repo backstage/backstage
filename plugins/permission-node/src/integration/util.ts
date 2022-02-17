@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import {
+  AllOfCriteria,
+  AnyOfCriteria,
+  NotCriteria,
+  PermissionCriteria,
+} from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 
 export const isAndCriteria = (
   filter: PermissionCriteria<unknown>,
-): filter is { allOf: PermissionCriteria<unknown>[] } =>
+): filter is AllOfCriteria<unknown> =>
   Object.prototype.hasOwnProperty.call(filter, 'allOf');
 
 export const isOrCriteria = (
   filter: PermissionCriteria<unknown>,
-): filter is { anyOf: PermissionCriteria<unknown>[] } =>
+): filter is AnyOfCriteria<unknown> =>
   Object.prototype.hasOwnProperty.call(filter, 'anyOf');
 
 export const isNotCriteria = (
   filter: PermissionCriteria<unknown>,
-): filter is { not: PermissionCriteria<unknown> } =>
+): filter is NotCriteria<unknown> =>
   Object.prototype.hasOwnProperty.call(filter, 'not');
 
 export const createGetRule = <TResource, TQuery>(

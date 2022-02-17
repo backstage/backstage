@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
+import {
+  Entity,
+  entityKindSchemaValidator,
+  KindValidator,
+} from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import { Entity } from '@backstage/catalog-model';
+import schema from './Template.v1beta3.schema.json';
 
-/** @public */
+/**
+ * Backstage catalog Template kind Entity. Templates are used by the Scaffolder
+ * plugin to create new entities, such as Components.
+ *
+ * @public
+ */
 export interface TemplateEntityV1beta3 extends Entity {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
   kind: 'Template';
@@ -35,3 +45,17 @@ export interface TemplateEntityV1beta3 extends Entity {
     owner?: string;
   };
 }
+
+const validator = entityKindSchemaValidator(schema);
+
+/**
+ * Entity data validator for {@link TemplateEntityV1beta3}.
+ *
+ * @public
+ */
+export const templateEntityV1beta3Validator: KindValidator = {
+  // TODO(freben): Emulate the old KindValidator until we fix that type
+  async check(data: Entity) {
+    return validator(data) === data;
+  },
+};

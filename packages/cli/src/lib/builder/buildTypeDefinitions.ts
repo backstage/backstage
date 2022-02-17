@@ -16,10 +16,10 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { Worker } from 'worker_threads';
 import { relative as relativePath, resolve as resolvePath } from 'path';
 import { paths } from '../paths';
 import { buildTypeDefinitionsWorker } from './buildTypeDefinitionsWorker';
+import { runWorkerThreads } from '../parallel';
 
 // These message types are ignored since we want to avoid duplicating the logic of
 // handling them correctly, and we already have the API Reports warning about them.
@@ -84,59 +84,46 @@ export async function buildTypeDefinitions(
   const typescriptDir = paths.resolveTargetRoot('node_modules/typescript');
   const hasTypescript = await fs.pathExists(typescriptDir);
   const typescriptCompilerFolder = hasTypescript ? typescriptDir : undefined;
-
-  const worker = new Worker(`(${buildTypeDefinitionsWorker})()`, {
-    eval: true,
+  await runWorkerThreads({
+    threadCount: 1,
     workerData: {
       entryPoints,
       workerConfigs,
       typescriptCompilerFolder,
     },
-  });
-
-  await new Promise<void>((resolve, reject) => {
-    worker.once('error', reject);
-    worker.once('exit', code => {
-      if (code) {
-        reject(new Error(`Worker exited with code ${code}`));
+    worker: buildTypeDefinitionsWorker,
+    onMessage: ({
+      message,
+      targetTypesDir,
+    }: {
+      message: any;
+      targetTypesDir: string;
+    }) => {
+      if (ignoredMessages.has(message.messageId)) {
+        return;
       }
-    });
-    worker.on('message', data => {
-      if (data.type === 'done') {
-        if (data.error) {
-          reject(data.error);
-        } else {
-          resolve();
-        }
-      } else if (data.type === 'message') {
-        const { message, targetTypesDir } = data;
 
-        if (ignoredMessages.has(message.messageId)) {
-          return;
-        }
-
-        let text = `${message.text} (${message.messageId})`;
-        if (message.sourceFilePath) {
-          text += ' at ';
-          text += relativePath(targetTypesDir, message.sourceFilePath);
-          if (message.sourceFileLine) {
-            text += `:${message.sourceFileLine}`;
-            if (message.sourceFileColumn) {
-              text += `:${message.sourceFileColumn}`;
-            }
+      let text = `${message.text} (${message.messageId})`;
+      if (message.sourceFilePath) {
+        text += ' at ';
+        text += relativePath(targetTypesDir, message.sourceFilePath);
+        if (message.sourceFileLine) {
+          text += `:${message.sourceFileLine}`;
+          if (message.sourceFileColumn) {
+            text += `:${message.sourceFileColumn}`;
           }
         }
-        if (message.logLevel === 'error') {
-          console.error(chalk.red(`Error: ${text}`));
-        } else if (
-          message.logLevel === 'warning' ||
-          message.category === 'Extractor'
-        ) {
-          console.warn(`Warning: ${text}`);
-        } else {
-          console.log(text);
-        }
       }
-    });
+      if (message.logLevel === 'error') {
+        console.error(chalk.red(`Error: ${text}`));
+      } else if (
+        message.logLevel === 'warning' ||
+        message.category === 'Extractor'
+      ) {
+        console.warn(`Warning: ${text}`);
+      } else {
+        console.log(text);
+      }
+    },
   });
 }

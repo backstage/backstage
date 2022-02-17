@@ -57,6 +57,7 @@ export function getEntityName(entity: Entity): EntityName {
  * The context of defaults that entity reference parsing happens within.
  *
  * @public
+ * @deprecated type inlined, will be removed in a future release.
  */
 export type EntityRefContext = {
   /** The default kind, if none is given in the reference */
@@ -82,7 +83,12 @@ export type EntityRefContext = {
  */
 export function parseEntityName(
   ref: EntityRef,
-  context: EntityRefContext = {},
+  context: {
+    /** The default kind, if none is given in the reference */
+    defaultKind?: string;
+    /** The default namespace, if none is given in the reference */
+    defaultNamespace?: string;
+  } = {},
 ): EntityName {
   const { kind, namespace, name } = parseEntityRef(ref, {
     defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
@@ -149,7 +155,12 @@ export function parseEntityRef(
  */
 export function parseEntityRef(
   ref: EntityRef,
-  context: EntityRefContext = {},
+  context: {
+    /** The default kind, if none is given in the reference */
+    defaultKind?: string;
+    /** The default namespace, if none is given in the reference */
+    defaultNamespace?: string;
+  } = {},
 ): {
   kind?: string;
   namespace?: string;
@@ -182,54 +193,6 @@ export function parseEntityRef(
     namespace: namespace ?? context.defaultNamespace,
     name,
   };
-}
-
-/**
- * Takes an entity reference or name, and outputs an entity reference on the
- * most compact form possible. I.e. if the parts do not contain any
- * special/reserved characters, it outputs the string form, otherwise it
- * outputs the compound form.
- *
- * @public
- * @deprecated Use `stringifyEntityRef` instead
- * @param ref - The reference to serialize
- * @returns The same reference on either string or compound form
- */
-export function serializeEntityRef(
-  ref:
-    | Entity
-    | {
-        kind?: string;
-        namespace?: string;
-        name: string;
-      },
-): EntityRef {
-  let kind;
-  let namespace;
-  let name;
-
-  if ('metadata' in ref) {
-    kind = ref.kind;
-    namespace = ref.metadata.namespace;
-    name = ref.metadata.name;
-  } else {
-    kind = ref.kind;
-    namespace = ref.namespace;
-    name = ref.name;
-  }
-
-  if (
-    kind?.includes(':') ||
-    kind?.includes('/') ||
-    namespace?.includes(':') ||
-    namespace?.includes('/') ||
-    name.includes(':') ||
-    name.includes('/')
-  ) {
-    return { kind, namespace, name };
-  }
-
-  return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
 }
 
 /**
@@ -282,11 +245,17 @@ export function stringifyEntityRef(
  * @param context - An optional context of default kind and namespace, that apply
  *                to the ref if given
  * @returns True if matching, false otherwise
+ * @deprecated compare using stringifyEntityRef instead.
  */
 export function compareEntityToRef(
   entity: Entity,
   ref: EntityRef | EntityName,
-  context?: EntityRefContext,
+  context?: {
+    /** The default kind, if none is given in the reference */
+    defaultKind?: string;
+    /** The default namespace, if none is given in the reference */
+    defaultNamespace?: string;
+  },
 ): boolean {
   const entityKind = entity.kind;
   const entityNamespace = entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE;

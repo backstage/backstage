@@ -11,6 +11,9 @@
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "common-library"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -24,12 +27,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test --passWithNoTests",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
   },
   "bugs": {
     "url": "https://github.com/backstage/backstage/issues"

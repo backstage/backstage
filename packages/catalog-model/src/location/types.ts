@@ -35,6 +35,7 @@ export type LocationSpec = {
  * Entity location for a specific entity.
  *
  * @public
+ * @deprecated import from {@link @backstage/catalog-client#Location} instead.
  */
 export type Location = {
   id: string;

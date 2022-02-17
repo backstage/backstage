@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { parseLocationReference } from '@backstage/catalog-model';
+import { parseLocationRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -27,7 +27,7 @@ const getBaseUrl = (
     return 'https://api.github.com';
   }
 
-  const location = parseLocationReference(host);
+  const location = parseLocationRef(host);
   if (location.type !== 'github' && location.type !== 'url') {
     return 'https://api.github.com';
   }

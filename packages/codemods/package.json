@@ -7,6 +7,9 @@
     "access": "public",
     "main": "dist/index.cjs.js"
   },
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -20,12 +23,12 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --",
-    "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli package clean"
   },
   "bin": {
     "backstage-codemods": "bin/backstage-codemods"

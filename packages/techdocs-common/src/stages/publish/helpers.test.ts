@@ -16,7 +16,7 @@
 import mockFs from 'mock-fs';
 import * as os from 'os';
 import * as path from 'path';
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
   getStaleFiles,
   getFileTreeRecursively,
@@ -189,7 +189,7 @@ describe('getCloudPathForLocalPath', () => {
       localPath,
     );
     expect(remoteBucket).toBe(
-      `${ENTITY_DEFAULT_NAMESPACE}/component/backstage/${localPath}`,
+      `${DEFAULT_NAMESPACE}/component/backstage/${localPath}`,
     );
   });
 

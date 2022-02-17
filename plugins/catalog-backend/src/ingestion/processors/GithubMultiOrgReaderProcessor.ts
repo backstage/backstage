@@ -21,6 +21,7 @@ import {
   GithubAppCredentialsMux,
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
+  ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -42,7 +43,7 @@ import { buildOrgHierarchy } from './util/org';
  * Be aware that this processor may not be compatible with future org structures in the catalog.
  */
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly orgs: GithubMultiOrgConfig;
   private readonly logger: Logger;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
@@ -65,7 +66,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   }
 
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;

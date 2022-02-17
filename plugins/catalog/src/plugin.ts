@@ -177,20 +177,6 @@ export const EntityDependsOnResourcesCard = catalogPlugin.provide(
   }),
 );
 
-/**
- * @deprecated This component is replaced by EntityCatalogGraphCard which is imported from `@backstage/plugin-catalog-graph`. This component will be removed in an
- * upcoming release
- */
-export const EntitySystemDiagramCard = catalogPlugin.provide(
-  createComponentExtension({
-    name: 'EntitySystemDiagramCard',
-    component: {
-      lazy: () =>
-        import('./components/SystemDiagramCard').then(m => m.SystemDiagramCard),
-    },
-  }),
-);
-
 export const RelatedEntitiesCard = catalogPlugin.provide(
   createComponentExtension({
     name: 'RelatedEntitiesCard',

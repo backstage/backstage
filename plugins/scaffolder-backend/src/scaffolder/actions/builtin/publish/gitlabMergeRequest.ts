@@ -24,22 +24,20 @@ import { InputError } from '@backstage/errors';
 import { parseRepoUrl } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
-export type GitlabMergeRequestActionInput = {
-  projectid: string;
-  repoUrl: string;
-  title: string;
-  description: string;
-  branchName: string;
-  targetPath: string;
-  token?: string;
-};
-
 export const createPublishGitlabMergeRequestAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
 
-  return createTemplateAction<GitlabMergeRequestActionInput>({
+  return createTemplateAction<{
+    projectid: string;
+    repoUrl: string;
+    title: string;
+    description: string;
+    branchName: string;
+    targetPath: string;
+    token?: string;
+  }>({
     id: 'publish:gitlab:merge-request',
     schema: {
       input: {

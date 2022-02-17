@@ -173,6 +173,14 @@ class PackageJsonHandler {
       return;
     }
 
+    // Skip diffing package scripts that have been migrated to the new commands
+    const hasNewScript = Object.values(targetScripts).some(script =>
+      String(script).includes('backstage-cli package '),
+    );
+    if (hasNewScript) {
+      return;
+    }
+
     for (const key of Object.keys(pkgScripts)) {
       await this.syncField(key, pkgScripts, targetScripts, 'scripts');
     }

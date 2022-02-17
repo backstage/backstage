@@ -28,22 +28,6 @@ import {
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
 
-type CookieCompatInput = {
-  copyWithoutRender?: string[];
-  cookiecutterCompat?: boolean;
-};
-
-type ExtensionInput = {
-  templateFileExtension?: string | boolean;
-};
-
-export type FetchTemplateInput = {
-  url: string;
-  targetPath?: string;
-  values: any;
-} & CookieCompatInput &
-  ExtensionInput;
-
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -51,7 +35,16 @@ export function createFetchTemplateAction(options: {
 }) {
   const { reader, integrations, additionalTemplateFilters } = options;
 
-  return createTemplateAction<FetchTemplateInput>({
+  return createTemplateAction<{
+    url: string;
+    targetPath?: string;
+    values: any;
+    templateFileExtension?: string | boolean;
+
+    // Cookiecutter compat options
+    copyWithoutRender?: string[];
+    cookiecutterCompat?: boolean;
+  }>({
     id: 'fetch:template',
     description:
       "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",

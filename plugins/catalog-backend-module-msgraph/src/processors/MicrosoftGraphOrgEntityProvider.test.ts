@@ -15,9 +15,9 @@
  */
 import { getVoidLogger } from '@backstage/backend-common';
 import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   GroupEntity,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
   UserEntity,
 } from '@backstage/catalog-model';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
@@ -162,8 +162,8 @@ describe('withLocations', () => {
         name: 'u1',
         annotations: {
           [MICROSOFT_GRAPH_USER_ID_ANNOTATION]: 'uid',
-          [LOCATION_ANNOTATION]: 'msgraph:test/uid',
-          [ORIGIN_LOCATION_ANNOTATION]: 'msgraph:test/uid',
+          [ANNOTATION_LOCATION]: 'msgraph:test/uid',
+          [ANNOTATION_ORIGIN_LOCATION]: 'msgraph:test/uid',
         },
       },
       spec: {

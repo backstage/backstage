@@ -11,6 +11,9 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "backend-plugin"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -23,13 +26,13 @@
   ],
   "configSchema": "schema.d.ts",
   "scripts": {
-    "start": "backstage-cli backend:dev",
-    "build": "backstage-cli backend:build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.10.7",
@@ -47,7 +50,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fs-extra": "9.1.0",
-    "helmet": "^4.0.0",
+    "helmet": "^5.0.2",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "stream-buffers": "^3.0.2",

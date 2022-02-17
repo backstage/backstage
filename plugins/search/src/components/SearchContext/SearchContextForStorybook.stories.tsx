@@ -16,7 +16,7 @@
 import { ApiProvider } from '@backstage/core-app-api';
 import { SearchResultSet } from '@backstage/search-common';
 import { TestApiRegistry } from '@backstage/test-utils';
-import React, { ComponentProps } from 'react';
+import React, { ComponentProps, PropsWithChildren } from 'react';
 import { searchApiRef } from '../../apis';
 import { SearchContextProvider as RealSearchContextProvider } from './SearchContext';
 
@@ -33,13 +33,16 @@ type QueryResultProps = {
 export const SearchContextProvider = (
   props: ComponentProps<typeof RealSearchContextProvider> & QueryResultProps,
 ) => {
-  const { mockedResults, ...contextProps } = props;
-  const query: any = () => Promise.resolve(mockedResults || {});
-  const apiRegistry = TestApiRegistry.from([searchApiRef, { query }]);
-
   return (
-    <ApiProvider apis={apiRegistry}>
-      <RealSearchContextProvider {...contextProps} />
-    </ApiProvider>
+    <SearchApiProvider {...props}>
+      <RealSearchContextProvider children={props.children} />
+    </SearchApiProvider>
   );
 };
+
+export function SearchApiProvider(props: PropsWithChildren<QueryResultProps>) {
+  const { mockedResults, children } = props;
+  const query: any = () => Promise.resolve(mockedResults || {});
+  const apiRegistry = TestApiRegistry.from([searchApiRef, { query }]);
+  return <ApiProvider apis={apiRegistry} children={children} />;
+}

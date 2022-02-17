@@ -21,7 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useContext, useState } from 'react';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import { useLocalStorageValue } from '@react-hookz/web';
 import {
   sidebarConfig,
   SidebarContext,
@@ -155,7 +155,7 @@ export function SidebarIntro(_props: {}) {
     recentlyViewedItemsDismissed: false,
   };
   const [dismissedIntro, setDismissedIntro] =
-    useLocalStorage<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
+    useLocalStorageValue<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
 
   const { starredItemsDismissed, recentlyViewedItemsDismissed } =
     dismissedIntro ?? {};

@@ -5,6 +5,9 @@
   "types": "src/index.ts",
   "license": "Apache-2.0",
   "private": true,
+  "backstage": {
+    "role": "backend"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -15,12 +18,12 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli backend:bundle",
+    "build": "backstage-cli package build",
     "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
-    "start": "backstage-cli backend:dev",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "clean": "backstage-cli clean",
+    "start": "backstage-cli package start",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {

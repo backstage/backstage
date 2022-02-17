@@ -198,8 +198,8 @@ describe('DefaultTechDocsCollator', () => {
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
-        kind: entity.kind,
-        name: entity.metadata.name,
+        kind: entity.kind.toLocaleLowerCase('en-US'),
+        name: entity.metadata.name.toLocaleLowerCase('en-US'),
         authorization: {
           resourceRef: `component:default/${entity.metadata.name}`,
         },
