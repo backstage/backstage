@@ -43,7 +43,7 @@ packages with `yarn build`.
 In a CI workflow it might look something like this:
 
 ```bash
-yarn install --frozen-lockfile
+yarn install --immutable
 
 # tsc outputs type definitions to dist-types/ in the repo root, which are then consumed by the build
 yarn tsc
@@ -71,7 +71,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     yarn config set python /usr/bin/python3
 
-RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+RUN yarn install --immutable --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
@@ -162,7 +162,7 @@ COPY --from=packages /app .
 RUN apt-get update && apt-get install -y libsqlite3-dev python3 cmake g++ && \
     yarn config set python /usr/bin/python3
 
-RUN yarn install --frozen-lockfile --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+RUN yarn install --immutable --network-timeout 600000 && rm -rf "$(yarn cache dir)"
 
 COPY . .
 
@@ -184,7 +184,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     yarn config set python /usr/bin/python3
 
-RUN yarn install --frozen-lockfile --production --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+RUN yarn install --immutable --network-timeout 600000 && rm -rf "$(yarn cache dir)"
 
 # Copy the built packages from the build stage
 COPY --from=build /app/packages/backend/dist/bundle.tar.gz .

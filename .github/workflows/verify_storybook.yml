@@ -49,10 +49,10 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: top-level install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: storybook yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: storybook
       # End of yarn setup
 

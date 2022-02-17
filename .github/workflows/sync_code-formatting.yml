@@ -40,7 +40,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: yarn install
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       # End of yarn setup
 
       - name: Run Prettier on ADOPTERS.md

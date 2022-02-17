@@ -162,7 +162,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   await pinYarnVersion(workspaceDir);
 
   print('Installing workspace dependencies');
-  await runPlain(['yarn', 'install', '--production', '--frozen-lockfile'], {
+  await runPlain(['yarn', 'install', '--production', '--immutable'], {
     cwd: workspaceDir,
   });
 
