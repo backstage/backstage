@@ -2,4 +2,4 @@
 '@backstage/plugin-org': patch
 ---
 
-add transtive ownership type for kind group in OwnershipCard
+add transitive ownership type for kind group in OwnershipCard
