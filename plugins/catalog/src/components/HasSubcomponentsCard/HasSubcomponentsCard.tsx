@@ -22,11 +22,13 @@ import {
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 
-type Props = {
+/** @public */
+export interface HasSubcomponentsCardProps {
   variant?: 'gridItem';
-};
+}
 
-export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
+export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
+  const { variant = 'gridItem' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -39,4 +41,4 @@ export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
       emptyHelpLink="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional"
     />
   );
-};
+}

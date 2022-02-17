@@ -23,8 +23,7 @@
 export * from './components/AboutCard';
 export * from './components/CatalogKindHeader';
 export * from './components/CatalogResultListItem';
-export { CatalogTable } from './components/CatalogTable';
-export type { EntityRow as CatalogTableRow } from './components/CatalogTable';
+export * from './components/CatalogTable';
 export * from './components/CatalogTable/columns';
 export * from './components/EntityLayout';
 export * from './components/EntityOrphanWarning';
@@ -49,6 +48,17 @@ export {
   RelatedEntitiesCard,
 } from './plugin';
 
-export type { EntityLinksEmptyStateClassKey } from './components/EntityLinksCard';
+export type { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
+export type { DependsOnComponentsCardProps } from './components/DependsOnComponentsCard';
+export type { DependsOnResourcesCardProps } from './components/DependsOnResourcesCard';
+export type {
+  EntityLinksEmptyStateClassKey,
+  EntityLinksCardProps,
+} from './components/EntityLinksCard';
 export type { SystemDiagramCardClassKey } from './components/SystemDiagramCard';
 export type { DefaultCatalogPageProps } from './components/CatalogPage';
+export type { HasComponentsCardProps } from './components/HasComponentsCard';
+export type { HasResourcesCardProps } from './components/HasResourcesCard';
+export type { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
+export type { HasSystemsCardProps } from './components/HasSystemsCard';
+export type { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';

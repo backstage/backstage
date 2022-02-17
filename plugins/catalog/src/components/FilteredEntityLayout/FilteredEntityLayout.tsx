@@ -15,10 +15,13 @@
  */
 
 import { Grid } from '@material-ui/core';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 
-export const FilteredEntityLayout = ({ children }: PropsWithChildren<{}>) => (
-  <Grid container style={{ position: 'relative' }}>
-    {children}
-  </Grid>
-);
+/** @public */
+export function FilteredEntityLayout(props: { children: React.ReactNode }) {
+  return (
+    <Grid container style={{ position: 'relative' }}>
+      {props.children}
+    </Grid>
+  );
+}

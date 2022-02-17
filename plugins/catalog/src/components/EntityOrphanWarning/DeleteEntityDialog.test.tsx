@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
@@ -21,7 +22,6 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 
 describe('DeleteEntityDialog', () => {
