@@ -333,6 +333,66 @@ describe('loadConfig', () => {
     stopSignal.resolve();
   });
 
+  it('watches included files', async () => {
+    const onChange = defer<AppConfig[]>();
+    const stopSignal = defer<void>();
+
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configTargets: [{ path: '/root/app-config.development.yaml' }],
+        watch: {
+          onChange: onChange.resolve,
+          stopSignal: stopSignal.promise,
+        },
+      }),
+    ).resolves.toEqual({
+      appConfigs: [
+        {
+          context: 'app-config.development.yaml',
+          data: {
+            app: {
+              sessionKey: 'development-key',
+            },
+            backend: {
+              foo: {
+                bar: 'token is-secret',
+              },
+            },
+            other: {
+              secret: 'abc123',
+            },
+          },
+        },
+      ],
+    });
+
+    // session-key is indirectly included in app-config.development.yaml
+    // via included.yaml
+    await fs.writeFile('/root/secrets/session-key.txt', 'abc234');
+
+    await expect(onChange.promise).resolves.toEqual([
+      {
+        context: 'app-config.development.yaml',
+        data: {
+          app: {
+            sessionKey: 'development-key',
+          },
+          backend: {
+            foo: {
+              bar: 'token is-secret',
+            },
+          },
+          other: {
+            secret: 'abc234',
+          },
+        },
+      },
+    ]);
+
+    stopSignal.resolve();
+  });
+
   it('watches remote config urls', async () => {
     server.use(initialLoaderHandler);
 
