@@ -5300,9 +5300,9 @@
     "@types/d3-selection" "*"
 
 "@types/dagre@^0.7.44":
-  version "0.7.46"
-  resolved "https://registry.npmjs.org/@types/dagre/-/dagre-0.7.46.tgz#c51ffcc62ca8a9affa07f5e06842acd840d3d442"
-  integrity sha512-ku3y+F8sPqmiB5Ugl22NpukI2dLAViJiWwdtueXLeuF4fxZozl+bytPSFVlLu/gDgaKiwobu3LBXXRWktIMiIA==
+  version "0.7.47"
+  resolved "https://registry.npmjs.org/@types/dagre/-/dagre-0.7.47.tgz#1d1b89e1fac36aaf5ef5ed6274bb123073095ac5"
+  integrity sha512-oX+3aRf7L6Cqq1MvbWmmD7FpAU/T8URwFFuHBagAiyHILn3i+RNZ35/tvyq28de+lZGY3W19BxJ7FeITQDO7aA==
 
 "@types/debug@^4.0.0":
   version "4.1.7"
