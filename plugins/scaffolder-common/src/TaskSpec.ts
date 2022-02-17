@@ -28,12 +28,13 @@ export type TemplateMetadata = {
 };
 
 /**
- * Information about a template that is stored on a task specification
+ * Information about a template that is stored on a task specification.
+ * Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
  *
  * @public
  */
 export type TemplateInfo = {
-  name: string;
+  entityRef: string;
   baseUrl?: string;
 };
 

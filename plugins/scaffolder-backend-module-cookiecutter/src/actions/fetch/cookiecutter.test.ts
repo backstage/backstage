@@ -90,7 +90,7 @@ describe('fetch:cookiecutter', () => {
         },
       },
       templateInfo: {
-        name: 'lols',
+        entityRef: 'template:default/cookiecutter',
         baseUrl: 'somebase',
       },
       workspacePath: mockTmpDir,
