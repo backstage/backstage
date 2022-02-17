@@ -78,10 +78,10 @@ export const OwnershipCard = ({
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
 }) => {
-  const [relationsType, setRelationsType] = useState('direct');
   const classes = useStyles();
   const { entity } = useEntity();
   const isGroup = entity.kind === 'Group';
+  const [relationsType, setRelationsType] = useState('direct');
   const renderedGrid =
     relationsType !== 'direct' && isGroup
       ? transitiveRelationsGrid(entity, entityFilterKind)
@@ -102,7 +102,7 @@ export const OwnershipCard = ({
             >
               <Switch
                 color="primary"
-                // checked={isPinned}
+                checked={relationsType !== 'direct'}
                 onChange={() =>
                   relationsType === 'direct'
                     ? setRelationsType('transitive')
