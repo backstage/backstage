@@ -109,7 +109,7 @@ export const OwnershipCard = ({
                     : setRelationsType('direct')
                 }
                 name="pin"
-                inputProps={{ 'aria-label': 'Pin Sidebar Switch' }}
+                inputProps={{ 'aria-label': 'Ownership Type Switch' }}
                 disabled={!isGroup}
               />
             </Tooltip>
