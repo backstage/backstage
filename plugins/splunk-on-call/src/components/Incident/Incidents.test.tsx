@@ -44,7 +44,7 @@ describe('Incidents', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents refreshIncidents={false} team="test" />
+          <Incidents readOnly={false} refreshIncidents={false} team="test" />
         </ApiProvider>,
       ),
     );
@@ -68,7 +68,7 @@ describe('Incidents', () => {
     } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents team="test" refreshIncidents={false} />
+          <Incidents readOnly={false} team="test" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
@@ -94,13 +94,7 @@ describe('Incidents', () => {
     mockSplunkOnCallApi.getIncidents.mockResolvedValue([MOCK_INCIDENT]);
     mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
 
-    const {
-      getByText,
-      getByTitle,
-      getAllByTitle,
-      getByLabelText,
-      queryByTestId,
-    } = render(
+    const { getByText, getAllByTitle, getByLabelText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <Incidents readOnly team="test" refreshIncidents={false} />
@@ -139,7 +133,7 @@ describe('Incidents', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents team="test" refreshIncidents={false} />
+          <Incidents readOnly={false} team="test" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
