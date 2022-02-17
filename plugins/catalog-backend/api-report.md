@@ -582,7 +582,7 @@ export type DeferredEntity = {
 
 // Warning: (ae-missing-release-tag) "durationText" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export function durationText(startTimestamp: [number, number]): string;
 
 // @public (undocumented)

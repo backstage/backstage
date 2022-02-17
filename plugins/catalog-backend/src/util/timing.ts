@@ -20,6 +20,7 @@
  *
  * @param startTimestamp - The timestamp (from process.hrtime()) at the start ot
  *                       the operation
+ * @deprecated use luxon library instead.
  */
 export function durationText(startTimestamp: [number, number]): string {
   const delta = process.hrtime(startTimestamp);
