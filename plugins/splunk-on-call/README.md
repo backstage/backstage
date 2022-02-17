@@ -74,6 +74,28 @@ proxy:
 
 In addition, to make certain API calls (trigger-resolve-acknowledge an incident) you need to add the `PATCH` method to the backend `cors` methods list: `[GET, POST, PUT, DELETE, PATCH]`.
 
+**WARNING**: In current implementation, the Splunk OnCall plugin requires the `/splunk-on-call` proxy endpoint be exposed by the Backstage backend as an unprotected endpoint, in effect enabling Splunk OnCall API access using the configured `SPLUNK_ON_CALL_API_KEY` for any user or process with access to the `/splunk-on-call` Backstage backend endpoint. See below for further configuration options enabling protection of this endpoint.
+
+### Read Only mode
+
+The Splunk OnCall plugin also supports a "read only" mode if you wish to suppress the rendering of UI controls to trigger-resolve-acknowledge incidents.
+
+```yaml
+# enable readOnly mode
+splunkOnCall:
+  readOnly: true
+
+proxy:
+  # ...
+  '/splunk-on-call':
+    target: https://api.victorops.com/api-public
+    headers:
+      X-VO-Api-Id: ${SPLUNK_ON_CALL_API_ID}
+      X-VO-Api-Key: ${SPLUNK_ON_CALL_API_KEY}
+    # prohibit non-GET requests from the /splunk-on-call proxy
+    allowedMethods: ['GET']
+```
+
 ### Adding your team name to the entity annotation
 
 The information displayed for each entity is based on either an associated team name or an associated routing key.
