@@ -27,6 +27,17 @@ describe('ExtractAirbrakeConfig', () => {
     voidLogger = getVoidLogger();
   });
 
+  it('gets the API key', () => {
+    const config = new ConfigReader({
+      airbrake: {
+        apiKey: 'fakeApiKey',
+      },
+    });
+
+    const airbrakeConfig = extractAirbrakeConfig(config, voidLogger);
+    expect(airbrakeConfig.apiKey).toStrictEqual('fakeApiKey');
+  });
+
   it('does not fail in development', () => {
     process.env = {
       ...oldProcessEnv,
