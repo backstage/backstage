@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-backend",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -22,12 +22,12 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.7",
-    "@backstage/config": "^0.1.13",
-    "@backstage/errors": "^0.2.0",
-    "@backstage/plugin-auth-node": "^0.1.0",
-    "@backstage/plugin-permission-common": "^0.4.0",
-    "@backstage/plugin-permission-node": "^0.4.3",
+    "@backstage/backend-common": "^0.10.8",
+    "@backstage/config": "^0.1.14",
+    "@backstage/errors": "^0.2.1",
+    "@backstage/plugin-auth-node": "^0.1.1",
+    "@backstage/plugin-permission-common": "^0.5.0",
+    "@backstage/plugin-permission-node": "^0.5.0",
     "@types/express": "*",
     "dataloader": "^2.0.0",
     "express": "^4.17.1",
@@ -39,7 +39,7 @@
     "zod": "^3.11.6"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2",
+    "@backstage/cli": "^0.14.0",
     "@types/lodash": "^4.14.151",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.6",

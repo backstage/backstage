@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.2.3
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/catalog-model@0.10.0
+
 ## 0.2.2
 
 ### Patch Changes

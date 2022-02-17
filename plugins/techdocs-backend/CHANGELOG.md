@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.13.4
+
+### Patch Changes
+
+- 453145abba: Do not use cross-fetch in the backend
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 811c710a21: Fix bug where tech docs collator stores search indices with wrong entity ref casing. Make the collator to conform legacyPathCasing configuration option.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/techdocs-common@0.11.8
+  - @backstage/plugin-catalog-common@0.1.3
+
 ## 0.13.3
 
 ### Patch Changes

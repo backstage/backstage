@@ -1,5 +1,40 @@
 # @backstage/plugin-catalog
 
+## 0.8.0
+
+### Minor Changes
+
+- ae7edbea45: Removed `CatalogClientWrapper` as usage have been replaced by the `fetchApiRef`.
+- 37092662cb: **BREAKING** Completely removed the `EntitySystemDiagramCard` component which was deprecated in a previous release. Any remaining references to this component are now broken and should be replaced with `EntityCatalogGraphCard`, which can be imported from package `@backstage/plugin-catalog-graph`.
+- 7657eeae22: Removed deprecated `Router` and `EntityPageLayout` exports.
+  `Router` is replaced by plugin extensions and `EntityPageLayout` is replaced by `CatalogEntityPage`.
+- 0a033351be: **BREAKING**:
+
+  - The `CatalogResultListItem` `result` prop is now of the more narrow and correct type `IndexableDocument`, rather than `any`.
+  - The individual table column factories (e.g. `createNameColumn`) are now no longer available directly, but only through `CatalogTable.columns`.
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 538ca90790: Use updated type names from `@backstage/catalog-client`
+- 0d03e42a89: Replaced use of deprecated `compareEntityToRef` utility.
+- 244d24ebc4: Import `Location` from the `@backstage/catalog-client` package.
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/catalog-client@0.7.0
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/integration-react@0.1.22
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/catalog-model@0.10.0
+  - @backstage/search-common@0.2.3
+  - @backstage/theme@0.2.15
+  - @backstage/plugin-catalog-common@0.1.3
+
 ## 0.7.12
 
 ### Patch Changes
