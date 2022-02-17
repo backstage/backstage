@@ -121,7 +121,7 @@ export const templateEntityV1beta3Validator: KindValidator;
 
 // @public
 export type TemplateInfo = {
-  name: string;
+  entityRef: string;
   baseUrl?: string;
 };
 
