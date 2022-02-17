@@ -22,7 +22,6 @@ import {
 import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
-import { CatalogListResponse } from '@backstage/catalog-client';
 import qs from 'qs';
 
 const limiter = limiterFactory(10);
@@ -118,22 +117,21 @@ export function useTransitiveEntities(
 
     const owners = Array.from(processedEntities);
 
-    const ownedAggregationEntitiesList: CatalogListResponse<Entity> =
-      await catalogApi.getEntities({
-        filter: [
-          {
-            kind: kinds,
-            'spec.owner': owners,
-          },
-        ],
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'spec.type',
-          'relations',
-        ],
-      });
+    const ownedAggregationEntitiesList = await catalogApi.getEntities({
+      filter: [
+        {
+          kind: kinds,
+          'spec.owner': owners,
+        },
+      ],
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+        'relations',
+      ],
+    });
 
     const counts = ownedAggregationEntitiesList.items.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
