@@ -40,9 +40,9 @@ yarn start
 yarn techdocs-cli:dev [...options]
 ```
 
-### Use an example docs project
+### Using an example docs project
 
-We have created an [example documentation project](https://github.com/backstage/techdocs-container/tree/main/mock-docs) and it's shipped with [techdocs-container](https://github.com/backstage/techdocs-container) repository, for the purpose of local development. But you are free to create your own local test site. All it takes is a `docs/index.md` and `mkdocs.yml` in a directory.
+For the purpose of local development, we have created an [example documentation project](https://github.com/backstage/techdocs-container/tree/main/mock-docs) which is shipped with the [techdocs-container](https://github.com/backstage/techdocs-container) repository. You are of course also free to create your own local test site - all it takes is a `docs/index.md` and an `mkdocs.yml` in a directory.
 
 ```sh
 git clone https://github.com/backstage/techdocs-container.git
@@ -67,17 +67,17 @@ pip install mkdocs-techdocs-core
 
 Then run `yarn test`.
 
-#### Run Cypress tests
+#### Running Cypress tests
 
-Running cypress tests requires you to run the CLI locally against our example docs project
+Running cypress tests requires you to run the CLI locally against our example docs project.
 
-Start by making sure you have the example project locally on your computer
+Start by making sure that you have the example project locally on your computer:
 
 ```sh
 git clone https://github.com/backstage/techdocs-container.git
 ```
 
-Run the local version of techdocs-cli against the example docs project
+Run the local version of techdocs-cli against the example docs project:
 
 ```sh
 # From the root of this repository run
@@ -91,7 +91,7 @@ cd techdocs-container/mock-docs
 ../../backstage/packages/techdocs-cli/bin/techdocs-cli serve
 ```
 
-Run the cypress tests
+Run the cypress tests:
 
 ```sh
 yarn cypress:open
