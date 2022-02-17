@@ -766,13 +766,11 @@ describe('BitbucketDiscoveryProcessor', () => {
   describe('Custom repository parser', () => {
     const customRepositoryParser: BitbucketRepositoryParser =
       async function* customRepositoryParser({}) {
-        yield results.location(
-          {
-            type: 'custom-location-type',
-            target: 'custom-target',
-          },
-          true,
-        );
+        yield results.location({
+          type: 'custom-location-type',
+          target: 'custom-target',
+          presence: 'optional',
+        });
       };
 
     const processor = BitbucketDiscoveryProcessor.fromConfig(
