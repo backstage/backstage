@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { relative as relativePath, posix as posixPath } from 'path';
+import path from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
 import { PackageRole } from '../role';
@@ -166,8 +166,11 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
 
     const dirMap = new Map(
       Array.from(this.values()).map(pkg => [
-        posixPath.normalize(relativePath(paths.targetRoot, pkg.dir)) +
-          posixPath.sep,
+        // relative from root, convert to posix, and add a / at the end
+        path
+          .relative(paths.targetRoot, pkg.dir)
+          .split(path.sep)
+          .join(path.posix.sep) + path.posix.sep,
         pkg,
       ]),
     );
