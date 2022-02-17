@@ -80,7 +80,7 @@ export interface CatalogKindHeaderProps {
 }
 
 // @public (undocumented)
-const catalogPlugin: BackstagePlugin<
+export const catalogPlugin: BackstagePlugin<
   {
     catalogIndex: RouteRef<undefined>;
     catalogEntity: RouteRef<{
@@ -101,8 +101,6 @@ const catalogPlugin: BackstagePlugin<
     >;
   }
 >;
-export { catalogPlugin };
-export { catalogPlugin as plugin };
 
 // @public (undocumented)
 export function CatalogResultListItem(
