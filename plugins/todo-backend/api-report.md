@@ -131,7 +131,7 @@ export type TodoScmReaderOptions = {
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;
-  filePathFilter?: (path: string) => boolean;
+  filePathFilter?: (filePath: string) => boolean;
 };
 
 // @public (undocumented)
