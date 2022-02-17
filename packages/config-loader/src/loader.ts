@@ -140,7 +140,8 @@ export async function loadConfig(
   const env = envFunc ?? (async (name: string) => process.env[name]);
 
   const loadConfigFiles = async () => {
-    const configs = [];
+    const fileConfigs = [];
+    const loadedPaths = new Set<string>();
 
     for (const configPath of configPaths) {
       if (!isAbsolute(configPath)) {
@@ -148,8 +149,15 @@ export async function loadConfig(
       }
 
       const dir = dirname(configPath);
-      const readFile = (path: string) =>
-        fs.readFile(resolvePath(dir, path), 'utf8');
+      const readFile = (path: string) => {
+        const fullPath = resolvePath(dir, path);
+        // if we read a file when building configuration,
+        // we should include that file when watching for
+        // changes, too.
+        loadedPaths.add(fullPath);
+
+        return fs.readFile(fullPath, 'utf8');
+      };
 
       const input = yaml.parse(await readFile(configPath));
       const substitutionTransform = createSubstitutionTransform(env);
@@ -158,10 +166,10 @@ export async function loadConfig(
         substitutionTransform,
       ]);
 
-      configs.push({ data, context: basename(configPath) });
+      fileConfigs.push({ data, context: basename(configPath) });
     }
 
-    return configs;
+    return { fileConfigs, loadedPaths };
   };
 
   const loadRemoteConfigFiles = async () => {
@@ -199,8 +207,9 @@ export async function loadConfig(
   };
 
   let fileConfigs: AppConfig[];
+  let loadedPaths: Set<string>;
   try {
-    fileConfigs = await loadConfigFiles();
+    ({ fileConfigs, loadedPaths } = await loadConfigFiles());
   } catch (error) {
     throw new ForwardedError('Failed to read static configuration file', error);
   }
@@ -220,14 +229,24 @@ export async function loadConfig(
   const envConfigs = await readEnvConfig(process.env);
 
   const watchConfigFile = (watchProp: LoadConfigOptionsWatch) => {
-    const watcher = chokidar.watch(configPaths, {
+    let watchedFiles = Array.from(loadedPaths);
+
+    const watcher = chokidar.watch(watchedFiles, {
       usePolling: process.env.NODE_ENV === 'test',
     });
 
     let currentSerializedConfig = JSON.stringify(fileConfigs);
     watcher.on('change', async () => {
       try {
-        const newConfigs = await loadConfigFiles();
+        const { fileConfigs: newConfigs, loadedPaths: newLoadedPaths } =
+          await loadConfigFiles();
+
+        // Replace watches to handle any added or removed
+        // $include or $file expressions.
+        watcher.unwatch(watchedFiles);
+        watchedFiles = Array.from(newLoadedPaths);
+        watcher.add(watchedFiles);
+
         const newSerializedConfig = JSON.stringify(newConfigs);
 
         if (currentSerializedConfig === newSerializedConfig) {
