@@ -19,6 +19,9 @@ import { Config } from '@backstage/config';
 import * as result from './results';
 import { CatalogProcessorEmit } from './types';
 
+/**
+ * @deprecated no longer in use, replaced by the ConfigLocationEntityProvider.
+ */
 export class StaticLocationProcessor implements StaticLocationProcessor {
   static fromConfig(config: Config): StaticLocationProcessor {
     const locations: LocationSpec[] = [];

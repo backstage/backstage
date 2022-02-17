@@ -1133,7 +1133,7 @@ export function runPeriodically(fn: () => any, delayMs: number): () => void;
 
 // Warning: (ae-missing-release-tag) "StaticLocationProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class StaticLocationProcessor implements StaticLocationProcessor {
   constructor(staticLocations: LocationSpec[]);
   // (undocumented)
