@@ -202,7 +202,7 @@ describe('fetch:template', () => {
       it('uses fetchContents to retrieve the template content', () => {
         expect(mockFetchContents).toHaveBeenCalledWith(
           expect.objectContaining({
-            baseUrl: context.baseUrl,
+            baseUrl: context.templateInfo?.baseUrl,
             fetchUrl: context.input.url,
           }),
         );
