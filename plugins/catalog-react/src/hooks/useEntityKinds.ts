@@ -18,7 +18,8 @@ import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
 
-/** Retrieve a list of unique entity kinds present in the catalog
+/**
+ * Retrieve a list of unique entity kinds present in the catalog
  * @public
  */
 export function useEntityKinds() {

@@ -35,7 +35,8 @@ export class EntityKindFilter implements EntityFilter {
   }
 }
 
-/** Filters entities based on type
+/**
+ * Filters entities based on type
  * @public
  */
 export class EntityTypeFilter implements EntityFilter {

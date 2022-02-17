@@ -47,7 +47,8 @@ const useStyles = makeStyles(
 
 /**
  * Renders search bar for filtering the entity list.
- * @public */
+ * @public
+ */
 export const EntitySearchBar = () => {
   const classes = useStyles();
 

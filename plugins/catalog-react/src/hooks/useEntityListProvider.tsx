@@ -109,7 +109,8 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
 
 /**
  * Provides entities and filters for a catalog listing.
- * @public */
+ * @public
+ */
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   children,
 }: PropsWithChildren<{}>) => {
