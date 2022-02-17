@@ -311,7 +311,7 @@ export { GroupEntityV1alpha1 };
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
 
-// @public
+// @public @deprecated
 export type JSONSchema = JSONSchema7 & {
   [key in string]?: JsonValue;
 };
