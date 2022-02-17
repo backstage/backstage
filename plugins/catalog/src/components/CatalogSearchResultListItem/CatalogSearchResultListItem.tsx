@@ -38,16 +38,18 @@ const useStyles = makeStyles({
 });
 
 /**
- * Props for {@link CatalogResultListItem}.
+ * Props for {@link CatalogSearchResultListItem}.
  *
  * @public
  */
-export interface CatalogResultListItemProps {
+export interface CatalogSearchResultListItemProps {
   result: IndexableDocument;
 }
 
 /** @public */
-export function CatalogResultListItem(props: CatalogResultListItemProps) {
+export function CatalogSearchResultListItem(
+  props: CatalogSearchResultListItemProps,
+) {
   const result = props.result as any;
 
   const classes = useStyles();
@@ -71,3 +73,15 @@ export function CatalogResultListItem(props: CatalogResultListItemProps) {
     </Link>
   );
 }
+
+/**
+ * @public
+ * @deprecated use {@link CatalogSearchResultListItemProps} instead
+ */
+export type CatalogResultListItemProps = CatalogSearchResultListItemProps;
+
+/**
+ * @public
+ * @deprecated use {@link CatalogSearchResultListItem} instead
+ */
+export const CatalogResultListItem = CatalogSearchResultListItem;
