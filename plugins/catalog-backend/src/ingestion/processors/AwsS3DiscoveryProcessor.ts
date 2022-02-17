@@ -28,6 +28,10 @@ import {
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
 
+  getProcessorName(): string {
+    return 'AwsS3DiscoveryProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     optional: boolean,

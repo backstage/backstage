@@ -45,6 +45,10 @@ export type LocationEntityProcessorOptions = {
 export class LocationEntityProcessor implements CatalogProcessor {
   constructor(private readonly options: LocationEntityProcessorOptions) {}
 
+  getProcessorName(): string {
+    return 'LocationEntityProcessor';
+  }
+
   async postProcessEntity(
     entity: Entity,
     location: LocationSpec,

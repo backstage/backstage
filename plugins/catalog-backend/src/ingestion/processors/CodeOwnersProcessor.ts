@@ -64,6 +64,10 @@ export class CodeOwnersProcessor implements CatalogProcessor {
     this.reader = options.reader;
   }
 
+  getProcessorName(): string {
+    return 'CodeOwnersProcessor';
+  }
+
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,

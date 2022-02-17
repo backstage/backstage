@@ -78,6 +78,9 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
   }
+  getProcessorName(): string {
+    return 'GithubMultiOrgReaderProcessor';
+  }
 
   async readLocation(
     location: LocationSpec,

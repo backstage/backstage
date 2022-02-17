@@ -134,6 +134,8 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     },
   ): MicrosoftGraphOrgReaderProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,

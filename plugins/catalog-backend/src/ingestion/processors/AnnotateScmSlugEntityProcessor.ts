@@ -30,6 +30,10 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
     private readonly opts: { scmIntegrationRegistry: ScmIntegrationRegistry },
   ) {}
 
+  getProcessorName(): string {
+    return 'AnnotateScmSlugEntityProcessor';
+  }
+
   static fromConfig(config: Config): AnnotateScmSlugEntityProcessor {
     return new AnnotateScmSlugEntityProcessor({
       scmIntegrationRegistry: ScmIntegrations.fromConfig(config),

@@ -60,6 +60,10 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     this.logger = options.logger;
   }
 
+  getProcessorName(): string {
+    return 'GitLabDiscoveryProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     _optional: boolean,

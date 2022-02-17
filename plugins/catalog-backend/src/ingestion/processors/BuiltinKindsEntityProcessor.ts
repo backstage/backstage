@@ -69,6 +69,10 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     domainEntityV1alpha1Validator,
   ];
 
+  getProcessorName(): string {
+    return 'BuiltinKindsEntityProcessor';
+  }
+
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
       const results = await validator.check(entity);

@@ -92,6 +92,8 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(options: Options);
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   preProcessEntity(
     entity: Entity,
     location: LocationSpec,
@@ -107,6 +109,8 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   constructor(opts: { scmIntegrationRegistry: ScmIntegrationRegistry });
   // (undocumented)
   static fromConfig(config: Config): AnnotateScmSlugEntityProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
@@ -133,6 +137,8 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   ): AwsOrganizationCloudAccountProcessor;
   // (undocumented)
   getAwsAccounts(): Promise<Account[]>;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   logger: Logger_2;
   // (undocumented)
@@ -164,6 +170,8 @@ export type AwsOrganizationProviderConfig = {
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(reader: UrlReader);
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     optional: boolean,
@@ -187,6 +195,8 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
       logger: Logger_2;
     },
   ): AzureDevOpsDiscoveryProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -213,6 +223,8 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     },
   ): BitbucketDiscoveryProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,
@@ -233,6 +245,8 @@ export type BitbucketRepositoryParser = (options: {
 //
 // @public (undocumented)
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   postProcessEntity(
     entity: Entity,
@@ -352,7 +366,7 @@ export interface CatalogProcessingOrchestrator {
 //
 // @public (undocumented)
 export type CatalogProcessor = {
-  getProcessorName?(): string;
+  getProcessorName(): string;
   readLocation?(
     location: LocationSpec,
     optional: boolean,
@@ -478,6 +492,8 @@ export class CodeOwnersProcessor implements CatalogProcessor {
       reader: UrlReader;
     },
   ): CodeOwnersProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
@@ -726,6 +742,8 @@ export type EntityProviderMutation =
 // @public (undocumented)
 export class FileReaderProcessor implements CatalogProcessor {
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     optional: boolean,
@@ -760,6 +778,8 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     },
   ): GithubDiscoveryProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,
@@ -783,6 +803,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubMultiOrgReaderProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -838,6 +860,8 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     },
   ): GithubOrgReaderProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,
@@ -856,6 +880,8 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       logger: Logger_2;
     },
   ): GitLabDiscoveryProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -896,6 +922,8 @@ export type LocationAnalyzer = {
 // @public (undocumented)
 export class LocationEntityProcessor implements CatalogProcessor {
   constructor(options: LocationEntityProcessorOptions);
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   postProcessEntity(
     entity: Entity,
@@ -1020,6 +1048,8 @@ export const permissionRules: {
 // @public
 export class PlaceholderProcessor implements CatalogProcessor {
   constructor(options: PlaceholderProcessorOptions);
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }

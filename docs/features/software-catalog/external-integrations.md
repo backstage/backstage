@@ -472,8 +472,8 @@ type CacheItem = {
 export class SystemXReaderProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
 
-  // It's recommended to give the processor a unique name.
   getProcessorName() {
+    // The processor name must be unique.
     return 'system-x-processor';
   }
 
