@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import { Strategy as GitlabStrategy } from 'passport-gitlab2';
 import { Logger } from 'winston';
-
 import {
   executeRedirectStrategy,
   executeFrameHandlerStrategy,
@@ -71,8 +74,17 @@ export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
     id = profile.email.split('@')[0];
   }
 
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: id,
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: `user:default/${id}`, ent: [`user:default/${id}`] },
+    claims: {
+      sub: entityRef,
+      ent: [entityRef],
+    },
   });
 
   return { id, token };

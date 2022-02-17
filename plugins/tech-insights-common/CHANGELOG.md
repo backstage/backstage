@@ -1,5 +1,13 @@
 # @backstage/plugin-tech-insights-common
 
+## 0.2.2
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/types@0.1.2
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.9
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/config@0.1.14
+  - @backstage/plugin-tech-insights-common@0.2.2
+  - @backstage/plugin-tech-insights-node@0.2.3
+
 ## 0.1.8
 
 ### Patch Changes

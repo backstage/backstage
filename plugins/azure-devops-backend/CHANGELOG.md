@@ -1,5 +1,15 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.4
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/config@0.1.14
+  - @backstage/plugin-azure-devops-common@0.2.1
+
 ## 0.3.3
 
 ### Patch Changes

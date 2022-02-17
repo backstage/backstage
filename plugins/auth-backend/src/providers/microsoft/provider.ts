@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
@@ -231,10 +235,16 @@ export const microsoftDefaultSignInResolver: SignInResolver<
 
   const userId = profile.email.split('@')[0];
 
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: userId,
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
     claims: {
-      sub: `user:default/${userId}`,
-      ent: [`user:default/${userId}`],
+      sub: entityRef,
+      ent: [entityRef],
     },
   });
 
