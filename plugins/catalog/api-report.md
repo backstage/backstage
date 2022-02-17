@@ -104,13 +104,19 @@ const catalogPlugin: BackstagePlugin<
 export { catalogPlugin };
 export { catalogPlugin as plugin };
 
+// @public @deprecated (undocumented)
+export const CatalogResultListItem: typeof CatalogSearchResultListItem;
+
+// @public @deprecated (undocumented)
+export type CatalogResultListItemProps = CatalogSearchResultListItemProps;
+
 // @public (undocumented)
-export function CatalogResultListItem(
-  props: CatalogResultListItemProps,
+export function CatalogSearchResultListItem(
+  props: CatalogSearchResultListItemProps,
 ): JSX.Element;
 
 // @public
-export interface CatalogResultListItemProps {
+export interface CatalogSearchResultListItemProps {
   // (undocumented)
   result: IndexableDocument;
 }

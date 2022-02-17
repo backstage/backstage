@@ -22,7 +22,7 @@
 
 export * from './components/AboutCard';
 export * from './components/CatalogKindHeader';
-export * from './components/CatalogResultListItem';
+export * from './components/CatalogSearchResultListItem';
 export * from './components/CatalogTable';
 export * from './components/CatalogTable/columns';
 export * from './components/EntityLayout';
