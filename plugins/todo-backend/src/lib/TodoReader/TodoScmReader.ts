@@ -41,13 +41,14 @@ const excludedExtensions = [
 ];
 const MAX_FILE_SIZE = 200000;
 
+const excludeFolders = ['vendor'];
+
 /** @public */
 export type TodoScmReaderOptions = {
   logger: Logger;
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;
-  excludeFolders?: string[];
 };
 
 type CacheItem = {
@@ -61,7 +62,6 @@ export class TodoScmReader implements TodoReader {
   private readonly reader: UrlReader;
   private readonly parser: TodoParser;
   private readonly integrations: ScmIntegrations;
-  private readonly excludeFolders: string[];
 
   private readonly cache = new Map<string, CacheItem>();
   private readonly inFlightReads = new Map<string, Promise<CacheItem>>();
@@ -70,11 +70,8 @@ export class TodoScmReader implements TodoReader {
     config: Config,
     options: Omit<TodoScmReaderOptions, 'integrations'>,
   ) {
-    const excludeFolders: string[] =
-      config.getOptionalStringArray('todo.excludeFolders') ?? [];
     return new TodoScmReader({
       ...options,
-      excludeFolders,
       integrations: ScmIntegrations.fromConfig(config),
     });
   }
@@ -84,7 +81,6 @@ export class TodoScmReader implements TodoReader {
     this.reader = options.reader;
     this.parser = options.parser ?? createTodoParser();
     this.integrations = options.integrations;
-    this.excludeFolders = options.excludeFolders ?? [];
   }
 
   async readTodos(options: ReadTodosOptions): Promise<ReadTodosResult> {
@@ -95,12 +91,7 @@ export class TodoScmReader implements TodoReader {
     }
 
     const cacheItem = this.cache.get(url);
-    const excludeFolders = this.excludeFolders;
-    const newRead = this.doReadTodos(
-      { url },
-      excludeFolders,
-      cacheItem?.etag,
-    ).catch(error => {
+    const newRead = this.doReadTodos({ url }, cacheItem?.etag).catch(error => {
       if (cacheItem && error.name === 'NotModifiedError') {
         return cacheItem;
       }
@@ -119,10 +110,13 @@ export class TodoScmReader implements TodoReader {
 
   private async doReadTodos(
     options: ReadTodosOptions,
-    excludeFolders?: string[],
     etag?: string,
   ): Promise<CacheItem> {
     const { url } = options;
+    const filePathFilter = (filePath: string): boolean => {
+      const splitPath = filePath.split('/');
+      return !excludeFolders.some(r => splitPath.includes(r));
+    };
     const tree = await this.reader.readTree(url, {
       etag,
       filter(filePath, info) {
@@ -130,12 +124,11 @@ export class TodoScmReader implements TodoReader {
         if (info && info.size > MAX_FILE_SIZE) {
           return false;
         }
-        const excFolders = excludeFolders ?? [];
         return (
           !filePath.startsWith('.') &&
           !filePath.includes('/.') &&
           !excludedExtensions.includes(extname) &&
-          !excFolders.some(exclude => filePath.startsWith(exclude))
+          filePathFilter(filePath)
         );
       },
     });

@@ -131,7 +131,6 @@ export type TodoScmReaderOptions = {
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;
-  excludeFolders?: string[];
 };
 
 // @public (undocumented)

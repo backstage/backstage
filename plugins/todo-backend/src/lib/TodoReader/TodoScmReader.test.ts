@@ -192,18 +192,20 @@ describe('TodoScmReader', () => {
 
   it('should filter out exclude folders', async () => {
     const reader = mockReader();
-    const excludeFolders = ['vendor/'];
     const todoReader = new TodoScmReader({
       logger: getVoidLogger(),
       reader,
       integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
-      excludeFolders: excludeFolders,
     });
     reader.readTree.mockResolvedValueOnce({
       files: async () => [
         {
           content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
           path: 'vendor/another-file.go',
+        },
+        {
+          content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
+          path: 'test/vendor/another-file.go',
         },
         {
           content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
@@ -229,6 +231,14 @@ describe('TodoScmReader', () => {
           text: 'my-todo',
           tag: 'TODO',
           lineNumber: 1,
+          repoFilePath: 'test/vendor/another-file.go',
+          viewUrl:
+            'https://github.com/backstage/backstage/test/vendor/another-file.go#L1',
+        },
+        {
+          text: 'my-todo',
+          tag: 'TODO',
+          lineNumber: 1,
           repoFilePath: 'my-folder/my-file.js',
           viewUrl:
             'https://github.com/backstage/backstage/my-folder/my-file.js#L1',
@@ -247,6 +257,7 @@ describe('TodoScmReader', () => {
     const filterFunc = reader.readTree.mock.calls[0][1]!.filter!;
     expect(filterFunc('another-file.go')).toBe(true);
     expect(filterFunc('vendor/another-file.go')).toBe(false);
+    expect(filterFunc('test/vendor/another-file.go')).toBe(false);
     expect(filterFunc('my-file.js')).toBe(true);
     expect(filterFunc('my-folder/my-file.js')).toBe(true);
   });
