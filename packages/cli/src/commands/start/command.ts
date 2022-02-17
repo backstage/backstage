@@ -39,7 +39,7 @@ export async function command(cmd: Command): Promise<void> {
       return startFrontend({
         ...options,
         entry: 'src/index',
-        verifyVersions: true,
+        verifyVersions: false, // temporary disable to be in sync with #9193
       });
     case 'web-library':
     case 'frontend-plugin':
