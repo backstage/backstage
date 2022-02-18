@@ -53,7 +53,7 @@ export function generalError(
 
 export function location(
   newLocation: LocationSpec,
-  optional: boolean,
+  optional?: boolean,
 ): CatalogProcessorResult {
   return { type: 'location', location: newLocation, optional };
 }
