@@ -53,17 +53,26 @@ export type ActionContext<Input extends JsonObject> = {
 // @public @deprecated
 export type CompletedTaskState = TaskCompletionState;
 
-// Warning: (ae-missing-release-tag) "createBuiltinActions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const createBuiltinActions: (options: {
-  reader: UrlReader;
-  integrations: ScmIntegrations;
-  catalogClient: CatalogApi;
-  containerRunner?: ContainerRunner;
-  config: Config;
+// @public
+export const createBuiltinActions: (
+  options: CreateBuiltInActionsOptions,
+) => TemplateAction<JsonObject>[];
+
+// @public
+export interface CreateBuiltInActionsOptions {
+  // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-}) => TemplateAction<JsonObject>[];
+  // (undocumented)
+  catalogClient: CatalogApi;
+  // (undocumented)
+  config: Config;
+  // @deprecated (undocumented)
+  containerRunner?: ContainerRunner;
+  // (undocumented)
+  integrations: ScmIntegrations;
+  // (undocumented)
+  reader: UrlReader;
+}
 
 // Warning: (ae-missing-release-tag) "createCatalogRegisterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
