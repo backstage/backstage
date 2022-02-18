@@ -10,8 +10,7 @@ This is a paragraph.
 {: #test_id .test_class }
 
 Apple
-: Pomaceous fruit of plants of the genus Malus in
-the family Rosaceae.
+: A fruit.
 
 ```javascript
 import { test } from 'something';
