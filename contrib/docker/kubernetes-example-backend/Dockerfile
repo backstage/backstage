@@ -24,7 +24,7 @@ RUN pip3.8 install cookiecutter && \
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
 ADD yarn.lock package.json skeleton.tar ./
 
-RUN yarn install --immutable --production
+RUN yarn workspaces focus --all --production
 
 # This will copy the contents of the dist-workspace when running the build-image command.
 # Do not use this Dockerfile outside of that command, as it will copy in the source code instead.

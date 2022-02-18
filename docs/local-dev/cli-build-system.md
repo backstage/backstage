@@ -317,7 +317,7 @@ earlier on in your build process, and building them again would result in
 duplicate work.
 
 In order to use the bundle, you extract it into a directory, run
-`yarn install --production`, and then start the backend using your backend
+`yarn workspaces focus --all --production`, and then start the backend using your backend
 package as the Node.js entry point, for example `node packages/backend`.
 
 The `dist/bundle.tar.gz` is accompanied by a `dist/skeleton.tar.gz`, which has
@@ -326,7 +326,7 @@ can be used to run a `yarn install` in environments that will benefit from the
 caching that this enables, such as Docker image builds. To use the skeleton
 archive you copy it over to the target directory along with the root
 `package.json` and `yarn.lock`, extract the archive, and then run
-`yarn install --production`. Your target directory will then have all
+`yarn workspaces focus --all --production`. Your target directory will then have all
 dependencies installed, and as soon as you copy over and extract the contents of
 the `bundle.tar.gz` archive on top of it, the backend will be ready to run.
 
@@ -346,7 +346,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     yarn config set python /usr/bin/python3
 
-RUN yarn install --immutable --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+RUN yarn workspaces focus --all --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
