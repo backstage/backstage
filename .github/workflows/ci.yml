@@ -113,8 +113,8 @@ jobs:
       - name: prettier
         run: yarn prettier:check '!ADOPTERS.md'
 
-      - name: lock
-        run: yarn lock:check
+      # - name: lock
+      #   run: yarn lock:check
 
       - name: validate config
         run: yarn backstage-cli config:check --lax
@@ -139,12 +139,12 @@ jobs:
         run: node scripts/verify-links.js
 
       - name: build changed packages
-        if: ${{ steps.yarn-lock.outcome == 'success' }}
+        # if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run build --since origin/master --include-dependencies
 
-      - name: build all packages
-        if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: yarn lerna -- run build
+      # - name: build all packages
+      #   if: ${{ steps.yarn-lock.outcome == 'failure' }}
+      #   run: yarn lerna -- run build
 
       - name: verify type dependencies
         run: yarn lint:type-deps
