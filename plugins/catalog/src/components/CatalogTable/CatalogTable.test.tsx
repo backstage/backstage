@@ -22,7 +22,6 @@ import {
 import { ApiProvider } from '@backstage/core-app-api';
 import {
   entityRouteRef,
-  DefaultStarredEntitiesApi,
   MockEntityListContextProvider,
   starredEntitiesApiRef,
   UserListFilter,
@@ -34,6 +33,7 @@ import {
 } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import * as React from 'react';
+import { DefaultStarredEntitiesApi } from '../../apis';
 import { CatalogTable } from './CatalogTable';
 
 const entities: Entity[] = [

@@ -16,10 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { StorageApi } from '@backstage/core-plugin-api';
+import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
-import { DefaultStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
+import { starredEntitiesApiRef } from '../apis';
 import { useStarredEntities } from './useStarredEntities';
 
 describe('useStarredEntities', () => {

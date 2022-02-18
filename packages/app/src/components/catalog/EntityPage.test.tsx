@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { EntityLayout } from '@backstage/plugin-catalog';
 import {
+  EntityLayout,
   DefaultStarredEntitiesApi,
+} from '@backstage/plugin-catalog';
+import {
   EntityProvider,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';

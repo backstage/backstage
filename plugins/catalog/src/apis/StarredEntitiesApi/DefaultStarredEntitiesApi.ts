@@ -15,10 +15,10 @@
  */
 
 import { StorageApi } from '@backstage/core-plugin-api';
+import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { performMigrationToTheNewBucket } from './migration';
-import { StarredEntitiesApi } from './StarredEntitiesApi';
 
 /**
  * Default implementation of the StarredEntitiesApi that is backed by the StorageApi.

@@ -21,7 +21,6 @@ import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import {
   AsyncEntityProvider,
   catalogApiRef,
-  DefaultStarredEntitiesApi,
   EntityProvider,
   entityRouteRef,
   starredEntitiesApiRef,
@@ -36,6 +35,7 @@ import {
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router';
+import { DefaultStarredEntitiesApi } from '../../apis';
 import { EntityLayout } from './EntityLayout';
 
 const mockEntity = {

@@ -23,8 +23,8 @@ import {
 import {
   starredEntitiesApiRef,
   entityRouteRef,
-  DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 

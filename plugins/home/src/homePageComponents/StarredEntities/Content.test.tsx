@@ -21,8 +21,8 @@ import {
 import {
   starredEntitiesApiRef,
   entityRouteRef,
-  DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
+import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import React from 'react';
 import { Content } from './Content';
 

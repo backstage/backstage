@@ -13,10 +13,13 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/search-common';
 import { InfoCardVariants } from '@backstage/core-components';
+import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
+import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -168,6 +171,15 @@ export interface DefaultCatalogPageProps {
   columns?: TableColumn<CatalogTableRow>[];
   // (undocumented)
   initiallySelectedFilter?: UserListFilterKind;
+}
+
+// @public
+export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
+  constructor(opts: { storageApi: StorageApi });
+  // (undocumented)
+  starredEntitie$(): Observable<Set<string>>;
+  // (undocumented)
+  toggleStarred(entityRef: string): Promise<void>;
 }
 
 // @public (undocumented)

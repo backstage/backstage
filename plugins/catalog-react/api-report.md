@@ -24,7 +24,6 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
@@ -137,15 +136,6 @@ export type DefaultEntityFilters = {
   tags?: EntityTagFilter;
   text?: EntityTextFilter;
 };
-
-// @public
-export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
-  constructor(opts: { storageApi: StorageApi });
-  // (undocumented)
-  starredEntitie$(): Observable<Set<string>>;
-  // (undocumented)
-  toggleStarred(entityRef: string): Promise<void>;
-}
 
 // @public (undocumented)
 export type EntityFilter = {

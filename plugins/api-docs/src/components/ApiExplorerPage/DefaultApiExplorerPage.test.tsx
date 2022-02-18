@@ -22,11 +22,13 @@ import {
   configApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { CatalogTableRow } from '@backstage/plugin-catalog';
+import {
+  CatalogTableRow,
+  DefaultStarredEntitiesApi,
+} from '@backstage/plugin-catalog';
 import {
   CatalogApi,
   catalogApiRef,
-  DefaultStarredEntitiesApi,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';

@@ -20,10 +20,10 @@ import {
   configApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   CatalogApi,
   catalogApiRef,
-  DefaultStarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import {

@@ -20,7 +20,6 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
   catalogApiRef,
   starredEntitiesApiRef,
-  DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { scaffolderApiRef, ScaffolderClient } from '../src';
@@ -30,7 +29,10 @@ import {
   fetchApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { CatalogEntityPage } from '@backstage/plugin-catalog';
+import {
+  CatalogEntityPage,
+  DefaultStarredEntitiesApi,
+} from '@backstage/plugin-catalog';
 
 createDevApp()
   .addPage({

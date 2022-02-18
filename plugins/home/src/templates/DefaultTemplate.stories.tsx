@@ -26,8 +26,8 @@ import { Content, Page, InfoCard } from '@backstage/core-components';
 import {
   starredEntitiesApiRef,
   entityRouteRef,
-  DefaultStarredEntitiesApi
 } from '@backstage/plugin-catalog-react';
+import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   HomePageSearchBar,
   SearchContextProvider,
@@ -153,4 +153,3 @@ export const DefaultTemplate = () => {
     </SearchContextProvider>
   );
 };
-

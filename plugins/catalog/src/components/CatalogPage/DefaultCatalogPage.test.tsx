@@ -29,7 +29,6 @@ import {
 } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  DefaultStarredEntitiesApi,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -43,6 +42,7 @@ import {
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
+import { DefaultStarredEntitiesApi } from '../../apis';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
