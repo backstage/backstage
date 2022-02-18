@@ -173,7 +173,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
  * Pin the yarn version in a directory to the one we're using in the Backstage repo
  */
 async function pinYarnVersion(dir: string) {
-  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc'), 'utf8');
+  const yarnRc = await fs.readFile(paths.resolveOwnRoot('.yarnrc.yml'), 'utf8');
   const yarnRcLines = yarnRc.split('\n');
   const yarnPathLine = yarnRcLines.find(line => line.startsWith('yarn-path'));
   if (!yarnPathLine) {
@@ -186,7 +186,10 @@ async function pinYarnVersion(dir: string) {
   const [, localYarnPath] = match;
   const yarnPath = paths.resolveOwnRoot(localYarnPath);
 
-  await fs.writeFile(resolvePath(dir, '.yarnrc'), `yarn-path "${yarnPath}"\n`);
+  await fs.writeFile(
+    resolvePath(dir, '.yarnrc.yml'),
+    `yarn-path "${yarnPath}"\n`,
+  );
 }
 
 /**

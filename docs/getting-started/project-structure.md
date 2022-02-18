@@ -215,7 +215,7 @@ future.
 - [`.vale.ini`](https://github.com/backstage/backstage/tree/master/.vale.ini) -
   [Spell checker](https://github.com/errata-ai/vale) for Markdown files.
 
-- [`.yarnrc`](https://github.com/backstage/backstage/tree/master/.yarnrc) -
+- [`.yarnrc.yml`](https://github.com/backstage/backstage/tree/master/.yarnrc.yml) -
   Enforces "our" version of Yarn.
 
 - [`app-config.yaml`](https://github.com/backstage/backstage/tree/master/app-config.yaml) -
