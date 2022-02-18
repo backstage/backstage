@@ -53,17 +53,26 @@ export type ActionContext<Input extends JsonObject> = {
 // @public @deprecated
 export type CompletedTaskState = TaskCompletionState;
 
-// Warning: (ae-missing-release-tag) "createBuiltinActions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const createBuiltinActions: (options: {
-  reader: UrlReader;
-  integrations: ScmIntegrations;
-  catalogClient: CatalogApi;
-  containerRunner?: ContainerRunner;
-  config: Config;
+// @public
+export const createBuiltinActions: (
+  options: CreateBuiltInActionsOptions,
+) => TemplateAction<JsonObject>[];
+
+// @public
+export interface CreateBuiltInActionsOptions {
+  // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-}) => TemplateAction<JsonObject>[];
+  // (undocumented)
+  catalogClient: CatalogApi;
+  // (undocumented)
+  config: Config;
+  // @deprecated (undocumented)
+  containerRunner?: ContainerRunner;
+  // (undocumented)
+  integrations: ScmIntegrations;
+  // (undocumented)
+  reader: UrlReader;
+}
 
 // Warning: (ae-missing-release-tag) "createCatalogRegisterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -356,9 +365,7 @@ export class DatabaseTaskStore implements TaskStore {
 // @public @deprecated
 export type DispatchResult = TaskBrokerDispatchResult;
 
-// Warning: (ae-missing-release-tag) "fetchContents" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function fetchContents({
   reader,
   integrations,
@@ -369,7 +376,7 @@ export function fetchContents({
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
-  fetchUrl?: JsonValue;
+  fetchUrl?: string;
   outputPath: string;
 }): Promise<void>;
 
@@ -487,7 +494,7 @@ export interface TaskBroker {
     unsubscribe: () => void;
   };
   // (undocumented)
-  vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
+  vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
 // @public

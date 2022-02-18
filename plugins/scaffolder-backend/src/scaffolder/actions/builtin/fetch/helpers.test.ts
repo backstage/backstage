@@ -50,15 +50,6 @@ describe('fetchContent helper', () => {
     outputPath: os.tmpdir(),
   };
 
-  it('should reject non string fetchUrls', async () => {
-    await expect(
-      fetchContents({
-        ...options,
-        fetchUrl: false,
-      }),
-    ).rejects.toThrow('Invalid url parameter, expected string, got boolean');
-  });
-
   it('should reject absolute file locations', async () => {
     await expect(
       fetchContents({

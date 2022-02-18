@@ -161,7 +161,7 @@ export interface TaskBroker {
   dispatch(
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
-  vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
+  vacuumTasks(options: { timeoutS: number }): Promise<void>;
   observe(
     options: {
       taskId: string;
