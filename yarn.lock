@@ -68,13 +68,13 @@
   dependencies:
     "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
 
-"@asyncapi/parser@^1.13.0":
-  version "1.13.0"
-  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.13.0.tgz#bc20d53ba870ead9d26d5a4e3a838c5765ba8d4c"
-  integrity sha512-UnTYSjx2Sc+VKWIIeIV5I+ogFbN5iWzNgx1UgTXQ5oPhtNlsdIkF+w7qV8GyiraaKbBqAuwepv4xbBvlEi8hkw==
+"@asyncapi/parser@^1.14.0":
+  version "1.14.1"
+  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.14.1.tgz#2f474f9d5ba1ce5b144e487fd956c0809ab11a9e"
+  integrity sha512-ZsNQc/HXmGDrxkYBRrGou/JrWn+FLHYdQQI0WPOylSL+LNfaWtLlIcYwbcj61l+jLLFqIe0DK/yZbmjxm0ydqw==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^9.0.6"
-    "@asyncapi/specs" "^2.11.0"
+    "@asyncapi/specs" "^2.13.0"
     "@fmvilas/pseudo-yaml-ast" "^0.3.1"
     ajv "^6.10.1"
     js-yaml "^3.13.1"
@@ -83,24 +83,24 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@1.0.0-next.32":
-  version "1.0.0-next.32"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.32.tgz#ccb99466b1b6cfd3e789cf3cead5e35ba26b5687"
-  integrity sha512-hUmLc8YCEhLsBdO+w3eoqFTtR0IZN3isNvgy7xL1WuYBXHNkB9DAhB7mnogLFUmcuLH6xAQnC/Li6CKtgIxaGw==
+"@asyncapi/react-component@1.0.0-next.33":
+  version "1.0.0-next.33"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.33.tgz#13bc0327ceb818753dbe1fef99a570dd77b8fe6b"
+  integrity sha512-3uUvOOimgqtqowGb+h73PvGKEgCMykEVxMQWHye/NH/+yDivelj6gX9mprGZQL3pWG2CVsUyPUd0vUuCrXOzcg==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.3.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
-    "@asyncapi/parser" "^1.13.0"
+    "@asyncapi/parser" "^1.14.0"
     highlight.js "^10.7.2"
     isomorphic-dompurify "^0.13.0"
     marked "^4.0.10"
     openapi-sampler "^1.1.0"
     use-resize-observer "^7.0.0"
 
-"@asyncapi/specs@^2.11.0":
-  version "2.12.0"
-  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.12.0.tgz#15534ca9e518b561d33edfdfdbb234f9b274f261"
-  integrity sha512-X4Xkrl+9WXSk5EJhsueIxNx6ymHI5wpkw4ofetV+VRnPLNob/XO4trPSJClrL5hlknxbGADLvlrkI5d3XJ996g==
+"@asyncapi/specs@^2.13.0":
+  version "2.13.0"
+  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.13.0.tgz#c0f46d00e8a67c1c9ea445eb3e8bca90f7dca795"
+  integrity sha512-X0OrxJtzwRH8iLILO/gUTDqjGVPmagmdlgdyuBggYAoGXzF6ZuAws3XCLxtPNve5eA/0V/1puwpUYEGekI22og==
 
 "@azure/abort-controller@^1.0.0":
   version "1.0.2"
@@ -13194,12 +13194,7 @@ hexoid@1.0.0:
   resolved "https://registry.npmjs.org/hexoid/-/hexoid-1.0.0.tgz#ad10c6573fb907de23d9ec63a711267d9dc9bc18"
   integrity sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==
 
-highlight.js@^10.1.0, highlight.js@^10.4.1, highlight.js@^10.6.0:
-  version "10.7.2"
-  resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.2.tgz#89319b861edc66c48854ed1e6da21ea89f847360"
-  integrity sha512-oFLl873u4usRM9K63j4ME9u3etNF0PLiJhSQ8rdfuL51Wn3zkD6drf9ZW0dOzjnZI22YYG24z30JcmfCZjMgYg==
-
-highlight.js@^10.7.2, highlight.js@~10.7.0:
+highlight.js@^10.1.0, highlight.js@^10.4.1, highlight.js@^10.6.0, highlight.js@^10.7.2, highlight.js@~10.7.0:
   version "10.7.3"
   resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.3.tgz#697272e3991356e40c3cac566a74eef681756531"
   integrity sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==
