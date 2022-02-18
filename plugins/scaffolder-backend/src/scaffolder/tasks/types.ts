@@ -131,6 +131,8 @@ export type TaskBrokerDispatchOptions = {
 
 /**
  * DispatchResult
+ *
+ * @public
  * @deprecated use TaskBrokerDispatchResult instead
  */
 export type DispatchResult = TaskBrokerDispatchResult;

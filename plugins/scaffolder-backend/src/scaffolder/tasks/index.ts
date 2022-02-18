@@ -38,5 +38,7 @@ export type {
   DispatchResult,
   TaskBrokerDispatchResult,
   TaskBrokerDispatchOptions,
+  TaskStoreCreateTaskOptions,
+  TaskStoreCreateTaskResult,
   TemplateMetadata,
 } from './types';
