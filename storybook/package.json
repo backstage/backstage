@@ -21,7 +21,7 @@
     "@storybook/addon-storysource": "^6.4.19",
     "@storybook/addons": "^6.4.19",
     "@storybook/react": "^6.4.19",
-    "storybook-dark-mode": "^1.0.8"
+    "storybook-dark-mode": "^1.0.9"
   },
   "peerDependencies": {
     "@backstage/theme": "link:../packages/theme",
