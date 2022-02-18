@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import React, { ReactNode, ReactElement } from 'react';
 import {
   attachComponentData,
   useApiHolder,
@@ -33,7 +33,7 @@ export interface EntitySwitchCaseProps {
     entity: Entity,
     context: { apis: ApiHolder },
   ) => boolean | Promise<boolean>;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const EntitySwitchCaseComponent = (_props: EntitySwitchCaseProps) => null;
@@ -53,8 +53,16 @@ type SwitchCaseResult = {
   children: JSX.Element;
 };
 
+/**
+ * Props for the {@link EntitySwitch} component.
+ * @public
+ */
+export interface EntitySwitchProps {
+  children: ReactNode;
+}
+
 /** @public */
-export const EntitySwitch = (props: { children: React.ReactNode }) => {
+export const EntitySwitch = (props: EntitySwitchProps) => {
   const { entity } = useEntity();
   const apis = useApiHolder();
   const results = useElementFilter(
@@ -66,7 +74,7 @@ export const EntitySwitch = (props: { children: React.ReactNode }) => {
           withStrictError: 'Child of EntitySwitch is not an EntitySwitch.Case',
         })
         .getElements()
-        .flatMap<SwitchCaseResult>((element: React.ReactElement) => {
+        .flatMap<SwitchCaseResult>((element: ReactElement) => {
           const { if: condition, children: elementsChildren } =
             element.props as EntitySwitchCase;
           return [
