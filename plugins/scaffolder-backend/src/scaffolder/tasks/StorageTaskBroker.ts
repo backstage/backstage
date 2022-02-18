@@ -38,39 +38,39 @@ export class TaskManager implements TaskContext {
 
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
-  static create(state: TaskState, storage: TaskStore, logger: Logger) {
-    const agent = new TaskManager(state, storage, logger);
+  static create(task: CurrentClaimedTask, storage: TaskStore, logger: Logger) {
+    const agent = new TaskManager(task, storage, logger);
     agent.startTimeout();
     return agent;
   }
 
   // Runs heartbeat internally
   private constructor(
-    private readonly state: TaskState,
+    private readonly task: CurrentClaimedTask,
     private readonly storage: TaskStore,
     private readonly logger: Logger,
   ) {}
 
   get spec() {
-    return this.state.spec;
+    return this.task.spec;
   }
 
   get secrets() {
-    return this.state.secrets;
+    return this.task.secrets;
   }
 
   async getWorkspaceName() {
-    return this.state.taskId;
+    return this.task.taskId;
   }
 
   get done() {
     return this.isDone;
   }
 
-  async emitLog(message: string, metadata?: JsonObject): Promise<void> {
+  async emitLog(message: string, logMetadata?: JsonObject): Promise<void> {
     await this.storage.emitLogEvent({
-      taskId: this.state.taskId,
-      body: { message, ...metadata },
+      taskId: this.task.taskId,
+      body: { message, ...logMetadata },
     });
   }
 
@@ -79,7 +79,7 @@ export class TaskManager implements TaskContext {
     metadata?: JsonObject,
   ): Promise<void> {
     await this.storage.completeTask({
-      taskId: this.state.taskId,
+      taskId: this.task.taskId,
       status: result === 'failed' ? 'failed' : 'completed',
       eventBody: {
         message: `Run completed with status: ${result}`,
@@ -95,13 +95,13 @@ export class TaskManager implements TaskContext {
   private startTimeout() {
     this.heartbeatTimeoutId = setTimeout(async () => {
       try {
-        await this.storage.heartbeatTask(this.state.taskId);
+        await this.storage.heartbeatTask(this.task.taskId);
         this.startTimeout();
       } catch (error) {
         this.isDone = true;
 
         this.logger.error(
-          `Heartbeat for task ${this.state.taskId} failed`,
+          `Heartbeat for task ${this.task.taskId} failed`,
           error,
         );
       }
@@ -110,15 +110,23 @@ export class TaskManager implements TaskContext {
 }
 
 /**
- * TaskState
+ * Stores the state of the current claimed task passed to the TaskContext
  *
  * @public
  */
-export interface TaskState {
+export interface CurrentClaimedTask {
   spec: TaskSpec;
   taskId: string;
   secrets?: TaskSecrets;
 }
+
+/**
+ * TaskState
+ *
+ * @public
+ * @deprecated use CurrentClaimedTask instead
+ */
+export type TaskState = CurrentClaimedTask;
 
 function defer() {
   let resolve = () => {};
