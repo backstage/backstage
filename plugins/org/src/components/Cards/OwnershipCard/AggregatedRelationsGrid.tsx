@@ -28,7 +28,7 @@ import {
 import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
-import { useTransitiveEntities } from './useTransitiveEntities';
+import { useAggregatedEntities } from './useAggregatedEntities';
 
 const useStyles = makeStyles((theme: BackstageTheme) =>
   createStyles({
@@ -86,7 +86,7 @@ const EntityCountTile = ({
 };
 
 // can only be used for group entity
-export const TransitiveRelationsGrid = ({
+export const AggregatedRelationsGrid = ({
   entity,
   entityFilterKind,
 }: {
@@ -94,7 +94,7 @@ export const TransitiveRelationsGrid = ({
   entityFilterKind?: string[];
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
-  const { componentsWithCounters, loading, error } = useTransitiveEntities(
+  const { componentsWithCounters, loading, error } = useAggregatedEntities(
     entity,
     entityFilterKind,
   );

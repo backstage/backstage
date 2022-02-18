@@ -50,7 +50,7 @@ const getQueryParams = (
   return queryParams;
 };
 
-export function useTransitiveEntities(
+export function useAggregatedEntities(
   entity: Entity,
   entityFilterKind?: string[],
 ): {

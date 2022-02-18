@@ -28,7 +28,7 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { DirectRelationsGrid } from './DirectRelationsGrid';
-import { TransitiveRelationsGrid } from './TransitiveRelationsGrid';
+import { AggregatedRelationsGrid } from './AggregatedRelationsGrid';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -59,12 +59,12 @@ const directRelationsGrid = (entity: Entity, entityFilterKind?: string[]) => {
   );
 };
 
-const transitiveRelationsGrid = (
+const aggregatedRelationsGrid = (
   entity: Entity,
   entityFilterKind?: string[],
 ) => {
   return (
-    <TransitiveRelationsGrid
+    <AggregatedRelationsGrid
       entity={entity}
       entityFilterKind={entityFilterKind}
     />
@@ -84,7 +84,7 @@ export const OwnershipCard = ({
   const [relationsType, setRelationsType] = useState('direct');
   const renderedGrid =
     relationsType !== 'direct' && isGroup
-      ? transitiveRelationsGrid(entity, entityFilterKind)
+      ? aggregatedRelationsGrid(entity, entityFilterKind)
       : directRelationsGrid(entity, entityFilterKind);
 
   return (
@@ -97,7 +97,7 @@ export const OwnershipCard = ({
             <Tooltip
               placement="top"
               arrow
-              title={`${relationsType === 'direct' ? 'Direct' : 'Transitive'
+              title={`${relationsType === 'direct' ? 'Direct' : 'Aggregated'
                 } Relations`}
             >
               <Switch
@@ -105,7 +105,7 @@ export const OwnershipCard = ({
                 checked={relationsType !== 'direct'}
                 onChange={() =>
                   relationsType === 'direct'
-                    ? setRelationsType('transitive')
+                    ? setRelationsType('aggregated')
                     : setRelationsType('direct')
                 }
                 name="pin"
@@ -113,7 +113,7 @@ export const OwnershipCard = ({
                 disabled={!isGroup}
               />
             </Tooltip>
-            Transitive Relations
+            Aggregated Relations
           </ListItemSecondaryAction>
         </ListItem>
       </List>
