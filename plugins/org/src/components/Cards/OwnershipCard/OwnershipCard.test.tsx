@@ -160,7 +160,7 @@ describe('OwnershipCard', () => {
     );
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
-      filter: { kind: ['Component', 'API'] },
+      filter: { kind: ['Component', 'API', 'System'] },
       fields: [
         'kind',
         'metadata.name',
