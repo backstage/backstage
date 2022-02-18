@@ -182,7 +182,9 @@ describe('OwnershipCard', () => {
     expect(
       queryByText(getByText('LIBRARY').parentElement!, '1'),
     ).toBeInTheDocument();
-    expect(() => getByText('SYSTEM')).toThrowError();
+    expect(
+      queryByText(getByText('SYSTEM').parentElement!, '1'),
+    ).toBeInTheDocument();
   });
 
   it('applies CustomFilterDefinition', async () => {
