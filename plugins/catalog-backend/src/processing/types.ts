@@ -14,8 +14,30 @@
  * limitations under the License.
  */
 
-import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
+
+/**
+ * Holds the relation data for entities.
+ *
+ * @public
+ */
+export type EntityRelationSpec = {
+  /**
+   * The source entity of this relation.
+   */
+  source: EntityName;
+
+  /**
+   * The type of the relation.
+   */
+  type: string;
+
+  /**
+   * The target entity of this relation.
+   */
+  target: EntityName;
+};
 
 export type EntityProcessingRequest = {
   entity: Entity;

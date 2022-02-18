@@ -234,13 +234,6 @@ export type EntityRelation = {
 };
 
 // @public
-export type EntityRelationSpec = {
-  source: EntityName;
-  type: string;
-  target: EntityName;
-};
-
-// @public
 export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T;

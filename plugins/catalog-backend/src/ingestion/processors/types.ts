@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityRelationSpec,
-  LocationSpec,
-} from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
+import { EntityRelationSpec } from '../../processing/types';
 
 export type CatalogProcessor = {
   /**
