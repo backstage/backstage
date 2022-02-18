@@ -18,8 +18,6 @@ import * as results from './results';
 
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
 export { AnnotateScmSlugEntityProcessor } from './AnnotateScmSlugEntityProcessor';
-export { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
-export type { AwsOrganizationProviderConfig } from './awsOrganization/config';
 export { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';
 export { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';

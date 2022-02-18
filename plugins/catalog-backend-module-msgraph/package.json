@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-msgraph",
-  "description": "A Backstage catalog backend modules that helps integrate towards Microsoft Graph",
+  "description": "A Backstage catalog backend module that helps integrate towards Microsoft Graph",
   "version": "0.2.16",
   "main": "src/index.ts",
   "types": "src/index.ts",
