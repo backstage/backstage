@@ -197,8 +197,15 @@ export type EntityRelation = {
 
   /**
    * The target entity of this relation.
+   *
+   * @deprecated use targetRef instead
    */
   target: EntityName;
+
+  /**
+   * The entity ref of the target of this relation.
+   */
+  targetRef: string;
 };
 
 /**
