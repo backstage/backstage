@@ -92,12 +92,7 @@ export class TodoScmReader implements TodoReader {
     }
 
     const cacheItem = this.cache.get(url);
-    const filePathFilter = this.filePathFilter;
-    const newRead = this.doReadTodos(
-      { url },
-      filePathFilter,
-      cacheItem?.etag,
-    ).catch(error => {
+    const newRead = this.doReadTodos({ url }, cacheItem?.etag).catch(error => {
       if (cacheItem && error.name === 'NotModifiedError') {
         return cacheItem;
       }
@@ -116,11 +111,10 @@ export class TodoScmReader implements TodoReader {
 
   private async doReadTodos(
     options: ReadTodosOptions,
-    filePathFilter: (filePath: string) => boolean,
     etag?: string,
   ): Promise<CacheItem> {
     const { url } = options;
-
+    const filePathFilter = this.filePathFilter;
     const tree = await this.reader.readTree(url, {
       etag,
       filter(filePath, info) {

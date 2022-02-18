@@ -252,7 +252,7 @@ describe('TodoScmReader', () => {
       files: async () => [
         {
           content: async () => Buffer.from('// TODO: my-todo', 'utf8'),
-          path: 'my-folder/my-file.js',
+          path: '',
         },
       ],
     } as ReadTreeResponse);
@@ -261,16 +261,7 @@ describe('TodoScmReader', () => {
         url: 'https://github.com/backstage/backstage/catalog-info.yaml',
       }),
     ).resolves.toEqual({
-      items: [
-        {
-          text: 'my-todo',
-          tag: 'TODO',
-          lineNumber: 1,
-          repoFilePath: 'my-folder/my-file.js',
-          viewUrl:
-            'https://github.com/backstage/backstage/my-folder/my-file.js#L1',
-        },
-      ],
+      items: [],
     });
     expect(reader.readTree).toHaveBeenCalledTimes(1);
     expect(reader.readTree).toHaveBeenCalledWith(
