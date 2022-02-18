@@ -160,23 +160,6 @@ export interface CatalogTableRow {
   };
 }
 
-// @public (undocumented)
-export const columnFactories: Readonly<{
-  createNameColumn(
-    options?:
-      | {
-          defaultKind?: string | undefined;
-        }
-      | undefined,
-  ): TableColumn<CatalogTableRow>;
-  createSystemColumn(): TableColumn<CatalogTableRow>;
-  createOwnerColumn(): TableColumn<CatalogTableRow>;
-  createSpecTypeColumn(): TableColumn<CatalogTableRow>;
-  createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
-  createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
-  createTagsColumn(): TableColumn<CatalogTableRow>;
-}>;
-
 // @public
 export interface DefaultCatalogPageProps {
   // (undocumented)
