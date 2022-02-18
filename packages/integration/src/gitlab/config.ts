@@ -82,11 +82,7 @@ export function readGitLabIntegrationConfig(
     baseUrl = `https://${host}`;
   }
 
-  if (host.includes(':')) {
-    throw new Error(
-      `Invalid GitLab integration config, host '${host}' should just be the host name (e.g. "github.com"), not a URL`,
-    );
-  } else if (!isValidHost(host)) {
+  if (!isValidHost(host)) {
     throw new Error(
       `Invalid GitLab integration config, '${host}' is not a valid host`,
     );
