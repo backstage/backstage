@@ -24,11 +24,11 @@ import {
   SerializedTask,
   TaskStatus,
   TaskEventType,
-  TaskSecrets,
-  TaskSpec,
   TaskStore,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
+  TaskStoreCreateTaskOptions,
+  TaskStoreCreateTaskResult,
 } from './types';
 import { DateTime } from 'luxon';
 
@@ -108,14 +108,13 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async createTask(
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<{ taskId: string }> {
+    options: TaskStoreCreateTaskOptions,
+  ): Promise<TaskStoreCreateTaskResult> {
     const taskId = uuid();
     await this.db<RawDbTaskRow>('tasks').insert({
       id: taskId,
-      spec: JSON.stringify(spec),
-      secrets: secrets ? JSON.stringify(secrets) : undefined,
+      spec: JSON.stringify(options.spec),
+      secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
       status: 'open',
     });
     return { taskId };

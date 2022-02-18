@@ -23,10 +23,10 @@ import {
   TaskSpec,
   TaskStore,
   TaskBroker,
-  DispatchResult,
   SerializedTaskEvent,
   SerializedTask,
 } from './types';
+import { TaskBrokerDispatchOptions } from '.';
 
 /**
  * TaskManager
@@ -155,10 +155,9 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   async dispatch(
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<DispatchResult> {
-    const taskRow = await this.storage.createTask(spec, secrets);
+    options: TaskBrokerDispatchOptions,
+  ): Promise<{ taskId: string }> {
+    const taskRow = await this.storage.createTask(options);
     this.signalDispatch();
     return {
       taskId: taskRow.taskId,

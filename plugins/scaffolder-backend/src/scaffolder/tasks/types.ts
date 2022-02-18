@@ -74,7 +74,7 @@ export type CompletedTaskState = TaskCompletionState;
 export type SerializedTask = {
   id: string;
   spec: TaskSpec;
-  status: Status;
+  status: TaskStatus;
   createdAt: string;
   lastHeartbeatAt?: string;
   secrets?: TaskSecrets;
@@ -110,13 +110,30 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 /**
- * DispatchResult
+ * The result of the TaskBroker Dispatch
  *
  * @public
  */
-export type DispatchResult = {
+export type TaskBrokerDispatchResult = {
   taskId: string;
 };
+
+/**
+ * The options passed to TaskBroker Dispatch
+ * Currently a spec and optional secrets
+ *
+ * @public
+ */
+export type TaskBrokerDispatchOptions = {
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+};
+
+/**
+ * DispatchResult
+ * @deprecated use TaskBrokerDispatchResult instead
+ */
+export type DispatchResult = TaskBrokerDispatchResult;
 
 /**
  * Task
@@ -128,7 +145,7 @@ export interface TaskContext {
   secrets?: TaskSecrets;
   done: boolean;
   emitLog(message: string, metadata?: JsonValue): Promise<void>;
-  complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
+  complete(result: TaskCompletionState, metadata?: JsonValue): Promise<void>;
   getWorkspaceName(): Promise<string>;
 }
 
@@ -139,7 +156,9 @@ export interface TaskContext {
  */
 export interface TaskBroker {
   claim(): Promise<TaskContext>;
-  dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
+  dispatch(
+    options: TaskBrokerDispatchOptions,
+  ): Promise<TaskBrokerDispatchResult>;
   vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
   observe(
     options: {
@@ -175,20 +194,36 @@ export type TaskStoreListEventsOptions = {
 };
 
 /**
+ * The options passed to TaskStore create
+ * @public
+ */
+export type TaskStoreCreateTaskOptions = {
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+};
+
+/**
+ * The response from TaskStoreCreate
+ * @public
+ */
+export type TaskStoreCreateTaskResult = {
+  taskId: string;
+};
+
+/**
  * TaskStore
  *
  * @public
  */
 export interface TaskStore {
   createTask(
-    task: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<{ taskId: string }>;
+    options: TaskStoreCreateTaskOptions,
+  ): Promise<TaskStoreCreateTaskResult>;
   getTask(taskId: string): Promise<SerializedTask>;
   claimTask(): Promise<SerializedTask | undefined>;
   completeTask(options: {
     taskId: string;
-    status: Status;
+    status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void>;
   heartbeatTask(taskId: string): Promise<void>;
