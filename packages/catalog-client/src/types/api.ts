@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, LocationSpec } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -242,7 +242,11 @@ export interface CatalogRequestOptions {
  */
 export type Location = {
   id: string;
-} & LocationSpec;
+  type: string;
+  target: string;
+  /** @deprecated This field is is ignored */
+  presence?: 'optional' | 'required';
+};
 
 /**
  * The request type for {@link CatalogClient.addLocation}.

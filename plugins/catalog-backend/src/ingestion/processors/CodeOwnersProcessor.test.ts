@@ -15,9 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { CodeOwnersProcessor } from './CodeOwnersProcessor';
+import { LocationSpec } from './types';
 
 const mockCodeOwnersText = () => `
 *       @acme/team-foo @acme/team-bar

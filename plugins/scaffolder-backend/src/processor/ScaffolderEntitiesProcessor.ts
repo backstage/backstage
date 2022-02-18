@@ -17,7 +17,6 @@
 import {
   Entity,
   getEntityName,
-  LocationSpec,
   parseEntityRef,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
@@ -25,6 +24,7 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
   results,
 } from '@backstage/plugin-catalog-backend';
 import {

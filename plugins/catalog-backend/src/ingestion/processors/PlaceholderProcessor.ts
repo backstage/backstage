@@ -15,11 +15,11 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
-import { CatalogProcessor } from './types';
+import { CatalogProcessor, LocationSpec } from './types';
 
 /** @public */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;

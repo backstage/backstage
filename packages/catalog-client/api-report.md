@@ -5,7 +5,6 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
-import { LocationSpec } from '@backstage/catalog-model';
 
 // @public
 export type AddLocationRequest = {
@@ -211,6 +210,9 @@ export interface GetEntityFacetsResponse {
 // @public
 type Location_2 = {
   id: string;
-} & LocationSpec;
+  type: string;
+  target: string;
+  presence?: 'optional' | 'required';
+};
 export { Location_2 as Location };
 ```

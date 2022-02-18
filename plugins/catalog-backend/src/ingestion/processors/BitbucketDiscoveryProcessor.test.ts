@@ -16,13 +16,13 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 import { ConfigReader } from '@backstage/config';
-import { LocationSpec } from '@backstage/catalog-model';
 import {
   BitbucketRepository20,
   BitbucketRepositoryParser,
   PagedResponse,
   PagedResponse20,
 } from './bitbucket';
+import { LocationSpec } from './types';
 import { results } from './index';
 import { RequestHandler, rest } from 'msw';
 import { setupServer } from 'msw/node';

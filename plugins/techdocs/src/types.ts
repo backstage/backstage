@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 
 export type TechDocsMetadata = {
   site_name: string;
@@ -22,5 +22,5 @@ export type TechDocsMetadata = {
 };
 
 export type TechDocsEntityMetadata = Entity & {
-  locationMetadata?: LocationSpec;
+  locationMetadata?: { type: string; target: string };
 };

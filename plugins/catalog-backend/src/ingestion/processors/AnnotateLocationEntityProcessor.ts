@@ -21,12 +21,11 @@ import {
   ANNOTATION_SOURCE_LOCATION,
   ANNOTATION_VIEW_URL,
   Entity,
-  LocationSpec,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { identity, merge, pickBy } from 'lodash';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
 /** @public */
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {

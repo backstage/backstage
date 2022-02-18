@@ -19,6 +19,7 @@ export type {
   RefreshService,
   RefreshOptions,
   LocationStore,
+  LocationInput,
 } from './types';
 export { createRouter } from './createRouter';
 export type { RouterOptions } from './createRouter';

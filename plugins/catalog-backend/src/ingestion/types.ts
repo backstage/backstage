@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { RecursivePartial } from '../util/RecursivePartial';
+import { LocationSpec } from './processors';
 
 /** @public */
 export type LocationAnalyzer = {

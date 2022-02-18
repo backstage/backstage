@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   ScmIntegrationRegistry,
@@ -22,7 +21,7 @@ import {
 } from '@backstage/integration';
 import { Logger } from 'winston';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 import { GitLabClient, GitLabProject, paginated } from './gitlab';
 import {
   CacheClient,

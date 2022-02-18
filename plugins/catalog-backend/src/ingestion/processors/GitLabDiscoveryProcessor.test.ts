@@ -16,11 +16,11 @@
 
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { GitLabProject } from './gitlab';
+import { LocationSpec } from './types';
 
 const server = setupServer();
 

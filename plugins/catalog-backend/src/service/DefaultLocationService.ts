@@ -15,7 +15,6 @@
  */
 import {
   Entity,
-  LocationSpec,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
@@ -25,7 +24,7 @@ import {
   CatalogProcessingOrchestrator,
   DeferredEntity,
 } from '../processing/types';
-import { LocationService, LocationStore } from './types';
+import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
 
 export class DefaultLocationService implements LocationService {
@@ -35,13 +34,13 @@ export class DefaultLocationService implements LocationService {
   ) {}
 
   async createLocation(
-    spec: LocationSpec,
+    input: LocationInput,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
     if (dryRun) {
-      return this.dryRunCreateLocation(spec);
+      return this.dryRunCreateLocation(input);
     }
-    const location = await this.store.createLocation(spec);
+    const location = await this.store.createLocation(input);
     return { location, entities: [] };
   }
 
@@ -93,7 +92,7 @@ export class DefaultLocationService implements LocationService {
   }
 
   private async dryRunCreateLocation(
-    spec: LocationSpec,
+    spec: LocationInput,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
     // Run the existence check in parallel with the processing
     const existsPromise = this.store

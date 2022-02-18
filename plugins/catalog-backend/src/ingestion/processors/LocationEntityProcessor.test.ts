@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   ScmIntegrations,
@@ -22,6 +21,7 @@ import {
 } from '@backstage/integration';
 import path from 'path';
 import { toAbsoluteUrl } from './LocationEntityProcessor';
+import { LocationSpec } from './types';
 
 describe('LocationEntityProcessor', () => {
   describe('toAbsoluteUrl', () => {

@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
+
+/**
+ * Holds the information required to create a new location in the catalog location store.
+ *
+ * @public
+ */
+export interface LocationInput {
+  type: string;
+  target: string;
+  /** @deprecated This field is ignored and will be removed */
+  presence?: 'optional' | 'required';
+}
 
 /**
  * The location service manages entity locations.
@@ -23,7 +35,7 @@ import { Location } from '@backstage/catalog-client';
  */
 export interface LocationService {
   createLocation(
-    spec: LocationSpec,
+    location: LocationInput,
     dryRun: boolean,
     options?: {
       authorizationToken?: string;
@@ -67,7 +79,7 @@ export interface RefreshService {
  * Interacts with the database to manage locations.
  * @public */
 export interface LocationStore {
-  createLocation(spec: LocationSpec): Promise<Location>;
+  createLocation(location: LocationInput): Promise<Location>;
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
