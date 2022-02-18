@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-export { CatalogResultListItem } from './CatalogResultListItem';
-export type { CatalogResultListItemProps } from './CatalogResultListItem';
+export {
+  CatalogSearchResultListItem,
+  CatalogResultListItem,
+} from './CatalogSearchResultListItem';
+export type {
+  CatalogSearchResultListItemProps,
+  CatalogResultListItemProps,
+} from './CatalogSearchResultListItem';
