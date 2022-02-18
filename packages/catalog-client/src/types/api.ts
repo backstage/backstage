@@ -257,6 +257,7 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
+  /** @deprecated This field is is ignored */
   presence?: 'optional' | 'required';
 };
 
