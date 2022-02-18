@@ -5,7 +5,11 @@
     "node": "14 || 16"
   },
   "bin": {
-    "backstage-cli": "./packages/cli/bin/backstage-cli"
+    "backstage-cli": "./packages/cli/bin/backstage-cli",
+    "backstage-codemods": "./packages/codemods/bin/backstage-codemods",
+    "backstage-create-app": "./packages/create-app/bin/backstage-create-app",
+    "e2e-test": "./packages/e2e-test/bin/e2e-test",
+    "techdocs-cli": "./packages/techdocs-cli/bin/techdocs-cli"
   },
   "scripts": {
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
