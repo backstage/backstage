@@ -50,8 +50,8 @@ export type ActionContext<Input extends JsonObject> = {
   templateInfo?: TemplateInfo;
 };
 
-// @public
-export type CompletedTaskState = 'failed' | 'completed';
+// @public @deprecated
+export type CompletedTaskState = TaskCompletionState;
 
 // Warning: (ae-missing-release-tag) "createBuiltinActions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -315,7 +315,6 @@ export type CreateWorkerOptions = {
 
 // @public
 export class DatabaseTaskStore implements TaskStore {
-  constructor(options: DatabaseTaskStoreOptions);
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
@@ -325,7 +324,7 @@ export class DatabaseTaskStore implements TaskStore {
     eventBody,
   }: {
     taskId: string;
-    status: Status;
+    status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void>;
   // Warning: (ae-forgotten-export) The symbol "DatabaseTaskStoreOptions" needs to be exported by the entry point index.d.ts
@@ -334,11 +333,8 @@ export class DatabaseTaskStore implements TaskStore {
   static create(options: DatabaseTaskStoreOptions): Promise<DatabaseTaskStore>;
   // (undocumented)
   createTask(
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<{
-    taskId: string;
-  }>;
+    options: TaskStoreCreateTaskOptions,
+  ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
   emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
@@ -357,10 +353,8 @@ export class DatabaseTaskStore implements TaskStore {
   }>;
 }
 
-// @public
-export type DispatchResult = {
-  taskId: string;
-};
+// @public @deprecated
+export type DispatchResult = TaskBrokerDispatchResult;
 
 // Warning: (ae-missing-release-tag) "fetchContents" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -449,7 +443,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
 export type SerializedTask = {
   id: string;
   spec: TaskSpec;
-  status: Status;
+  status: TaskStatus;
   createdAt: string;
   lastHeartbeatAt?: string;
   secrets?: TaskSecrets;
@@ -464,20 +458,17 @@ export type SerializedTaskEvent = {
   createdAt: string;
 };
 
-// @public
-export type Status =
-  | 'open'
-  | 'processing'
-  | 'failed'
-  | 'cancelled'
-  | 'completed';
+// @public @deprecated
+export type Status = TaskStatus;
 
 // @public
 export interface TaskBroker {
   // (undocumented)
   claim(): Promise<TaskContext>;
   // (undocumented)
-  dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
+  dispatch(
+    options: TaskBrokerDispatchOptions,
+  ): Promise<TaskBrokerDispatchResult>;
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
@@ -500,9 +491,23 @@ export interface TaskBroker {
 }
 
 // @public
+export type TaskBrokerDispatchOptions = {
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+};
+
+// @public
+export type TaskBrokerDispatchResult = {
+  taskId: string;
+};
+
+// @public
+export type TaskCompletionState = 'failed' | 'completed';
+
+// @public
 export interface TaskContext {
   // (undocumented)
-  complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
+  complete(result: TaskCompletionState, metadata?: JsonValue): Promise<void>;
   // (undocumented)
   done: boolean;
   // (undocumented)
@@ -521,7 +526,7 @@ export type TaskEventType = 'completion' | 'log';
 // @public
 export class TaskManager implements TaskContext {
   // (undocumented)
-  complete(result: CompletedTaskState, metadata?: JsonObject): Promise<void>;
+  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     state: TaskState,
@@ -562,22 +567,27 @@ export interface TaskState {
 }
 
 // @public
+export type TaskStatus =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'cancelled'
+  | 'completed';
+
+// @public
 export interface TaskStore {
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
   // (undocumented)
   completeTask(options: {
     taskId: string;
-    status: Status;
+    status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void>;
   // (undocumented)
   createTask(
-    task: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<{
-    taskId: string;
-  }>;
+    options: TaskStoreCreateTaskOptions,
+  ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
   emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
@@ -595,6 +605,17 @@ export interface TaskStore {
     }[];
   }>;
 }
+
+// @public
+export type TaskStoreCreateTaskOptions = {
+  spec: TaskSpec;
+  secrets?: TaskSecrets;
+};
+
+// @public
+export type TaskStoreCreateTaskResult = {
+  taskId: string;
+};
 
 // @public
 export type TaskStoreEmitOptions = {
