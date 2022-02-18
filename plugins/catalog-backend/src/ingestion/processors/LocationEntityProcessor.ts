@@ -81,7 +81,7 @@ export class LocationEntityProcessor implements CatalogProcessor {
           location,
           maybeRelativeTarget,
         );
-        emit(result.location({ type, target }, false));
+        emit(result.location({ type, target }));
       }
     }
 

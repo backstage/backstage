@@ -15,6 +15,7 @@ import { IndexableDocument } from '@backstage/search-common';
 import { InfoCardVariants } from '@backstage/core-components';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TableColumn } from '@backstage/core-components';
@@ -102,13 +103,19 @@ export const catalogPlugin: BackstagePlugin<
   }
 >;
 
+// @public @deprecated (undocumented)
+export const CatalogResultListItem: typeof CatalogSearchResultListItem;
+
+// @public @deprecated (undocumented)
+export type CatalogResultListItemProps = CatalogSearchResultListItemProps;
+
 // @public (undocumented)
-export function CatalogResultListItem(
-  props: CatalogResultListItemProps,
+export function CatalogSearchResultListItem(
+  props: CatalogSearchResultListItemProps,
 ): JSX.Element;
 
 // @public
-export interface CatalogResultListItemProps {
+export interface CatalogSearchResultListItemProps {
   // (undocumented)
   result: IndexableDocument;
 }
@@ -307,14 +314,14 @@ export function EntityProcessingErrorsPanel(): JSX.Element | null;
 
 // @public (undocumented)
 export const EntitySwitch: {
-  (props: { children: React_2.ReactNode }): JSX.Element | null;
+  (props: EntitySwitchProps): JSX.Element | null;
   Case: (_props: EntitySwitchCaseProps) => null;
 };
 
 // @public (undocumented)
 export interface EntitySwitchCaseProps {
   // (undocumented)
-  children: React_2.ReactNode;
+  children: ReactNode;
   // (undocumented)
   if?: (
     entity: Entity,
@@ -322,6 +329,12 @@ export interface EntitySwitchCaseProps {
       apis: ApiHolder;
     },
   ) => boolean | Promise<boolean>;
+}
+
+// @public
+export interface EntitySwitchProps {
+  // (undocumented)
+  children: ReactNode;
 }
 
 // @public (undocumented)

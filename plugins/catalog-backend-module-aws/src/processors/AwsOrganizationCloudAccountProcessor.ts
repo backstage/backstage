@@ -13,35 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { LocationSpec, ResourceEntityV1alpha1 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  results,
+} from '@backstage/plugin-catalog-backend';
 import AWS, { Credentials, Organizations } from 'aws-sdk';
 import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
-
-import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import {
   AwsOrganizationProviderConfig,
   readAwsOrganizationConfig,
-} from './awsOrganization/config';
+} from '../awsOrganization/config';
 
 const AWS_ORGANIZATION_REGION = 'us-east-1';
 const LOCATION_TYPE = 'aws-cloud-accounts';
 
-const ACCOUNTID_ANNOTATION: string = 'amazonaws.com/account-id';
-const ARN_ANNOTATION: string = 'amazonaws.com/arn';
-const ORGANIZATION_ANNOTATION: string = 'amazonaws.com/organization-id';
+const ACCOUNTID_ANNOTATION = 'amazonaws.com/account-id';
+const ARN_ANNOTATION = 'amazonaws.com/arn';
+const ORGANIZATION_ANNOTATION = 'amazonaws.com/organization-id';
 
 /**
  * A processor for ingesting AWS Accounts from AWS Organizations.
  *
- * If custom authentication is needed, it can be achieved by configuring the global AWS.credentials object.
+ * If custom authentication is needed, it can be achieved by configuring the
+ * global AWS.credentials object.
+ *
+ * @public
  */
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
-  logger: Logger;
-  organizations: Organizations;
-  provider: AwsOrganizationProviderConfig;
+  private readonly organizations: Organizations;
+  private readonly provider: AwsOrganizationProviderConfig;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
     const c = config.getOptionalConfig('catalog.processors.awsOrganization');
@@ -67,12 +72,8 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: {
-    provider: AwsOrganizationProviderConfig;
-    logger: Logger;
-  }) {
+  private constructor(options: { provider: AwsOrganizationProviderConfig }) {
     this.provider = options.provider;
-    this.logger = options.logger;
     const credentials = AwsOrganizationCloudAccountProcessor.buildCredentials(
       this.provider,
     );
@@ -81,68 +82,9 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
   }
+
   getProcessorName(): string {
     return 'AwsOrganizationCloudAccountProcessor';
-  }
-
-  normalizeName(name: string): string {
-    return name
-      .trim()
-      .toLocaleLowerCase()
-      .replace(/[^a-zA-Z0-9\-]/g, '-');
-  }
-
-  extractInformationFromArn(arn: string): {
-    accountId: string;
-    organizationId: string;
-  } {
-    const parts = arn.split('/');
-
-    return {
-      accountId: parts[parts.length - 1],
-      organizationId: parts[parts.length - 2],
-    };
-  }
-
-  async getAwsAccounts(): Promise<Account[]> {
-    let awsAccounts: Account[] = [];
-    let isInitialAttempt = true;
-    let nextToken = undefined;
-    while (isInitialAttempt || nextToken) {
-      isInitialAttempt = false;
-      const orgAccounts: ListAccountsResponse = await this.organizations
-        .listAccounts({ NextToken: nextToken })
-        .promise();
-      if (orgAccounts.Accounts) {
-        awsAccounts = awsAccounts.concat(orgAccounts.Accounts);
-      }
-      nextToken = orgAccounts.NextToken;
-    }
-
-    return awsAccounts;
-  }
-
-  mapAccountToComponent(account: Account): ResourceEntityV1alpha1 {
-    const { accountId, organizationId } = this.extractInformationFromArn(
-      account.Arn as string,
-    );
-    return {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Resource',
-      metadata: {
-        annotations: {
-          [ACCOUNTID_ANNOTATION]: accountId,
-          [ARN_ANNOTATION]: account.Arn || '',
-          [ORGANIZATION_ANNOTATION]: organizationId,
-        },
-        name: this.normalizeName(account.Name || ''),
-        namespace: 'default',
-      },
-      spec: {
-        type: 'cloud-account',
-        owner: 'unknown',
-      },
-    };
   }
 
   async readLocation(
@@ -168,10 +110,70 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
         }
         return true;
       })
-      .forEach((entity: ResourceEntityV1alpha1) => {
+      .forEach(entity => {
         emit(results.entity(location, entity));
       });
 
     return true;
+  }
+
+  private normalizeName(name: string): string {
+    return name
+      .trim()
+      .toLocaleLowerCase('en-US')
+      .replace(/[^a-zA-Z0-9\-]/g, '-');
+  }
+
+  private extractInformationFromArn(arn: string): {
+    accountId: string;
+    organizationId: string;
+  } {
+    const parts = arn.split('/');
+
+    return {
+      accountId: parts[parts.length - 1],
+      organizationId: parts[parts.length - 2],
+    };
+  }
+
+  private async getAwsAccounts(): Promise<Account[]> {
+    let awsAccounts: Account[] = [];
+    let isInitialAttempt = true;
+    let nextToken = undefined;
+    while (isInitialAttempt || nextToken) {
+      isInitialAttempt = false;
+      const orgAccounts: ListAccountsResponse = await this.organizations
+        .listAccounts({ NextToken: nextToken })
+        .promise();
+      if (orgAccounts.Accounts) {
+        awsAccounts = awsAccounts.concat(orgAccounts.Accounts);
+      }
+      nextToken = orgAccounts.NextToken;
+    }
+
+    return awsAccounts;
+  }
+
+  private mapAccountToComponent(account: Account): ResourceEntityV1alpha1 {
+    const { accountId, organizationId } = this.extractInformationFromArn(
+      account.Arn as string,
+    );
+    return {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Resource',
+      metadata: {
+        annotations: {
+          [ACCOUNTID_ANNOTATION]: accountId,
+          [ARN_ANNOTATION]: account.Arn || '',
+          [ORGANIZATION_ANNOTATION]: organizationId,
+        },
+        name: this.normalizeName(account.Name || ''),
+        namespace: 'default',
+      },
+      spec: {
+        type: 'cloud-account',
+        owner: 'unknown',
+      },
+    };
   }
 }

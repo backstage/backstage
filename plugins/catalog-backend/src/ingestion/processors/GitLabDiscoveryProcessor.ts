@@ -117,20 +117,17 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       const project_branch = branch === '*' ? project.default_branch : branch;
 
       emit(
-        results.location(
-          {
-            type: 'url',
-            // The format expected by the GitLabUrlReader:
-            // https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
-            //
-            // This unfortunately will trigger another API call in `getGitLabFileFetchUrl` to get the project ID.
-            // The alternative is using the `buildRawUrl` function, which does not support subgroups, so providing a raw
-            // URL here won't work either.
-            target: `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
-            presence: 'optional',
-          },
-          true,
-        ),
+        results.location({
+          type: 'url',
+          // The format expected by the GitLabUrlReader:
+          // https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
+          //
+          // This unfortunately will trigger another API call in `getGitLabFileFetchUrl` to get the project ID.
+          // The alternative is using the `buildRawUrl` function, which does not support subgroups, so providing a raw
+          // URL here won't work either.
+          target: `${project.web_url}/-/blob/${project_branch}/${catalogPath}`,
+          presence: 'optional',
+        }),
       );
     }
 

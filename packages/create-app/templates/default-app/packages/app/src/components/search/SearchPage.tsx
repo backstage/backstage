@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
 
-import { CatalogResultListItem } from '@backstage/plugin-catalog';
+import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
@@ -116,7 +116,7 @@ const SearchPage = () => {
                     switch (type) {
                       case 'software-catalog':
                         return (
-                          <CatalogResultListItem
+                          <CatalogSearchResultListItem
                             key={document.location}
                             result={document}
                           />

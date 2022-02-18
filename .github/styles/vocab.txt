@@ -17,6 +17,7 @@ autoscaling
 Autoscaling
 autoselect
 Avro
+aws
 backrub
 backported
 backporting

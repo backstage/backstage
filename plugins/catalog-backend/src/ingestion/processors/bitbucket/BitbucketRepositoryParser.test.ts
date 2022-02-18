@@ -25,14 +25,11 @@ describe('BitbucketRepositoryParser', () => {
         'https://bitbucket.mycompany.com/projects/project-key/repos/repo-slug/browse';
       const path = '/catalog-info.yaml';
       const expected = [
-        results.location(
-          {
-            type: 'url',
-            target: `${browseUrl}${path}`,
-            presence: 'optional',
-          },
-          true,
-        ),
+        results.location({
+          type: 'url',
+          target: `${browseUrl}${path}`,
+          presence: 'optional',
+        }),
       ];
       const actual = await defaultRepositoryParser({
         integration: {} as BitbucketIntegration,

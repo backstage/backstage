@@ -37,6 +37,7 @@ import {
 } from './util';
 import { RefreshOptions, LocationService, RefreshService } from './types';
 import { z } from 'zod';
+import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 
 /**
  * Options used by {@link createRouter}.
@@ -160,7 +161,15 @@ export async function createRouter(
           const response = await entitiesCatalog.entityAncestry(entityRef);
           res.status(200).json(response);
         },
-      );
+      )
+      .get('/entity-facets', async (req, res) => {
+        const response = await entitiesCatalog.facets({
+          filter: parseEntityFilterParams(req.query),
+          facets: parseEntityFacetParams(req.query),
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
+        res.status(200).json(response);
+      });
   }
 
   if (locationService) {

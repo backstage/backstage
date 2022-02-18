@@ -17,21 +17,24 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
+import lodash from 'lodash';
 import {
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
-  EntityAncestryResponse,
-  EntityPagination,
-  EntityFilter,
   EntitiesSearchFilter,
+  EntityAncestryResponse,
+  EntityFacetsRequest,
+  EntityFacetsResponse,
+  EntityFilter,
+  EntityPagination,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
+  DbPageInfo,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbSearchRow,
-  DbPageInfo,
 } from '../database/tables';
 
 function parsePagination(input?: EntityPagination): {
@@ -294,5 +297,50 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       rootEntityRef: stringifyEntityRef(rootEntity),
       items,
     };
+  }
+
+  async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
+    const { entities } = await this.entities({
+      filter: request.filter,
+      authorizationToken: request.authorizationToken,
+    });
+
+    const facets: EntityFacetsResponse['facets'] = {};
+
+    for (const facet of request.facets) {
+      const values = entities
+        .map(entity => {
+          // TODO(freben): Generalize this code to handle any field that may
+          // have dots in its key?
+          if (facet.startsWith('metadata.annotations.')) {
+            return entity.metadata.annotations?.[
+              facet.substring('metadata.annotations.'.length)
+            ];
+          } else if (facet.startsWith('metadata.labels.')) {
+            return entity.metadata.labels?.[
+              facet.substring('metadata.labels.'.length)
+            ];
+          }
+          return lodash.get(entity, facet);
+        })
+        .flatMap(field => {
+          if (typeof field === 'string') {
+            return [field];
+          } else if (Array.isArray(field)) {
+            return field.filter(i => typeof i === 'string');
+          }
+          return [];
+        })
+        .sort();
+
+      const counts = lodash.countBy(values, lodash.identity);
+
+      facets[facet] = Object.entries(counts).map(([value, count]) => ({
+        value,
+        count,
+      }));
+    }
+
+    return { facets };
   }
 }

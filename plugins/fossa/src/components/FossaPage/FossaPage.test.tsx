@@ -36,6 +36,7 @@ describe('<FossaPage />', () => {
     removeLocationById: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
   const fossaApi: jest.Mocked<FossaApi> = {
     getFindingSummary: jest.fn(),
