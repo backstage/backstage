@@ -22,7 +22,7 @@ import {
   isOwnerOf,
 } from '@backstage/plugin-catalog-react';
 import qs from 'qs';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 
 type EntityTypeProps = {
   kind: string;

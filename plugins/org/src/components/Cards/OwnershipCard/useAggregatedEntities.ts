@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import qs from 'qs';
 
 const limiter = limiterFactory(10);
