@@ -17,7 +17,7 @@ import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import {
-  CompletedTaskState,
+  TaskCompletionState,
   TaskContext,
   TaskSecrets,
   TaskSpec,
@@ -75,7 +75,7 @@ export class TaskManager implements TaskContext {
   }
 
   async complete(
-    result: CompletedTaskState,
+    result: TaskCompletionState,
     metadata?: JsonObject,
   ): Promise<void> {
     await this.storage.completeTask({

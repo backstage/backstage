@@ -22,7 +22,7 @@ import { v4 as uuid } from 'uuid';
 import {
   SerializedTaskEvent,
   SerializedTask,
-  Status,
+  TaskStatus,
   TaskEventType,
   TaskSecrets,
   TaskSpec,
@@ -40,7 +40,7 @@ const migrationsDir = resolvePackagePath(
 export type RawDbTaskRow = {
   id: string;
   spec: string;
-  status: Status;
+  status: TaskStatus;
   last_heartbeat_at?: string;
   created_at: string;
   secrets?: string | null;
@@ -202,7 +202,7 @@ export class DatabaseTaskStore implements TaskStore {
     eventBody,
   }: {
     taskId: string;
-    status: Status;
+    status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void> {
     let oldStatus: string;

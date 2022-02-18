@@ -32,11 +32,11 @@ export type {
 };
 
 /**
- * Status
+ * The status of each step of the Task
  *
  * @public
  */
-export type Status =
+export type TaskStatus =
   | 'open'
   | 'processing'
   | 'failed'
@@ -44,11 +44,27 @@ export type Status =
   | 'completed';
 
 /**
- * CompletedTaskState
+ * The status of each step of the Task
+ *
+ * @public
+ * @deprecated use TaskStatus instead
+ */
+export type Status = TaskStatus;
+
+/**
+ * The state of a completed task.
  *
  * @public
  */
-export type CompletedTaskState = 'failed' | 'completed';
+export type TaskCompletionState = 'failed' | 'completed';
+
+/**
+ * The state of a completed task.
+ *
+ * @public
+ * @deprecated use TaskCompletionState instead
+ */
+export type CompletedTaskState = TaskCompletionState;
 
 /**
  * SerializedTask
