@@ -1733,15 +1733,25 @@
     find-my-way "^4.3.3"
     into-stream "^6.0.0"
 
-"@elastic/elasticsearch@7.13.0":
-  version "7.13.0"
-  resolved "https://registry.npmjs.org/@elastic/elasticsearch/-/elasticsearch-7.13.0.tgz#6dcf511dfa91187e22c81e54f41f4bd0fd96b4d6"
-  integrity sha512-WgwLWo2p9P2tdqzBGX9fHeG8p5IOTXprXNTECQG2mJ7z9n93N5AFBJpEw4d35tWWeCWi9jI13A2wzQZH7XZ/xw==
+"@elastic/elasticsearch@8.0.0":
+  version "8.0.0"
+  resolved "https://registry.npmjs.org/@elastic/elasticsearch/-/elasticsearch-8.0.0.tgz#c9aaf8be238ef87eadec89c97b0cfe8209f3d5ae"
+  integrity sha512-V9H35N4rc9uxf+5WYSOwdwdJeP+oa5i933QuMKJNaLj9PbADVXj1sCkCt7qdAmRf/0qOuTuVK18fNrkHhWUDCA==
   dependencies:
-    debug "^4.3.1"
-    hpagent "^0.1.1"
+    "@elastic/transport" "^8.0.1"
+    tslib "^2.3.0"
+
+"@elastic/transport@^8.0.1":
+  version "8.0.1"
+  resolved "https://registry.npmjs.org/@elastic/transport/-/transport-8.0.1.tgz#eb917770611f3b88464d672a181245b7075cf1bb"
+  integrity sha512-e5ijysqmKrfOXaJCLexk20LwvvVmKParG0AZ2Wm1avvEQCaU5CfI7ez/0aIeWNKfFntXu99sauRNvbMizNfMUw==
+  dependencies:
+    debug "^4.3.2"
+    hpagent "^0.1.2"
     ms "^2.1.3"
     secure-json-parse "^2.4.0"
+    tslib "^2.3.0"
+    undici "^4.7.0"
 
 "@emotion/hash@^0.8.0":
   version "0.8.0"
@@ -13261,7 +13271,7 @@ hpack.js@^2.1.6:
     readable-stream "^2.0.1"
     wbuf "^1.1.0"
 
-hpagent@^0.1.1:
+hpagent@^0.1.2:
   version "0.1.2"
   resolved "https://registry.npmjs.org/hpagent/-/hpagent-0.1.2.tgz#cab39c66d4df2d4377dbd212295d878deb9bdaa9"
   integrity sha512-ePqFXHtSQWAFXYmj+JtOTHr84iNrII4/QRlAAPPE+zqnKy4xJo7Ie1Y4kC7AdB+LxLxSTTzBMASsEcy0q8YyvQ==
@@ -23681,6 +23691,11 @@ underscore@^1.12.1, underscore@^1.9.1:
   version "1.13.1"
   resolved "https://registry.npmjs.org/underscore/-/underscore-1.13.1.tgz#0c1c6bd2df54b6b69f2314066d65b6cde6fcf9d1"
   integrity sha512-hzSoAVtJF+3ZtiFX0VgfFPHEDRm7Y/QPjGyNo4TVdnDTdft3tr8hEkD25a1jC+TjTuE7tkHGKkhwCgs9dgBB2g==
+
+undici@^4.7.0:
+  version "4.14.1"
+  resolved "https://registry.npmjs.org/undici/-/undici-4.14.1.tgz#7633b143a8a10d6d63335e00511d071e8d52a1d9"
+  integrity sha512-WJ+g+XqiZcATcBaUeluCajqy4pEDcQfK1vy+Fo+bC4/mqXI9IIQD/XWHLS70fkGUT6P52Drm7IFslO651OdLPQ==
 
 undici@^4.9.3:
   version "4.11.0"
