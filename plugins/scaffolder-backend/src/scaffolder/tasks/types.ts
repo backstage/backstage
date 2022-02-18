@@ -110,7 +110,7 @@ export type TaskSecrets = Record<string, string> & {
 };
 
 /**
- * The result of the TaskBroker Dispatch
+ * The result of {@link TaskBroker.dispatch}
  *
  * @public
  */
@@ -119,7 +119,7 @@ export type TaskBrokerDispatchResult = {
 };
 
 /**
- * The options passed to TaskBroker Dispatch
+ * The options passed to {@link TaskBroker.dispatch}
  * Currently a spec and optional secrets
  *
  * @public
@@ -196,7 +196,7 @@ export type TaskStoreListEventsOptions = {
 };
 
 /**
- * The options passed to TaskStore create
+ * The options passed to {@link TaskStore.createTask}
  * @public
  */
 export type TaskStoreCreateTaskOptions = {
@@ -205,7 +205,7 @@ export type TaskStoreCreateTaskOptions = {
 };
 
 /**
- * The response from TaskStoreCreate
+ * The response from {@link TaskStore.createTask}
  * @public
  */
 export type TaskStoreCreateTaskResult = {
