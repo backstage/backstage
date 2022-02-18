@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import {
   parseParallelismOption,
   getEnvironmentParallelism,
   runParallelWorkers,
+  runWorkerQueueThreads,
+  runWorkerThreads,
 } from './parallel';
+
+const defaultParallelism = Math.ceil(os.cpus().length / 2);
 
 describe('parseParallelismOption', () => {
   it('coerces false no parallelism', () => {
@@ -27,10 +32,10 @@ describe('parseParallelismOption', () => {
   });
 
   it('coerces true or undefined to default parallelism', () => {
-    expect(parseParallelismOption(true)).toBe(4);
-    expect(parseParallelismOption('true')).toBe(4);
-    expect(parseParallelismOption(undefined)).toBe(4);
-    expect(parseParallelismOption(null)).toBe(4);
+    expect(parseParallelismOption(true)).toBe(defaultParallelism);
+    expect(parseParallelismOption('true')).toBe(defaultParallelism);
+    expect(parseParallelismOption(undefined)).toBe(defaultParallelism);
+    expect(parseParallelismOption(null)).toBe(defaultParallelism);
   });
 
   it('coerces number string to number', () => {
@@ -50,13 +55,13 @@ describe('getEnvironmentParallelism', () => {
     expect(getEnvironmentParallelism()).toBe(2);
 
     process.env.BACKSTAGE_CLI_BUILD_PARALLEL = 'true';
-    expect(getEnvironmentParallelism()).toBe(4);
+    expect(getEnvironmentParallelism()).toBe(defaultParallelism);
 
     process.env.BACKSTAGE_CLI_BUILD_PARALLEL = 'false';
     expect(getEnvironmentParallelism()).toBe(1);
 
     delete process.env.BACKSTAGE_CLI_BUILD_PARALLEL;
-    expect(getEnvironmentParallelism()).toBe(4);
+    expect(getEnvironmentParallelism()).toBe(defaultParallelism);
   });
 });
 
@@ -68,6 +73,7 @@ describe('runParallelWorkers', () => {
 
     const work = runParallelWorkers({
       items: [0, 1, 2, 3, 4],
+      parallelismSetting: 4,
       parallelismFactor: 0.5, // 2 at a time
       worker: async item => {
         started.push(item);
@@ -140,5 +146,70 @@ describe('runParallelWorkers', () => {
 
     await work;
     expect(done).toEqual([0, 1, 2, 3, 4]);
+  });
+});
+
+describe('runWorkerQueueThreads', () => {
+  it('should execute work in parallel', async () => {
+    const sharedData = new SharedArrayBuffer(10);
+    const sharedView = new Uint8Array(sharedData);
+
+    const results = await runWorkerQueueThreads({
+      threadCount: 4,
+      workerData: sharedData,
+      items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      workerFactory: data => {
+        const view = new Uint8Array(data);
+
+        return async (i: number) => {
+          view[i] = 10 + i;
+          return 20 + i;
+        };
+      },
+    });
+
+    expect(Array.from(sharedView)).toEqual([
+      10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+    ]);
+    expect(results).toEqual([20, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
+  });
+});
+
+describe('runWorkerThreads', () => {
+  it('should run a single thread without items', async () => {
+    const [result] = await runWorkerThreads({
+      threadCount: 1,
+      workerData: 'foo',
+      worker: async data => `${data}bar`,
+    });
+
+    expect(result).toBe('foobar');
+  });
+
+  it('should run multiple threads without items', async () => {
+    const results = await runWorkerThreads({
+      threadCount: 4,
+      worker: async () => 'foo',
+    });
+
+    expect(results).toEqual(['foo', 'foo', 'foo', 'foo']);
+  });
+
+  it('should send messages', async () => {
+    const messages = new Array<string>();
+
+    await runWorkerThreads({
+      threadCount: 2,
+      worker: async (_data, sendMessage) => {
+        sendMessage('a');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        sendMessage('b');
+        await new Promise(resolve => setTimeout(resolve, 10));
+        sendMessage('c');
+      },
+      onMessage: (message: string) => messages.push(message),
+    });
+
+    expect(messages.sort()).toEqual(['a', 'a', 'b', 'b', 'c', 'c']);
   });
 });

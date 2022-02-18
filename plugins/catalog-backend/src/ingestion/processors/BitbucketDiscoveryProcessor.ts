@@ -64,6 +64,10 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     this.logger = options.logger;
   }
 
+  getProcessorName(): string {
+    return 'BitbucketDiscoveryProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     _optional: boolean,

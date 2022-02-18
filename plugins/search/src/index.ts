@@ -32,13 +32,14 @@ export type {
   SearchBarProps,
 } from './components/SearchBar';
 export { SearchContextProvider, useSearch } from './components/SearchContext';
+export type { SearchContextState } from './components/SearchContext';
 export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
 export type {
   SearchAutocompleteFilterProps,
   SearchFilterComponentProps,
   SearchFilterWrapperProps,
 } from './components/SearchFilter';
-export { SearchModal } from './components/SearchModal';
+export { SearchModal, useSearchModal } from './components/SearchModal';
 export type { SearchModalProps } from './components/SearchModal';
 export { SearchPage as Router } from './components/SearchPage';
 export { SearchResultPager } from './components/SearchResultPager';

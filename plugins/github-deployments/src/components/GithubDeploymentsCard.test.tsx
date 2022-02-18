@@ -254,7 +254,7 @@ describe('github-deployments', () => {
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
           'backstage.io/source-location':
-            'github:https://my-github-1.com/org/repo/tree/master/',
+            'url:https://my-github-1.com/org/repo/tree/master/',
         };
       });
 
@@ -276,7 +276,7 @@ describe('github-deployments', () => {
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
           'backstage.io/managed-by-location':
-            'github:https://my-github-2.com/org/repo/blob/master/catalog-info.yaml',
+            'url:https://my-github-2.com/org/repo/blob/master/catalog-info.yaml',
         };
       });
 
@@ -298,7 +298,7 @@ describe('github-deployments', () => {
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
           'backstage.io/managed-by-location':
-            'github:https://my-github-3.com/org/repo/blob/master/catalog-info.yaml',
+            'url:https://my-github-3.com/org/repo/blob/master/catalog-info.yaml',
         };
       });
 
@@ -323,7 +323,7 @@ describe('github-deployments', () => {
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
           'backstage.io/managed-by-location':
-            'github:https://my-github-unknown.com/org/repo/blob/master/catalog-info.yaml',
+            'url:https://my-github-unknown.com/org/repo/blob/master/catalog-info.yaml',
         };
       });
 

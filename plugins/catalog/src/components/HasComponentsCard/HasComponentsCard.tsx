@@ -23,11 +23,13 @@ import {
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 
-type Props = {
+/** @public */
+export interface HasComponentsCardProps {
   variant?: 'gridItem';
-};
+}
 
-export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export function HasComponentsCard(props: HasComponentsCardProps) {
+  const { variant = 'gridItem' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -40,4 +42,4 @@ export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
       asRenderableEntities={asComponentEntities}
     />
   );
-};
+}

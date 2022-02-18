@@ -18,9 +18,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // Warning: (ae-missing-release-tag) "EntityJenkinsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityJenkinsContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityJenkinsContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityLatestJenkinsRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

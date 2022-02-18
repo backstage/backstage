@@ -94,12 +94,12 @@ describe('CatalogImportClient', () => {
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
     getEntityByName: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
 
   let catalogImportClient: CatalogImportClient;

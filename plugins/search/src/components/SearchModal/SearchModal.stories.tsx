@@ -18,9 +18,9 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { Button } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
-import { useSearch } from '../SearchContext';
-import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchApiProvider } from '../SearchContext/SearchContextForStorybook.stories';
 import { SearchModal } from './SearchModal';
+import { useSearchModal } from './useSearchModal';
 
 const mockResults = {
   results: [
@@ -57,23 +57,23 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
-        <SearchContextProvider mockedResults={mockResults}>
+        <SearchApiProvider mockedResults={mockResults}>
           <Story />
-        </SearchContextProvider>,
+        </SearchApiProvider>,
         { mountedRoutes: { '/search': rootRouteRef } },
       ),
   ],
 };
 
 export const Default = () => {
-  const { open, toggleModal } = useSearch();
+  const { state, toggleModal } = useSearchModal();
 
   return (
     <>
       <Button variant="contained" color="primary" onClick={toggleModal}>
         Toggle Search Modal
       </Button>
-      <SearchModal open={open} toggleModal={toggleModal} />
+      <SearchModal {...state} toggleModal={toggleModal} />
     </>
   );
 };

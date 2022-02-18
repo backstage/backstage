@@ -19,7 +19,6 @@ import {
   AlphaEntity,
   stringifyEntityRef,
   EntityStatusItem,
-  compareEntityToRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -42,12 +41,12 @@ const errorFilter = (i: EntityStatusItem) =>
   i.level === 'error' &&
   i.type === ENTITY_STATUS_CATALOG_PROCESSING_TYPE;
 
-type GetOwnAndAncestorsErrorsResponse = {
+interface GetOwnAndAncestorsErrorsResponse {
   items: {
     errors: SerializedError[];
     entity: Entity;
   }[];
-};
+}
 
 async function getOwnAndAncestorsErrors(
   entityRef: string,
@@ -67,10 +66,15 @@ async function getOwnAndAncestorsErrors(
   return { items };
 }
 
-export const hasCatalogProcessingErrors = async (
+/**
+ * Returns true if the given entity has any processing errors on it.
+ *
+ * @public
+ */
+export async function hasCatalogProcessingErrors(
   entity: Entity,
   context: { apis: ApiHolder },
-) => {
+) {
   const catalogApi = context.apis.get(catalogApiRef);
   if (!catalogApi) {
     throw new Error(`No implementation available for ${catalogApiRef}`);
@@ -81,12 +85,14 @@ export const hasCatalogProcessingErrors = async (
     catalogApi,
   );
   return errors.items.length > 0;
-};
+}
 
 /**
  * Displays a list of errors from the ancestors of the current entity.
+ *
+ * @public
  */
-export const EntityProcessingErrorsPanel = () => {
+export function EntityProcessingErrorsPanel() {
   const { entity } = useEntity();
   const entityRef = stringifyEntityRef(entity);
   const catalogApi = useApi(catalogApiRef);
@@ -110,10 +116,8 @@ export const EntityProcessingErrorsPanel = () => {
     <>
       {value.items.map((ancestorError, index) => (
         <Box key={index} mb={1}>
-          {!compareEntityToRef(
-            entity,
-            stringifyEntityRef(ancestorError.entity),
-          ) && (
+          {stringifyEntityRef(entity) !==
+            stringifyEntityRef(ancestorError.entity) && (
             <Box p={1}>
               The error below originates from{' '}
               <EntityRefLink entityRef={ancestorError.entity} />
@@ -126,4 +130,4 @@ export const EntityProcessingErrorsPanel = () => {
       ))}
     </>
   );
-};
+}

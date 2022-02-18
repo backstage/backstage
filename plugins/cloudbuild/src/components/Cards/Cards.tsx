@@ -16,7 +16,6 @@
 import React, { useEffect } from 'react';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Theme, makeStyles, LinearProgress } from '@material-ui/core';
@@ -76,8 +75,6 @@ const WidgetContent = ({
 export const LatestWorkflowRunCard = ({
   branch = 'master',
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   branch: string;
 }) => {
   const { entity } = useEntity();
@@ -109,8 +106,6 @@ export const LatestWorkflowRunCard = ({
 export const LatestWorkflowsForBranchCard = ({
   branch = 'master',
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   branch: string;
 }) => {
   const { entity } = useEntity();

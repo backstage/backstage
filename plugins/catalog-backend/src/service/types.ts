@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec, Location } from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Location } from '@backstage/catalog-client';
 
 export interface LocationService {
   createLocation(

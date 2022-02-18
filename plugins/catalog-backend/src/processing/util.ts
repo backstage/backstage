@@ -20,8 +20,8 @@ import {
   entitySchemaValidator,
   LocationEntity,
   LocationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -34,7 +34,7 @@ export function isLocationEntity(entity: Entity): entity is LocationEntity {
 }
 
 export function getEntityLocationRef(entity: Entity): string {
-  const ref = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  const ref = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   if (!ref) {
     const entityRef = stringifyEntityRef(entity);
     throw new InputError(`Entity '${entityRef}' does not have a location`);
@@ -43,7 +43,7 @@ export function getEntityLocationRef(entity: Entity): string {
 }
 
 export function getEntityOriginLocationRef(entity: Entity): string {
-  const ref = entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+  const ref = entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
   if (!ref) {
     const entityRef = stringifyEntityRef(entity);
     throw new InputError(

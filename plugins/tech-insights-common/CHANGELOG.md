@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-insights-common
 
+## 0.2.3
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/types@0.1.3
+
+## 0.2.2
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/types@0.1.2
+
 ## 0.2.1
 
 ### Patch Changes

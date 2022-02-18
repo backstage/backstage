@@ -45,6 +45,7 @@ import {
 } from './tables';
 
 import { generateStableHash } from './util';
+import { isDatabaseConflictError } from '@backstage/backend-common';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -160,7 +161,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    const { toUpsert, toRemove } = await this.createDelta(tx, options);
+    const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
       // TODO(freben): Batch split, to not hit variable limits?
@@ -275,6 +276,53 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       this.options.logger.debug(
         `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
       );
+    }
+
+    if (toAdd.length) {
+      // The reason for this chunking, rather than just massively batch
+      // inserting the entire payload, is that we fall back to the individual
+      // upsert mechanism below on conflicts. That path is massively slower than
+      // the fast batch path, so we don't want to end up accidentally having to
+      // for example item-by-item upsert tens of thousands of entities in a
+      // large initial delivery dump. The implication is that the size of these
+      // chunks needs to weigh the benefit of fast successful inserts, against
+      // the drawback of super slow but more rare fallbacks. There's quickly
+      // diminishing returns though with turning up this value way high.
+      for (const chunk of lodash.chunk(toAdd, 50)) {
+        try {
+          await tx.batchInsert(
+            'refresh_state',
+            chunk.map(item => ({
+              entity_id: uuid(),
+              entity_ref: stringifyEntityRef(item.deferred.entity),
+              unprocessed_entity: JSON.stringify(item.deferred.entity),
+              unprocessed_hash: item.hash,
+              errors: '',
+              location_key: item.deferred.locationKey,
+              next_update_at: tx.fn.now(),
+              last_discovery_at: tx.fn.now(),
+            })),
+            BATCH_SIZE,
+          );
+          await tx.batchInsert(
+            'refresh_state_references',
+            chunk.map(item => ({
+              source_key: options.sourceKey,
+              target_entity_ref: stringifyEntityRef(item.deferred.entity),
+            })),
+            BATCH_SIZE,
+          );
+        } catch (error) {
+          if (!isDatabaseConflictError(error)) {
+            throw error;
+          } else {
+            this.options.logger.debug(
+              `Fast insert path failed, falling back to slow path, ${error}`,
+            );
+            toUpsert.push(...chunk);
+          }
+        }
+      }
     }
 
     if (toUpsert.length) {
@@ -600,11 +648,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     tx: Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<{
+    toAdd: { deferred: DeferredEntity; hash: string }[];
     toUpsert: { deferred: DeferredEntity; hash: string }[];
     toRemove: string[];
   }> {
     if (options.type === 'delta') {
       return {
+        toAdd: [],
         toUpsert: options.added.map(e => ({
           deferred: e,
           hash: generateStableHash(e.entity),
@@ -644,6 +694,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
     const newRefsSet = new Set(items.map(item => item.ref));
 
+    const toAdd = new Array<{ deferred: DeferredEntity; hash: string }>();
     const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
     const toRemove = oldRefs
       .map(row => row.target_entity_ref)
@@ -654,18 +705,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const upsertItem = { deferred: item.deferred, hash: item.hash };
       if (!oldRef) {
         // Add any entity that does not exist in the database
-        toUpsert.push(upsertItem);
+        toAdd.push(upsertItem);
       } else if (oldRef.locationKey !== item.deferred.locationKey) {
         // Remove and then re-add any entity that exists, but with a different location key
         toRemove.push(item.ref);
-        toUpsert.push(upsertItem);
+        toAdd.push(upsertItem);
       } else if (oldRef.oldEntityHash !== item.hash) {
         // Entities with modifications should be pushed through too
         toUpsert.push(upsertItem);
       }
     }
 
-    return { toUpsert, toRemove };
+    return { toAdd, toUpsert, toRemove };
   }
 
   /**

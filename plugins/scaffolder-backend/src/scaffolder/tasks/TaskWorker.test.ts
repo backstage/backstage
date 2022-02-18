@@ -91,12 +91,14 @@ describe('TaskWorker', () => {
     });
 
     await broker.dispatch({
-      apiVersion: 'backstage.io/v1beta2',
-      steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-      output: {
-        result: '{{ steps.test.output.testOutput }}',
+      spec: {
+        apiVersion: 'backstage.io/v1beta2',
+        steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+        output: {
+          result: '{{ steps.test.output.testOutput }}',
+        },
+        values: {},
       },
-      values: {},
     });
 
     const task = await broker.claim();
@@ -122,12 +124,14 @@ describe('TaskWorker', () => {
     });
 
     await broker.dispatch({
-      apiVersion: 'scaffolder.backstage.io/v1beta3',
-      steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-      output: {
-        result: '{{ steps.test.output.testOutput }}',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+        output: {
+          result: '{{ steps.test.output.testOutput }}',
+        },
+        parameters: {},
       },
-      parameters: {},
     });
 
     const task = await broker.claim();
@@ -151,12 +155,14 @@ describe('TaskWorker', () => {
     });
 
     const { taskId } = await broker.dispatch({
-      apiVersion: 'scaffolder.backstage.io/v1beta3',
-      steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-      output: {
-        result: '{{ steps.test.output.testOutput }}',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+        output: {
+          result: '{{ steps.test.output.testOutput }}',
+        },
+        parameters: {},
       },
-      parameters: {},
     });
 
     const task = await broker.claim();

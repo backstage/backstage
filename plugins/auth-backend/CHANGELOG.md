@@ -1,5 +1,38 @@
 # @backstage/plugin-auth-backend
 
+## 0.10.2
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+  - @backstage/plugin-auth-node@0.1.2
+
+## 0.10.1
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- a31559d1f5: Bump `passport-oauth2` to version 1.6.1
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 1433045c08: Removed unused `helmet` dependency.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-auth-node@0.1.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.10.0
 
 ### Minor Changes

@@ -83,15 +83,7 @@ export interface GKEClusterDetails extends ClusterDetails {}
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
-  build(): Promise<{
-    clusterDetails: ClusterDetails[];
-    clusterSupplier: KubernetesClustersSupplier;
-    customResources: CustomResource[];
-    fetcher: KubernetesFetcher;
-    objectsProvider: KubernetesObjectsProvider;
-    router: express.Router;
-    serviceLocator: KubernetesServiceLocator;
-  }>;
+  build(): KubernetesBuilderReturn;
   // (undocumented)
   protected buildClusterSupplier(): KubernetesClustersSupplier;
   // (undocumented)
@@ -141,6 +133,17 @@ export class KubernetesBuilder {
   // (undocumented)
   setServiceLocator(serviceLocator?: KubernetesServiceLocator): this;
 }
+
+// @public
+export type KubernetesBuilderReturn = Promise<{
+  router: express.Router;
+  clusterDetails: ClusterDetails[];
+  clusterSupplier: KubernetesClustersSupplier;
+  customResources: CustomResource[];
+  fetcher: KubernetesFetcher;
+  objectsProvider: KubernetesObjectsProvider;
+  serviceLocator: KubernetesServiceLocator;
+}>;
 
 // Warning: (ae-missing-release-tag) "KubernetesClustersSupplier" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

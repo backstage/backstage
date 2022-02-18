@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityRelationSpec,
-  LocationSpec,
-} from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
+import { EntityRelationSpec } from '../../processing/types';
 
 export type CatalogProcessor = {
   /**
    * A unique identifier for the Catalog Processor.
-   * It's strongly recommended to implement getProcessorName as this method will be required in the future.
    */
-  getProcessorName?(): string;
+  getProcessorName(): string;
 
   /**
    * Reads the contents of a location.
@@ -159,7 +155,8 @@ export type CatalogProcessorEmit = (generated: CatalogProcessorResult) => void;
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
-  optional: boolean;
+  /** @deprecated Set `location.presence = 'optional'` instead  */
+  optional?: boolean;
 };
 
 export type CatalogProcessorEntityResult = {

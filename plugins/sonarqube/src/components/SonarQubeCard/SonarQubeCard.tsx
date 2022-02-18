@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -90,7 +89,6 @@ export const SonarQubeCard = ({
   variant = 'gridItem',
   duplicationRatings = defaultDuplicationRatings,
 }: {
-  entity?: Entity;
   variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => {

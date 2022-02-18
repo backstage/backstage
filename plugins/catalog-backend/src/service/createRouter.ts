@@ -15,11 +15,7 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import {
-  analyzeLocationSchema,
-  locationSpecSchema,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import express from 'express';
@@ -34,8 +30,14 @@ import {
   parseEntityPaginationParams,
   parseEntityTransformParams,
 } from './request';
-import { disallowReadonlyMode, validateRequestBody } from './util';
+import {
+  disallowReadonlyMode,
+  locationSpec,
+  validateRequestBody,
+} from './util';
 import { RefreshOptions, LocationService, RefreshService } from './types';
+import { z } from 'zod';
+import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 
 /**
  * Options used by {@link createRouter}.
@@ -159,13 +161,21 @@ export async function createRouter(
           const response = await entitiesCatalog.entityAncestry(entityRef);
           res.status(200).json(response);
         },
-      );
+      )
+      .get('/entity-facets', async (req, res) => {
+        const response = await entitiesCatalog.facets({
+          filter: parseEntityFilterParams(req.query),
+          facets: parseEntityFacetParams(req.query),
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
+        res.status(200).json(response);
+      });
   }
 
   if (locationService) {
     router
       .post('/locations', async (req, res) => {
-        const input = await validateRequestBody(req, locationSpecSchema);
+        const location = await validateRequestBody(req, locationSpec);
         const dryRun = yn(req.query.dryRun, { default: false });
 
         // when in dryRun addLocation is effectively a read operation so we don't
@@ -174,7 +184,7 @@ export async function createRouter(
           disallowReadonlyMode(readonlyEnabled);
         }
 
-        const output = await locationService.createLocation(input, dryRun, {
+        const output = await locationService.createLocation(location, dryRun, {
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(201).json(output);
@@ -206,8 +216,12 @@ export async function createRouter(
 
   if (locationAnalyzer) {
     router.post('/analyze-location', async (req, res) => {
-      const input = await validateRequestBody(req, analyzeLocationSchema);
-      const output = await locationAnalyzer.analyzeLocation(input);
+      const body = await validateRequestBody(
+        req,
+        z.object({ location: locationSpec }),
+      );
+      const schema = z.object({ location: locationSpec });
+      const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
       res.status(200).json(output);
     });
   }

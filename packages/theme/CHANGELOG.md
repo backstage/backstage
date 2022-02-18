@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.15
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+
 ## 0.2.14
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
   EntityName,
@@ -168,12 +168,12 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
 
   private constructor(
     private readonly config: JenkinsConfig,
-    private readonly catalog: CatalogClient,
+    private readonly catalog: CatalogApi,
   ) {}
 
   static fromConfig(options: {
     config: Config;
-    catalog: CatalogClient;
+    catalog: CatalogApi;
   }): DefaultJenkinsInfoProvider {
     return new DefaultJenkinsInfoProvider(
       JenkinsConfig.fromConfig(options.config),

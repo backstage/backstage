@@ -17,16 +17,29 @@
 import { JsonValue, JsonObject } from '@backstage/types';
 
 /**
- * TemplateMetadata
+ * Metadata about the Template that was the originator of a scaffolder task, as
+ * stored in the database.
  *
  * @public
+ * @deprecated use templateInfo on the spec instead
  */
 export type TemplateMetadata = {
   name: string;
 };
 
 /**
- * TaskStep
+ * Information about a template that is stored on a task specification.
+ * Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
+ *
+ * @public
+ */
+export type TemplateInfo = {
+  entityRef: string;
+  baseUrl?: string;
+};
+
+/**
+ * An individual step of a scaffolder task, as stored in the database.
  *
  * @public
  */
@@ -39,35 +52,45 @@ export interface TaskStep {
 }
 
 /**
- * TaskSpecV1beta2
+ * A scaffolder task as stored in the database, generated from a v1beta2
+ * apiVersion Template.
  *
  * @public
+ * @deprecated Please convert your templates to TaskSpecV1beta3 on apiVersion
+ *             scaffolder.backstage.io/v1beta3
  */
 export interface TaskSpecV1beta2 {
   apiVersion: 'backstage.io/v1beta2';
+  /** @deprecated use templateInfo.baseUrl instead */
   baseUrl?: string;
   values: JsonObject;
   steps: TaskStep[];
   output: { [name: string]: string };
+  /** @deprecated use templateInfo instead */
   metadata?: TemplateMetadata;
+  templateInfo?: TemplateInfo;
 }
 
 /**
- * TaskSpecV1beta3
+ * A scaffolder task as stored in the database, generated from a v1beta3
+ * apiVersion Template.
  *
  * @public
  */
 export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
+  /** @deprecated use templateInfo.baseUrl instead */
   baseUrl?: string;
   parameters: JsonObject;
   steps: TaskStep[];
   output: { [name: string]: JsonValue };
+  /** @deprecated use templateInfo instead */
   metadata?: TemplateMetadata;
+  templateInfo?: TemplateInfo;
 }
 
 /**
- * TaskSpec
+ * A scaffolder task as stored in the database, generated from a Template.
  *
  * @public
  */

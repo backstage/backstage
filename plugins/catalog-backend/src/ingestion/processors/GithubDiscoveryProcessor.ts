@@ -19,6 +19,7 @@ import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
+  ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
@@ -42,7 +43,7 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
  **/
 export class GithubDiscoveryProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
@@ -62,7 +63,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
   }
 
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
@@ -71,6 +72,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     this.githubCredentialsProvider =
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
+  }
+  getProcessorName(): string {
+    return 'GithubDiscoveryProcessor';
   }
 
   async readLocation(
@@ -136,17 +140,14 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       const path = `/blob/${branchName}${catalogPath}`;
 
       emit(
-        results.location(
-          {
-            type: 'url',
-            target: `${repository.url}${path}`,
-            presence: 'optional',
-          },
+        results.location({
+          type: 'url',
+          target: `${repository.url}${path}`,
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
           // an error if it couldn't.
-          true,
-        ),
+          presence: 'optional',
+        }),
       );
     }
 

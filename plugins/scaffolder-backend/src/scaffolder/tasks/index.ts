@@ -21,6 +21,7 @@ export type { CreateWorkerOptions } from './TaskWorker';
 export type {
   TaskSecrets,
   TaskSpec,
+  TaskCompletionState,
   CompletedTaskState,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
@@ -29,10 +30,15 @@ export type {
   TaskSpecV1beta2,
   TaskSpecV1beta3,
   Status,
+  TaskStatus,
   TaskEventType,
   TaskBroker,
   TaskContext,
   TaskStore,
   DispatchResult,
+  TaskBrokerDispatchResult,
+  TaskBrokerDispatchOptions,
+  TaskStoreCreateTaskOptions,
+  TaskStoreCreateTaskResult,
   TemplateMetadata,
 } from './types';

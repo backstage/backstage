@@ -26,6 +26,7 @@ import {
   EntityListContextProps,
 } from '../hooks/useEntityListProvider';
 
+/** @public */
 export const MockEntityListContextProvider = ({
   children,
   value,

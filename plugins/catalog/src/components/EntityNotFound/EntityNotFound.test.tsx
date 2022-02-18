@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-
 import { EntityNotFound } from './EntityNotFound';
 
 describe('<EntityNotFound />', () => {

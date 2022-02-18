@@ -27,11 +27,17 @@ import { ScmIntegrations } from '@backstage/integration';
 import { PassThrough } from 'stream';
 import { fetchContents } from './helpers';
 import { ActionContext, TemplateAction } from '../../types';
-import { createFetchTemplateAction, FetchTemplateInput } from './template';
+import { createFetchTemplateAction } from './template';
 
 jest.mock('./helpers', () => ({
   fetchContents: jest.fn(),
 }));
+
+type FetchTemplateInput = ReturnType<
+  typeof createFetchTemplateAction
+> extends TemplateAction<infer U>
+  ? U
+  : never;
 
 const realFiles = Object.fromEntries(
   [
@@ -69,7 +75,10 @@ describe('fetch:template', () => {
   const logger = getVoidLogger();
 
   const mockContext = (inputPatch: Partial<FetchTemplateInput> = {}) => ({
-    baseUrl: 'base-url',
+    templateInfo: {
+      baseUrl: 'base-url',
+      entityRef: 'template:default/test-template',
+    },
     input: {
       url: './skeleton',
       targetPath: './target',
@@ -193,7 +202,7 @@ describe('fetch:template', () => {
       it('uses fetchContents to retrieve the template content', () => {
         expect(mockFetchContents).toHaveBeenCalledWith(
           expect.objectContaining({
-            baseUrl: context.baseUrl,
+            baseUrl: context.templateInfo?.baseUrl,
             fetchUrl: context.input.url,
           }),
         );

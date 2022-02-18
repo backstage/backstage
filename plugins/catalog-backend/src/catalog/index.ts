@@ -18,9 +18,11 @@ export type {
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
-  EntityAncestryResponse,
-  PageInfo,
   EntitiesSearchFilter,
+  EntityAncestryResponse,
+  EntityFacetsRequest,
+  EntityFacetsResponse,
   EntityFilter,
   EntityPagination,
+  PageInfo,
 } from './types';

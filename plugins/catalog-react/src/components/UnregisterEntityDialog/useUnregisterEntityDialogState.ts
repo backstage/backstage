@@ -18,7 +18,7 @@ import {
   Entity,
   EntityName,
   getEntityName,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_ORIGIN_LOCATION,
 } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
 import { useCallback } from 'react';
@@ -60,20 +60,20 @@ export function useUnregisterEntityDialogState(
   entity: Entity,
 ): UseUnregisterEntityDialogState {
   const catalogApi = useApi(catalogApiRef);
-  const locationRef = entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+  const locationRef = entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
   const uid = entity.metadata.uid;
   const isBootstrap = locationRef === 'bootstrap:bootstrap';
 
   // Load the prerequisite data: what entities that are colocated with us, and
   // what location that spawned us
   const prerequisites = useAsync(async () => {
-    const locationPromise = catalogApi.getOriginLocationByEntity(entity);
+    const locationPromise = catalogApi.getLocationByRef(locationRef!);
 
     let colocatedEntitiesPromise: Promise<Entity[]>;
     if (!locationRef) {
       colocatedEntitiesPromise = Promise.resolve([]);
     } else {
-      const locationAnnotationFilter = `metadata.annotations.${ORIGIN_LOCATION_ANNOTATION}`;
+      const locationAnnotationFilter = `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`;
       colocatedEntitiesPromise = catalogApi
         .getEntities({
           filter: { [locationAnnotationFilter]: locationRef },

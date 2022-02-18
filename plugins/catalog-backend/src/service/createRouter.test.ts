@@ -17,7 +17,8 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
-import type { Entity, LocationSpec, Location } from '@backstage/catalog-model';
+import type { Location } from '@backstage/catalog-client';
+import type { Entity, LocationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog } from '../catalog';
@@ -39,6 +40,7 @@ describe('createRouter readonly disabled', () => {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
+      facets: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -393,6 +395,7 @@ describe('createRouter readonly enabled', () => {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
+      facets: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -577,6 +580,7 @@ describe('NextRouter permissioning', () => {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
+      facets: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),

@@ -1,5 +1,24 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.0.10
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/config@0.1.15
+  - @backstage/search-common@0.2.4
+
+## 0.0.9
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 4c0332e55c: chore(deps-dev): bump `@elastic/elasticsearch-mock` from 0.3.0 to 1.0.0
+- Updated dependencies
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+
 ## 0.0.8
 
 ### Patch Changes

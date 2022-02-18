@@ -15,4 +15,5 @@
  */
 
 export { CatalogTable } from './CatalogTable';
-export type { EntityRow } from './types';
+export type { CatalogTableProps } from './CatalogTable';
+export type { CatalogTableRow } from './types';

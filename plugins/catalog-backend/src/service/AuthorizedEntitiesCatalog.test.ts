@@ -30,6 +30,7 @@ describe('AuthorizedEntitiesCatalog', () => {
     entities: jest.fn(),
     removeEntityByUid: jest.fn(),
     entityAncestry: jest.fn(),
+    facets: jest.fn(),
   };
   const fakePermissionApi = {
     authorize: jest.fn(),
@@ -251,6 +252,56 @@ describe('AuthorizedEntitiesCatalog', () => {
             parentEntityRefs: [],
           },
         ],
+      });
+    });
+  });
+
+  describe('facets', () => {
+    it('returns empty response on DENY', async () => {
+      fakePermissionApi.authorize.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
+      const catalog = createCatalog();
+
+      expect(
+        await catalog.facets({
+          facets: ['a'],
+          authorizationToken: 'abcd',
+        }),
+      ).toEqual({
+        facets: { a: [] },
+      });
+    });
+
+    it('calls underlying catalog method with correct filter on CONDITIONAL', async () => {
+      fakePermissionApi.authorize.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: { rule: 'IS_ENTITY_KIND', params: [['b']] },
+        },
+      ]);
+      const catalog = createCatalog(isEntityKind);
+
+      await catalog.facets({ facets: ['a'], authorizationToken: 'abcd' });
+
+      expect(fakeCatalog.facets).toHaveBeenCalledWith({
+        facets: ['a'],
+        authorizationToken: 'abcd',
+        filter: { key: 'kind', values: ['b'] },
+      });
+    });
+
+    it('calls underlying catalog method on ALLOW', async () => {
+      fakePermissionApi.authorize.mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const catalog = createCatalog();
+
+      await catalog.facets({ facets: ['a'], authorizationToken: 'abcd' });
+
+      expect(fakeCatalog.facets).toHaveBeenCalledWith({
+        facets: ['a'],
+        authorizationToken: 'abcd',
       });
     });
   });

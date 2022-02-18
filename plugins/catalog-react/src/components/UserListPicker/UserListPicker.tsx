@@ -118,20 +118,25 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-type UserListPickerProps = {
+/** @public */
+export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
 };
 
-export const UserListPicker = ({
-  initialFilter,
-  availableFilters,
-}: UserListPickerProps) => {
+/** @public */
+export const UserListPicker = (props: UserListPickerProps) => {
+  const { initialFilter, availableFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const { filters, updateFilters, backendEntities, queryParameters, loading } =
-    useEntityListProvider();
+  const {
+    filters,
+    updateFilters,
+    backendEntities,
+    queryParameters,
+    loading: loadingBackendEntities,
+  } = useEntityListProvider();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
@@ -149,7 +154,10 @@ export const UserListPicker = ({
     .filter(({ items }) => !!items.length);
 
   const { isStarredEntity } = useStarredEntities();
-  const { isOwnedEntity } = useEntityOwnership();
+  const { isOwnedEntity, loading: loadingEntityOwnership } =
+    useEntityOwnership();
+
+  const loading = loadingBackendEntities || loadingEntityOwnership;
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(

@@ -163,7 +163,7 @@ describe('DefaultWorkflowRunner', () => {
     });
 
     it('should pass metadata through', async () => {
-      const templateName = 'template name';
+      const entityRef = `template:default/templateName`;
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         parameters: {},
@@ -176,13 +176,13 @@ describe('DefaultWorkflowRunner', () => {
             input: { foo: 1 },
           },
         ],
-        metadata: { name: templateName },
+        templateInfo: { entityRef },
       });
 
       await runner.execute(task);
 
-      expect(fakeActionHandler.mock.calls[0][0].metadata).toEqual({
-        name: templateName,
+      expect(fakeActionHandler.mock.calls[0][0].templateInfo).toEqual({
+        entityRef,
       });
     });
 
@@ -203,13 +203,15 @@ describe('DefaultWorkflowRunner', () => {
           ],
         },
         {
-          token: fakeToken,
+          backstageToken: fakeToken,
         },
       );
 
       await runner.execute(task);
 
-      expect(fakeActionHandler.mock.calls[0][0].token).toEqual(fakeToken);
+      expect(fakeActionHandler.mock.calls[0][0].secrets).toEqual(
+        expect.objectContaining({ backstageToken: fakeToken }),
+      );
     });
   });
 

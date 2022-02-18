@@ -16,7 +16,10 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { Logger } from 'winston';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -37,7 +40,7 @@ import { codeSearch } from './azure';
  *    target: https://dev.azure.com/org/project/_git/repo
  **/
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
@@ -49,9 +52,16 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    logger: Logger;
+  }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
+  }
+
+  getProcessorName(): string {
+    return 'AzureDevOpsDiscoveryProcessor';
   }
 
   async readLocation(
@@ -91,17 +101,14 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
 
     for (const file of files) {
       emit(
-        results.location(
-          {
-            type: 'url',
-            target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
-            presence: 'optional',
-          },
+        results.location({
+          type: 'url',
+          target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
           // an error if it couldn't.
-          true,
-        ),
+          presence: 'optional',
+        }),
       );
     }
 

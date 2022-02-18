@@ -23,7 +23,7 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 import { PassThrough } from 'stream';
 import os from 'os';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { createCatalogWriteAction } from './write';
 import { resolve as resolvePath } from 'path';
 import * as yaml from 'yaml';
@@ -51,7 +51,7 @@ describe('catalog:write', () => {
         name: 'n',
         namespace: 'ns',
         annotations: {
-          [ORIGIN_LOCATION_ANNOTATION]: 'url:https://example.com',
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com',
         },
       },
       spec: {},
@@ -79,7 +79,7 @@ describe('catalog:write', () => {
         name: 'n',
         namespace: 'ns',
         annotations: {
-          [ORIGIN_LOCATION_ANNOTATION]: 'url:https://example.com',
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com',
         },
       },
       spec: {},

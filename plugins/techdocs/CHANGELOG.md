@@ -1,5 +1,26 @@
 # @backstage/plugin-techdocs
 
+## 0.13.4
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 6553985cd4: Match text size of admonitions to main content text size.
+- 9df7b43e1a: Improve overall appearance of highlighted code in docs.
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/integration-react@0.1.22
+  - @backstage/plugin-catalog@0.8.0
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/plugin-search@0.7.0
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+
 ## 0.13.3
 
 ### Patch Changes

@@ -30,11 +30,11 @@ describe('CatalogIdentityClient', () => {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
   const tokenManager: jest.Mocked<TokenManager> = {
     getToken: jest.fn(),

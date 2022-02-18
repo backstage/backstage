@@ -16,6 +16,7 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import ora from 'ora';
 import semver from 'semver';
 import minimatch from 'minimatch';
 import { Command } from 'commander';
@@ -68,15 +69,30 @@ export default async (cmd: Command) => {
 
   let findTargetVersion: (name: string) => Promise<string>;
   let releaseManifest: ReleaseManifest;
+  // Specific release specified. Be strict when resolving versions
   if (semver.valid(cmd.release)) {
     releaseManifest = await getManifestByVersion({ version: cmd.release });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
   } else {
-    releaseManifest = await getManifestByReleaseLine({
-      releaseLine: cmd.release,
-    });
+    // Release line specified. Be lenient when resolving versions.
+    if (cmd.release === 'next') {
+      const next = await getManifestByReleaseLine({
+        releaseLine: 'next',
+      });
+      const main = await getManifestByReleaseLine({
+        releaseLine: 'main',
+      });
+      // Prefer manifest with the latest release version
+      releaseManifest = semver.gt(next.releaseVersion, main.releaseVersion)
+        ? next
+        : main;
+    } else {
+      releaseManifest = await getManifestByReleaseLine({
+        releaseLine: cmd.release,
+      });
+    }
     findTargetVersion = createVersionFinder({
       releaseLine: cmd.releaseLine,
       releaseManifest,
@@ -244,12 +260,8 @@ export default async (cmd: Command) => {
         ),
       );
     }
-    console.log();
-    console.log(
-      `Running ${chalk.blue('yarn install')} to install new versions`,
-    );
-    console.log();
-    await run('yarn', ['install']);
+
+    await runYarnInstall();
 
     if (breakingUpdates.size > 0) {
       console.log();
@@ -405,17 +417,34 @@ export async function bumpBackstageJsonVersion(version: string) {
     throw e;
   });
 
-  if (backstageJson?.version === version) {
+  const prevVersion = backstageJson?.version;
+
+  if (prevVersion === version) {
     return;
   }
 
-  console.log(
-    chalk.yellow(
-      typeof backstageJson === 'undefined'
-        ? `Creating ${BACKSTAGE_JSON}`
-        : `Bumping version in ${BACKSTAGE_JSON}`,
-    ),
-  );
+  const { yellow, cyan, green } = chalk;
+  if (prevVersion) {
+    const from = encodeURIComponent(prevVersion);
+    const to = encodeURIComponent(version);
+    const link = `https://backstage.github.io/upgrade-helper/?from=${from}&to=${to}`;
+    console.log(
+      yellow(
+        `Upgraded from release ${green(prevVersion)} to ${green(
+          version,
+        )}, please review these template changes:`,
+      ),
+    );
+    console.log();
+    console.log(`  ${cyan(link)}`);
+    console.log();
+  } else {
+    console.log(
+      yellow(
+        `Your project is now at version ${version}, which has been written to ${BACKSTAGE_JSON}`,
+      ),
+    );
+  }
 
   await fs.writeJson(
     backstageJsonPath,
@@ -425,4 +454,36 @@ export async function bumpBackstageJsonVersion(version: string) {
       encoding: 'utf8',
     },
   );
+}
+
+async function runYarnInstall() {
+  const spinner = ora({
+    prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
+    spinner: 'arc',
+    color: 'green',
+  }).start();
+
+  const installOutput = new Array<Buffer>();
+  try {
+    await run('yarn', ['install'], {
+      env: {
+        FORCE_COLOR: 'true',
+        // We filter out all of the npm_* environment variables that are added when
+        // executing through yarn. This works around an issue where these variables
+        // incorrectly override local yarn or npm config in the project directory.
+        ...Object.fromEntries(
+          Object.entries(process.env).map(([name, value]) =>
+            name.startsWith('npm_') ? [name, undefined] : [name, value],
+          ),
+        ),
+      },
+      stdoutLogFunc: data => installOutput.push(data),
+      stderrLogFunc: data => installOutput.push(data),
+    });
+    spinner.succeed();
+  } catch (error) {
+    spinner.fail();
+    process.stdout.write(Buffer.concat(installOutput));
+    throw error;
+  }
 }

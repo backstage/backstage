@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { Badge, BadgeContext, BadgeFactories } from './types';
 
@@ -24,9 +24,9 @@ function appTitle(context: BadgeContext): string {
 
 function entityUrl(context: BadgeContext): string {
   const e = context.entity!;
-  const entityUri = `${e.metadata.namespace || ENTITY_DEFAULT_NAMESPACE}/${
-    e.kind
-  }/${e.metadata.name}`;
+  const entityUri = `${e.metadata.namespace || DEFAULT_NAMESPACE}/${e.kind}/${
+    e.metadata.name
+  }`;
   const catalogUrl = `${context.config.getString('app.baseUrl')}/catalog`;
   return `${catalogUrl}/${entityUri}`.toLowerCase();
 }

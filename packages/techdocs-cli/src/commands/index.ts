@@ -45,7 +45,7 @@ export function registerCommands(program: CommanderStatic) {
     )
     .option(
       '--techdocs-ref <HOST_TYPE:URL>',
-      'The repository hosting documentation source files e.g. github:https://ghe.mycompany.net.com/org/repo.' +
+      'The repository hosting documentation source files e.g. url:https://ghe.mycompany.net.com/org/repo.' +
         '\nThis value is same as the backstage.io/techdocs-ref annotation of the corresponding Backstage entity.' +
         '\nIt is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml if not found.\n',
     )

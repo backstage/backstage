@@ -109,11 +109,21 @@ privateKey: |
 This will result in backstage preventing the use of any installation that is not
 within the allow list.
 
-### Permissions for pull requests
+### App permissions
 
-These are the minimum permissions required for creating a pull request with
-Backstage software templates:
+When creating a GitHub App, you must select permissions to define the level of
+access for the app. The permissions required vary depending on your use of the
+integration:
 
-- Read and Write permissions for `Contents`.
-- Read and write permissions for `Pull Requests` and `Issues`.
-- Read permissions on `Metadata`.
+- Reading software components:
+  - `Contents`: `Read-only`
+- Reading organization data:
+  - `Members`: `Read-only`
+- Publishing software templates:
+
+  - `Administration`: `Read & write` (for creating repositories)
+  - `Contents`: `Read & write`
+  - `Metadata`: `Read-only`
+  - `Pull requests`: `Read & write`
+  - `Issues`: `Read & write`
+  - `Workflows`: `Read & write` (if templates include GitHub workflows)

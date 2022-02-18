@@ -56,8 +56,8 @@ describe('DefaultApiExplorerPage', () => {
           },
         ] as Entity[],
       }),
-    getLocationByEntity: () =>
-      Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+    getLocationByRef: () =>
+      Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntityByName: async entityName => {
       return {
         apiVersion: 'backstage.io/v1alpha1',

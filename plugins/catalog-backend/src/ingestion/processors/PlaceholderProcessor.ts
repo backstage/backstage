@@ -52,6 +52,10 @@ export type PlaceholderProcessorOptions = {
 export class PlaceholderProcessor implements CatalogProcessor {
   constructor(private readonly options: PlaceholderProcessorOptions) {}
 
+  getProcessorName(): string {
+    return 'PlaceholderProcessor';
+  }
+
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,

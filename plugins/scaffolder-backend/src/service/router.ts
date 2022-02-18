@@ -20,16 +20,22 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import {
+  TemplateEntityV1beta2,
+  TemplateEntityV1beta3,
+  TaskSpecV1beta3,
+  TaskSpecV1beta2,
+} from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
-import { CatalogEntityClient, TemplateFilter } from '../lib';
+import { TemplateFilter } from '../lib';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -40,7 +46,7 @@ import {
   TemplateActionRegistry,
 } from '../scaffolder';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
 
 /**
  * RouterOptions
@@ -89,7 +95,6 @@ export async function createRouter(
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
-  const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
   let taskBroker: TaskBroker;
 
@@ -148,7 +153,9 @@ export async function createRouter(
           );
         }
 
-        const template = await entityClient.findTemplate(name, {
+        const template = await findTemplate({
+          catalogApi: catalogClient,
+          entityRef: { kind, namespace, name },
           token: getBearerToken(req.headers.authorization),
         });
         if (isSupportedTemplate(template)) {
@@ -181,18 +188,34 @@ export async function createRouter(
     })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
+      const { kind, namespace } = { kind: 'template', namespace: 'default' };
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
-      const template = await entityClient.findTemplate(templateName, {
-        token,
+      const template = await findTemplate({
+        catalogApi: catalogClient,
+        entityRef: {
+          name: templateName,
+          kind,
+          namespace,
+        },
+        token: getBearerToken(req.headers.authorization),
       });
 
       let taskSpec: TaskSpec;
 
       if (isSupportedTemplate(template)) {
+        if (template.apiVersion === 'backstage.io/v1beta2') {
+          logger.warn(
+            `Scaffolding ${stringifyEntityRef(
+              template,
+            )} with deprecated apiVersion ${
+              template.apiVersion
+            }. Please migrate the template to backstage.io/v1beta3. https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3`,
+          );
+        }
+
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const result = validate(values, parameters);
-
           if (!result.valid) {
             res.status(400).json({ errors: result.errors });
             return;
@@ -201,32 +224,40 @@ export async function createRouter(
 
         const baseUrl = getEntityBaseUrl(template);
 
+        const baseTaskSpec = {
+          baseUrl,
+          steps: template.spec.steps.map((step, index) => ({
+            ...step,
+            id: step.id ?? `step-${index + 1}`,
+            name: step.name ?? step.action,
+          })),
+          output: template.spec.output ?? {},
+
+          // deprecated in favour of templateInfo
+          metadata: { name: template.metadata?.name },
+
+          templateInfo: {
+            entityRef: stringifyEntityRef({
+              kind,
+              namespace,
+              name: template.metadata?.name,
+            }),
+            baseUrl,
+          },
+        };
+
         taskSpec =
           template.apiVersion === 'backstage.io/v1beta2'
-            ? {
+            ? ({
+                ...baseTaskSpec,
                 apiVersion: template.apiVersion,
-                baseUrl,
                 values,
-                steps: template.spec.steps.map((step, index) => ({
-                  ...step,
-                  id: step.id ?? `step-${index + 1}`,
-                  name: step.name ?? step.action,
-                })),
-                output: template.spec.output ?? {},
-                metadata: { name: template.metadata?.name },
-              }
-            : {
+              } as TaskSpecV1beta2)
+            : ({
+                ...baseTaskSpec,
                 apiVersion: template.apiVersion,
-                baseUrl,
                 parameters: values,
-                steps: template.spec.steps.map((step, index) => ({
-                  ...step,
-                  id: step.id ?? `step-${index + 1}`,
-                  name: step.name ?? step.action,
-                })),
-                output: template.spec.output ?? {},
-                metadata: { name: template.metadata?.name },
-              };
+              } as TaskSpecV1beta3);
       } else {
         throw new InputError(
           `Unsupported apiVersion field in schema entity, ${
@@ -235,11 +266,12 @@ export async function createRouter(
         );
       }
 
-      const result = await taskBroker.dispatch(taskSpec, {
-        ...req.body.secrets,
-        backstageToken: token,
-        // This is deprecated, but we need to support it for now if people are running their own task broker.
-        token: token,
+      const result = await taskBroker.dispatch({
+        spec: taskSpec,
+        secrets: {
+          ...req.body.secrets,
+          backstageToken: token,
+        },
       });
 
       res.status(201).json({ id: result.taskId });

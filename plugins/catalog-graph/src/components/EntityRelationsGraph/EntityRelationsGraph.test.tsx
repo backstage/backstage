@@ -150,12 +150,12 @@ describe('<EntityRelationsGraph/>', () => {
       getEntityByName: jest.fn(async n => entities[stringifyEntityRef(n)]),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
-      getOriginLocationByEntity: jest.fn(),
-      getLocationByEntity: jest.fn(),
+      getLocationByRef: jest.fn(),
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
+      getEntityFacets: jest.fn(),
     };
 
     Wrapper = ({ children }) => (

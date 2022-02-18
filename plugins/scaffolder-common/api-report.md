@@ -5,19 +5,19 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
+import { KindValidator } from '@backstage/catalog-model';
 
 // @public
 export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
 
-// @public
+// @public @deprecated
 export interface TaskSpecV1beta2 {
   // (undocumented)
   apiVersion: 'backstage.io/v1beta2';
-  // (undocumented)
+  // @deprecated (undocumented)
   baseUrl?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   metadata?: TemplateMetadata;
   // (undocumented)
   output: {
@@ -26,6 +26,8 @@ export interface TaskSpecV1beta2 {
   // (undocumented)
   steps: TaskStep[];
   // (undocumented)
+  templateInfo?: TemplateInfo;
+  // (undocumented)
   values: JsonObject;
 }
 
@@ -33,9 +35,9 @@ export interface TaskSpecV1beta2 {
 export interface TaskSpecV1beta3 {
   // (undocumented)
   apiVersion: 'scaffolder.backstage.io/v1beta3';
-  // (undocumented)
+  // @deprecated (undocumented)
   baseUrl?: string;
-  // (undocumented)
+  // @deprecated (undocumented)
   metadata?: TemplateMetadata;
   // (undocumented)
   output: {
@@ -45,6 +47,8 @@ export interface TaskSpecV1beta3 {
   parameters: JsonObject;
   // (undocumented)
   steps: TaskStep[];
+  // (undocumented)
+  templateInfo?: TemplateInfo;
 }
 
 // @public
@@ -61,7 +65,34 @@ export interface TaskStep {
   name: string;
 }
 
-// @public (undocumented)
+// @public @deprecated
+export interface TemplateEntityV1beta2 extends Entity {
+  // (undocumented)
+  apiVersion: 'backstage.io/v1beta2';
+  // (undocumented)
+  kind: 'Template';
+  // (undocumented)
+  spec: {
+    type: string;
+    parameters?: JsonObject | JsonObject[];
+    steps: Array<{
+      id?: string;
+      name?: string;
+      action: string;
+      input?: JsonObject;
+      if?: string | boolean;
+    }>;
+    output?: {
+      [name: string]: string;
+    };
+    owner?: string;
+  };
+}
+
+// @public @deprecated
+export const templateEntityV1beta2Validator: KindValidator;
+
+// @public
 export interface TemplateEntityV1beta3 extends Entity {
   // (undocumented)
   apiVersion: 'scaffolder.backstage.io/v1beta3';
@@ -85,10 +116,16 @@ export interface TemplateEntityV1beta3 extends Entity {
   };
 }
 
-// @public (undocumented)
-export const templateEntityV1beta3Schema: JSONSchema;
+// @public
+export const templateEntityV1beta3Validator: KindValidator;
 
 // @public
+export type TemplateInfo = {
+  entityRef: string;
+  baseUrl?: string;
+};
+
+// @public @deprecated
 export type TemplateMetadata = {
   name: string;
 };

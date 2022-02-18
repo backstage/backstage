@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
@@ -49,7 +49,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 
-type SubRoute = {
+/** @public */
+export type EntityLayoutRouteProps = {
   path: string;
   title: string;
   children: JSX.Element;
@@ -59,19 +60,15 @@ type SubRoute = {
 
 const dataKey = 'plugin.catalog.entityLayoutRoute';
 
-const Route: (props: SubRoute) => null = () => null;
+const Route: (props: EntityLayoutRouteProps) => null = () => null;
 attachComponentData(Route, dataKey, true);
+attachComponentData(Route, 'core.gatherMountPoints', true); // This causes all mount points that are discovered within this route to use the path of the route itself
 
-// This causes all mount points that are discovered within this route to use the path of the route itself
-attachComponentData(Route, 'core.gatherMountPoints', true);
-
-const EntityLayoutTitle = ({
-  entity,
-  title,
-}: {
+function EntityLayoutTitle(props: {
   title: string;
   entity: Entity | undefined;
-}) => {
+}) {
+  const { entity, title } = props;
   return (
     <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
       <Box
@@ -85,23 +82,21 @@ const EntityLayoutTitle = ({
       {entity && <FavoriteEntity entity={entity} />}
     </Box>
   );
-};
+}
 
-const headerProps = (
+function headerProps(
   paramKind: string | undefined,
   paramNamespace: string | undefined,
   paramName: string | undefined,
   entity: Entity | undefined,
-): { headerTitle: string; headerType: string } => {
+): { headerTitle: string; headerType: string } {
   const kind = paramKind ?? entity?.kind ?? '';
   const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
   const name =
     entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
   return {
     headerTitle: `${name}${
-      namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
-        ? ` in ${namespace}`
-        : ''
+      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
     }`,
     headerType: (() => {
       let t = kind.toLocaleLowerCase('en-US');
@@ -112,9 +107,10 @@ const headerProps = (
       return t;
     })(),
   };
-};
+}
 
-const EntityLabels = ({ entity }: { entity: Entity }) => {
+function EntityLabels(props: { entity: Entity }) {
+  const { entity } = props;
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
   return (
     <>
@@ -135,26 +131,27 @@ const EntityLabels = ({ entity }: { entity: Entity }) => {
       )}
     </>
   );
-};
+}
 
 // NOTE(freben): Intentionally not exported at this point, since it's part of
 // the unstable extra context menu items concept below
-type ExtraContextMenuItem = {
+interface ExtraContextMenuItem {
   title: string;
   Icon: IconComponent;
   onClick: () => void;
-};
+}
 
 // unstable context menu option, eg: disable the unregister entity menu
-type contextMenuOptions = {
+interface contextMenuOptions {
   disableUnregister: boolean;
-};
+}
 
-type EntityLayoutProps = {
+/** @public */
+export interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: contextMenuOptions;
   children?: React.ReactNode;
-};
+}
 
 /**
  * EntityLayout is a compound component, which allows you to define a layout for
@@ -170,12 +167,15 @@ type EntityLayoutProps = {
  *   </EntityLayout.Route>
  * </EntityLayout>
  * ```
+ *
+ * @public
  */
-export const EntityLayout = ({
-  UNSTABLE_extraContextMenuItems,
-  UNSTABLE_contextMenuOptions,
-  children,
-}: EntityLayoutProps) => {
+export const EntityLayout = (props: EntityLayoutProps) => {
+  const {
+    UNSTABLE_extraContextMenuItems,
+    UNSTABLE_contextMenuOptions,
+    children,
+  } = props;
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
   const location = useLocation();
@@ -188,18 +188,18 @@ export const EntityLayout = ({
           withStrictError:
             'Child of EntityLayout must be an EntityLayout.Route',
         })
-        .getElements<SubRoute>() // all nodes, element data, maintain structure or not?
-        .flatMap(({ props }) => {
-          if (props.if && entity && !props.if(entity)) {
+        .getElements<EntityLayoutRouteProps>() // all nodes, element data, maintain structure or not?
+        .flatMap(({ props: elementProps }) => {
+          if (elementProps.if && entity && !elementProps.if(entity)) {
             return [];
           }
 
           return [
             {
-              path: props.path,
-              title: props.title,
-              children: props.children,
-              tabProps: props.tabProps,
+              path: elementProps.path,
+              title: elementProps.title,
+              children: elementProps.children,
+              tabProps: elementProps.tabProps,
             },
           ];
         }),

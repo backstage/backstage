@@ -16,12 +16,12 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   Entity,
   EntityPolicies,
   LocationEntity,
   LocationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -82,8 +82,8 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       metadata: {
         name: 'my-foo-bar',
         annotations: {
-          [LOCATION_ANNOTATION]: 'url:./here',
-          [ORIGIN_LOCATION_ANNOTATION]: 'url:./there',
+          [ANNOTATION_LOCATION]: 'url:./here',
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:./there',
         },
       },
     };
@@ -128,8 +128,8 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
               metadata: {
                 name: 'my-new-foo-bar',
                 annotations: {
-                  [LOCATION_ANNOTATION]: 'url:./new-place',
-                  [ORIGIN_LOCATION_ANNOTATION]: 'url:./there',
+                  [ANNOTATION_LOCATION]: 'url:./new-place',
+                  [ANNOTATION_ORIGIN_LOCATION]: 'url:./there',
                 },
               },
             },
@@ -196,8 +196,8 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         metadata: {
           name: 'l',
           annotations: {
-            [ORIGIN_LOCATION_ANNOTATION]: 'url:https://example.com/origin.yaml',
-            [LOCATION_ANNOTATION]: 'url:https://example.com/origin.yaml',
+            [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com/origin.yaml',
+            [ANNOTATION_LOCATION]: 'url:https://example.com/origin.yaml',
           },
         },
         spec: {
@@ -208,6 +208,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
 
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
       const processor: jest.Mocked<CatalogProcessor> = {
+        getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
           emit(results.entity({ type: 't', target: 't' }, entity));

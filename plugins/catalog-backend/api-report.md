@@ -5,27 +5,25 @@
 ```ts
 /// <reference types="node" />
 
-import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
 import { Entity } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
-import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
 import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Location as Location_2 } from '@backstage/catalog-model';
+import { Location as Location_2 } from '@backstage/catalog-client';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
-import { Organizations } from 'aws-sdk';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -33,10 +31,8 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { ScmIntegrations } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Validators } from '@backstage/catalog-model';
@@ -93,6 +89,8 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(options: Options);
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   preProcessEntity(
     entity: Entity,
     location: LocationSpec,
@@ -109,61 +107,18 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   // (undocumented)
   static fromConfig(config: Config): AnnotateScmSlugEntityProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
-
-// Warning: (ae-missing-release-tag) "AwsOrganizationCloudAccountProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
-  constructor(options: {
-    provider: AwsOrganizationProviderConfig;
-    logger: Logger_2;
-  });
-  // (undocumented)
-  extractInformationFromArn(arn: string): {
-    accountId: string;
-    organizationId: string;
-  };
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger_2;
-    },
-  ): AwsOrganizationCloudAccountProcessor;
-  // (undocumented)
-  getAwsAccounts(): Promise<Account[]>;
-  // (undocumented)
-  logger: Logger_2;
-  // (undocumented)
-  mapAccountToComponent(account: Account): ResourceEntityV1alpha1;
-  // (undocumented)
-  normalizeName(name: string): string;
-  // (undocumented)
-  organizations: Organizations;
-  // (undocumented)
-  provider: AwsOrganizationProviderConfig;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// Warning: (ae-missing-release-tag) "AwsOrganizationProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export type AwsOrganizationProviderConfig = {
-  roleArn?: string;
-};
 
 // Warning: (ae-missing-release-tag) "AwsS3DiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(reader: UrlReader);
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -177,7 +132,10 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
 //
 // @public
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: { integrations: ScmIntegrations; logger: Logger_2 });
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    logger: Logger_2;
+  });
   // (undocumented)
   static fromConfig(
     config: Config,
@@ -185,6 +143,8 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
       logger: Logger_2;
     },
   ): AzureDevOpsDiscoveryProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -211,6 +171,8 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     },
   ): BitbucketDiscoveryProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,
@@ -231,6 +193,8 @@ export type BitbucketRepositoryParser = (options: {
 //
 // @public (undocumented)
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   postProcessEntity(
     entity: Entity,
@@ -350,7 +314,7 @@ export interface CatalogProcessingOrchestrator {
 //
 // @public (undocumented)
 export type CatalogProcessor = {
-  getProcessorName?(): string;
+  getProcessorName(): string;
   readLocation?(
     location: LocationSpec,
     optional: boolean,
@@ -414,7 +378,7 @@ export type CatalogProcessorErrorResult = {
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
-  optional: boolean;
+  optional?: boolean;
 };
 
 // Warning: (ae-missing-release-tag) "CatalogProcessorParser" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -464,7 +428,7 @@ export type CatalogRulesEnforcer = {
 // @public (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     reader: UrlReader;
   });
@@ -476,6 +440,8 @@ export class CodeOwnersProcessor implements CatalogProcessor {
       reader: UrlReader;
     },
   ): CodeOwnersProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
@@ -509,7 +475,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
     locationTemplate?: string;
-    filter?: CatalogEntitiesRequest['filter'];
+    filter?: GetEntitiesRequest['filter'];
     catalogClient?: CatalogApi;
   });
   // (undocumented)
@@ -524,14 +490,14 @@ export class DefaultCatalogCollator implements DocumentCollator {
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
-  protected filter?: CatalogEntitiesRequest['filter'];
+  protected filter?: GetEntitiesRequest['filter'];
   // (undocumented)
   static fromConfig(
     _config: Config,
     options: {
       discovery: PluginEndpointDiscovery;
       tokenManager: TokenManager;
-      filter?: CatalogEntitiesRequest['filter'];
+      filter?: GetEntitiesRequest['filter'];
     },
   ): DefaultCatalogCollator;
   // (undocumented)
@@ -578,11 +544,6 @@ export type DeferredEntity = {
   locationKey?: string;
 };
 
-// Warning: (ae-missing-release-tag) "durationText" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export function durationText(startTimestamp: [number, number]): string;
-
 // @public (undocumented)
 export type EntitiesCatalog = {
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
@@ -598,6 +559,7 @@ export type EntitiesCatalog = {
       authorizationToken?: string;
     },
   ): Promise<EntityAncestryResponse>;
+  facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
 };
 
 // Warning: (ae-missing-release-tag) "EntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -642,6 +604,24 @@ export type EntityAncestryResponse = {
     parentEntityRefs: string[];
   }>;
 };
+
+// @public
+export interface EntityFacetsRequest {
+  authorizationToken?: string;
+  facets: string[];
+  filter?: EntityFilter;
+}
+
+// @public
+export interface EntityFacetsResponse {
+  facets: Record<
+    string,
+    Array<{
+      value: string;
+      count: number;
+    }>
+  >;
+}
 
 // Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -724,10 +704,19 @@ export type EntityProviderMutation =
       removed: DeferredEntity[];
     };
 
+// @public
+export type EntityRelationSpec = {
+  source: EntityName;
+  type: string;
+  target: EntityName;
+};
+
 // Warning: (ae-missing-release-tag) "FileReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export class FileReaderProcessor implements CatalogProcessor {
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -750,7 +739,7 @@ function generalError(
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
@@ -763,6 +752,8 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     },
   ): GithubDiscoveryProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,
@@ -773,7 +764,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 // @alpha
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;
@@ -786,6 +777,8 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubMultiOrgReaderProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -828,7 +821,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 // @public
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
-    integrations: ScmIntegrations;
+    integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
@@ -840,6 +833,8 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -860,13 +855,13 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     },
   ): GitLabDiscoveryProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
-  // (undocumented)
-  updateLastActivity(): Promise<string | undefined>;
 }
 
 // Warning: (ae-missing-release-tag) "inputError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -882,7 +877,7 @@ function inputError(
 // @public (undocumented)
 function location_2(
   newLocation: LocationSpec,
-  optional: boolean,
+  optional?: boolean,
 ): CatalogProcessorResult;
 
 // Warning: (ae-missing-release-tag) "LocationAnalyzer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -899,6 +894,8 @@ export type LocationAnalyzer = {
 // @public (undocumented)
 export class LocationEntityProcessor implements CatalogProcessor {
   constructor(options: LocationEntityProcessorOptions);
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   postProcessEntity(
     entity: Entity,
@@ -1024,6 +1021,8 @@ export const permissionRules: {
 export class PlaceholderProcessor implements CatalogProcessor {
   constructor(options: PlaceholderProcessorOptions);
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
@@ -1131,12 +1130,12 @@ export interface RouterOptions {
 
 // Warning: (ae-missing-release-tag) "runPeriodically" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export function runPeriodically(fn: () => any, delayMs: number): () => void;
 
 // Warning: (ae-missing-release-tag) "StaticLocationProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class StaticLocationProcessor implements StaticLocationProcessor {
   constructor(staticLocations: LocationSpec[]);
   // (undocumented)

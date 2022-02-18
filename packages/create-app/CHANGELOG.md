@@ -1,5 +1,34 @@
 # @backstage/create-app
 
+## 0.4.20
+
+### Patch Changes
+
+- e725bb812f: Remove SearchContextProvider from `<Root />`
+
+  The `SidebarSearchModal` exported from `plugin-search` internally renders `SearchContextProvider`, so it can be removed from `Root.tsx`:
+
+  ```diff
+  -import {
+  -  SidebarSearchModal,
+  -  SearchContextProvider,
+  -} from '@backstage/plugin-search';
+  +import { SidebarSearchModal } from '@backstage/plugin-search';
+
+  ... omitted ...
+
+         <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+  -        <SearchContextProvider>
+  -          <SidebarSearchModal />
+  -        </SearchContextProvider>
+  +        <SidebarSearchModal />
+         </SidebarGroup>
+  ```
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/cli-common@0.1.7
+
 ## 0.4.19
 
 ### Patch Changes

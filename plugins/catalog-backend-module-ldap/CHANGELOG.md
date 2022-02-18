@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.3.13
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 244d24ebc4: Import `Location` from the `@backstage/catalog-client` package.
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.4
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.3.12
 
 ### Patch Changes

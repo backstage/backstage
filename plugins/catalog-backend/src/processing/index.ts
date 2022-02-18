@@ -19,6 +19,7 @@ export type {
   CatalogProcessingEngine,
   EntityProcessingRequest,
   EntityProcessingResult,
+  EntityRelationSpec,
   DeferredEntity,
 } from './types';
 export { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';

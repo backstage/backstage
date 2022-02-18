@@ -40,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'PluginCatalogEntityLinksEmptyState' },
 );
 
-export const EntityLinksEmptyState = () => {
+export function EntityLinksEmptyState() {
   const classes = useStyles();
 
   return (
@@ -68,4 +68,4 @@ export const EntityLinksEmptyState = () => {
       </Button>
     </>
   );
-};
+}

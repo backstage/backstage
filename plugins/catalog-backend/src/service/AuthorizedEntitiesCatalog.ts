@@ -30,6 +30,8 @@ import {
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
+  EntityFacetsRequest,
+  EntityFacetsResponse,
   EntityFilter,
 } from '../catalog/types';
 import { basicEntityFilter } from './request/basicEntityFilter';
@@ -149,6 +151,35 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
           ),
       ),
     };
+  }
+
+  async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
+    const authorizeDecision = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogEntityReadPermission }],
+        { token: request?.authorizationToken },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return {
+        facets: Object.fromEntries(request.facets.map(f => [f, []])),
+      };
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeDecision.conditions,
+      );
+      return this.entitiesCatalog.facets({
+        ...request,
+        filter: request?.filter
+          ? { allOf: [permissionFilter, request.filter] }
+          : permissionFilter,
+      });
+    }
+
+    return this.entitiesCatalog.facets(request);
   }
 
   private findParents(

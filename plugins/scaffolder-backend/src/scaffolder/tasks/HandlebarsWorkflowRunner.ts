@@ -225,19 +225,12 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
             input: JSON.stringify(input, null, 2),
           });
 
-          if (!task.spec.metadata) {
-            console.warn(
-              'DEPRECATION NOTICE: metadata is undefined. metadata will be required in the future.',
-            );
-          }
-
           await action.handler({
+            // deprecated in favor of templateInfo.baseUrl
             baseUrl: task.spec.baseUrl,
             logger: taskLogger,
             logStream: stream,
             input,
-            // this token is deprecated, and will be removed in favour of secrets.backstageToken instead.
-            token: task.secrets?.token,
             secrets: task.secrets ?? {},
             workspacePath,
             async createTemporaryDirectory() {
@@ -250,7 +243,9 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
             output(name: string, value: JsonValue) {
               stepOutputs[name] = value;
             },
+            // deprecated in favor of templateInfo
             metadata: task.spec.metadata,
+            templateInfo: task.spec.templateInfo,
           });
 
           // Remove all temporary directories that were created when executing the action

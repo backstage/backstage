@@ -17,16 +17,16 @@ import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import {
-  CompletedTaskState,
+  TaskCompletionState,
   TaskContext,
   TaskSecrets,
   TaskSpec,
   TaskStore,
   TaskBroker,
-  DispatchResult,
   SerializedTaskEvent,
   SerializedTask,
 } from './types';
+import { TaskBrokerDispatchOptions } from '.';
 
 /**
  * TaskManager
@@ -75,7 +75,7 @@ export class TaskManager implements TaskContext {
   }
 
   async complete(
-    result: CompletedTaskState,
+    result: TaskCompletionState,
     metadata?: JsonObject,
   ): Promise<void> {
     await this.storage.completeTask({
@@ -155,10 +155,9 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   async dispatch(
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<DispatchResult> {
-    const taskRow = await this.storage.createTask(spec, secrets);
+    options: TaskBrokerDispatchOptions,
+  ): Promise<{ taskId: string }> {
+    const taskRow = await this.storage.createTask(options);
     this.signalDispatch();
     return {
       taskId: taskRow.taskId,

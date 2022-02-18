@@ -202,28 +202,6 @@ export type EntityRelation = {
 };
 
 /**
- * Holds the relation data for entities.
- *
- * @public
- */
-export type EntityRelationSpec = {
-  /**
-   * The source entity of this relation.
-   */
-  source: EntityName;
-
-  /**
-   * The type of the relation.
-   */
-  type: string;
-
-  /**
-   * The target entity of this relation.
-   */
-  target: EntityName;
-};
-
-/**
  * A link to external information that is related to the entity.
  *
  * @public

@@ -334,13 +334,19 @@ The following is an example of a `Dockerfile` that can be used to package the
 output of `backstage-cli backend:bundle` into an image:
 
 ```Dockerfile
-FROM node:14-buster-slim
+FROM node:16-bullseye-slim
 WORKDIR /app
 
 COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN yarn install --production --frozen-lockfile --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+# install sqlite3 dependencies
+RUN apt-get update && \
+    apt-get install -y libsqlite3-dev python3 cmake g++ && \
+    rm -rf /var/lib/apt/lists/* && \
+    yarn config set python /usr/bin/python3
+
+RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
@@ -444,8 +450,9 @@ working directory to the package that the test is in.
 
 Where small customizations are needed, such as setting coverage thresholds or
 support for specific transforms, it is possible to override the Jest
-configuration through the `"jest"` field in `package.json`. These overrides will
-be loaded in from all `package.json` files in the directory ancestry, meaning
+configuration through the `"jest"` field in `package.json`. For a full list of
+options, see the [Jest documentation](https://jestjs.io/docs/en/configuration).
+These overrides will be loaded in from all `package.json` files in the directory ancestry, meaning
 that you can place common configuration in the `package.json` at the root of a
 monorepo. If multiple overrides are found, they will be merged together with
 configuration further down in the directory tree taking precedence.
@@ -462,6 +469,45 @@ The overrides in a single `package.json` may for example look like this:
       }
     }
   },
+```
+
+If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest rather than running through the Yarn test script. For example, with the Jest extension for VS Code the configuration would look something like this:
+
+```jsonc
+{
+  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js",
+  // In a large repo like the Backstage main repo you likely want to disable
+  // watch mode and the initial test run too, leaving just manual and perhaps
+  // on-save test runs in place.
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-src-file"
+  }
+}
+```
+
+If you also want to enable source maps when debugging tests, you can do so by setting the `ENABLE_SOURCE_MAPS` environment variable. For example, a complete launch configuration for VS Code debugging may look like this:
+
+```json
+{
+  "type": "node",
+  "name": "vscode-jest-tests",
+  "request": "launch",
+  "console": "integratedTerminal",
+  "internalConsoleOptions": "neverOpen",
+  "disableOptimisticBPs": true,
+  "program": "${workspaceFolder}/node_modules/.bin/jest",
+  "cwd": "${workspaceFolder}",
+  "env": {
+    "ENABLE_SOURCE_MAPS": "true"
+  },
+  "args": [
+    "--config",
+    "node_modules/@backstage/cli/config/jest.js",
+    "--runInBand",
+    "--watchAll=false"
+  ]
+}
 ```
 
 ## Publishing

@@ -12,18 +12,15 @@ import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EntityPageRollbar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityPageRollbar: (_props: Props) => JSX.Element;
+export const EntityPageRollbar: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityRollbarContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityRollbarContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityRollbarContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isPluginApplicableToEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -103,5 +100,5 @@ export { rollbarPlugin };
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (_props: Props_2) => JSX.Element;
+export const Router: (_props: Props) => JSX.Element;
 ```
