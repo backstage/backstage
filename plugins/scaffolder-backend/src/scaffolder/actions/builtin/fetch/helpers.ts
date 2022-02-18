@@ -15,7 +15,6 @@
  */
 
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
-import { JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
@@ -31,15 +30,9 @@ export async function fetchContents({
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
-  fetchUrl?: JsonValue;
+  fetchUrl?: string;
   outputPath: string;
 }) {
-  if (typeof fetchUrl !== 'string') {
-    throw new InputError(
-      `Invalid url parameter, expected string, got ${typeof fetchUrl}`,
-    );
-  }
-
   let fetchUrlIsAbsolute = false;
   try {
     // eslint-disable-next-line no-new
