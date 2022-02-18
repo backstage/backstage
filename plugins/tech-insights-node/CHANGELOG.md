@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.2.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/plugin-tech-insights-common@0.2.3
+
 ## 0.2.3
 
 ### Patch Changes

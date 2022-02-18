@@ -89,7 +89,10 @@ describe('fetch:cookiecutter', () => {
           help: 'me',
         },
       },
-      baseUrl: 'somebase',
+      templateInfo: {
+        entityRef: 'template:default/cookiecutter',
+        baseUrl: 'somebase',
+      },
       workspacePath: mockTmpDir,
       logger: getVoidLogger(),
       logStream: new PassThrough(),
@@ -149,7 +152,7 @@ describe('fetch:cookiecutter', () => {
       expect.objectContaining({
         reader: mockReader,
         integrations,
-        baseUrl: mockContext.baseUrl,
+        baseUrl: mockContext.templateInfo?.baseUrl,
         fetchUrl: mockContext.input.url,
         outputPath: join(
           mockTmpDir,

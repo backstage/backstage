@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-common
 
+## 0.5.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+
 ## 0.5.0
 
 ### Minor Changes

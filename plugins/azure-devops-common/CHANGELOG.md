@@ -1,5 +1,11 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.2.2
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+
 ## 0.2.1
 
 ### Patch Changes

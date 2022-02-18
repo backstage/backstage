@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-common
 
+## 0.2.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/catalog-model@0.10.1
+  - @backstage/types@0.1.3
+
 ## 0.2.0
 
 ### Minor Changes

@@ -75,7 +75,10 @@ describe('fetch:template', () => {
   const logger = getVoidLogger();
 
   const mockContext = (inputPatch: Partial<FetchTemplateInput> = {}) => ({
-    baseUrl: 'base-url',
+    templateInfo: {
+      baseUrl: 'base-url',
+      entityRef: 'template:default/test-template',
+    },
     input: {
       url: './skeleton',
       targetPath: './target',
@@ -199,7 +202,7 @@ describe('fetch:template', () => {
       it('uses fetchContents to retrieve the template content', () => {
         expect(mockFetchContents).toHaveBeenCalledWith(
           expect.objectContaining({
-            baseUrl: context.baseUrl,
+            baseUrl: context.templateInfo?.baseUrl,
             fetchUrl: context.input.url,
           }),
         );

@@ -35,7 +35,6 @@ export {
   CatalogEntityPage,
   CatalogIndexPage,
   catalogPlugin,
-  catalogPlugin as plugin,
   EntityAboutCard,
   EntityDependencyOfComponentsCard,
   EntityDependsOnComponentsCard,

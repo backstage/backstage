@@ -1,5 +1,17 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.20
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+
 ## 0.1.19
 
 ### Patch Changes
