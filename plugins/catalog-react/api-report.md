@@ -541,14 +541,14 @@ export function useEntity<T extends Entity = Entity>(): {
   refresh: VoidFunction | undefined;
 };
 
-// @public
+// @public @deprecated
 export const useEntityCompoundName: () => {
   kind: string;
   namespace: string;
   name: string;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const useEntityFromUrl: () => EntityLoadingStatus;
 
 // @public

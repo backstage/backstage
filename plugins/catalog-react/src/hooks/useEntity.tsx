@@ -134,7 +134,9 @@ const CompatibilityProvider = ({
 };
 EntityContext.Provider = CompatibilityProvider as Provider<EntityLoadingStatus>;
 
-/** @public */
+/** @public
+ * @deprecated will be deleted shortly due to low external usage, re-implement if needed.
+ */
 export const useEntityFromUrl = (): EntityLoadingStatus => {
   const { kind, namespace, name } = useEntityCompoundName();
   const navigate = useNavigate();
