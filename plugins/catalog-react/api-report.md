@@ -142,8 +142,6 @@ export type DefaultEntityFilters = {
 export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   constructor(opts: { storageApi: StorageApi });
   // (undocumented)
-  isStarred(entityRef: string): boolean;
-  // (undocumented)
   starredEntitie$(): Observable<Set<string>>;
   // (undocumented)
   toggleStarred(entityRef: string): Promise<void>;

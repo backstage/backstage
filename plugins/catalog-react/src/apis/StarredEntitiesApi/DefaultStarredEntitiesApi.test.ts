@@ -14,33 +14,27 @@
  * limitations under the License.
  */
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { StorageApi } from '@backstage/core-plugin-api';
 import { MockStorageApi } from '@backstage/test-utils';
 import { DefaultStarredEntitiesApi } from './DefaultStarredEntitiesApi';
 import { performMigrationToTheNewBucket } from './migration';
 
 jest.mock('./migration');
 
-describe('DefaultStarredEntitiesApi', () => {
-  let mockStorage: StorageApi;
-  let starredEntitiesApi: DefaultStarredEntitiesApi;
-
-  const mockEntityRef = stringifyEntityRef({
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'mock',
-    },
+function getStarred(api: DefaultStarredEntitiesApi) {
+  return new Promise((resolve, reject) => {
+    const subscription = api.starredEntitie$().subscribe({
+      next(starred) {
+        resolve(starred);
+        subscription.unsubscribe();
+      },
+      error: reject,
+    });
   });
+}
 
+describe('DefaultStarredEntitiesApi', () => {
   beforeEach(() => {
     (performMigrationToTheNewBucket as jest.Mock).mockResolvedValue(undefined);
-
-    mockStorage = MockStorageApi.create();
-    starredEntitiesApi = new DefaultStarredEntitiesApi({
-      storageApi: mockStorage,
-    });
   });
 
   afterEach(() => {
@@ -49,55 +43,53 @@ describe('DefaultStarredEntitiesApi', () => {
 
   describe('constructor', () => {
     it('should call migration', () => {
-      expect(performMigrationToTheNewBucket).toBeCalledTimes(1);
-    });
-  });
-
-  describe('toggleStarred', () => {
-    it('should star unstarred entity', async () => {
-      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(false);
-
-      await starredEntitiesApi.toggleStarred(mockEntityRef);
-
-      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(true);
-    });
-
-    it('should unstar starred entity', async () => {
-      const bucket = mockStorage.forBucket('starredEntities');
-      await bucket.set('entityRefs', ['component:default/mock']);
-
-      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(true);
-
-      await starredEntitiesApi.toggleStarred(mockEntityRef);
-
-      expect(starredEntitiesApi.isStarred(mockEntityRef)).toBe(false);
-    });
-  });
-
-  describe('starredEntities$', () => {
-    const handler = jest.fn();
-
-    beforeEach(async () => {
-      await new Promise<void>(resolve => {
-        starredEntitiesApi.starredEntitie$().subscribe({
-          next: (...args) => {
-            handler(...args);
-
-            if (handler.mock.calls.length >= 2) {
-              resolve();
-            }
-          },
-        });
-
-        const bucket = mockStorage.forBucket('starredEntities');
-        bucket.set('entityRefs', ['component:default/mock']).then();
+      const api = new DefaultStarredEntitiesApi({
+        storageApi: MockStorageApi.create(),
       });
+      expect(performMigrationToTheNewBucket).toBeCalledTimes(1);
+      expect(api).toBeDefined();
+    });
+  });
+
+  it('should notify and toggle starred entities', async () => {
+    const entityRef = 'component:default/mock';
+
+    const storageApi = MockStorageApi.create();
+    const storageBucket = storageApi.forBucket('starredEntities');
+    const api = new DefaultStarredEntitiesApi({ storageApi });
+
+    const values = new Array<Set<string>>();
+    api.starredEntitie$().subscribe({
+      next: value => {
+        values.push(value);
+      },
     });
 
-    it('should receive updates', async () => {
-      expect(handler).toBeCalledTimes(2);
-      expect(handler).toBeCalledWith(new Set());
-      expect(handler).toBeCalledWith(new Set(['component:default/mock']));
-    });
+    await expect(getStarred(api)).resolves.toEqual(new Set());
+
+    await api.toggleStarred(entityRef);
+    await expect(getStarred(api)).resolves.toEqual(new Set([entityRef]));
+    expect(storageBucket.snapshot('entityRefs')).toEqual(
+      expect.objectContaining({ presence: 'present', value: [entityRef] }),
+    );
+
+    await api.toggleStarred(entityRef);
+    await expect(getStarred(api)).resolves.toEqual(new Set());
+    expect(storageBucket.snapshot('entityRefs')).toEqual(
+      expect.objectContaining({ presence: 'present', value: [] }),
+    );
+
+    expect(values).toEqual([new Set(), new Set([entityRef]), new Set()]);
+  });
+
+  it('should read starred entities from storage', async () => {
+    const entityRef = 'component:default/mock';
+
+    const storageApi = MockStorageApi.create();
+    const storageBucket = storageApi.forBucket('starredEntities');
+    storageBucket.set('entityRefs', [entityRef]);
+    const api = new DefaultStarredEntitiesApi({ storageApi });
+
+    await expect(getStarred(api)).resolves.toEqual(new Set([entityRef]));
   });
 });

@@ -64,17 +64,13 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     return this.observable;
   }
 
-  isStarred(entityRef: string): boolean {
-    return this.starredEntities.has(entityRef);
-  }
-
   private readonly subscribers = new Set<
     ZenObservable.SubscriptionObserver<Set<string>>
   >();
 
   private readonly observable = new ObservableImpl<Set<string>>(subscriber => {
     // forward the the latest value
-    subscriber.next(this.starredEntities);
+    subscriber.next(new Set(this.starredEntities));
 
     this.subscribers.add(subscriber);
     return () => {
@@ -84,7 +80,7 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
 
   private notifyChanges() {
     for (const subscription of this.subscribers) {
-      subscription.next(this.starredEntities);
+      subscription.next(new Set(this.starredEntities));
     }
   }
 }
