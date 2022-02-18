@@ -43,6 +43,11 @@ export interface KubernetesEnvironment {
   config: Config;
 }
 
+/**
+ * The return type of the `KubernetesBuilder.build` method
+ *
+ * @public
+ */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
   clusterDetails: ClusterDetails[];
