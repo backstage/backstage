@@ -58,8 +58,6 @@ const CardTitle = ({ title }: { title: string }) => (
 export const GroupProfileCard = ({
   variant,
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: GroupEntity;
   variant?: InfoCardVariants;
 }) => {
   const { entity: group } = useEntity<GroupEntity>();

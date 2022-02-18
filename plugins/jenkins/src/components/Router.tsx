@@ -27,10 +27,7 @@ export const isJenkinsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[JENKINS_ANNOTATION]) ||
   Boolean(entity.metadata.annotations?.[LEGACY_JENKINS_ANNOTATION]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
+type Props = {};
 
 export const Router = (_props: Props) => {
   const { entity } = useEntity();

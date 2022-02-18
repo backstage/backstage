@@ -40,10 +40,7 @@ export const Router = () => {
   );
 };
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
+type Props = {};
 
 export const EmbeddedDocsRouter = (_props: Props) => {
   const { entity } = useEntity();

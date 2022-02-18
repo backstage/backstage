@@ -26,12 +26,7 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 export const isGithubActionsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const Router = (_props: Props) => {
+export const Router = () => {
   const { entity } = useEntity();
 
   if (!isGithubActionsAvailable(entity)) {

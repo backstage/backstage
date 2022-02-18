@@ -6,11 +6,8 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
-import { GroupEntity } from '@backstage/catalog-model';
 import { InfoCardVariants } from '@backstage/core-components';
-import { UserEntity } from '@backstage/catalog-model';
 
 // Warning: (ae-missing-release-tag) "EntityGroupProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -18,7 +15,6 @@ import { UserEntity } from '@backstage/catalog-model';
 export const EntityGroupProfileCard: ({
   variant,
 }: {
-  entity?: GroupEntity | undefined;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
@@ -26,7 +22,6 @@ export const EntityGroupProfileCard: ({
 //
 // @public (undocumented)
 export const EntityMembersListCard: (_props: {
-  entity?: GroupEntity | undefined;
   memberDisplayTitle?: string | undefined;
   pageSize?: number | undefined;
 }) => JSX.Element;
@@ -38,7 +33,6 @@ export const EntityOwnershipCard: ({
   variant,
   entityFilterKind,
 }: {
-  entity?: Entity | undefined;
   variant?: InfoCardVariants | undefined;
   entityFilterKind?: string[] | undefined;
 }) => JSX.Element;
@@ -49,7 +43,6 @@ export const EntityOwnershipCard: ({
 export const EntityUserProfileCard: ({
   variant,
 }: {
-  entity?: UserEntity | undefined;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
@@ -59,7 +52,6 @@ export const EntityUserProfileCard: ({
 export const GroupProfileCard: ({
   variant,
 }: {
-  entity?: GroupEntity | undefined;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
@@ -67,7 +59,6 @@ export const GroupProfileCard: ({
 //
 // @public (undocumented)
 export const MembersListCard: (_props: {
-  entity?: GroupEntity;
   memberDisplayTitle?: string;
   pageSize?: number;
 }) => JSX.Element;
@@ -91,7 +82,6 @@ export const OwnershipCard: ({
   variant,
   entityFilterKind,
 }: {
-  entity?: Entity | undefined;
   variant?: InfoCardVariants | undefined;
   entityFilterKind?: string[] | undefined;
 }) => JSX.Element;
@@ -102,7 +92,6 @@ export const OwnershipCard: ({
 export const UserProfileCard: ({
   variant,
 }: {
-  entity?: UserEntity | undefined;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 ```

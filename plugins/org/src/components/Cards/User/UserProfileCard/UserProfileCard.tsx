@@ -51,8 +51,6 @@ const CardTitle = ({ title }: { title?: string }) =>
 export const UserProfileCard = ({
   variant,
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: UserEntity;
   variant?: InfoCardVariants;
 }) => {
   const { entity: user } = useEntity<UserEntity>();

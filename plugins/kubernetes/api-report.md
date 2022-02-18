@@ -25,9 +25,7 @@ export const clusterLinksFormatters: Record<string, ClusterLinksFormatter>;
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityKubernetesContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityKubernetesContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "formatClusterLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
