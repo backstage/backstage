@@ -30,7 +30,7 @@
     "test": "backstage-cli package test --testPathIgnorePatterns=src/e2e.test.ts",
     "test:e2e": "backstage-cli test src/e2e.test.ts",
     "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts",
-    "cypress:open": "cypress open",
+    "test:cypress": "cypress open",
     "prepack": "./scripts/prepack.sh"
   },
   "bin": {
