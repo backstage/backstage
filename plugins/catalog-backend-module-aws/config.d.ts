@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * A Backstage catalog backend module that helps integrate towards LDAP
- *
- * @packageDocumentation
- */
-
-export * from './processors';
-export * from './ldap';
+export interface Config {
+  catalog?: {
+    /**
+     * List of processor-specific options and attributes
+     */
+    processors?: {
+      /**
+       * AwsOrganizationCloudAccountProcessor configuration
+       */
+      awsOrganization?: {
+        provider: {
+          /**
+           * The role to be assumed by this processor
+           */
+          roleArn?: string;
+        };
+      };
+    };
+  };
+}

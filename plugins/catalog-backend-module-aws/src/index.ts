@@ -15,10 +15,9 @@
  */
 
 /**
- * A Backstage catalog backend module that helps integrate towards LDAP
+ * A Backstage catalog backend module that helps integrate towards AWS
  *
  * @packageDocumentation
  */
 
 export * from './processors';
-export * from './ldap';

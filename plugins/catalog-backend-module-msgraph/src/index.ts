@@ -15,7 +15,7 @@
  */
 
 /**
- * A Backstage catalog backend modules that helps integrate towards Microsoft Graph
+ * A Backstage catalog backend module that helps integrate towards Microsoft Graph
  *
  * @packageDocumentation
  */
