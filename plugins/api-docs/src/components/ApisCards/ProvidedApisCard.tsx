@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ApiEntity,
-  Entity,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
+import { ApiEntity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import { Typography } from '@material-ui/core';
 import {
   EntityTable,
@@ -36,8 +32,6 @@ import {
 } from '@backstage/core-components';
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: 'gridItem';
 };
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
@@ -26,8 +25,6 @@ import { InfoCard } from '@backstage/core-components';
 
 /** @public */
 export interface EntityLinksCardProps {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   cols?: ColumnBreakpoints | number;
   variant?: 'gridItem';
 }

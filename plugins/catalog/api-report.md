@@ -27,8 +27,6 @@ export function AboutCard(props: AboutCardProps): JSX.Element;
 
 // @public
 export interface AboutCardProps {
-  // @deprecated (undocumented)
-  entity?: Entity;
   // (undocumented)
   variant?: InfoCardVariants;
 }
@@ -285,8 +283,6 @@ export interface EntityLinksCardProps {
   //
   // (undocumented)
   cols?: ColumnBreakpoints | number;
-  // @deprecated (undocumented)
-  entity?: Entity;
   // (undocumented)
   variant?: 'gridItem';
 }

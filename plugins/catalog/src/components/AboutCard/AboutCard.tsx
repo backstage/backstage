@@ -15,7 +15,6 @@
  */
 
 import {
-  Entity,
   ANNOTATION_LOCATION,
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
@@ -78,8 +77,6 @@ const useStyles = makeStyles({
  * @public
  */
 export interface AboutCardProps {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: InfoCardVariants;
 }
 

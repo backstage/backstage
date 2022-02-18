@@ -55,7 +55,7 @@ describe('UserSummary Test', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <EntityProvider entity={userEntity}>
-          <UserProfileCard entity={userEntity} variant="gridItem" />
+          <UserProfileCard variant="gridItem" />
         </EntityProvider>,
         {
           mountedRoutes: {
