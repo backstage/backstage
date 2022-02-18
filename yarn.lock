@@ -5145,13 +5145,6 @@
   resolved "https://registry.npmjs.org/@types/cors/-/cors-2.8.12.tgz#6b2c510a7ad7039e98e7b8d3d6598f4359e5c080"
   integrity sha512-vt+kDhq/M2ayberEtJcIN/hxXy1Pk+59g2FV/ZQceeaTyCtCucjL2Q7FXlFjtWn4n15KCr1NE2lNNFhp0lEThw==
 
-"@types/cssnano@*":
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/@types/cssnano/-/cssnano-5.0.0.tgz#9463679a7f11ea375e0ed4ada46c04de6c908ef0"
-  integrity sha512-z98V7ICNAojxj9YV9+Q8qV+F7fW0poLWJRjed9tu7KNdYzHwAvLOAsTMI8xWjkOY9yzO+HmMxRRixlIvRsZwXg==
-  dependencies:
-    postcss "^8"
-
 "@types/d3-color@*":
   version "3.0.2"
   resolved "https://registry.npmjs.org/@types/d3-color/-/d3-color-3.0.2.tgz#53f2d6325f66ee79afd707c05ac849e8ae0edbb0"
@@ -6006,14 +5999,12 @@
     "@types/node" "*"
     rollup "^0.63.4"
 
-"@types/rollup-plugin-postcss@^2.0.0":
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/@types/rollup-plugin-postcss/-/rollup-plugin-postcss-2.0.1.tgz#f2c73a458b035db8af361c4a7d921f74c6d4dffa"
-  integrity sha512-q+o1V6536wwIIlwJzEjm09emg/1QIceJXo01h6fTA1JJY4p/QQTOc10mizp4NhmwRMB8LVOThCgkwvQgzvJFjQ==
+"@types/rollup-plugin-postcss@^3.1.4":
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/@types/rollup-plugin-postcss/-/rollup-plugin-postcss-3.1.4.tgz#064054efb779a4ab6f1ea5d67f46f26acfc13a51"
+  integrity sha512-r1udsfjOlDiErJAvpsU12LNqwYfaMtom4wTKkm8lAu/cZBYbEN7Mcfyucpicl+R3GoBkgNXE+39bEnMjXxGRdA==
   dependencies:
-    "@types/cssnano" "*"
-    "@types/node" "*"
-    rollup "^0.63.4"
+    rollup-plugin-postcss "*"
 
 "@types/scheduler@*":
   version "0.16.1"
@@ -19511,7 +19502,7 @@ postcss-value-parser@^4.0.2, postcss-value-parser@^4.1.0, postcss-value-parser@^
   resolved "https://registry.npmjs.org/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-postcss@^8, postcss@^8.1.0, postcss@^8.4.5:
+postcss@^8.1.0, postcss@^8.4.5:
   version "8.4.6"
   resolved "https://registry.npmjs.org/postcss/-/postcss-8.4.6.tgz#c5ff3c3c457a23864f32cb45ac9b741498a09ae1"
   integrity sha512-OovjwIzs9Te46vlEx7+uXB0PLijpwjXGKXjVGGPIGubGpq7uh5Xgf6D6FiJ/SzJMBosHDp6a2hiXOS97iBXcaA==
@@ -21291,7 +21282,7 @@ rollup-plugin-peer-deps-external@^2.2.2:
   resolved "https://registry.npmjs.org/rollup-plugin-peer-deps-external/-/rollup-plugin-peer-deps-external-2.2.4.tgz#8a420bbfd6dccc30aeb68c9bf57011f2f109570d"
   integrity sha512-AWdukIM1+k5JDdAqV/Cxd+nejvno2FVLVeZ74NKggm3Q5s9cbbcOgUPGdbxPi4BXu7xGaZ8HG12F+thImYu/0g==
 
-rollup-plugin-postcss@^4.0.0:
+rollup-plugin-postcss@*, rollup-plugin-postcss@^4.0.0:
   version "4.0.2"
   resolved "https://registry.npmjs.org/rollup-plugin-postcss/-/rollup-plugin-postcss-4.0.2.tgz#15e9462f39475059b368ce0e49c800fa4b1f7050"
   integrity sha512-05EaY6zvZdmvPUDi3uCcAQoESDcYnv8ogJJQRp6V5kZ6J6P7uAVJlrTZcaaA20wTH527YTnKfkAoPxWI/jPp4w==

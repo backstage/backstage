@@ -140,7 +140,7 @@
     "@types/npm-packlist": "^1.1.2",
     "@types/recursive-readdir": "^2.2.0",
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",
-    "@types/rollup-plugin-postcss": "^2.0.0",
+    "@types/rollup-plugin-postcss": "^3.1.4",
     "@types/svgo": "^2.6.2",
     "@types/tar": "^6.1.1",
     "@types/terser-webpack-plugin": "^5.0.4",
