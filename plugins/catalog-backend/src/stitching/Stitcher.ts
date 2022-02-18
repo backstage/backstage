@@ -186,6 +186,7 @@ export class Stitcher {
       .map(row => ({
         type: row.relationType!,
         target: parseEntityRef(row.relationTarget!),
+        targetRef: row.relationTarget!,
       }));
     if (statusItems.length) {
       entity.status = {
@@ -210,7 +211,7 @@ export class Stitcher {
     }
 
     // This may throw if the entity is invalid, so we call it before
-    // the final_entites write, even though we may end up not needing
+    // the final_entities write, even though we may end up not needing
     // to write the search index.
     const searchEntries = buildEntitySearch(entityId, entity);
 

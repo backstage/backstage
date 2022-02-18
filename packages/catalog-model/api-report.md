@@ -231,6 +231,7 @@ export type EntityRefContext = {
 export type EntityRelation = {
   type: string;
   target: EntityName;
+  targetRef: string;
 };
 
 // @public

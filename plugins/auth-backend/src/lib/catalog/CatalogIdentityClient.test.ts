@@ -79,8 +79,9 @@ describe('CatalogIdentityClient', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
+            targetRef: 'group:default/team-a',
             target: {
-              kind: 'Group',
+              kind: 'group',
               namespace: 'default',
               name: 'team-a',
             },
@@ -100,8 +101,9 @@ describe('CatalogIdentityClient', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
+            targetRef: 'group:reality/screen-actors-guild',
             target: {
-              kind: 'Group',
+              kind: 'group',
               namespace: 'reality',
               name: 'screen-actors-guild',
             },

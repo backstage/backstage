@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-common';
 import {
   Entity,
+  parseEntityRef,
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -154,9 +155,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
               entityTitle: entity.metadata.title,
               componentType: entity.spec?.type?.toString() || 'other',
               lifecycle: (entity.spec?.lifecycle as string) || '',
-              owner:
-                entity.relations?.find(r => r.type === RELATION_OWNED_BY)
-                  ?.target?.name || '',
+              owner: getSimpleEntityOwnerString(entity),
               authorization: {
                 resourceRef: stringifyEntityRef(entity),
               },
@@ -201,4 +200,15 @@ export class DefaultTechDocsCollator implements DocumentCollator {
           return { ...acc, [key]: value.toLocaleLowerCase('en-US') };
         }, {} as EntityInfo);
   }
+}
+
+function getSimpleEntityOwnerString(entity: Entity): string {
+  if (entity.relations) {
+    const owner = entity.relations.find(r => r.type === RELATION_OWNED_BY);
+    if (owner) {
+      const { name } = parseEntityRef(owner.targetRef);
+      return name;
+    }
+  }
+  return '';
 }

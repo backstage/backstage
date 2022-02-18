@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
@@ -194,11 +198,32 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       };
     }
 
-    const dbResponse = rows.map(e => JSON.parse(e.final_entity!));
+    let entities: Entity[] = rows.map(e => JSON.parse(e.final_entity!));
 
-    const entities = dbResponse.map(e =>
-      request?.fields ? request.fields(e) : e,
-    );
+    if (request?.fields) {
+      entities = entities.map(e => request.fields!(e));
+    }
+
+    // TODO(freben): This is added as a compatibility guarantee, until we can be
+    // sure that all adopters have re-stitched their entities so that the new
+    // targetRef field is present on them, and that they have stopped consuming
+    // the now-removed old field
+    for (const entity of entities) {
+      if (entity.relations) {
+        for (const relation of entity.relations) {
+          if (!relation.targetRef) {
+            // This is the case where an old-form entity, not yet stitched with
+            // the updated code, was in the database
+            relation.targetRef = stringifyEntityRef(relation.target);
+          } else if (!relation.target) {
+            // This is the case where a new-form entity, stitched with the
+            // updated code, was in the database but we still want to produce
+            // the old data shape as well for compatibility reasons
+            relation.target = parseEntityRef(relation.targetRef);
+          }
+        }
+      }
+    }
 
     return {
       entities,

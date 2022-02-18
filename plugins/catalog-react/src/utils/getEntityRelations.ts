@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, EntityName, parseEntityRef } from '@backstage/catalog-model';
 
+// TODO(freben): This should be returning entity refs instead
 /**
  * Get the related entity references.
+ *
  * @public
  */
 export function getEntityRelations(
@@ -28,10 +30,10 @@ export function getEntityRelations(
   let entityNames =
     entity?.relations
       ?.filter(r => r.type === relationType)
-      ?.map(r => r.target) || [];
+      .map(r => parseEntityRef(r.targetRef)) || [];
 
   if (filter?.kind) {
-    entityNames = entityNames?.filter(
+    entityNames = entityNames.filter(
       e =>
         e.kind.toLocaleLowerCase('en-US') ===
         filter.kind.toLocaleLowerCase('en-US'),

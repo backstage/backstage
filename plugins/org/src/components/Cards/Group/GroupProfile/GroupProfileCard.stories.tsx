@@ -28,6 +28,7 @@ export default {
 
 const dummyDepartment = {
   type: 'childOf',
+  targetRef: 'group:default/department-a',
   target: {
     namespace: 'default',
     kind: 'group',

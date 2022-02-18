@@ -81,10 +81,11 @@ describe('<HasComponentsCard />', () => {
       relations: [
         {
           target: {
-            kind: 'Component',
+            kind: 'component',
             namespace: 'my-namespace',
             name: 'target-name',
           },
+          targetRef: 'component:my-namespace/target-name',
           type: RELATION_HAS_PART,
         },
       ],

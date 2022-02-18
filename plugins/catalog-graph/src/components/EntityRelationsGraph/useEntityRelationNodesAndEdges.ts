@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { MouseEvent, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
@@ -100,11 +97,9 @@ export function useEntityRelationNodesAndEdges({
 
         if (entity) {
           entity?.relations?.forEach(rel => {
-            const targetRef = stringifyEntityRef(rel.target);
-
             // Check if the related entity should be displayed, if not, ignore
             // the relation too
-            if (!entities[targetRef]) {
+            if (!entities[rel.targetRef]) {
               return;
             }
 
@@ -114,12 +109,14 @@ export function useEntityRelationNodesAndEdges({
 
             if (
               kinds &&
-              !kinds.includes(rel.target.kind.toLocaleLowerCase('en-US'))
+              !kinds.some(kind =>
+                rel.targetRef.startsWith(`${kind.toLocaleLowerCase('en-US')}:`),
+              )
             ) {
               return;
             }
 
-            if (!unidirectional || !visitedNodes.has(targetRef)) {
+            if (!unidirectional || !visitedNodes.has(rel.targetRef)) {
               if (mergeRelations) {
                 const pair = relationPairs.find(
                   ([l, r]) => l === rel.type || r === rel.type,
@@ -127,24 +124,24 @@ export function useEntityRelationNodesAndEdges({
                 const [left] = pair;
 
                 edges.push({
-                  from: left === rel.type ? entityRef : targetRef,
-                  to: left === rel.type ? targetRef : entityRef,
+                  from: left === rel.type ? entityRef : rel.targetRef,
+                  to: left === rel.type ? rel.targetRef : entityRef,
                   relations: pair,
                   label: 'visible',
                 });
               } else {
                 edges.push({
                   from: entityRef,
-                  to: targetRef,
+                  to: rel.targetRef,
                   relations: [rel.type],
                   label: 'visible',
                 });
               }
             }
 
-            if (!visitedNodes.has(targetRef)) {
-              nodeQueue.push(targetRef);
-              visitedNodes.add(targetRef);
+            if (!visitedNodes.has(rel.targetRef)) {
+              nodeQueue.push(rel.targetRef);
+              visitedNodes.add(rel.targetRef);
             }
           });
         }

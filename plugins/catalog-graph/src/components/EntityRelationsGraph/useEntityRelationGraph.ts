@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { useEffect } from 'react';
 import { useEntityStore } from './useEntityStore';
 
@@ -64,13 +64,15 @@ export function useEntityRelationGraph({
             if (
               (!relations || relations.includes(rel.type)) &&
               (!kinds ||
-                kinds.includes(rel.target.kind.toLocaleLowerCase('en-US')))
+                kinds.some(kind =>
+                  rel.targetRef.startsWith(
+                    `${kind.toLocaleLowerCase('en-US')}:`,
+                  ),
+                ))
             ) {
-              const relationEntityRef = stringifyEntityRef(rel.target);
-
-              if (!processedEntityRefs.has(relationEntityRef)) {
-                nextDepthRefQueue.push(relationEntityRef);
-                expectedEntities.add(relationEntityRef);
+              if (!processedEntityRefs.has(rel.targetRef)) {
+                nextDepthRefQueue.push(rel.targetRef);
+                expectedEntities.add(rel.targetRef);
               }
             }
           }

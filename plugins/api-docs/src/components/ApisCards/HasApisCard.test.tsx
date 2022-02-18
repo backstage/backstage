@@ -95,10 +95,11 @@ describe('<HasApisCard />', () => {
       relations: [
         {
           target: {
-            kind: 'API',
+            kind: 'api',
             namespace: 'my-namespace',
             name: 'target-name',
           },
+          targetRef: 'api:my-namespace/target-name',
           type: RELATION_HAS_PART,
         },
       ],

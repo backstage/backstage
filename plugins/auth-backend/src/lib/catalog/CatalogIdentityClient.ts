@@ -120,11 +120,11 @@ export class CatalogIdentityClient {
       e =>
         e!.relations
           ?.filter(r => r.type === RELATION_MEMBER_OF)
-          .map(r => r.target) ?? [],
+          .map(r => r.targetRef) ?? [],
     );
 
     const newEntityRefs = [
-      ...new Set(resolvedEntityRefs.concat(memberOf).map(stringifyEntityRef)),
+      ...new Set(resolvedEntityRefs.map(stringifyEntityRef).concat(memberOf)),
     ];
 
     logger?.debug(`Found catalog membership: ${newEntityRefs.join()}`);
