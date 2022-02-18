@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { execSync, spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import path from 'path';
 
 import findProcess from 'find-process';
@@ -33,7 +33,10 @@ const executeCommand = (
     const stderr: Buffer[] = [];
 
     const shell = process.platform === 'win32';
-    const proc = spawn(command, args, { ...options, shell });
+    const proc = spawn('yarn', ['exec', command, ...args], {
+      ...options,
+      shell,
+    });
 
     proc.stdout?.on('data', data => {
       stdout.push(Buffer.from(data));
@@ -70,14 +73,6 @@ describe('end-to-end', () => {
         process.kill(proc.pid);
       });
     }
-  });
-
-  beforeAll(() => {
-    execSync('yarn workspace @techdocs/cli link', { stdio: 'ignore' });
-  });
-
-  afterAll(() => {
-    execSync('yarn workspace @techdocs/cli unlink', { stdio: 'ignore' });
   });
 
   it('shows help text', async () => {
