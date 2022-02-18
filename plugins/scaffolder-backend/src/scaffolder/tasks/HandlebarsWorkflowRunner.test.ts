@@ -94,7 +94,7 @@ describe('LegacyWorkflowRunner', () => {
   });
 
   it('should pass metadata through', async () => {
-    const templateName = 'template name';
+    const entityRef = `template:default/templateName`;
     const task = createMockTaskWithSpec({
       apiVersion: 'backstage.io/v1beta2',
       steps: [
@@ -107,13 +107,13 @@ describe('LegacyWorkflowRunner', () => {
       ],
       output: {},
       values: {},
-      metadata: { name: templateName },
+      templateInfo: { entityRef },
     });
 
     await runner.execute(task);
 
-    expect(fakeActionHandler.mock.calls[0][0].metadata).toEqual({
-      name: templateName,
+    expect(fakeActionHandler.mock.calls[0][0].templateInfo).toEqual({
+      entityRef,
     });
   });
 

@@ -28,6 +28,8 @@ import { ScmIntegrations } from '@backstage/integration';
 import {
   TemplateEntityV1beta2,
   TemplateEntityV1beta3,
+  TaskSpecV1beta3,
+  TaskSpecV1beta2,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -186,12 +188,15 @@ export async function createRouter(
     })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
+      const { kind, namespace } = { kind: 'template', namespace: 'default' };
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
       const template = await findTemplate({
         catalogApi: catalogClient,
         entityRef: {
           name: templateName,
+          kind,
+          namespace,
         },
         token: getBearerToken(req.headers.authorization),
       });
@@ -219,32 +224,40 @@ export async function createRouter(
 
         const baseUrl = getEntityBaseUrl(template);
 
+        const baseTaskSpec = {
+          baseUrl,
+          steps: template.spec.steps.map((step, index) => ({
+            ...step,
+            id: step.id ?? `step-${index + 1}`,
+            name: step.name ?? step.action,
+          })),
+          output: template.spec.output ?? {},
+
+          // deprecated in favour of templateInfo
+          metadata: { name: template.metadata?.name },
+
+          templateInfo: {
+            entityRef: stringifyEntityRef({
+              kind,
+              namespace,
+              name: template.metadata?.name,
+            }),
+            baseUrl,
+          },
+        };
+
         taskSpec =
           template.apiVersion === 'backstage.io/v1beta2'
-            ? {
+            ? ({
+                ...baseTaskSpec,
                 apiVersion: template.apiVersion,
-                baseUrl,
                 values,
-                steps: template.spec.steps.map((step, index) => ({
-                  ...step,
-                  id: step.id ?? `step-${index + 1}`,
-                  name: step.name ?? step.action,
-                })),
-                output: template.spec.output ?? {},
-                metadata: { name: template.metadata?.name },
-              }
-            : {
+              } as TaskSpecV1beta2)
+            : ({
+                ...baseTaskSpec,
                 apiVersion: template.apiVersion,
-                baseUrl,
                 parameters: values,
-                steps: template.spec.steps.map((step, index) => ({
-                  ...step,
-                  id: step.id ?? `step-${index + 1}`,
-                  name: step.name ?? step.action,
-                })),
-                output: template.spec.output ?? {},
-                metadata: { name: template.metadata?.name },
-              };
+              } as TaskSpecV1beta3);
       } else {
         throw new InputError(
           `Unsupported apiVersion field in schema entity, ${
@@ -256,8 +269,6 @@ export async function createRouter(
       const result = await taskBroker.dispatch(taskSpec, {
         ...req.body.secrets,
         backstageToken: token,
-        // This is deprecated, but we need to support it for now if people are running their own task broker.
-        token: token,
       });
 
       res.status(201).json({ id: result.taskId });

@@ -21,9 +21,21 @@ import { JsonValue, JsonObject } from '@backstage/types';
  * stored in the database.
  *
  * @public
+ * @deprecated use templateInfo on the spec instead
  */
 export type TemplateMetadata = {
   name: string;
+};
+
+/**
+ * Information about a template that is stored on a task specification.
+ * Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
+ *
+ * @public
+ */
+export type TemplateInfo = {
+  entityRef: string;
+  baseUrl?: string;
 };
 
 /**
@@ -49,11 +61,14 @@ export interface TaskStep {
  */
 export interface TaskSpecV1beta2 {
   apiVersion: 'backstage.io/v1beta2';
+  /** @deprecated use templateInfo.baseUrl instead */
   baseUrl?: string;
   values: JsonObject;
   steps: TaskStep[];
   output: { [name: string]: string };
+  /** @deprecated use templateInfo instead */
   metadata?: TemplateMetadata;
+  templateInfo?: TemplateInfo;
 }
 
 /**
@@ -64,11 +79,14 @@ export interface TaskSpecV1beta2 {
  */
 export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
+  /** @deprecated use templateInfo.baseUrl instead */
   baseUrl?: string;
   parameters: JsonObject;
   steps: TaskStep[];
   output: { [name: string]: JsonValue };
+  /** @deprecated use templateInfo instead */
   metadata?: TemplateMetadata;
+  templateInfo?: TemplateInfo;
 }
 
 /**

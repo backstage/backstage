@@ -19,10 +19,12 @@ import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { TaskSecrets, TemplateMetadata } from '../tasks/types';
+import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 
 export type ActionContext<Input extends JsonObject> = {
   /**
    * Base URL for the location of the task spec, typically the url of the source entity file.
+   * @deprecated please use templateInfo.baseUrl instead
    */
   baseUrl?: string;
 
@@ -38,7 +40,11 @@ export type ActionContext<Input extends JsonObject> = {
    */
   createTemporaryDirectory(): Promise<string>;
 
+  /**
+   * @deprecated please use templateInfo instead
+   */
   metadata?: TemplateMetadata;
+  templateInfo?: TemplateInfo;
 };
 
 export type TemplateAction<Input extends JsonObject> = {
