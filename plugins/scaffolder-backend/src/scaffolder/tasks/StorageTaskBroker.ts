@@ -207,8 +207,8 @@ export class StorageTaskBroker implements TaskBroker {
     return { unsubscribe };
   }
 
-  async vacuumTasks(timeoutS: { timeoutS: number }): Promise<void> {
-    const { tasks } = await this.storage.listStaleTasks(timeoutS);
+  async vacuumTasks(options: { timeoutS: number }): Promise<void> {
+    const { tasks } = await this.storage.listStaleTasks(options);
     await Promise.all(
       tasks.map(async task => {
         try {

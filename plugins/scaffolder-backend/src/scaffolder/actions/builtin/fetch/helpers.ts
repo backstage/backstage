@@ -20,6 +20,12 @@ import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
 import path from 'path';
 
+/**
+ * A helper function that reads the contents of a directory from the given URL.
+ * Can be used in your own actions, and also used behind fetch:template and fetch:plain
+ *
+ * @public
+ */
 export async function fetchContents({
   reader,
   integrations,
