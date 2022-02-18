@@ -24,7 +24,11 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  useApi,
+  featureFlagsApiRef,
+} from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
@@ -116,13 +120,53 @@ export const MultistepJsonForm = ({
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
+  const featureFlagApi = useApi(featureFlagsApiRef);
+  const featureFlagKey = 'backstage:featureFlag';
+  const filterOutProperties = (schema: JsonObject): JsonObject => {
+    const removedPropertiesKeys: Array<string> = [];
+    if (schema.properties) {
+      schema.properties = Object.fromEntries(
+        Object.entries(schema.properties).filter(([key, value]) => {
+          if (value[featureFlagKey]) {
+            if (featureFlagApi.isActive(value[featureFlagKey])) {
+              return true;
+            }
+            removedPropertiesKeys.push(key);
+            return false;
+          }
+          return true;
+        }),
+      );
+
+      // remove the feature flag property keys from required if they are not active
+      if (Array.isArray(schema.required) && removedPropertiesKeys.length > 0) {
+        for (const property of removedPropertiesKeys) {
+          const index = schema.required.findIndex(r => r === property);
+          if (index > -1) {
+            schema.required.splice(index, 1);
+          }
+        }
+      }
+    }
+    return schema;
+  };
+
+  const updatedSteps = steps.filter(s => {
+    const featureFlag = s.schema[featureFlagKey] as string;
+    if (featureFlag && !featureFlagApi.isActive(featureFlag)) {
+      return null;
+    }
+    // filter out properties accordingly to the feature flag settings;
+    s.schema = filterOutProperties(s.schema);
+    return s;
+  });
 
   const handleReset = () => {
     setActiveStep(0);
     onReset();
   };
   const handleNext = () => {
-    setActiveStep(Math.min(activeStep + 1, steps.length));
+    setActiveStep(Math.min(activeStep + 1, updatedSteps.length));
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
   const handleCreate = async () => {
@@ -138,7 +182,7 @@ export const MultistepJsonForm = ({
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map(({ title, schema, ...formProps }, index) => {
+        {updatedSteps.map(({ title, schema, ...formProps }, index) => {
           return (
             <StepUI key={title}>
               <StepLabel
