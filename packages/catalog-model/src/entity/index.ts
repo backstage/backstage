@@ -29,7 +29,6 @@ export type {
   EntityLink,
   EntityMeta,
   EntityRelation,
-  EntityRelationSpec,
 } from './Entity';
 export type { EntityEnvelope } from './EntityEnvelope';
 export type {

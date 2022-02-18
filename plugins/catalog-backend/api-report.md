@@ -12,8 +12,8 @@ import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
 import { Entity } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
-import { EntityRelationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -703,6 +703,13 @@ export type EntityProviderMutation =
       added: DeferredEntity[];
       removed: DeferredEntity[];
     };
+
+// @public
+export type EntityRelationSpec = {
+  source: EntityName;
+  type: string;
+  target: EntityName;
+};
 
 // Warning: (ae-missing-release-tag) "FileReaderProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

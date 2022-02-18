@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import { DateTime } from 'luxon';
-import { DeferredEntity } from '../processing/types';
+import { DeferredEntity, EntityRelationSpec } from '../processing/types';
 
 /**
  * An abstraction for transactions of the underlying database technology.

@@ -15,12 +15,9 @@
  */
 
 import { InputError, NotFoundError } from '@backstage/errors';
-import {
-  Entity,
-  EntityRelationSpec,
-  LocationSpec,
-} from '@backstage/catalog-model';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { CatalogProcessorResult } from './types';
+import { EntityRelationSpec } from '../../processing/types';
 
 export function notFoundError(
   atLocation: LocationSpec,
