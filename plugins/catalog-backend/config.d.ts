@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/config';
-
 export interface Config {
   /**
    * Configuration options for the catalog plugin.
@@ -171,19 +169,6 @@ export interface Config {
            */
           userNamespace?: string;
         }>;
-      };
-
-      /**
-       * AwsOrganizationCloudAccountProcessor configuration
-       */
-      awsOrganization?: {
-        provider: {
-          /**
-           * The role to be assumed by this processor
-           *
-           */
-          roleArn?: string;
-        };
       };
     };
   };

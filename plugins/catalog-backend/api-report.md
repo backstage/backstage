@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="node" />
 
-import { Account } from 'aws-sdk/clients/organizations';
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
@@ -25,7 +24,6 @@ import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
-import { Organizations } from 'aws-sdk';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -33,7 +31,6 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -114,55 +111,6 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
-
-// Warning: (ae-missing-release-tag) "AwsOrganizationCloudAccountProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
-  constructor(options: {
-    provider: AwsOrganizationProviderConfig;
-    logger: Logger_2;
-  });
-  // (undocumented)
-  extractInformationFromArn(arn: string): {
-    accountId: string;
-    organizationId: string;
-  };
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger_2;
-    },
-  ): AwsOrganizationCloudAccountProcessor;
-  // (undocumented)
-  getAwsAccounts(): Promise<Account[]>;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  logger: Logger_2;
-  // (undocumented)
-  mapAccountToComponent(account: Account): ResourceEntityV1alpha1;
-  // (undocumented)
-  normalizeName(name: string): string;
-  // (undocumented)
-  organizations: Organizations;
-  // (undocumented)
-  provider: AwsOrganizationProviderConfig;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// Warning: (ae-missing-release-tag) "AwsOrganizationProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export type AwsOrganizationProviderConfig = {
-  roleArn?: string;
-};
 
 // Warning: (ae-missing-release-tag) "AwsS3DiscoveryProcessor" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
