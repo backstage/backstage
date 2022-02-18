@@ -559,6 +559,7 @@ export type EntitiesCatalog = {
       authorizationToken?: string;
     },
   ): Promise<EntityAncestryResponse>;
+  facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
 };
 
 // Warning: (ae-missing-release-tag) "EntitiesRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -603,6 +604,24 @@ export type EntityAncestryResponse = {
     parentEntityRefs: string[];
   }>;
 };
+
+// @public
+export interface EntityFacetsRequest {
+  authorizationToken?: string;
+  facets: string[];
+  filter?: EntityFilter;
+}
+
+// @public
+export interface EntityFacetsResponse {
+  facets: Record<
+    string,
+    Array<{
+      value: string;
+      count: number;
+    }>
+  >;
+}
 
 // Warning: (ae-missing-release-tag) "EntityFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

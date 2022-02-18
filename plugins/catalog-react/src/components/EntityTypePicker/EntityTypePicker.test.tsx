@@ -26,6 +26,7 @@ import { EntityKindFilter, EntityTypeFilter } from '../../filters';
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 
 const entities: Entity[] = [
   {
@@ -64,7 +65,14 @@ const apis = TestApiRegistry.from(
   [
     catalogApiRef,
     {
-      getEntities: jest.fn().mockResolvedValue({ items: entities }),
+      getEntityFacets: jest.fn().mockResolvedValue({
+        facets: {
+          'spec.type': entities.map(e => ({
+            value: (e.spec as any).type,
+            count: 1,
+          })),
+        },
+      } as GetEntityFacetsResponse),
     },
   ],
   [

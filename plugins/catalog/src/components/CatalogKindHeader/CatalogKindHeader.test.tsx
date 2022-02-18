@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
+import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -60,7 +61,15 @@ const entities: Entity[] = [
 const apis = TestApiRegistry.from([
   catalogApiRef,
   {
-    getEntities: jest.fn().mockResolvedValue({ items: entities }),
+    getEntityFacets: jest.fn().mockResolvedValue({
+      facets: {
+        kind: [
+          { value: 'Component', count: 2 },
+          { value: 'Template', count: 1 },
+          { value: 'System', count: 1 },
+        ],
+      },
+    } as GetEntityFacetsResponse),
   },
 ]);
 

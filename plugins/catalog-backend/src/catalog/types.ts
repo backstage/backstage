@@ -87,6 +87,44 @@ export type EntityAncestryResponse = {
   }>;
 };
 
+/**
+ * The request shape for {@link EntitiesCatalog.facets}.
+ *
+ * @public
+ */
+export interface EntityFacetsRequest {
+  /**
+   * A filter to apply on the full list of entities before computing the facets.
+   */
+  filter?: EntityFilter;
+  /**
+   * The facets to compute.
+   *
+   * @remarks
+   *
+   * This is a list of strings corresponding to paths within individual entity
+   * shapes. For example, to compute the facets for all available tags, you
+   * would pass in the string 'metadata.tags'.
+   */
+  facets: string[];
+  /**
+   * The optional token that authorizes the action.
+   */
+  authorizationToken?: string;
+}
+
+/**
+ * The response shape for {@link EntitiesCatalog.facets}.
+ *
+ * @public
+ */
+export interface EntityFacetsResponse {
+  /**
+   * The computed facets, one entry per facet in the request.
+   */
+  facets: Record<string, Array<{ value: string; count: number }>>;
+}
+
 /** @public */
 export type EntitiesCatalog = {
   /**
@@ -115,4 +153,12 @@ export type EntitiesCatalog = {
     entityRef: string,
     options?: { authorizationToken?: string },
   ): Promise<EntityAncestryResponse>;
+
+  /**
+   * Computes facets for a set of entities, e.g. for populating filter lists
+   * or driving insights or similar.
+   *
+   * @param request - Request options
+   */
+  facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
 };
