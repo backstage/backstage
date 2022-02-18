@@ -1,7 +1,5 @@
 ---
-'example-app': patch
 '@backstage/app-defaults': patch
-'example-backend': patch
 '@backstage/backend-common': patch
 '@backstage/backend-tasks': patch
 '@backstage/backend-test-utils': patch
@@ -17,7 +15,6 @@
 '@backstage/core-plugin-api': patch
 '@backstage/create-app': patch
 '@backstage/dev-utils': patch
-'e2e-test': patch
 '@backstage/errors': patch
 '@backstage/integration': patch
 '@backstage/integration-react': patch
