@@ -80,7 +80,7 @@ export class DatabaseTaskStore implements TaskStore {
     return new DatabaseTaskStore(options);
   }
 
-  constructor(options: DatabaseTaskStoreOptions) {
+  private constructor(options: DatabaseTaskStoreOptions) {
     this.db = options.database;
   }
 
