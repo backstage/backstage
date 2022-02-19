@@ -211,11 +211,11 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     for (const entity of entities) {
       if (entity.relations) {
         for (const relation of entity.relations) {
-          if (!relation.targetRef) {
+          if (!relation.targetRef && relation.target) {
             // This is the case where an old-form entity, not yet stitched with
             // the updated code, was in the database
             relation.targetRef = stringifyEntityRef(relation.target);
-          } else if (!relation.target) {
+          } else if (!relation.target && relation.targetRef) {
             // This is the case where a new-form entity, stitched with the
             // updated code, was in the database but we still want to produce
             // the old data shape as well for compatibility reasons

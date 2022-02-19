@@ -278,6 +278,8 @@ sqlite
 squidfunk
 src
 stdout
+stringify
+stringified
 subcomponent
 subcomponents
 subkey
