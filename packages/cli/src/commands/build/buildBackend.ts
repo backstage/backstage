@@ -35,7 +35,10 @@ export async function buildBackend(options: BuildBackendOptions) {
   const pkg = await fs.readJson(resolvePath(targetDir, 'package.json'));
 
   // We build the target package without generating type declarations.
-  await buildPackage({ outputs: new Set([Output.cjs]) });
+  await buildPackage({
+    targetDir: options.targetDir,
+    outputs: new Set([Output.cjs]),
+  });
 
   const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-bundle'));
   try {
