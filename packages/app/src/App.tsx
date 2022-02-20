@@ -84,7 +84,7 @@ import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
-import { techDocsPage } from './components/techdocs/TechDocsPage';
+import { techDocsPage } from '@backstage/plugin-techdocs-mkdocs';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';

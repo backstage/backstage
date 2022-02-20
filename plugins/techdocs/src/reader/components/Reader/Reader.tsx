@@ -19,6 +19,7 @@ import { Grid, makeStyles } from '@material-ui/core';
 
 import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { MkDocsContent } from '@backstage/plugin-techdocs-mkdocs';
 
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
@@ -44,7 +45,7 @@ type TechDocsReaderPageProps = PropsWithChildren<{
 
 const TechDocsReaderPage = ({
   withSearch = true,
-  children,
+  children = <MkDocsContent />,
 }: TechDocsReaderPageProps) => {
   const classes = useStyles();
   const { entityRef } = useTechDocsReader();
