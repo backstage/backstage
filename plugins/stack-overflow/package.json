@@ -1,0 +1,56 @@
+{
+  "name": "@backstage/plugin-stack-overflow",
+  "version": "0.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "scripts": {
+    "build": "backstage-cli plugin:build",
+    "start": "backstage-cli plugin:serve",
+    "lint": "backstage-cli lint",
+    "test": "backstage-cli test",
+    "diff": "backstage-cli plugin:diff",
+    "prepack": "backstage-cli prepack",
+    "postpack": "backstage-cli postpack",
+    "clean": "backstage-cli clean"
+  },
+  "dependencies": {
+    "@backstage/core-components": "^0.8.8",
+    "@backstage/plugin-home": "^0.4.15",
+    "@backstage/core-plugin-api": "^0.6.0",
+    "@backstage/search-common": "^0.2.2",
+    "@backstage/config": "^0.1.13",
+    "@backstage/theme": "^0.2.14",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.57",
+    "qs": "^6.10.3",
+    "cross-fetch": "^3.0.6",
+    "lodash": "^4.17.21",
+    "react-use": "^17.2.4",
+    "@testing-library/jest-dom": "^5.10.1"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.13.2-next.0",
+    "@backstage/core-app-api": "^0.5.2",
+    "@backstage/dev-utils": "^0.2.21-next.0",
+    "@backstage/test-utils": "^0.2.4",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^13.1.8",
+    "@types/jest": "*",
+    "@types/node": "*",
+    "msw": "^0.35.0",
+    "cross-fetch": "^3.0.6"
+  },
+  "files": [
+    "dist"
+  ]
+}
