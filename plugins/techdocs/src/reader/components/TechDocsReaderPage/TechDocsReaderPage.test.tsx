@@ -28,7 +28,7 @@ import {
   TechDocsApi,
   techdocsStorageApiRef,
   TechDocsStorageApi,
-} from '../../api';
+} from '../../../api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search';
 
@@ -40,7 +40,7 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-jest.mock('./TechDocsReaderPageHeader', () => {
+jest.mock('../TechDocsReaderPageHeader', () => {
   return {
     __esModule: true,
     TechDocsReaderPageHeader: () => <div />,

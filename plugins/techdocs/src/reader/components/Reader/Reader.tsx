@@ -40,7 +40,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from '@backstage/core-components';
 
-import { techdocsStorageApiRef } from '../../api';
+import { techdocsStorageApiRef } from '../../../api';
 
 import {
   addBaseUrl,
@@ -56,11 +56,11 @@ import {
   scrollIntoAnchor,
   transform as transformer,
   copyToClipboard,
-} from '../transformers';
+} from '../../transformers';
 
-import { TechDocsSearch } from '../../search';
-import { TechDocsStateIndicator } from './TechDocsStateIndicator';
-import { useReaderState } from './useReaderState';
+import { TechDocsSearch } from '../../../search';
+import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
+import { useReaderState } from '../useReaderState';
 
 /**
  * Props for {@link Reader}

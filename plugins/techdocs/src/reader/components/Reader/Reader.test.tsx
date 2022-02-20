@@ -22,7 +22,7 @@ import {
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
-import { TechDocsStorageApi, techdocsStorageApiRef } from '../../api';
+import { TechDocsStorageApi, techdocsStorageApiRef } from '../../../api';
 import { Reader } from './Reader';
 import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search';
