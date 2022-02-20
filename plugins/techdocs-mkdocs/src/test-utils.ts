@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
-export * from './MkDocsContent';
-export * from './MkDocsContentTransformers';
-export * from './techDocsPage';
+import { ReactElement } from 'react';
+import ReactDOM from 'react-dom';
+
+export const useTechDocsReader = jest.fn().mockReturnValue({
+  path: 'test',
+  entityRef: { kind: '', namespace: '', name: '' },
+});
+
+jest.mock('@backstage/core-plugin-api', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api'),
+  useTechDocsReader,
+}));
+
+export const createDom = (element: ReactElement) => {
+  const dom = document.createElement('html');
+  ReactDOM.render(element, dom);
+  return dom;
+};

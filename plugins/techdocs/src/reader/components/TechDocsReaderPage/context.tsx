@@ -53,9 +53,10 @@ export const TechDocsReaderPageProvider = ({
     [kind, name, namespace],
   );
 
-  const { value: techdocsMetadataValue } = useAsync(async () => {
-    return await techdocsApi.getTechDocsMetadata(entityRef);
-  }, [entityRef, techdocsApi]);
+  const { value: techdocsMetadataValue, error: techddocsMetadataError } =
+    useAsync(async () => {
+      return await techdocsApi.getTechDocsMetadata(entityRef);
+    }, [entityRef, techdocsApi]);
 
   const { value: entityMetadataValue, error: entityMetadataError } =
     useAsync(async () => {
@@ -69,7 +70,7 @@ export const TechDocsReaderPageProvider = ({
     techdocsMetadataValue,
   };
 
-  if (entityMetadataError) {
+  if (techddocsMetadataError || entityMetadataError) {
     return <NotFoundErrorPage />;
   }
 

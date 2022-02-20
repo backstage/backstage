@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-export * from './MkDocsContent';
-export * from './MkDocsContentTransformers';
-export * from './techDocsPage';
+import { useTechDocsBaseUrl } from '../hooks';
+
+export const SourceTransformer = () => {
+  useTechDocsBaseUrl('source', 'src');
+  return null;
+};
