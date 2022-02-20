@@ -19,9 +19,9 @@ import { Progress } from '@backstage/core-components';
 import { CircularProgress, Button, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
-import { TechDocsBuildLogs } from './TechDocsBuildLogs';
-import { TechDocsNotFound } from './TechDocsNotFound';
-import { useTechDocsReader } from './Reader';
+import { TechDocsBuildLogs } from '../TechDocsBuildLogs';
+import { TechDocsNotFound } from '../TechDocsNotFound';
+import { useTechDocsReader } from '../Reader';
 
 const useStyles = makeStyles(theme => ({
   root: {

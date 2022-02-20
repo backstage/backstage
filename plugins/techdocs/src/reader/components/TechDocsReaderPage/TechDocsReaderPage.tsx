@@ -18,13 +18,15 @@ import React, { useCallback, useState } from 'react';
 import { useOutlet } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import { Reader } from './Reader';
-import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
-import { techdocsApiRef } from '../../api';
-import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
+
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useApi, useApp } from '@backstage/core-plugin-api';
 import { Page, Content } from '@backstage/core-components';
+
+import { techdocsApiRef } from '../../../api';
+import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
+import { Reader } from '../Reader';
+import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
 
 /**
  * Helper function that gives the children of {@link TechDocsReaderPage} access to techdocs and entity metadata
