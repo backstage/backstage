@@ -15,28 +15,40 @@
  */
 import React from 'react';
 import { TechDocsReaderPage } from './TechDocsReaderPage';
-import { render, act } from '@testing-library/react';
-import { ConfigReader } from '@backstage/config';
+import { render, waitFor } from '@testing-library/react';
+
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+import { ConfigReader } from '@backstage/config';
 import { Header } from '@backstage/core-components';
+import { ApiProvider } from '@backstage/core-app-api';
+import { searchApiRef } from '@backstage/plugin-search';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+
 import {
   techdocsApiRef,
   TechDocsApi,
   techdocsStorageApiRef,
   TechDocsStorageApi,
 } from '../../../api';
-import { ApiProvider } from '@backstage/core-app-api';
-import { searchApiRef } from '@backstage/plugin-search';
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
-    useParams: jest.fn(),
+    useParams: jest.fn().mockReturnValue({
+      entityRef: 'Component::backstage',
+    }),
+  };
+});
+
+jest.mock('@backstage/plugin-techdocs-mkdocs', () => {
+  const actual = jest.requireActual('@backstage/plugin-techdocs-mkdocs');
+  return {
+    ...actual,
+    techDocsPage: <div data-testid="techdocs-content" />,
   };
 });
 
@@ -47,129 +59,76 @@ jest.mock('../TechDocsReaderPageHeader', () => {
   };
 });
 
-const { useParams }: { useParams: jest.Mock } =
-  jest.requireMock('react-router-dom');
 global.scroll = jest.fn();
 
+const scmIntegrationsApi = ScmIntegrationsApi.fromConfig(
+  new ConfigReader({ integrations: {} }),
+);
+
+const techdocsApi: Partial<TechDocsApi> = {
+  getEntityMetadata: jest.fn().mockResolvedValue({
+    apiVersion: 'v1',
+    kind: 'Component',
+    metadata: {
+      name: 'backstage',
+    },
+  }),
+  getTechDocsMetadata: jest.fn().mockResolvedValue({
+    site_name: 'Backstage',
+    site_description: 'Backstage is an open-source developer portal.',
+  }),
+};
+
+const techdocsStorageApi: Partial<TechDocsStorageApi> = {
+  getEntityDocs: jest.fn().mockResolvedValue('<html />'),
+  getBaseUrl: jest.fn().mockResolvedValue('https://backstage.io/docs'),
+  getApiOrigin: jest.fn().mockResolvedValue('backstage.io'),
+};
+
+const searchApi = {
+  query: jest.fn().mockResolvedValue({ results: [] }),
+};
+
+const apiRegistry = TestApiRegistry.from(
+  [scmIntegrationsApiRef, scmIntegrationsApi],
+  [techdocsApiRef, techdocsApi],
+  [techdocsStorageApiRef, techdocsStorageApi],
+  [searchApiRef, searchApi],
+);
+
 describe('<TechDocsReaderPage />', () => {
-  it('should render techdocs page', async () => {
-    useParams.mockReturnValue({
-      entityRef: 'Component::backstage',
-    });
-
-    const scmIntegrationsApi: ScmIntegrationsApi =
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {},
-        }),
-      );
-    const techdocsApi: Partial<TechDocsApi> = {
-      getEntityMetadata: () =>
-        Promise.resolve({
-          apiVersion: 'v1',
-          kind: 'Component',
-          metadata: {
-            name: 'backstage',
-          },
-        }),
-      getTechDocsMetadata: () =>
-        Promise.resolve({
-          site_name: 'string',
-          site_description: 'string',
-        }),
-    };
-
-    const techdocsStorageApi: Partial<TechDocsStorageApi> = {
-      getEntityDocs: (): Promise<string> => Promise.resolve('String'),
-      getBaseUrl: (): Promise<string> => Promise.resolve('String'),
-      getApiOrigin: (): Promise<string> => Promise.resolve('String'),
-    };
-    const searchApi = {
-      query: () =>
-        Promise.resolve({
-          results: [],
-        }),
-    };
-    const apiRegistry = TestApiRegistry.from(
-      [scmIntegrationsApiRef, scmIntegrationsApi],
-      [techdocsApiRef, techdocsApi],
-      [techdocsStorageApiRef, techdocsStorageApi],
-      [searchApiRef, searchApi],
+  it('should render default techdocs page', async () => {
+    const rendered = render(
+      wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <TechDocsReaderPage />
+        </ApiProvider>,
+      ),
     );
 
-    await act(async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apiRegistry}>
-            <TechDocsReaderPage />
-          </ApiProvider>,
-        ),
-      );
+    await waitFor(() => {
       expect(rendered.getByTestId('techdocs-content')).toBeInTheDocument();
     });
   });
 
   it('should render techdocs page with custom header', async () => {
-    useParams.mockReturnValue({
-      entityRef: 'Component::backstage',
-    });
-
-    const scmIntegrationsApi: ScmIntegrationsApi =
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {},
-        }),
-      );
-    const techdocsApi: Partial<TechDocsApi> = {
-      getEntityMetadata: () =>
-        Promise.resolve({
-          apiVersion: 'v1',
-          kind: 'Component',
-          metadata: {
-            name: 'backstage',
-          },
-        }),
-      getTechDocsMetadata: () =>
-        Promise.resolve({
-          site_name: 'string',
-          site_description: 'string',
-        }),
-    };
-
-    const techdocsStorageApi: Partial<TechDocsStorageApi> = {
-      getEntityDocs: (): Promise<string> => Promise.resolve('String'),
-      getBaseUrl: (): Promise<string> => Promise.resolve('String'),
-      getApiOrigin: (): Promise<string> => Promise.resolve('String'),
-    };
-    const searchApi = {
-      query: () =>
-        Promise.resolve({
-          results: [],
-        }),
-    };
-    const apiRegistry = TestApiRegistry.from(
-      [scmIntegrationsApiRef, scmIntegrationsApi],
-      [techdocsApiRef, techdocsApi],
-      [techdocsStorageApiRef, techdocsStorageApi],
-      [searchApiRef, searchApi],
+    const rendered = render(
+      wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <TechDocsReaderPage>
+            {({ techdocsMetadataValue }) => (
+              <Header
+                type="documentation"
+                title="A custom header"
+                subtitle={techdocsMetadataValue?.site_name}
+              />
+            )}
+          </TechDocsReaderPage>
+        </ApiProvider>,
+      ),
     );
 
-    await act(async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apiRegistry}>
-            <TechDocsReaderPage>
-              {({ techdocsMetadataValue }) => (
-                <Header
-                  type="documentation"
-                  title="A custom header"
-                  subtitle={techdocsMetadataValue?.site_name}
-                />
-              )}
-            </TechDocsReaderPage>
-          </ApiProvider>,
-        ),
-      );
+    await waitFor(() => {
       expect(rendered.getByText('A custom header')).toBeInTheDocument();
     });
   });
