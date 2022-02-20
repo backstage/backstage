@@ -118,6 +118,7 @@ function createPage({
             namespace: 'default',
             name: 'my-docs',
           }}
+          withSearch={false}
         />
       );
     }
