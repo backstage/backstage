@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export * from './MkDocsContent';
-export * from './MkDocsContentTransformers';
-export * from './techDocsPage';
+import { RuleFunction } from './rules';
+
+export const animation: RuleFunction = () => `
+  /*
+    Disable CSS animations on link colors as they lead to issues in dark mode.
+    The dark mode color theme is applied later and theirfore there is always an animation from light to dark mode when navigation between pages.
+  */
+  .md-dialog, .md-nav__link, .md-footer__link, .md-typeset a, .md-typeset a::before, .md-typeset .headerlink {
+    transition: none;
+  }
+`;

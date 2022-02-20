@@ -24,6 +24,20 @@ import {
   TechDocsShadowDomHooks,
 } from '@backstage/plugin-techdocs';
 
+import {
+  StylesTransformer,
+  ScriptTransformer,
+  ScrollTransformer,
+  HeaderTransformer,
+  FooterTransformer,
+  DrawerTransformer,
+  SidebarTransformer,
+  AnchorTransformer,
+  ImageTransformer,
+  SourceTransformer,
+  CodeTransformer,
+} from '../MkDocsContentTransformers';
+
 import { beforeSanitizeElements, afterSanitizeAttributes } from './hooks';
 
 export const MkDocsContent = () => {
@@ -57,6 +71,18 @@ export const MkDocsContent = () => {
       config={config}
       hooks={hooks}
       onAttached={onReady}
-    />
+    >
+      <StylesTransformer />
+      <ScriptTransformer />
+      <ScrollTransformer />
+      <HeaderTransformer />
+      <FooterTransformer />
+      <DrawerTransformer />
+      <SidebarTransformer />
+      <AnchorTransformer />
+      <ImageTransformer />
+      <SourceTransformer />
+      <CodeTransformer />
+    </TechDocsShadowDom>
   );
 };

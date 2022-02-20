@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export * from './MkDocsContent';
-export * from './MkDocsContentTransformers';
-export * from './techDocsPage';
+import { RuleFunction } from './rules';
+
+export const reset: RuleFunction = ({ theme }) => `
+  body {
+    --md-text-color: var(--md-default-fg-color);
+    --md-text-link-color: var(--md-accent-fg-color);
+    --md-text-font-family: ${theme.typography.fontFamily};
+    font-family: var(--md-text-font-family);
+    background-color: unset;
+  }
+`;

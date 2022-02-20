@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
-export * from './MkDocsContent';
-export * from './MkDocsContentTransformers';
-export * from './techDocsPage';
+import { useEffect } from 'react';
+import { useTechDocsShadowDom } from '@backstage/plugin-techdocs';
+
+const NAV_TITLE_SELECTOR = '.md-nav__title';
+
+/**
+ * Disable MkDocs drawer toggling ('for' attribute => checkbox mechanism)
+ */
+export const DrawerTransformer = () => {
+  const dom = useTechDocsShadowDom();
+
+  useEffect(() => {
+    if (!dom) return;
+    dom.querySelector(NAV_TITLE_SELECTOR)?.removeAttribute('for');
+  }, [dom]);
+
+  return null;
+};
