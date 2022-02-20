@@ -14,72 +14,74 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import React from 'react';
+import { render, waitFor } from '@testing-library/react';
+
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import { act, render } from '@testing-library/react';
-import React from 'react';
-import { TechDocsStorageApi, techdocsStorageApiRef } from '../../../api';
-import { Reader } from './Reader';
+import { ConfigReader } from '@backstage/config';
 import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
+
+import { TechDocsStorageApi, techdocsStorageApiRef } from '../../../api';
+import { Reader } from './Reader';
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
-    useParams: jest.fn(),
+    useParams: jest.fn().mockReturnValue({
+      entityRef: 'Component::backstage',
+    }),
   };
 });
 
-const { useParams }: { useParams: jest.Mock } =
-  jest.requireMock('react-router-dom');
+const searchApi = {
+  query: jest.fn().mockResolvedValue({ results: [] }),
+};
+
+const scmIntegrationsApi = ScmIntegrationsApi.fromConfig(
+  new ConfigReader({
+    integrations: {},
+  }),
+);
+
+const techdocsStorageApi: Partial<TechDocsStorageApi> = {
+  getEntityDocs: jest.fn().mockResolvedValue('<html />'),
+  syncEntityDocs: jest.fn().mockResolvedValue('cached'),
+};
+
+const apiRegistry = TestApiRegistry.from(
+  [searchApiRef, searchApi],
+  [scmIntegrationsApiRef, scmIntegrationsApi],
+  [techdocsStorageApiRef, techdocsStorageApi],
+);
 
 describe('<Reader />', () => {
   it('should render Reader content', async () => {
-    useParams.mockReturnValue({
-      entityRef: 'Component::backstage',
-    });
+    const id = 'techdocs-content-shadowroot';
 
-    const scmIntegrationsApi: ScmIntegrationsApi =
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {},
-        }),
-      );
-    const techdocsStorageApi: Partial<TechDocsStorageApi> = {};
-    const searchApi = {
-      query: () =>
-        Promise.resolve({
-          results: [],
-        }),
-    };
-    const apiRegistry = TestApiRegistry.from(
-      [scmIntegrationsApiRef, scmIntegrationsApi],
-      [techdocsStorageApiRef, techdocsStorageApi],
-      [searchApiRef, searchApi],
+    const rendered = render(
+      wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <Reader
+            entityRef={{
+              kind: 'Component',
+              namespace: 'default',
+              name: 'example',
+            }}
+          >
+            <div data-testid={id} />
+          </Reader>
+        </ApiProvider>,
+      ),
     );
 
-    await act(async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apiRegistry}>
-            <Reader
-              entityRef={{
-                kind: 'Component',
-                namespace: 'default',
-                name: 'example',
-              }}
-            />
-          </ApiProvider>,
-        ),
-      );
-      expect(
-        rendered.getByTestId('techdocs-content-shadowroot'),
-      ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(rendered.getByTestId(id)).toBeInTheDocument();
     });
   });
 });
