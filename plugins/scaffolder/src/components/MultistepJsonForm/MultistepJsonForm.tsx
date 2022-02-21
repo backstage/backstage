@@ -123,7 +123,7 @@ export const MultistepJsonForm = ({
   const featureFlagApi = useApi(featureFlagsApiRef);
   const featureFlagKey = 'backstage:featureFlag';
   const filterOutProperties = (schema: JsonObject): JsonObject => {
-    const removedPropertiesKeys: Array<string> = [];
+    const removedPropertyKeys: Array<string> = [];
     if (schema.properties) {
       schema.properties = Object.fromEntries(
         Object.entries(schema.properties).filter(([key, value]) => {
@@ -131,16 +131,16 @@ export const MultistepJsonForm = ({
             if (featureFlagApi.isActive(value[featureFlagKey])) {
               return true;
             }
-            removedPropertiesKeys.push(key);
+            removedPropertyKeys.push(key);
             return false;
           }
           return true;
         }),
       );
 
-      // remove the feature flag property keys from required if they are not active
-      if (Array.isArray(schema.required) && removedPropertiesKeys.length > 0) {
-        for (const property of removedPropertiesKeys) {
+      // remove the feature flag property key from required if they are not active
+      if (Array.isArray(schema.required) && removedPropertyKeys.length > 0) {
+        for (const property of removedPropertyKeys) {
           const index = schema.required.findIndex(r => r === property);
           if (index > -1) {
             schema.required.splice(index, 1);
