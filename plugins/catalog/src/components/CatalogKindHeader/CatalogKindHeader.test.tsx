@@ -24,8 +24,13 @@ import {
   MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
 import { ApiProvider } from '@backstage/core-app-api';
-import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import {
+  MockErrorApi,
+  renderWithEffects,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { CatalogKindHeader } from './CatalogKindHeader';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 const entities: Entity[] = [
   {
@@ -57,21 +62,24 @@ const entities: Entity[] = [
     },
   },
 ];
-
-const apis = TestApiRegistry.from([
-  catalogApiRef,
-  {
-    getEntityFacets: jest.fn().mockResolvedValue({
-      facets: {
-        kind: [
-          { value: 'Component', count: 2 },
-          { value: 'Template', count: 1 },
-          { value: 'System', count: 1 },
-        ],
-      },
-    } as GetEntityFacetsResponse),
-  },
-]);
+const errorApi = new MockErrorApi();
+const apis = TestApiRegistry.from(
+  [
+    catalogApiRef,
+    {
+      getEntityFacets: jest.fn().mockResolvedValue({
+        facets: {
+          kind: [
+            { value: 'Component', count: 2 },
+            { value: 'Template', count: 1 },
+            { value: 'System', count: 1 },
+          ],
+        },
+      } as GetEntityFacetsResponse),
+    },
+  ],
+  [errorApiRef, errorApi],
+);
 
 describe('<CatalogKindHeader />', () => {
   it('renders available kinds', async () => {

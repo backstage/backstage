@@ -21,6 +21,7 @@ import { catalogApiRef } from '../api';
 /**
  * Retrieve a list of unique entity kinds present in the catalog
  * @public
+ * @deprecated and will be removed due to low utility value.
  */
 export function useEntityKinds() {
   const catalogApi = useApi(catalogApiRef);

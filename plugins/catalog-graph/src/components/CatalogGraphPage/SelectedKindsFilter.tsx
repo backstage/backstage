@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
-import { useEntityKinds } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   Box,
   Checkbox,
@@ -28,6 +28,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useCallback, useEffect, useMemo } from 'react';
+import useAsync from 'react-use/lib/useAsync';
 
 const useStyles = makeStyles({
   formControl: {
@@ -43,7 +44,13 @@ export type Props = {
 export const SelectedKindsFilter = ({ value, onChange }: Props) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
-  const { error, kinds } = useEntityKinds();
+  const catalogApi = useApi(catalogApiRef);
+
+  const { error, value: kinds } = useAsync(async () => {
+    return await catalogApi
+      .getEntityFacets({ facets: ['kind'] })
+      .then(response => response.facets.kind?.map(f => f.value).sort() || []);
+  });
 
   useEffect(() => {
     if (error) {
