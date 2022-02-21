@@ -27,7 +27,7 @@ describe('simplifyMkdocsFooter', () => {
       },
     );
 
-    expect(shadowDom.querySelector('.md-footer-copyright')).toBeTruthy();
+    expect(shadowDom.querySelector('.md-footer .md-copyright')).toBeTruthy();
   });
 
   it('does remove mkdocs copyright', async () => {
@@ -39,6 +39,6 @@ describe('simplifyMkdocsFooter', () => {
       },
     );
 
-    expect(shadowDom.querySelector('.md-footer-copyright')).toBeFalsy();
+    expect(shadowDom.querySelector('.md-footer .md-copyright')).toBeFalsy();
   });
 });

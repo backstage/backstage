@@ -17,7 +17,7 @@ bundle into the `packages/techdocs-cli/dist` which is then published with the
 ```sh
 # From the root of this repository run
 # NOTE: This will build the techdocs-cli-embedded-app and copy the output into the cli dist directory
-yarn build --scope @techdocs/cli
+yarn workspace @techdocs/cli build
 
 # Now execute the binary
 packages/techdocs-cli/bin/techdocs-cli

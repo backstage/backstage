@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-import { EntityName, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { Header, HeaderLabel } from '@backstage/core-components';
+import React, { PropsWithChildren } from 'react';
+import CodeIcon from '@material-ui/icons/Code';
+
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { Header, HeaderLabel } from '@backstage/core-components';
+import { EntityName, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   EntityRefLink,
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import CodeIcon from '@material-ui/icons/Code';
-import React from 'react';
+
 import { rootRouteRef } from '../../routes';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 
-export type TechDocsPageHeaderProps = {
+export type TechDocsPageHeaderProps = PropsWithChildren<{
   entityRef: EntityName;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
-};
+}>;
 
 export const TechDocsPageHeader = ({
   entityRef,
   entityMetadata,
   techDocsMetadata,
+  children,
 }: TechDocsPageHeaderProps) => {
   const { name } = entityRef;
 
@@ -107,6 +110,7 @@ export const TechDocsPageHeader = ({
       typeLink={docsRootLink}
     >
       {labels}
+      {children}
     </Header>
   );
 };
