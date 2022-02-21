@@ -46,6 +46,7 @@ import {
   addBaseUrl,
   addGitFeedbackLink,
   addLinkClickListener,
+  addSidebarToggle,
   injectCss,
   onCssReady,
   removeMkdocsHeader,
@@ -74,8 +75,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     marginBottom: theme.spacing(1),
     marginLeft: 'calc(16rem + 1.2rem)',
     '@media screen and (max-width: 76.1875em)': {
-      marginLeft: 'calc(10rem + 0.8rem)',
-      maxWidth: 'calc(100% - 10rem - 1.6rem)',
+      marginLeft: '0',
+      maxWidth: '100%',
     },
   },
 }));
@@ -171,11 +172,20 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
     if (!dom || !sidebars) return;
     // set sidebar height so they don't initially render in wrong position
     const mdTabs = dom.querySelector('.md-container > .md-tabs');
+    const sidebarsCollapsed = window.matchMedia(
+      'screen and (max-width: 76.1875em)',
+    ).matches;
+    const newTop = Math.max(dom.getBoundingClientRect().top, 0);
     sidebars.forEach(sidebar => {
-      const newTop = Math.max(dom.getBoundingClientRect().top, 0);
-      sidebar.style.top = mdTabs
-        ? `${newTop + mdTabs.getBoundingClientRect().height}px`
-        : `${newTop}px`;
+      if (sidebarsCollapsed) {
+        sidebar.style.top = '0px';
+      } else if (mdTabs) {
+        sidebar.style.top = `${
+          newTop + mdTabs.getBoundingClientRect().height
+        }px`;
+      } else {
+        sidebar.style.top = `${newTop}px`;
+      }
     });
   }, [dom, sidebars]);
 
@@ -222,6 +232,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           path: contentPath,
         }),
         rewriteDocLinks(),
+        addSidebarToggle(),
         removeMkdocsHeader(),
         simplifyMkdocsFooter(),
         addGitFeedbackLink(scmIntegrationsApi),
@@ -489,21 +500,34 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               }
 
               .md-sidebar--primary {
-                width: 10rem !important;
-                left: ${isPinned ? '242px' : '72px'} !important;
+                width: 12.1rem !important;
+                z-index: 200;
+                left: ${
+                  isPinned ? 'calc(224px - 12.1rem)' : 'calc(72px - 12.1rem)'
+                } !important;
               }
               .md-sidebar--secondary:not([hidden]) {
                 display: none;
               }
 
               .md-content {
-                max-width: calc(100% - 10rem);
-                margin-left: 10rem;
+                max-width: 100%;
+                margin-left: 0;
+              }
+
+              .md-header__button {
+                margin: 0.4rem 0;
+                margin-left: 0.4rem;
+                padding: 0;
+              }
+
+              .md-overlay {
+                left: 0;
               }
 
               .md-footer {
                 position: static;
-                padding-left: 10rem;
+                padding-left: 0;
               }
               .md-footer-nav__link {
                 /* footer links begin to overlap at small sizes without setting width */
@@ -513,7 +537,8 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
 
             @media screen and (max-width: 600px) {
               .md-sidebar--primary {
-                left: 1rem !important;
+                left: -12.1rem !important;
+                width: 12.1rem;
               }
             }
           `,
