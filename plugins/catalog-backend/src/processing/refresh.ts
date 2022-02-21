@@ -16,12 +16,14 @@
 
 /**
  * Function that returns the catalog refresh interval in seconds.
+ * @public
  */
 export type RefreshIntervalFunction = () => number;
 
 /**
  * Creates a function that returns a random refresh interval between minSeconds and maxSeconds.
  * @returns A {@link RefreshIntervalFunction} that provides the next refresh interval
+ * @public
  */
 export function createRandomRefreshInterval(options: {
   minSeconds: number;

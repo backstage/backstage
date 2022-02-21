@@ -41,6 +41,8 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
  * You may also explicitly specify the source branch:
  *
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
+ *
+ * @public
  **/
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;

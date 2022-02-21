@@ -25,6 +25,7 @@ import { CatalogProcessor } from './types';
 
 const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
+/** @public */
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   constructor(
     private readonly opts: { scmIntegrationRegistry: ScmIntegrationRegistry },

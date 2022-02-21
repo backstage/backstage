@@ -19,6 +19,7 @@ import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { CatalogProcessorResult } from './types';
 import { EntityRelationSpec } from '../../processing/types';
 
+/** @public */
 export function notFoundError(
   atLocation: LocationSpec,
   message: string,
@@ -30,6 +31,7 @@ export function notFoundError(
   };
 }
 
+/** @public */
 export function inputError(
   atLocation: LocationSpec,
   message: string,
@@ -41,6 +43,7 @@ export function inputError(
   };
 }
 
+/** @public */
 export function generalError(
   atLocation: LocationSpec,
   message: string,
@@ -48,6 +51,7 @@ export function generalError(
   return { type: 'error', location: atLocation, error: new Error(message) };
 }
 
+/** @public */
 export function location(
   newLocation: LocationSpec,
   optional?: boolean,
@@ -55,6 +59,7 @@ export function location(
   return { type: 'location', location: newLocation, optional };
 }
 
+/** @public */
 export function entity(
   atLocation: LocationSpec,
   newEntity: Entity,
@@ -62,6 +67,7 @@ export function entity(
   return { type: 'entity', location: atLocation, entity: newEntity };
 }
 
+/** @public */
 export function relation(spec: EntityRelationSpec): CatalogProcessorResult {
   return { type: 'relation', relation: spec };
 }

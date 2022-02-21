@@ -38,6 +38,7 @@ type GraphQL = typeof graphql;
 
 /**
  * Extracts teams and users out of a GitHub org.
+ * @public
  */
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;

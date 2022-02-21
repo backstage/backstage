@@ -28,6 +28,7 @@ import {
 
 const glob = promisify(g);
 
+/** @public */
 export class FileReaderProcessor implements CatalogProcessor {
   getProcessorName(): string {
     return 'FileReaderProcessor';

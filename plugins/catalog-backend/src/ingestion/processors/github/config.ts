@@ -86,6 +86,7 @@ export function readGithubConfig(config: Config): ProviderConfig[] {
 
 /**
  * The configuration parameters for a multi-org GitHub processor.
+ * @public
  */
 export type GithubMultiOrgConfig = Array<{
   /**

@@ -21,12 +21,16 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import yaml from 'yaml';
 import { CatalogProcessor } from './types';
 
+/** @public */
 export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
+
+/** @public */
 export type PlaceholderResolverResolveUrl = (
   url: string,
   base: string,
 ) => string;
 
+/** @public */
 export type PlaceholderResolverParams = {
   key: string;
   value: JsonValue;
@@ -35,10 +39,12 @@ export type PlaceholderResolverParams = {
   resolveUrl: PlaceholderResolverResolveUrl;
 };
 
+/** @public */
 export type PlaceholderResolver = (
   params: PlaceholderResolverParams,
 ) => Promise<JsonValue>;
 
+/** @public */
 export type PlaceholderProcessorOptions = {
   resolvers: Record<string, PlaceholderResolver>;
   reader: UrlReader;
@@ -48,6 +54,7 @@ export type PlaceholderProcessorOptions = {
 /**
  * Traverses raw entity JSON looking for occurrences of $-prefixed placeholders
  * that it then fills in with actual data.
+ * @public
  */
 export class PlaceholderProcessor implements CatalogProcessor {
   constructor(private readonly options: PlaceholderProcessorOptions) {}

@@ -18,6 +18,9 @@ import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { EntityRelationSpec } from '../../processing/types';
 
+/**
+ * @public
+ */
 export type CatalogProcessor = {
   /**
    * A unique identifier for the Catalog Processor.
@@ -116,6 +119,7 @@ export type CatalogProcessor = {
  * A parser, that is able to take the raw catalog descriptor data and turn it
  * into the actual result pieces. The default implementation performs a YAML
  * document parsing.
+ * @public
  */
 export type CatalogProcessorParser = (options: {
   data: Buffer;
@@ -150,8 +154,10 @@ export interface CatalogProcessorCache {
   set<ItemType extends JsonValue>(key: string, value: ItemType): Promise<void>;
 }
 
+/** @public */
 export type CatalogProcessorEmit = (generated: CatalogProcessorResult) => void;
 
+/** @public */
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
@@ -159,24 +165,28 @@ export type CatalogProcessorLocationResult = {
   optional?: boolean;
 };
 
+/** @public */
 export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
   location: LocationSpec;
 };
 
+/** @public */
 export type CatalogProcessorRelationResult = {
   type: 'relation';
   relation: EntityRelationSpec;
   entityRef?: string;
 };
 
+/** @public */
 export type CatalogProcessorErrorResult = {
   type: 'error';
   error: Error;
   location: LocationSpec;
 };
 
+/** @public */
 export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
   | CatalogProcessorEntityResult

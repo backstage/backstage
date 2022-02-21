@@ -32,6 +32,7 @@ import {
 
 /**
  * Extracts repositories out of an GitLab instance.
+ * @public
  */
 export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;

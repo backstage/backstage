@@ -28,12 +28,13 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { identity, merge, pickBy } from 'lodash';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
-type Options = {
-  integrations: ScmIntegrationRegistry;
-};
-
+/** @public */
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
-  constructor(private readonly options: Options) {}
+  constructor(
+    private readonly options: {
+      integrations: ScmIntegrationRegistry;
+    },
+  ) {}
 
   getProcessorName(): string {
     return 'AnnotateLocationEntityProcessor';

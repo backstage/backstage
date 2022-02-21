@@ -17,6 +17,10 @@
 import { Entity, LocationSpec } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
 
+/**
+ * The location service manages entity locations.
+ * @public
+ */
 export interface LocationService {
   createLocation(
     spec: LocationSpec,
@@ -59,6 +63,9 @@ export interface RefreshService {
   refresh(options: RefreshOptions): Promise<void>;
 }
 
+/**
+ * Interacts with the database to manage locations.
+ * @public */
 export interface LocationStore {
   createLocation(spec: LocationSpec): Promise<Location>;
   listLocations(): Promise<Location[]>;
