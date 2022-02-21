@@ -66,45 +66,37 @@ type EntityInfo = {
  * @public
  */
 export class DefaultTechDocsCollator implements DocumentCollator {
-  protected discovery: PluginEndpointDiscovery;
-  protected locationTemplate: string;
-  private readonly logger: Logger;
-  private readonly catalogClient: CatalogApi;
-  private readonly tokenManager: TokenManager;
-  private readonly parallelismLimit: number;
-  private readonly legacyPathCasing: boolean;
   public readonly type: string = 'techdocs';
   public readonly visibilityPermission = catalogEntityReadPermission;
 
-  /**
-   * @deprecated use static fromConfig method instead.
-   */
-  constructor(options: TechDocsCollatorOptions) {
-    this.discovery = options.discovery;
-    this.locationTemplate =
-      options.locationTemplate || '/docs/:namespace/:kind/:name/:path';
-    this.logger = options.logger;
-    this.catalogClient =
-      options.catalogClient ||
-      new CatalogClient({ discoveryApi: options.discovery });
-    this.parallelismLimit = options.parallelismLimit ?? 10;
-    this.legacyPathCasing = options.legacyPathCasing ?? false;
-    this.tokenManager = options.tokenManager;
-  }
+  private constructor(
+    private readonly legacyPathCasing: boolean,
+    private readonly options: TechDocsCollatorOptions,
+  ) {}
 
   static fromConfig(config: Config, options: TechDocsCollatorOptions) {
     const legacyPathCasing =
       config.getOptionalBoolean(
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
-    return new DefaultTechDocsCollator({ ...options, legacyPathCasing });
+    return new DefaultTechDocsCollator(legacyPathCasing, options);
   }
 
   async execute() {
-    const limit = pLimit(this.parallelismLimit);
-    const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
-    const { token } = await this.tokenManager.getToken();
-    const entities = await this.catalogClient.getEntities(
+    const {
+      parallelismLimit,
+      discovery,
+      tokenManager,
+      catalogClient,
+      locationTemplate,
+      logger,
+    } = this.options;
+    const limit = pLimit(parallelismLimit ?? 10);
+    const techDocsBaseUrl = await discovery.getBaseUrl('techdocs');
+    const { token } = await tokenManager.getToken();
+    const entities = await (
+      catalogClient ?? new CatalogClient({ discoveryApi: discovery })
+    ).getEntities(
       {
         fields: [
           'kind',
@@ -125,7 +117,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       .map((entity: Entity) =>
         limit(async (): Promise<TechDocsDocument[]> => {
           const entityInfo = DefaultTechDocsCollator.handleEntityInfoCasing(
-            this.legacyPathCasing,
+            this.legacyPathCasing ?? false,
             {
               kind: entity.kind,
               namespace: entity.metadata.namespace || 'default',
@@ -150,10 +142,13 @@ export class DefaultTechDocsCollator implements DocumentCollator {
             return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
               title: unescape(doc.title),
               text: unescape(doc.text || ''),
-              location: this.applyArgsToFormat(this.locationTemplate, {
-                ...entityInfo,
-                path: doc.location,
-              }),
+              location: this.applyArgsToFormat(
+                locationTemplate || '/docs/:namespace/:kind/:name/:path',
+                {
+                  ...entityInfo,
+                  path: doc.location,
+                },
+              ),
               path: doc.location,
               ...entityInfo,
               entityTitle: entity.metadata.title,
@@ -167,7 +162,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
               },
             }));
           } catch (e) {
-            this.logger.debug(
+            logger.debug(
               `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
               e,
             );
