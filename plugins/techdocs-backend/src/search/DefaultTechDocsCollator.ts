@@ -39,6 +39,11 @@ interface MkSearchIndexDoc {
   location: string;
 }
 
+/**
+ * Options to configure the TechDocs collator
+ *
+ * @public
+ */
 export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
@@ -55,6 +60,11 @@ type EntityInfo = {
   kind: string;
 };
 
+/**
+ * A search collator responsible for gather and transform TechDocs document to index.
+ *
+ * @public
+ */
 export class DefaultTechDocsCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
