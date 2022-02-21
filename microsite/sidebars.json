@@ -253,7 +253,8 @@
       "permission/overview",
       "permission/getting-started",
       "permission/writing-a-policy",
-      "permission/concepts"
+      "permission/concepts",
+      "permission/integrate-permission-framework-into-your-plugin"
     ],
     "Deployment": [
       "deployment/index",

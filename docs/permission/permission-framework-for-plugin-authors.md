@@ -1,5 +1,5 @@
 ---
-id: bringing-permission-framework-into-your-plugin
+id: integrate-permission-framework-into-your-plugin
 title: Permission Framework for plugin authors
 description: How to get started with the permission framework as a plugin author
 ---
