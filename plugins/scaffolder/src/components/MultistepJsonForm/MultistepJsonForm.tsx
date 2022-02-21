@@ -108,15 +108,8 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
   return reviewData;
 }
 
-export const MultistepJsonForm = ({
-  steps,
-  formData,
-  onChange,
-  onReset,
-  onFinish,
-  fields,
-  widgets,
-}: Props) => {
+export const MultistepJsonForm = (props: Props) => {
+  const { formData, onChange, onReset, onFinish, fields, widgets } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const errorApi = useApi(errorApiRef);
@@ -139,21 +132,21 @@ export const MultistepJsonForm = ({
       );
 
       // remove the feature flag property key from required if they are not active
-      if (Array.isArray(schema.required) && removedPropertyKeys.length > 0) {
-        for (const property of removedPropertyKeys) {
-          const index = schema.required.findIndex(r => r === property);
-          if (index > -1) {
-            schema.required.splice(index, 1);
-          }
-        }
-      }
+      schema.required = Array.isArray(schema.required)
+        ? schema.required?.filter(
+            r => !removedPropertyKeys.includes(r as string),
+          )
+        : schema.required;
     }
     return schema;
   };
 
-  const updatedSteps = steps.filter(s => {
-    const featureFlag = s.schema[featureFlagKey] as string;
-    if (featureFlag && !featureFlagApi.isActive(featureFlag)) {
+  const steps = props.steps.filter(s => {
+    const featureFlag = s.schema[featureFlagKey];
+    if (
+      typeof featureFlag === 'string' &&
+      !featureFlagApi.isActive(featureFlag)
+    ) {
       return null;
     }
     // filter out properties accordingly to the feature flag settings;
@@ -166,7 +159,7 @@ export const MultistepJsonForm = ({
     onReset();
   };
   const handleNext = () => {
-    setActiveStep(Math.min(activeStep + 1, updatedSteps.length));
+    setActiveStep(Math.min(activeStep + 1, steps.length));
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
   const handleCreate = async () => {
@@ -182,7 +175,7 @@ export const MultistepJsonForm = ({
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {updatedSteps.map(({ title, schema, ...formProps }, index) => {
+        {steps.map(({ title, schema, ...formProps }, index) => {
           return (
             <StepUI key={title}>
               <StepLabel
