@@ -30,6 +30,7 @@ export {
   EntityListContext,
   EntityListProvider,
   useEntityListProvider,
+  useEntityList,
 } from './useEntityListProvider';
 export type {
   DefaultEntityFilters,

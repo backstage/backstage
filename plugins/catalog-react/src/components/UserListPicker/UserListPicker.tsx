@@ -36,7 +36,7 @@ import { compact } from 'lodash';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { UserListFilter } from '../../filters';
 import {
-  useEntityListProvider,
+  useEntityList,
   useStarredEntities,
   useEntityOwnership,
 } from '../../hooks';
@@ -136,7 +136,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
     backendEntities,
     queryParameters,
     loading: loadingBackendEntities,
-  } = useEntityListProvider();
+  } = useEntityList();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.

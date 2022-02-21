@@ -27,7 +27,7 @@ import {
 import {
   catalogApiRef,
   EntityKindFilter,
-  useEntityListProvider,
+  useEntityList,
 } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
@@ -59,7 +59,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
       .getEntityFacets({ facets: ['kind'] })
       .then(response => response.facets.kind?.map(f => f.value).sort() || []);
   });
-  const { updateFilters, queryParameters } = useEntityListProvider();
+  const { updateFilters, queryParameters } = useEntityList();
 
   const [selectedKind, setSelectedKind] = useState(
     ([queryParameters.kind].flat()[0] ?? initialFilter).toLocaleLowerCase(

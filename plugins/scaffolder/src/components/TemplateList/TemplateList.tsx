@@ -25,7 +25,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { useEntityListProvider } from '@backstage/plugin-catalog-react';
+import { useEntityList } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 
@@ -44,7 +44,7 @@ export const TemplateList = ({
   TemplateCardComponent,
   group,
 }: TemplateListProps) => {
-  const { loading, error, entities } = useEntityListProvider();
+  const { loading, error, entities } = useEntityList();
   const Card = TemplateCardComponent || TemplateCard;
   const maybeFilteredEntities = group
     ? entities.filter(e => group.filter(e))

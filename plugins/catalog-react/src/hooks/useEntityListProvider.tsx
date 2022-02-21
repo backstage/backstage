@@ -252,14 +252,26 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 /**
  * Hook for interacting with the entity list context provided by the {@link EntityListProvider}.
  * @public
+ * @deprecated use {@link useEntityList} instead.
  */
 export function useEntityListProvider<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)
-    throw new Error(
-      'useEntityListProvider must be used within EntityListProvider',
-    );
+    throw new Error('useEntityList must be used within EntityListProvider');
+  return context;
+}
+
+/**
+ * Hook for interacting with the entity list context provided by the {@link EntityListProvider}.
+ * @public
+ */
+export function useEntityList<
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
+>(): EntityListContextProps<EntityFilters> {
+  const context = useContext(EntityListContext);
+  if (!context)
+    throw new Error('useEntityList must be used within EntityListProvider');
   return context;
 }
