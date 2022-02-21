@@ -34,6 +34,7 @@ import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
+import cloneDeep from 'lodash/cloneDeep';
 import * as fieldOverrides from './FieldOverrides';
 
 const Form = withTheme(MuiTheme);
@@ -115,44 +116,43 @@ export const MultistepJsonForm = (props: Props) => {
   const errorApi = useApi(errorApiRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
   const featureFlagKey = 'backstage:featureFlag';
-  const filterOutProperties = (schema: JsonObject): JsonObject => {
+  const filterOutProperties = (step: Step): Step => {
+    const filteredStep = cloneDeep(step);
     const removedPropertyKeys: Array<string> = [];
-    if (schema.properties) {
-      schema.properties = Object.fromEntries(
-        Object.entries(schema.properties).filter(([key, value]) => {
-          if (value[featureFlagKey]) {
-            if (featureFlagApi.isActive(value[featureFlagKey])) {
-              return true;
+    if (filteredStep.schema.properties) {
+      filteredStep.schema.properties = Object.fromEntries(
+        Object.entries(filteredStep.schema.properties).filter(
+          ([key, value]) => {
+            if (value[featureFlagKey]) {
+              if (featureFlagApi.isActive(value[featureFlagKey])) {
+                return true;
+              }
+              removedPropertyKeys.push(key);
+              return false;
             }
-            removedPropertyKeys.push(key);
-            return false;
-          }
-          return true;
-        }),
+            return true;
+          },
+        ),
       );
 
       // remove the feature flag property key from required if they are not active
-      schema.required = Array.isArray(schema.required)
-        ? schema.required?.filter(
+      filteredStep.schema.required = Array.isArray(filteredStep.schema.required)
+        ? filteredStep.schema.required?.filter(
             r => !removedPropertyKeys.includes(r as string),
           )
-        : schema.required;
+        : filteredStep.schema.required;
     }
-    return schema;
+    return filteredStep;
   };
 
-  const steps = props.steps.filter(s => {
-    const featureFlag = s.schema[featureFlagKey];
-    if (
-      typeof featureFlag === 'string' &&
-      !featureFlagApi.isActive(featureFlag)
-    ) {
-      return null;
-    }
-    // filter out properties accordingly to the feature flag settings;
-    s.schema = filterOutProperties(s.schema);
-    return s;
-  });
+  const steps = props.steps
+    .filter(step => {
+      const featureFlag = step.schema[featureFlagKey];
+      return (
+        typeof featureFlag !== 'string' || featureFlagApi.isActive(featureFlag)
+      );
+    })
+    .map(filterOutProperties);
 
   const handleReset = () => {
     setActiveStep(0);
