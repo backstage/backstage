@@ -113,7 +113,7 @@ describe('ServerPermissionClient', () => {
         tokenManager: ServerTokenManager.noop(),
       }),
     ).toThrowError(
-      'You must configure at least one key in backend.auth.keys if permissions are enabled.',
+      'Backend-to-backend authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/tutorials/backend-to-backend-auth',
     );
   });
 });
