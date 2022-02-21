@@ -188,7 +188,12 @@ async function pinYarnVersion(dir: string) {
 
   await fs.writeFile(
     resolvePath(dir, '.yarnrc.yml'),
-    `nodeLinker: node-modules\nyarnPath: ${yarnPath}\n`,
+    `logFilters:
+  - pattern: "*"
+    level: discard
+nodeLinker: node-modules
+yarnPath: ${yarnPath}
+  `,
   );
 }
 
