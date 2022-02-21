@@ -323,6 +323,16 @@ export type CreateWorkerOptions = {
 };
 
 // @public
+export interface CurrentClaimedTask {
+  // (undocumented)
+  secrets?: TaskSecrets;
+  // (undocumented)
+  spec: TaskSpec;
+  // (undocumented)
+  taskId: string;
+}
+
+// @public
 export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
@@ -514,11 +524,11 @@ export type TaskCompletionState = 'failed' | 'completed';
 // @public
 export interface TaskContext {
   // (undocumented)
-  complete(result: TaskCompletionState, metadata?: JsonValue): Promise<void>;
+  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   done: boolean;
   // (undocumented)
-  emitLog(message: string, metadata?: JsonValue): Promise<void>;
+  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
@@ -536,14 +546,14 @@ export class TaskManager implements TaskContext {
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
-    state: TaskState,
+    task: CurrentClaimedTask,
     storage: TaskStore,
     logger: Logger_2,
   ): TaskManager;
   // (undocumented)
   get done(): boolean;
   // (undocumented)
-  emitLog(message: string, metadata?: JsonObject): Promise<void>;
+  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
@@ -563,15 +573,8 @@ export { TaskSpecV1beta2 };
 
 export { TaskSpecV1beta3 };
 
-// @public
-export interface TaskState {
-  // (undocumented)
-  secrets?: TaskSecrets;
-  // (undocumented)
-  spec: TaskSpec;
-  // (undocumented)
-  taskId: string;
-}
+// @public @deprecated
+export type TaskState = CurrentClaimedTask;
 
 // @public
 export type TaskStatus =

@@ -146,8 +146,8 @@ export interface TaskContext {
   spec: TaskSpec;
   secrets?: TaskSecrets;
   done: boolean;
-  emitLog(message: string, metadata?: JsonValue): Promise<void>;
-  complete(result: TaskCompletionState, metadata?: JsonValue): Promise<void>;
+  emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   getWorkspaceName(): Promise<string>;
 }
 

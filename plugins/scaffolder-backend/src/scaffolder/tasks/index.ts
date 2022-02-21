@@ -15,7 +15,7 @@
  */
 export { DatabaseTaskStore } from './DatabaseTaskStore';
 export { TaskManager } from './StorageTaskBroker';
-export type { TaskState } from './StorageTaskBroker';
+export type { CurrentClaimedTask, TaskState } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
 export type { CreateWorkerOptions } from './TaskWorker';
 export type {
