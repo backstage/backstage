@@ -25,10 +25,12 @@ import {
   Theme,
 } from '@material-ui/core';
 import {
+  catalogApiRef,
   EntityKindFilter,
-  useEntityKinds,
   useEntityListProvider,
 } from '@backstage/plugin-catalog-react';
+import useAsync from 'react-use/lib/useAsync';
+import { useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,7 +53,12 @@ export interface CatalogKindHeaderProps {
 export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   const { initialFilter = 'component' } = props;
   const classes = useStyles();
-  const { kinds: allKinds = [] } = useEntityKinds();
+  const catalogApi = useApi(catalogApiRef);
+  const { value: allKinds } = useAsync(async () => {
+    return await catalogApi
+      .getEntityFacets({ facets: ['kind'] })
+      .then(response => response.facets.kind?.map(f => f.value).sort() || []);
+  });
   const { updateFilters, queryParameters } = useEntityListProvider();
 
   const [selectedKind, setSelectedKind] = useState(
@@ -72,7 +79,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   // including selectedKind if it's unknown - but allows the selectedKind to get clobbered by the
   // more proper catalog kind if it exists.
   const options = [capitalize(selectedKind)]
-    .concat(allKinds)
+    .concat(allKinds ?? [])
     .sort()
     .reduce((acc, kind) => {
       acc[kind.toLocaleLowerCase('en-US')] = kind;
