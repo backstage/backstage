@@ -25,6 +25,7 @@ import {
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
+import { CalendarCard } from '@backstage/plugin-gcalendar-homepage';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
@@ -99,6 +100,9 @@ export const HomePage = () => (
               },
             ]}
           />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <CalendarCard />
         </Grid>
       </Grid>
     </Content>

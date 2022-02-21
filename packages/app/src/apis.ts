@@ -33,7 +33,12 @@ import {
   createApiFactory,
   errorApiRef,
   githubAuthApiRef,
+  googleAuthApiRef,
 } from '@backstage/core-plugin-api';
+import {
+  GCalendarApiClient,
+  gcalendarApiRef,
+} from '@backstage/plugin-gcalendar-homepage';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -41,8 +46,13 @@ export const apis: AnyApiFactory[] = [
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
   }),
-
   ScmAuth.createDefaultApiFactory(),
+
+  createApiFactory({
+    api: gcalendarApiRef,
+    deps: { authApi: googleAuthApiRef },
+    factory: deps => new GCalendarApiClient(deps),
+  }),
 
   createApiFactory({
     api: graphQlBrowseApiRef,
