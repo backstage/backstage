@@ -21,7 +21,7 @@ import {
   getEntityMetadataEditUrl,
   getEntityMetadataViewUrl,
   getEntityRelations,
-  useEntityListProvider,
+  useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import Edit from '@material-ui/icons/Edit';
@@ -52,7 +52,7 @@ export interface CatalogTableProps {
 export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  const { loading, error, entities, filters } = useEntityListProvider();
+  const { loading, error, entities, filters } = useEntityList();
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(
     () => [

@@ -24,7 +24,7 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import {
-  useEntityListProvider,
+  useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { DocsTable } from './DocsTable';
@@ -39,7 +39,7 @@ export const EntityListDocsTable = ({
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 }) => {
-  const { loading, error, entities, filters } = useEntityListProvider();
+  const { loading, error, entities, filters } = useEntityList();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const [, copyToClipboard] = useCopyToClipboard();
 

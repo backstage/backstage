@@ -18,12 +18,12 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { useEntityListProvider } from '@backstage/plugin-catalog-react';
+import { useEntityList } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { DocsCardGrid } from './DocsCardGrid';
 
 export const EntityListDocsGrid = () => {
-  const { loading, error, entities } = useEntityListProvider();
+  const { loading, error, entities } = useEntityList();
 
   if (error) {
     return (

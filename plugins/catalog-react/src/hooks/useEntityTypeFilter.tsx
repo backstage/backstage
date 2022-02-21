@@ -20,7 +20,7 @@ import isEqual from 'lodash/isEqual';
 import sortBy from 'lodash/sortBy';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
-import { useEntityListProvider } from './useEntityListProvider';
+import { useEntityList } from './useEntityListProvider';
 import { EntityTypeFilter } from '../filters';
 
 /** @public */
@@ -33,7 +33,7 @@ export type EntityTypeReturn = {
 };
 
 /**
- * A hook built on top of `useEntityListProvider` for enabling selection of valid `spec.type` values
+ * A hook built on top of `useEntityList` for enabling selection of valid `spec.type` values
  * based on the selected EntityKindFilter.
  * @public
  */
@@ -43,7 +43,7 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     filters: { kind: kindFilter, type: typeFilter },
     queryParameters,
     updateFilters,
-  } = useEntityListProvider();
+  } = useEntityList();
 
   const queryParamTypes = useMemo(
     () => [queryParameters.type].flat().filter(Boolean) as string[],
