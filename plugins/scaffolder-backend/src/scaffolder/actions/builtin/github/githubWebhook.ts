@@ -19,7 +19,7 @@ import {
 } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
 import { emitterEventNames } from '@octokit/webhooks';
-import { assertError } from '@backstage/errors';
+import { assertError, InputError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { getOctokitOptions } from './helpers';
 import { parseRepoUrl } from '../publish/util';
@@ -29,11 +29,8 @@ export function createGithubWebhookAction(options: {
   defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
-  const {
-    integrations,
-    defaultWebhookSecret,
-    githubCredentialsProvider,
-  } = options;
+  const { integrations, defaultWebhookSecret, githubCredentialsProvider } =
+    options;
 
   const eventNames = emitterEventNames.filter(event => !event.includes('.'));
 
@@ -139,7 +136,7 @@ export function createGithubWebhookAction(options: {
       );
 
       if (!owner) {
-        throw new InputError('Invalid repository owner');
+        throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
       try {
