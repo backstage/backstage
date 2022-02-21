@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export { MockAirbrakeApi } from './MockApi';
+export * from './MockApi';
+export * from './MockEntity';
+export * from './LocalDiscoveryApi';

@@ -18,7 +18,7 @@ import { EntityAirbrakeContent } from './extensions';
 import { Route } from 'react-router';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { airbrakeApiRef, MockAirbrakeApi } from './api';
-import { createEntity } from './api/mock/MockEntity';
+import { createEntity } from './api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
 describe('The Airbrake entity', () => {

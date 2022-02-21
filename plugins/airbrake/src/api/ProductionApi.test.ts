@@ -19,21 +19,19 @@ import { rest } from 'msw';
 import mockGroupsData from './mock/airbrakeGroupsApiMock.json';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { localDiscoveryApi } from './mock';
 
 describe('The production Airbrake API', () => {
-  const productionApi = new ProductionAirbrakeApi('fakeApiKey');
+  const productionApi = new ProductionAirbrakeApi(localDiscoveryApi);
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
   it('fetches groups using the provided project ID', async () => {
     worker.use(
       rest.get(
-        'https://api.airbrake.io/api/v4/projects/123456/groups',
-        (req, res, ctx) => {
-          if (req.url.searchParams.get('key') === 'fakeApiKey') {
-            return res(ctx.status(200), ctx.json(mockGroupsData));
-          }
-          return res(ctx.status(401));
+        'http://localhost:7007/api/airbrake/api/v4/projects/123456/groups',
+        (_, res, ctx) => {
+          return res(ctx.status(200), ctx.json(mockGroupsData));
         },
       ),
     );
@@ -46,7 +44,7 @@ describe('The production Airbrake API', () => {
   it('throws if fetching groups was unsuccessful', async () => {
     worker.use(
       rest.get(
-        'https://api.airbrake.io/api/v4/projects/123456/groups',
+        'http://localhost:7007/api/airbrake/api/v4/projects/123456/groups',
         (_, res, ctx) => {
           return res(ctx.status(500));
         },

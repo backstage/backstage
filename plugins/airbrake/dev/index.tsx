@@ -19,13 +19,14 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { airbrakePlugin, EntityAirbrakeContent } from '../src';
 import {
   airbrakeApiRef,
+  localDiscoveryApi,
   MockAirbrakeApi,
   ProductionAirbrakeApi,
 } from '../src/api';
 import { ApiBar } from './components/ApiBar';
 import { Content, Header, Page } from '@backstage/core-components';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { createEntity } from '../src/api/mock/MockEntity';
+import { createEntity } from '../src/api';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import CloudIcon from '@material-ui/icons/Cloud';
 import { Context, ContextProvider } from './components/ContextProvider';
@@ -53,7 +54,10 @@ createDevApp()
     element: (
       <ContextProvider>
         <Page themeId="tool">
-          <Header title="Airbrake demo application" subtitle="Real API">
+          <Header
+            title="Airbrake demo application"
+            subtitle="Real API (The Airbrake backend plugin must be running for this to work)"
+          >
             <ApiBar />
           </Header>
           <Content>
@@ -61,7 +65,10 @@ createDevApp()
               {value => (
                 <TestApiProvider
                   apis={[
-                    [airbrakeApiRef, new ProductionAirbrakeApi(value.apiKey)],
+                    [
+                      airbrakeApiRef,
+                      new ProductionAirbrakeApi(localDiscoveryApi),
+                    ],
                   ]}
                 >
                   <EntityProvider entity={createEntity(value.projectId)}>

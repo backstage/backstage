@@ -1,16 +1,21 @@
 # airbrake-backend
 
-Welcome to the airbrake-backend backend plugin!
+The Airbrake backend plugin provides a simple proxy to the Airbrake API while hiding away the secret API key from the frontend.
 
-_This plugin was created through the Backstage CLI_
+## How to use
 
-## Getting started
+See the [Airbrake plugin instructions](../airbrake/README.md#how-to-use).
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/airbrake-backend](http://localhost:7007/airbrake-backend).
+## Local Development
 
-Here is an example endpoint: http://localhost:7007/airbrake-backend/health
-
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
 
-It is only meant for local development.
+1. Set the environment variable `AIRBRAKE_API_KEY` with your [API key](https://airbrake.io/docs/api/#authentication).
+2. Run this plugin in standalone mode by running `yarn start`. The configuration is already setup in the root [`app-config.yaml`](../../app-config.yaml) to pick up your API key from the environment variable above.
+
+Access it from http://localhost:7007/api/airbrake. Or use the Airbrake plugin which will talk to it automatically.
+
+Here are some example endpoints:
+
+- http://localhost:7007/api/airbrake/health
+- http://localhost:7007/api/airbrake/api/v4/projects
