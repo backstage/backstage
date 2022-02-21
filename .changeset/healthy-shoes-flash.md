@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs': minor
+'@backstage/plugin-techdocs': patch
 ---
 
 Changed <TechdocsPage /> to use <NotFoundErrorPage /> from createApp

@@ -41,7 +41,7 @@ export type TechDocsPageProps = {
 };
 
 export const TechDocsPage = ({ children }: TechDocsPageProps) => {
-  const NotFoundErrorPage = useApp().getComponents().NotFoundErrorPage;
+  const { NotFoundErrorPage } = useApp().getComponents();
   const outlet = useOutlet();
 
   const [documentReady, setDocumentReady] = useState<boolean>(false);
