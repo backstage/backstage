@@ -56,6 +56,7 @@ import {
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
+/** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   private readonly validators = [
     apiEntityV1alpha1Validator,

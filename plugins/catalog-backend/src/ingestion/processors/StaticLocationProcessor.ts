@@ -21,6 +21,7 @@ import { CatalogProcessorEmit } from './types';
 
 /**
  * @deprecated no longer in use, replaced by the ConfigLocationEntityProvider.
+ * @public
  */
 export class StaticLocationProcessor implements StaticLocationProcessor {
   static fromConfig(config: Config): StaticLocationProcessor {

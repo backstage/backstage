@@ -97,6 +97,7 @@ import { basicEntityFilter } from './request/basicEntityFilter';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 
+/** @public */
 export type CatalogEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;

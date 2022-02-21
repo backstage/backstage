@@ -24,6 +24,7 @@ import yaml from 'yaml';
 import * as result from '../results';
 import { CatalogProcessorParser, CatalogProcessorResult } from '../types';
 
+/** @public */
 export function* parseEntityYaml(
   data: Buffer,
   location: LocationSpec,

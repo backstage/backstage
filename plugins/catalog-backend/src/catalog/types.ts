@@ -21,6 +21,7 @@ import { Entity } from '@backstage/catalog-model';
  *
  * Any (at least one) of the outer sets must match, within which all of the
  * individual filters must match.
+ * @public
  */
 export type EntityFilter =
   | { allOf: EntityFilter[] }
@@ -30,6 +31,7 @@ export type EntityFilter =
 
 /**
  * A pagination rule for entities.
+ * @public
  */
 export type EntityPagination = {
   limit?: number;
@@ -39,6 +41,7 @@ export type EntityPagination = {
 
 /**
  * Matches rows in the entities_search table.
+ * @public
  */
 export type EntitiesSearchFilter = {
   /**
@@ -57,6 +60,7 @@ export type EntitiesSearchFilter = {
   values?: string[];
 };
 
+/** @public */
 export type PageInfo =
   | {
       hasNextPage: false;
@@ -66,6 +70,7 @@ export type PageInfo =
       endCursor: string;
     };
 
+/** @public */
 export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
@@ -73,6 +78,7 @@ export type EntitiesRequest = {
   authorizationToken?: string;
 };
 
+/** @public */
 export type EntitiesResponse = {
   entities: Entity[];
   pageInfo: PageInfo;

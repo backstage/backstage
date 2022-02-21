@@ -24,6 +24,7 @@
  *                next.
  * @returns A function that, when called, stops the invocation loop.
  * @deprecated use \@backstage/backend-tasks package instead.
+ * @public
  */
 export function runPeriodically(fn: () => any, delayMs: number): () => void {
   let cancel: () => void;

@@ -39,11 +39,19 @@ export type EntityRelationSpec = {
   target: EntityName;
 };
 
+/**
+ * The request to process an entity.
+ * @public
+ */
 export type EntityProcessingRequest = {
   entity: Entity;
   state?: JsonObject; // Versions for multiple deployments etc
 };
 
+/**
+ * The result of processing an entity.
+ * @public
+ */
 export type EntityProcessingResult =
   | {
       ok: true;
@@ -58,15 +66,24 @@ export type EntityProcessingResult =
       errors: Error[];
     };
 
+/**
+ * Responsible for executing the individual processing steps in order to fully process an entity.
+ * @public
+ * */
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
+/**
+ * Entities that are not yet processed.
+ * @public
+ * */
 export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;
 };
 
+/** @public */
 export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;

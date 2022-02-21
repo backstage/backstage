@@ -25,6 +25,7 @@ import {
   CatalogProcessorParser,
 } from './types';
 
+/** @public */
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
 

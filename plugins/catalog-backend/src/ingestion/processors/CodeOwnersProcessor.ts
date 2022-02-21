@@ -29,6 +29,7 @@ const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 
 const ALLOWED_LOCATION_TYPES = ['url'];
 
+/** @public */
 export class CodeOwnersProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;

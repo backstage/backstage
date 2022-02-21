@@ -38,6 +38,8 @@ import { codeSearch } from './azure';
  * You may also explicitly specify a single repo:
  *
  *    target: https://dev.azure.com/org/project/_git/repo
+ *
+ * @public
  **/
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;

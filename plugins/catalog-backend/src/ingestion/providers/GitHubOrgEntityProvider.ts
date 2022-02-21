@@ -38,7 +38,7 @@ import {
 import { assignGroupsToUsers, buildOrgHierarchy } from '../processors/util/org';
 
 // TODO: Consider supporting an (optional) webhook that reacts on org changes
-
+/** @public */
 export class GitHubOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private githubCredentialsProvider: GithubCredentialsProvider;

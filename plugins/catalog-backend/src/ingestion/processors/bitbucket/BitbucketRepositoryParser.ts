@@ -18,6 +18,7 @@ import { results } from '../index';
 import { Logger } from 'winston';
 import { BitbucketIntegration } from '@backstage/integration';
 
+/** @public */
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;

@@ -37,6 +37,7 @@ const DEFAULT_BRANCH = 'master';
 const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';
 const EMPTY_CATALOG_LOCATION = '/';
 
+/** @public */
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly parser: BitbucketRepositoryParser;

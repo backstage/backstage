@@ -64,6 +64,7 @@ type Context = {
   cache: ProcessorCacheManager;
 };
 
+/** @public */
 export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator
 {

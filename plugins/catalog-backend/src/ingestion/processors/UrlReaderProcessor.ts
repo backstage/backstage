@@ -32,11 +32,6 @@ import {
 
 const CACHE_KEY = 'v1';
 
-type Options = {
-  reader: UrlReader;
-  logger: Logger;
-};
-
 // WARNING: If you change this type, you likely need to bump the CACHE_KEY as well
 type CacheItem = {
   etag: string;
@@ -47,8 +42,14 @@ type CacheItem = {
   }[];
 };
 
+/** @public */
 export class UrlReaderProcessor implements CatalogProcessor {
-  constructor(private readonly options: Options) {}
+  constructor(
+    private readonly options: {
+      reader: UrlReader;
+      logger: Logger;
+    },
+  ) {}
 
   getProcessorName() {
     return 'url-reader';
