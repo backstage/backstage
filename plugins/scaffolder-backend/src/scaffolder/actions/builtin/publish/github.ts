@@ -258,7 +258,7 @@ export function createPublishGithubAction(options: {
         defaultBranch,
         auth: {
           username: 'x-access-token',
-          password: octokitOptions.token,
+          password: octokitOptions.auth,
         },
         logger: ctx.logger,
         commitMessage: config.getOptionalString(
