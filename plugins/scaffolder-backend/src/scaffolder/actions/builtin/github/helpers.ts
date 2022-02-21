@@ -22,18 +22,13 @@ import {
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { parseRepoUrl } from '../publish/util';
 
-interface GetOctokitOptionsInput {
+export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
   token?: string;
   repoUrl: string;
-}
-export const getOctokitOptions = async ({
-  integrations,
-  credentialsProvider,
-  repoUrl,
-  token,
-}: GetOctokitOptionsInput): Promise<OctokitOptions> => {
+}): Promise<OctokitOptions> {
+  const { integrations, credentialsProvider, repoUrl, token } = options;
   const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
   if (!owner) {
@@ -46,8 +41,7 @@ export const getOctokitOptions = async ({
     throw new InputError(`No integration for host ${host}`);
   }
 
-  // Short circuit the internal Github Token provider the token provided
-  // by the action or the caller.
+  // short circuit the `githubCredentialsProvider` if there is a token provided by the caller already
   if (token) {
     return {
       auth: token,
@@ -60,8 +54,8 @@ export const getOctokitOptions = async ({
     credentialsProvider ??
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
-  // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
-  // needless to create URL and then parse again the other side.
+  // TODO(blam): Consider changing this API to take host and repo instead of repoUrl, as we end up parsing in this function
+  // and then parsing in the `getCredentials` function too the other side
   const {
     token: credentialProviderToken,
   } = await githubCredentialsProvider.getCredentials({
@@ -81,4 +75,4 @@ export const getOctokitOptions = async ({
     baseUrl: integrationConfig.apiBaseUrl,
     previews: ['nebula-preview'],
   };
-};
+}

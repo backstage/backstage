@@ -157,6 +157,10 @@ export function createPublishGithubAction(options: {
 
       const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
       const octokitOptions = await getOctokitOptions({
         integrations,
         credentialsProvider: githubCredentialsProvider,
@@ -165,10 +169,6 @@ export function createPublishGithubAction(options: {
       });
 
       const client = new Octokit(octokitOptions);
-
-      if (!owner) {
-        throw new InputError('Invalid repository owner provided in repoUrl');
-      }
 
       const user = await client.rest.users.getByUsername({
         username: owner,
