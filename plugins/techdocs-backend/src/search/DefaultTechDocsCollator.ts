@@ -61,7 +61,7 @@ type EntityInfo = {
 };
 
 /**
- * A search collator responsible for gather and transform TechDocs document to index.
+ * A search collator responsible for gathering and transforming TechDocs documents.
  *
  * @public
  */
