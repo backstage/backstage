@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
@@ -22,11 +21,12 @@ import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
 } from '../helpers';
-import { getRepoSourceDirectory } from './util';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
-import { OctokitProvider } from '../github/OctokitProvider';
-import { assertError } from '@backstage/errors';
+import { assertError, InputError } from '@backstage/errors';
+import { getOctokitOptions } from '../github/helpers';
+import { Octokit } from 'octokit';
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
@@ -34,11 +34,6 @@ export function createPublishGithubAction(options: {
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
-  const octokitProvider = new OctokitProvider(
-    integrations,
-    githubCredentialsProvider ||
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
-  );
 
   return createTemplateAction<{
     repoUrl: string;
@@ -160,10 +155,20 @@ export function createPublishGithubAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const { client, token, owner, repo } = await octokitProvider.getOctokit(
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
         repoUrl,
-        { token: providedToken },
-      );
+      });
+
+      const client = new Octokit(octokitOptions);
+
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
 
       const user = await client.rest.users.getByUsername({
         username: owner,
@@ -253,7 +258,7 @@ export function createPublishGithubAction(options: {
         defaultBranch,
         auth: {
           username: 'x-access-token',
-          password: token,
+          password: octokitOptions.token,
         },
         logger: ctx.logger,
         commitMessage: config.getOptionalString(

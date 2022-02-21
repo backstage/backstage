@@ -32,6 +32,8 @@ export type OctokitIntegration = {
 /**
  * OctokitProvider provides Octokit client based on ScmIntegrationsRegistry configuration.
  * OctokitProvider supports GitHub credentials caching out of the box.
+ *
+ * @deprecated use the internal {@link getOctokitOptions} function instead
  */
 export class OctokitProvider {
   private readonly integrations: ScmIntegrationRegistry;
@@ -51,6 +53,8 @@ export class OctokitProvider {
    * gets standard Octokit client based on repository URL.
    *
    * @param repoUrl - Repository URL
+   *
+   * @deprecated use the internal {@link getOctokitOptions} function instead
    */
   async getOctokit(
     repoUrl: string,

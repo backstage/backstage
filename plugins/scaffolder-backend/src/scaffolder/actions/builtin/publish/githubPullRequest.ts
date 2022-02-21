@@ -20,7 +20,6 @@ import { parseRepoUrl, isExecutable } from './util';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
-  SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import { zipObject } from 'lodash';
 import { createTemplateAction } from '../../createTemplateAction';
@@ -29,6 +28,7 @@ import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { getOctokitOptions } from '../github/helpers';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -65,40 +65,15 @@ export const defaultClientFactory = async ({
   host = 'github.com',
   token: providedToken,
 }: ClientFactoryInput): Promise<PullRequestCreator> => {
-  const integrationConfig = integrations.github.byHost(host)?.config;
+  const octokitOptions = await getOctokitOptions({
+    integrations,
+    credentialsProvider: githubCredentialsProvider,
+    repoUrl: `https://${host}/${owner}/${repo}`,
+    token: providedToken,
+  });
+
   const OctokitPR = Octokit.plugin(createPullRequest);
-
-  if (!integrationConfig) {
-    throw new InputError(`No integration for host ${host}`);
-  }
-
-  if (providedToken) {
-    return new OctokitPR({
-      auth: providedToken,
-      baseUrl: integrationConfig.apiBaseUrl,
-    });
-  }
-
-  const credentialsProvider =
-    githubCredentialsProvider ||
-    SingleInstanceGithubCredentialsProvider.create(integrationConfig);
-
-  const { token } = await credentialsProvider.getCredentials({
-    url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-      repo,
-    )}`,
-  });
-
-  if (!token) {
-    throw new InputError(
-      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
-    );
-  }
-
-  return new OctokitPR({
-    auth: token,
-    baseUrl: integrationConfig.apiBaseUrl,
-  });
+  return new OctokitPR(octokitOptions);
 };
 
 interface CreateGithubPullRequestActionOptions {
