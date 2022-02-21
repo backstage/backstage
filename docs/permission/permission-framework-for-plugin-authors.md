@@ -6,7 +6,7 @@ description: How to get started with the permission framework as a plugin author
 
 The permission framework offers different patterns that plugin authors can use, for integrating their plugins with the Backstage Permission Framework.
 
-The following tutorial is designed for plugin authors, who already have knowledge about how to create a backstage plugin. We will provide a "TODO List" plugin to be used as a starting point.
+The following tutorial is designed for plugin authors who already have knowledge about how to create a backstage plugin. We will provide a "TODO List" plugin to be used as a starting point.
 After integrating the plugin into your application, we will guide you step by step in the process needed for bringing the permission framework onboard of your plugin.
 
 If you feel that you want to try the tutorial on top of your existing plugin, or if you recognize that your real plugin has a similar structure in terms of resource and endpoints, feel free to skip the next section.
