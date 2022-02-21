@@ -551,7 +551,7 @@ export const useEntityCompoundName: () => {
 // @public (undocumented)
 export const useEntityFromUrl: () => EntityLoadingStatus;
 
-// @public
+// @public @deprecated
 export function useEntityKinds(): {
   error: Error | undefined;
   loading: boolean;
