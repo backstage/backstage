@@ -47,6 +47,7 @@ export type TodoScmReaderOptions = {
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;
+  filePathFilter?: (filePath: string) => boolean;
 };
 
 type CacheItem = {
@@ -60,6 +61,7 @@ export class TodoScmReader implements TodoReader {
   private readonly reader: UrlReader;
   private readonly parser: TodoParser;
   private readonly integrations: ScmIntegrations;
+  private readonly filePathFilter: (filePath: string) => boolean;
 
   private readonly cache = new Map<string, CacheItem>();
   private readonly inFlightReads = new Map<string, Promise<CacheItem>>();
@@ -79,6 +81,7 @@ export class TodoScmReader implements TodoReader {
     this.reader = options.reader;
     this.parser = options.parser ?? createTodoParser();
     this.integrations = options.integrations;
+    this.filePathFilter = options.filePathFilter ?? (() => true);
   }
 
   async readTodos(options: ReadTodosOptions): Promise<ReadTodosResult> {
@@ -111,6 +114,7 @@ export class TodoScmReader implements TodoReader {
     etag?: string,
   ): Promise<CacheItem> {
     const { url } = options;
+    const filePathFilter = this.filePathFilter;
     const tree = await this.reader.readTree(url, {
       etag,
       filter(filePath, info) {
@@ -121,7 +125,8 @@ export class TodoScmReader implements TodoReader {
         return (
           !filePath.startsWith('.') &&
           !filePath.includes('/.') &&
-          !excludedExtensions.includes(extname)
+          !excludedExtensions.includes(extname) &&
+          filePathFilter(filePath)
         );
       },
     });
