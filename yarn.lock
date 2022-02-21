@@ -5371,9 +5371,9 @@
     "@types/node" "*"
 
 "@types/git-url-parse@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.npmjs.org/@types/git-url-parse/-/git-url-parse-9.0.0.tgz#aac1315a44fa4ed5a52c3820f6c3c2fb79cbd12d"
-  integrity sha512-kA2RxBT/r/ZuDDKwMl+vFWn1Z0lfm1/Ik6Qb91wnSzyzCDa/fkM8gIOq6ruB7xfr37n6Mj5dyivileUVKsidlg==
+  version "9.0.1"
+  resolved "https://registry.npmjs.org/@types/git-url-parse/-/git-url-parse-9.0.1.tgz#1c7cc89527ca8b5afcf260ead3b0e4e373c43938"
+  integrity sha512-Zf9mY4Mz7N3Nyi341nUkOtgVUQn4j6NS4ndqEha/lOgEbTkHzpD7wZuRagYKzrXNtvawWfsrojoC1nhsQexvNA==
 
 "@types/glob@*":
   version "7.1.3"
