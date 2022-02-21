@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DiscoveryApi } from '@backstage/core-plugin-api';
 
-import { UrlPatternDiscovery } from '@backstage/core-app-api';
-
-export const localDiscoveryApi = UrlPatternDiscovery.compile(
-  'http://localhost:7007/api/{{ pluginId }}',
-);
+export const localDiscoveryApi: DiscoveryApi = {
+  async getBaseUrl(pluginId: string): Promise<string> {
+    return `http://localhost:7007/api/${pluginId}`;
+  },
+};
