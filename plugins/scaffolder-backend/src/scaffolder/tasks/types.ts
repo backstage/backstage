@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-import { JsonValue, JsonObject } from '@backstage/types';
-import {
-  TaskSpec,
-  TaskStep,
-  TemplateMetadata,
-  TaskSpecV1beta2,
-  TaskSpecV1beta3,
-} from '@backstage/plugin-scaffolder-common';
-
-export type {
-  TaskSpec,
-  TaskStep,
-  TemplateMetadata,
-  TaskSpecV1beta2,
-  TaskSpecV1beta3,
-};
+import { JsonValue, JsonObject, Observable } from '@backstage/types';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 /**
  * The status of each step of the Task
@@ -162,16 +148,10 @@ export interface TaskBroker {
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
-  observe(
-    options: {
-      taskId: string;
-      after: number | undefined;
-    },
-    callback: (
-      error: Error | undefined,
-      result: { events: SerializedTaskEvent[] },
-    ) => void,
-  ): { unsubscribe: () => void };
+  event$(options: {
+    taskId: string;
+    after: number | undefined;
+  }): Observable<{ events: SerializedTaskEvent[] }>;
   get(taskId: string): Promise<SerializedTask>;
 }
 
@@ -180,9 +160,9 @@ export interface TaskBroker {
  *
  * @public
  */
-export type TaskStoreEmitOptions = {
+export type TaskStoreEmitOptions<TBody = JsonObject> = {
   taskId: string;
-  body: JsonObject;
+  body: TBody;
 };
 
 /**

@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  TaskContext,
-  WorkflowRunner,
-  WorkflowResponse,
-  TaskSpecV1beta2,
-  TaskSpec,
-} from './types';
+import { TaskContext, WorkflowRunner, WorkflowResponse } from './types';
 import * as Handlebars from 'handlebars';
 import { TemplateActionRegistry } from '..';
 import { ScmIntegrations } from '@backstage/integration';
@@ -33,6 +27,7 @@ import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
+import { TaskSpec, TaskSpecV1beta2 } from '@backstage/plugin-scaffolder-common';
 
 type Options = {
   workingDirectory: string;

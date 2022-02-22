@@ -15,14 +15,7 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  TaskContext,
-  TaskSpec,
-  TaskSpecV1beta3,
-  TaskStep,
-  WorkflowResponse,
-  WorkflowRunner,
-} from './types';
+import { TaskContext, WorkflowResponse, WorkflowRunner } from './types';
 import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
@@ -39,6 +32,11 @@ import {
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
+import {
+  TaskSpec,
+  TaskSpecV1beta3,
+  TaskStep,
+} from '@backstage/plugin-scaffolder-common';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;

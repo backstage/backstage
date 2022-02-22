@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/types';
-import { assertError } from '@backstage/errors';
+import { JsonObject, Observable } from '@backstage/types';
+import ObservableImpl from 'zen-observable';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 import {
   TaskCompletionState,
   TaskContext,
   TaskSecrets,
-  TaskSpec,
   TaskStore,
   TaskBroker,
   SerializedTaskEvent,
@@ -176,43 +176,33 @@ export class StorageTaskBroker implements TaskBroker {
     return this.storage.getTask(taskId);
   }
 
-  observe(
-    options: {
-      taskId: string;
-      after: number | undefined;
-    },
-    callback: (
-      error: Error | undefined,
-      result: { events: SerializedTaskEvent[] },
-    ) => void,
-  ): { unsubscribe: () => void } {
-    const { taskId } = options;
+  event$(options: {
+    taskId: string;
+    after?: number;
+  }): Observable<{ events: SerializedTaskEvent[] }> {
+    return new ObservableImpl(observer => {
+      const { taskId } = options;
 
-    let cancelled = false;
-    const unsubscribe = () => {
-      cancelled = true;
-    };
-
-    (async () => {
       let after = options.after;
-      while (!cancelled) {
-        const result = await this.storage.listEvents({ taskId, after: after });
-        const { events } = result;
-        if (events.length) {
-          after = events[events.length - 1].id;
-          try {
-            callback(undefined, result);
-          } catch (error) {
-            assertError(error);
-            callback(error, { events: [] });
+      let cancelled = false;
+
+      (async () => {
+        while (!cancelled) {
+          const result = await this.storage.listEvents({ taskId, after });
+          const { events } = result;
+          if (events.length) {
+            after = events[events.length - 1].id;
+            observer.next(result);
           }
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
+      })();
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    })();
-
-    return { unsubscribe };
+      return () => {
+        cancelled = true;
+      };
+    });
   }
 
   async vacuumTasks(options: { timeoutS: number }): Promise<void> {

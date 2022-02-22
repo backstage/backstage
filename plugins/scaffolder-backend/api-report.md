@@ -20,6 +20,7 @@ import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
+import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
@@ -27,8 +28,6 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSpecV1beta2 } from '@backstage/plugin-scaffolder-common';
-import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
@@ -355,7 +354,13 @@ export class DatabaseTaskStore implements TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
-  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  emitLogEvent(
+    options: TaskStoreEmitOptions<
+      {
+        message: string;
+      } & JsonObject
+    >,
+  ): Promise<void>;
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
@@ -374,6 +379,11 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public @deprecated
 export type DispatchResult = TaskBrokerDispatchResult;
+
+// Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public
 export function fetchContents({
@@ -433,16 +443,8 @@ export interface RouterOptions {
   taskWorkers?: number;
 }
 
-// Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "runCommand" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const runCommand: ({
-  command,
-  args,
-  logStream,
-  options,
-}: RunCommandOptions) => Promise<void>;
+// @public @deprecated
+export const runCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
@@ -489,22 +491,11 @@ export interface TaskBroker {
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
   // (undocumented)
-  get(taskId: string): Promise<SerializedTask>;
+  event$(options: { taskId: string; after: number | undefined }): Observable<{
+    events: SerializedTaskEvent[];
+  }>;
   // (undocumented)
-  observe(
-    options: {
-      taskId: string;
-      after: number | undefined;
-    },
-    callback: (
-      error: Error | undefined,
-      result: {
-        events: SerializedTaskEvent[];
-      },
-    ) => void,
-  ): {
-    unsubscribe: () => void;
-  };
+  get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
@@ -569,12 +560,6 @@ export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
 
-export { TaskSpec };
-
-export { TaskSpecV1beta2 };
-
-export { TaskSpecV1beta3 };
-
 // @public @deprecated
 export type TaskState = CurrentClaimedTask;
 
@@ -630,9 +615,9 @@ export type TaskStoreCreateTaskResult = {
 };
 
 // @public
-export type TaskStoreEmitOptions = {
+export type TaskStoreEmitOptions<TBody = JsonObject> = {
   taskId: string;
-  body: JsonObject;
+  body: TBody;
 };
 
 // @public
@@ -680,6 +665,4 @@ export class TemplateActionRegistry {
 //
 // @public (undocumented)
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
-
-export { TemplateMetadata };
 ```

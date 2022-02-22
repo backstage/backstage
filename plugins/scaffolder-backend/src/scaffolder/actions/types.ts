@@ -18,8 +18,11 @@ import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
-import { TaskSecrets, TemplateMetadata } from '../tasks/types';
-import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
+import { TaskSecrets } from '../tasks/types';
+import {
+  TemplateInfo,
+  TemplateMetadata,
+} from '@backstage/plugin-scaffolder-common';
 
 export type ActionContext<Input extends JsonObject> = {
   /**
