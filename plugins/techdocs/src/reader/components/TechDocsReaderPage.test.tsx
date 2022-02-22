@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TechDocsPage } from './TechDocsPage';
+import { TechDocsReaderPage } from './TechDocsReaderPage';
 import { render, act } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -51,7 +51,7 @@ const { useParams }: { useParams: jest.Mock } =
   jest.requireMock('react-router-dom');
 global.scroll = jest.fn();
 
-describe('<TechDocsPage />', () => {
+describe('<TechDocsReaderPage />', () => {
   it('should render techdocs page', async () => {
     useParams.mockReturnValue({
       entityRef: 'Component::backstage',
@@ -101,7 +101,7 @@ describe('<TechDocsPage />', () => {
       const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apiRegistry}>
-            <TechDocsPage />
+            <TechDocsReaderPage />
           </ApiProvider>,
         ),
       );
@@ -158,7 +158,7 @@ describe('<TechDocsPage />', () => {
       const rendered = render(
         wrapInTestApp(
           <ApiProvider apis={apiRegistry}>
-            <TechDocsPage>
+            <TechDocsReaderPage>
               {({ techdocsMetadataValue }) => (
                 <Header
                   type="documentation"
@@ -166,7 +166,7 @@ describe('<TechDocsPage />', () => {
                   subtitle={techdocsMetadataValue?.site_name}
                 />
               )}
-            </TechDocsPage>
+            </TechDocsReaderPage>
           </ApiProvider>,
         ),
       );

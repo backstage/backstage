@@ -25,7 +25,12 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi, useApp } from '@backstage/core-plugin-api';
 import { Page } from '@backstage/core-components';
 
-export type TechDocsPageRenderFunction = ({
+/**
+ * Helper function that gives the children of {@link TechDocsReaderPage} acccess to techdocs and entity metadata
+ *
+ * @public
+ */
+export type TechDocsReaderPageRenderFunction = ({
   techdocsMetadataValue,
   entityMetadataValue,
   entityRef,
@@ -36,11 +41,22 @@ export type TechDocsPageRenderFunction = ({
   onReady: () => void;
 }) => JSX.Element;
 
-export type TechDocsPageProps = {
-  children?: TechDocsPageRenderFunction | React.ReactNode;
+/**
+ * Props for {@link TechDocsReaderPage}
+ *
+ * @public
+ */
+export type TechDocsReaderPageProps = {
+  children?: TechDocsReaderPageRenderFunction | React.ReactNode;
 };
 
-export const TechDocsPage = ({ children }: TechDocsPageProps) => {
+/**
+ * Component responsible for composing a TechDocs reader page experience
+ *
+ * @public
+ */
+export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
+  const { children } = props;
   const { NotFoundErrorPage } = useApp().getComponents();
   const outlet = useOutlet();
 
@@ -83,3 +99,16 @@ export const TechDocsPage = ({ children }: TechDocsPageProps) => {
     </Page>
   );
 };
+
+/**
+ * @public
+ * @deprecated use {@link TechDocsReaderPage} instead
+ */
+export const TechDocsPage = TechDocsReaderPage;
+
+/**
+ * @public
+ * @deprecated use {@link TechDocsReaderPageRenderFunction} instead
+ */
+
+export type TechDocsPageRenderFunction = TechDocsReaderPageRenderFunction;
