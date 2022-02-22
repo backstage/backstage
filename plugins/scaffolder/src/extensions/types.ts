@@ -21,13 +21,11 @@ import { FieldValidation, FieldProps } from '@rjsf/core';
  *
  * @public
  */
-export type CustomFieldValidator<T> =
-  | ((data: T, field: FieldValidation) => void)
-  | ((
-      data: T,
-      field: FieldValidation,
-      context: { apiHolder: ApiHolder },
-    ) => void);
+export type CustomFieldValidator<TReturnValue> = (
+  data: TReturnValue,
+  field: FieldValidation,
+  context: { apiHolder: ApiHolder },
+) => void;
 
 /**
  * Type for the Custom Field Extension with the
@@ -35,10 +33,10 @@ export type CustomFieldValidator<T> =
  *
  * @public
  */
-export type FieldExtensionOptions<T = any> = {
+export type FieldExtensionOptions<TReturnValue = unknown> = {
   name: string;
-  component: (props: FieldProps<T>) => JSX.Element | null;
-  validation?: CustomFieldValidator<T>;
+  component: (props: FieldProps<TReturnValue>) => JSX.Element | null;
+  validation?: CustomFieldValidator<TReturnValue>;
 };
 
 /**

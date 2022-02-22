@@ -25,8 +25,8 @@ import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
 
-export function createScaffolderFieldExtension<T = any>(
-  options: FieldExtensionOptions<T>,
+export function createScaffolderFieldExtension<TReturnValue = unknown>(
+  options: FieldExtensionOptions<TReturnValue>,
 ): Extension<() => null> {
   return {
     expose() {
