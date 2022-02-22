@@ -24,7 +24,6 @@ import {
 import {
   configApiRef,
   createApiFactory,
-  createComponentExtension,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,

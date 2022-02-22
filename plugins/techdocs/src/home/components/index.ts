@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+export * from './Grids';
+export * from './Tables';
 export { DefaultTechDocsHome } from './DefaultTechDocsHome';
-export { EntityListDocsGrid } from './EntityListDocsGrid';
-export { EntityListDocsTable } from './EntityListDocsTable';
-export type { PanelType } from './TechDocsCustomHome';
-export { TechDocsPageWrapper } from './TechDocsPageWrapper';
+export type {
+  PanelType,
+  PanelConfig,
+  TabConfig,
+  TabsConfig,
+} from './TechDocsCustomHome';
+export {
+  TechDocsPageWrapper,
+  type TechDocsPageWrapperProps,
+} from './TechDocsPageWrapper';
 export { TechDocsPicker } from './TechDocsPicker';
-export type { DocsTableRow } from './types';
