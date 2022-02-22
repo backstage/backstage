@@ -428,7 +428,7 @@ This should do the trick. However, this approach has a downside. It would force 
 
 To avoid this situation, the permissions framework has support for filtering items in the data source itself.
 
-Create `plugins/todo-list-backend/src/service/rules.ts`
+Update `plugins/todo-list-backend/src/service/rules.ts`
 
 ```diff
   import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
