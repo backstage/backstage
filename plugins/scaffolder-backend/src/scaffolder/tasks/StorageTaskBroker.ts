@@ -15,7 +15,6 @@
  */
 import { JsonObject, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
-import { assertError } from '@backstage/errors';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 import {

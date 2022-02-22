@@ -20,6 +20,7 @@ import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
+import { Observable } from '@backstage/types';
 import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
@@ -27,8 +28,6 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSpecV1beta2 } from '@backstage/plugin-scaffolder-common';
-import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
@@ -355,7 +354,14 @@ export class DatabaseTaskStore implements TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
-  emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
+  emitLogEvent({
+    taskId,
+    body,
+  }: TaskStoreEmitOptions<
+    {
+      message: string;
+    } & JsonObject
+  >): Promise<void>;
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
@@ -487,22 +493,11 @@ export interface TaskBroker {
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
   // (undocumented)
-  get(taskId: string): Promise<SerializedTask>;
+  event$(options: { taskId: string; after: number | undefined }): Observable<{
+    events: SerializedTaskEvent[];
+  }>;
   // (undocumented)
-  observe(
-    options: {
-      taskId: string;
-      after: number | undefined;
-    },
-    callback: (
-      error: Error | undefined,
-      result: {
-        events: SerializedTaskEvent[];
-      },
-    ) => void,
-  ): {
-    unsubscribe: () => void;
-  };
+  get(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
@@ -567,12 +562,6 @@ export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
 
-export { TaskSpec };
-
-export { TaskSpecV1beta2 };
-
-export { TaskSpecV1beta3 };
-
 // @public @deprecated
 export type TaskState = CurrentClaimedTask;
 
@@ -628,9 +617,9 @@ export type TaskStoreCreateTaskResult = {
 };
 
 // @public
-export type TaskStoreEmitOptions = {
+export type TaskStoreEmitOptions<TBody = JsonObject> = {
   taskId: string;
-  body: JsonObject;
+  body: TBody;
 };
 
 // @public
@@ -678,6 +667,4 @@ export class TemplateActionRegistry {
 //
 // @public (undocumented)
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
-
-export { TemplateMetadata };
 ```
