@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 export {
-  EntityContext,
   useEntity,
   useEntityFromUrl,
   EntityProvider,

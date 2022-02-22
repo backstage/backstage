@@ -20,13 +20,7 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import React, {
-  ReactNode,
-  useEffect,
-  createContext,
-  Provider,
-  Context,
-} from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { catalogApiRef } from '../api';
@@ -39,20 +33,6 @@ export type EntityLoadingStatus = {
   error?: Error;
   refresh?: VoidFunction;
 };
-
-/**
- * @public
- * @deprecated use `useEntity` and `EntityProvider` or `AsyncEntityProvider` instead.
- */
-export const EntityContext: Context<EntityLoadingStatus> =
-  createContext<EntityLoadingStatus>({
-    entity: undefined,
-    loading: true,
-    error: undefined,
-    refresh: () => {},
-  });
-// We grab this for use in the new provider, since we're overriding it later on
-const OldEntityProvider = EntityContext.Provider;
 
 // This context has support for multiple concurrent versions of this package.
 // It is currently used in parallel with the old context in order to provide
@@ -89,11 +69,9 @@ export const AsyncEntityProvider = ({
   // We provide both the old and the new context, since
   // consumers might be doing things like `useContext(EntityContext)`
   return (
-    <OldEntityProvider value={value}>
-      <NewEntityContext.Provider value={createVersionedValueMap({ 1: value })}>
-        {children}
-      </NewEntityContext.Provider>
-    </OldEntityProvider>
+    <NewEntityContext.Provider value={createVersionedValueMap({ 1: value })}>
+      {children}
+    </NewEntityContext.Provider>
   );
 };
 
@@ -121,18 +99,6 @@ export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
     children={children}
   />
 );
-
-// This is used for forwards compatibility with the new entity context
-const CompatibilityProvider = ({
-  value,
-  children,
-}: {
-  value: EntityLoadingStatus;
-  children: ReactNode;
-}) => {
-  return <AsyncEntityProvider {...value} children={children} />;
-};
-EntityContext.Provider = CompatibilityProvider as Provider<EntityLoadingStatus>;
 
 /** @public
  * @deprecated will be deleted shortly due to low external usage, re-implement if needed.

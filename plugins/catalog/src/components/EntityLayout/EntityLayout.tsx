@@ -35,17 +35,17 @@ import {
   useElementFilter,
 } from '@backstage/core-plugin-api';
 import {
-  EntityContext,
   EntityRefLinks,
   FavoriteEntity,
   getEntityRelations,
   InspectEntityDialog,
   UnregisterEntityDialog,
+  useEntity,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 
@@ -177,7 +177,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     children,
   } = props;
   const { kind, namespace, name } = useEntityCompoundName();
-  const { entity, loading, error } = useContext(EntityContext);
+  const { entity, loading, error } = useEntity();
   const location = useLocation();
   const routes = useElementFilter(
     children,
