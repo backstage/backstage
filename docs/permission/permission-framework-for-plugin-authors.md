@@ -424,7 +424,7 @@ Potentially, something like this could be done:
     });
 ```
 
-This should do the trick. However, this approach has a downside. It requires to retrieve all the elements upfront and authorize them one by one.
+This should do the trick. However, this approach has a downside. It would force us to retrieve all the elements upfront and authorize them one by one, and mean that concerns like pagination that are handled by the data source today also need to move into the plugin.
 
 The following approach is supposed to be used in case the downstream service or database provides built-in support for filtering items in a more efficient way.
 
