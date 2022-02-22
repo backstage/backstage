@@ -16,7 +16,6 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
@@ -479,15 +478,10 @@ export function InspectEntityDialog(props: {
 // @public
 export function isOwnerOf(owner: Entity, owned: Entity): boolean;
 
-// @public
+// @public @deprecated
 export function loadCatalogOwnerRefs(
   catalogApi: CatalogApi,
   identityOwnerRefs: string[],
-): Promise<string[]>;
-
-// @public @deprecated
-export function loadIdentityOwnerRefs(
-  identityApi: IdentityApi,
 ): Promise<string[]>;
 
 // @public (undocumented)

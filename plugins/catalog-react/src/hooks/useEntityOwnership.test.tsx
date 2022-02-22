@@ -26,11 +26,7 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { catalogApiRef } from '../api';
-import {
-  loadCatalogOwnerRefs,
-  loadIdentityOwnerRefs,
-  useEntityOwnership,
-} from './useEntityOwnership';
+import { loadCatalogOwnerRefs, useEntityOwnership } from './useEntityOwnership';
 
 describe('useEntityOwnership', () => {
   type MockIdentityApi = jest.Mocked<Pick<IdentityApi, 'getBackstageIdentity'>>;
@@ -99,18 +95,6 @@ describe('useEntityOwnership', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-  });
-
-  describe('loadIdentityOwnerRefs', () => {
-    it('passes through the ownershipEntityRefs', async () => {
-      const refs = new Array<string>();
-      mockIdentityApi.getBackstageIdentity.mockResolvedValueOnce({
-        type: 'user',
-        userEntityRef: 'user:default/guest',
-        ownershipEntityRefs: refs,
-      });
-      await expect(loadIdentityOwnerRefs(identityApi)).resolves.toBe(refs);
-    });
   });
 
   describe('loadCatalogOwnerRefs', () => {
