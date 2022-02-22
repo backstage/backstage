@@ -53,26 +53,12 @@ const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
 const configApi: ConfigApi = new ConfigReader({
   splunkOnCall: {
     eventsRestEndpoint: 'EXAMPLE_REST_ENDPOINT',
-    readOnly: false,
-  },
-});
-
-const readOnlyConfigApi: ConfigApi = new ConfigReader({
-  splunkOnCall: {
-    eventsRestEndpoint: 'EXAMPLE_REST_ENDPOINT',
-    readOnly: true,
   },
 });
 
 const apis = TestApiRegistry.from(
   [splunkOnCallApiRef, mockSplunkOnCallApi],
   [configApiRef, configApi],
-  [alertApiRef, {}],
-);
-
-const readOnlyApis = TestApiRegistry.from(
-  [splunkOnCallApiRef, mockSplunkOnCallApi],
-  [configApiRef, readOnlyConfigApi],
   [alertApiRef, {}],
 );
 
@@ -155,9 +141,9 @@ describe('SplunkOnCallCard', () => {
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
-        <ApiProvider apis={readOnlyApis}>
+        <ApiProvider apis={apis}>
           <EntityProvider entity={mockEntityNoIncidents}>
-            <EntitySplunkOnCallCard />
+            <EntitySplunkOnCallCard readOnly />
           </EntityProvider>
         </ApiProvider>,
       ),

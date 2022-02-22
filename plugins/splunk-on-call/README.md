@@ -45,6 +45,14 @@ const overviewContent = (
     </EntitySwitch>
 ```
 
+### `readOnly` mode
+
+To suppress the rendering of the actionable create-acknowledge-resolve incident buttons and UI controls, the `EntitySplunkOnCallCard` can also be instantiated in `readOnly` mode:
+
+```ts
+<EntitySplunkOnCallCard readOnly />
+```
+
 ## Client configuration
 
 In order to be able to perform certain actions (create-acknowledge-resolve an action), you need to provide a REST Endpoint.
@@ -74,17 +82,9 @@ proxy:
 
 In addition, to make certain API calls (trigger-resolve-acknowledge an incident) you need to add the `PATCH` method to the backend `cors` methods list: `[GET, POST, PUT, DELETE, PATCH]`.
 
-**WARNING**: In current implementation, the Splunk OnCall plugin requires the `/splunk-on-call` proxy endpoint be exposed by the Backstage backend as an unprotected endpoint, in effect enabling Splunk OnCall API access using the configured `SPLUNK_ON_CALL_API_KEY` for any user or process with access to the `/splunk-on-call` Backstage backend endpoint. See below for further configuration options enabling protection of this endpoint.
-
-### Read Only mode
-
-The Splunk OnCall plugin also supports a "read only" mode if you wish to suppress the rendering of UI controls to trigger-resolve-acknowledge incidents.
+**WARNING**: In current implementation, the Splunk OnCall plugin requires the `/splunk-on-call` proxy endpoint be exposed by the Backstage backend as an unprotected endpoint, in effect enabling Splunk OnCall API access using the configured `SPLUNK_ON_CALL_API_KEY` for any user or process with access to the `/splunk-on-call` Backstage backend endpoint. See below for further configuration options enabling protection of this endpoint. If you regard this as problematic, consider using the plugin in `readOnly` mode (`<EntitySplunkOnCallCard readOnly />`) using the following proxy configuration:
 
 ```yaml
-# enable readOnly mode
-splunkOnCall:
-  readOnly: true
-
 proxy:
   '/splunk-on-call':
     target: https://api.victorops.com/api-public

@@ -109,7 +109,12 @@ const useStyles = makeStyles({
   },
 });
 
-export const EntitySplunkOnCallCard = () => {
+type Props = {
+  readOnly?: boolean;
+};
+
+export const EntitySplunkOnCallCard = ({ readOnly }: Props) => {
+  const readOnlyMode = readOnly || false;
   const classes = useStyles();
   const config = useApi(configApiRef);
   const api = useApi(splunkOnCallApiRef);
@@ -125,8 +130,6 @@ export const EntitySplunkOnCallCard = () => {
 
   const eventsRestEndpoint =
     config.getOptionalString('splunkOnCall.eventsRestEndpoint') || true;
-
-  const readOnly = config.getOptionalBoolean('splunkOnCall.readOnly') || false;
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
@@ -221,7 +224,7 @@ export const EntitySplunkOnCallCard = () => {
     return (
       <>
         <Incidents
-          readOnly={readOnly}
+          readOnly={readOnlyMode}
           team={teamName}
           refreshIncidents={refreshIncidents}
         />
