@@ -68,7 +68,7 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
 
 ## Local Development
 
-Start this plugin in standalone mode by running `yarn start`. This method of serving the plugin provides quicker
+Start this plugin in standalone mode by running `yarn start` inside the plugin directory. This method of serving the plugin provides quicker
 iteration speed and a faster startup and hot reloads. It is only meant for local development, and the setup for it can
 be found inside the [/dev](./dev) directory.
 
