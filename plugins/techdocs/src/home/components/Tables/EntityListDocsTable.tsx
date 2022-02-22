@@ -32,13 +32,23 @@ import * as actionFactories from './actions';
 import * as columnFactories from './columns';
 import { DocsTableRow } from './types';
 
-export const EntityListDocsTable = ({
-  columns,
-  actions,
-}: {
+/**
+ * Props for {@link EntityListDocsTable}.
+ *
+ * @public
+ */
+export type EntityListDocsTableProps = {
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
-}) => {
+};
+
+/**
+ * Component which renders a table with entities from catalog.
+ *
+ * @public
+ */
+export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
+  const { columns, actions } = props;
   const { loading, error, entities, filters } = useEntityList();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const [, copyToClipboard] = useCopyToClipboard();

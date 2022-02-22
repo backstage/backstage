@@ -23,7 +23,7 @@ import {
   formatEntityRefTitle,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { rootDocsRouteRef } from '../../routes';
+import { rootDocsRouteRef } from '../../../routes';
 import {
   Button,
   EmptyState,
@@ -33,22 +33,29 @@ import {
 } from '@backstage/core-components';
 import * as actionFactories from './actions';
 import * as columnFactories from './columns';
+import { toLowerMaybe } from '../../../helpers';
 import { DocsTableRow } from './types';
-import { toLowerMaybe } from '../../helpers';
 
-export const DocsTable = ({
-  entities,
-  title,
-  loading,
-  columns,
-  actions,
-}: {
+/**
+ * Props for {@link DocsTable}.
+ *
+ * @public
+ */
+export type DocsTableProps = {
   entities: Entity[] | undefined;
   title?: string | undefined;
   loading?: boolean | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
-}) => {
+};
+
+/**
+ * Component which renders a table documents
+ *
+ * @public
+ */
+export const DocsTable = (props: DocsTableProps) => {
+  const { entities, title, loading, columns, actions } = props;
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);

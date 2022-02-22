@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
+import { rootDocsRouteRef } from '../../../routes';
+import { toLowerMaybe } from '../../../helpers';
 import { Entity } from '@backstage/catalog-model';
 import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
-import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
-import { rootDocsRouteRef } from '../../routes';
-
 import {
   Button,
   ItemCardGrid,
   ItemCardHeader,
 } from '@backstage/core-components';
-import { toLowerMaybe } from '../../helpers';
+import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
+import React from 'react';
 
+/**
+ * Component which accepts a list of entities and renders a item card for each entity
+ *
+ * @public
+ */
 export const DocsCardGrid = ({
   entities,
 }: {

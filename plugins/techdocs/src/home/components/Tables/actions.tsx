@@ -22,6 +22,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { DocsTableRow } from './types';
 
+/**
+ * Utility function for creating a copy docs url action for {@link DocsTable}.
+ *
+ * @internal
+ */
+
 export function createCopyDocsUrlAction(copyToClipboard: Function) {
   return (row: DocsTableRow) => {
     return {
@@ -32,6 +38,12 @@ export function createCopyDocsUrlAction(copyToClipboard: Function) {
     };
   };
 }
+
+/**
+ * Utility function for creating a star entity action for {@link DocsTable}.
+ *
+ * @internal
+ */
 
 export function createStarEntityAction(
   isStarredEntity: Function,

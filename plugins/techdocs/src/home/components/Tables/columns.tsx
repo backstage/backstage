@@ -24,6 +24,11 @@ function customTitle(entity: Entity): string {
   return entity.metadata.title || entity.metadata.name;
 }
 
+/**
+ * Utility function for creating a name column for {@link DocsTable}.
+ *
+ * @internal
+ */
 export function createNameColumn(): TableColumn<DocsTableRow> {
   return {
     title: 'Document',
@@ -38,6 +43,11 @@ export function createNameColumn(): TableColumn<DocsTableRow> {
   };
 }
 
+/**
+ * Utility function for creating an owner column for {@link DocsTable}.
+ *
+ * @internal
+ */
 export function createOwnerColumn(): TableColumn<DocsTableRow> {
   return {
     title: 'Owner',
@@ -51,6 +61,11 @@ export function createOwnerColumn(): TableColumn<DocsTableRow> {
   };
 }
 
+/**
+ * Utility function for creating an spec type column for {@link DocsTable}.
+ *
+ * @internal
+ */
 export function createTypeColumn(): TableColumn<DocsTableRow> {
   return {
     title: 'Type',
