@@ -32,20 +32,18 @@ import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 // Warning: (ae-missing-release-tag) "createScaffolderFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function createScaffolderFieldExtension<T = any>(
-  options: FieldExtensionOptions<T>,
+export function createScaffolderFieldExtension<TReturnValue = unknown>(
+  options: FieldExtensionOptions<TReturnValue>,
 ): Extension<() => null>;
 
 // @public
-export type CustomFieldValidator<T> =
-  | ((data: T, field: FieldValidation) => void)
-  | ((
-      data: T,
-      field: FieldValidation,
-      context: {
-        apiHolder: ApiHolder;
-      },
-    ) => void);
+export type CustomFieldValidator<TReturnValue> = (
+  data: TReturnValue,
+  field: FieldValidation,
+  context: {
+    apiHolder: ApiHolder;
+  },
+) => void;
 
 // Warning: (ae-missing-release-tag) "EntityNamePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -106,10 +104,10 @@ export interface FieldExtensionComponentProps<
 }
 
 // @public
-export type FieldExtensionOptions<T = any> = {
+export type FieldExtensionOptions<TReturnValue = unknown> = {
   name: string;
-  component: (props: FieldProps<T>) => JSX.Element | null;
-  validation?: CustomFieldValidator<T>;
+  component: (props: FieldProps<TReturnValue>) => JSX.Element | null;
+  validation?: CustomFieldValidator<TReturnValue>;
 };
 
 // Warning: (ae-missing-release-tag) "OwnedEntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
