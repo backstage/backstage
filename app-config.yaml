@@ -464,6 +464,3 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
-
-airbrake:
-  apiKey: ${AIRBRAKE_API_KEY}

@@ -40,7 +40,7 @@ describe('createRouter', () => {
         apiKey: 'fakeApiKey',
       },
     });
-    airbrakeConfig = extractAirbrakeConfig(config, voidLogger);
+    airbrakeConfig = extractAirbrakeConfig(config);
 
     const router = await createRouter({
       logger: voidLogger,

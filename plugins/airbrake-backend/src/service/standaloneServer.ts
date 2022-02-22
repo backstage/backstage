@@ -34,7 +34,7 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'airbrake-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
-  const airbrakeConfig = extractAirbrakeConfig(config, logger);
+  const airbrakeConfig = extractAirbrakeConfig(config);
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,

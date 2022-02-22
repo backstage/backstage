@@ -10,8 +10,19 @@ See the [Airbrake plugin instructions](../airbrake/README.md#how-to-use).
 
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
 
-1. Set the environment variable `AIRBRAKE_API_KEY` with your [API key](https://airbrake.io/docs/api/#authentication).
-2. Run this plugin in standalone mode by running `yarn start`. The configuration is already setup in the root [`app-config.yaml`](../../app-config.yaml) to pick up your API key from the environment variable above.
+1. Add the required config to your `app-config.local.yaml`:
+
+   ```yaml
+   airbrake:
+     apiKey: ${AIRBRAKE_API_KEY}
+   ```
+
+2. Set the environment variable `AIRBRAKE_API_KEY` with your [API
+   key](https://airbrake.io/docs/api/#authentication). You can also write it
+   directly into the config file above for convenience - but beware of
+   accidentally leaking the key.
+
+3. Go into the plugin's directory and run it in standalone mode by running `yarn start`.
 
 Access it from http://localhost:7007/api/airbrake. Or use the Airbrake plugin which will talk to it automatically.
 

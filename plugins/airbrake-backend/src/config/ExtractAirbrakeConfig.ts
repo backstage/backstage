@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Config } from '@backstage/config';
-import * as winston from 'winston';
 
 /**
  * The configuration needed for the airbrake-backend plugin
@@ -34,27 +34,9 @@ export interface AirbrakeConfig {
  * @public
  *
  * @param config - The config object to extract from
- * @param logger - THe logger object
  */
-export function extractAirbrakeConfig(
-  config: Config,
-  logger: winston.Logger,
-): AirbrakeConfig {
-  try {
-    return {
-      apiKey: config.getString('airbrake.apiKey'),
-    };
-  } catch (e) {
-    if (process.env.NODE_ENV !== 'development') {
-      throw e;
-    } else {
-      logger.warn(
-        'Airbrake config missing, Airbrake plugin will probably not work',
-        e,
-      );
-      return {
-        apiKey: '',
-      };
-    }
-  }
+export function extractAirbrakeConfig(config: Config): AirbrakeConfig {
+  return {
+    apiKey: config.getString('airbrake.apiKey'),
+  };
 }
