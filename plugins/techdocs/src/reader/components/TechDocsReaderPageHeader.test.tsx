@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TechDocsPageHeader } from './TechDocsPageHeader';
+import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
 import { act } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { rootRouteRef } from '../../routes';
 
-describe('<TechDocsPageHeader />', () => {
+describe('<TechDocsReaderPageHeader />', () => {
   it('should render a techdocs page header', async () => {
     await act(async () => {
       const rendered = await renderInTestApp(
-        <TechDocsPageHeader
+        <TechDocsReaderPageHeader
           entityRef={{
             kind: 'test',
             name: 'test-name',
@@ -66,7 +66,7 @@ describe('<TechDocsPageHeader />', () => {
   it('should render a techdocs page header even if metadata is missing', async () => {
     await act(async () => {
       const rendered = await renderInTestApp(
-        <TechDocsPageHeader
+        <TechDocsReaderPageHeader
           entityRef={{
             kind: 'test',
             name: 'test-name',
@@ -88,7 +88,7 @@ describe('<TechDocsPageHeader />', () => {
   it('should render a link back to the component page', async () => {
     await act(async () => {
       const rendered = await renderInTestApp(
-        <TechDocsPageHeader
+        <TechDocsReaderPageHeader
           entityRef={{
             kind: 'test',
             name: 'test-name',

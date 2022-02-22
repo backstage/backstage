@@ -29,18 +29,28 @@ import {
 import { rootRouteRef } from '../../routes';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 
-export type TechDocsPageHeaderProps = PropsWithChildren<{
+/**
+ * Props for {@link TechDocsReaderPageHeader}
+ *
+ * @public
+ */
+export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
   entityRef: EntityName;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
 }>;
 
-export const TechDocsPageHeader = ({
+/**
+ * Component responsible for rendering a Header with metadata on TechDocs reader page.
+ *
+ * @public
+ */
+export const TechDocsReaderPageHeader = ({
   entityRef,
   entityMetadata,
   techDocsMetadata,
   children,
-}: TechDocsPageHeaderProps) => {
+}: TechDocsReaderPageHeaderProps) => {
   const { name } = entityRef;
 
   const { site_name: siteName, site_description: siteDescription } =
@@ -114,3 +124,16 @@ export const TechDocsPageHeader = ({
     </Header>
   );
 };
+
+/**
+ * @public
+ * @deprecated use {@link TechDocsReaderPageHeader} instead
+ */
+export const TechDocsPageHeader = TechDocsReaderPageHeader;
+
+/**
+ * @public
+ * @deprecated use {@link TechDocsReaderPageHeader} instead
+ */
+
+export type TechDocsPageHeaderProps = TechDocsReaderPageHeaderProps;
