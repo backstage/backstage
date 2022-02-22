@@ -23,7 +23,7 @@ export interface Config {
     /** Backend configuration for when request authentication is enabled */
     auth?: {
       /** Keys shared by all backends for signing and validating backend tokens. */
-      keys: {
+      keys?: {
         /**
          * Secret for generating tokens. Should be a base64 string, recommended
          * length is 24 bytes.
