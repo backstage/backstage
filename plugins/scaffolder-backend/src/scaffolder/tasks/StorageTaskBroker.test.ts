@@ -16,9 +16,10 @@
 
 import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
-import { TaskSecrets, TaskSpec, SerializedTaskEvent } from './types';
+import { TaskSecrets, SerializedTaskEvent } from './types';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(

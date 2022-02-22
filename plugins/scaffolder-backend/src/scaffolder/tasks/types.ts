@@ -15,21 +15,7 @@
  */
 
 import { JsonValue, JsonObject } from '@backstage/types';
-import {
-  TaskSpec,
-  TaskStep,
-  TemplateMetadata,
-  TaskSpecV1beta2,
-  TaskSpecV1beta3,
-} from '@backstage/plugin-scaffolder-common';
-
-export type {
-  TaskSpec,
-  TaskStep,
-  TemplateMetadata,
-  TaskSpecV1beta2,
-  TaskSpecV1beta3,
-};
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 /**
  * The status of each step of the Task

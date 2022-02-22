@@ -29,6 +29,7 @@ import {
   TemplateEntityV1beta2,
   TemplateEntityV1beta3,
   TaskSpecV1beta3,
+  TaskSpec,
   TaskSpecV1beta2,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
@@ -40,7 +41,6 @@ import {
   createBuiltinActions,
   DatabaseTaskStore,
   TaskBroker,
-  TaskSpec,
   TaskWorker,
   TemplateAction,
   TemplateActionRegistry,

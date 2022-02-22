@@ -21,8 +21,9 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
-import { TaskContext, TaskSpec } from './types';
+import { TaskContext } from './types';
 import { RepoSpec } from '../actions/builtin/publish/util';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 describe('LegacyWorkflowRunner', () => {
   let runner: HandlebarsWorkflowRunner;

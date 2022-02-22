@@ -22,7 +22,8 @@ import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { TaskContext, TaskSpec, TaskSecrets } from './types';
+import { TaskContext, TaskSecrets } from './types';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 const realFiles = Object.fromEntries(
   [

@@ -15,12 +15,12 @@
  */
 import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 import {
   TaskCompletionState,
   TaskContext,
   TaskSecrets,
-  TaskSpec,
   TaskStore,
   TaskBroker,
   SerializedTaskEvent,
