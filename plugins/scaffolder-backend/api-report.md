@@ -392,13 +392,15 @@ export function fetchContents({
 
 // Warning: (ae-missing-release-tag) "OctokitProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export class OctokitProvider {
   constructor(
     integrations: ScmIntegrationRegistry,
     githubCredentialsProvider?: GithubCredentialsProvider,
   );
   // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
+  //
+  // @deprecated
   getOctokit(
     repoUrl: string,
     options?: {
