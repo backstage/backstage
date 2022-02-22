@@ -65,10 +65,14 @@ export const defaultClientFactory = async ({
   host = 'github.com',
   token: providedToken,
 }: ClientFactoryInput): Promise<PullRequestCreator> => {
+  const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
+    encodeURIComponent,
+  );
+
   const octokitOptions = await getOctokitOptions({
     integrations,
     credentialsProvider: githubCredentialsProvider,
-    repoUrl: `https://${host}/${owner}/${repo}`,
+    repoUrl: `https://${encodedHost}/${encodedOwner}/${encodedRepo}`,
     token: providedToken,
   });
 
