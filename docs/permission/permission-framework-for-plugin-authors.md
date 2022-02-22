@@ -13,7 +13,7 @@ If you want to add support for permissions to your own plugin, feel free to skip
 
 ## Setup for the Tutorial
 
-We will use a "Todo list" plugin, composed of the `todo-list` and `todo-list-backend` plugins.
+We will use a "Todo list" feature, composed of the `todo-list` and `todo-list-backend` plugins.
 
 The source code is already available here:
 
