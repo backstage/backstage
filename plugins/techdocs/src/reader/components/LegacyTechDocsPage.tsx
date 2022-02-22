@@ -22,8 +22,11 @@ import { TechDocsNotFound } from './TechDocsNotFound';
 import { useApi } from '@backstage/core-plugin-api';
 import { Page, Content } from '@backstage/core-components';
 import { Reader } from './Reader';
-import { TechDocsPageHeader } from './TechDocsPageHeader';
+import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
 
+/**
+ * @deprecated Use {@link TechDocsPage} instead.
+ */
 export const LegacyTechDocsPage = () => {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const { namespace, kind, name } = useParams();
@@ -53,7 +56,7 @@ export const LegacyTechDocsPage = () => {
 
   return (
     <Page themeId="documentation">
-      <TechDocsPageHeader
+      <TechDocsReaderPageHeader
         techDocsMetadata={techdocsMetadataValue}
         entityMetadata={entityMetadataValue}
         entityRef={{

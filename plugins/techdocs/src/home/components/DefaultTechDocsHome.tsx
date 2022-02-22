@@ -34,10 +34,9 @@ import {
   UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { EntityListDocsTable } from './EntityListDocsTable';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
-import { DocsTableRow } from './types';
+import { DocsTableRow, EntityListDocsTable } from './Tables';
 
 export const DefaultTechDocsHome = ({
   initialFilter = 'all',

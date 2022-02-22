@@ -58,11 +58,16 @@ import {
   copyToClipboard,
 } from '../transformers';
 
-import { TechDocsSearch } from './TechDocsSearch';
+import { TechDocsSearch } from '../../search';
 import { TechDocsStateIndicator } from './TechDocsStateIndicator';
 import { useReaderState } from './useReaderState';
 
-type Props = {
+/**
+ * Props for {@link Reader}
+ *
+ * @public
+ */
+export type ReaderProps = {
   entityRef: EntityName;
   withSearch?: boolean;
   onReady?: () => void;
@@ -823,7 +828,7 @@ const TheReader = ({
   entityRef,
   onReady = () => {},
   withSearch = true,
-}: Props) => {
+}: ReaderProps) => {
   const classes = useStyles();
   const dom = useTechDocsReaderDom(entityRef);
   const shadowDomRef = useRef<HTMLDivElement>(null);
@@ -860,16 +865,20 @@ const TheReader = ({
   );
 };
 
-export const Reader = ({
-  entityRef,
-  onReady = () => {},
-  withSearch = true,
-}: Props) => (
-  <TechDocsReaderProvider entityRef={entityRef}>
-    <TheReader
-      entityRef={entityRef}
-      onReady={onReady}
-      withSearch={withSearch}
-    />
-  </TechDocsReaderProvider>
-);
+/**
+ * Component responsible for rendering TechDocs documentation
+ *
+ * @public
+ */
+export const Reader = (props: ReaderProps) => {
+  const { entityRef, onReady = () => {}, withSearch = true } = props;
+  return (
+    <TechDocsReaderProvider entityRef={entityRef}>
+      <TheReader
+        entityRef={entityRef}
+        onReady={onReady}
+        withSearch={withSearch}
+      />
+    </TechDocsReaderProvider>
+  );
+};
