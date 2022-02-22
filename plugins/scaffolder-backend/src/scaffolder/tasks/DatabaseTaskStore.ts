@@ -252,12 +252,15 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void> {
-    const serliazedBody = JSON.stringify(body);
+  async emitLogEvent({
+    taskId,
+    body,
+  }: TaskStoreEmitOptions<{ message: string } & JsonObject>): Promise<void> {
+    const serializedBo = JSON.stringify(body);
     await this.db<RawDbTaskEventRow>('task_events').insert({
       task_id: taskId,
       event_type: 'log',
-      body: serliazedBody,
+      body: serializedBo,
     });
   }
 

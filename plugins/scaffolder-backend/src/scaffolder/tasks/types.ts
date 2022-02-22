@@ -180,9 +180,9 @@ export interface TaskBroker {
  *
  * @public
  */
-export type TaskStoreEmitOptions = {
+export type TaskStoreEmitOptions<TBody = JsonObject> = {
   taskId: string;
-  body: JsonObject;
+  body: TBody;
 };
 
 /**
