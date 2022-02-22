@@ -11,7 +11,6 @@ import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
-import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
@@ -150,9 +149,6 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
   // (undocumented)
   toggleStarred(entityRef: string): Promise<void>;
 }
-
-// @public @deprecated (undocumented)
-export const EntityContext: Context<EntityLoadingStatus>;
 
 // @public (undocumented)
 export type EntityFilter = {
