@@ -56,13 +56,12 @@ export async function getOctokitOptions(options: {
 
   // TODO(blam): Consider changing this API to take host and repo instead of repoUrl, as we end up parsing in this function
   // and then parsing in the `getCredentials` function too the other side
-  const {
-    token: credentialProviderToken,
-  } = await githubCredentialsProvider.getCredentials({
-    url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-      repo,
-    )}`,
-  });
+  const { token: credentialProviderToken } =
+    await githubCredentialsProvider.getCredentials({
+      url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
+        repo,
+      )}`,
+    });
 
   if (!credentialProviderToken) {
     throw new InputError(
