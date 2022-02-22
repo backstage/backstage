@@ -584,13 +584,13 @@ export function useEntityPermission(permission: Permission): {
 // @public
 export function useEntityTypeFilter(): EntityTypeReturn;
 
-// @public
+// @public @deprecated
 export function useOwnedEntities(allowedKinds?: string[]): {
   loading: boolean;
   ownedEntities: GetEntitiesResponse | undefined;
 };
 
-// @public
+// @public @deprecated
 export function useOwnUser(): AsyncState<UserEntity | undefined>;
 
 // @public (undocumented)

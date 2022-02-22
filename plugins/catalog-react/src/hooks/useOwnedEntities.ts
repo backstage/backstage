@@ -32,6 +32,7 @@ import { useMemo } from 'react';
  * @public
  *
  * @param allowedKinds - Array of allowed kinds to filter the entities
+ * @deprecated Use `ownershipEntityRefs` from `identityApi.getBackstageIdentity()` instead.
  */
 export function useOwnedEntities(allowedKinds?: string[]): {
   loading: boolean;
