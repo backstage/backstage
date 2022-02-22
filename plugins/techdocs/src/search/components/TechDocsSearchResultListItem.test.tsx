@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { DocsResultListItem } from './DocsResultListItem';
+import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 
 // Using canvas to render text..
 jest.mock('react-text-truncate', () => {
@@ -44,9 +44,11 @@ const validResultWithTitle = {
   lifecycle: 'production',
 };
 
-describe('DocsResultListItem test', () => {
+describe('TechDocsSearchResultListItem test', () => {
   it('should render search doc passed in', async () => {
-    const { findByText } = render(<DocsResultListItem result={validResult} />);
+    const { findByText } = render(
+      <TechDocsSearchResultListItem result={validResult} />,
+    );
 
     expect(
       await findByText('Documentation | Backstage docs'),
@@ -60,7 +62,10 @@ describe('DocsResultListItem test', () => {
 
   it('should use title if defined', async () => {
     const { findByText } = render(
-      <DocsResultListItem result={validResult} title="Count Dookumentation" />,
+      <TechDocsSearchResultListItem
+        result={validResult}
+        title="Count Dookumentation"
+      />,
     );
 
     expect(await findByText('Count Dookumentation')).toBeInTheDocument();
@@ -73,7 +78,7 @@ describe('DocsResultListItem test', () => {
 
   it('should use entity title if defined', async () => {
     const { findByText } = render(
-      <DocsResultListItem result={validResultWithTitle} />,
+      <TechDocsSearchResultListItem result={validResultWithTitle} />,
     );
 
     expect(
