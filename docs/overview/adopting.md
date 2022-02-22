@@ -25,7 +25,7 @@ This team will have **four** primary objectives:
 
 2. Drive adoption of customers (developers at your company).
 
-3. Work with senior tech leadership and architects to ensure your organizations
+3. Work with senior tech leadership and architects to ensure your organization's
    best practices for software development are encoded into a set of
    [Software Templates](../features/software-templates/index.md).
 
@@ -62,7 +62,7 @@ products they maintain.
 
 ### Tactics
 
-Example of tactics we have used to evangelize Backstage internally:
+Examples of tactics we have used to evangelize Backstage internally:
 
 - Arrange "Lunch & Learns" and seminars. Frequently offer teams interested in
   Backstage development to come to a seminar where you show, for example, how to
@@ -77,13 +77,13 @@ Example of tactics we have used to evangelize Backstage internally:
 
 - Show & tell meetings. In order to build an internal community around Backstage
   we have quarterly meetings where anyone working on Backstage is invited to
-  present their work. This is a not only a great way to get early feedback, but
+  present their work. This is not only a great way to get early feedback, but
   also helps coordination between teams that are building overlapping
   experiences.
 
 - Provide metrics. Add instrumentation to your Backstage deployment and make
-  metrics available to contributing teams. At Spotify we have even gone so far
-  as sending out weekly digest email showing how usage metrics have changed for
+  metrics available to contributing teams. At Spotify, we have even gone so far
+  as to send out weekly digest emails showing how usage metrics have changed for
   individual plugins.
 
 - Pro-actively identify new plugins. Reach out to teams that own internal UIs or
@@ -109,12 +109,12 @@ successful impact on your software development process:
 - **Deploys to production** Cousin to the metric above: How many times does an
   engineer push changes into production.
 
-- **MTTR** With clear ownership of all the pieces in your micro services
+- **MTTR** With clear ownership of all the pieces in your microservices
   ecosystem and all tools integrated into one place, Backstage makes it quicker
   for teams to find the root cause of failures, and fix them.
 
 - **Context switching** Reducing context switching can help engineers stay in
-  the "zone". We measure the number of different tools an engineer have to
+  the "zone". We measure the number of different tools an engineer has to
   interact with in order to get a certain job done (e.g. push a change, follow
   it into production and validate it did not break anything).
 
