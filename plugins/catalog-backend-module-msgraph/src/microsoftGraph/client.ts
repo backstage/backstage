@@ -28,6 +28,10 @@ import { MicrosoftGraphProviderConfig } from './config';
  */
 export type ODataQuery = {
   /**
+   * search resources within a collection matching a free-text search expression.
+   */
+  search?: string;
+  /**
    * filter a collection of resources
    */
   filter?: string;
@@ -135,6 +139,7 @@ export class MicrosoftGraphClient {
   async requestApi(path: string, query?: ODataQuery): Promise<Response> {
     const queryString = qs.stringify(
       {
+        $search: query?.search,
         $filter: query?.filter,
         $select: query?.select?.join(','),
         $expand: query?.expand?.join(','),
@@ -167,6 +172,11 @@ export class MicrosoftGraphClient {
     return await fetch(url, {
       headers: {
         Authorization: `Bearer ${token.accessToken}`,
+
+        // Eventual consistency is required to use $search.
+        // Groups/Users are not changed that frequently to require strong consistency
+        // If a new user/group is not found, it'll eventually be imported on a subsequent call
+        ConsistencyLevel: 'eventual'
       },
     });
   }

@@ -153,7 +153,9 @@ export type MicrosoftGraphProviderConfig = {
   userFilter?: string;
   userExpand?: string[];
   userGroupMemberFilter?: string;
+  userGroupMemberSearch?: string;
   groupFilter?: string;
+  groupSearch?: string;
 };
 
 // @public
@@ -161,6 +163,7 @@ export function normalizeEntityName(name: string): string;
 
 // @public
 export type ODataQuery = {
+  search?: string;
   filter?: string;
   expand?: string[];
   select?: string[];
@@ -183,7 +186,9 @@ export function readMicrosoftGraphOrg(
   options: {
     userExpand?: string[];
     userFilter?: string;
+    userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    groupSearch?: string;
     groupFilter?: string;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;

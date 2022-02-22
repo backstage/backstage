@@ -74,11 +74,23 @@ export interface Config {
            */
           groupFilter?: string;
           /**
+           * The search criteria to apply to extract users by groups memberships.
+           *
+           * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
+           */
+          groupSearch?: string;
+          /**
            * The filter to apply to extract users by groups memberships.
            *
            * E.g. "displayName eq 'Backstage Users'"
            */
           userGroupMemberFilter?: string;
+          /**
+           * The search criteria to apply to extract groups.
+           *
+           * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
+           */
+          userGroupMemberSearch?: string;
         }>;
       };
     };
