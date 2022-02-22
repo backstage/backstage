@@ -301,15 +301,13 @@ export async function createRouter(
       });
 
       // After client opens connection send all events as string
-      const { unsubscribe } = taskBroker.observe(
-        { taskId, after },
-        (error, { events }) => {
-          if (error) {
-            logger.error(
-              `Received error from event stream when observing taskId '${taskId}', ${error}`,
-            );
-          }
-
+      const subscription = taskBroker.event$({ taskId, after }).subscribe({
+        error: error => {
+          logger.error(
+            `Received error from event stream when observing taskId '${taskId}', ${error}`,
+          );
+        },
+        next: ({ events }) => {
           let shouldUnsubscribe = false;
           for (const event of events) {
             res.write(
@@ -317,19 +315,18 @@ export async function createRouter(
             );
             if (event.type === 'completion') {
               shouldUnsubscribe = true;
-              // Closing the event stream here would cause the frontend
-              // to automatically reconnect because it lost connection.
             }
           }
           // res.flush() is only available with the compression middleware
           res.flush?.();
-          if (shouldUnsubscribe) unsubscribe();
+          if (shouldUnsubscribe) subscription.unsubscribe();
         },
-      );
+      });
+
       // When client closes connection we update the clients list
       // avoiding the disconnected one
       req.on('close', () => {
-        unsubscribe();
+        subscription.unsubscribe();
         logger.debug(`Event stream observing taskId '${taskId}' closed`);
       });
     })
@@ -337,36 +334,29 @@ export async function createRouter(
       const { taskId } = req.params;
       const after = Number(req.query.after) || undefined;
 
-      let unsubscribe = () => {};
-
       // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
       const timeout = setTimeout(() => {
-        unsubscribe();
         res.json([]);
       }, 30_000);
 
       // Get all known events after an id (always includes the completion event) and return the first callback
-      ({ unsubscribe } = taskBroker.observe(
-        { taskId, after },
-        (error, { events }) => {
-          // stop the timeout
+      const subscription = taskBroker.event$({ taskId, after }).subscribe({
+        error: error => {
+          logger.error(
+            `Received error from event stream when observing taskId '${taskId}', ${error}`,
+          );
+        },
+        next: ({ events }) => {
           clearTimeout(timeout);
-          unsubscribe();
-
-          if (error) {
-            logger.error(
-              `Received error from log when observing taskId '${taskId}', ${error}`,
-            );
-          }
-
+          subscription.unsubscribe();
           res.json(events);
         },
-      ));
+      });
 
       // When client closes connection we update the clients list
       // avoiding the disconnected one
       req.on('close', () => {
-        unsubscribe();
+        subscription.unsubscribe();
         clearTimeout(timeout);
       });
     });
