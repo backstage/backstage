@@ -26,18 +26,43 @@ import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
 import { PreparerBase, PreparerResponse } from './types';
 
+export type DirectoryPreparerOptions = {
+  config: Config;
+  reader: UrlReader;
+};
+
+export type PreparerOptions = { logger?: Logger; etag?: string };
+
+/**
+ * Prepares files before building documentation
+ *
+ * @public
+ */
 export class DirectoryPreparer implements PreparerBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly reader: UrlReader;
 
-  constructor(config: Config, _logger: Logger, reader: UrlReader) {
+  /**
+   * @deprecated use static fromConfig method instead.
+   */
+  constructor(config: Config, _logger: Logger | null, reader: UrlReader) {
     this.reader = reader;
     this.scmIntegrations = ScmIntegrations.fromConfig(config);
   }
 
+  static fromConfig(options: DirectoryPreparerOptions): DirectoryPreparer {
+    return new DirectoryPreparer(options.config, null, options.reader);
+  }
+
+  /**
+   *
+   * @param entity - The parts of the format that's common to all versions/kinds of entity
+   * @param options - Optional logger and etag
+   * @returns
+   */
   async prepare(
     entity: Entity,
-    options?: { logger?: Logger; etag?: string },
+    options?: PreparerOptions,
   ): Promise<PreparerResponse> {
     const annotation = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',

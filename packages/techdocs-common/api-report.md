@@ -17,21 +17,19 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "DirectoryPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class DirectoryPreparer implements PreparerBase {
-  constructor(config: Config, _logger: Logger_2, reader: UrlReader);
+  // @deprecated
+  constructor(config: Config, _logger: Logger_2 | null, reader: UrlReader);
+  // Warning: (ae-forgotten-export) The symbol "DirectoryPreparerOptions" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  static fromConfig(options: DirectoryPreparerOptions): DirectoryPreparer;
+  // Warning: (ae-forgotten-export) The symbol "PreparerOptions" needs to be exported by the entry point index.d.ts
   // Warning: (ae-forgotten-export) The symbol "PreparerResponse" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  prepare(
-    entity: Entity,
-    options?: {
-      logger?: Logger_2;
-      etag?: string;
-    },
-  ): Promise<PreparerResponse>;
+  prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
 
 // Warning: (ae-missing-release-tag) "GeneratorBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
