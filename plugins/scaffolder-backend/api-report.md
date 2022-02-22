@@ -354,14 +354,13 @@ export class DatabaseTaskStore implements TaskStore {
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
   // (undocumented)
-  emitLogEvent({
-    taskId,
-    body,
-  }: TaskStoreEmitOptions<
-    {
-      message: string;
-    } & JsonObject
-  >): Promise<void>;
+  emitLogEvent(
+    options: TaskStoreEmitOptions<
+      {
+        message: string;
+      } & JsonObject
+    >,
+  ): Promise<void>;
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
@@ -380,6 +379,11 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public @deprecated
 export type DispatchResult = TaskBrokerDispatchResult;
+
+// Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public
 export function fetchContents({
@@ -437,16 +441,8 @@ export interface RouterOptions {
   taskWorkers?: number;
 }
 
-// Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "runCommand" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const runCommand: ({
-  command,
-  args,
-  logStream,
-  options,
-}: RunCommandOptions) => Promise<void>;
+// @public @deprecated
+export const runCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {

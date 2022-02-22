@@ -25,4 +25,4 @@ export * from './github';
 /** @deprecated please add this package to your own installation manually */
 export { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 
-export { runCommand } from './helpers';
+export { runCommand, executeShellCommand } from './helpers';
