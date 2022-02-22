@@ -176,7 +176,7 @@ export class MicrosoftGraphClient {
         // Eventual consistency is required to use $search.
         // Groups/Users are not changed that frequently to require strong consistency
         // If a new user/group is not found, it'll eventually be imported on a subsequent call
-        ConsistencyLevel: 'eventual'
+        ConsistencyLevel: 'eventual',
       },
     });
   }

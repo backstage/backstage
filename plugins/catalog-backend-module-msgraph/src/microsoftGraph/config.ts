@@ -105,12 +105,16 @@ export function readMicrosoftGraphConfig(
       : 'https://login.microsoftonline.com';
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getString('clientId');
-    const clientSecret = providerConfig.getString("clientSecret");
-    const userFilter = providerConfig.getOptionalString("userFilter");
-    const userGroupMemberFilter = providerConfig.getOptionalString("userGroupMemberFilter");
-    const userGroupMemberSearch = providerConfig.getOptionalString("userGroupMemberSearch");
-    const groupFilter = providerConfig.getOptionalString("groupFilter");
-    const groupSearch = providerConfig.getOptionalString("groupSearch");
+    const clientSecret = providerConfig.getString('clientSecret');
+    const userFilter = providerConfig.getOptionalString('userFilter');
+    const userGroupMemberFilter = providerConfig.getOptionalString(
+      'userGroupMemberFilter',
+    );
+    const userGroupMemberSearch = providerConfig.getOptionalString(
+      'userGroupMemberSearch',
+    );
+    const groupFilter = providerConfig.getOptionalString('groupFilter');
+    const groupSearch = providerConfig.getOptionalString('groupSearch');
 
     if (userFilter && userGroupMemberFilter) {
       throw new Error(
@@ -118,7 +122,9 @@ export function readMicrosoftGraphConfig(
       );
     }
     if (userFilter && userGroupMemberSearch) {
-      throw new Error(`userGroupMemberSearch cannot be specified when userFilter is defined.`);
+      throw new Error(
+        `userGroupMemberSearch cannot be specified when userFilter is defined.`,
+      );
     }
 
     providers.push({
@@ -131,7 +137,7 @@ export function readMicrosoftGraphConfig(
       userGroupMemberFilter,
       userGroupMemberSearch,
       groupFilter,
-      groupSearch
+      groupSearch,
     });
   }
 
