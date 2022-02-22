@@ -24,7 +24,7 @@ To become a maintainer you need to demonstrate the following:
 - Monitor Discord (delayed response is perfectly acceptable).
 - Triage GitHub issues and perform pull request reviews for other maintainers and the community.
 - Triage build issues - file issues for known flaky builds or bugs, and either fix or find someone to fix any master build breakages.
-- During GitHub issue triage, apply all applicable ([labels](https://github.com/backstage/backstage/labels)) to each new issue. Labels are extremely useful for future issue to follow-up. Which labels to apply is somewhat subjective so just use your best judgment. A few of the most important labels that are not self-explanatory are:
+- During GitHub issue triage, apply all applicable ([labels](https://github.com/backstage/backstage/labels)) to each new issue. Labels are extremely useful for future issue follow-up. Which labels to apply is somewhat subjective so just use your best judgment. A few of the most important labels that are not self-explanatory are:
   - good first issue: Mark any issue that can reasonably be accomplished by a new contributor with this label.
   - help wanted: Unless it is immediately obvious that someone is going to work on an issue (and if so assign it), mark it help wanted.
 - Make sure that ongoing PRs are moving forward at the right pace or closing them.
@@ -71,9 +71,9 @@ The following is a non-exhaustive list of types of change, for which a reviewer 
 - Additions and removals of entire packages
 - Releases (e.g. pull requests titled `Version Packages`)
 
-A maintainer may suggest an addition to the reviewers' team by opening a pull request that modifies [`OWNERS.md`](./OWNERS.md) accordingly. Prospective reviewers are not expected to do this themselves, but should rather ask a maintainer to sponsor their addition. All of the maintainers and sponsors are called to vote on the addition (see the section below about voting). If the vote passes, the pull request can be approved and merged, and the corresponding addition to the GitHub team can be made.
+A maintainer may suggest an addition to the reviewers team by opening a pull request that modifies [`OWNERS.md`](./OWNERS.md) accordingly. Prospective reviewers are not expected to do this themselves, but should rather ask a maintainer to sponsor their addition. All of the maintainers and sponsors are called to vote on the addition (see the section below about voting). If the vote passes, the pull request can be approved and merged, and the corresponding addition to the GitHub team can be made.
 
-A reviewer can elect to remove themselves from the reviewers' group by opening, or asking a maintainer to open, a pull request that modifies [`OWNERS.md`](./OWNERS.md) accordingly. A maintainer will approve and merge the pull request, and the corresponding removal from the GitHub team can be made.
+A reviewer can elect to remove themselves from the reviewers group by opening, or asking a maintainer to open, a pull request that modifies [`OWNERS.md`](./OWNERS.md) accordingly. A maintainer will approve and merge the pull request, and the corresponding removal from the GitHub team can be made.
 
 A maintainer can call on the other maintainers and sponsors for a vote to remove a reviewer (see the section below about conflict resolution and voting). If the vote passes, a maintainer creates a pull request that modifies [`OWNERS.md`](./OWNERS.md) accordingly. After approval by another maintainer, the pull request can be merged, and the corresponding removal from the GitHub team can be made.
 

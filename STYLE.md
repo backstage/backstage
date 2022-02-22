@@ -131,7 +131,7 @@ We use [API Extractor](https://api-extractor.com/pages/overview/demo_docs/) to g
 
 The doc comments are of the good old `/** ... */` format, with tags of the format `@<tag>` used to mark various things. The [TSDoc website](https://tsdoc.org/) has a good index of all available tags.
 
-There are a few things to pay attention to to make the documentation show up in a nice way on the website...
+There are a few things to pay attention to, in order to make the documentation show up in a nice way on the website...
 
 ## Declare exported functions using the `function` keyword
 

@@ -191,7 +191,7 @@ components: {
 That should be it. You can stop your Backstage App. When you start it again and
 go to your Backstage portal in your browser, you should have your login prompt!
 
-To learn more about Authentication in Backstage, here are the following docs you
+To learn more about Authentication in Backstage, here are some docs you
 could read:
 
 - [Adding Authentication](../auth/)
