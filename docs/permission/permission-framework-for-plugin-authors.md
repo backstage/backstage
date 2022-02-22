@@ -400,7 +400,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
 ## Authorize the `GET /todos` endpoint
 
-Authorizing the `GET /todos` is similar to the update endpoint: whenever a `GET /todos` request is received, only the items that the user has created, should be returned.
+Authorizing the `GET /todos` is similar to the update endpoint: whenever a `GET /todos` request is received, only the items that the user has created should be returned.
 
 As in the previous case, the permission policy can't take the decision itself, meaning that a conditional decision should be returned.
 Also, here we don't have a `resourceRef` but a list of resources.
