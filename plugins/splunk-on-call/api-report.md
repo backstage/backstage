@@ -15,7 +15,11 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // Warning: (ae-missing-release-tag) "EntitySplunkOnCallCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntitySplunkOnCallCard: () => JSX.Element;
+export const EntitySplunkOnCallCard: ({
+  readOnly,
+}: {
+  readOnly?: boolean | undefined;
+}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isSplunkOnCallAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
