@@ -243,15 +243,13 @@ export const IncidentListItem = ({
 
       {incident.incidentLink && incident.incidentNumber && (
         <ListItemSecondaryAction>
-          {!readOnly ? (
+          {!readOnly && (
             <IncidentAction
               currentPhase={incident.currentPhase || ''}
               incidentId={incident.entityId}
               resolveAction={handleResolveIncident}
               acknowledgeAction={handleAcknowledgeIncident}
             />
-          ) : (
-            ''
           )}
           <Tooltip title="View in Splunk On-Call" placement="top">
             <IconButton
