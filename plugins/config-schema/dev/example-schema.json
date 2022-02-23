@@ -746,36 +746,6 @@
           "description": "List of processor-specific options and attributes",
           "type": "object",
           "properties": {
-            "githubOrg": {
-              "description": "GithubOrgReaderProcessor configuration",
-              "type": "object",
-              "required": ["providers"],
-              "properties": {
-                "providers": {
-                  "description": "The configuration parameters for each single GitHub org provider.",
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "required": ["target"],
-                    "properties": {
-                      "target": {
-                        "description": "The prefix of the target that this matches on, e.g.\n\"https://github.com\", with no trailing slash.",
-                        "type": "string"
-                      },
-                      "apiBaseUrl": {
-                        "description": "The base URL of the API of this provider, e.g.\n\"https://api.github.com\", with no trailing slash.\n\nMay be omitted specifically for GitHub; then it will be deduced.",
-                        "type": "string"
-                      },
-                      "token": {
-                        "description": "The authorization token to use for requests to this provider.\n\nIf no token is specified, anonymous access is used.",
-                        "visibility": "secret",
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "ldapOrg": {
               "description": "LdapOrgReaderProcessor configuration",
               "type": "object",

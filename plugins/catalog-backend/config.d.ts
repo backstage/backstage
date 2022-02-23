@@ -111,39 +111,6 @@ export interface Config {
      */
     processors?: {
       /**
-       * GithubOrgReaderProcessor configuration
-       *
-       * @deprecated Configure a GitHub integration instead.
-       */
-      githubOrg?: {
-        /**
-         * The configuration parameters for each single GitHub org provider.
-         */
-        providers: Array<{
-          /**
-           * The prefix of the target that this matches on, e.g.
-           * "https://github.com", with no trailing slash.
-           */
-          target: string;
-          /**
-           * The base URL of the API of this provider, e.g.
-           * "https://api.github.com", with no trailing slash.
-           *
-           * May be omitted specifically for GitHub; then it will be deduced.
-           */
-          apiBaseUrl?: string;
-          /**
-           * The authorization token to use for requests to this provider.
-           *
-           * If no token is specified, anonymous access is used.
-           *
-           * @visibility secret
-           */
-          token?: string;
-        }>;
-      };
-
-      /**
        * GithubMultiOrgReaderProcessor configuration
        */
       githubMultiOrg?: {

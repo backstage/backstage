@@ -211,14 +211,6 @@ catalog:
         - Location
 
   processors:
-    githubOrg:
-      providers:
-        - target: https://github.com
-          token: ${GITHUB_TOKEN}
-        #### Example for how to add your GitHub Enterprise instance using the API:
-        # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api
-        #   token: ${GHE_TOKEN}
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
       # providers:
