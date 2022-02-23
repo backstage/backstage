@@ -40,8 +40,8 @@ export function createScaffolderFieldExtension<
 ): Extension<TInputProps & (() => null)>;
 
 // @public
-export type CustomFieldValidator<TReturnValue> = (
-  data: TReturnValue,
+export type CustomFieldValidator<TFieldReturnValue> = (
+  data: TFieldReturnValue,
   field: FieldValidation,
   context: {
     apiHolder: ApiHolder;
@@ -101,9 +101,9 @@ export const FavouriteTemplate: (props: Props) => JSX.Element;
 
 // @public
 export interface FieldExtensionComponentProps<
-  TReturnValue,
+  TFieldReturnValue,
   TUiOptions extends {} = {},
-> extends FieldProps<TReturnValue> {
+> extends FieldProps<TFieldReturnValue> {
   // (undocumented)
   uiSchema: FieldProps['uiSchema'] & {
     'ui:options'?: TUiOptions;
@@ -112,12 +112,12 @@ export interface FieldExtensionComponentProps<
 
 // @public
 export type FieldExtensionOptions<
-  TReturnValue = unknown,
-  TProps = FieldProps<TReturnValue>,
+  TFieldReturnValue = unknown,
+  TProps = FieldProps<TFieldReturnValue>,
 > = {
   name: string;
   component: (props: TProps) => JSX.Element | null;
-  validation?: CustomFieldValidator<TReturnValue>;
+  validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 
 // Warning: (ae-missing-release-tag) "OwnedEntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
