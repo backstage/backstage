@@ -76,13 +76,19 @@ export interface EntityPickerUiOptions {
   defaultKind?: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "EntityTagsPickerUiOptions" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const EntityTagsPickerFieldExtension: FieldExtensionComponentProps<
   string[],
   EntityTagsPickerUiOptions
 >;
+
+// Warning: (ae-missing-release-tag) "EntityTagsPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface EntityTagsPickerUiOptions {
+  // (undocumented)
+  kinds?: string[];
+}
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "FavouriteTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

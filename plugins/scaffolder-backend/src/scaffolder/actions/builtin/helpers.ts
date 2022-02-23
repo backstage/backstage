@@ -44,6 +44,7 @@ export const executeShellCommand = async (options: RunCommandOptions) => {
     options: spawnOptions,
     logStream = new PassThrough(),
   } = options;
+  console.log('in exec shell commabnd');
   await new Promise<void>((resolve, reject) => {
     const process = spawn(command, args, spawnOptions);
 
