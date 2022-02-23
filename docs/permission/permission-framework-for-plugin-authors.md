@@ -24,7 +24,7 @@ The source code is available here:
 
     ![backstage application files structure](../assets/permission/permission-tutorial-backstage-application-initial-structure.png)
 
-2.  add the new plugin as dependency of your app's backend module:
+2.  add the new plugin as a dependency of your app's backend module:
 
     ```
     $ yarn workspace app add @internal/plugin-todo-list@^1.0.0
