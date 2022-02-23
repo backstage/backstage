@@ -20,7 +20,7 @@ The source code is available here:
 - [todo-list](link-to-backstage-todo-list-plugin)
 - [todo-list-backend](link-to-backstage-todo-list-backend-plugin)
 
-1.  Copy-paste the two folders into the plugins folder of your backstage application.folder into your backstage application plugins folder. Your application structure should look more or less as the following:
+1.  Copy-paste the two folders into the plugins folder of your backstage application repository. Your application structure should look something like this:
 
     ![backstage application files structure](../assets/permission/permission-tutorial-backstage-application-initial-structure.png)
 
