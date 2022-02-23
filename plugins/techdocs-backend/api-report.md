@@ -32,8 +32,6 @@ export class DefaultTechDocsCollator implements DocumentCollator {
   // (undocumented)
   execute(): Promise<TechDocsDocument[]>;
   // (undocumented)
-  protected filter?: GetEntitiesRequest['filter'];
-  // (undocumented)
   static fromConfig(
     config: Config,
     options: TechDocsCollatorOptions,
