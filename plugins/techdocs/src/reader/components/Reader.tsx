@@ -69,12 +69,13 @@ type Props = {
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   searchBar: {
-    marginLeft: '16rem',
-    maxWidth: 'calc(100% - 16rem * 2)',
-    marginTop: theme.spacing(1),
+    maxWidth: 'calc(100% - 16rem * 2 - 2.4rem)',
+    marginTop: 0,
+    marginBottom: theme.spacing(1),
+    marginLeft: 'calc(16rem + 1.2rem)',
     '@media screen and (max-width: 76.1875em)': {
-      marginLeft: '10rem',
-      maxWidth: 'calc(100% - 10rem)',
+      marginLeft: 'calc(10rem + 0.8rem)',
+      maxWidth: 'calc(100% - 10rem - 1.6rem)',
     },
   },
 }));
@@ -391,7 +392,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           // Layout
           css: `
             .md-grid {
-              max-width: 90vw;
+              max-width: 100%;
               margin: 0;
             }
 
@@ -483,6 +484,9 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
               .md-nav--primary :is(.md-nav__title,.md-nav__item) {
                 font-size : var(--md-typeset-font-size);
               }
+              .md-nav .md-source {
+                display: none;
+              }
 
               .md-sidebar--primary {
                 width: 10rem !important;
@@ -545,6 +549,10 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
                 }
               `);
             }, '')}
+
+            .md-typeset .md-content__button {
+              color: var(--md-default-fg-color);
+            }
             
             .md-typeset hr {
               border-bottom: 0.05rem dotted ${theme.palette.divider};
