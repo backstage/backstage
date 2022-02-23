@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/styles';
 import {
@@ -23,9 +23,13 @@ import {
   catalogApiRef,
   CatalogApi,
   isOwnerOf,
-  useOwnUser,
 } from '@backstage/plugin-catalog-react';
-import { Entity } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  Entity,
+  parseEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { DocsTable } from './DocsTable';
 import { DocsCardGrid } from './DocsCardGrid';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
@@ -40,7 +44,7 @@ import {
   ContentHeader,
 } from '@backstage/core-components';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 const panels = {
   DocsTable: DocsTable,
@@ -195,3 +199,18 @@ export const TechDocsCustomHome = ({
     </TechDocsPageWrapper>
   );
 };
+
+function useOwnUser(): AsyncState<UserEntity | undefined> {
+  const catalogApi = useApi(catalogApiRef);
+  const identityApi = useApi(identityApiRef);
+
+  return useAsync(async () => {
+    const identity = await identityApi.getBackstageIdentity();
+    return catalogApi.getEntityByName(
+      parseEntityRef(identity.userEntityRef, {
+        defaultKind: 'User',
+        defaultNamespace: DEFAULT_NAMESPACE,
+      }),
+    ) as Promise<UserEntity | undefined>;
+  }, [catalogApi, identityApi]);
+}
