@@ -15,7 +15,7 @@ If you want to add support for permissions to your own plugin, feel free to skip
 
 We will use a "Todo list" feature, composed of the `todo-list` and `todo-list-backend` plugins.
 
-The source code is already available here:
+The source code is available here:
 
 - [todo-list](link-to-backstage-todo-list-plugin)
 - [todo-list-backend](link-to-backstage-todo-list-backend-plugin)
