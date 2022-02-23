@@ -32,7 +32,7 @@ import {
 } from './request';
 import {
   disallowReadonlyMode,
-  locationSpec,
+  locationInput,
   validateRequestBody,
 } from './util';
 import { RefreshOptions, LocationService, RefreshService } from './types';
@@ -175,7 +175,7 @@ export async function createRouter(
   if (locationService) {
     router
       .post('/locations', async (req, res) => {
-        const location = await validateRequestBody(req, locationSpec);
+        const location = await validateRequestBody(req, locationInput);
         const dryRun = yn(req.query.dryRun, { default: false });
 
         // when in dryRun addLocation is effectively a read operation so we don't
@@ -218,9 +218,9 @@ export async function createRouter(
     router.post('/analyze-location', async (req, res) => {
       const body = await validateRequestBody(
         req,
-        z.object({ location: locationSpec }),
+        z.object({ location: locationInput }),
       );
-      const schema = z.object({ location: locationSpec });
+      const schema = z.object({ location: locationInput });
       const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
       res.status(200).json(output);
     });

@@ -9,7 +9,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GroupEntity } from '@backstage/catalog-model';
-import { LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger as Logger_2 } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import * as msal from '@azure/msal-node';

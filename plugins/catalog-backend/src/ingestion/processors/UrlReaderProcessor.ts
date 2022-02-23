@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import parseGitUrl from 'git-url-parse';
 import limiterFactory from 'p-limit';
@@ -28,6 +28,7 @@ import {
   CatalogProcessorEntityResult,
   CatalogProcessorParser,
   CatalogProcessorResult,
+  LocationSpec,
 } from './types';
 
 const CACHE_KEY = 'v1';

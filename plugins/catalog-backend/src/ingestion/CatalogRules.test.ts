@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { DefaultCatalogRulesEnforcer } from './CatalogRules';
+import { LocationSpec } from './processors';
 
 const entity = {
   user: {

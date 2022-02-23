@@ -15,13 +15,13 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { codeSearch } from './azure';
 import {
   AzureDevOpsDiscoveryProcessor,
   parseUrl,
 } from './AzureDevOpsDiscoveryProcessor';
+import { LocationSpec } from './types';
 
 jest.mock('./azure');
 const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;

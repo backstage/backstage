@@ -15,9 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from './github';
+import { LocationSpec } from './types';
 import { ConfigReader } from '@backstage/config';
 import {
   ScmIntegrations,

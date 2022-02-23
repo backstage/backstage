@@ -363,7 +363,7 @@ export { LocationEntityV1alpha1 };
 // @public
 export const locationEntityV1alpha1Validator: KindValidator;
 
-// @public
+// @public @deprecated
 export type LocationSpec = {
   type: string;
   target: string;

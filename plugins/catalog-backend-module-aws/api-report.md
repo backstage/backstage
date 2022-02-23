@@ -6,7 +6,7 @@
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
-import { LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger as Logger_2 } from 'winston';
 
 // @public

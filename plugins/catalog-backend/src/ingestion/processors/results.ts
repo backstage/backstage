@@ -15,8 +15,8 @@
  */
 
 import { InputError, NotFoundError } from '@backstage/errors';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
-import { CatalogProcessorResult } from './types';
+import { Entity } from '@backstage/catalog-model';
+import { CatalogProcessorResult, LocationSpec } from './types';
 import { EntityRelationSpec } from '../../processing/types';
 
 /** @public */

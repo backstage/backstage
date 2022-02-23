@@ -21,7 +21,6 @@ import {
   Entity,
   EntityPolicies,
   LocationEntity,
-  LocationSpec,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -29,6 +28,7 @@ import {
   CatalogProcessorCache,
   CatalogProcessorEmit,
   CatalogProcessorParser,
+  LocationSpec,
   results,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';

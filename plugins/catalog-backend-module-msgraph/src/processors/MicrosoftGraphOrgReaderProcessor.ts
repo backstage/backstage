@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
   results,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { LocationSpec, ResourceEntityV1alpha1 } from '@backstage/catalog-model';
+import { ResourceEntityV1alpha1 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
   results,
 } from '@backstage/plugin-catalog-backend';
 import AWS, { Credentials, Organizations } from 'aws-sdk';

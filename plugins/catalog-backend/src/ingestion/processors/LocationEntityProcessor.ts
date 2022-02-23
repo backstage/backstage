@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, LocationEntity, LocationSpec } from '@backstage/catalog-model';
+import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
 export function toAbsoluteUrl(
   integrations: ScmIntegrationRegistry,

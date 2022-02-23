@@ -22,7 +22,6 @@ import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-client';
-import { LocationSpec } from '@backstage/catalog-model';
 import { Logger as Logger_2 } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -813,10 +812,20 @@ export type LocationEntityProcessorOptions = {
 };
 
 // @public
+export interface LocationInput {
+  // @deprecated (undocumented)
+  presence?: 'optional' | 'required';
+  // (undocumented)
+  target: string;
+  // (undocumented)
+  type: string;
+}
+
+// @public
 export interface LocationService {
   // (undocumented)
   createLocation(
-    spec: LocationSpec,
+    location: LocationInput,
     dryRun: boolean,
     options?: {
       authorizationToken?: string;
@@ -847,9 +856,16 @@ export interface LocationService {
 }
 
 // @public
+export type LocationSpec = {
+  type: string;
+  target: string;
+  presence?: 'optional' | 'required';
+};
+
+// @public
 export interface LocationStore {
   // (undocumented)
-  createLocation(spec: LocationSpec): Promise<Location_2>;
+  createLocation(location: LocationInput): Promise<Location_2>;
   // (undocumented)
   deleteLocation(id: string): Promise<void>;
   // (undocumented)

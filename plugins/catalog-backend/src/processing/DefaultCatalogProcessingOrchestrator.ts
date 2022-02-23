@@ -18,7 +18,6 @@ import {
   Entity,
   EntityPolicy,
   LocationEntity,
-  LocationSpec,
   parseLocationRef,
   stringifyEntityRef,
   stringifyLocationRef,
@@ -36,6 +35,7 @@ import { Logger } from 'winston';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
+  LocationSpec,
 } from '../ingestion/processors';
 import * as results from '../ingestion/processors/results';
 import {

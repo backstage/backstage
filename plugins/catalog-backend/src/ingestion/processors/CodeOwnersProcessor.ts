@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   ScmIntegrationRegistry,
@@ -23,7 +23,7 @@ import {
 } from '@backstage/integration';
 import { Logger } from 'winston';
 import { findCodeOwnerByTarget } from './codeowners';
-import { CatalogProcessor } from './types';
+import { CatalogProcessor, LocationSpec } from './types';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 

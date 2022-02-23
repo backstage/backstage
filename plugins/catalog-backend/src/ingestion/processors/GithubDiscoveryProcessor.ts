@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -26,7 +25,7 @@ import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import { getOrganizationRepositories } from './github';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
 /**
  * Extracts repositories out of a GitHub org.
