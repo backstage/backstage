@@ -1,10 +1,8 @@
 ---
-id: integrate-permission-framework-into-your-plugin
+id: permission-framework-for-plugin-authors
 title: Permission Framework for plugin authors
 description: How to get started with the permission framework as a plugin author
 ---
-
-The permission framework offers different patterns that plugin authors can use, for integrating their plugins with the Backstage Permission Framework.
 
 The following tutorial is designed for plugin authors who already have knowledge about how to create a backstage plugin. We will provide a "TODO List" plugin to be used as a starting point.
 After integrating the plugin into your application, we will guide you step by step in the process needed for adding support for permissions to your plugin.
@@ -17,8 +15,8 @@ We will use a "Todo list" feature, composed of the `todo-list` and `todo-list-ba
 
 The source code is available here:
 
-- [todo-list](link-to-backstage-todo-list-plugin)
-- [todo-list-backend](link-to-backstage-todo-list-backend-plugin)
+- todo-list link-to-backstage-todo-list-plugin
+- todo-list-backend link-to-backstage-todo-list-backend-plugin
 
 1.  Copy-paste the two folders into the plugins folder of your backstage application repository. Your application structure should look something like this:
 
@@ -44,7 +42,6 @@ The source code is available here:
     export default async function createPlugin({
       logger,
       discovery,
-      permissions,
     }: PluginEnvironment): Promise<Router> {
       return await createRouter({
         logger,
@@ -52,12 +49,9 @@ The source code is available here:
           discovery,
           issuer: await discovery.getExternalBaseUrl('auth'),
         }),
-        permissions,
       });
     }
     ```
-
-    Don't worry if you see typescript complaining about the `permissions` object. This is just a typings issue that we will address in the following steps.
 
     Apply the following changes to `packages/backend/src/index.ts`:
 
@@ -122,14 +116,13 @@ Let's create a new `permissions.ts` file under `plugins/todo-list-backend/src/se
 ```typescript
 import { Permission } from '@backstage/plugin-permission-common';
 
-export const TODOS_LIST_RESOURCE_TYPE = 'todo-item';
+export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 
 export const todosListCreate: Permission = {
   name: 'todos.list.create',
   attributes: {
     action: 'create',
   },
-  resourceType: TODOS_LIST_RESOURCE_TYPE,
 };
 
 export const todosListUpdate: Permission = {
@@ -137,7 +130,7 @@ export const todosListUpdate: Permission = {
   attributes: {
     action: 'update',
   },
-  resourceType: TODOS_LIST_RESOURCE_TYPE,
+  resourceType: TODO_LIST_RESOURCE_TYPE,
 };
 
 export const todosListRead: Permission = {
@@ -145,7 +138,7 @@ export const todosListRead: Permission = {
   attributes: {
     action: 'read',
   },
-  resourceType: TODOS_LIST_RESOURCE_TYPE,
+  resourceType: TODO_LIST_RESOURCE_TYPE,
 };
 ```
 
@@ -197,6 +190,30 @@ Let's authorize the create endpoint. Edit `plugins/todo-list-backend/src/service
       res.json(todo);
   });
 
+```
+
+Pass the `permissions` object to the plugin in `packages/backend/src/plugins/todolist.ts`:
+
+```diff
+  import { IdentityClient } from '@backstage/plugin-auth-backend';
+  import { createRouter } from '@internal/plugin-todo-list-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin({
+    logger,
+    discovery,
++   permissions,
+  }: PluginEnvironment): Promise<Router> {
+    return await createRouter({
+      logger,
+      identity: new IdentityClient({
+        discovery,
+        issuer: await discovery.getExternalBaseUrl('auth'),
+      }),
++     permissions,
+    });
+  }
 ```
 
 That's it! Now your plugin is fully configured.
@@ -366,7 +383,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
 ```diff
 - import { todosListCreate, todosListUpdate } from './permissions';
-+ import { todosListCreate, todosListUpdate, TODOS_LIST_RESOURCE_TYPE } from './permissions';
++ import { todosListCreate, todosListUpdate, TODO_LIST_RESOURCE_TYPE } from './permissions';
 + import { rules } from './rules;
 
   export async function createRouter(
@@ -378,7 +395,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 +     getResources: async resourceRefs => {
 +       return resourceRefs.map(getTodo);
 +     },
-+     resourceType: TODOS_LIST_RESOURCE_TYPE,
++     resourceType: TODO_LIST_RESOURCE_TYPE,
 +     rules,
 +   });
 
@@ -454,7 +471,7 @@ Update `plugins/todo-list-backend/src/service/rules.ts`
     todosListCreate,
     todosListUpdate,
 +   todosListRead,
-    TODOS_LIST_RESOURCE_TYPE,
+    TODO_LIST_RESOURCE_TYPE,
   } from './permissions';
 
   router.get('/todos', async (req, res) => {

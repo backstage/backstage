@@ -254,7 +254,7 @@
       "permission/getting-started",
       "permission/writing-a-policy",
       "permission/concepts",
-      "permission/integrate-permission-framework-into-your-plugin"
+      "permission/permission-framework-for-plugin-authors"
     ],
     "Deployment": [
       "deployment/index",
