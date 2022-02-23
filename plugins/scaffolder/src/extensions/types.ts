@@ -33,9 +33,12 @@ export type CustomFieldValidator<TReturnValue> = (
  *
  * @public
  */
-export type FieldExtensionOptions<TReturnValue = unknown> = {
+export type FieldExtensionOptions<
+  TReturnValue = unknown,
+  TProps = FieldProps<TReturnValue>,
+> = {
   name: string;
-  component: (props: FieldProps<TReturnValue>) => JSX.Element | null;
+  component: (props: TProps) => JSX.Element | null;
   validation?: CustomFieldValidator<TReturnValue>;
 };
 
@@ -46,10 +49,10 @@ export type FieldExtensionOptions<TReturnValue = unknown> = {
  * @public
  */
 export interface FieldExtensionComponentProps<
-  ReturnValue,
-  UiOptions extends {} = {},
-> extends FieldProps<ReturnValue> {
-  uiSchema: {
-    'ui:options'?: UiOptions;
+  TReturnValue,
+  TUiOptions extends {} = {},
+> extends FieldProps<TReturnValue> {
+  uiSchema: FieldProps['uiSchema'] & {
+    'ui:options'?: TUiOptions;
   };
 }
