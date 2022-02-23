@@ -69,7 +69,14 @@ export class CommonValidatorFunctions {
 // @public @deprecated
 export function compareEntityToRef(
   entity: Entity,
-  ref: EntityRef | EntityName,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      }
+    | EntityName,
   context?: {
     defaultKind?: string;
     defaultNamespace?: string;
@@ -212,7 +219,7 @@ export type EntityPolicy = {
   enforce(entity: Entity): Promise<Entity | undefined>;
 };
 
-// @public
+// @public @deprecated
 export type EntityRef =
   | string
   | {
@@ -384,9 +391,15 @@ export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
 export const ORIGIN_LOCATION_ANNOTATION =
   'backstage.io/managed-by-origin-location';
 
-// @public
+// @public @deprecated
 export function parseEntityName(
-  ref: EntityRef,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
   context?: {
     defaultKind?: string;
     defaultNamespace?: string;
@@ -395,7 +408,13 @@ export function parseEntityName(
 
 // @public
 export function parseEntityRef(
-  ref: EntityRef,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
   context?: {
     defaultKind: string;
     defaultNamespace: string;
@@ -404,7 +423,13 @@ export function parseEntityRef(
 
 // @public
 export function parseEntityRef(
-  ref: EntityRef,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
   context?: {
     defaultKind: string;
   },
@@ -416,7 +441,13 @@ export function parseEntityRef(
 
 // @public
 export function parseEntityRef(
-  ref: EntityRef,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
   context?: {
     defaultNamespace: string;
   },
