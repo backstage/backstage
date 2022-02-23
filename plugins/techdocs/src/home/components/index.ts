@@ -16,15 +16,12 @@
 
 export * from './Grids';
 export * from './Tables';
-export { DefaultTechDocsHome } from './DefaultTechDocsHome';
+export * from './DefaultTechDocsHome';
 export type {
   PanelType,
   PanelConfig,
   TabConfig,
   TabsConfig,
 } from './TechDocsCustomHome';
-export {
-  TechDocsPageWrapper,
-  type TechDocsPageWrapperProps,
-} from './TechDocsPageWrapper';
-export { TechDocsPicker } from './TechDocsPicker';
+export * from './TechDocsPageWrapper';
+export * from './TechDocsPicker';

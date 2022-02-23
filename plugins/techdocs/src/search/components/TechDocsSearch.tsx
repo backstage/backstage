@@ -28,7 +28,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useDebounce from 'react-use/lib/useDebounce';
-import { TechDocsSearchResultListItem } from '../../search';
+import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 
 const useStyles = makeStyles({
   root: {
