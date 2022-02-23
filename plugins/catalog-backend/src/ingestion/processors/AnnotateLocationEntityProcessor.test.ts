@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { LocationSpec } from './types';
 import { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
 
 describe('AnnotateLocationEntityProcessor', () => {

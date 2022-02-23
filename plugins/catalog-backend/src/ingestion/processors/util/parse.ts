@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  LocationSpec,
-  stringifyLocationRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyLocationRef } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import * as result from '../results';
-import { CatalogProcessorParser, CatalogProcessorResult } from '../types';
+import {
+  CatalogProcessorParser,
+  CatalogProcessorResult,
+  LocationSpec,
+} from '../types';
 
+/** @public */
 export function* parseEntityYaml(
   data: Buffer,
   location: LocationSpec,

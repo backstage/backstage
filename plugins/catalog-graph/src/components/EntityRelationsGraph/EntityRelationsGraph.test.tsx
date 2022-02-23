@@ -54,6 +54,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'a1',
               namespace: 'd',
             },
+            targetRef: 'k:d/a1',
             type: RELATION_OWNER_OF,
           },
           {
@@ -62,6 +63,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'c1',
               namespace: 'd',
             },
+            targetRef: 'b:d/c1',
             type: RELATION_HAS_PART,
           },
         ],
@@ -80,6 +82,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'c',
               namespace: 'd',
             },
+            targetRef: 'b:d/c',
             type: RELATION_OWNED_BY,
           },
           {
@@ -88,6 +91,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'c1',
               namespace: 'd',
             },
+            targetRef: 'b:d/c1',
             type: RELATION_OWNED_BY,
           },
         ],
@@ -106,6 +110,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'c',
               namespace: 'd',
             },
+            targetRef: 'b:d/c',
             type: RELATION_PART_OF,
           },
           {
@@ -114,6 +119,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'a1',
               namespace: 'd',
             },
+            targetRef: 'k:d/a1',
             type: RELATION_OWNER_OF,
           },
           {
@@ -122,6 +128,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'c2',
               namespace: 'd',
             },
+            targetRef: 'b:d/c2',
             type: RELATION_HAS_PART,
           },
         ],
@@ -140,6 +147,7 @@ describe('<EntityRelationsGraph/>', () => {
               name: 'c1',
               namespace: 'd',
             },
+            targetRef: 'b:d/c1',
             type: RELATION_PART_OF,
           },
         ],
@@ -150,12 +158,12 @@ describe('<EntityRelationsGraph/>', () => {
       getEntityByName: jest.fn(async n => entities[stringifyEntityRef(n)]),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
-      getOriginLocationByEntity: jest.fn(),
-      getLocationByEntity: jest.fn(),
+      getLocationByRef: jest.fn(),
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
+      getEntityFacets: jest.fn(),
     };
 
     Wrapper = ({ children }) => (
@@ -225,6 +233,7 @@ describe('<EntityRelationsGraph/>', () => {
                 name: 'some-component',
                 namespace: 'default',
               },
+              targetRef: 'component:default/some-component',
               type: RELATION_OWNER_OF,
             },
           ],

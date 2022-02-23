@@ -1,5 +1,21 @@
 # @backstage/dev-utils
 
+## 0.2.22
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-app-api@0.5.3
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/integration-react@0.1.22
+  - @backstage/test-utils@0.2.5
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/app-defaults@0.1.8
+  - @backstage/catalog-model@0.10.0
+  - @backstage/theme@0.2.15
+
 ## 0.2.21
 
 ### Patch Changes

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   ScmIntegrations,
@@ -22,6 +21,7 @@ import {
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
+import { LocationSpec } from './types';
 
 jest.mock('@octokit/graphql');
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, LocationEntity, LocationSpec } from '@backstage/catalog-model';
+import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
 export function toAbsoluteUrl(
   integrations: ScmIntegrationRegistry,
@@ -38,12 +38,18 @@ export function toAbsoluteUrl(
   }
 }
 
+/** @public */
 export type LocationEntityProcessorOptions = {
   integrations: ScmIntegrationRegistry;
 };
 
+/** @public */
 export class LocationEntityProcessor implements CatalogProcessor {
   constructor(private readonly options: LocationEntityProcessorOptions) {}
+
+  getProcessorName(): string {
+    return 'LocationEntityProcessor';
+  }
 
   async postProcessEntity(
     entity: Entity,
@@ -77,7 +83,7 @@ export class LocationEntityProcessor implements CatalogProcessor {
           location,
           maybeRelativeTarget,
         );
-        emit(result.location({ type, target }, false));
+        emit(result.location({ type, target }));
       }
     }
 

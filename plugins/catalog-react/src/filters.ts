@@ -19,6 +19,10 @@ import { formatEntityRefTitle } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';
 
+/**
+ * Filter entities based on Kind.
+ * @public
+ */
 export class EntityKindFilter implements EntityFilter {
   constructor(readonly value: string) {}
 
@@ -31,6 +35,10 @@ export class EntityKindFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities based on type
+ * @public
+ */
 export class EntityTypeFilter implements EntityFilter {
   constructor(readonly value: string | string[]) {}
 
@@ -48,6 +56,10 @@ export class EntityTypeFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities based on tag.
+ * @public
+ */
 export class EntityTagFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
@@ -60,6 +72,10 @@ export class EntityTagFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities where the text matches spec, title or tags.
+ * @public
+ */
 export class EntityTextFilter implements EntityFilter {
   constructor(readonly value: string) {}
 
@@ -81,6 +97,10 @@ export class EntityTextFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filter matching entities that are owned by group.
+ * @public
+ */
 export class EntityOwnerFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
@@ -97,6 +117,10 @@ export class EntityOwnerFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities on lifecycle.
+ * @public
+ */
 export class EntityLifecycleFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
@@ -109,6 +133,10 @@ export class EntityLifecycleFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities based on whatever the user has starred or owns them.
+ * @public
+ */
 export class UserListFilter implements EntityFilter {
   constructor(
     readonly value: UserListFilterKind,

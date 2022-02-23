@@ -5,7 +5,6 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
-import { LocationSpec } from '@backstage/catalog-model';
 
 // @public
 export type AddLocationRequest = {
@@ -43,16 +42,16 @@ export interface CatalogApi {
     name: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
-  getLocationByEntity(
-    entity: Entity,
+  getEntityFacets(
+    request: GetEntityFacetsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
+  ): Promise<GetEntityFacetsResponse>;
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getOriginLocationByEntity(
-    entity: Entity,
+  getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   refreshEntity(
@@ -95,6 +94,11 @@ export class CatalogClient implements CatalogApi {
     compoundName: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
+  getEntityFacets(
+    request: GetEntityFacetsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntityFacetsResponse>;
+  // @deprecated (undocumented)
   getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
@@ -103,6 +107,11 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  getLocationByRef(
+    locationRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<Location_2 | undefined>;
+  // @deprecated (undocumented)
   getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
@@ -179,8 +188,31 @@ export interface GetEntityAncestorsResponse {
 }
 
 // @public
+export interface GetEntityFacetsRequest {
+  facets: string[];
+  filter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+}
+
+// @public
+export interface GetEntityFacetsResponse {
+  facets: Record<
+    string,
+    Array<{
+      value: string;
+      count: number;
+    }>
+  >;
+}
+
+// @public
 type Location_2 = {
   id: string;
-} & LocationSpec;
+  type: string;
+  target: string;
+  presence?: 'optional' | 'required';
+};
 export { Location_2 as Location };
 ```

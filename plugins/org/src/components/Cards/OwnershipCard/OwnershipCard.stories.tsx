@@ -69,9 +69,10 @@ const makeComponent = ({ type, name }: { type: string; name: string }) => ({
   relations: [
     {
       type: 'ownedBy',
+      targetRef: 'group:default/team-a',
       target: {
         namespace: 'default',
-        kind: 'Group',
+        kind: 'group',
         name: 'team-a',
       },
     },

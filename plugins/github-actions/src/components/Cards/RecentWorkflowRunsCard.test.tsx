@@ -75,7 +75,7 @@ describe('<RecentWorkflowRunsCard />', () => {
     jest.resetAllMocks();
   });
 
-  const renderSubject = (props: RecentWorkflowRunsCardProps = { entity }) =>
+  const renderSubject = (props: RecentWorkflowRunsCardProps = {}) =>
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
@@ -85,7 +85,7 @@ describe('<RecentWorkflowRunsCard />', () => {
               [configApiRef, configApi],
             ]}
           >
-            <EntityProvider entity={props.entity!}>
+            <EntityProvider entity={entity}>
               <RecentWorkflowRunsCard {...props} />
             </EntityProvider>
           </TestApiProvider>
@@ -113,7 +113,7 @@ describe('<RecentWorkflowRunsCard />', () => {
 
   it('requests only the required number of workflow runs', async () => {
     const limit = 3;
-    renderSubject({ entity, limit });
+    renderSubject({ limit });
     expect(useWorkflowRuns).toHaveBeenCalledWith(
       expect.objectContaining({ initialPageSize: limit }),
     );
@@ -128,7 +128,7 @@ describe('<RecentWorkflowRunsCard />', () => {
 
   it('filters workflows by branch if one is specified', async () => {
     const branch = 'master';
-    renderSubject({ entity, branch });
+    renderSubject({ branch });
     expect(useWorkflowRuns).toHaveBeenCalledWith(
       expect.objectContaining({ branch }),
     );

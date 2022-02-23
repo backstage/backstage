@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { parseEntityName } from '@backstage/catalog-model';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
@@ -57,7 +57,7 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
         .filter(({ url, entityRef }) => url || entityRef)
         .map(({ url, entityRef, title, icon }) => {
           if (entityRef) {
-            const entityName = parseEntityName(entityRef);
+            const entityName = parseEntityRef(entityRef);
             const target = entityRoute(entityName);
             return { title, icon, url: target };
           }

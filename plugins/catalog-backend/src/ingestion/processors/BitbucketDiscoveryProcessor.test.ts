@@ -16,13 +16,13 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 import { ConfigReader } from '@backstage/config';
-import { LocationSpec } from '@backstage/catalog-model';
 import {
   BitbucketRepository20,
   BitbucketRepositoryParser,
   PagedResponse,
   PagedResponse20,
 } from './bitbucket';
+import { LocationSpec } from './types';
 import { results } from './index';
 import { RequestHandler, rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -210,7 +210,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/projects/backstage/repos/backstage/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -220,7 +219,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/projects/demo/repos/demo/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -246,7 +244,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-cli/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -269,7 +266,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/projects/demo/repos/demo/browse/catalog.yaml?ref=branch-name',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -292,7 +288,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/projects/backstage/repos/test/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -321,7 +316,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-cli/browse/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
   });
@@ -369,7 +363,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/custom-path/projects/backstage/repos/backstage/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -379,7 +372,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/custom-path/projects/demo/repos/demo/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -408,7 +400,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/custom-path/projects/backstage/repos/techdocs-cli/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -434,7 +425,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/custom-path/projects/demo/repos/demo/browse/catalog.yaml?ref=branch-name',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -460,7 +450,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/custom-path/projects/backstage/repos/test/browse/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -492,7 +481,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.mycompany.com/custom-path/projects/backstage/repos/techdocs-cli/browse/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
   });
@@ -536,7 +524,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -546,7 +533,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-two/src/master/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -574,7 +560,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-one/src/master/my/nested/path/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -584,7 +569,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-two/src/master/my/nested/path/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -612,7 +596,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -622,7 +605,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-two/src/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -649,7 +631,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -677,7 +658,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-three/src/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -703,7 +683,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(mockCall).toBeCalledTimes(1);
       // it should be possible to do this via an `expect.objectContaining` check but seems to fail with some encoding issue.
@@ -739,7 +718,6 @@ describe('BitbucketDiscoveryProcessor', () => {
             'https://bitbucket.org/myworkspace/repository-one/src/master/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -766,13 +744,11 @@ describe('BitbucketDiscoveryProcessor', () => {
   describe('Custom repository parser', () => {
     const customRepositoryParser: BitbucketRepositoryParser =
       async function* customRepositoryParser({}) {
-        yield results.location(
-          {
-            type: 'custom-location-type',
-            target: 'custom-target',
-          },
-          true,
-        );
+        yield results.location({
+          type: 'custom-location-type',
+          target: 'custom-target',
+          presence: 'optional',
+        });
       };
 
     const processor = BitbucketDiscoveryProcessor.fromConfig(
@@ -808,8 +784,8 @@ describe('BitbucketDiscoveryProcessor', () => {
         location: {
           type: 'custom-location-type',
           target: 'custom-target',
+          presence: 'optional',
         },
-        optional: true,
       });
     });
   });

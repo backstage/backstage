@@ -34,15 +34,18 @@ export type RunCommandOptions = {
 
 /**
  * Run a command in a sub-process, normally a shell command.
+ *
+ * @public
  */
-export const runCommand = async ({
-  command,
-  args,
-  logStream = new PassThrough(),
-  options,
-}: RunCommandOptions) => {
+export const executeShellCommand = async (options: RunCommandOptions) => {
+  const {
+    command,
+    args,
+    options: spawnOptions,
+    logStream = new PassThrough(),
+  } = options;
   await new Promise<void>((resolve, reject) => {
-    const process = spawn(command, args, options);
+    const process = spawn(command, args, spawnOptions);
 
     process.stdout.on('data', stream => {
       logStream.write(stream);
@@ -66,6 +69,13 @@ export const runCommand = async ({
     });
   });
 };
+
+/**
+ * Run a command in a sub-process, normally a shell command.
+ * @public
+ * @deprecated use {@link executeShellCommand} instead
+ */
+export const runCommand = executeShellCommand;
 
 export async function initRepoAndPush({
   dir,

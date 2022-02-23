@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, LocationSpec } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -143,6 +143,90 @@ export interface GetEntityAncestorsResponse {
 }
 
 /**
+ * The request type for {@link CatalogClient.getEntityFacets}.
+ *
+ * @public
+ */
+export interface GetEntityFacetsRequest {
+  /**
+   * If given, return only entities that match the given patterns.
+   *
+   * @remarks
+   *
+   * If multiple filter sets are given as an array, then there is effectively an
+   * OR between each filter set.
+   *
+   * Within one filter set, there is effectively an AND between the various
+   * keys.
+   *
+   * Within one key, if there are more than one value, then there is effectively
+   * an OR between them.
+   *
+   * Example: For an input of
+   *
+   * ```
+   * [
+   *   { kind: ['API', 'Component'] },
+   *   { 'metadata.name': 'a', 'metadata.namespace': 'b' }
+   * ]
+   * ```
+   *
+   * This effectively means
+   *
+   * ```
+   * (kind = EITHER 'API' OR 'Component')
+   * OR
+   * (metadata.name = 'a' AND metadata.namespace = 'b' )
+   * ```
+   *
+   * Each key is a dot separated path in each object.
+   *
+   * As a value you can also pass in the symbol `CATALOG_FILTER_EXISTS`
+   * (exported from this package), which means that you assert on the existence
+   * of that key, no matter what its value is.
+   */
+  filter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+  /**
+   * Dot separated paths for the facets to extract from each entity.
+   *
+   * @remarks
+   *
+   * Example: For an input of `['kind', 'metadata.annotations.backstage.io/orphan']`, then the
+   * response will be shaped like
+   *
+   * ```
+   * {
+   *   "facets": {
+   *     "kind": [
+   *       { "key": "Component", "count": 22 },
+   *       { "key": "API", "count": 13 }
+   *     ],
+   *     "metadata.annotations.backstage.io/orphan": [
+   *       { "key": "true", "count": 2 }
+   *     ]
+   *   }
+   * }
+   * ```
+   */
+  facets: string[];
+}
+
+/**
+ * The response type for {@link CatalogClient.getEntityFacets}.
+ *
+ * @public
+ */
+export interface GetEntityFacetsResponse {
+  /**
+   * The computed facets, one entry per facet in the request.
+   */
+  facets: Record<string, Array<{ value: string; count: number }>>;
+}
+
+/**
  * Options you can pass into a catalog request for additional information.
  *
  * @public
@@ -158,7 +242,11 @@ export interface CatalogRequestOptions {
  */
 export type Location = {
   id: string;
-} & LocationSpec;
+  type: string;
+  target: string;
+  /** @deprecated This field is is ignored */
+  presence?: 'optional' | 'required';
+};
 
 /**
  * The request type for {@link CatalogClient.addLocation}.
@@ -169,6 +257,7 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
+  /** @deprecated This field is is ignored */
   presence?: 'optional' | 'required';
 };
 
@@ -248,6 +337,17 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<void>;
 
+  /**
+   * Gets a summary of field facets of entities in the catalog.
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  getEntityFacets(
+    request: GetEntityFacetsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntityFacetsResponse>;
+
   // Locations
 
   /**
@@ -262,24 +362,13 @@ export interface CatalogApi {
   ): Promise<Location | undefined>;
 
   /**
-   * Gets origin location by Entity.
+   * Gets a registered location by its ref.
    *
-   * @param entity - An {@link catalog-model#Entity}.
+   * @param locationRef - A location ref, e.g. "url:https://github.com/..."
    * @param options - Additional options
    */
-  getOriginLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location | undefined>;
-
-  /**
-   * Gets Location by Entity.
-   *
-   * @param entity - An {@link catalog-model#Entity}.
-   * @param options - Additional options
-   */
-  getLocationByEntity(
-    entity: Entity,
+  getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined>;
 

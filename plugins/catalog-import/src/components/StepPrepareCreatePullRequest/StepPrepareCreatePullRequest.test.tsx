@@ -39,13 +39,13 @@ describe('<StepPrepareCreatePullRequest />', () => {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     getEntityByName: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
 
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {

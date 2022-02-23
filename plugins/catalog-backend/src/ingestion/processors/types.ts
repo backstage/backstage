@@ -14,19 +14,35 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityRelationSpec,
-  LocationSpec,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
+import { EntityRelationSpec } from '../../processing/types';
 
+/**
+ * Holds the entity location information.
+ *
+ * @remarks
+ *
+ *  `presence` flag: when using repo importer plugin, location is being created before the component yaml file is merged to the main branch.
+ *  This flag is then set to indicate that the file can be not present.
+ *  default value: 'required'.
+ *
+ * @public
+ */
+export type LocationSpec = {
+  type: string;
+  target: string;
+  presence?: 'optional' | 'required';
+};
+
+/**
+ * @public
+ */
 export type CatalogProcessor = {
   /**
    * A unique identifier for the Catalog Processor.
-   * It's strongly recommended to implement getProcessorName as this method will be required in the future.
    */
-  getProcessorName?(): string;
+  getProcessorName(): string;
 
   /**
    * Reads the contents of a location.
@@ -120,6 +136,7 @@ export type CatalogProcessor = {
  * A parser, that is able to take the raw catalog descriptor data and turn it
  * into the actual result pieces. The default implementation performs a YAML
  * document parsing.
+ * @public
  */
 export type CatalogProcessorParser = (options: {
   data: Buffer;
@@ -154,32 +171,39 @@ export interface CatalogProcessorCache {
   set<ItemType extends JsonValue>(key: string, value: ItemType): Promise<void>;
 }
 
+/** @public */
 export type CatalogProcessorEmit = (generated: CatalogProcessorResult) => void;
 
+/** @public */
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
-  optional: boolean;
+  /** @deprecated Set `location.presence = 'optional'` instead  */
+  optional?: boolean;
 };
 
+/** @public */
 export type CatalogProcessorEntityResult = {
   type: 'entity';
   entity: Entity;
   location: LocationSpec;
 };
 
+/** @public */
 export type CatalogProcessorRelationResult = {
   type: 'relation';
   relation: EntityRelationSpec;
   entityRef?: string;
 };
 
+/** @public */
 export type CatalogProcessorErrorResult = {
   type: 'error';
   error: Error;
   location: LocationSpec;
 };
 
+/** @public */
 export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
   | CatalogProcessorEntityResult

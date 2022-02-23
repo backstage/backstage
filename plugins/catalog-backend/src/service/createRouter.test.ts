@@ -18,11 +18,11 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import type { Location } from '@backstage/catalog-client';
-import type { Entity, LocationSpec } from '@backstage/catalog-model';
+import type { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog } from '../catalog';
-import { LocationService, RefreshService } from './types';
+import { LocationInput, LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createRouter } from './createRouter';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -40,6 +40,7 @@ describe('createRouter readonly disabled', () => {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
+      facets: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -298,7 +299,7 @@ describe('createRouter readonly disabled', () => {
       const spec = {
         typez: 'b',
         target: 'c',
-      } as unknown as LocationSpec;
+      } as unknown as LocationInput;
 
       const response = await request(app)
         .post('/locations')
@@ -310,7 +311,7 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('passes the body down', async () => {
-      const spec: LocationSpec = {
+      const spec: LocationInput = {
         type: 'b',
         target: 'c',
       };
@@ -338,7 +339,7 @@ describe('createRouter readonly disabled', () => {
     });
 
     it('supports dry run', async () => {
-      const spec: LocationSpec = {
+      const spec: LocationInput = {
         type: 'b',
         target: 'c',
       };
@@ -394,6 +395,7 @@ describe('createRouter readonly enabled', () => {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
+      facets: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),
@@ -504,7 +506,7 @@ describe('createRouter readonly enabled', () => {
 
   describe('POST /locations', () => {
     it('is not allowed', async () => {
-      const spec: LocationSpec = {
+      const spec: LocationInput = {
         type: 'b',
         target: 'c',
       };
@@ -520,7 +522,7 @@ describe('createRouter readonly enabled', () => {
     });
 
     it('supports dry run', async () => {
-      const spec: LocationSpec = {
+      const spec: LocationInput = {
         type: 'b',
         target: 'c',
       };
@@ -578,6 +580,7 @@ describe('NextRouter permissioning', () => {
       entities: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
+      facets: jest.fn(),
     };
     locationService = {
       getLocation: jest.fn(),

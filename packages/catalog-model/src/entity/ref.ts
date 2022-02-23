@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { EntityName, EntityRef } from '../types';
-import { ENTITY_DEFAULT_NAMESPACE } from './constants';
+import { DEFAULT_NAMESPACE } from './constants';
+import { EntityName } from '../types';
 import { Entity } from './Entity';
 
 function parseRefString(ref: string): {
@@ -48,7 +48,7 @@ function parseRefString(ref: string): {
 export function getEntityName(entity: Entity): EntityName {
   return {
     kind: entity.kind,
-    namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
     name: entity.metadata.name,
   };
 }
@@ -76,13 +76,14 @@ export type EntityRefContext = {
  * otherwise specified as part of the options, and will throw an error if no
  * kind was specified in the input reference and no default kind was given.
  *
+ * @deprecated Please use parseEntityRef instead
  * @public
  * @param ref - The reference to parse
  * @param context - The context of defaults that the parsing happens within
  * @returns A complete entity name
  */
 export function parseEntityName(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context: {
     /** The default kind, if none is given in the reference */
     defaultKind?: string;
@@ -91,7 +92,7 @@ export function parseEntityName(
   } = {},
 ): EntityName {
   const { kind, namespace, name } = parseEntityRef(ref, {
-    defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+    defaultNamespace: DEFAULT_NAMESPACE,
     ...context,
   });
 
@@ -119,7 +120,7 @@ export function parseEntityName(
  * @returns The compound form of the reference
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context?: { defaultKind: string; defaultNamespace: string },
 ): EntityName;
 /**
@@ -128,7 +129,7 @@ export function parseEntityRef(
  * @public
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context?: { defaultKind: string },
 ): {
   kind: string;
@@ -141,7 +142,7 @@ export function parseEntityRef(
  * @public
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context?: { defaultNamespace: string },
 ): {
   kind?: string;
@@ -154,7 +155,7 @@ export function parseEntityRef(
  * @public
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context: {
     /** The default kind, if none is given in the reference */
     defaultKind?: string;
@@ -170,11 +171,13 @@ export function parseEntityRef(
     throw new Error(`Entity reference must not be empty`);
   }
 
+  const defaultNamespace = context.defaultNamespace || DEFAULT_NAMESPACE;
+
   if (typeof ref === 'string') {
     const parsed = parseRefString(ref);
     return {
       kind: parsed.kind ?? context.defaultKind,
-      namespace: parsed.namespace ?? context.defaultNamespace,
+      namespace: parsed.namespace ?? defaultNamespace,
       name: parsed.name,
     };
   }
@@ -190,7 +193,7 @@ export function parseEntityRef(
 
   return {
     kind: kind ?? context.defaultKind,
-    namespace: namespace ?? context.defaultNamespace,
+    namespace: namespace ?? defaultNamespace,
     name,
   };
 }
@@ -218,11 +221,11 @@ export function stringifyEntityRef(
 
   if ('metadata' in ref) {
     kind = ref.kind;
-    namespace = ref.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+    namespace = ref.metadata.namespace ?? DEFAULT_NAMESPACE;
     name = ref.metadata.name;
   } else {
     kind = ref.kind;
-    namespace = ref.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+    namespace = ref.namespace ?? DEFAULT_NAMESPACE;
     name = ref.name;
   }
 
@@ -249,7 +252,10 @@ export function stringifyEntityRef(
  */
 export function compareEntityToRef(
   entity: Entity,
-  ref: EntityRef | EntityName,
+  ref:
+    | string
+    | { kind?: string; namespace?: string; name: string }
+    | EntityName,
   context?: {
     /** The default kind, if none is given in the reference */
     defaultKind?: string;
@@ -258,7 +264,7 @@ export function compareEntityToRef(
   },
 ): boolean {
   const entityKind = entity.kind;
-  const entityNamespace = entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE;
+  const entityNamespace = entity.metadata.namespace || DEFAULT_NAMESPACE;
   const entityName = entity.metadata.name;
 
   let refKind: string | undefined;
@@ -268,12 +274,12 @@ export function compareEntityToRef(
     const parsed = parseRefString(ref);
     refKind = parsed.kind || context?.defaultKind;
     refNamespace =
-      parsed.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
+      parsed.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
     refName = parsed.name;
   } else {
     refKind = ref.kind || context?.defaultKind;
     refNamespace =
-      ref.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
+      ref.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
     refName = ref.name;
   }
 

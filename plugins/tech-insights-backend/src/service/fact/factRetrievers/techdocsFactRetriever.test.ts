@@ -57,6 +57,7 @@ const defaultEntityListResponse: GetEntitiesResponse = {
       relations: [
         {
           type: RELATION_OWNED_BY,
+          targetRef: 'group:default/team-a',
           target: { name: 'team-a', kind: 'group', namespace: 'default' },
         },
       ],

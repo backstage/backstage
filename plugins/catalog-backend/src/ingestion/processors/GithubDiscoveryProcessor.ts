@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -26,7 +25,7 @@ import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import { getOrganizationRepositories } from './github';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
 /**
  * Extracts repositories out of a GitHub org.
@@ -41,6 +40,8 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
  * You may also explicitly specify the source branch:
  *
  *    target: https://github.com/backstage/*\/blob/main/catalog-info.yaml
+ *
+ * @public
  **/
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
@@ -72,6 +73,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     this.githubCredentialsProvider =
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
+  }
+  getProcessorName(): string {
+    return 'GithubDiscoveryProcessor';
   }
 
   async readLocation(
@@ -137,17 +141,14 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
       const path = `/blob/${branchName}${catalogPath}`;
 
       emit(
-        results.location(
-          {
-            type: 'url',
-            target: `${repository.url}${path}`,
-            presence: 'optional',
-          },
+        results.location({
+          type: 'url',
+          target: `${repository.url}${path}`,
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
           // an error if it couldn't.
-          true,
-        ),
+          presence: 'optional',
+        }),
       );
     }
 

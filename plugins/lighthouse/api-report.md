@@ -70,9 +70,7 @@ export const EntityLastLighthouseAuditCard: ({
 // Warning: (ae-missing-release-tag) "EntityLighthouseContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityLighthouseContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityLighthouseContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "FetchError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

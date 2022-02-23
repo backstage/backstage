@@ -22,13 +22,13 @@ import { v4 as uuid } from 'uuid';
 import {
   SerializedTaskEvent,
   SerializedTask,
-  Status,
+  TaskStatus,
   TaskEventType,
-  TaskSecrets,
-  TaskSpec,
   TaskStore,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
+  TaskStoreCreateTaskOptions,
+  TaskStoreCreateTaskResult,
 } from './types';
 import { DateTime } from 'luxon';
 
@@ -40,7 +40,7 @@ const migrationsDir = resolvePackagePath(
 export type RawDbTaskRow = {
   id: string;
   spec: string;
-  status: Status;
+  status: TaskStatus;
   last_heartbeat_at?: string;
   created_at: string;
   secrets?: string | null;
@@ -80,7 +80,7 @@ export class DatabaseTaskStore implements TaskStore {
     return new DatabaseTaskStore(options);
   }
 
-  constructor(options: DatabaseTaskStoreOptions) {
+  private constructor(options: DatabaseTaskStoreOptions) {
     this.db = options.database;
   }
 
@@ -108,14 +108,13 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async createTask(
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<{ taskId: string }> {
+    options: TaskStoreCreateTaskOptions,
+  ): Promise<TaskStoreCreateTaskResult> {
     const taskId = uuid();
     await this.db<RawDbTaskRow>('tasks').insert({
       id: taskId,
-      spec: JSON.stringify(spec),
-      secrets: secrets ? JSON.stringify(secrets) : undefined,
+      spec: JSON.stringify(options.spec),
+      secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
       status: 'open',
     });
     return { taskId };
@@ -202,7 +201,7 @@ export class DatabaseTaskStore implements TaskStore {
     eventBody,
   }: {
     taskId: string;
-    status: Status;
+    status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void> {
     let oldStatus: string;
@@ -253,12 +252,15 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void> {
-    const serliazedBody = JSON.stringify(body);
+  async emitLogEvent(
+    options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
+  ): Promise<void> {
+    const { taskId, body } = options;
+    const serializedBody = JSON.stringify(body);
     await this.db<RawDbTaskEventRow>('task_events').insert({
       task_id: taskId,
       event_type: 'log',
-      body: serliazedBody,
+      body: serializedBody,
     });
   }
 

@@ -32,6 +32,7 @@ import {
 } from '@backstage/catalog-client';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
 
+/** @public */
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
   namespace: string;
@@ -40,6 +41,7 @@ export interface CatalogEntityDocument extends IndexableDocument {
   owner: string;
 }
 
+/** @public */
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;

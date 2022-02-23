@@ -21,7 +21,6 @@ import {
   Entity,
   EntityPolicies,
   LocationEntity,
-  LocationSpec,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -29,6 +28,7 @@ import {
   CatalogProcessorCache,
   CatalogProcessorEmit,
   CatalogProcessorParser,
+  LocationSpec,
   results,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
@@ -208,6 +208,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
 
       const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
       const processor: jest.Mocked<CatalogProcessor> = {
+        getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
           emit(results.entity({ type: 't', target: 't' }, entity));

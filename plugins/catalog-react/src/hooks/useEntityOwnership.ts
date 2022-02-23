@@ -23,33 +23,11 @@ import {
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  IdentityApi,
-  identityApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../api';
 import { getEntityRelations } from '../utils/getEntityRelations';
-
-/**
- * Takes the relevant parts of the Backstage identity, and translates them into
- * a list of entity refs on string form that represent the user's ownership
- * connections.
- *
- * @public
- * @deprecated Use `ownershipEntityRefs` from `identityApi.getBackstageIdentity()` instead.
- *
- * @param identityApi - The IdentityApi implementation
- * @returns IdentityOwner refs as a string array
- */
-export async function loadIdentityOwnerRefs(
-  identityApi: IdentityApi,
-): Promise<string[]> {
-  const identity = await identityApi.getBackstageIdentity();
-  return identity.ownershipEntityRefs;
-}
 
 /**
  * Takes the relevant parts of the User entity corresponding to the Backstage
@@ -61,6 +39,7 @@ export async function loadIdentityOwnerRefs(
  * @param catalogApi - The Catalog API implementation
  * @param identityOwnerRefs - List of identity owner refs as strings
  * @returns OwnerRefs as a string array
+ * @deprecated Use `ownershipEntityRefs` from `identityApi.getBackstageIdentity()` instead.
  */
 export async function loadCatalogOwnerRefs(
   catalogApi: CatalogApi,

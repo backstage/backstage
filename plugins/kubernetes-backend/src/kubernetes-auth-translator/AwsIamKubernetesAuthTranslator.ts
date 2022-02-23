@@ -18,19 +18,6 @@ import { sign } from 'aws4';
 import { AWSClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
 
-const base64 = (str: string) =>
-  Buffer.from(str.toString(), 'binary').toString('base64');
-const prepend = (prep: string) => (str: string) => prep + str;
-const replace =
-  (search: string | RegExp, substitution: string) => (str: string) =>
-    str.replace(search, substitution);
-const pipe =
-  (fns: ReadonlyArray<any>) =>
-  (thing: string): string =>
-    fns.reduce((val, fn) => fn(val), thing);
-const removePadding = replace(/=+$/, '');
-const makeUrlSafe = pipe([replace('+', '-'), replace('/', '_')]);
-
 type SigningCreds = {
   accessKeyId: string | undefined;
   secretAccessKey: string | undefined;
@@ -117,15 +104,15 @@ export class AwsIamKubernetesAuthTranslator
       signQuery: true,
     };
 
-    const signedRequest = sign(request, credentials);
+    const signed = sign(request, credentials);
+    const url = `https://${signed.host}${signed.path}`;
+    const base64Url = Buffer.from(url, 'binary').toString('base64');
+    const urlSafeBase64Url = base64Url
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
 
-    return pipe([
-      (signed: any) => `https://${signed.host}${signed.path}`,
-      base64,
-      removePadding,
-      makeUrlSafe,
-      prepend('k8s-aws-v1.'),
-    ])(signedRequest);
+    return `k8s-aws-v1.${urlSafeBase64Url}`;
   }
 
   async decorateClusterDetailsWithAuth(

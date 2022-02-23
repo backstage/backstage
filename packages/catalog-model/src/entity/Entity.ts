@@ -116,6 +116,7 @@ export type EntityMeta = JsonObject & {
    * This field can not be set by the user at creation time, and the server
    * will reject an attempt to do so. The field will be populated in read
    * operations.
+   * @deprecated field is not supported.
    */
   generation?: number;
 
@@ -197,30 +198,15 @@ export type EntityRelation = {
 
   /**
    * The target entity of this relation.
+   *
+   * @deprecated use targetRef instead
    */
   target: EntityName;
-};
-
-/**
- * Holds the relation data for entities.
- *
- * @public
- */
-export type EntityRelationSpec = {
-  /**
-   * The source entity of this relation.
-   */
-  source: EntityName;
 
   /**
-   * The type of the relation.
+   * The entity ref of the target of this relation.
    */
-  type: string;
-
-  /**
-   * The target entity of this relation.
-   */
-  target: EntityName;
+  targetRef: string;
 };
 
 /**

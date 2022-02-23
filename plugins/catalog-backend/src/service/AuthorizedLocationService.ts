@@ -15,7 +15,7 @@
  */
 
 import { Location } from '@backstage/catalog-client';
-import { LocationSpec, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   catalogLocationCreatePermission,
@@ -26,7 +26,7 @@ import {
   AuthorizeResult,
   PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
-import { LocationService } from './types';
+import { LocationInput, LocationService } from './types';
 
 export class AuthorizedLocationService implements LocationService {
   constructor(
@@ -35,7 +35,7 @@ export class AuthorizedLocationService implements LocationService {
   ) {}
 
   async createLocation(
-    spec: LocationSpec,
+    spec: LocationInput,
     dryRun: boolean,
     options?: {
       authorizationToken?: string;

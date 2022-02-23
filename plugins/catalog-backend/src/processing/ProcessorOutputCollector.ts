@@ -16,7 +16,6 @@
 
 import {
   Entity,
-  EntityRelationSpec,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyLocationRef,
@@ -25,7 +24,7 @@ import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { CatalogProcessorResult } from '../ingestion';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { DeferredEntity } from './types';
+import { DeferredEntity, EntityRelationSpec } from './types';
 import {
   getEntityLocationRef,
   getEntityOriginLocationRef,

@@ -28,7 +28,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityLifecycleFilter } from '../../filters';
 
 /** @public */
@@ -50,7 +50,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityLifecyclePicker = () => {
   const classes = useStyles();
   const { updateFilters, backendEntities, filters, queryParameters } =
-    useEntityListProvider();
+    useEntityList();
 
   const queryParamLifecycles = useMemo(
     () => [queryParameters.lifecycles].flat().filter(Boolean) as string[],

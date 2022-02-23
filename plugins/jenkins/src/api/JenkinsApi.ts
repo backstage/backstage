@@ -19,7 +19,7 @@ import {
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import type { EntityName, EntityRef } from '@backstage/catalog-model';
+import type { EntityName } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
@@ -80,7 +80,7 @@ export interface JenkinsApi {
    */
   getProjects(options: {
     /** the entity whose jobs should be retrieved. */
-    entity: EntityRef;
+    entity: EntityName;
     /** a filter on jobs. Currently this just takes a branch (and assumes certain structures in jenkins) */
     filter: { branch?: string };
   }): Promise<Project[]>;
@@ -117,13 +117,11 @@ export class JenkinsClient implements JenkinsApi {
     this.identityApi = options.identityApi;
   }
 
-  async getProjects({
-    entity,
-    filter,
-  }: {
+  async getProjects(options: {
     entity: EntityName;
     filter: { branch?: string };
   }): Promise<Project[]> {
+    const { entity, filter } = options;
     const url = new URL(
       `${await this.discoveryApi.getBaseUrl(
         'jenkins',
@@ -158,15 +156,12 @@ export class JenkinsClient implements JenkinsApi {
     );
   }
 
-  async getBuild({
-    entity,
-    jobFullName,
-    buildNumber,
-  }: {
+  async getBuild(options: {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build> {
+    const { entity, jobFullName, buildNumber } = options;
     const url = `${await this.discoveryApi.getBaseUrl(
       'jenkins',
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(
@@ -186,15 +181,12 @@ export class JenkinsClient implements JenkinsApi {
     return (await response.json()).build;
   }
 
-  async retry({
-    entity,
-    jobFullName,
-    buildNumber,
-  }: {
+  async retry(options: {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
   }): Promise<void> {
+    const { entity, jobFullName, buildNumber } = options;
     const url = `${await this.discoveryApi.getBaseUrl(
       'jenkins',
     )}/v1/entity/${encodeURIComponent(entity.namespace)}/${encodeURIComponent(

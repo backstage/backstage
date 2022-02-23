@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName, parseEntityName } from '@backstage/catalog-model';
+import { EntityName, parseEntityRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -55,7 +55,7 @@ export async function createRouter(
     let entity: EntityName | undefined = undefined;
     if (entityRef) {
       try {
-        entity = parseEntityName(entityRef);
+        entity = parseEntityRef(entityRef);
       } catch (error) {
         throw new InputError(`Invalid entity ref, ${error}`);
       }

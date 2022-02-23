@@ -18,7 +18,11 @@ import useAsync from 'react-use/lib/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
 
-// Retrieve a list of unique entity kinds present in the catalog
+/**
+ * Retrieve a list of unique entity kinds present in the catalog
+ * @public
+ * @deprecated and will be removed due to low utility value.
+ */
 export function useEntityKinds() {
   const catalogApi = useApi(catalogApiRef);
 
@@ -27,11 +31,9 @@ export function useEntityKinds() {
     loading,
     value: kinds,
   } = useAsync(async () => {
-    const entities = await catalogApi
-      .getEntities({ fields: ['kind'] })
-      .then(response => response.items);
-
-    return [...new Set(entities.map(e => e.kind))].sort();
+    return await catalogApi
+      .getEntityFacets({ facets: ['kind'] })
+      .then(response => response.facets.kind?.map(f => f.value).sort() || []);
   });
   return { error, loading, kinds };
 }

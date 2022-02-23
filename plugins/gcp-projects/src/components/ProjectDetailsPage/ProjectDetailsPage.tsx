@@ -27,7 +27,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 import { gcpApiRef } from '../../api';
 
 import {
@@ -60,19 +60,13 @@ const DetailsPage = () => {
   const api = useApi(gcpApiRef);
   const classes = useStyles();
 
-  const {
-    loading,
-    error,
-    value: details,
-  } = useAsync(
-    async () =>
-      api.getProject(
-        decodeURIComponent(location.search.split('projectId=')[1]),
-      ),
-    [location.search],
+  const [{ status, result: details, error }, { execute }] = useAsync(async () =>
+    api.getProject(decodeURIComponent(location.search.split('projectId=')[1])),
   );
 
-  if (loading) {
+  useMountEffect(execute);
+
+  if (status === 'loading') {
     return <LinearProgress />;
   } else if (error) {
     return (

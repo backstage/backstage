@@ -3,6 +3,8 @@ accessors
 addon
 addons
 Airbrake
+Airbrakes
+airbrake
 Anddddd
 Apdex
 api
@@ -17,6 +19,7 @@ autoscaling
 Autoscaling
 autoselect
 Avro
+aws
 backrub
 backported
 backporting
@@ -275,6 +278,8 @@ sqlite
 squidfunk
 src
 stdout
+stringify
+stringified
 subcomponent
 subcomponents
 subkey

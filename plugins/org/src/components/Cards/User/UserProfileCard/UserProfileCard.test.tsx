@@ -42,6 +42,7 @@ describe('UserSummary Test', () => {
     relations: [
       {
         type: 'memberOf',
+        targetRef: 'group:default/examplegroup',
         target: {
           kind: 'group',
           name: 'ExampleGroup',
@@ -55,7 +56,7 @@ describe('UserSummary Test', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <EntityProvider entity={userEntity}>
-          <UserProfileCard entity={userEntity} variant="gridItem" />
+          <UserProfileCard variant="gridItem" />
         </EntityProvider>,
         {
           mountedRoutes: {
@@ -70,9 +71,9 @@ describe('UserSummary Test', () => {
       'src',
       'https://example.com/staff/calum.jpeg',
     );
-    expect(rendered.getByText('ExampleGroup')).toHaveAttribute(
+    expect(rendered.getByText('examplegroup')).toHaveAttribute(
       'href',
-      '/catalog/default/group/ExampleGroup',
+      '/catalog/default/group/examplegroup',
     );
     expect(rendered.getByText('Super awesome human')).toBeInTheDocument();
   });

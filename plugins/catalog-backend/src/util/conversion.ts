@@ -17,13 +17,13 @@
 import {
   Entity,
   LocationEntityV1alpha1,
-  LocationSpec,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
+import { LocationSpec } from '../ingestion';
 
 export function locationSpecToMetadataName(location: LocationSpec) {
   const hash = createHash('sha1')

@@ -17,7 +17,6 @@
 import { makeStyles, Box, Typography } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
-
 import { Link } from '@backstage/core-components';
 import { IconComponent } from '@backstage/core-plugin-api';
 
@@ -32,15 +31,12 @@ const useStyles = makeStyles({
   },
 });
 
-export const IconLink = ({
-  href,
-  text,
-  Icon,
-}: {
+export function IconLink(props: {
   href: string;
   text?: string;
   Icon?: IconComponent;
-}) => {
+}) {
+  const { href, text, Icon } = props;
   const classes = useStyles();
 
   return (
@@ -57,4 +53,4 @@ export const IconLink = ({
       </Box>
     </Box>
   );
-};
+}

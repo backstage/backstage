@@ -9,7 +9,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GroupEntity } from '@backstage/catalog-model';
-import { LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger as Logger_2 } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import * as msal from '@azure/msal-node';
@@ -80,9 +80,16 @@ export class MicrosoftGraphClient {
   ): Promise<string | undefined>;
   getUserProfile(userId: string): Promise<MicrosoftGraph.User>;
   getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
-  requestApi(path: string, query?: ODataQuery): Promise<Response_2>;
+  requestApi(
+    path: string,
+    query?: ODataQuery,
+    headers?: Record<string, string>,
+  ): Promise<Response_2>;
   requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
-  requestRaw(url: string): Promise<Response_2>;
+  requestRaw(
+    url: string,
+    headers?: Record<string, string>,
+  ): Promise<Response_2>;
 }
 
 // @public
@@ -134,6 +141,8 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     },
   ): MicrosoftGraphOrgReaderProcessor;
   // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
   readLocation(
     location: LocationSpec,
     _optional: boolean,
@@ -151,7 +160,9 @@ export type MicrosoftGraphProviderConfig = {
   userFilter?: string;
   userExpand?: string[];
   userGroupMemberFilter?: string;
+  userGroupMemberSearch?: string;
   groupFilter?: string;
+  groupSearch?: string;
 };
 
 // @public
@@ -159,6 +170,7 @@ export function normalizeEntityName(name: string): string;
 
 // @public
 export type ODataQuery = {
+  search?: string;
   filter?: string;
   expand?: string[];
   select?: string[];
@@ -181,7 +193,9 @@ export function readMicrosoftGraphOrg(
   options: {
     userExpand?: string[];
     userFilter?: string;
+    userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    groupSearch?: string;
     groupFilter?: string;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;

@@ -47,6 +47,7 @@ describe('<AboutContent />', () => {
         relations: [
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'user:default/o',
             target: {
               kind: 'user',
               name: 'o',
@@ -55,6 +56,7 @@ describe('<AboutContent />', () => {
           },
           {
             type: RELATION_PART_OF,
+            targetRef: 'system:default/s',
             target: {
               kind: 'system',
               name: 's',
@@ -63,6 +65,7 @@ describe('<AboutContent />', () => {
           },
           {
             type: RELATION_PART_OF,
+            targetRef: 'domain:default/d',
             target: {
               kind: 'domain',
               name: 'd',
@@ -152,6 +155,7 @@ describe('<AboutContent />', () => {
         relations: [
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'user:default/guest',
             target: {
               kind: 'user',
               name: 'guest',
@@ -160,6 +164,7 @@ describe('<AboutContent />', () => {
           },
           {
             type: RELATION_PART_OF,
+            targetRef: 'system:default/system',
             target: {
               kind: 'system',
               name: 'system',
@@ -257,6 +262,7 @@ describe('<AboutContent />', () => {
         relations: [
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'user:default/guest',
             target: {
               kind: 'user',
               name: 'guest',
@@ -265,6 +271,7 @@ describe('<AboutContent />', () => {
           },
           {
             type: RELATION_PART_OF,
+            targetRef: 'system:default/system',
             target: {
               kind: 'system',
               name: 'system',
@@ -273,6 +280,7 @@ describe('<AboutContent />', () => {
           },
           {
             type: RELATION_PART_OF,
+            targetRef: 'component:default/parent-software',
             target: {
               kind: 'component',
               name: 'parent-software',
@@ -369,6 +377,7 @@ describe('<AboutContent />', () => {
         relations: [
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'user:default/guest',
             target: {
               kind: 'user',
               name: 'guest',
@@ -528,6 +537,7 @@ describe('<AboutContent />', () => {
         relations: [
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'user:default/guest',
             target: {
               kind: 'user',
               name: 'guest',
@@ -536,6 +546,7 @@ describe('<AboutContent />', () => {
           },
           {
             type: RELATION_PART_OF,
+            targetRef: 'system:default/system',
             target: {
               kind: 'system',
               name: 'system',
@@ -625,6 +636,7 @@ describe('<AboutContent />', () => {
         relations: [
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'user:default/guest',
             target: {
               kind: 'user',
               name: 'guest',
@@ -633,6 +645,7 @@ describe('<AboutContent />', () => {
           },
           {
             type: RELATION_PART_OF,
+            targetRef: 'domain:default/domain',
             target: {
               kind: 'domain',
               name: 'domain',

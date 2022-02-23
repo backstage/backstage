@@ -21,7 +21,7 @@ mean features in the radar, but not yet scheduled.
 
 The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
 Third-party contributions are also not currently included in the roadmap. Let us
-know about any ongoing developments and we’re happy to include it here as well.
+know about any ongoing developments and we’re happy to include them here as well.
 
 ## What’s next
 

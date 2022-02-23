@@ -15,12 +15,17 @@
  */
 
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
-import { JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
 import path from 'path';
 
+/**
+ * A helper function that reads the contents of a directory from the given URL.
+ * Can be used in your own actions, and also used behind fetch:template and fetch:plain
+ *
+ * @public
+ */
 export async function fetchContents({
   reader,
   integrations,
@@ -31,15 +36,9 @@ export async function fetchContents({
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
-  fetchUrl?: JsonValue;
+  fetchUrl?: string;
   outputPath: string;
 }) {
-  if (typeof fetchUrl !== 'string') {
-    throw new InputError(
-      `Invalid url parameter, expected string, got ${typeof fetchUrl}`,
-    );
-  }
-
   let fetchUrlIsAbsolute = false;
   try {
     // eslint-disable-next-line no-new

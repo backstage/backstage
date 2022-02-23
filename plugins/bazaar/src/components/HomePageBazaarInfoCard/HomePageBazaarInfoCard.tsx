@@ -47,7 +47,6 @@ import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 
 import {
-  parseEntityName,
   stringifyEntityRef,
   Entity,
   parseEntityRef,
@@ -150,7 +149,7 @@ export const HomePageBazaarInfoCard = ({
 
   const getEntityPageLink = () => {
     if (bazaarProject?.value?.entityRef) {
-      const { name, kind, namespace } = parseEntityName(
+      const { name, kind, namespace } = parseEntityRef(
         bazaarProject.value.entityRef,
       );
       return entityLink({ kind, namespace, name });

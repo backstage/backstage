@@ -107,7 +107,7 @@ export const SortView = () => {
       if (catalogEntityRefs) {
         bazaarProjects.value?.forEach(async (project: BazaarProject) => {
           if (project.entityRef) {
-            if (!catalogEntityRefs?.includes(project.entityRef as string)) {
+            if (!catalogEntityRefs?.includes(project.entityRef)) {
               await bazaarApi.updateProject({
                 ...project,
                 entityRef: null,

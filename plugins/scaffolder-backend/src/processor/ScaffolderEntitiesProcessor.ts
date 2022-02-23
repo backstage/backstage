@@ -17,7 +17,6 @@
 import {
   Entity,
   getEntityName,
-  LocationSpec,
   parseEntityRef,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
@@ -25,6 +24,7 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
   results,
 } from '@backstage/plugin-catalog-backend';
 import {
@@ -34,6 +34,10 @@ import {
 
 /** @public */
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
+  getProcessorName(): string {
+    return 'ScaffolderEntitiesProcessor';
+  }
+
   private readonly validators = [templateEntityV1beta3Validator];
 
   async validateEntityKind(entity: Entity): Promise<boolean> {

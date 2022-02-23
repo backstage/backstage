@@ -24,6 +24,7 @@
  *  default value: 'required'.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-catalog-backend` instead.
  */
 export type LocationSpec = {
   type: string;

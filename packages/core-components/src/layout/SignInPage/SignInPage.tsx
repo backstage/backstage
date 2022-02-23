@@ -25,7 +25,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
-import useMount from 'react-use/lib/useMount';
+import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
@@ -149,7 +149,7 @@ export const SingleSignInPage = ({
     }
   };
 
-  useMount(() => login({ checkExisting: true }));
+  useMountEffect(() => login({ checkExisting: true }));
 
   return showLoginPage ? (
     <Page themeId="home">

@@ -15,7 +15,6 @@ metadata:
     {{- if .Values.issuer.email }}
     cert-manager.io/cluster-issuer: {{ .Values.issuer.clusterIssuer }}
     {{- end }}
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       if ($scheme = https) {

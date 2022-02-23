@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   GithubCredentialType,
@@ -31,13 +30,14 @@ import {
   parseGitHubOrgUrl,
 } from './github';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 import { assignGroupsToUsers, buildOrgHierarchy } from './util/org';
 
 type GraphQL = typeof graphql;
 
 /**
  * Extracts teams and users out of a GitHub org.
+ * @public
  */
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
@@ -69,6 +69,9 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
     this.logger = options.logger;
+  }
+  getProcessorName(): string {
+    return 'GithubOrgReaderProcessor';
   }
 
   async readLocation(

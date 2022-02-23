@@ -11,7 +11,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GroupEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
-import { LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger as Logger_2 } from 'winston';
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
@@ -136,6 +136,8 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       userTransformer?: UserTransformer;
     },
   ): LdapOrgReaderProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,

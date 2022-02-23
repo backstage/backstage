@@ -3,6 +3,9 @@
   "description": "E2E test for verifying Backstage packages",
   "version": "0.2.0",
   "private": true,
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -16,9 +19,11 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "test:e2e": "yarn start"
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "test:e2e": "yarn start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean"
   },
   "bin": {
     "e2e-test": "bin/e2e-test"

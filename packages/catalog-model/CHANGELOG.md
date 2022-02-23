@@ -1,5 +1,45 @@
 # @backstage/catalog-model
 
+## 0.10.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+
+## 0.10.0
+
+### Minor Changes
+
+- e483dd6c72: **BREAKING**: Remove deprecated validation methods `analyzeLocationSchema`, `locationSchema` and `locationSpecSchema`.
+  This functionality was primarily used internally by the `catalog-backend`.
+- edbc03814a: **BREAKING**: Remove deprecated `serializeEntityRef` which is replaced by `stringifyEntityRef`.
+- e72d371296: **BREAKING**: Removed `TemplateEntityV1beta2` from the model and moved it to
+  `@backstage/plugin-scaffolder-common` where `TemplateEntityV1beta3` already
+  lived. It has also been marked as deprecated in the process - please consider
+  [migrating to `v1beta3` templates](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3).
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Deprecated `parseLocationReference` and `stringifyLocationReference`,
+  introducing `parseLocationRef` and `stringifyLocationRef` in their place.
+- 244d24ebc4: Deprecates the `Location` type export from this package. Imports of the `Location` type should now be done from the `@backstage/catalog-client` package instead.
+- 7aeb491394: Deprecated `ENTITY_DEFAULT_NAMESPACE` constant in favour of `DEFAULT_NAMESPACE`.
+- 0d03e42a89: Deprecated `compareEntityToRef` due to low usage and provided value.
+- e8c6f9d282: Deprecated the `EntityRefContext` type which had limited use.
+- 7f21538c9e: Deprecated `JSONSchema` export type.
+- 20f3244102: Deprecates the following exports which all have very limited and internal use. `ENTITY_META_GENERATED_FIELDS`, `entityHasChanges`, `generateEntityEtag`, `generateEntityUid`, `generateUpdatedEntity`, `ENTITY_META_GENERATED_FIELDS`.
+- 27eccab216: Deprecates `EDIT_URL_ANNOTATION`, `LOCATION_ANNOTATION`, `ORIGIN_LOCATION_ANNOTATION`, `SOURCE_LOCATION_ANNOTATION`, `VIEW_URL_ANNOTATION`
+  and replaces these constants all prefixed with ANNOTATION\_ `ANNOTATION_EDIT_URL`, `ANNOTATION_LOCATION`, `ANNOTATION_ORIGIN_LOCATION`, `ANNOTATION_SOURCE_LOCATION`, `ANNOTATION_VIEW_URL`
+- Updated dependencies
+  - @backstage/errors@0.2.1
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.9.10
 
 ### Patch Changes

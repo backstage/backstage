@@ -27,11 +27,9 @@ export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
   const membershipRefs =
     entity.relations
       ?.filter(
-        r =>
-          r.type === RELATION_MEMBER_OF &&
-          r.target.kind.toLocaleLowerCase('en-US') === 'group',
+        r => r.type === RELATION_MEMBER_OF && r.targetRef.startsWith('group:'),
       )
-      .map(r => stringifyEntityRef(r.target)) ?? [];
+      .map(r => r.targetRef) ?? [];
 
   return {
     sub: userRef,

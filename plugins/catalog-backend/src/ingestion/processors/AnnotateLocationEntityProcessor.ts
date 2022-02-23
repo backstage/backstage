@@ -21,19 +21,23 @@ import {
   ANNOTATION_SOURCE_LOCATION,
   ANNOTATION_VIEW_URL,
   Entity,
-  LocationSpec,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { identity, merge, pickBy } from 'lodash';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
-type Options = {
-  integrations: ScmIntegrationRegistry;
-};
-
+/** @public */
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
-  constructor(private readonly options: Options) {}
+  constructor(
+    private readonly options: {
+      integrations: ScmIntegrationRegistry;
+    },
+  ) {}
+
+  getProcessorName(): string {
+    return 'AnnotateLocationEntityProcessor';
+  }
 
   async preProcessEntity(
     entity: Entity,

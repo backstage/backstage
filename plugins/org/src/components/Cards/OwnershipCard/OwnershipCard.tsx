@@ -131,8 +131,6 @@ export const OwnershipCard = ({
   variant,
   entityFilterKind,
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
 }) => {

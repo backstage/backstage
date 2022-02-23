@@ -36,7 +36,7 @@ describe('<ProvidedApisCard />', () => {
     getEntityByName: jest.fn(),
     getEntities: jest.fn(),
     addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
   let Wrapper: React.ComponentType;
@@ -95,10 +95,11 @@ describe('<ProvidedApisCard />', () => {
       relations: [
         {
           target: {
-            kind: 'API',
+            kind: 'api',
             namespace: 'my-namespace',
             name: 'target-name',
           },
+          targetRef: 'api:my-namespace/target-name',
           type: RELATION_PROVIDES_API,
         },
       ],

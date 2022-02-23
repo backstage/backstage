@@ -16,12 +16,7 @@
 
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import {
-  useEntity,
-  EntityProvider,
-  AsyncEntityProvider,
-  EntityContext,
-} from './useEntity';
+import { useEntity, EntityProvider, AsyncEntityProvider } from './useEntity';
 import { Entity } from '@backstage/catalog-model';
 
 describe('EntityProvider', () => {
@@ -100,41 +95,6 @@ describe('AsyncEntityProvider', () => {
     expect(result.current.entity).toBe(undefined);
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe(error);
-    expect(result.current.refresh).toBe(undefined);
-  });
-});
-
-describe('EntityContext.Provider', () => {
-  it('should provide no entity', async () => {
-    const { result } = renderHook(() => useEntity(), {
-      wrapper: ({ children }) => (
-        <EntityContext.Provider
-          value={{ loading: false }}
-          children={children}
-        />
-      ),
-    });
-
-    expect(result.current.entity).toBe(undefined);
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe(undefined);
-    expect(result.current.refresh).toBe(undefined);
-  });
-
-  it('should provide an entity', async () => {
-    const entity = { kind: 'MyEntity' } as Entity;
-    const { result } = renderHook(() => useEntity(), {
-      wrapper: ({ children }) => (
-        <EntityContext.Provider
-          value={{ entity, loading: false }}
-          children={children}
-        />
-      ),
-    });
-
-    expect(result.current.entity).toBe(entity);
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe(undefined);
     expect(result.current.refresh).toBe(undefined);
   });
 });

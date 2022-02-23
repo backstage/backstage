@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -33,7 +32,7 @@ import {
   readGithubMultiOrgConfig,
 } from './github';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 import { buildOrgHierarchy } from './util/org';
 
 /**
@@ -77,6 +76,9 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
     this.githubCredentialsProvider =
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
+  }
+  getProcessorName(): string {
+    return 'GithubMultiOrgReaderProcessor';
   }
 
   async readLocation(

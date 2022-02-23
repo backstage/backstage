@@ -20,6 +20,7 @@ import {
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 
+/** @public */
 export function formatEntityRefTitle(
   entityRef: Entity | EntityName,
   opts?: { defaultKind?: string },

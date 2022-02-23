@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import {
   OAuthAdapter,
@@ -235,8 +240,17 @@ export const oktaDefaultSignInResolver: SignInResolver<OAuthResult> = async (
   // TODO(Rugvip): Hardcoded to the local part of the email for now
   const userId = profile.email.split('@')[0];
 
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: userId,
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: `user:default/${userId}`, ent: [`user:default/${userId}`] },
+    claims: {
+      sub: entityRef,
+      ent: [entityRef],
+    },
   });
 
   return { id: userId, token };

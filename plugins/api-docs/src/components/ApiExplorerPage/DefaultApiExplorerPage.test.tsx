@@ -56,8 +56,8 @@ describe('DefaultApiExplorerPage', () => {
           },
         ] as Entity[],
       }),
-    getLocationByEntity: () =>
-      Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+    getLocationByRef: () =>
+      Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
     getEntityByName: async entityName => {
       return {
         apiVersion: 'backstage.io/v1alpha1',
@@ -66,7 +66,8 @@ describe('DefaultApiExplorerPage', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
-            target: { namespace: 'default', kind: 'Group', name: 'tools' },
+            targetRef: 'group:default/tools',
+            target: { namespace: 'default', kind: 'group', name: 'tools' },
           },
         ],
       };

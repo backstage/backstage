@@ -26,7 +26,6 @@ import {
   GroupEntity,
   groupEntityV1alpha1Validator,
   locationEntityV1alpha1Validator,
-  LocationSpec,
   parseEntityRef,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -54,8 +53,9 @@ import {
   templateEntityV1beta2Validator,
 } from '@backstage/plugin-scaffolder-common';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
+/** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   private readonly validators = [
     apiEntityV1alpha1Validator,
@@ -68,6 +68,10 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     systemEntityV1alpha1Validator,
     domainEntityV1alpha1Validator,
   ];
+
+  getProcessorName(): string {
+    return 'BuiltinKindsEntityProcessor';
+  }
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {

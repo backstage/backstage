@@ -175,7 +175,10 @@ async function getRootConfig() {
       // script to determine whether a given package should be tested
       const packageData = await fs.readJson(packagePath);
       const testScript = packageData.scripts && packageData.scripts.test;
-      if (testScript && testScript.includes('backstage-cli test')) {
+      const isSupportedTestScript =
+        testScript?.includes('backstage-cli test') ||
+        testScript?.includes('backstage-cli package test');
+      if (testScript && isSupportedTestScript) {
         return await getProjectConfig(projectPath, packageData.name);
       }
 

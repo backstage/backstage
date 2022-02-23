@@ -29,7 +29,7 @@ import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../routes';
-import { useProjectName } from '../useProjectName';
+import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { Entity } from '@backstage/catalog-model';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
@@ -157,7 +157,7 @@ export const WorkflowRunsTable = ({
   branch?: string;
 }) => {
   const config = useApi(configApiRef);
-  const { value: projectName, loading } = useProjectName(entity);
+  const projectName = getProjectNameFromEntity(entity);
   // TODO: Get github hostname from metadata annotation
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
@@ -172,7 +172,7 @@ export const WorkflowRunsTable = ({
     });
 
   const githubHost = hostname || 'github.com';
-  const hasNoRuns = !loading && !tableProps.loading && !runs;
+  const hasNoRuns = !tableProps.loading && !runs;
 
   return hasNoRuns ? (
     <EmptyState
@@ -193,7 +193,7 @@ export const WorkflowRunsTable = ({
     <WorkflowRunsTableView
       {...tableProps}
       runs={runs}
-      loading={loading || tableProps.loading}
+      loading={tableProps.loading}
       retry={retry}
       onChangePageSize={setPageSize}
       onChangePage={setPage}

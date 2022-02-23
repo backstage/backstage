@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import * as result from './results';
-import { CatalogProcessorEmit } from './types';
+import { CatalogProcessorEmit, LocationSpec } from './types';
 
+/**
+ * @deprecated no longer in use, replaced by the ConfigLocationEntityProvider.
+ * @public
+ */
 export class StaticLocationProcessor implements StaticLocationProcessor {
   static fromConfig(config: Config): StaticLocationProcessor {
     const locations: LocationSpec[] = [];
@@ -45,7 +48,7 @@ export class StaticLocationProcessor implements StaticLocationProcessor {
     }
 
     for (const staticLocation of this.staticLocations) {
-      emit(result.location(staticLocation, false));
+      emit(result.location(staticLocation));
     }
 
     return true;

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import {
   Client,
@@ -211,21 +215,31 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oAuth2DefaultSignInResolver: SignInResolver<
-  OidcAuthResult
-> = async (info, ctx) => {
+export const oidcDefaultSignInResolver: SignInResolver<OidcAuthResult> = async (
+  info,
+  ctx,
+) => {
   const { profile } = info;
 
   if (!profile.email) {
     throw new Error('Profile contained no email');
   }
+
   const userId = profile.email.split('@')[0];
+
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: userId,
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
     claims: {
-      sub: `user:default/${userId}`,
-      ent: [`user:default/${userId}`],
+      sub: entityRef,
+      ent: [entityRef],
     },
   });
+
   return { id: userId, token };
 };
 
@@ -289,7 +303,7 @@ export const createOidcProvider = (
             },
           });
       const signInResolverFn =
-        options?.signIn?.resolver ?? oAuth2DefaultSignInResolver;
+        options?.signIn?.resolver ?? oidcDefaultSignInResolver;
       const signInResolver: SignInResolver<OidcAuthResult> = info =>
         signInResolverFn(info, {
           catalogIdentityClient,

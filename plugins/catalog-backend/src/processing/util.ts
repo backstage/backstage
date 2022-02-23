@@ -19,7 +19,6 @@ import {
   entityEnvelopeSchemaValidator,
   entitySchemaValidator,
   LocationEntity,
-  LocationSpec,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
@@ -28,6 +27,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
+import { LocationSpec } from '../ingestion';
 
 export function isLocationEntity(entity: Entity): entity is LocationEntity {
   return entity.kind === 'Location';

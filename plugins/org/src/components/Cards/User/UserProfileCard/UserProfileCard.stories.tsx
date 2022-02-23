@@ -28,6 +28,7 @@ export default {
 
 const dummyGroup = {
   type: 'memberOf',
+  targetRef: 'group:default/team-a',
   target: {
     namespace: 'default',
     kind: 'group',

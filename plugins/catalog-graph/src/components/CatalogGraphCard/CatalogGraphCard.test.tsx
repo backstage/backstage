@@ -60,12 +60,12 @@ describe('<CatalogGraphCard/>', () => {
       getEntityByName: jest.fn(async _ => ({ ...entity, relations: [] })),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
-      getOriginLocationByEntity: jest.fn(),
-      getLocationByEntity: jest.fn(),
+      getLocationByRef: jest.fn(),
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
+      getEntityFacets: jest.fn(),
     };
     apis = TestApiRegistry.from([catalogApiRef, catalog]);
 

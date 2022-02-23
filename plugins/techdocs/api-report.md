@@ -15,7 +15,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
-import { LocationSpec } from '@backstage/catalog-model';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
@@ -169,9 +169,7 @@ export const EntityListDocsTable: {
 // Warning: (ae-missing-release-tag) "EntityTechdocsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityTechdocsContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityTechdocsContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isTechDocsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -265,16 +263,17 @@ export const TechDocsPageHeader: ({
   entityRef,
   entityMetadata,
   techDocsMetadata,
+  children,
 }: TechDocsPageHeaderProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "TechDocsPageHeaderProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type TechDocsPageHeaderProps = {
+export type TechDocsPageHeaderProps = PropsWithChildren<{
   entityRef: EntityName;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
-};
+}>;
 
 // Warning: (ae-missing-release-tag) "TechDocsPageProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -395,5 +394,5 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 //
 // src/home/components/EntityListDocsTable.d.ts:11:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
 // src/home/components/EntityListDocsTable.d.ts:12:5 - (ae-forgotten-export) The symbol "actionFactories" needs to be exported by the entry point index.d.ts
-// src/plugin.d.ts:29:5 - (ae-forgotten-export) The symbol "TabsConfig" needs to be exported by the entry point index.d.ts
+// src/plugin.d.ts:27:5 - (ae-forgotten-export) The symbol "TabsConfig" needs to be exported by the entry point index.d.ts
 ```

@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { createCatalogPermissionRule } from './util';
 
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for entities with a specified owner.
+ *
  * @public
  */
 export const isEntityOwner = createCatalogPermissionRule({
@@ -36,7 +33,7 @@ export const isEntityOwner = createCatalogPermissionRule({
 
     return resource.relations
       .filter(relation => relation.type === RELATION_OWNED_BY)
-      .some(relation => claims.includes(stringifyEntityRef(relation.target)));
+      .some(relation => claims.includes(relation.targetRef));
   },
   toQuery: (claims: string[]) => ({
     key: 'relations.ownedBy',

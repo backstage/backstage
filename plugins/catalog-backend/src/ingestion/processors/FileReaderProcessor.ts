@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import fs from 'fs-extra';
 import g from 'glob';
 import path from 'path';
@@ -24,11 +23,17 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorParser,
+  LocationSpec,
 } from './types';
 
 const glob = promisify(g);
 
+/** @public */
 export class FileReaderProcessor implements CatalogProcessor {
+  getProcessorName(): string {
+    return 'FileReaderProcessor';
+  }
+
   async readLocation(
     location: LocationSpec,
     optional: boolean,

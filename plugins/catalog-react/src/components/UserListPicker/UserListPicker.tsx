@@ -36,7 +36,7 @@ import { compact } from 'lodash';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { UserListFilter } from '../../filters';
 import {
-  useEntityListProvider,
+  useEntityList,
   useStarredEntities,
   useEntityOwnership,
 } from '../../hooks';
@@ -118,15 +118,15 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-type UserListPickerProps = {
+/** @public */
+export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
 };
 
-export const UserListPicker = ({
-  initialFilter,
-  availableFilters,
-}: UserListPickerProps) => {
+/** @public */
+export const UserListPicker = (props: UserListPickerProps) => {
+  const { initialFilter, availableFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
@@ -136,7 +136,7 @@ export const UserListPicker = ({
     backendEntities,
     queryParameters,
     loading: loadingBackendEntities,
-  } = useEntityListProvider();
+  } = useEntityList();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
