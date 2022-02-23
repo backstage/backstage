@@ -85,8 +85,29 @@ export const EntityListDocsGrid: () => JSX.Element;
 // @public
 export const EntityListDocsTable: {
   (props: EntityListDocsTableProps): JSX.Element;
-  columns: typeof columnFactories;
-  actions: typeof actionFactories;
+  columns: {
+    createNameColumn(): TableColumn<DocsTableRow>;
+    createOwnerColumn(): TableColumn<DocsTableRow>;
+    createTypeColumn(): TableColumn<DocsTableRow>;
+  };
+  actions: {
+    createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
+      icon: () => JSX.Element;
+      tooltip: string;
+      onClick: () => any;
+    };
+    createStarEntityAction(
+      isStarredEntity: Function,
+      toggleStarredEntity: Function,
+    ): ({ entity }: DocsTableRow) => {
+      cellStyle: {
+        paddingLeft: string;
+      };
+      icon: () => JSX.Element;
+      tooltip: string;
+      onClick: () => any;
+    };
+  };
 };
 
 // @public
@@ -361,9 +382,4 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/home/components/Tables/EntityListDocsTable.d.ts:22:5 - (ae-forgotten-export) The symbol "columnFactories" needs to be exported by the entry point index.d.ts
-// src/home/components/Tables/EntityListDocsTable.d.ts:23:5 - (ae-forgotten-export) The symbol "actionFactories" needs to be exported by the entry point index.d.ts
 ```

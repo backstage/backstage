@@ -25,50 +25,42 @@ function customTitle(entity: Entity): string {
 }
 
 /**
- * Utility function for creating a name column for {@link DocsTable}.
+ * Not directly exported, but through DocsTable.columns and EntityListDocsTable.columns
  *
- * @internal
+ * @public
  */
-export function createNameColumn(): TableColumn<DocsTableRow> {
-  return {
-    title: 'Document',
-    field: 'entity.metadata.name',
-    highlight: true,
-    render: (row: DocsTableRow) => (
-      <SubvalueCell
-        value={<Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>}
-        subvalue={row.entity.metadata.description}
-      />
-    ),
-  };
-}
-
-/**
- * Utility function for creating an owner column for {@link DocsTable}.
- *
- * @internal
- */
-export function createOwnerColumn(): TableColumn<DocsTableRow> {
-  return {
-    title: 'Owner',
-    field: 'resolved.ownedByRelationsTitle',
-    render: ({ resolved }) => (
-      <EntityRefLinks
-        entityRefs={resolved.ownedByRelations}
-        defaultKind="group"
-      />
-    ),
-  };
-}
-
-/**
- * Utility function for creating an spec type column for {@link DocsTable}.
- *
- * @internal
- */
-export function createTypeColumn(): TableColumn<DocsTableRow> {
-  return {
-    title: 'Type',
-    field: 'entity.spec.type',
-  };
-}
+export const columnFactories = {
+  createNameColumn(): TableColumn<DocsTableRow> {
+    return {
+      title: 'Document',
+      field: 'entity.metadata.name',
+      highlight: true,
+      render: (row: DocsTableRow) => (
+        <SubvalueCell
+          value={
+            <Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>
+          }
+          subvalue={row.entity.metadata.description}
+        />
+      ),
+    };
+  },
+  createOwnerColumn(): TableColumn<DocsTableRow> {
+    return {
+      title: 'Owner',
+      field: 'resolved.ownedByRelationsTitle',
+      render: ({ resolved }) => (
+        <EntityRefLinks
+          entityRefs={resolved.ownedByRelations}
+          defaultKind="group"
+        />
+      ),
+    };
+  },
+  createTypeColumn(): TableColumn<DocsTableRow> {
+    return {
+      title: 'Type',
+      field: 'entity.spec.type',
+    };
+  },
+};

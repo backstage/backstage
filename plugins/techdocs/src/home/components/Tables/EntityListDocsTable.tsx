@@ -28,8 +28,8 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { DocsTable } from './DocsTable';
-import * as actionFactories from './actions';
-import * as columnFactories from './columns';
+import { actionFactories } from './actions';
+import { columnFactories } from './columns';
 import { DocsTableRow } from './types';
 
 /**

@@ -31,8 +31,8 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import * as actionFactories from './actions';
-import * as columnFactories from './columns';
+import { actionFactories } from './actions';
+import { columnFactories } from './columns';
 import { toLowerMaybe } from '../../../helpers';
 import { DocsTableRow } from './types';
 

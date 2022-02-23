@@ -23,39 +23,33 @@ import {
 import { DocsTableRow } from './types';
 
 /**
- * Utility function for creating a copy docs url action for {@link DocsTable}.
+ * Not directly exported, but through DocsTable.actions and EntityListDocsTable.actions
  *
- * @internal
+ * @public
  */
-
-export function createCopyDocsUrlAction(copyToClipboard: Function) {
-  return (row: DocsTableRow) => {
-    return {
-      icon: () => <ShareIcon fontSize="small" />,
-      tooltip: 'Click to copy documentation link to clipboard',
-      onClick: () =>
-        copyToClipboard(`${window.location.origin}${row.resolved.docsUrl}`),
+export const actionFactories = {
+  createCopyDocsUrlAction(copyToClipboard: Function) {
+    return (row: DocsTableRow) => {
+      return {
+        icon: () => <ShareIcon fontSize="small" />,
+        tooltip: 'Click to copy documentation link to clipboard',
+        onClick: () =>
+          copyToClipboard(`${window.location.origin}${row.resolved.docsUrl}`),
+      };
     };
-  };
-}
-
-/**
- * Utility function for creating a star entity action for {@link DocsTable}.
- *
- * @internal
- */
-
-export function createStarEntityAction(
-  isStarredEntity: Function,
-  toggleStarredEntity: Function,
-) {
-  return ({ entity }: DocsTableRow) => {
-    const isStarred = isStarredEntity(entity);
-    return {
-      cellStyle: { paddingLeft: '1em' },
-      icon: () => favoriteEntityIcon(isStarred),
-      tooltip: favoriteEntityTooltip(isStarred),
-      onClick: () => toggleStarredEntity(entity),
+  },
+  createStarEntityAction(
+    isStarredEntity: Function,
+    toggleStarredEntity: Function,
+  ) {
+    return ({ entity }: DocsTableRow) => {
+      const isStarred = isStarredEntity(entity);
+      return {
+        cellStyle: { paddingLeft: '1em' },
+        icon: () => favoriteEntityIcon(isStarred),
+        tooltip: favoriteEntityTooltip(isStarred),
+        onClick: () => toggleStarredEntity(entity),
+      };
     };
-  };
-}
+  },
+};
