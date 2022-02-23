@@ -80,9 +80,16 @@ export class MicrosoftGraphClient {
   ): Promise<string | undefined>;
   getUserProfile(userId: string): Promise<MicrosoftGraph.User>;
   getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
-  requestApi(path: string, query?: ODataQuery): Promise<Response_2>;
+  requestApi(
+    path: string,
+    query?: ODataQuery,
+    headers?: Record<string, string>,
+  ): Promise<Response_2>;
   requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
-  requestRaw(url: string): Promise<Response_2>;
+  requestRaw(
+    url: string,
+    headers?: Record<string, string>,
+  ): Promise<Response_2>;
 }
 
 // @public
