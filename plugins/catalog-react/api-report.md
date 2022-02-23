@@ -265,7 +265,7 @@ export const EntityRefLink: (props: EntityRefLinkProps) => JSX.Element;
 
 // @public
 export type EntityRefLinkProps = {
-  entityRef: Entity | EntityName;
+  entityRef: Entity | EntityName | string;
   defaultKind?: string;
   title?: string;
   children?: React_2.ReactNode;
@@ -586,10 +586,7 @@ export function useOwnUser(): AsyncState<UserEntity | undefined>;
 // @public (undocumented)
 export function useRelatedEntities(
   entity: Entity,
-  {
-    type,
-    kind,
-  }: {
+  relationFilter: {
     type?: string;
     kind?: string;
   },

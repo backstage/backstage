@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  RELATION_MEMBER_OF,
-  stringifyEntityRef,
-  UserEntity,
-} from '@backstage/catalog-model';
-import { TokenParams } from '../../identity';
+// @ts-check
 
-export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
-  const userRef = stringifyEntityRef(entity);
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function up(knex) {
+  // Make sure to reprocess everything, to make sure that relations have a targetRef produced
+  await knex('refresh_state').update({
+    result_hash: '',
+    next_update_at: knex.fn.now(),
+  });
+  await knex('final_entities').update({ hash: '' });
+};
 
-  const membershipRefs =
-    entity.relations
-      ?.filter(
-        r => r.type === RELATION_MEMBER_OF && r.targetRef.startsWith('group:'),
-      )
-      .map(r => r.targetRef) ?? [];
-
-  return {
-    sub: userRef,
-    ent: [userRef, ...membershipRefs],
-  };
-}
+exports.down = async function down() {};

@@ -76,10 +76,11 @@ describe('<HasResourcesCard />', () => {
       relations: [
         {
           target: {
-            kind: 'Resource',
+            kind: 'resource',
             namespace: 'my-namespace',
             name: 'target-name',
           },
+          targetRef: 'resource:my-namespace/target-name',
           type: RELATION_HAS_PART,
         },
       ],

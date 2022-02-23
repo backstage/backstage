@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { DbSearchRow } from '../database/tables';
 
@@ -181,7 +177,7 @@ export function buildEntitySearch(
   for (const relation of entity.relations ?? []) {
     raw.push({
       key: `relations.${relation.type}`,
-      value: stringifyEntityRef(relation.target),
+      value: relation.targetRef,
     });
   }
 

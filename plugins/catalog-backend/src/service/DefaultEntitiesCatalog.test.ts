@@ -469,6 +469,62 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(0);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should return both target and targetRef for entities',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+        await addEntity(
+          knex,
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'one' },
+            spec: {},
+            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
+          },
+          [],
+        );
+        await addEntity(
+          knex,
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'two' },
+            spec: {},
+            relations: [
+              {
+                type: 'r',
+                target: { kind: 'x', namespace: 'y', name: 'z' },
+              } as any,
+            ],
+          },
+          [],
+        );
+        const catalog = new DefaultEntitiesCatalog(knex);
+
+        const { entities } = await catalog.entities();
+
+        expect(
+          entities.find(e => e.metadata.name === 'one')!.relations,
+        ).toEqual([
+          {
+            type: 'r',
+            targetRef: 'x:y/z',
+            target: { kind: 'x', namespace: 'y', name: 'z' },
+          },
+        ]);
+        expect(
+          entities.find(e => e.metadata.name === 'two')!.relations,
+        ).toEqual([
+          {
+            type: 'r',
+            targetRef: 'x:y/z',
+            target: { kind: 'x', namespace: 'y', name: 'z' },
+          },
+        ]);
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {

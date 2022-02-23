@@ -63,6 +63,7 @@ describe('<AboutCard />', () => {
       relations: [
         {
           type: RELATION_OWNED_BY,
+          targetRef: 'user:default/guest',
           target: {
             kind: 'user',
             name: 'guest',

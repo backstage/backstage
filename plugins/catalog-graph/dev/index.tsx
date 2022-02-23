@@ -118,6 +118,11 @@ const entities = (
     },
     relations: relations.map(([type, k, n]) => ({
       target: { kind: k, name: n, namespace: DEFAULT_NAMESPACE },
+      targetRef: stringifyEntityRef({
+        kind: k,
+        namespace: DEFAULT_NAMESPACE,
+        name: n,
+      }),
       type,
     })),
   };

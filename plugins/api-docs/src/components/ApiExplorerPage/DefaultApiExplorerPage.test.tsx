@@ -66,7 +66,8 @@ describe('DefaultApiExplorerPage', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
-            target: { namespace: 'default', kind: 'Group', name: 'tools' },
+            targetRef: 'group:default/tools',
+            target: { namespace: 'default', kind: 'group', name: 'tools' },
           },
         ],
       };

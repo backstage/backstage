@@ -58,6 +58,7 @@ describe('<CatalogGraphPage/>', () => {
       relations: [
         {
           type: RELATION_PART_OF,
+          targetRef: 'b:d/e',
           target: {
             kind: 'b',
             namespace: 'd',
@@ -76,6 +77,7 @@ describe('<CatalogGraphPage/>', () => {
       relations: [
         {
           type: RELATION_HAS_PART,
+          targetRef: 'b:d/c',
           target: {
             kind: 'b',
             namespace: 'd',

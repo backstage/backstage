@@ -73,7 +73,8 @@ describe('DefaultCatalogPage', () => {
             relations: [
               {
                 type: RELATION_OWNED_BY,
-                target: { kind: 'Group', name: 'tools', namespace: 'default' },
+                targetRef: 'group:default/tools',
+                target: { kind: 'group', name: 'tools', namespace: 'default' },
               },
             ],
           },
@@ -90,8 +91,9 @@ describe('DefaultCatalogPage', () => {
             relations: [
               {
                 type: RELATION_OWNED_BY,
+                targetRef: 'group:default/not-tools',
                 target: {
-                  kind: 'Group',
+                  kind: 'group',
                   name: 'not-tools',
                   namespace: 'default',
                 },
@@ -110,6 +112,7 @@ describe('DefaultCatalogPage', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
+            targetRef: 'group:default/tools',
             target: { namespace: 'default', kind: 'Group', name: 'tools' },
           },
         ],
