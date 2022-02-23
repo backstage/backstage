@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { EntityName, EntityRef } from '../types';
 import { DEFAULT_NAMESPACE } from './constants';
+import { EntityName } from '../types';
 import { Entity } from './Entity';
 
 function parseRefString(ref: string): {
@@ -76,13 +76,14 @@ export type EntityRefContext = {
  * otherwise specified as part of the options, and will throw an error if no
  * kind was specified in the input reference and no default kind was given.
  *
+ * @deprecated Please use parseEntityRef instead
  * @public
  * @param ref - The reference to parse
  * @param context - The context of defaults that the parsing happens within
  * @returns A complete entity name
  */
 export function parseEntityName(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context: {
     /** The default kind, if none is given in the reference */
     defaultKind?: string;
@@ -119,7 +120,7 @@ export function parseEntityName(
  * @returns The compound form of the reference
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context?: { defaultKind: string; defaultNamespace: string },
 ): EntityName;
 /**
@@ -128,7 +129,7 @@ export function parseEntityRef(
  * @public
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context?: { defaultKind: string },
 ): {
   kind: string;
@@ -141,7 +142,7 @@ export function parseEntityRef(
  * @public
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context?: { defaultNamespace: string },
 ): {
   kind?: string;
@@ -154,7 +155,7 @@ export function parseEntityRef(
  * @public
  */
 export function parseEntityRef(
-  ref: EntityRef,
+  ref: string | { kind?: string; namespace?: string; name: string },
   context: {
     /** The default kind, if none is given in the reference */
     defaultKind?: string;
@@ -249,7 +250,10 @@ export function stringifyEntityRef(
  */
 export function compareEntityToRef(
   entity: Entity,
-  ref: EntityRef | EntityName,
+  ref:
+    | string
+    | { kind?: string; namespace?: string; name: string }
+    | EntityName,
   context?: {
     /** The default kind, if none is given in the reference */
     defaultKind?: string;
