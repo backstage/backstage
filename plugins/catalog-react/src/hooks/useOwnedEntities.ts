@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import { catalogApiRef } from './../api';
-import {
-  loadCatalogOwnerRefs,
-  loadIdentityOwnerRefs,
-} from './useEntityOwnership';
+import { loadCatalogOwnerRefs } from './useEntityOwnership';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
@@ -41,7 +38,8 @@ export function useOwnedEntities(allowedKinds?: string[]): {
   const catalogApi = useApi(catalogApiRef);
 
   const { loading, value: refs } = useAsync(async () => {
-    const identityRefs = await loadIdentityOwnerRefs(identityApi);
+    const identity = await identityApi.getBackstageIdentity();
+    const identityRefs = identity.ownershipEntityRefs;
     const catalogRefs = await loadCatalogOwnerRefs(catalogApi, identityRefs);
     const catalogs = await catalogApi.getEntities(
       allowedKinds
