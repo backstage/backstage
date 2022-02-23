@@ -64,12 +64,11 @@ export const scaffolderPlugin = createPlugin({
   },
 });
 
-export const EntityPickerExtension = createScaffolderFieldExtension({
-  component: EntityPicker,
-  name: 'EntityPicker',
-});
 export const EntityPickerFieldExtension = scaffolderPlugin.provide(
-  EntityPickerExtension,
+  createScaffolderFieldExtension({
+    component: EntityPicker,
+    name: 'EntityPicker',
+  }),
 );
 
 export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
