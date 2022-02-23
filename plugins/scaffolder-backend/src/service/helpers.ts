@@ -20,11 +20,11 @@ import {
   ANNOTATION_LOCATION,
   parseLocationRef,
   ANNOTATION_SOURCE_LOCATION,
-  EntityRef,
-  parseEntityRef,
+  EntityName,
+  DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError, ConflictError, NotFoundError } from '@backstage/errors';
+import { assertError, InputError, NotFoundError } from '@backstage/errors';
 import {
   TemplateEntityV1beta2,
   TemplateEntityV1beta3,
@@ -87,47 +87,29 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
 }
 
 /**
- * Will use the provided CatalogApi to go find the template entity ref that is provided with and additional token
- * Returns the first matching template, throws a NotFoundError or ConflictError if 0 or multiple templates are found.
+ * Will use the provided CatalogApi to go find the given template entity with an additional token.
+ * Returns the matching template, or throws a NotFoundError if no such template existed.
  */
-export async function findTemplate({
-  entityRef,
-  token,
-  catalogApi,
-}: {
-  entityRef: EntityRef;
+export async function findTemplate(options: {
+  entityRef: EntityName;
   token?: string;
   catalogApi: CatalogApi;
 }): Promise<TemplateEntityV1beta3 | TemplateEntityV1beta2> {
-  const parsedEntityRef = parseEntityRef(entityRef, {
-    defaultKind: 'template',
-    defaultNamespace: 'default',
-  });
-  const { items } = await catalogApi.getEntities(
-    {
-      filter: {
-        kind: 'template',
-        'metadata.name': parsedEntityRef.name,
-        'metadata.namespace': parsedEntityRef.namespace,
-      },
-    },
-    {
-      token,
-    },
-  );
+  const { entityRef, token, catalogApi } = options;
 
-  const templates = items.filter(
-    (entity): entity is TemplateEntityV1beta3 | TemplateEntityV1beta2 =>
-      entity.kind === 'Template',
-  );
-
-  if (templates.length !== 1) {
-    if (templates.length > 1) {
-      throw new ConflictError('Templates lookup resulted in multiple matches');
-    } else {
-      throw new NotFoundError('Template not found');
-    }
+  if (entityRef.namespace.toLocaleLowerCase('en-US') !== DEFAULT_NAMESPACE) {
+    throw new InputError(
+      `Invalid namespace, only '${DEFAULT_NAMESPACE}' namespace is supported`,
+    );
+  }
+  if (entityRef.kind.toLocaleLowerCase('en-US') !== 'template') {
+    throw new InputError(`Invalid kind, only 'Template' kind is supported`);
   }
 
-  return templates[0];
+  const template = await catalogApi.getEntityByName(entityRef, { token });
+  if (!template) {
+    throw new NotFoundError(`Template ${entityRef} not found`);
+  }
+
+  return template as TemplateEntityV1beta3 | TemplateEntityV1beta2;
 }

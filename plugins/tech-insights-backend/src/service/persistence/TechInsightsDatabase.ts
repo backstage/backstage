@@ -26,7 +26,7 @@ import { rsort } from 'semver';
 import { groupBy, omit } from 'lodash';
 import { DateTime } from 'luxon';
 import { Logger } from 'winston';
-import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { isMaxItems, isTtl } from '../fact/factRetrievers/utils';
 
 type Transaction = Knex.Transaction;
@@ -161,7 +161,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
 
     return groupBy(
       results.map(it => {
-        const { namespace, kind, name } = parseEntityName(it.entity);
+        const { namespace, kind, name } = parseEntityRef(it.entity);
         const timestamp =
           typeof it.timestamp === 'string'
             ? DateTime.fromISO(it.timestamp)
@@ -253,7 +253,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
 
   private dbFactRowsToTechInsightFacts(rows: RawDbFactRow[]) {
     return rows.reduce((acc, it) => {
-      const { namespace, kind, name } = parseEntityName(it.entity);
+      const { namespace, kind, name } = parseEntityRef(it.entity);
       const timestamp =
         typeof it.timestamp === 'string'
           ? DateTime.fromISO(it.timestamp)

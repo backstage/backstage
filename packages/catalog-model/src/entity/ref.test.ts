@@ -194,12 +194,12 @@ describe('ref', () => {
       });
       expect(parseEntityRef('a:c')).toEqual({
         kind: 'a',
-        namespace: undefined,
+        namespace: 'default',
         name: 'c',
       });
       expect(parseEntityRef('c')).toEqual({
         kind: undefined,
-        namespace: undefined,
+        namespace: 'default',
         name: 'c',
       });
     });
