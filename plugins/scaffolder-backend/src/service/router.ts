@@ -179,7 +179,7 @@ export async function createRouter(
     })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const kind = 'Template';
+      const kind = 'template';
       const namespace = DEFAULT_NAMESPACE;
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);

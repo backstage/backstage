@@ -50,10 +50,10 @@ import request from 'supertest';
 import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 
-const createCatalogClient = (templates: any[] = []) =>
+const createCatalogClient = (template: any) =>
   ({
-    getEntities: async () => ({ items: templates }),
-  } as CatalogApi);
+    getEntityByName: async () => template,
+  } as unknown as CatalogApi);
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -120,7 +120,7 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       config: new ConfigReader({}),
       database: createDatabase(),
-      catalogClient: createCatalogClient([template]),
+      catalogClient: createCatalogClient(template),
       containerRunner: new DockerContainerRunner({} as any),
       reader: mockUrlReader,
       taskBroker,
