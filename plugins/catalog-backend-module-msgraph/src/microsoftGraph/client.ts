@@ -106,12 +106,13 @@ export class MicrosoftGraphClient {
     path: string,
     query?: ODataQuery,
   ): AsyncIterable<T> {
-
-    const headers: Record<string, string> = query?.search ? {
-      // Eventual consistency is required to use $search.
-      // If a new user/group is not found, it'll eventually be imported on a subsequent read
-      ConsistencyLevel: 'eventual',
-    } : {}
+    const headers: Record<string, string> = query?.search
+      ? {
+          // Eventual consistency is required to use $search.
+          // If a new user/group is not found, it'll eventually be imported on a subsequent read
+          ConsistencyLevel: 'eventual',
+        }
+      : {};
 
     let response = await this.requestApi(path, query, headers);
 
@@ -144,7 +145,11 @@ export class MicrosoftGraphClient {
    * @param query - OData Query {@link ODataQuery}
    * @param headers - optional HTTP headers
    */
-  async requestApi(path: string, query?: ODataQuery, headers?: Record<string, string>): Promise<Response> {
+  async requestApi(
+    path: string,
+    query?: ODataQuery,
+    headers?: Record<string, string>,
+  ): Promise<Response> {
     const queryString = qs.stringify(
       {
         $search: query?.search,
@@ -159,7 +164,10 @@ export class MicrosoftGraphClient {
       },
     );
 
-    return await this.requestRaw(`${this.baseUrl}/${path}${queryString}`, headers);
+    return await this.requestRaw(
+      `${this.baseUrl}/${path}${queryString}`,
+      headers,
+    );
   }
 
   /**
@@ -168,7 +176,10 @@ export class MicrosoftGraphClient {
    * @param url - HTTP Endpoint of Graph API
    * @param headers - optional HTTP headers
    */
-  async requestRaw(url: string, headers?: Record<string, string>): Promise<Response> {
+  async requestRaw(
+    url: string,
+    headers?: Record<string, string>,
+  ): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
     const token = await this.pca.acquireTokenByClientCredential({
       scopes: ['https://graph.microsoft.com/.default'],
