@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TaskRunner } from '@backstage/backend-tasks';
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
@@ -35,10 +36,10 @@ export type IndexBuilderOptions = {
  */
 export interface RegisterCollatorParameters {
   /**
-   * The default interval (in seconds) that the provided collator will be called (can be overridden in config).
+   * The schedule for which the provided collator will be called, commonly the result of
+   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
    */
-  defaultRefreshIntervalSeconds: number;
-
+  schedule: TaskRunner;
   /**
    * The class responsible for returning the document collator of the given type.
    */
