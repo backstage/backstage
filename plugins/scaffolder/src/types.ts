@@ -17,28 +17,14 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
-export type Status = 'open' | 'processing' | 'failed' | 'completed' | 'skipped';
-export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
-export type Job = {
-  id: string;
-  metadata: {
-    entity: any;
-    values: any;
-    remoteUrl?: string;
-    catalogInfoUrl?: string;
-  };
-  status: JobStatus;
-  stages: Stage[];
-  error?: Error;
-};
+export type LogEventStatus =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'completed'
+  | 'skipped';
 
-export type Stage = {
-  name: string;
-  log: string[];
-  status: JobStatus;
-  startedAt: string;
-  endedAt?: string;
-};
+export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
 
 export type ScaffolderTask = {
   id: string;
@@ -57,19 +43,19 @@ export type ListActionsResponse = Array<{
   };
 }>;
 
-type OutputLink = {
+type ScaffolderOutputLink = {
   title?: string;
   icon?: string;
   url?: string;
   entityRef?: string;
 };
 
-export type TaskOutput = {
+export type ScaffolderTaskOutput = {
   /** @deprecated use the `links` property to link out to relevant resources */
   entityRef?: string;
   /** @deprecated use the `links` property to link out to relevant resources */
   remoteUrl?: string;
-  links?: OutputLink[];
+  links?: ScaffolderOutputLink[];
 } & {
   [key: string]: unknown;
 };
@@ -87,7 +73,7 @@ export type LogEvent = {
   body: {
     message: string;
     stepId?: string;
-    status?: Status;
+    status?: LogEventStatus;
   };
   createdAt: string;
   id: string;
@@ -100,7 +86,7 @@ export interface ScaffolderScaffoldOptions {
 }
 
 export interface ScaffolderScaffoldResponse {
-  jobId: string;
+  taskId: string;
 }
 
 export interface ScaffolderGetIntegrationsListOptions {

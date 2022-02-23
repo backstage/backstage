@@ -140,7 +140,7 @@ export class ScaffolderClient implements ScaffolderApi {
     }
 
     const { id } = (await response.json()) as { id: string };
-    return { jobId: id };
+    return { taskId: id };
   }
 
   async getTask(taskId: string): Promise<ScaffolderTask> {

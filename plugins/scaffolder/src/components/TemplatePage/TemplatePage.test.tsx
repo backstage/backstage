@@ -23,7 +23,8 @@ import { ThemeProvider } from '@material-ui/core';
 import { act, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router';
-import { ScaffolderApi, scaffolderApiRef } from '../../api';
+import { scaffolderApiRef } from '../../api';
+import { ScaffolderApi } from '../../types';
 import { rootRouteRef } from '../../routes';
 import { TemplatePage } from './TemplatePage';
 import {
