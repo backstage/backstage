@@ -79,6 +79,7 @@ export type LogEvent = {
   id: string;
   taskId: string;
 };
+
 export interface ScaffolderScaffoldOptions {
   templateName: string;
   values: Record<string, any>;
@@ -115,9 +116,7 @@ export interface ScaffolderApi {
    * Executes the scaffolding of a component, given a template and its
    * parameter values.
    *
-   * @param options.templateName - Name of the Template entity for the scaffolder to use. New project is going to be created out of this template.
-   * @param options.values - Parameters for the template, e.g. name, description
-   * @param options.secrets - Optional secrets to pass to as the secrets parameter to the template.
+   * @param options - The {@link ScaffolderScaffoldOptions} the scaffolding.
    */
   scaffold(
     options: ScaffolderScaffoldOptions,

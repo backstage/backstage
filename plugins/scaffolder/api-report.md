@@ -261,9 +261,6 @@ export interface ScaffolderApi {
     templateRef: string,
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
@@ -294,9 +291,6 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
