@@ -187,18 +187,8 @@ describe('ref', () => {
         namespace: 'b',
         name: 'c',
       });
-      expect(parseEntityRef('b/c')).toEqual({
-        kind: undefined,
-        namespace: 'b',
-        name: 'c',
-      });
       expect(parseEntityRef('a:c')).toEqual({
         kind: 'a',
-        namespace: 'default',
-        name: 'c',
-      });
-      expect(parseEntityRef('c')).toEqual({
-        kind: undefined,
         namespace: 'default',
         name: 'c',
       });

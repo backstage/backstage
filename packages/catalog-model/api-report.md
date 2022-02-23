@@ -417,46 +417,10 @@ export function parseEntityRef(
         name: string;
       },
   context?: {
-    defaultKind: string;
-    defaultNamespace: string;
+    defaultKind?: string;
+    defaultNamespace?: string;
   },
 ): EntityName;
-
-// @public
-export function parseEntityRef(
-  ref:
-    | string
-    | {
-        kind?: string;
-        namespace?: string;
-        name: string;
-      },
-  context?: {
-    defaultKind: string;
-  },
-): {
-  kind: string;
-  namespace?: string;
-  name: string;
-};
-
-// @public
-export function parseEntityRef(
-  ref:
-    | string
-    | {
-        kind?: string;
-        namespace?: string;
-        name: string;
-      },
-  context?: {
-    defaultNamespace: string;
-  },
-): {
-  kind?: string;
-  namespace: string;
-  name: string;
-};
 
 // @public
 export function parseLocationRef(ref: string): {
