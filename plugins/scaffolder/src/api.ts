@@ -35,6 +35,7 @@ import {
   ScaffolderStreamLogsOptions,
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
+  ScaffolderTask,
 } from './types';
 
 /**
@@ -142,7 +143,7 @@ export class ScaffolderClient implements ScaffolderApi {
     return { jobId: id };
   }
 
-  async getTask(taskId: string) {
+  async getTask(taskId: string): Promise<ScaffolderTask> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
 
