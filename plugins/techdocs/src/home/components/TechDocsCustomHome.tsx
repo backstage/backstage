@@ -138,11 +138,17 @@ const CustomPanel = ({
   );
 };
 
-export const TechDocsCustomHome = ({
-  tabsConfig,
-}: {
+/**
+ * Props for {@link TechDocsCustomHome}
+ *
+ * @public
+ */
+export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
-}) => {
+};
+
+export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
+  const { tabsConfig } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
 

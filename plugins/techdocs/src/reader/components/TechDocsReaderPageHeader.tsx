@@ -45,12 +45,10 @@ export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
  *
  * @public
  */
-export const TechDocsReaderPageHeader = ({
-  entityRef,
-  entityMetadata,
-  techDocsMetadata,
-  children,
-}: TechDocsReaderPageHeaderProps) => {
+export const TechDocsReaderPageHeader = (
+  props: TechDocsReaderPageHeaderProps,
+) => {
+  const { entityRef, entityMetadata, techDocsMetadata, children } = props;
   const { name } = entityRef;
 
   const { site_name: siteName, site_description: siteDescription } =

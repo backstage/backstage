@@ -38,15 +38,19 @@ import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
 import { DocsTableRow, EntityListDocsTable } from './Tables';
 
-export const DefaultTechDocsHome = ({
-  initialFilter = 'all',
-  columns,
-  actions,
-}: {
+/**
+ * Props for {@link DefaultTechDocsHome}
+ *
+ * @public
+ */
+export type DefaultTechDocsHomeProps = {
   initialFilter?: UserListFilterKind;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
-}) => {
+};
+
+export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
+  const { initialFilter = 'all', columns, actions } = props;
   return (
     <TechDocsPageWrapper>
       <Content>

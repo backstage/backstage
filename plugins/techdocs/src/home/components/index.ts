@@ -22,6 +22,7 @@ export type {
   PanelConfig,
   TabConfig,
   TabsConfig,
+  TechDocsCustomHomeProps,
 } from './TechDocsCustomHome';
 export * from './TechDocsPageWrapper';
 export * from './TechDocsPicker';

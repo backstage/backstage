@@ -27,15 +27,21 @@ import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
 import React from 'react';
 
 /**
+ * Props for {@link DocsCardGrid}
+ *
+ * @public
+ */
+export type DocsCardGridProps = {
+  entities: Entity[] | undefined;
+};
+
+/**
  * Component which accepts a list of entities and renders a item card for each entity
  *
  * @public
  */
-export const DocsCardGrid = ({
-  entities,
-}: {
-  entities: Entity[] | undefined;
-}) => {
+export const DocsCardGrid = (props: DocsCardGridProps) => {
+  const { entities } = props;
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
   if (!entities) return null;
