@@ -20,7 +20,10 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
@@ -141,18 +144,6 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
-
-        if (namespace !== 'default') {
-          throw new InputError(
-            `Invalid namespace, only 'default' namespace is supported`,
-          );
-        }
-        if (kind.toLowerCase() !== 'template') {
-          throw new InputError(
-            `Invalid kind, only 'Template' kind is supported`,
-          );
-        }
-
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
@@ -188,16 +179,13 @@ export async function createRouter(
     })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const { kind, namespace } = { kind: 'template', namespace: 'default' };
+      const kind = 'Template';
+      const namespace = DEFAULT_NAMESPACE;
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
       const template = await findTemplate({
         catalogApi: catalogClient,
-        entityRef: {
-          name: templateName,
-          kind,
-          namespace,
-        },
+        entityRef: { kind, namespace, name: templateName },
         token: getBearerToken(req.headers.authorization),
       });
 
