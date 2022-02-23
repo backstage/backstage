@@ -16,4 +16,14 @@
 export { DirectoryPreparer } from './dir';
 export { UrlPreparer } from './url';
 export { Preparers } from './preparers';
-export type { PreparerBuilder, PreparerBase, RemoteProtocol } from './types';
+export type {
+  PreparerBase,
+  PreparerBuilder,
+  PreparerFactory,
+  PreparerOptions,
+  PreparerResponse,
+  DirectoryFactory,
+  UrlFactory,
+  RemoteProtocol,
+  ETag,
+} from './types';

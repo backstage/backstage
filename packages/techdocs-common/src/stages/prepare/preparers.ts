@@ -13,26 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import { parseReferenceAnnotation } from '../../helpers';
 import { DirectoryPreparer } from './dir';
 import { UrlPreparer } from './url';
-import { PreparerBase, PreparerBuilder, RemoteProtocol } from './types';
+import {
+  PreparerBase,
+  PreparerBuilder,
+  PreparerFactory,
+  RemoteProtocol,
+} from './types';
 
-type factoryOptions = {
-  logger: Logger;
-  reader: UrlReader;
-};
-
+/**
+ * Collection of docs preparers
+ * @public
+ */
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
 
+  /**
+   * Returns a generators instance containing a generator for Tech Docs
+   * @public
+   * @param config - A Backstage configuration
+   * @param options - Options to configure the URL preparer
+   */
   static async fromConfig(
     config: Config,
-    { logger, reader }: factoryOptions,
+    { logger, reader }: PreparerFactory,
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
@@ -49,10 +57,20 @@ export class Preparers implements PreparerBuilder {
     return preparers;
   }
 
+  /**
+   * Register a preparer in the preparers collection
+   * @param protocol - url or dir to associate with preparer
+   * @param preparer - The preparer instance to set
+   */
   register(protocol: RemoteProtocol, preparer: PreparerBase) {
     this.preparerMap.set(protocol, preparer);
   }
 
+  /**
+   * Returns the preparer for a given Tech Docs entity
+   * @param entity - A Tech Docs entity instance
+   * @returns
+   */
   get(entity: Entity): PreparerBase {
     const { type } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',

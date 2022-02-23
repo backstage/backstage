@@ -15,19 +15,72 @@
  */
 
 import type { Entity } from '@backstage/catalog-model';
+import { UrlReader } from '@backstage/backend-common';
 import { Logger } from 'winston';
 
+/**
+ * Options for building preparers
+ * @public
+ */
+export type PreparerFactory = {
+  logger: Logger;
+  reader: UrlReader;
+};
+
+/**
+ * Options to configure a directory preparer.
+ * @public
+ */
+export type DirectoryFactory = {
+  reader: UrlReader;
+};
+
+/**
+ * Options to configure a url preparer.
+ * @public
+ */
+export type UrlFactory = PreparerFactory;
+
+/**
+ * A unique identifier of the tree blob, usually the commit SHA or etag from the target.
+ * @public
+ */
+export type ETag = string;
+
+/**
+ * Options for configuring the content preparation process.
+ * @public
+ */
+export type PreparerOptions = {
+  /**
+   * An instance of the logger
+   */
+  logger?: Logger;
+  /**
+   * see {@link ETag}
+   */
+  etag?: ETag;
+};
+
+/**
+ * Result of the preparation step.
+ * @public
+ */
 export type PreparerResponse = {
   /**
    * The path to directory where the tree is downloaded.
    */
   preparedDir: string;
   /**
-   * A unique identifier of the tree blob, usually the commit SHA or etag from the target.
+   * see {@link ETag}
    */
-  etag: string;
+  etag: ETag;
 };
 
+/**
+ * Definition of a Tech Docs preparer
+ * @public
+ */
 export type PreparerBase = {
   /**
    * Given an Entity definition from the Software Catalog, go and prepare a directory
@@ -38,15 +91,20 @@ export type PreparerBase = {
    *        updated since the last build.
    * @throws `NotModifiedError` when the prepared directory has not been changed since the last build.
    */
-  prepare(
-    entity: Entity,
-    options?: { logger?: Logger; etag?: string },
-  ): Promise<PreparerResponse>;
+  prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 };
 
+/**
+ * Definition for a Tech Docs preparer builder
+ * @public
+ */
 export type PreparerBuilder = {
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
   get(entity: Entity): PreparerBase;
 };
 
+/**
+ * Location where documentation files are stored
+ * @public
+ */
 export type RemoteProtocol = 'url' | 'dir';

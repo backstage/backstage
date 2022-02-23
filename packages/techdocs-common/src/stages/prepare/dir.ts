@@ -24,42 +24,40 @@ import {
 } from '@backstage/integration';
 import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
-import { PreparerBase, PreparerResponse } from './types';
-
-export type DirectoryPreparerOptions = {
-  config: Config;
-  reader: UrlReader;
-};
-
-export type PreparerOptions = { logger?: Logger; etag?: string };
+import {
+  PreparerBase,
+  PreparerOptions,
+  PreparerResponse,
+  DirectoryFactory,
+} from './types';
 
 /**
- * Prepares files before building documentation
- *
+ * Preparer used to retrieve documentation files from a local directory
  * @public
  */
 export class DirectoryPreparer implements PreparerBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly reader: UrlReader;
 
-  /**
-   * @deprecated use static fromConfig method instead.
-   */
+  /**  @deprecated use static fromConfig method instead */
   constructor(config: Config, _logger: Logger | null, reader: UrlReader) {
     this.reader = reader;
     this.scmIntegrations = ScmIntegrations.fromConfig(config);
   }
 
-  static fromConfig(options: DirectoryPreparerOptions): DirectoryPreparer {
-    return new DirectoryPreparer(options.config, null, options.reader);
+  /**
+   * Returns a directory preparer instance
+   * @param config - A backstage config
+   * @param options - A directory preparer options containing the URL reader
+   */
+  static fromConfig(
+    config: Config,
+    options: DirectoryFactory,
+  ): DirectoryPreparer {
+    return new DirectoryPreparer(config, null, options.reader);
   }
 
-  /**
-   *
-   * @param entity - The parts of the format that's common to all versions/kinds of entity
-   * @param options - Optional logger and etag
-   * @returns
-   */
+  /** {@inheritDoc PreparerBase.prepare} */
   async prepare(
     entity: Entity,
     options?: PreparerOptions,

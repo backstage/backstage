@@ -19,17 +19,32 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { getDocFilesFromRepository } from '../../helpers';
-import { PreparerBase, PreparerResponse } from './types';
+import { PreparerBase, PreparerResponse, UrlFactory } from './types';
 
+/**
+ * Preparer used to retrieve documentation files from a remote repository
+ * @public
+ */
 export class UrlPreparer implements PreparerBase {
   private readonly logger: Logger;
   private readonly reader: UrlReader;
 
+  /**  @deprecated use static fromConfig method instead */
   constructor(reader: UrlReader, logger: Logger) {
     this.logger = logger;
     this.reader = reader;
   }
 
+  /**
+   * Returns a directory preparer instance
+   * @param config - A backstage config
+   * @param options - A directory preparer options containing the URL reader
+   */
+  static fromConfig(options: UrlFactory): UrlPreparer {
+    return new UrlPreparer(options.reader, options.logger);
+  }
+
+  /** {@inheritDoc PreparerBase.prepare} */
   async prepare(
     entity: Entity,
     options?: { etag?: string },
