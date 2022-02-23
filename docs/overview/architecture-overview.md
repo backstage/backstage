@@ -281,11 +281,11 @@ stores as a means of improving performance or reliability. Similar to how
 databases are supported, plugins receive logically separated cache connections,
 which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
-At this time of writing, Backstage can be configured to use one of two cache
-stores: memory, which is mainly used for local testing, and memcache, which is a
-cache store better suited for production deployment. The right cache store for
-your Backstage instance will depend on your own run-time constraints and those
-required of the plugins you're running.
+At this time of writing, Backstage can be configured to use one of three cache
+stores: memory, which is mainly used for local testing, memcache or Redis,
+which are cache stores better suited for production deployment. The right cache
+store for your Backstage instance will depend on your own run-time constraints
+and those required of the plugins you're running.
 
 ### Use memory for cache
 
@@ -302,6 +302,15 @@ backend:
   cache:
     store: memcache
     connection: user:pass@cache.example.com:11211
+```
+
+### Use Redis for cache
+
+```yaml
+backend:
+  cache:
+    store: redis
+    connection: user:pass@cache.example.com:6379
 ```
 
 Contributions supporting other cache stores are welcome!

@@ -135,6 +135,14 @@ export interface Config {
           store: 'memory';
         }
       | {
+          store: 'redis';
+          /**
+           * A redis connection string in the form `user:pass@host:port`.
+           * @secret
+           */
+          connection: string;
+        }
+      | {
           store: 'memcache';
           /**
            * A memcache connection string in the form `user:pass@host:port`.

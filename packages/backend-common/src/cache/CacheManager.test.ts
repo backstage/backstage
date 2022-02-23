@@ -18,6 +18,8 @@ import { ConfigReader } from '@backstage/config';
 import Keyv from 'keyv';
 /* @ts-expect-error */
 import KeyvMemcache from 'keyv-memcache';
+/* @ts-expect-error */
+import KeyvRedis from '@keyv/redis';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManager } from './CacheManager';
 import { NoStore } from './NoStore';
@@ -26,6 +28,8 @@ jest.createMockFromModule('keyv');
 jest.mock('keyv');
 jest.createMockFromModule('keyv-memcache');
 jest.mock('keyv-memcache');
+jest.createMockFromModule('@keyv/redis');
+jest.mock('@keyv/redis');
 jest.mock('./CacheClient', () => {
   return {
     DefaultCacheClient: jest.fn(),
@@ -188,6 +192,33 @@ describe('CacheManager', () => {
       const mockMemcacheCalls = memcache.mock.calls.splice(-1);
       expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
     });
+  });
+
+  it('returns a Redis client when configured', () => {
+    const redisHostAndPort = '127.0.0.1:6379';
+    const expectedHost = `redis://${redisHostAndPort}`;
+    const manager = CacheManager.fromConfig(
+      new ConfigReader({
+        backend: {
+          cache: {
+            store: 'redis',
+            connection: redisHostAndPort,
+          },
+        },
+      }),
+    );
+    const expectedTtl = 3600;
+    manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
+
+    const cache = Keyv as unknown as jest.Mock;
+    const mockCacheCalls = cache.mock.calls.splice(-1);
+    expect(mockCacheCalls[0][0]).toMatchObject({
+      ttl: expectedTtl,
+    });
+    expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
+    const redis = KeyvRedis as jest.Mock;
+    const mockRedisCalls = redis.mock.calls.splice(-1);
+    expect(mockRedisCalls[0][0]).toEqual(expectedHost);
   });
 
   describe('connection errors', () => {

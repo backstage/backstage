@@ -18,6 +18,8 @@ import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 // @ts-expect-error
 import KeyvMemcache from 'keyv-memcache';
+// @ts-expect-error
+import KeyvRedis from '@keyv/redis';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
 import { DefaultCacheClient, CacheClient } from './CacheClient';
@@ -37,6 +39,7 @@ export class CacheManager {
    * that return Keyv instances appropriate to the store.
    */
   private readonly storeFactories = {
+    redis: this.getRedisClient,
     memcache: this.getMemcacheClient,
     memory: this.getMemoryClient,
     none: this.getNoneClient,
@@ -121,6 +124,17 @@ export class CacheManager {
 
   private getClientWithTtl(pluginId: string, ttl: number | undefined): Keyv {
     return this.storeFactories[this.store].call(this, pluginId, ttl);
+  }
+
+  private getRedisClient(
+    pluginId: string,
+    defaultTtl: number | undefined,
+  ): Keyv {
+    return new Keyv({
+      namespace: pluginId,
+      ttl: defaultTtl,
+      store: new KeyvRedis(`redis://${this.connection}`),
+    });
   }
 
   private getMemcacheClient(
