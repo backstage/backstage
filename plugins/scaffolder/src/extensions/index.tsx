@@ -30,7 +30,8 @@ export function createScaffolderFieldExtension<
   TInputProps = unknown,
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
-): Extension<TInputProps> {
+  // TODO: need know how to embed these types nicely so the api report looks nice.
+): Extension<TInputProps & (() => null)> {
   return {
     expose() {
       const FieldExtensionDataHolder: any = () => null;
