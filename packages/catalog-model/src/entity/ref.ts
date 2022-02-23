@@ -15,7 +15,7 @@
  */
 
 import { EntityName, EntityRef } from '../types';
-import { ENTITY_DEFAULT_NAMESPACE } from './constants';
+import { DEFAULT_NAMESPACE } from './constants';
 import { Entity } from './Entity';
 
 function parseRefString(ref: string): {
@@ -48,7 +48,7 @@ function parseRefString(ref: string): {
 export function getEntityName(entity: Entity): EntityName {
   return {
     kind: entity.kind,
-    namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
     name: entity.metadata.name,
   };
 }
@@ -91,7 +91,7 @@ export function parseEntityName(
   } = {},
 ): EntityName {
   const { kind, namespace, name } = parseEntityRef(ref, {
-    defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+    defaultNamespace: DEFAULT_NAMESPACE,
     ...context,
   });
 
@@ -218,11 +218,11 @@ export function stringifyEntityRef(
 
   if ('metadata' in ref) {
     kind = ref.kind;
-    namespace = ref.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+    namespace = ref.metadata.namespace ?? DEFAULT_NAMESPACE;
     name = ref.metadata.name;
   } else {
     kind = ref.kind;
-    namespace = ref.namespace ?? ENTITY_DEFAULT_NAMESPACE;
+    namespace = ref.namespace ?? DEFAULT_NAMESPACE;
     name = ref.name;
   }
 
@@ -258,7 +258,7 @@ export function compareEntityToRef(
   },
 ): boolean {
   const entityKind = entity.kind;
-  const entityNamespace = entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE;
+  const entityNamespace = entity.metadata.namespace || DEFAULT_NAMESPACE;
   const entityName = entity.metadata.name;
 
   let refKind: string | undefined;
@@ -268,12 +268,12 @@ export function compareEntityToRef(
     const parsed = parseRefString(ref);
     refKind = parsed.kind || context?.defaultKind;
     refNamespace =
-      parsed.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
+      parsed.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
     refName = parsed.name;
   } else {
     refKind = ref.kind || context?.defaultKind;
     refNamespace =
-      ref.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
+      ref.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
     refName = ref.name;
   }
 
