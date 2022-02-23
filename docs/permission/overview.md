@@ -38,4 +38,4 @@ The permission framework was designed with a few key properties in mind:
 
 See the "[getting started](./getting-started.md)" permission documentation for Backstage integrators.
 
-If you are a plugin author, see the permission [documentation for plugin authors](./permission-framework-for-plugin-authors.md) on how to integrate permissions into your plugin.
+If you are a plugin author, see the permission [documentation for plugin authors](./permission-framework-for-plugin-authors-setup.md) on how to integrate permissions into your plugin.
