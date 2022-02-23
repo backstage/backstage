@@ -129,7 +129,7 @@ export const EntitySplunkOnCallCard = ({ readOnly }: Props) => {
     : undefined;
 
   const eventsRestEndpoint =
-    config.getOptionalString('splunkOnCall.eventsRestEndpoint') || true;
+    config.getOptionalString('splunkOnCall.eventsRestEndpoint') || null;
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
