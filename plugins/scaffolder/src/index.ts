@@ -21,7 +21,7 @@
  */
 
 export { scaffolderApiRef, ScaffolderClient } from './api';
-export type { ScaffolderApi } from './api';
+export * from './types';
 export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,

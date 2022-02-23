@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema } from '@backstage/catalog-model';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { JsonObject, Observable } from '@backstage/types';
+import { JSONSchema7 } from 'json-schema';
 
 export type Status = 'open' | 'processing' | 'failed' | 'completed' | 'skipped';
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
@@ -51,8 +52,8 @@ export type ListActionsResponse = Array<{
   id: string;
   description?: string;
   schema?: {
-    input?: JSONSchema;
-    output?: JSONSchema;
+    input?: JSONSchema7;
+    output?: JSONSchema7;
   };
 }>;
 
@@ -72,3 +73,80 @@ export type TaskOutput = {
 } & {
   [key: string]: unknown;
 };
+
+export type TemplateParameterSchema = {
+  title: string;
+  steps: Array<{
+    title: string;
+    schema: JsonObject;
+  }>;
+};
+
+export type LogEvent = {
+  type: 'log' | 'completion';
+  body: {
+    message: string;
+    stepId?: string;
+    status?: Status;
+  };
+  createdAt: string;
+  id: string;
+  taskId: string;
+};
+export interface ScaffolderScaffoldOptions {
+  templateName: string;
+  values: Record<string, any>;
+  secrets?: Record<string, string>;
+}
+
+export interface ScaffolderScaffoldResponse {
+  jobId: string;
+}
+
+export interface ScaffolderGetIntegrationsListOptions {
+  allowedHosts: string[];
+}
+
+export interface ScaffolderGetIntegrationsListResponse {
+  integrations: { type: string; title: string; host: string }[];
+}
+
+export interface ScaffolderStreamLogsOptions {
+  taskId: string;
+  after?: number;
+}
+/**
+ * An API to interact with the scaffolder backend.
+ *
+ * @public
+ */
+export interface ScaffolderApi {
+  getTemplateParameterSchema(
+    templateRef: string,
+  ): Promise<TemplateParameterSchema>;
+
+  /**
+   * Executes the scaffolding of a component, given a template and its
+   * parameter values.
+   *
+   * @param options.templateName - Name of the Template entity for the scaffolder to use. New project is going to be created out of this template.
+   * @param options.values - Parameters for the template, e.g. name, description
+   * @param options.secrets - Optional secrets to pass to as the secrets parameter to the template.
+   */
+  scaffold(
+    options: ScaffolderScaffoldOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+
+  getTask(taskId: string): Promise<ScaffolderTask>;
+
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
+
+  /**
+   * Returns a list of all installed actions.
+   */
+  listActions(): Promise<ListActionsResponse>;
+
+  streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
+}
