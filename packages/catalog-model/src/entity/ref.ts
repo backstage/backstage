@@ -171,11 +171,13 @@ export function parseEntityRef(
     throw new Error(`Entity reference must not be empty`);
   }
 
+  const defaultNamespace = context.defaultNamespace || DEFAULT_NAMESPACE;
+
   if (typeof ref === 'string') {
     const parsed = parseRefString(ref);
     return {
       kind: parsed.kind ?? context.defaultKind,
-      namespace: parsed.namespace ?? context.defaultNamespace,
+      namespace: parsed.namespace ?? defaultNamespace,
       name: parsed.name,
     };
   }
@@ -191,7 +193,7 @@ export function parseEntityRef(
 
   return {
     kind: kind ?? context.defaultKind,
-    namespace: namespace ?? context.defaultNamespace,
+    namespace: namespace ?? defaultNamespace,
     name,
   };
 }
