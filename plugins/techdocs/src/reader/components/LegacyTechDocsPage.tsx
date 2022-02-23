@@ -25,7 +25,7 @@ import { Reader } from './Reader';
 import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
 
 /**
- * @deprecated Use {@link TechDocsPage} instead.
+ * @deprecated Use {@link TechDocsReaderPage} instead.
  */
 export const LegacyTechDocsPage = () => {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
