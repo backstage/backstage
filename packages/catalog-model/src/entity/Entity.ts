@@ -116,6 +116,7 @@ export type EntityMeta = JsonObject & {
    * This field can not be set by the user at creation time, and the server
    * will reject an attempt to do so. The field will be populated in read
    * operations.
+   * @deprecated replaced by etag.
    */
   generation?: number;
 
