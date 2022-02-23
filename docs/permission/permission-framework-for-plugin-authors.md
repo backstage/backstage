@@ -119,10 +119,10 @@ The first step we need to do in order to authorize the create endpoint, is to cr
 
 Let's create a new `permissions.ts` file under `plugins/todo-list-backend/src/service/permissions.ts` with the following content:
 
-```javascript
+```typescript
 import { Permission } from '@backstage/plugin-permission-common';
 
-export const TODOS_LIST_RESOURCE_TYPE = 'todos-list';
+export const TODOS_LIST_RESOURCE_TYPE = 'todo-item';
 
 export const todosListCreate: Permission = {
   name: 'todos.list.create',
@@ -205,7 +205,7 @@ Let's try to test the logic by denying the permission.
 
 ### Test the authorized create endpoint
 
-In order to test the logic above, the only thing your adopters need to do, is to deny change their permission policy in `packages/backend/src/plugins/permission.ts`:
+In order to test the logic above, the integrators of your backstage instance need to deny change their permission policy in `packages/backend/src/plugins/permission.ts`:
 
 ```diff
 
@@ -254,10 +254,9 @@ now the create endpoint should be enabled again.
 
 ## Authorize the update endpoint
 
-The `PUT /update` endpoint is a bit more complicated than the create endpoint.
-It would be great if the plugin could offer a more granular authorization, for example, to only allow to update the todos that belong to the user.
+When performing updates (or other operations) on specific resources, the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource, and deny the operation otherwise.
 
-For now, let's edit `plugins/todo-list-backend/src/service/router.ts`, in a similar way as already done in the previous step.
+To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a similar way as in the previous step.
 
 ```diff
 - import { todosListCreate } from './permissions';
@@ -290,15 +289,9 @@ For now, let's edit `plugins/todo-list-backend/src/service/router.ts`, in a simi
     });
 ```
 
-**Important:** Notice that we are passing an extra `resourceRef` object, containing the `id` of the todo we want to authorize.
+**Important:** Notice that we are passing an extra `resourceRef` object, containing the `id` of the todo we want to authorize. This enables decisions based on characteristics of the resource, but it's important to note that to enable authorizing multiple resources at once, **the resourceRef is not passed to PermissionPolicy#handle**. Instead, policies must return a _conditional decision_.
 
-In order to be able to take such a decision, the permission policy should have access to the "entity" object, which in this case is the `todo` item that needs to be changed.
-Unfortunately, the permission policy function doesn't have such argument, since the only data exposed to the function are the request (containing the policy) and
-the user (performing the action).
-
-This is a special case, called _Conditional Decision_.
-
-Before diving into the extra steps needed for supporting such a case, let's go back to the permission policy's function used by your adopters and try to authorize our new permission.
+Before diving into the extra steps needed for supporting conditional decisions, let's go back to the permission policy's handle function used by your adopters and try to authorize our new permission.
 
 Let's edit `packages/backend/src/plugins/permission.ts`
 
@@ -313,7 +306,7 @@ Let's edit `packages/backend/src/plugins/permission.ts`
 +       return {
 +         result: AuthorizeResult.CONDITIONAL,
 +         pluginId: 'todolist',
-+         resourceType: request.permission.resourceType,
++         resourceType: 'todo-list', // or whatever the resourceType ends up being
 +         conditions: {
 +           rule: 'IS_OWNER',
 +           params: [user?.identity.userEntityRef],
@@ -323,10 +316,9 @@ Let's edit `packages/backend/src/plugins/permission.ts`
     }
 ```
 
-This is what happens when a _Conditional Decision_ is returned. We are telling:
+This is what happens when a _Conditional Decision_ is returned. We are saying:
 
-_Hey permission framework, I can't make a decision alone.
-Please go to the plugin with id `todolist`, asking to apply these conditions._
+> Hey permission framework, I can't make a decision alone. Please go to the plugin with id `todolist` and ask it to apply these conditions.
 
 Now if we try to edit an item from the UI, we should spot the following error in the backend's console:
 
@@ -341,7 +333,7 @@ This happens because our plugin should have exposed a specific endpoint, used by
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
 ```diff
-+ import { makeCreatePermissionRule } from '@backstage/+ plugin-permission-node';
++ import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 + import { Todo } from './todos';
 
 + const createTodoListPermissionRule = makeCreatePermissionRule<
@@ -490,18 +482,17 @@ Update `plugins/todo-list-backend/src/service/rules.ts`
 
 In this case, we are not passing any `resourceRef` when invoking `permissions.authorize()`.
 
-Since there is no `resourceRef` and the permission policy is returning a conditional response, the permission framework can't take a decision
-on its own and it's expecting you to take care of this case.
-This makes sense, since we would need to authorize each one of the todo items.
+Since there is no `resourceRef` and the permission policy is returning a conditional response, the permission framework can't make a decision
+on its own and it's expecting the todo list backend's router to take care of this case.
 
-We could implement this in a more efficient way.
+Instead of authorizing every todo item one by one, we can implement this more efficiently.
 
 In case all the items are stored in a database. We could transform each permission result in the proper database query, letting the database do the filtering.
 
 In case it's ok for you to proceed in a more simple approach, it's still possible to use the result-by-result authorization approach mentioned at the beginning of the section.
 
 Fortunately, our todo service is smart enough and lets us pass an optional `filter` function when invoking `getAll()`.
-This is exactly what the `toQuery` present when defining each rule does.
+This is exactly what the `toQuery` field in the permission rule does.
 
 In this particular example, the `isOwner` rule returns a function (expected by `getAll` method). But there is no constraint regarding the shape of the returned object: any type of data can be returned.
 
