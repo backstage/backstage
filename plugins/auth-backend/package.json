@@ -56,7 +56,7 @@
     "knex": "^1.0.2",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
-    "minimatch": "^3.0.3",
+    "minimatch": "^5.0.0",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.7",
     "node-cache": "^5.1.2",
