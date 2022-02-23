@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityNamePicker';
-export * from './EntityPicker';
-export * from './OwnerPicker';
-export * from './RepoUrlPicker';
-export * from './TextValuePicker';
-export * from './OwnedEntityPicker';
-export * from './EntityTagsPicker';
+export type { EntityPickerUiOptions } from './EntityPicker';
+export type { OwnerPickerUiOptions } from './OwnerPicker';
+export type { RepoUrlPickerUiOptions } from './RepoUrlPicker';
+export type { OwnedEntityPickerUiOptions } from './OwnedEntityPicker';
+export type { EntityTagsPickerUiOptions } from './EntityTagsPicker';

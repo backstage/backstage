@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { EntityTagsPicker } from './EntityTagsPicker';
+export type { EntityTagsPickerUiOptions } from './EntityTagsPicker';

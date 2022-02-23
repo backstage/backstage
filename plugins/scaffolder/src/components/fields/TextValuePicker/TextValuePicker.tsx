@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { TextField } from '@material-ui/core';
-import { FieldProps } from '@rjsf/core';
 import React from 'react';
+import { FieldExtensionComponentProps } from '../../../extensions';
 
 export const TextValuePicker = ({
   onChange,
@@ -26,7 +26,7 @@ export const TextValuePicker = ({
   uiSchema: { 'ui:autofocus': autoFocus },
   idSchema,
   placeholder,
-}: FieldProps<string>) => (
+}: FieldExtensionComponentProps<string>) => (
   <TextField
     id={idSchema?.$id}
     label={title}

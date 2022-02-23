@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { FieldProps } from '@rjsf/core';
 import { TextValuePicker } from '../TextValuePicker';
+import { FieldExtensionComponentProps } from '../../../extensions';
 
 export const EntityNamePicker = ({
   schema: { title = 'Name', description = 'Unique name of the component' },
   ...props
-}: FieldProps<string>) => (
+}: FieldExtensionComponentProps<string>) => (
   <TextValuePicker schema={{ title, description }} {...props} />
 );
