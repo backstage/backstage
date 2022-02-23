@@ -37,7 +37,7 @@
     "@types/node": "^14.14.32",
     "@types/react-dom": "*",
     "cross-env": "^7.0.0",
-    "cypress": "^7.3.0",
+    "cypress": "^9.5.0",
     "eslint-plugin-cypress": "^2.10.3",
     "start-server-and-test": "^1.10.11"
   },
