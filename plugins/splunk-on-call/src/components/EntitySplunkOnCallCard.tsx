@@ -109,12 +109,14 @@ const useStyles = makeStyles({
   },
 });
 
-type Props = {
+/** @public */
+export type EntitySplunkOnCallCardProps = {
   readOnly?: boolean;
 };
 
-export const EntitySplunkOnCallCard = ({ readOnly }: Props) => {
-  const readOnlyMode = readOnly || false;
+/** @public */
+export const EntitySplunkOnCallCard = (props: EntitySplunkOnCallCardProps) => {
+  const { readOnly } = props;
   const classes = useStyles();
   const config = useApi(configApiRef);
   const api = useApi(splunkOnCallApiRef);
@@ -224,7 +226,7 @@ export const EntitySplunkOnCallCard = ({ readOnly }: Props) => {
     return (
       <>
         <Incidents
-          readOnly={readOnlyMode}
+          readOnly={readOnly || false}
           team={teamName}
           refreshIncidents={refreshIncidents}
         />
