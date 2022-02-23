@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import {
+  EntityName,
+  EntityRef,
+  parseEntityRef,
+} from '@backstage/catalog-model';
 import {
   createApiRef,
   DiscoveryApi,
@@ -70,7 +74,7 @@ export type CustomField = {
  */
 export interface ScaffolderApi {
   getTemplateParameterSchema(
-    templateName: EntityName,
+    templateRef: EntityRef,
   ): Promise<TemplateParameterSchema>;
 
   /**
@@ -136,14 +140,15 @@ export class ScaffolderClient implements ScaffolderApi {
   }
 
   async getTemplateParameterSchema(
-    templateName: EntityName,
+    templateRef: EntityRef,
   ): Promise<TemplateParameterSchema> {
-    const { namespace, kind, name } = templateName;
+    const { namespace, kind, name } = parseEntityRef(templateRef);
 
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const templatePath = [namespace, kind, name]
       .map(s => encodeURIComponent(s))
       .join('/');
+
     const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema`;
 
     const response = await this.fetchApi.fetch(url);
