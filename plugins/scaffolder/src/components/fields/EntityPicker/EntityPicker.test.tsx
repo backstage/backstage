@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
-import userEvent from '@testing-library/user-event';
+import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
 
@@ -92,15 +92,16 @@ describe('<EntityPicker />', () => {
     });
 
     it('updates even if there is not an exact match', async () => {
-      const { getByLabelText } = await renderInTestApp(
+      const { getByRole } = await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
-      const input = getByLabelText('Entity');
 
-      userEvent.type(input, 'squ');
-      input.blur();
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.blur(input);
 
       expect(onChange).toHaveBeenCalledWith('squ');
     });

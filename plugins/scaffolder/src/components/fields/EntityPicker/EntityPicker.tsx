@@ -43,7 +43,7 @@ export const EntityPicker = (
     formData,
     idSchema,
   } = props;
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds ?? [];
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
   const defaultKind = uiSchema['ui:options']?.defaultKind;
 
   const catalogApi = useApi(catalogApiRef);
@@ -85,7 +85,7 @@ export const EntityPicker = (
         onChange={onSelect}
         options={entityRefs || []}
         autoSelect
-        freeSolo={uiSchema['ui:options']?.allowArbitraryValues}
+        freeSolo={uiSchema['ui:options']?.allowArbitraryValues ?? true}
         renderInput={params => (
           <TextField
             {...params}
