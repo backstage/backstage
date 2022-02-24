@@ -32,6 +32,7 @@ const createBitbucketCloudRepository = async (opts: {
   description?: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
+  apiBaseUrl: string;
 }) => {
   const {
     workspace,
@@ -40,6 +41,7 @@ const createBitbucketCloudRepository = async (opts: {
     description,
     repoVisibility,
     authorization,
+    apiBaseUrl,
   } = opts;
 
   const options: RequestInit = {
@@ -59,7 +61,7 @@ const createBitbucketCloudRepository = async (opts: {
   let response: Response;
   try {
     response = await fetch(
-      `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo}`,
+      `${apiBaseUrl}/repositories/${workspace}/${repo}`,
       options,
     );
   } catch (e) {
@@ -88,16 +90,14 @@ const createBitbucketCloudRepository = async (opts: {
 };
 
 const createBitbucketServerRepository = async (opts: {
-  host: string;
   project: string;
   repo: string;
   description?: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
-  apiBaseUrl?: string;
+  apiBaseUrl: string;
 }) => {
   const {
-    host,
     project,
     repo,
     description,
@@ -121,8 +121,7 @@ const createBitbucketServerRepository = async (opts: {
   };
 
   try {
-    const baseUrl = apiBaseUrl ? apiBaseUrl : `https://${host}/rest/api/1.0`;
-    response = await fetch(`${baseUrl}/projects/${project}/repos`, options);
+    response = await fetch(`${apiBaseUrl}/projects/${project}/repos`, options);
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
@@ -306,7 +305,11 @@ export function createPublishBitbucketAction(options: {
 
       const authorization = getAuthorizationHeader(
         ctx.input.token
-          ? { host: integrationConfig.config.host, token: ctx.input.token }
+          ? {
+              host: integrationConfig.config.host,
+              apiBaseUrl: integrationConfig.config.apiBaseUrl,
+              token: ctx.input.token,
+            }
           : integrationConfig.config,
       );
 
@@ -319,7 +322,6 @@ export function createPublishBitbucketAction(options: {
 
       const { remoteUrl, repoContentsUrl } = await createMethod({
         authorization,
-        host,
         workspace: workspace || '',
         project,
         repo,
