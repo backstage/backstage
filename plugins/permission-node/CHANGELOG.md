@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-node
 
+## 0.5.2
+
+### Patch Changes
+
+- 0816f8237a: Improved error message shown when permissions are enabled without backend-to-backend authentication.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-auth-node@0.1.3
+
 ## 0.5.1
 
 ### Patch Changes

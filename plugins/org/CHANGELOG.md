@@ -1,5 +1,21 @@
 # @backstage/plugin-org
 
+## 0.5.0
+
+### Minor Changes
+
+- 2262fe19c9: **BREAKING**: Removed support for passing in an explicit `entity` prop to entity page extensions, which has been deprecated for a long time. This is only a breaking change at the TypeScript level, as this property was already ignored.
+
+### Patch Changes
+
+- cd8c6970ed: Add entity sync button to Group page
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+
 ## 0.4.3
 
 ### Patch Changes

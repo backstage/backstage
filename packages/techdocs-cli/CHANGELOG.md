@@ -1,5 +1,19 @@
 # @techdocs/cli
 
+## 0.8.15
+
+### Patch Changes
+
+- ed78516480: chore(deps-dev): bump `cypress` from 7.3.0 to 9.5.0
+- 209fd128e6: Updated usage of `github:` location types in docs to use `url:` instead.
+- 61ff215e08: - Adds `cypress` and `cypress-plugin-snapshots` as dependencies for integration and visual regression tests.
+  - Updates README documentation with instructions for how to run tests.
+  - Clarifies output text for prepack script.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/techdocs-common@0.11.10
+
 ## 0.8.14
 
 ### Patch Changes

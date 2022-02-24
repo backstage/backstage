@@ -1,5 +1,14 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+
 ## 0.11.21
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/core-plugin-api
 
+## 0.7.0
+
+### Minor Changes
+
+- 33cd215b11: **BREAKING**: Removed deprecated `AnyAnalyticsContext` type which is replaced by `AnalyticsContextValue`
+
 ## 0.6.1
 
 ### Patch Changes

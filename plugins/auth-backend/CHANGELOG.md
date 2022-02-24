@@ -1,5 +1,35 @@
 # @backstage/plugin-auth-backend
 
+## 0.11.0
+
+### Minor Changes
+
+- 3884bf0348: **BREAKING**: The default sign-in resolvers for all providers, if you choose to
+  use them, now emit the token `sub` and `ent` claims on the standard,
+  all-lowercase form, instead of the mixed-case form. The mixed-case form causes
+  problems for implementations that naively do string comparisons on refs. The end
+  result is that you may for example see your Backstage token `sub` claim now
+  become `'user:default/my-id'` instead of `'user:default/My-ID'`.
+
+  On a related note, specifically the SAML provider now correctly issues both
+  `sub` and `ent` claims, and on the full entity ref form instead of the short
+  form with only the ID.
+
+  **NOTE**: For a long time, it has been strongly recommended that you provide
+  your own sign-in resolver instead of using the builtin ones, and that will
+  become mandatory in the future.
+
+### Patch Changes
+
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-auth-node@0.1.3
+
 ## 0.10.2
 
 ### Patch Changes

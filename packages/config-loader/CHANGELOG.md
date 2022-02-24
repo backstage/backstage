@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 0.9.6
+
+### Patch Changes
+
+- c3a1300f79: Include any files included in configuration via $include or $file directives when watching for configuration changes.
+
 ## 0.9.5
 
 ### Patch Changes

@@ -1,5 +1,115 @@
 # @backstage/plugin-catalog-backend
 
+## 0.22.0
+
+### Minor Changes
+
+- 209fd128e6: The `CodeOwnersProcessor` no longer supports the deprecated SCM-specific location types like `'github/api'`. This is a breaking change but it is unlikely to have an impact, as these location types haven't been supported by the rest of the catalog for a long time.
+- 9876e7f172: **BREAKING**: Removed unused `durationText` utility.
+- 25e97e7242: **BREAKING**: Removed `AwsOrganizationCloudAccountProcessor` from the default
+  set of builtin processors, and instead moved it into its own module
+  `@backstage/plugin-catalog-backend-module-aws`.
+
+  If you were using this processor, through making use of the location type
+  `aws-cloud-accounts` and/or using the configuration key
+  `catalog.processors.awsOrganization`, you will from now on have to add the
+  processor manually to your catalog.
+
+  First, add the `@backstage/plugin-catalog-backend-module-aws` dependency to your
+  `packages/backend` package.
+
+  Then, in `packages/backend/src/plugins/catalog.ts`:
+
+  ```diff
+  +import { AwsOrganizationCloudAccountProcessor } from '@backstage/plugin-catalog-backend-module-aws';
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+  +  builder.addProcessor(
+  +    AwsOrganizationCloudAccountProcessor.fromConfig(
+  +      env.config,
+  +      { logger: env.logger }
+  +    )
+  +  );
+     // ...
+  ```
+
+- e9cf0dd03e: Made the `GitLabDiscoveryProcessor.updateLastActivity` method private, as it was accidentally exposed. It has also been fixed to properly operate in its own cache namespace to avoid collisions with other processors.
+- df61ca71dd: Updated all processors to implement `getProcessorName`.
+
+  **BREAKING**: The `CatalogProcessor` interface now require that the `CatalogProcessor` class implements `getProcessorName()`.
+  The processor name has previously defaulted processor class name. It's therefore _recommended_ to keep your return the same name as the class name if you did not implement this method previously.
+
+  For example:
+
+  ```ts
+  class CustomProcessor implements CatalogProcessor {
+    getProcessorName() {
+      // Use the same name as the class name if this method was not previously implemented.
+      return 'CustomProcessor';
+    }
+  }
+  ```
+
+### Patch Changes
+
+- 919cf2f836: The catalog API now returns entity relations that have three fields: The old
+  `type` and `target` fields, as well as a new `targetRef` field. The last one is
+  the stringified form of the second one.
+
+  **DEPRECATION**: The `target` field is hereby deprecated, both as seen from the
+  catalog API as well as from the `@backstage/catalog-model` package. Both
+  `target` and `targetRef` will be produced for some time, but eventually,
+  `target` will be removed entirely. Please update your readers to stop consuming
+  the `relations.[].target` field from the catalog API as soon as possible.
+
+- 957cb4cb20: Deprecated the `runPeriodically` function which is no longer in use.
+- 01e124ea60: Added an `/entity-facets` endpoint, which lets you query the distribution of
+  possible values for fields of entities.
+
+  This can be useful for example when populating a dropdown in the user interface,
+  such as listing all tag values that are actually being used right now in your
+  catalog instance, along with putting the most common ones at the top.
+
+- 082c32f948: Deprecated the second parameter of `results.location()` that determines whether an emitted location is optional. In cases where this is currently being set to `false`, the parameter can simply be dropped, as that is the default. Usage where this was being set to `true` should be migrated to set the `presence` option of the emitted location to `optional`. For example:
+
+  ```ts
+  results.location(
+    {
+      type: 'url',
+      target: 'http://example.com/foo',
+    },
+    true,
+  );
+
+  // migrated to
+
+  results.location({
+    type: 'url',
+    target: 'http://example.com/foo',
+    presence: 'optional',
+  });
+  ```
+
+- ed09ad8093: Added `LocationSpec`, which was moved over from `@backstage/catalog-model`.
+
+  Added `LocationInput`, which replaced `LocationSpec` where it was used in the `LocationService` and `LocationStore` interfaces. The `LocationInput` type deprecates the `presence` field, which was not being used in those contexts.
+
+- 6d994fd9da: Cleanup catalog-backend API report.
+- 7010349c9a: Added `EntityRelationSpec`, which was moved over from `@backstage/catalog-model`.
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- 420f8d710f: Removed the `processors.githubOrg` config section which is unused and has been replaced by the integrations config.
+- b1296f1f57: Deprecated `StaticLocationProcessor` which is unused and replaced by `ConfigLocationEntityProvider`.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-scaffolder-common@0.2.2
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-permission-node@0.5.2
+  - @backstage/integration@0.7.5
+
 ## 0.21.5
 
 ### Patch Changes

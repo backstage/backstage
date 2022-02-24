@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-common
 
+## 0.2.2
+
+### Patch Changes
+
+- a4d53fe18e: **DEPRECATED** - The `TaskSpec.metadata` and `TaskSpec.baseUrl` has been deprecated in favour of the new `TaskSpec.templateInfo`.
+  The `baseUrl` is now found on the `templateInfo` object, and the name can be inferred from the `templateInfo.entityRef` property.
+
+  Usages of `TaskSpec.metadata.name` or `ctx.metadata.name` in Actions should migrate to using `parseEntityRef(taskSpec.templateInfo.entityRef)` to get the parsed entity triplet.
+
+  Usages of `ctx.baseUrl` in Actions should migrate to using `ctx.templateInfo.baseUrl` instead.
+
+- Updated dependencies
+  - @backstage/catalog-model@0.11.0
+
 ## 0.2.1
 
 ### Patch Changes
