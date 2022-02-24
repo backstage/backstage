@@ -47,6 +47,8 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
+      - name: yarn cache clean
+        run: yarn cache clean
       - name: yarn install
         run: yarn install --frozen-lockfile
 
