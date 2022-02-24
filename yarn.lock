@@ -5763,12 +5763,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/humanize-duration@^3.18.1", "@types/humanize-duration@^3.25.1":
-  version "3.27.1"
-  resolved "https://registry.npmjs.org/@types/humanize-duration/-/humanize-duration-3.27.1.tgz#f14740d1f585a0a8e3f46359b62fda8b0eaa31e7"
-  integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
-
-"@types/humanize-duration@^3.27.1":
+"@types/humanize-duration@^3.18.1", "@types/humanize-duration@^3.25.1", "@types/humanize-duration@^3.27.1":
   version "3.27.1"
   resolved "https://registry.npmjs.org/@types/humanize-duration/-/humanize-duration-3.27.1.tgz#f14740d1f585a0a8e3f46359b62fda8b0eaa31e7"
   integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
@@ -5937,12 +5932,7 @@
   resolved "https://registry.npmjs.org/@types/lunr/-/lunr-2.3.3.tgz#ec985618fd2712c010f8edab4f1ae7784ad7c583"
   integrity sha512-09sXZZVsB3Ib41U0fC+O1O+4UOZT1bl/e+/QubPxpqDWHNEchvx/DEb1KJMOwq6K3MTNzZFoNSzVdR++o1DVnw==
 
-"@types/luxon@^2.0.4", "@types/luxon@^2.0.5":
-  version "2.0.9"
-  resolved "https://registry.npmjs.org/@types/luxon/-/luxon-2.0.9.tgz#782a0edfa6d699191292c13168bd496cd66b87c6"
-  integrity sha512-ZuzIc7aN+i2ZDMWIiSmMdubR9EMMSTdEzF6R+FckP4p6xdnOYKqknTo/k+xXQvciSXlNGIwA4OPU5X7JIFzYdA==
-
-"@types/luxon@^2.0.9":
+"@types/luxon@^2.0.4", "@types/luxon@^2.0.5", "@types/luxon@^2.0.9":
   version "2.0.9"
   resolved "https://registry.npmjs.org/@types/luxon/-/luxon-2.0.9.tgz#782a0edfa6d699191292c13168bd496cd66b87c6"
   integrity sha512-ZuzIc7aN+i2ZDMWIiSmMdubR9EMMSTdEzF6R+FckP4p6xdnOYKqknTo/k+xXQvciSXlNGIwA4OPU5X7JIFzYdA==
@@ -15433,9 +15423,9 @@ jest-watcher@^26.6.2:
     string-length "^4.0.1"
 
 jest-when@^3.1.0:
-  version "3.5.0"
-  resolved "https://registry.npmjs.org/jest-when/-/jest-when-3.5.0.tgz#364ab8dc149a5d683f9cc14e44d73d03b84b0d97"
-  integrity sha512-/IkPkG5lo2tyXH3a+VraYe7t/ma6UK9VPQko7hr6YgEtjoHyfAPpLXzyhnSNxxKRzNQDrw8YoGPCOkdTLR4mHA==
+  version "3.5.1"
+  resolved "https://registry.npmjs.org/jest-when/-/jest-when-3.5.1.tgz#33ab6f923661cf878cd08fe9df64b507934603db"
+  integrity sha512-o+HiaIVCg1IC95sMDKHU9G5v5N5l3UHqXvJpf0PgAMThZeQo4Hf5Sgoj+wpCBRGg4/KtzSAZZZEKNiLqE0i4eQ==
 
 jest-worker@^26.6.2:
   version "26.6.2"
