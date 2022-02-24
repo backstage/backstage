@@ -42,11 +42,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: install latest nodegyp
-        shell: powershell
-        run: |
-          npm install --global node-gyp@latest
-          npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
+          
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
       - name: setup chrome
