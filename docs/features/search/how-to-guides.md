@@ -131,26 +131,3 @@ indexBuilder.addCollator({
 
 As shown above, you can add a catalog entity filter to narrow down what catalog
 entities are indexed by the search engine.
-
-## How to limit where TechDocs Collator scanning the Software Catalog
-
-The DefaultTechDocsCollator is responsible for indexing the TechDocs into search.
-The way it does is by getting all the entities every refresh interval from the
-catalog and find the entities that has annotation `backstage.io/techdocs-ref`,
-the process of getting all the entities is quite expensive if you have a large
-amount of entity catalog data. To relieve the process, you can filter where the
-DefaultTechDocsCollator is scanning your entities.
-
-```typescript
-indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 600,
-  collator: DefaultTechDocsCollator.fromConfig(config, {
-    discovery,
-    logger,
-    tokenManager,
-+   filter: {
-+      kind: ['API', 'Component', 'Domain', 'System'],
-+   },
-  }),
-});
-```
