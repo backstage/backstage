@@ -27,10 +27,8 @@ import { AuthProviderInfo } from './auth';
 export type OAuthRequesterOptions<TOAuthResponse> = {
   /**
    * Information about the auth provider, which will be forwarded to auth requests.
-   *
-   * Not passing in an `id` is deprecated, and it will be required in the future.
    */
-  provider: Omit<AuthProviderInfo, 'id'> & { id?: string };
+  provider: AuthProviderInfo;
 
   /**
    * Implementation of the auth flow, which will be called synchronously when
@@ -71,10 +69,8 @@ export type OAuthRequester<TAuthResponse> = (
 export type PendingOAuthRequest = {
   /**
    * Information about the auth provider, as given in the AuthRequesterOptions
-   *
-   * Not passing in an `id` is deprecated, and it will be required in the future.
    */
-  provider: Omit<AuthProviderInfo, 'id'> & { id?: string };
+  provider: AuthProviderInfo;
 
   /**
    * Rejects the request, causing all pending AuthRequester calls to fail with "RejectedError".
