@@ -30,7 +30,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
-import { Link as BackstageLink } from '../../';
+import { Link as BackstageLink } from '../../components/Link';
 import { isExternalLink } from './utils';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({

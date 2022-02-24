@@ -34,4 +34,4 @@ export function isLocationMatch(currentLocation: Location, toLocation: Path) {
   return matching;
 }
 
-export const isExternalLink = (link: string) => /^http/.test(link);
+export const isExternalLink = (link: string) => /^https?:/.test(link);
