@@ -23,7 +23,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { TechDocsSearch } from './TechDocsSearch';
 
 const entityId = {
@@ -70,6 +70,7 @@ describe('<TechDocsPage />', () => {
       expect(rendered.getByTestId('techdocs-search-bar')).toBeInTheDocument();
     });
   });
+
   it('should trigger query when autocomplete input changed', async () => {
     const query = () => singleResult;
     const querySpy = jest.fn(query);
@@ -114,6 +115,63 @@ describe('<TechDocsPage />', () => {
           },
           pageCursor: '',
           term: 'asdf',
+          types: ['techdocs'],
+        }),
+      );
+    });
+  });
+
+  it('should update filter values when a new entityName is provided', async () => {
+    const query = () => singleResult;
+    const querySpy = jest.fn(query);
+    const searchApi = { query: querySpy };
+    const apiRegistry = TestApiRegistry.from([searchApiRef, searchApi]);
+    const newEntityId = {
+      name: 'test-diff',
+      namespace: 'testspace-diff',
+      kind: 'TestableDiff',
+    };
+
+    const WrappedSearchBar = () => {
+      const [entityName, setEntityName] = useState(entityId);
+      return wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <button onClick={() => setEntityName(newEntityId)}>
+            Update Entity
+          </button>
+          <TechDocsSearch entityId={entityName} debounceTime={0} />
+        </ApiProvider>,
+      );
+    };
+
+    await act(async () => {
+      const rendered = render(<WrappedSearchBar />);
+
+      await singleResult;
+      expect(querySpy).toBeCalledWith({
+        filters: {
+          kind: 'Testable',
+          name: 'test',
+          namespace: 'testspace',
+        },
+        pageCursor: '',
+        term: '',
+        types: ['techdocs'],
+      });
+
+      const button = rendered.getByText('Update Entity');
+      button.click();
+
+      await singleResult;
+      await waitFor(() =>
+        expect(querySpy).toBeCalledWith({
+          filters: {
+            kind: 'TestableDiff',
+            name: 'test-diff',
+            namespace: 'testspace-diff',
+          },
+          pageCursor: '',
+          term: '',
           types: ['techdocs'],
         }),
       );
