@@ -33,7 +33,8 @@ import {
 } from '../microsoftGraph';
 
 /**
- * Extracts teams and users out of a the Microsoft Graph API.
+ * Reads user and group entries out of Microsoft Graph, and provides them as
+ * User and Group entities for the catalog.
  *
  * @public
  */

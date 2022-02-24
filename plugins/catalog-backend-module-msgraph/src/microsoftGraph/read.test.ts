@@ -97,7 +97,7 @@ describe('read microsoft graph', () => {
             annotations: {
               'graph.microsoft.com/user-id': 'userid',
             },
-            name: 'user.name_example.com',
+            name: 'user.name',
           },
           spec: {
             profile: {
@@ -206,7 +206,7 @@ describe('read microsoft graph', () => {
             annotations: {
               'graph.microsoft.com/user-id': 'userid',
             },
-            name: 'user.name_example.com',
+            name: 'user.name',
           },
           spec: {
             profile: {
