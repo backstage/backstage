@@ -22,6 +22,7 @@ import {
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   DEFAULT_NAMESPACE,
+  parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
@@ -178,14 +179,15 @@ export async function createRouter(
       res.json(actionsList);
     })
     .post('/v2/tasks', async (req, res) => {
-      const templateName: string = req.body.templateName;
-      const kind = 'template';
-      const namespace = DEFAULT_NAMESPACE;
+      const templateRef: string = req.body.templateRef;
+      const { kind, namespace, name } = parseEntityRef(templateRef, {
+        defaultKind: 'template',
+      });
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
       const template = await findTemplate({
         catalogApi: catalogClient,
-        entityRef: { kind, namespace, name: templateName },
+        entityRef: { kind, namespace, name },
         token: getBearerToken(req.headers.authorization),
       });
 

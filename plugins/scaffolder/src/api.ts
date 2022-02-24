@@ -90,7 +90,9 @@ export class ScaffolderClient implements ScaffolderApi {
   async getTemplateParameterSchema(
     templateRef: string,
   ): Promise<TemplateParameterSchema> {
-    const { namespace, kind, name } = parseEntityRef(templateRef);
+    const { namespace, kind, name } = parseEntityRef(templateRef, {
+      defaultKind: 'template',
+    });
 
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const templatePath = [namespace, kind, name]
@@ -117,7 +119,7 @@ export class ScaffolderClient implements ScaffolderApi {
   async scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse> {
-    const { templateName, values, secrets = {} } = options;
+    const { templateRef, values, secrets = {} } = options;
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
     const response = await this.fetchApi.fetch(url, {
       method: 'POST',
@@ -125,7 +127,7 @@ export class ScaffolderClient implements ScaffolderApi {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        templateName,
+        templateRef,
         values: { ...values },
         secrets,
       }),

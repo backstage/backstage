@@ -81,7 +81,7 @@ export type LogEvent = {
 };
 
 export interface ScaffolderScaffoldOptions {
-  templateName: string;
+  templateRef: string;
   values: Record<string, any>;
   secrets?: Record<string, string>;
 }

@@ -41,6 +41,7 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -137,7 +138,11 @@ export const TemplatePage = ({
 
   const handleCreate = async () => {
     const { taskId } = await scaffolderApi.scaffold({
-      templateName,
+      templateRef: stringifyEntityRef({
+        name: templateName,
+        kind: 'template',
+        namespace: 'default',
+      }),
       values: formState,
       secrets: secretsContext?.secrets,
     });
