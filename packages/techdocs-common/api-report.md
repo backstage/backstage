@@ -18,17 +18,12 @@ import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
 // @public
-export type DirectoryFactory = {
-  reader: UrlReader;
-};
-
-// @public
 export class DirectoryPreparer implements PreparerBase {
   // @deprecated
   constructor(config: Config, _logger: Logger_2 | null, reader: UrlReader);
   static fromConfig(
     config: Config,
-    options: DirectoryFactory,
+    { logger, reader }: PreparerConfig,
   ): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
@@ -48,7 +43,7 @@ export type GeneratorBuilder = {
 };
 
 // @public
-export type GeneratorFactory = {
+export type GeneratorOptions = {
   containerRunner: ContainerRunner;
   logger: Logger_2;
 };
@@ -124,7 +119,7 @@ export type PreparerBuilder = {
 };
 
 // @public
-export type PreparerFactory = {
+export type PreparerConfig = {
   logger: Logger_2;
   reader: UrlReader;
 };
@@ -144,8 +139,8 @@ export type PreparerResponse = {
 // @public
 export class Preparers implements PreparerBuilder {
   static fromConfig(
-    config: Config,
-    { logger, reader }: PreparerFactory,
+    backstageConfig: Config,
+    { logger, reader }: PreparerConfig,
   ): Promise<PreparerBuilder>;
   get(entity: Entity): PreparerBase;
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
@@ -227,7 +222,7 @@ export class TechdocsGenerator implements GeneratorBase {
   static readonly defaultDockerImage = 'spotify/techdocs:v0.3.7';
   static fromConfig(
     config: Config,
-    options: GeneratorFactory,
+    options: GeneratorOptions,
   ): TechdocsGenerator;
   run(options: GeneratorRunOptions): Promise<void>;
 }
@@ -252,18 +247,10 @@ export const transformDirLocation: (
 };
 
 // @public
-export type UrlFactory = PreparerFactory;
-
-// @public
 export class UrlPreparer implements PreparerBase {
   // @deprecated
   constructor(reader: UrlReader, logger: Logger_2);
-  static fromConfig(options: UrlFactory): UrlPreparer;
-  prepare(
-    entity: Entity,
-    options?: {
-      etag?: string;
-    },
-  ): Promise<PreparerResponse>;
+  static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer;
+  prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
 ```

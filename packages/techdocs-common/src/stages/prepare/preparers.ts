@@ -21,26 +21,26 @@ import { UrlPreparer } from './url';
 import {
   PreparerBase,
   PreparerBuilder,
-  PreparerFactory,
+  PreparerConfig,
   RemoteProtocol,
 } from './types';
 
 /**
- * Collection of docs preparers
+ * Collection of docs preparers (dir and url)
  * @public
  */
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
 
   /**
-   * Returns a generators instance containing a generator for Tech Docs
+   * Returns a generators instance containing a generator for TechDocs
    * @public
-   * @param config - A Backstage configuration
-   * @param options - Options to configure the URL preparer
+   * @param backstageConfig - A Backstage configuration
+   * @param preparerConfig - Options to configure preparers
    */
   static async fromConfig(
-    config: Config,
-    { logger, reader }: PreparerFactory,
+    backstageConfig: Config,
+    { logger, reader }: PreparerConfig,
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
@@ -51,7 +51,11 @@ export class Preparers implements PreparerBuilder {
      * Dir preparer is a syntactic sugar for users to define techdocs-ref annotation.
      * When using dir preparer, the docs will be fetched using URL Reader.
      */
-    const directoryPreparer = new DirectoryPreparer(config, logger, reader);
+    const directoryPreparer = new DirectoryPreparer(
+      backstageConfig,
+      logger,
+      reader,
+    );
     preparers.register('dir', directoryPreparer);
 
     return preparers;
@@ -67,8 +71,8 @@ export class Preparers implements PreparerBuilder {
   }
 
   /**
-   * Returns the preparer for a given Tech Docs entity
-   * @param entity - A Tech Docs entity instance
+   * Returns the preparer for a given TechDocs entity
+   * @param entity - A TechDocs entity instance
    * @returns
    */
   get(entity: Entity): PreparerBase {

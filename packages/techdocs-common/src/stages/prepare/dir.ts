@@ -26,9 +26,9 @@ import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
 import {
   PreparerBase,
+  PreparerConfig,
   PreparerOptions,
   PreparerResponse,
-  DirectoryFactory,
 } from './types';
 
 /**
@@ -48,13 +48,13 @@ export class DirectoryPreparer implements PreparerBase {
   /**
    * Returns a directory preparer instance
    * @param config - A backstage config
-   * @param options - A directory preparer options containing the URL reader
+   * @param options - A directory preparer options containing a logger and reader
    */
   static fromConfig(
     config: Config,
-    options: DirectoryFactory,
+    { logger, reader }: PreparerConfig,
   ): DirectoryPreparer {
-    return new DirectoryPreparer(config, null, options.reader);
+    return new DirectoryPreparer(config, logger, reader);
   }
 
   /** {@inheritDoc PreparerBase.prepare} */

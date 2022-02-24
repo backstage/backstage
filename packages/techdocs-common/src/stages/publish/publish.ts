@@ -29,7 +29,7 @@ import { PublisherFactory, PublisherBase, PublisherType } from './types';
  */
 export class Publisher {
   /**
-   * Returns a instance of Tech Docs publisher
+   * Returns a instance of TechDocs publisher
    * @param config - A Backstage configuration
    * @param options - Options for configuring the publisher factory
    */

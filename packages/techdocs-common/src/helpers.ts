@@ -39,7 +39,7 @@ export type ParsedLocationAnnotation = {
  * Returns a parset locations annotation
  * @public
  * @param annotationName - The name of the annotation in the entity metadata
- * @param entity - A Tech Docs entity instance
+ * @param entity - A TechDocs entity instance
  */
 export const parseReferenceAnnotation = (
   annotationName: string,
@@ -112,9 +112,9 @@ export const transformDirLocation = (
 };
 
 /**
- * Returns a entity reference based on the Tech Docs annotation type
+ * Returns a entity reference based on the TechDocs annotation type
  * @public
- * @param entity - A Tech Docs instance
+ * @param entity - A TechDocs instance
  * @param scmIntegration - An implementation for  SCM integration API
  */
 export const getLocationForEntity = (
@@ -140,7 +140,7 @@ export const getLocationForEntity = (
  * Returns a preparer response {@link PreparerResponse}
  * @public
  * @param reader - Read a tree of files from a repository
- * @param entity - A Tech Docs entity instance
+ * @param entity - A TechDocs entity instance
  * @param opts - Options for configuring the reader, e.g. logger, etag, etc.
  */
 export const getDocFilesFromRepository = async (

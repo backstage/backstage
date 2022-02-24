@@ -17,7 +17,7 @@
 import { IndexableDocument } from '@backstage/search-common';
 
 /**
- * Tech Docs indexable document interface
+ * TechDocs indexable document interface
  * @public
  */
 export interface TechDocsDocument extends IndexableDocument {

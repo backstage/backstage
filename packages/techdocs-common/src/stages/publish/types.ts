@@ -89,7 +89,7 @@ export type TechDocsMetadata = {
 };
 
 /**
- * Tech Docs entity triplet migration request
+ * TechDocs entity triplet migration request
  * @public
  */
 export type MigrateRequest = {

@@ -34,9 +34,9 @@ export class Generators implements GeneratorBuilder {
   private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
 
   /**
-   * Returns a generators instance containing a generator for Tech Docs
+   * Returns a generators instance containing a generator for TechDocs
    * @param config - A Backstage configuration
-   * @param options - Options to configure the Tech Docs generator
+   * @param options - Options to configure the TechDocs generator
    */
   static async fromConfig(
     config: Config,
@@ -60,8 +60,8 @@ export class Generators implements GeneratorBuilder {
   }
 
   /**
-   * Returns the generator for a given Tech Docs entity
-   * @param entity - A Tech Docs entity instance
+   * Returns the generator for a given TechDocs entity
+   * @param entity - A TechDocs entity instance
    */
   get(entity: Entity): GeneratorBase {
     const generatorKey = getGeneratorKey(entity);

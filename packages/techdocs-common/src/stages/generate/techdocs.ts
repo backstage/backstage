@@ -34,11 +34,11 @@ import {
 import {
   GeneratorBase,
   GeneratorConfig,
+  GeneratorOptions,
   GeneratorRunInType,
   GeneratorRunOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
-import { GeneratorFactory } from './types';
 
 /**
  * Generates documentation files
@@ -56,11 +56,11 @@ export class TechdocsGenerator implements GeneratorBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
   /**
-   * Returns a instance of Tech Docs generator
+   * Returns a instance of TechDocs generator
    * @param config - A Backstage configuration
    * @param options - Options to configure the generator
    */
-  static fromConfig(config: Config, options: GeneratorFactory) {
+  static fromConfig(config: Config, options: GeneratorOptions) {
     const { containerRunner, logger } = options;
     const scmIntegrations = ScmIntegrations.fromConfig(config);
     return new TechdocsGenerator({

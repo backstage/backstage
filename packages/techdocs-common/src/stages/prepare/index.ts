@@ -19,11 +19,9 @@ export { Preparers } from './preparers';
 export type {
   PreparerBase,
   PreparerBuilder,
-  PreparerFactory,
+  PreparerConfig,
   PreparerOptions,
   PreparerResponse,
-  DirectoryFactory,
-  UrlFactory,
   RemoteProtocol,
   ETag,
 } from './types';

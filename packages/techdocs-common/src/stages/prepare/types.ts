@@ -19,33 +19,19 @@ import { UrlReader } from '@backstage/backend-common';
 import { Logger } from 'winston';
 
 /**
- * Options for building preparers
- * @public
- */
-export type PreparerFactory = {
-  logger: Logger;
-  reader: UrlReader;
-};
-
-/**
- * Options to configure a directory preparer.
- * @public
- */
-export type DirectoryFactory = {
-  reader: UrlReader;
-};
-
-/**
- * Options to configure a url preparer.
- * @public
- */
-export type UrlFactory = PreparerFactory;
-
-/**
  * A unique identifier of the tree blob, usually the commit SHA or etag from the target.
  * @public
  */
 export type ETag = string;
+
+/**
+ * Options for building preparers
+ * @public
+ */
+export type PreparerConfig = {
+  logger: Logger;
+  reader: UrlReader;
+};
 
 /**
  * Options for configuring the content preparation process.
@@ -78,7 +64,7 @@ export type PreparerResponse = {
 };
 
 /**
- * Definition of a Tech Docs preparer
+ * Definition of a TechDocs preparer
  * @public
  */
 export type PreparerBase = {
@@ -95,7 +81,7 @@ export type PreparerBase = {
 };
 
 /**
- * Definition for a Tech Docs preparer builder
+ * Definition for a TechDocs preparer builder
  * @public
  */
 export type PreparerBuilder = {

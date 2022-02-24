@@ -27,7 +27,7 @@ export type GeneratorRunInType = 'docker' | 'local';
  * Options for building generators
  * @public
  */
-export type GeneratorFactory = {
+export type GeneratorOptions = {
   containerRunner: ContainerRunner;
   logger: Logger;
 };
