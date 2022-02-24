@@ -5,7 +5,7 @@ name: E2E Test Windows
 on:
   pull_request:
     paths:
-      - '.github/workflows/e2e-win.yml'
+      - '.github/workflows/verify_e2e-windows.yml'
       - 'packages/cli/**'
       - 'packages/e2e-test/**'
       - 'packages/create-app/**'
