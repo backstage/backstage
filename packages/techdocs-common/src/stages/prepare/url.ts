@@ -19,20 +19,39 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { getDocFilesFromRepository } from '../../helpers';
-import { PreparerBase, PreparerResponse } from './types';
+import {
+  PreparerBase,
+  PreparerConfig,
+  PreparerOptions,
+  PreparerResponse,
+} from './types';
 
+/**
+ * Preparer used to retrieve documentation files from a remote repository
+ * @public
+ */
 export class UrlPreparer implements PreparerBase {
   private readonly logger: Logger;
   private readonly reader: UrlReader;
 
+  /**  @deprecated use static fromConfig method instead */
   constructor(reader: UrlReader, logger: Logger) {
     this.logger = logger;
     this.reader = reader;
   }
 
+  /**
+   * Returns a directory preparer instance
+   * @param config - A URL preparer config containing the a logger and reader
+   */
+  static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer {
+    return new UrlPreparer(reader, logger);
+  }
+
+  /** {@inheritDoc PreparerBase.prepare} */
   async prepare(
     entity: Entity,
-    options?: { etag?: string },
+    options?: PreparerOptions,
   ): Promise<PreparerResponse> {
     try {
       return await getDocFilesFromRepository(this.reader, entity, {

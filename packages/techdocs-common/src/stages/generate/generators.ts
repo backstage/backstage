@@ -26,9 +26,18 @@ import {
   SupportedGeneratorKey,
 } from './types';
 
+/**
+ * Collection of docs generators
+ * @public
+ */
 export class Generators implements GeneratorBuilder {
   private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
 
+  /**
+   * Returns a generators instance containing a generator for TechDocs
+   * @param config - A Backstage configuration
+   * @param options - Options to configure the TechDocs generator
+   */
   static async fromConfig(
     config: Config,
     options: { logger: Logger; containerRunner: ContainerRunner },
@@ -41,10 +50,19 @@ export class Generators implements GeneratorBuilder {
     return generators;
   }
 
+  /**
+   * Register a generator in the generators collection
+   * @param generatorKey - Unique identifier for the generator
+   * @param generator - The generator instance to register
+   */
   register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase) {
     this.generatorMap.set(generatorKey, generator);
   }
 
+  /**
+   * Returns the generator for a given TechDocs entity
+   * @param entity - A TechDocs entity instance
+   */
   get(entity: Entity): GeneratorBase {
     const generatorKey = getGeneratorKey(entity);
     const generator = this.generatorMap.get(generatorKey);

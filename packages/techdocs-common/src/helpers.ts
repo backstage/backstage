@@ -26,11 +26,21 @@ import path from 'path';
 import { Logger } from 'winston';
 import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
 
+/**
+ * Parsed location annotation
+ * @public
+ */
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
   target: string;
 };
 
+/**
+ * Returns a parset locations annotation
+ * @public
+ * @param annotationName - The name of the annotation in the entity metadata
+ * @param entity - A TechDocs entity instance
+ */
 export const parseReferenceAnnotation = (
   annotationName: string,
   entity: Entity,
@@ -56,7 +66,7 @@ export const parseReferenceAnnotation = (
  * location, it returns a `url` location with a resolved target that points to the
  * targeted subfolder. If the entity was registered by a `file` location, it returns
  * an absolute `dir` location.
- *
+ * @public
  * @param entity - the entity with annotations
  * @param dirAnnotation - the parsed techdocs-ref annotation of type 'dir'
  * @param scmIntegrations - access to the scmIntegration to do url transformations
@@ -101,6 +111,12 @@ export const transformDirLocation = (
   }
 };
 
+/**
+ * Returns a entity reference based on the TechDocs annotation type
+ * @public
+ * @param entity - A TechDocs instance
+ * @param scmIntegration - An implementation for  SCM integration API
+ */
 export const getLocationForEntity = (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
@@ -120,6 +136,13 @@ export const getLocationForEntity = (
   }
 };
 
+/**
+ * Returns a preparer response {@link PreparerResponse}
+ * @public
+ * @param reader - Read a tree of files from a repository
+ * @param entity - A TechDocs entity instance
+ * @param opts - Options for configuring the reader, e.g. logger, etag, etc.
+ */
 export const getDocFilesFromRepository = async (
   reader: UrlReader,
   entity: Entity,

@@ -16,7 +16,9 @@
 export { TechdocsGenerator } from './techdocs';
 export { Generators } from './generators';
 export type {
-  GeneratorBuilder,
   GeneratorBase,
+  GeneratorOptions,
+  GeneratorBuilder,
   GeneratorRunOptions,
+  SupportedGeneratorKey,
 } from './types';

@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import { AwsS3Publish } from './awsS3';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { GoogleGCSPublish } from './googleStorage';
 import { LocalPublish } from './local';
 import { OpenStackSwiftPublish } from './openStackSwift';
-import { PublisherBase, PublisherType } from './types';
-
-type factoryOptions = {
-  logger: Logger;
-  discovery: PluginEndpointDiscovery;
-};
+import { PublisherFactory, PublisherBase, PublisherType } from './types';
 
 /**
  * Factory class to create a TechDocs publisher based on defined publisher type in app config.
  * Uses `techdocs.publisher.type`.
+ * @public
  */
 export class Publisher {
+  /**
+   * Returns a instance of TechDocs publisher
+   * @param config - A Backstage configuration
+   * @param options - Options for configuring the publisher factory
+   */
   static async fromConfig(
     config: Config,
-    { logger, discovery }: factoryOptions,
+    { logger, discovery }: PublisherFactory,
   ): Promise<PublisherBase> {
     const publisherType = (config.getOptionalString(
       'techdocs.publisher.type',
