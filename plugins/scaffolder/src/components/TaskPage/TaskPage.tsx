@@ -49,7 +49,7 @@ import React, { memo, useEffect, useMemo, useState } from 'react';
 import { generatePath, useNavigate, useParams } from 'react-router';
 import useInterval from 'react-use/lib/useInterval';
 import { rootRouteRef } from '../../routes';
-import { Status, TaskOutput } from '../../types';
+import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
 
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type TaskStep = {
   id: string;
   name: string;
-  status: Status;
+  status: ScaffolderTaskStatus;
   startedAt?: string;
   endedAt?: string;
 };
@@ -217,7 +217,11 @@ export const TaskStatusStepper = memo(
   },
 );
 
-const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
+const hasLinks = ({
+  entityRef,
+  remoteUrl,
+  links = [],
+}: ScaffolderTaskOutput): boolean =>
   !!(entityRef || remoteUrl || links.length > 0);
 
 /**

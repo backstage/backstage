@@ -23,7 +23,9 @@ import {
   scmAuthApiRef,
   ScmAuthApi,
 } from '@backstage/integration-react';
-import { scaffolderApiRef, ScaffolderApi } from '../../../api';
+import { scaffolderApiRef } from '../../../api';
+import { ScaffolderApi } from '../../../types';
+
 import {
   SecretsContextProvider,
   SecretsContext,
@@ -32,10 +34,12 @@ import { act, fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
-    getIntegrationsList: async () => [
-      { host: 'github.com', type: 'github', title: 'github.com' },
-      { host: 'dev.azure.com', type: 'azure', title: 'dev.azure.com' },
-    ],
+    getIntegrationsList: async () => ({
+      integrations: [
+        { host: 'github.com', type: 'github', title: 'github.com' },
+        { host: 'dev.azure.com', type: 'azure', title: 'dev.azure.com' },
+      ],
+    }),
   };
 
   const mockIntegrationsApi: Partial<ScmIntegrationsApi> = {

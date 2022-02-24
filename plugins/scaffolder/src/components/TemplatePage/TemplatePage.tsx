@@ -41,17 +41,13 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
-const useTemplateParameterSchema = (templateName: string) => {
+const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const { value, loading, error } = useAsync(
-    () =>
-      scaffolderApi.getTemplateParameterSchema({
-        name: templateName,
-        kind: 'template',
-        namespace: 'default',
-      }),
-    [scaffolderApi, templateName],
+    () => scaffolderApi.getTemplateParameterSchema(templateRef),
+    [scaffolderApi, templateRef],
   );
   return { schema: value, loading, error };
 };
@@ -141,11 +137,15 @@ export const TemplatePage = ({
   );
 
   const handleCreate = async () => {
-    const id = await scaffolderApi.scaffold(
-      templateName,
-      formState,
-      secretsContext?.secrets,
-    );
+    const { taskId } = await scaffolderApi.scaffold({
+      templateRef: stringifyEntityRef({
+        name: templateName,
+        kind: 'template',
+        namespace: 'default',
+      }),
+      values: formState,
+      secrets: secretsContext?.secrets,
+    });
 
     const formParams = qs.stringify(
       { formData: formState },
@@ -158,7 +158,7 @@ export const TemplatePage = ({
     // extra back/forward slots.
     window.history?.replaceState(null, document.title, newUrl);
 
-    navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
+    navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId }));
   };
 
   if (error) {

@@ -15,14 +15,19 @@
  */
 import { useImmerReducer } from 'use-immer';
 import { useEffect } from 'react';
-import { scaffolderApiRef, LogEvent } from '../../api';
-import { ScaffolderTask, Status, TaskOutput } from '../../types';
+import { scaffolderApiRef } from '../../api';
+import {
+  ScaffolderTask,
+  ScaffolderTaskStatus,
+  ScaffolderTaskOutput,
+  LogEvent,
+} from '../../types';
 import { useApi } from '@backstage/core-plugin-api';
 import { Subscription } from '@backstage/types';
 
 type Step = {
   id: string;
-  status: Status;
+  status: ScaffolderTaskStatus;
   endedAt?: string;
   startedAt?: string;
 };
@@ -34,16 +39,16 @@ export type TaskStream = {
   completed: boolean;
   task?: ScaffolderTask;
   steps: { [stepId in string]: Step };
-  output?: TaskOutput;
+  output?: ScaffolderTaskOutput;
 };
 
 type ReducerLogEntry = {
   createdAt: string;
   body: {
     stepId?: string;
-    status?: Status;
+    status?: ScaffolderTaskStatus;
     message: string;
-    output?: TaskOutput;
+    output?: ScaffolderTaskOutput;
   };
 };
 

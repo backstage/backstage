@@ -21,7 +21,21 @@
  */
 
 export { scaffolderApiRef, ScaffolderClient } from './api';
-export type { ScaffolderApi } from './api';
+export type {
+  JobStatus,
+  ListActionsResponse,
+  LogEvent,
+  ScaffolderApi,
+  ScaffolderGetIntegrationsListOptions,
+  ScaffolderGetIntegrationsListResponse,
+  ScaffolderScaffoldOptions,
+  ScaffolderScaffoldResponse,
+  ScaffolderStreamLogsOptions,
+  ScaffolderTask,
+  ScaffolderTaskOutput,
+  ScaffolderTaskStatus,
+  TemplateParameterSchema,
+} from './types';
 export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,

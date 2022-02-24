@@ -19,12 +19,12 @@ import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
-import { TaskOutput } from '../../types';
+import { ScaffolderTaskOutput } from '../../types';
 import { IconLink } from './IconLink';
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 
 type TaskPageLinksProps = {
-  output: TaskOutput;
+  output: ScaffolderTaskOutput;
 };
 
 export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {

@@ -23,11 +23,11 @@ describe('RepoUrlPickerHostField', () => {
   it('renders the default host properly', async () => {
     const mockOnChange = jest.fn();
     const mockScaffolderApi = {
-      getIntegrationsList: jest
-        .fn()
-        .mockResolvedValue([
+      getIntegrationsList: jest.fn().mockResolvedValue({
+        integrations: [
           { host: 'github.com', title: 'github.com', type: 'github' },
-        ]),
+        ],
+      }),
     };
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
@@ -46,10 +46,12 @@ describe('RepoUrlPickerHostField', () => {
   it('should provide a dropdown when multiple hosts are returned that can be selected', async () => {
     const mockOnChange = jest.fn();
     const mockScaffolderApi = {
-      getIntegrationsList: jest.fn().mockResolvedValue([
-        { host: 'github.com', title: 'github.com', type: 'github' },
-        { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
-      ]),
+      getIntegrationsList: jest.fn().mockResolvedValue({
+        integrations: [
+          { host: 'github.com', title: 'github.com', type: 'github' },
+          { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
+        ],
+      }),
     };
 
     const { getByRole, getByText, getByTestId } = await renderInTestApp(
@@ -73,10 +75,12 @@ describe('RepoUrlPickerHostField', () => {
   it('should not display hosts that dont have integration config set correctly', async () => {
     const mockOnChange = jest.fn();
     const mockScaffolderApi = {
-      getIntegrationsList: jest.fn().mockResolvedValue([
-        { host: 'github.com', title: 'github.com', type: 'github' },
-        { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
-      ]),
+      getIntegrationsList: jest.fn().mockResolvedValue({
+        integrations: [
+          { host: 'github.com', title: 'github.com', type: 'github' },
+          { host: 'gitlab.com', title: 'gitlab.com', type: 'gitlab' },
+        ],
+      }),
     };
 
     const { getByRole, getByText, getByTestId } = await renderInTestApp(

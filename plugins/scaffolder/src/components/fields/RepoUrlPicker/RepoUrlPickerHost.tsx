@@ -30,11 +30,13 @@ export const RepoUrlPickerHost = (props: {
   const { host, hosts, onChange, rawErrors } = props;
   const scaffolderApi = useApi(scaffolderApiRef);
 
-  const { value: integrations, loading } = useAsync(async () => {
-    return await scaffolderApi.getIntegrationsList({
-      allowedHosts: hosts ?? [],
-    });
-  });
+  const { value: { integrations } = { integrations: [] }, loading } = useAsync(
+    async () => {
+      return await scaffolderApi.getIntegrationsList({
+        allowedHosts: hosts ?? [],
+      });
+    },
+  );
 
   useEffect(() => {
     // If there is no host chosen currently

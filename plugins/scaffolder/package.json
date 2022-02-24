@@ -34,6 +34,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@types/json-schema": "^7.0.9",
     "@backstage/catalog-client": "^0.7.0",
     "@backstage/catalog-model": "^0.10.0",
     "@backstage/config": "^0.1.14",

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
   createApiRef,
   DiscoveryApi,
@@ -22,11 +22,21 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { JsonObject, JsonValue, Observable } from '@backstage/types';
-import { Field, FieldValidation } from '@rjsf/core';
+import { Observable } from '@backstage/types';
 import qs from 'qs';
 import ObservableImpl from 'zen-observable';
-import { ListActionsResponse, ScaffolderTask, Status } from './types';
+import {
+  ListActionsResponse,
+  LogEvent,
+  ScaffolderApi,
+  TemplateParameterSchema,
+  ScaffolderScaffoldOptions,
+  ScaffolderScaffoldResponse,
+  ScaffolderStreamLogsOptions,
+  ScaffolderGetIntegrationsListOptions,
+  ScaffolderGetIntegrationsListResponse,
+  ScaffolderTask,
+} from './types';
 
 /**
  * Utility API reference for the {@link ScaffolderApi}.
@@ -36,70 +46,6 @@ import { ListActionsResponse, ScaffolderTask, Status } from './types';
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
 });
-
-type TemplateParameterSchema = {
-  title: string;
-  steps: Array<{
-    title: string;
-    schema: JsonObject;
-  }>;
-};
-
-export type LogEvent = {
-  type: 'log' | 'completion';
-  body: {
-    message: string;
-    stepId?: string;
-    status?: Status;
-  };
-  createdAt: string;
-  id: string;
-  taskId: string;
-};
-
-export type CustomField = {
-  name: string;
-  component: Field;
-  validation: (data: JsonValue, field: FieldValidation) => void;
-};
-
-/**
- * An API to interact with the scaffolder backend.
- *
- * @public
- */
-export interface ScaffolderApi {
-  getTemplateParameterSchema(
-    templateName: EntityName,
-  ): Promise<TemplateParameterSchema>;
-
-  /**
-   * Executes the scaffolding of a component, given a template and its
-   * parameter values.
-   *
-   * @param templateName - Name of the Template entity for the scaffolder to use. New project is going to be created out of this template.
-   * @param values - Parameters for the template, e.g. name, description
-   * @param secrets - Optional secrets to pass to as the secrets parameter to the template.
-   */
-  scaffold(
-    templateName: string,
-    values: Record<string, any>,
-    secrets?: Record<string, string>,
-  ): Promise<string>;
-
-  getTask(taskId: string): Promise<ScaffolderTask>;
-
-  getIntegrationsList(options: {
-    allowedHosts: string[];
-  }): Promise<{ type: string; title: string; host: string }[]>;
-
-  /**
-   * Returns a list of all installed actions.
-   */
-  listActions(): Promise<ListActionsResponse>;
-
-  streamLogs(options: { taskId: string; after?: number }): Observable<LogEvent>;
-}
 
 /**
  * An API to interact with the scaffolder backend.
@@ -124,8 +70,10 @@ export class ScaffolderClient implements ScaffolderApi {
     this.useLongPollingLogs = options.useLongPollingLogs ?? false;
   }
 
-  async getIntegrationsList(options: { allowedHosts: string[] }) {
-    return [
+  async getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse> {
+    const integrations = [
       ...this.scmIntegrationsApi.azure.list(),
       ...this.scmIntegrationsApi.bitbucket.list(),
       ...this.scmIntegrationsApi.github.list(),
@@ -133,17 +81,24 @@ export class ScaffolderClient implements ScaffolderApi {
     ]
       .map(c => ({ type: c.type, title: c.title, host: c.config.host }))
       .filter(c => options.allowedHosts.includes(c.host));
+
+    return {
+      integrations,
+    };
   }
 
   async getTemplateParameterSchema(
-    templateName: EntityName,
+    templateRef: string,
   ): Promise<TemplateParameterSchema> {
-    const { namespace, kind, name } = templateName;
+    const { namespace, kind, name } = parseEntityRef(templateRef, {
+      defaultKind: 'template',
+    });
 
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const templatePath = [namespace, kind, name]
       .map(s => encodeURIComponent(s))
       .join('/');
+
     const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema`;
 
     const response = await this.fetchApi.fetch(url);
@@ -159,15 +114,12 @@ export class ScaffolderClient implements ScaffolderApi {
    * Executes the scaffolding of a component, given a template and its
    * parameter values.
    *
-   * @param templateName - Template name for the scaffolder to use. New project is going to be created out of this template.
-   * @param values - Parameters for the template, e.g. name, description
-   * @param secrets - Optional secrets to pass to as the secrets parameter to the template.
+   * @param options - The {@link ScaffolderScaffoldOptions} the scaffolding.
    */
   async scaffold(
-    templateName: string,
-    values: Record<string, any>,
-    secrets: Record<string, string> = {},
-  ): Promise<string> {
+    options: ScaffolderScaffoldOptions,
+  ): Promise<ScaffolderScaffoldResponse> {
+    const { templateRef, values, secrets = {} } = options;
     const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
     const response = await this.fetchApi.fetch(url, {
       method: 'POST',
@@ -175,7 +127,7 @@ export class ScaffolderClient implements ScaffolderApi {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        templateName,
+        templateRef,
         values: { ...values },
         secrets,
       }),
@@ -188,10 +140,10 @@ export class ScaffolderClient implements ScaffolderApi {
     }
 
     const { id } = (await response.json()) as { id: string };
-    return id;
+    return { taskId: id };
   }
 
-  async getTask(taskId: string) {
+  async getTask(taskId: string): Promise<ScaffolderTask> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
 
@@ -203,10 +155,7 @@ export class ScaffolderClient implements ScaffolderApi {
     return await response.json();
   }
 
-  streamLogs(options: {
-    taskId: string;
-    after?: number;
-  }): Observable<LogEvent> {
+  streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent> {
     if (this.useLongPollingLogs) {
       return this.streamLogsPolling(options);
     }

@@ -12,7 +12,6 @@ import { ComponentProps } from 'react';
 import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -20,7 +19,7 @@ import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
 import { IconButton } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema } from '@backstage/catalog-model';
+import { JSONSchema7 } from 'json-schema';
 import { Observable } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -122,6 +121,38 @@ export type FieldExtensionOptions<
   validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 
+// Warning: (ae-missing-release-tag) "JobStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
+
+// Warning: (ae-missing-release-tag) "ListActionsResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ListActionsResponse = Array<{
+  id: string;
+  description?: string;
+  schema?: {
+    input?: JSONSchema7;
+    output?: JSONSchema7;
+  };
+}>;
+
+// Warning: (ae-missing-release-tag) "LogEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type LogEvent = {
+  type: 'log' | 'completion';
+  body: {
+    message: string;
+    stepId?: string;
+    status?: ScaffolderTaskStatus;
+  };
+  createdAt: string;
+  id: string;
+  taskId: string;
+};
+
 // Warning: (ae-missing-release-tag) "OwnedEntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
@@ -210,34 +241,21 @@ export interface RepoUrlPickerUiOptions {
 // @public
 export interface ScaffolderApi {
   // (undocumented)
-  getIntegrationsList(options: { allowedHosts: string[] }): Promise<
-    {
-      type: string;
-      title: string;
-      host: string;
-    }[]
-  >;
-  // Warning: (ae-forgotten-export) The symbol "ScaffolderTask" needs to be exported by the entry point index.d.ts
-  //
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
   // (undocumented)
   getTask(taskId: string): Promise<ScaffolderTask>;
-  // Warning: (ae-forgotten-export) The symbol "TemplateParameterSchema" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   getTemplateParameterSchema(
-    templateName: EntityName,
+    templateRef: string,
   ): Promise<TemplateParameterSchema>;
-  // Warning: (ae-forgotten-export) The symbol "ListActionsResponse" needs to be exported by the entry point index.d.ts
   listActions(): Promise<ListActionsResponse>;
   scaffold(
-    templateName: string,
-    values: Record<string, any>,
-    secrets?: Record<string, string>,
-  ): Promise<string>;
-  // Warning: (ae-forgotten-export) The symbol "LogEvent" needs to be exported by the entry point index.d.ts
-  //
+    options: ScaffolderScaffoldOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
   // (undocumented)
-  streamLogs(options: { taskId: string; after?: number }): Observable<LogEvent>;
+  streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 }
 
 // @public
@@ -252,34 +270,48 @@ export class ScaffolderClient implements ScaffolderApi {
     useLongPollingLogs?: boolean;
   });
   // (undocumented)
-  getIntegrationsList(options: { allowedHosts: string[] }): Promise<
-    {
-      type: string;
-      title: string;
-      host: string;
-    }[]
-  >;
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
   // (undocumented)
-  getTask(taskId: string): Promise<any>;
+  getTask(taskId: string): Promise<ScaffolderTask>;
   // (undocumented)
   getTemplateParameterSchema(
-    templateName: EntityName,
+    templateRef: string,
   ): Promise<TemplateParameterSchema>;
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
   scaffold(
-    templateName: string,
-    values: Record<string, any>,
-    secrets?: Record<string, string>,
-  ): Promise<string>;
+    options: ScaffolderScaffoldOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
   // (undocumented)
-  streamLogs(options: { taskId: string; after?: number }): Observable<LogEvent>;
+  streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 }
 
 // Warning: (ae-missing-release-tag) "ScaffolderFieldExtensions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const ScaffolderFieldExtensions: React_2.ComponentType;
+
+// Warning: (ae-missing-release-tag) "ScaffolderGetIntegrationsListOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ScaffolderGetIntegrationsListOptions {
+  // (undocumented)
+  allowedHosts: string[];
+}
+
+// Warning: (ae-missing-release-tag) "ScaffolderGetIntegrationsListResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ScaffolderGetIntegrationsListResponse {
+  // (undocumented)
+  integrations: {
+    type: string;
+    title: string;
+    host: string;
+  }[];
+}
 
 // Warning: (ae-missing-release-tag) "ScaffolderPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -316,6 +348,68 @@ export const scaffolderPlugin: BackstagePlugin<
   }
 >;
 
+// Warning: (ae-missing-release-tag) "ScaffolderScaffoldOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ScaffolderScaffoldOptions {
+  // (undocumented)
+  secrets?: Record<string, string>;
+  // (undocumented)
+  templateRef: string;
+  // (undocumented)
+  values: Record<string, any>;
+}
+
+// Warning: (ae-missing-release-tag) "ScaffolderScaffoldResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ScaffolderScaffoldResponse {
+  // (undocumented)
+  taskId: string;
+}
+
+// Warning: (ae-missing-release-tag) "ScaffolderStreamLogsOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ScaffolderStreamLogsOptions {
+  // (undocumented)
+  after?: number;
+  // (undocumented)
+  taskId: string;
+}
+
+// Warning: (ae-missing-release-tag) "ScaffolderTask" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ScaffolderTask = {
+  id: string;
+  spec: TaskSpec;
+  status: 'failed' | 'completed' | 'processing' | 'open' | 'cancelled';
+  lastHeartbeatAt: string;
+  createdAt: string;
+};
+
+// Warning: (ae-missing-release-tag) "ScaffolderTaskOutput" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ScaffolderTaskOutput = {
+  entityRef?: string;
+  remoteUrl?: string;
+  links?: ScaffolderOutputLink[];
+} & {
+  [key: string]: unknown;
+};
+
+// Warning: (ae-missing-release-tag) "ScaffolderTaskStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ScaffolderTaskStatus =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'completed'
+  | 'skipped';
+
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 
@@ -348,6 +442,17 @@ export type TemplateListProps = {
   };
 };
 
+// Warning: (ae-missing-release-tag) "TemplateParameterSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TemplateParameterSchema = {
+  title: string;
+  steps: Array<{
+    title: string;
+    schema: JsonObject;
+  }>;
+};
+
 // Warning: (ae-missing-release-tag) "TemplateTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -357,4 +462,8 @@ export const TemplateTypePicker: () => JSX.Element | null;
 export const useTemplateSecrets: () => {
   setSecret: (input: Record<string, string>) => void;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/types.d.ts:32:5 - (ae-forgotten-export) The symbol "ScaffolderOutputLink" needs to be exported by the entry point index.d.ts
 ```
