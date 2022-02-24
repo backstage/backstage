@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        node-version: [14.x, 16.x]
+        node-version: ["14.18.3", "16.13.2"]
 
     env:
       CI: true
