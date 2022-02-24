@@ -49,6 +49,7 @@ import request from 'supertest';
  */
 import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const createCatalogClient = (template: any) =>
   ({
@@ -146,7 +147,10 @@ describe('createRouter', () => {
       const response = await request(app)
         .post('/v2/tasks')
         .send({
-          templateName: 'create-react-app-template',
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
           values: {
             storePath: 'https://github.com/backstage/backstage',
           },
@@ -165,7 +169,10 @@ describe('createRouter', () => {
       const response = await request(app)
         .post('/v2/tasks')
         .send({
-          templateName: 'create-react-app-template',
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
           values: {
             required: 'required-value',
           },

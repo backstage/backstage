@@ -146,22 +146,12 @@ export type LogEvent = {
   body: {
     message: string;
     stepId?: string;
-    status?: LogEventStatus;
+    status?: ScaffolderTaskStatus;
   };
   createdAt: string;
   id: string;
   taskId: string;
 };
-
-// Warning: (ae-missing-release-tag) "LogEventStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type LogEventStatus =
-  | 'open'
-  | 'processing'
-  | 'failed'
-  | 'completed'
-  | 'skipped';
 
 // Warning: (ae-missing-release-tag) "OwnedEntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -365,7 +355,7 @@ export interface ScaffolderScaffoldOptions {
   // (undocumented)
   secrets?: Record<string, string>;
   // (undocumented)
-  templateName: string;
+  templateRef: string;
   // (undocumented)
   values: Record<string, any>;
 }
@@ -409,6 +399,16 @@ export type ScaffolderTaskOutput = {
 } & {
   [key: string]: unknown;
 };
+
+// Warning: (ae-missing-release-tag) "ScaffolderTaskStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ScaffolderTaskStatus =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'completed'
+  | 'skipped';
 
 // @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;

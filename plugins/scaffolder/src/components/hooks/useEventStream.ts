@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 import { scaffolderApiRef } from '../../api';
 import {
   ScaffolderTask,
-  LogEventStatus,
+  ScaffolderTaskStatus,
   ScaffolderTaskOutput,
   LogEvent,
 } from '../../types';
@@ -27,7 +27,7 @@ import { Subscription } from '@backstage/types';
 
 type Step = {
   id: string;
-  status: LogEventStatus;
+  status: ScaffolderTaskStatus;
   endedAt?: string;
   startedAt?: string;
 };
@@ -46,7 +46,7 @@ type ReducerLogEntry = {
   createdAt: string;
   body: {
     stepId?: string;
-    status?: LogEventStatus;
+    status?: ScaffolderTaskStatus;
     message: string;
     output?: ScaffolderTaskOutput;
   };

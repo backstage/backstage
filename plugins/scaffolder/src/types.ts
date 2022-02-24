@@ -17,7 +17,7 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
-export type LogEventStatus =
+export type ScaffolderTaskStatus =
   | 'open'
   | 'processing'
   | 'failed'
@@ -73,7 +73,7 @@ export type LogEvent = {
   body: {
     message: string;
     stepId?: string;
-    status?: LogEventStatus;
+    status?: ScaffolderTaskStatus;
   };
   createdAt: string;
   id: string;
