@@ -488,12 +488,12 @@ export const MockEntityListContextProvider: ({
   value?: Partial<EntityListContextProps<DefaultEntityFilters>> | undefined;
 }>) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function reduceCatalogFilters(
   filters: EntityFilter[],
 ): Record<string, string | symbol | (string | symbol)[]>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function reduceEntityFilters(
   filters: EntityFilter[],
 ): (entity: Entity) => boolean;
