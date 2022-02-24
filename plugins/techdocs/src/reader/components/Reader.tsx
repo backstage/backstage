@@ -410,9 +410,20 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-nav {
               font-size: calc(var(--md-typeset-font-size) * 0.9);
             }
+            .md-nav__link {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            }
             .md-nav__icon {
-              width: auto !important;
-              height: auto !important;
+              height: 20px !important;
+              width: 20px !important;
+              margin-left:${theme.spacing(1)}px;
+            }
+            .md-nav__icon svg {
+              margin: 0;
+              width: 20px !important;
+              height: 20px !important;
             }
             .md-nav__icon:after {
               width: 20px !important;
@@ -424,9 +435,12 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             }
             
             .md-sidebar {
+              height: calc(100% - 100px);
               position: fixed;
-              bottom: 100px;
               width: 16rem;
+            }
+            .md-sidebar .md-sidebar__scrollwrap {
+              max-height: calc(100% - 100px);
             }
             .md-sidebar--secondary {
               right: ${theme.spacing(3)}px;
@@ -499,11 +513,14 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
                 display: none;
               }
 
+              .md-sidebar {
+                height: 100%;
+              }
               .md-sidebar--primary {
                 width: 12.1rem !important;
                 z-index: 200;
                 left: ${
-                  isPinned ? 'calc(224px - 12.1rem)' : 'calc(72px - 12.1rem)'
+                  isPinned ? 'calc(-12.1rem + 242px)' : 'calc(-12.1rem + 72px)'
                 } !important;
               }
               .md-sidebar--secondary:not([hidden]) {
