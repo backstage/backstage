@@ -8,7 +8,6 @@ import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
-import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
@@ -74,7 +73,6 @@ export type TechDocsCollatorOptions = {
   logger: Logger_2;
   tokenManager: TokenManager;
   locationTemplate?: string;
-  filter?: GetEntitiesRequest['filter'];
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
   legacyPathCasing?: boolean;

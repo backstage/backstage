@@ -34,7 +34,7 @@ import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
 import {
   CatalogApi,
   CatalogClient,
-  GetEntitiesRequest,
+  CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 
@@ -54,7 +54,6 @@ export type TechDocsCollatorOptions = {
   logger: Logger;
   tokenManager: TokenManager;
   locationTemplate?: string;
-  filter?: GetEntitiesRequest['filter'];
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
@@ -93,7 +92,6 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       parallelismLimit,
       discovery,
       tokenManager,
-      filter,
       catalogClient,
       locationTemplate,
       logger,
@@ -105,7 +103,10 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       catalogClient ?? new CatalogClient({ discoveryApi: discovery })
     ).getEntities(
       {
-        filter,
+        filter: {
+          'metadata.annotations.backstage.io/techdocs-ref':
+            CATALOG_FILTER_EXISTS,
+        },
         fields: [
           'kind',
           'namespace',
@@ -120,62 +121,60 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       },
       { token },
     );
-    const docPromises = entities.items
-      .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
-      .map((entity: Entity) =>
-        limit(async (): Promise<TechDocsDocument[]> => {
-          const entityInfo = DefaultTechDocsCollator.handleEntityInfoCasing(
-            this.legacyPathCasing ?? false,
+    const docPromises = entities.items.map((entity: Entity) =>
+      limit(async (): Promise<TechDocsDocument[]> => {
+        const entityInfo = DefaultTechDocsCollator.handleEntityInfoCasing(
+          this.legacyPathCasing ?? false,
+          {
+            kind: entity.kind,
+            namespace: entity.metadata.namespace || 'default',
+            name: entity.metadata.name,
+          },
+        );
+
+        try {
+          const searchIndexResponse = await fetch(
+            DefaultTechDocsCollator.constructDocsIndexUrl(
+              techDocsBaseUrl,
+              entityInfo,
+            ),
             {
-              kind: entity.kind,
-              namespace: entity.metadata.namespace || 'default',
-              name: entity.metadata.name,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             },
           );
+          const searchIndex = await searchIndexResponse.json();
 
-          try {
-            const searchIndexResponse = await fetch(
-              DefaultTechDocsCollator.constructDocsIndexUrl(
-                techDocsBaseUrl,
-                entityInfo,
-              ),
+          return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+            title: unescape(doc.title),
+            text: unescape(doc.text || ''),
+            location: this.applyArgsToFormat(
+              locationTemplate || '/docs/:namespace/:kind/:name/:path',
               {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
+                ...entityInfo,
+                path: doc.location,
               },
-            );
-            const searchIndex = await searchIndexResponse.json();
-
-            return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-              title: unescape(doc.title),
-              text: unescape(doc.text || ''),
-              location: this.applyArgsToFormat(
-                locationTemplate || '/docs/:namespace/:kind/:name/:path',
-                {
-                  ...entityInfo,
-                  path: doc.location,
-                },
-              ),
-              path: doc.location,
-              ...entityInfo,
-              entityTitle: entity.metadata.title,
-              componentType: entity.spec?.type?.toString() || 'other',
-              lifecycle: (entity.spec?.lifecycle as string) || '',
-              owner: getSimpleEntityOwnerString(entity),
-              authorization: {
-                resourceRef: stringifyEntityRef(entity),
-              },
-            }));
-          } catch (e) {
-            logger.debug(
-              `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
-              e,
-            );
-            return [];
-          }
-        }),
-      );
+            ),
+            path: doc.location,
+            ...entityInfo,
+            entityTitle: entity.metadata.title,
+            componentType: entity.spec?.type?.toString() || 'other',
+            lifecycle: (entity.spec?.lifecycle as string) || '',
+            owner: getSimpleEntityOwnerString(entity),
+            authorization: {
+              resourceRef: stringifyEntityRef(entity),
+            },
+          }));
+        } catch (e) {
+          logger.debug(
+            `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
+            e,
+          );
+          return [];
+        }
+      }),
+    );
     return (await Promise.all(docPromises)).flat();
   }
 
