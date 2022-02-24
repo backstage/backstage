@@ -23,7 +23,9 @@ import { catalogApiRef } from '../api';
 import { useEntityList } from './useEntityListProvider';
 import { EntityTypeFilter } from '../filters';
 
-/** @public */
+/** @public
+ * @deprecated type inlined with {@link useEntityTypeFilter}.
+ */
 export type EntityTypeReturn = {
   loading: boolean;
   error?: Error;
@@ -37,7 +39,13 @@ export type EntityTypeReturn = {
  * based on the selected EntityKindFilter.
  * @public
  */
-export function useEntityTypeFilter(): EntityTypeReturn {
+export function useEntityTypeFilter(): {
+  loading: boolean;
+  error?: Error;
+  availableTypes: string[];
+  selectedTypes: string[];
+  setSelectedTypes: (types: string[]) => void;
+} {
   const catalogApi = useApi(catalogApiRef);
   const {
     filters: { kind: kindFilter, type: typeFilter },

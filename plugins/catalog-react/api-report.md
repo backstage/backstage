@@ -410,7 +410,7 @@ export interface EntityTypePickerProps {
   initialFilter?: string;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type EntityTypeReturn = {
   loading: boolean;
   error?: Error;
@@ -572,7 +572,13 @@ export function useEntityPermission(permission: Permission): {
 };
 
 // @public
-export function useEntityTypeFilter(): EntityTypeReturn;
+export function useEntityTypeFilter(): {
+  loading: boolean;
+  error?: Error;
+  availableTypes: string[];
+  selectedTypes: string[];
+  setSelectedTypes: (types: string[]) => void;
+};
 
 // @public @deprecated
 export function useOwnedEntities(allowedKinds?: string[]): {
