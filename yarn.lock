@@ -5763,12 +5763,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/humanize-duration@^3.18.1", "@types/humanize-duration@^3.25.1":
-  version "3.27.1"
-  resolved "https://registry.npmjs.org/@types/humanize-duration/-/humanize-duration-3.27.1.tgz#f14740d1f585a0a8e3f46359b62fda8b0eaa31e7"
-  integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
-
-"@types/humanize-duration@^3.27.1":
+"@types/humanize-duration@^3.18.1", "@types/humanize-duration@^3.25.1", "@types/humanize-duration@^3.27.1":
   version "3.27.1"
   resolved "https://registry.npmjs.org/@types/humanize-duration/-/humanize-duration-3.27.1.tgz#f14740d1f585a0a8e3f46359b62fda8b0eaa31e7"
   integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
@@ -5937,12 +5932,7 @@
   resolved "https://registry.npmjs.org/@types/lunr/-/lunr-2.3.3.tgz#ec985618fd2712c010f8edab4f1ae7784ad7c583"
   integrity sha512-09sXZZVsB3Ib41U0fC+O1O+4UOZT1bl/e+/QubPxpqDWHNEchvx/DEb1KJMOwq6K3MTNzZFoNSzVdR++o1DVnw==
 
-"@types/luxon@^2.0.4", "@types/luxon@^2.0.5":
-  version "2.0.9"
-  resolved "https://registry.npmjs.org/@types/luxon/-/luxon-2.0.9.tgz#782a0edfa6d699191292c13168bd496cd66b87c6"
-  integrity sha512-ZuzIc7aN+i2ZDMWIiSmMdubR9EMMSTdEzF6R+FckP4p6xdnOYKqknTo/k+xXQvciSXlNGIwA4OPU5X7JIFzYdA==
-
-"@types/luxon@^2.0.9":
+"@types/luxon@^2.0.4", "@types/luxon@^2.0.5", "@types/luxon@^2.0.9":
   version "2.0.9"
   resolved "https://registry.npmjs.org/@types/luxon/-/luxon-2.0.9.tgz#782a0edfa6d699191292c13168bd496cd66b87c6"
   integrity sha512-ZuzIc7aN+i2ZDMWIiSmMdubR9EMMSTdEzF6R+FckP4p6xdnOYKqknTo/k+xXQvciSXlNGIwA4OPU5X7JIFzYdA==
@@ -12586,9 +12576,9 @@ fork-ts-checker-webpack-plugin@^6.5.0:
     tapable "^1.0.0"
 
 fork-ts-checker-webpack-plugin@^7.0.0-alpha.8:
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-7.1.1.tgz#9806c04f3aecaec8c9e8872806cd1f26d50d92a8"
-  integrity sha512-MgAv1g6+HLXz1iq2AZRfBjDhwBwk1HRSjuhNiMs8ax/3tsFo0rHedKwuE6ok44sJ5F5VgwPZae8gq0wiBAqYRw==
+  version "7.2.1"
+  resolved "https://registry.npmjs.org/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-7.2.1.tgz#c37a538e12730fe11fd725bcf0fce29487950833"
+  integrity sha512-uOfQdg/iQ8iokQ64qcbu8iZb114rOmaKLQFu7hU14/eJaKgsP91cQ7ts7v2iiDld6TzDe84Meksha8/MkWiCyw==
   dependencies:
     "@babel/code-frame" "^7.16.7"
     chalk "^4.1.2"
