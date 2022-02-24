@@ -1,5 +1,39 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.24
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- be9e010da0: Add support to exclude certain folders in `todo` plugin.
+
+  You can add function by configuring your own exclusion logic, for example:
+
+  ```ts
+  import {
+    TodoScmReader,
+    createTodoParser,
+  } from '@backstage/plugin-todo-backend';
+
+  // ...
+
+  const todoReader = TodoScmReader.fromConfig(config, {
+    logger,
+    reader,
+    filePathFilter: (filePath: string): boolean => {
+        ...
+        YOUR LOGIC HERE
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/integration@0.7.5
+
 ## 0.1.23
 
 ### Patch Changes

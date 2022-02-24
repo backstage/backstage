@@ -1,5 +1,46 @@
 # @backstage/catalog-model
 
+## 0.11.0
+
+### Minor Changes
+
+- 919cf2f836: **BREAKING**: Added `EntityRelation.targetRef` (a string form entity ref), and
+  deprecated `EntityRelation.target` (a kind + namespace + name object). This
+  aligns the type with our goal of using string form entity refs more coherently.
+  There will be a period of time when both fields need to be present, which may in
+  particular affect your tests which now have to list both the string form and the
+  object form side by side.
+
+  ```diff
+   const mockEntity: Entity = {
+     kind: 'Component',
+     relations: [
+       {
+         type: RELATION_MEMBER_OF,
+  +      targetRef: 'component:default/foo',
+         target: { kind: 'component', namespace: 'default', name: 'foo' }
+       }
+     ]
+  ```
+
+  The `target` field will be entirely removed from this type in a future release.
+
+- 7010349c9a: **BREAKING**: Removed `EntityRelationSpec` as it is only used during the catalog during the catalog processing.
+- 68f0871b76: **BREAKING**: Simplified the `parseEntityRef` function to _always_ either return
+  a complete `EntityName`, complete with both kind, namespace and name, or throw
+  an error if it for some reason did not have enough information to form that
+  result. This makes its usage and its type declaration vastly simpler.
+
+### Patch Changes
+
+- ed09ad8093: Deprecated the `LocationSpec` export, which should now be imported from `@backstage/plugin-catalog-backend` instead.
+- b5c02d10a6: Remove all usage of the deprecated `ENTITY_DEFAULT_NAMESPACE`
+- 67a7c02d26: **DEPRECATED**: The `EntityRef` type and `parseEntityName` function are now
+  deprecated, and will soon be removed. This is part of a larger movement toward
+  fixing the poorly named `EntityName` type which should instead have been named
+  `EntityRef`. Please remove any usage of these as soon as possible.
+- da44c47f43: Deprecated the `entity.metadata.generation` as the field has never been fully functioning.
+
 ## 0.10.1
 
 ### Patch Changes

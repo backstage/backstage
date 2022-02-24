@@ -1,5 +1,14 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.17
+
+### Patch Changes
+
+- 68913af4ff: chore(deps): bump `graphql-modules` from 1.4.4 to 2.0.0
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-catalog-graphql@0.3.4
+
 ## 0.1.16
 
 ### Patch Changes

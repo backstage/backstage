@@ -1,5 +1,16 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.1.25
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/integration@0.7.5
+
 ## 0.1.24
 
 ### Patch Changes

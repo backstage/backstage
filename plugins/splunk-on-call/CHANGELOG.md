@@ -1,5 +1,16 @@
 # @backstage/plugin-splunk-on-call
 
+## 0.3.24
+
+### Patch Changes
+
+- 02faa6781b: The Splunk On-Call plugin now supports an optional `readOnly` property (`<SplunkOnCallEntityCard readOnly />`) for suppressing the rendering of incident trigger-acknowledge-resolve controls from the Backstage UI.
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+
 ## 0.3.23
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-import
 
+## 0.8.3
+
+### Patch Changes
+
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/integration@0.7.5
+  - @backstage/integration-react@0.1.23
+
 ## 0.8.2
 
 ### Patch Changes

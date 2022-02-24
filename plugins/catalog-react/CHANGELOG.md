@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog-react
 
+## 0.7.0
+
+### Minor Changes
+
+- 3334ad47d4: Removed the deprecated `EntityContext` which have been replaced by `useEntity`, `EntityProvider` and `AsyncEntityProvider`.
+- e2e0b6625c: Improved API documentation.
+
+  **BREAKING**: The individual table column factories (e.g. `createEntityRefColumn`) are now no longer available directly, but only through `EntityTable.columns`.
+
+- c4276915c0: **BREAKING**: Deleted the deprecated `loadIdentityOwnerRefs` function which is replaced by `ownershipEntityRefs` from `identityApi.getBackstageIdentity()`.
+
+  Deprecated the `loadCatalogOwnerRefs` hook as membership references should be added as `ent` inside `claims` sections of the `SignInResolver` when issuing tokens. See https://backstage.io/docs/auth/identity-resolver for more details on how to prepare your `SignInResolver` if not done already. Usage of the `loadCatalogOwnerRefs` hook should be replaced by `ownershipEntityRefs` from `identityApi.getBackstageIdentity()` instead.
+
+### Patch Changes
+
+- a8331830f1: Deprecated the `useEntityKinds` hook due to low usage and utility value.
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- b776ce5aab: Deprecated the `useEntityListProvider` hook which is now renamed to `useEntityList`
+- b3ef24038b: Deprecated `reduceCatalogFilters` and `reduceEntityFilters` as these helper functions are used internally and provides low external value.
+- 2d339b5f2c: Deprecated `useEntityFromUrl` and the `useEntityCompoundName` hooks as these have very low utility value.
+- 96b8ae9a9e: Deprecated the `EntityTypeReturn` type and inlined the return type to `useEntityTypeFilter` as the type and function name does not align
+- d4f67fa728: Deprecated the `useOwnedEntities` hook which is replaced by the IdentityAPI.
+  Deprecated the `useOwnUser` hook due to low external value.
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/integration@0.7.5
+  - @backstage/plugin-permission-react@0.3.2
+
 ## 0.6.15
 
 ### Patch Changes

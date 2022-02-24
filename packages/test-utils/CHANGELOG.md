@@ -1,5 +1,14 @@
 # @backstage/test-utils
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/core-app-api@0.5.4
+  - @backstage/plugin-permission-react@0.3.2
+
 ## 0.2.5
 
 ### Patch Changes

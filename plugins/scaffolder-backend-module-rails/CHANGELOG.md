@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.3.2
+
+### Patch Changes
+
+- 0f37cdef19: Migrated over from the deprecated `spec.metadata` to `spec.templateInfo` for the `name` and the `baseUrl` of the template.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-scaffolder-backend@0.17.0
+  - @backstage/integration@0.7.5
+
 ## 0.3.1
 
 ### Patch Changes

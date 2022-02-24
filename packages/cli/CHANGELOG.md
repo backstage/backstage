@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.14.1
+
+### Patch Changes
+
+- 5cc7f48400: Fixed a bug in the built-in Jest configuration that prevented it from identifying packages that had migrated to using the new package scripts to run tests.
+- 49ae6c9573: chore(deps-dev): bump `@types/rollup-plugin-postcss` from 2.0.1 to 3.1.4
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- d2e9d2a34f: chore(deps): bump `@hot-loader/react-dom` from 16.13.0 to 17.0.2
+- c2f3a548cf: Fix building of backends with `repo build --all`, where it would previously only work if the build was executed within the backend package.
+- 3d7ed5377a: Ignore setupTests and the file inside ./dev folder recursively. Eslint
+  can not resolve relative paths as we defined in the rule import/no-extraneous-dependencies, and it does not apply this rule.
+
+  A downside to use a recursive definition would be to checking all `dev` folders, which might not be wanted. Ensure you don't use
+  the `dev` folder out of scope (must be used for dev. env. only)
+
+- Updated dependencies
+  - @backstage/config-loader@0.9.6
+
 ## 0.14.0
 
 ### Minor Changes

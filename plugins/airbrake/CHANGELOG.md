@@ -1,5 +1,21 @@
 # @backstage/plugin-airbrake
 
+## 0.3.0
+
+### Minor Changes
+
+- da78e79a94: This marks the first release where the Airbrake plugin is useable. Airbrake frontend and Airbrake backend work with each other. Currently just a summary of the latest Airbrakes is shown on Backstage.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/dev-utils@0.2.23
+  - @backstage/test-utils@0.2.6
+
 ## 0.2.0
 
 ### Minor Changes

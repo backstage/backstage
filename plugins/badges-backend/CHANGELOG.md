@@ -1,5 +1,15 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.21
+
+### Patch Changes
+
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+
 ## 0.1.20
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/backend-tasks
 
+## 0.1.9
+
+### Patch Changes
+
+- dc97845422: Only output janitor logs when actually timing out tasks
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+
 ## 0.1.8
 
 ### Patch Changes

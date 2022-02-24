@@ -1,5 +1,17 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.7
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-tech-insights-node@0.2.5
+
 ## 0.2.6
 
 ### Patch Changes

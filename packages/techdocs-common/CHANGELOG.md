@@ -1,5 +1,16 @@
 # @backstage/techdocs-common
 
+## 0.11.10
+
+### Patch Changes
+
+- 209fd128e6: Updated usage of `github:` location types in docs to use `url:` instead.
+- 13ef228d03: Clean up the API interface for TechDocs common library.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/integration@0.7.5
+
 ## 0.11.9
 
 ### Patch Changes

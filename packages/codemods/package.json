@@ -34,7 +34,7 @@
     "backstage-codemods": "bin/backstage-codemods"
   },
   "dependencies": {
-    "@backstage/cli-common": "0.1.7",
+    "@backstage/cli-common": "^0.1.8",
     "@backstage/core-app-api": "*",
     "@backstage/core-components": "*",
     "@backstage/core-plugin-api": "*",

@@ -1,5 +1,18 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.31
+
+### Patch Changes
+
+- 209fd128e6: The removed `'github'` catalog location type no longer triggers a GitHub integration configuration lookup.
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/integration@0.7.5
+  - @backstage/integration-react@0.1.23
+
 ## 0.1.30
 
 ### Patch Changes
