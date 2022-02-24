@@ -76,11 +76,6 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public @deprecated
-export type AnyAnalyticsContext = {
-  [param in string]: string | boolean | number | undefined;
-};
-
 // @public
 export type AnyApiFactory = ApiFactory<
   unknown,
