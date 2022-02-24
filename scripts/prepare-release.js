@@ -95,7 +95,7 @@ async function updatePatchVersions() {
       const deps = packageJson[depType];
       for (const depName of Object.keys(deps ?? {})) {
         const currentRange = deps[depName];
-        if (currentRange === '*') {
+        if (currentRange === '*' || currentRange === '') {
           continue;
         }
 
