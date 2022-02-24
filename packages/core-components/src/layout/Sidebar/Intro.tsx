@@ -38,7 +38,7 @@ export type SidebarIntroClassKey =
   | 'introDismissText'
   | 'introDismissIcon';
 
-const useStyles = ({sidebarConfig}: { sidebarConfig: SidebarConfig }) => 
+const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
   makeStyles<BackstageTheme>(
     theme => {
       return {

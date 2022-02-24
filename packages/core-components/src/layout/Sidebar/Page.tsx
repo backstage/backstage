@@ -25,17 +25,21 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { SidebarConfigContext } from './config';
+import { SidebarConfigContext, SidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export type SidebarPageClassKey = 'root';
 
-const useStyles = ({ isPinned }: { isPinned: boolean }) => {
-  const { sidebarConfig } = useContext(SidebarConfigContext);
-
-  return makeStyles<BackstageTheme>(
+const useStyles = ({
+  isPinned,
+  sidebarConfig,
+}: {
+  isPinned: boolean;
+  sidebarConfig: SidebarConfig;
+}) =>
+  makeStyles<BackstageTheme>(
     theme => {
       return {
         root: {
@@ -63,7 +67,6 @@ const useStyles = ({ isPinned }: { isPinned: boolean }) => {
     },
     { name: 'BackstageSidebarPage' },
   )();
-};
 
 /**
  * Type of `SidebarPinStateContext`
@@ -113,6 +116,7 @@ export function SidebarPage(props: SidebarPageProps) {
   const [isPinned, setIsPinned] = useState(() =>
     LocalStorage.getSidebarPinState(),
   );
+  const { sidebarConfig } = useContext(SidebarConfigContext);
 
   const contentRef = useRef(null);
 
@@ -136,7 +140,7 @@ export function SidebarPage(props: SidebarPageProps) {
 
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
-  const classes = useStyles({ isPinned });
+  const classes = useStyles({ isPinned, sidebarConfig });
 
   return (
     <SidebarPinStateContext.Provider

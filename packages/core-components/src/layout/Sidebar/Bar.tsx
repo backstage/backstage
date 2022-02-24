@@ -28,6 +28,8 @@ import {
   SidebarContext,
   SidebarConfigContext,
   SubmenuConfig,
+  SidebarOptions,
+  SubmenuOptions,
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext, useContent } from './Page';
@@ -84,7 +86,7 @@ const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
       };
     },
     { name: 'BackstageSidebar' },
-  );
+  )
 
 enum State {
   Closed,
@@ -94,13 +96,17 @@ enum State {
 
 /** @public */
 export type SidebarProps = {
-  sidebarConfig?: Partial<SidebarConfig>;
-  submenuConfig?: Partial<SubmenuConfig>;
+  openDelayMs?: number;
+  closeDelayMs?: number;
+  sidebarOptions?: SidebarOptions;
+  submenuOptions?: SubmenuOptions;
   disableExpandOnHover?: boolean;
   children?: React.ReactNode;
 };
 
 export type DesktopSidebarProps = {
+  openDelayMs?: number;
+  closeDelayMs?: number;
   disableExpandOnHover?: boolean;
   children?: React.ReactNode;
 };
@@ -117,10 +123,12 @@ export type DesktopSidebarProps = {
  */
 const DesktopSidebar = (props: DesktopSidebarProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const { defaultOpenDelayMs: openDelayMs, defaultCloseDelayMs: closeDelayMs } =
-    sidebarConfig;
-
-  const { disableExpandOnHover, children } = props;
+  const {
+    openDelayMs = sidebarConfig.defaultOpenDelayMs,
+    closeDelayMs = sidebarConfig.defaultCloseDelayMs,
+    disableExpandOnHover,
+    children,
+  } = props;
 
   const classes = useStyles({ sidebarConfig })();
   const isSmallScreen = useMediaQuery<BackstageTheme>(
@@ -216,20 +224,23 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
  */
 export const Sidebar = (props: SidebarProps) => {
   const sidebarConfig: SidebarConfig = makeSidebarConfig(
-    props.sidebarConfig ?? {},
+    props.sidebarOptions ?? {},
   );
   const submenuConfig: SubmenuConfig = makeSidebarSubmenuConfig(
-    props.submenuConfig ?? {},
-    sidebarConfig,
+    props.submenuOptions ?? {},
   );
-  const { children, disableExpandOnHover } = props;
+  const { children, disableExpandOnHover, openDelayMs, closeDelayMs } = props;
   const { isMobile } = useContext(SidebarPinStateContext);
 
   return isMobile ? (
     <MobileSidebar>{children}</MobileSidebar>
   ) : (
     <SidebarConfigContext.Provider value={{ sidebarConfig, submenuConfig }}>
-      <DesktopSidebar disableExpandOnHover={disableExpandOnHover}>
+      <DesktopSidebar
+        openDelayMs={openDelayMs}
+        closeDelayMs={closeDelayMs}
+        disableExpandOnHover={disableExpandOnHover}
+      >
         {children}
       </DesktopSidebar>
     </SidebarConfigContext.Provider>

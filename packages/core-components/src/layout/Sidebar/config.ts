@@ -20,6 +20,16 @@ const drawerWidthClosed = 72;
 const iconPadding = 24;
 const userBadgePadding = 18;
 
+export type SidebarOptions = {
+  drawerWidthClosed?: number;
+  drawerWidthOpen?: number;
+};
+
+export type SubmenuOptions = {
+  drawerWidthClosed?: number;
+  drawerWidthOpen?: number;
+};
+
 export type SidebarConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
@@ -55,7 +65,7 @@ export const sidebarConfig = {
 };
 
 export const makeSidebarConfig = (
-  customSidebarConfig: Partial<SidebarConfig>,
+  customSidebarConfig: Partial<SidebarOptions>,
 ) => ({
   ...sidebarConfig,
   ...customSidebarConfig,
@@ -78,12 +88,10 @@ export const submenuConfig = {
 };
 
 export const makeSidebarSubmenuConfig = (
-  customSubmenuConfig: Partial<SubmenuConfig>,
-  customSidebarConfig: SidebarConfig,
+  customSubmenuConfig: Partial<SubmenuOptions>,
 ) => ({
   ...submenuConfig,
   ...customSubmenuConfig,
-  defaultOpenDelayMs: customSidebarConfig.defaultOpenDelayMs + 200,
 });
 
 export const SIDEBAR_INTRO_LOCAL_STORAGE =

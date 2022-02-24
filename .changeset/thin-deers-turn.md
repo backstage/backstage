@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-<Sidebar /> now accepts custom configuration options by supplying props sidebarConfig and submenuConfig
+<Sidebar /> now accepts additional props sidebarOptions and submenuOptions to allow further customization
