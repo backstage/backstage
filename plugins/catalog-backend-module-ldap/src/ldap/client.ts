@@ -106,7 +106,7 @@ export class LdapClient {
             reject(new Error(errorString(e)));
           });
 
-          res.on('page', (result, cb) => {
+          res.on('page', (_result, cb) => {
             if (cb) {
               cb();
             }
