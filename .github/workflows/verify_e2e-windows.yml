@@ -20,8 +20,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest]
-        node-version: ['14.18.3', '16.13.2']
+        os: [windows-2019]
+        node-version: [14.x, 16.x]
 
     env:
       CI: true
@@ -42,13 +42,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
-      - name: yarn cache clean
-        run: yarn cache clean
       - name: yarn install
         run: yarn install --frozen-lockfile
 
