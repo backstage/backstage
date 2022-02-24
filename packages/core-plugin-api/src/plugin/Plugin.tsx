@@ -21,7 +21,7 @@ import {
   AnyRoutes,
   AnyExternalRoutes,
   PluginFeatureFlagConfig,
-  PluginNotificationSource,
+  PluginNotificationChannel,
 } from './types';
 import { AnyApiFactory } from '../apis';
 
@@ -47,8 +47,8 @@ export class PluginImpl<
     return this.config.featureFlags?.slice() ?? [];
   }
 
-  getNotificationSources(): Iterable<PluginNotificationSource> {
-    return this.config.notificationSource?.slice() ?? [];
+  getNotificationChannels(): Iterable<PluginNotificationChannel> {
+    return this.config.notificationChannels?.slice() ?? [];
   }
 
   get routes(): Routes {

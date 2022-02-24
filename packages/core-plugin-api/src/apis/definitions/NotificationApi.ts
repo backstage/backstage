@@ -21,7 +21,22 @@ import { EntityRef } from '@backstage/catalog-model';
 export type Notification = {
   kind: string;
   metadata?: {
+    title: string;
+    message: string;
+    uuid: string;
+    timestamp: number; // milliseconds
+    [key: string]: any;
+  };
+  spec?: {
+    // Catalog entity that triggered the notification, if applicable
+    originatingEntityRef?: EntityRef;
+    // Target user/Group entity refs if the notification is not global.
+    // Note that the frontend does not use this for filtering, that should be done
+    // by the channel and backend. This is informational so a user knows why they
+    // received a notification.
     targetEntityRefs?: EntityRef[];
+    icon?: string | JSX.Element; // system or custom icon
+    links?: { url: string; title: string }[]; // example: link notification to a page
     [key: string]: any;
   };
 };
@@ -29,7 +44,6 @@ export type Notification = {
 export type AlertNotification = Notification & {
   kind: 'alert';
   metadata: {
-    message: string;
     severity: 'success' | 'info' | 'warning' | 'error';
   };
 };
@@ -49,6 +63,13 @@ export type NotificationApi = {
    * Observe notifications posted by other parts of the application.
    */
   notification$(): Observable<Notification>;
+
+  /**
+   * Acknowledge last notifaction seen by user
+   */
+  acknowledge(notification: Notification): void;
+
+  getLastAcknowledge(): number | undefined;
 };
 
 /**

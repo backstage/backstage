@@ -25,6 +25,7 @@ import {
   createComponentExtension,
   NotificationApi,
 } from '@backstage/core-plugin-api';
+import { v4 as uuid } from 'uuid';
 
 export const githubActionsPlugin = createPlugin({
   id: 'github-actions',
@@ -39,10 +40,10 @@ export const githubActionsPlugin = createPlugin({
   routes: {
     entityContent: rootRouteRef,
   },
-  notificationSource: [
+  notificationChannels: [
     {
       id: 'github-actions-notification-source',
-      initialize: (notificationApi: NotificationApi) => {
+      initialize: (notificationApi: NotificationApi, _since?: number) => {
         setInterval(async () => {
           // Poll some backend for messages; potentially using a timestamp in the request to only
           // retrieve messages we haven't seen yet. May also pass the Backstage identity to filter
@@ -52,6 +53,9 @@ export const githubActionsPlugin = createPlugin({
               kind: 'alert',
               metadata: {
                 message: 'sample notification',
+                title: 'sample title',
+                uuid: uuid(),
+                timestamp: Date.now(),
                 severity: 'warning',
               },
             },
@@ -66,8 +70,16 @@ export const githubActionsPlugin = createPlugin({
         setInterval(async () => {
           const notifications = await Promise.resolve([
             {
-              kind: 'user',
-              metadata: {},
+              kind: 'tingle',
+              metadata: {
+                message: 'sample user notification',
+                title: 'sample user title',
+                uuid: uuid(),
+                timestamp: Date.now(),
+              },
+              spec: {
+                targetEntityRefs: ['user:default/guest'],
+              },
             },
           ]);
           notifications.forEach(n => notificationApi.post(n));

@@ -23,5 +23,5 @@ export type {
   FeatureFlagsHooks,
   PluginConfig,
   PluginFeatureFlagConfig,
-  PluginNotificationSource,
+  PluginNotificationChannel,
 } from './types';

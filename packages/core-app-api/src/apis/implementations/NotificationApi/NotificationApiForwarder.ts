@@ -17,7 +17,11 @@
 import { Notification, NotificationApi } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { PublishSubject } from '../../../lib/subjects';
+import { StorageApi } from '@backstage/core-plugin-api';
 
+type NotificationStorage = {
+  timestamp: number;
+};
 /**
  * Base implementation for the NotificationApi that simply forwards alerts to consumers.
  *
@@ -25,6 +29,7 @@ import { PublishSubject } from '../../../lib/subjects';
  */
 export class NotificationApiForwarder implements NotificationApi {
   private readonly subject = new PublishSubject<Notification>();
+  constructor(private readonly storageApi: StorageApi) {}
 
   post(notification: Notification) {
     this.subject.next(notification);
@@ -32,5 +37,18 @@ export class NotificationApiForwarder implements NotificationApi {
 
   notification$(): Observable<Notification> {
     return this.subject;
+  }
+
+  acknowledge(notification: Notification): void {
+    if (notification.spec?.targetEntityRefs) {
+      this.storageApi.set('notifications', {
+        timestamp: notification.metadata?.timestamp,
+      });
+    }
+  }
+
+  getLastAcknowledge(): number | undefined {
+    const data = this.storageApi.snapshot<NotificationStorage>('notifications');
+    return data.value?.timestamp;
   }
 }
