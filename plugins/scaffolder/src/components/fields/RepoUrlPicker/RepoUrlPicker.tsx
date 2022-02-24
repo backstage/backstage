@@ -44,6 +44,9 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
+/**
+ * Repo Url Picker
+ */
 export const RepoUrlPicker = (
   props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
 ) => {

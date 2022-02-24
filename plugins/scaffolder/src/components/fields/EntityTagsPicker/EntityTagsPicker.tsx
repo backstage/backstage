@@ -22,22 +22,23 @@ import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { FormControl, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import { FieldProps } from '@rjsf/core';
+import { FieldExtensionComponentProps } from '../../../extensions';
 
+export interface EntityTagsPickerUiOptions {
+  kinds?: string[];
+}
 /**
  * EntityTagsPicker
- * @public
  */
-export const EntityTagsPicker = ({
-  formData,
-  onChange,
-  uiSchema,
-}: FieldProps<string[]>) => {
+export const EntityTagsPicker = (
+  props: FieldExtensionComponentProps<string[], EntityTagsPickerUiOptions>,
+) => {
+  const { formData, onChange, uiSchema } = props;
   const catalogApi = useApi(catalogApiRef);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState(false);
   const tagValidator = makeValidator().isValidTag;
-  const kinds = uiSchema['ui:options']?.kinds as string[];
+  const kinds = uiSchema['ui:options']?.kinds;
 
   const { loading, value: existingTags } = useAsync(async () => {
     const tagsRequest: GetEntitiesRequest = { fields: ['metadata.tags'] };

@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { OwnedEntityPicker } from './OwnedEntityPicker';
+export type { OwnedEntityPickerUiOptions } from './OwnedEntityPicker';
