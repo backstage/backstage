@@ -222,9 +222,9 @@
     tslib "^2.0.0"
 
 "@azure/identity@^2.0.1":
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/@azure/identity/-/identity-2.0.3.tgz#286e7b145b29bee009ef10f3c2900122dcc1c947"
-  integrity sha512-MFW2QS5dWm2U8MDTSm0sHo7pcAQtQtJhKVVcN5wA2ownHzmHluXTGFK4WdFiXzUInhZtqYA5CH+OGHTGs6DTBA==
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/@azure/identity/-/identity-2.0.4.tgz#f5cfde0daf1b9ebaaff3ed6c504f50d7d7c939a5"
+  integrity sha512-ZgFubAsmo7dji63NLPaot6O7pmDfceAUPY57uphSCr0hmRj+Cakqb4SUz5SohCHFtscrhcmejRU903Fowz6iXg==
   dependencies:
     "@azure/abort-controller" "^1.0.0"
     "@azure/core-auth" "^1.3.0"
@@ -5763,12 +5763,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/humanize-duration@^3.18.1", "@types/humanize-duration@^3.25.1":
-  version "3.27.1"
-  resolved "https://registry.npmjs.org/@types/humanize-duration/-/humanize-duration-3.27.1.tgz#f14740d1f585a0a8e3f46359b62fda8b0eaa31e7"
-  integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
-
-"@types/humanize-duration@^3.27.1":
+"@types/humanize-duration@^3.18.1", "@types/humanize-duration@^3.25.1", "@types/humanize-duration@^3.27.1":
   version "3.27.1"
   resolved "https://registry.npmjs.org/@types/humanize-duration/-/humanize-duration-3.27.1.tgz#f14740d1f585a0a8e3f46359b62fda8b0eaa31e7"
   integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
@@ -5937,12 +5932,7 @@
   resolved "https://registry.npmjs.org/@types/lunr/-/lunr-2.3.3.tgz#ec985618fd2712c010f8edab4f1ae7784ad7c583"
   integrity sha512-09sXZZVsB3Ib41U0fC+O1O+4UOZT1bl/e+/QubPxpqDWHNEchvx/DEb1KJMOwq6K3MTNzZFoNSzVdR++o1DVnw==
 
-"@types/luxon@^2.0.4", "@types/luxon@^2.0.5":
-  version "2.0.9"
-  resolved "https://registry.npmjs.org/@types/luxon/-/luxon-2.0.9.tgz#782a0edfa6d699191292c13168bd496cd66b87c6"
-  integrity sha512-ZuzIc7aN+i2ZDMWIiSmMdubR9EMMSTdEzF6R+FckP4p6xdnOYKqknTo/k+xXQvciSXlNGIwA4OPU5X7JIFzYdA==
-
-"@types/luxon@^2.0.9":
+"@types/luxon@^2.0.4", "@types/luxon@^2.0.5", "@types/luxon@^2.0.9":
   version "2.0.9"
   resolved "https://registry.npmjs.org/@types/luxon/-/luxon-2.0.9.tgz#782a0edfa6d699191292c13168bd496cd66b87c6"
   integrity sha512-ZuzIc7aN+i2ZDMWIiSmMdubR9EMMSTdEzF6R+FckP4p6xdnOYKqknTo/k+xXQvciSXlNGIwA4OPU5X7JIFzYdA==
