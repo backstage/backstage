@@ -29,7 +29,6 @@ export interface EntityTagsPickerUiOptions {
 }
 /**
  * EntityTagsPicker
- * @public
  */
 export const EntityTagsPicker = (
   props: FieldExtensionComponentProps<string[], EntityTagsPickerUiOptions>,

@@ -31,6 +31,9 @@ export interface EntityPickerUiOptions {
   allowArbitraryValues?: boolean;
 }
 
+/**
+ * Entity Picker
+ */
 export const EntityPicker = (
   props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,
 ) => {

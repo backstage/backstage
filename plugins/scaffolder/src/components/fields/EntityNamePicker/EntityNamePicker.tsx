@@ -17,6 +17,9 @@ import React from 'react';
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { TextField } from '@material-ui/core';
 
+/**
+ * EntityName Picker
+ */
 export const EntityNamePicker = (
   props: FieldExtensionComponentProps<string>,
 ) => {

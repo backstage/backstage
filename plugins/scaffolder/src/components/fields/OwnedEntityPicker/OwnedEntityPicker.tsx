@@ -29,6 +29,9 @@ export interface OwnedEntityPickerUiOptions {
   defaultKind?: string;
 }
 
+/**
+ * Owned Entity Picker
+ */
 export const OwnedEntityPicker = (
   props: FieldExtensionComponentProps<string, OwnedEntityPickerUiOptions>,
 ) => {

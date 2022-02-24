@@ -21,6 +21,9 @@ export interface OwnerPickerUiOptions {
   allowedKinds?: string[];
 }
 
+/**
+ * Owner Picker
+ */
 export const OwnerPicker = (
   props: FieldExtensionComponentProps<string, OwnerPickerUiOptions>,
 ) => {
