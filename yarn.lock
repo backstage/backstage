@@ -12576,9 +12576,9 @@ fork-ts-checker-webpack-plugin@^6.5.0:
     tapable "^1.0.0"
 
 fork-ts-checker-webpack-plugin@^7.0.0-alpha.8:
-  version "7.1.1"
-  resolved "https://registry.npmjs.org/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-7.1.1.tgz#9806c04f3aecaec8c9e8872806cd1f26d50d92a8"
-  integrity sha512-MgAv1g6+HLXz1iq2AZRfBjDhwBwk1HRSjuhNiMs8ax/3tsFo0rHedKwuE6ok44sJ5F5VgwPZae8gq0wiBAqYRw==
+  version "7.2.1"
+  resolved "https://registry.npmjs.org/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-7.2.1.tgz#c37a538e12730fe11fd725bcf0fce29487950833"
+  integrity sha512-uOfQdg/iQ8iokQ64qcbu8iZb114rOmaKLQFu7hU14/eJaKgsP91cQ7ts7v2iiDld6TzDe84Meksha8/MkWiCyw==
   dependencies:
     "@babel/code-frame" "^7.16.7"
     chalk "^4.1.2"
