@@ -567,4 +567,47 @@ describe('publish:bitbucket', () => {
       'https://bitbucket.org/workspace/repo/src/master',
     );
   });
+
+  it('should call outputs with the correct urls with correct default branch', async () => {
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/workspace/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        defaultBranch: 'main',
+      },
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://bitbucket.org/workspace/cloneurl',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'https://bitbucket.org/workspace/repo/src/main',
+    );
+  });
 });
