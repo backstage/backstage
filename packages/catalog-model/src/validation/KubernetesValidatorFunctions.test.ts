@@ -75,7 +75,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['a/b', false],
     ['a-b', true],
     ['-a-b', false],
-    ['a-b-', false],
+    ['a-b-', true],
     ['a--b', true],
     ['a_b', true],
     ['a.b', true],

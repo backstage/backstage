@@ -49,7 +49,7 @@ export class KubernetesValidatorFunctions {
       typeof value === 'string' &&
       value.length >= 1 &&
       value.length <= 63 &&
-      /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/.test(value)
+      /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9-]$/.test(value)
     );
   }
 
