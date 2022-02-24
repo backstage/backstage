@@ -2,7 +2,7 @@ name: Verify Storybook
 on:
   pull_request:
     paths:
-      - '.github/workflows/chromatic-storybook-test.yml'
+      - '.github/workflows/verify_storybook.yml'
       - 'storybook/**'
       - 'packages/config/src/**'
       - 'packages/theme/src/**'

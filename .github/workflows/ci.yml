@@ -1,5 +1,4 @@
 name: CI
-
 on:
   pull_request:
     paths-ignore:

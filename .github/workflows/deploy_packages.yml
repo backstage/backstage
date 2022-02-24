@@ -1,5 +1,4 @@
 name: Deploy Packages
-
 on:
   workflow_dispatch:
   push:
