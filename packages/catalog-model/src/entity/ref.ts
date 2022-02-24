@@ -121,81 +121,51 @@ export function parseEntityName(
  */
 export function parseEntityRef(
   ref: string | { kind?: string; namespace?: string; name: string },
-  context?: { defaultKind: string; defaultNamespace: string },
-): EntityName;
-/**
- * parseEntityRef with optional Kind.
- *
- * @public
- */
-export function parseEntityRef(
-  ref: string | { kind?: string; namespace?: string; name: string },
-  context?: { defaultKind: string },
-): {
-  kind: string;
-  namespace?: string;
-  name: string;
-};
-/**
- * parseEntityRef with optional Namespace.
- *
- * @public
- */
-export function parseEntityRef(
-  ref: string | { kind?: string; namespace?: string; name: string },
-  context?: { defaultNamespace: string },
-): {
-  kind?: string;
-  namespace: string;
-  name: string;
-};
-/**
- * parseEntityRef with optional Kind and Namespace.
- *
- * @public
- */
-export function parseEntityRef(
-  ref: string | { kind?: string; namespace?: string; name: string },
-  context: {
+  context?: {
     /** The default kind, if none is given in the reference */
     defaultKind?: string;
     /** The default namespace, if none is given in the reference */
     defaultNamespace?: string;
-  } = {},
-): {
-  kind?: string;
-  namespace?: string;
-  name: string;
-} {
+  },
+): EntityName {
   if (!ref) {
     throw new Error(`Entity reference must not be empty`);
   }
 
-  const defaultNamespace = context.defaultNamespace || DEFAULT_NAMESPACE;
+  const defaultKind = context?.defaultKind;
+  const defaultNamespace = context?.defaultNamespace || DEFAULT_NAMESPACE;
+
+  let kind: string | undefined;
+  let namespace: string | undefined;
+  let name: string | undefined;
 
   if (typeof ref === 'string') {
     const parsed = parseRefString(ref);
-    return {
-      kind: parsed.kind ?? context.defaultKind,
-      namespace: parsed.namespace ?? defaultNamespace,
-      name: parsed.name,
-    };
+    kind = parsed.kind ?? defaultKind;
+    namespace = parsed.namespace ?? defaultNamespace;
+    name = parsed.name;
+  } else {
+    kind = ref.kind ?? defaultKind;
+    namespace = ref.namespace ?? defaultNamespace;
+    name = ref.name;
   }
 
-  const { kind, namespace, name } = ref;
-  if (kind === '') {
-    throw new Error('Entity reference kinds must not be empty');
-  } else if (namespace === '') {
-    throw new Error('Entity reference namespaces must not be empty');
+  if (!kind) {
+    const textual = JSON.stringify(ref);
+    throw new Error(
+      `Entity reference ${textual} had missing or empty kind (e.g. did not start with "component:" or similar)`,
+    );
+  } else if (!namespace) {
+    const textual = JSON.stringify(ref);
+    throw new Error(
+      `Entity reference ${textual} had missing or empty namespace`,
+    );
   } else if (!name) {
-    throw new Error('Entity references must contain a name');
+    const textual = JSON.stringify(ref);
+    throw new Error(`Entity reference ${textual} had missing or empty name`);
   }
 
-  return {
-    kind: kind ?? context.defaultKind,
-    namespace: namespace ?? defaultNamespace,
-    name,
-  };
+  return { kind, namespace, name };
 }
 
 /**

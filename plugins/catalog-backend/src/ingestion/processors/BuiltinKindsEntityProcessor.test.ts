@@ -187,7 +187,7 @@ describe('BuiltinKindsEntityProcessor', () => {
       await expect(
         processor.postProcessEntity(entity, location, emit),
       ).rejects.toThrowError(
-        'Entity reference "r" did not specify a kind (e.g. starting with "Component:"), and has no default',
+        'Entity reference "r" had missing or empty kind (e.g. did not start with "component:" or similar)',
       );
     });
 
@@ -360,7 +360,7 @@ describe('BuiltinKindsEntityProcessor', () => {
       await expect(
         processor.postProcessEntity(entity, location, emit),
       ).rejects.toThrowError(
-        'Entity reference "c" did not specify a kind (e.g. starting with "Component:"), and has no default',
+        'Entity reference "c" had missing or empty kind (e.g. did not start with "component:" or similar)',
       );
     });
 

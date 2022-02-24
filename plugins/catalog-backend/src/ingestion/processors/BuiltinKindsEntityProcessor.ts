@@ -106,11 +106,6 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       }
       for (const target of [targets].flat()) {
         const targetRef = parseEntityRef(target, context);
-        if (targetRef.kind === undefined) {
-          throw new Error(
-            `Entity reference "${target}" did not specify a kind (e.g. starting with "Component:"), and has no default`,
-          );
-        }
         emit(
           result.relation({
             source: selfRef,
