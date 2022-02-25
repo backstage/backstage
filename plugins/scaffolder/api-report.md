@@ -418,6 +418,14 @@ export type ScaffolderTaskStatus =
   | 'skipped';
 
 // @public
+export interface ScaffolderUseTemplateSecrets {
+  // @deprecated (undocumented)
+  setSecret: (input: Record<string, string>) => void;
+  // (undocumented)
+  setSecrets: (input: Record<string, string>) => void;
+}
+
+// @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 
 // @public
@@ -443,7 +451,7 @@ export type TemplateListProps = {
       }>
     | undefined;
   group?: {
-    title?: string;
+    title?: React_2.ReactNode;
     titleComponent?: React_2.ReactNode;
     filter: (entity: Entity) => boolean;
   };
@@ -465,8 +473,6 @@ export type TemplateParameterSchema = {
 // @public (undocumented)
 export const TemplateTypePicker: () => JSX.Element | null;
 
-// Warning: (ae-forgotten-export) The symbol "ScaffolderUseTemplateSecrets" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 

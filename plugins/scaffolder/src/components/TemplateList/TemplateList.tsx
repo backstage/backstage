@@ -37,7 +37,8 @@ export type TemplateListProps = {
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
   group?: {
-    title?: string;
+    title?: React.ReactNode;
+    /** @deprecated use title instead, can be a string or a react component */
     titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   };
@@ -55,11 +56,24 @@ export const TemplateList = ({
   const maybeFilteredEntities = group
     ? entities.filter(e => group.filter(e))
     : entities;
-  const title = group ? (
-    group.titleComponent || <ContentHeader title={group.title} />
-  ) : (
-    <ContentHeader title="Other Templates" />
-  );
+
+  const titleComponent: React.ReactNode = (() => {
+    if (group?.titleComponent) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'DEPRECATED: group.titleComponent is now deprecated. Use group.title instead, it can be a string or a react component',
+      );
+      return group?.titleComponent;
+    }
+    if (group && group.title) {
+      if (typeof group.title === 'string') {
+        return <ContentHeader title={group.title} />;
+      }
+      return group.title;
+    }
+
+    return <ContentHeader title="Other Templates" />;
+  })();
 
   if (group && maybeFilteredEntities.length === 0) {
     return null;
@@ -85,7 +99,7 @@ export const TemplateList = ({
       )}
 
       <Content>
-        {title}
+        {titleComponent}
         <ItemCardGrid>
           {maybeFilteredEntities &&
             maybeFilteredEntities?.length > 0 &&

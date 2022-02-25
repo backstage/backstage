@@ -48,6 +48,10 @@ export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
   );
 };
 
+/**
+ * The return type from the useTemplateSecrets hook.
+ * @public
+ */
 export interface ScaffolderUseTemplateSecrets {
   /** @deprecated use setSecrets instead */
   setSecret: (input: Record<string, string>) => void;
