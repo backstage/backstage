@@ -64,7 +64,7 @@ export const Router = (props: RouterProps) => {
   if (legacyTemplateCardComponent || legacyTaskPageComponent) {
     // eslint-disable-next-line no-console
     console.warn(
-      "DEPRECATION: 'TemplateCardComponent' and 'TaskPageComponent' are deprecated when calling the 'ScaffolderPage'. Use 'components' instead.",
+      "DEPRECATION: 'TemplateCardComponent' and 'TaskPageComponent' are deprecated when calling the 'ScaffolderPage'. Use 'components' prop to pass these component overrides instead.",
     );
   }
 
