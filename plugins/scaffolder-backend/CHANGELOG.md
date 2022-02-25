@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.17.2
+
+### Patch Changes
+
+- `repoUrl` does not have a protocol in `publish:github:pull-request`
+
 ## 0.17.1
 
 ### Patch Changes
