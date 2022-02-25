@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Location, Path } from 'history';
-import { isExternalLink, isLocationMatch } from './utils';
+import { isLocationMatch } from './utils';
 
 describe('isLocationMatching', () => {
   let currentLocation: Location;
