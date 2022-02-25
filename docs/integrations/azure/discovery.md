@@ -12,7 +12,7 @@ DevOps organization and register entities matching the configured path. This can
 be useful as an alternative to static locations or manually adding things to the
 catalog.
 
-To use the discovery processor, you'll need a GitHub integration
+To use the discovery processor, you'll need a Azure integration
 [set up](locations.md) with a `AZURE_TOKEN`. Then you can add a location target
 to the catalog configuration:
 
