@@ -6,6 +6,7 @@ Added some deprecations as follows:
 
 - **DEPRECATED**: `TemplateCardComponent` and `TaskPageComponent` props have been deprecated, and moved to a `components` prop instead. You can pass them in through there instead.
 - **DEPRECATED**: `TemplateList` and `TemplateListProps` has been deprecated. Please use the `TemplateCard` to create your own list component instead.
+- **DEPRECATED**: `setSecret` has been deprecated in favour of `setSecrets` when calling `useTemplateSecrets`
 
 Other notable changes:
 

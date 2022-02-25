@@ -465,10 +465,10 @@ export type TemplateParameterSchema = {
 // @public (undocumented)
 export const TemplateTypePicker: () => JSX.Element | null;
 
+// Warning: (ae-forgotten-export) The symbol "ScaffolderUseTemplateSecrets" needs to be exported by the entry point index.d.ts
+//
 // @public
-export const useTemplateSecrets: () => {
-  setSecret: (input: Record<string, string>) => void;
-};
+export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 
 // Warnings were encountered during analysis:
 //
