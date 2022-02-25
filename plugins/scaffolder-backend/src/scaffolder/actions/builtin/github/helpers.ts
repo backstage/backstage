@@ -22,8 +22,6 @@ import {
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { parseRepoUrl } from '../publish/util';
 
-const SECOND = 1000;
-
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
@@ -34,7 +32,7 @@ export async function getOctokitOptions(options: {
   const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
   const requestOptions = {
     // set timeout to 60 seconds
-    timeout: 60 * SECOND,
+    timeout: 60_000,
   };
 
   if (!owner) {
