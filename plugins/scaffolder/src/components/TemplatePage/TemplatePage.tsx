@@ -24,7 +24,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
 import { SecretsContext } from '../secrets/SecretsContext';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef, scaffolderTaskRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 import {
@@ -117,7 +117,8 @@ export const TemplatePage = ({
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
   const navigate = useNavigate();
-  const rootLink = useRouteRef(rootRouteRef);
+  const scaffolderTaskRoute = useRouteRef(scaffolderTaskRouteRef);
+  const rootRoute = useRouteRef(rootRouteRef);
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState<Record<string, any>>(() => {
     const query = qs.parse(window.location.search, {
@@ -158,16 +159,16 @@ export const TemplatePage = ({
     // extra back/forward slots.
     window.history?.replaceState(null, document.title, newUrl);
 
-    navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId }));
+    navigate(scaffolderTaskRoute({ taskId }));
   };
 
   if (error) {
     errorApi.post(new Error(`Failed to load template, ${error}`));
-    return <Navigate to={rootLink()} />;
+    return <Navigate to={rootRoute()} />;
   }
   if (!loading && !schema) {
     errorApi.post(new Error('Template was not found.'));
-    return <Navigate to={rootLink()} />;
+    return <Navigate to={rootRoute()} />;
   }
 
   const customFieldComponents = Object.fromEntries(

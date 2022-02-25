@@ -41,8 +41,7 @@ import {
 } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
-import { generatePath } from 'react-router';
-import { rootRouteRef } from '../../routes';
+import { selectedTemplateRouteRef } from '../../routes';
 import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
 
 import { Button, ItemCardHeader } from '@backstage/core-components';
@@ -141,7 +140,7 @@ const DeprecationWarning = () => {
 
 export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
-  const rootLink = useRouteRef(rootRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const templateProps = getTemplateCardProps(template);
   const ownedByRelations = getEntityRelations(
     template as Entity,
@@ -152,9 +151,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
-  const href = generatePath(`${rootLink()}/templates/:templateName`, {
-    templateName: templateProps.name,
-  });
+  const href = templateRoute({ templateName: templateProps.name });
 
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const sourceLocation = getEntitySourceLocation(template, scmIntegrationsApi);
