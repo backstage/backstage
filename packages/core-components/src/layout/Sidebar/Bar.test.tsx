@@ -48,7 +48,6 @@ async function renderScalableSidebar() {
             <SidebarSubmenuItem title="Tools" to="/1" icon={BuildRoundedIcon} />
             <SidebarSubmenuItem
               title="Misc"
-              to="/6"
               icon={AcUnitIcon}
               dropdownItems={[
                 {

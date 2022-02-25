@@ -31,6 +31,7 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import classnames from 'classnames';
 import React, {
+  HTMLAttributeAnchorTarget,
   ComponentProps,
   ComponentType,
   forwardRef,
@@ -207,7 +208,8 @@ const useStyles = makeStyles<BackstageTheme>(
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
- * The reeveluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
+ * The reeveluation is only triggered, if the `locationPathname` changes,
+ * as `useElementFilter` uses memorization.
  *
  * @param submenu SidebarSubmenu component
  * @param location Location
@@ -220,28 +222,23 @@ const useLocationMatch = (
   useElementFilter(
     submenu.props.children,
     elements => {
-      let active = false;
-      elements
+      const active = elements
         .getElements()
-        .forEach(
+        .some(
           ({
             props: { to, dropdownItems },
           }: {
             props: Partial<SidebarSubmenuItemProps>;
           }) => {
-            if (!active) {
-              if (dropdownItems?.length) {
-                dropdownItems.forEach(
-                  ({ to: _to }) =>
-                    (active =
-                      active || isLocationMatch(location, resolvePath(_to))),
-                );
-                return;
-              }
-              if (to) {
-                active = isLocationMatch(location, resolvePath(to));
-              }
+            if (dropdownItems?.length) {
+              return dropdownItems.some(({ to: _to }) =>
+                _to ? isLocationMatch(location, resolvePath(_to)) : false,
+              );
             }
+            if (to) {
+              return isLocationMatch(location, resolvePath(to));
+            }
+            return false;
           },
         );
       return active;
@@ -251,42 +248,45 @@ const useLocationMatch = (
 
 type SidebarItemBaseProps = {
   icon: IconComponent;
+  id?: string;
   text?: string;
   hasNotifications?: boolean;
   disableHighlight?: boolean;
   className?: string;
+  children?: ReactNode;
+  onClick?: (ev: React.MouseEvent) => void;
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
-  onClick: (ev: React.MouseEvent) => void;
-  children?: ReactNode;
+  to?: never;
+  href?: never;
 };
 
-type SidebarItemLinkProps = SidebarItemBaseProps & {
+type SidebarItemInternalLinkProps = SidebarItemBaseProps & {
   to: string;
-  onClick?: (ev: React.MouseEvent) => void;
+  href?: never;
 } & NavLinkProps;
 
-type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
-  to?: string;
-  onClick?: (ev: React.MouseEvent) => void;
-  children: ReactNode;
-};
+type SidebarItemExternalLinkProps = SidebarItemBaseProps & {
+  to?: never;
+  href: string;
+  target?: HTMLAttributeAnchorTarget;
+} & NavLinkProps;
 
 /**
- * SidebarItem with 'to' property will be a clickable link.
+ * SidebarItem with 'to' property will be a clickable internal link.
  * SidebarItem with 'onClick' property and without 'to' property will be a clickable button.
  * SidebarItem which wraps a SidebarSubmenu will be a clickable button which opens a submenu.
  */
 type SidebarItemProps =
-  | SidebarItemLinkProps
-  | SidebarItemButtonProps
-  | SidebarItemWithSubmenuProps;
+  | SidebarItemInternalLinkProps
+  | SidebarItemExternalLinkProps
+  | SidebarItemButtonProps;
 
 function isButtonItem(
   props: SidebarItemProps,
 ): props is SidebarItemButtonProps {
-  return (props as SidebarItemLinkProps).to === undefined;
+  return typeof props.to === 'undefined' && typeof props.href === 'undefined';
 }
 
 const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
@@ -354,6 +354,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     onClick,
     children,
     className,
+    to,
     ...navLinkProps
   } = props;
   const classes = useStyles();
@@ -408,14 +409,25 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       </button>
     );
   }
-
+  if (props.href) {
+    return (
+      <a
+        {...childProps}
+        ref={ref}
+        aria-label={text ?? props.href}
+        {...navLinkProps}
+      >
+        {content}
+      </a>
+    );
+  }
   return (
     <WorkaroundNavLink
       {...childProps}
       activeClassName={classes.selected}
-      to={props.to ? props.to : ''}
+      to={props.to ?? ''}
       ref={ref}
-      aria-label={text ? text : props.to}
+      aria-label={text ?? props.to}
       {...navLinkProps}
     >
       {content}
