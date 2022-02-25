@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { Entity } from '@backstage/catalog-model';
+
 import { makeStyles } from '@material-ui/core';
 import {
   Content,
@@ -37,18 +37,13 @@ import { CategoryPicker } from './CategoryPicker';
 import { RegisterExistingButton } from './RegisterExistingButton';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { registerComponentRouteRef } from '../../routes';
-
-export type TemplateListGroup = {
-  title?: string;
-  titleComponent?: React.ReactNode;
-  filter: (entity: Entity) => boolean;
-};
+import { TemplateGroupFilter, TemplateGroups } from './TemplateGroups';
 
 export type TemplateListPageProps = {
   TemplateCardComponent?: React.ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
-  groups?: TemplateListGroup[];
+  groups?: TemplateGroupFilter[];
 };
 
 const useStyles = makeStyles(theme => ({
@@ -60,20 +55,22 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const defaultGroup: TemplateGroupFilter = {
+  title: 'All Templates',
+  filter: () => true,
+};
+
 export const TemplateListPage = (props: TemplateListPageProps) => {
   const styles = useStyles();
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
+  const { TemplateCardComponent, groups = [defaultGroup] } = props;
 
   return (
     <EntityListProvider>
       <Page themeId="home">
         <Header
           pageTitleOverride="Create a New Component"
-          title={
-            <>
-              Create a New Component <Lifecycle shorthand />
-            </>
-          }
+          title="Create a New Component"
           subtitle="Create new software components using standard templates"
         />
         <Content>
@@ -101,19 +98,10 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
               <EntityTagPicker />
             </div>
             <div>
-              {/* {groups &&
-                groups.map((group, index) => (
-                  <TemplateList
-                    key={index}
-                    TemplateCardComponent={TemplateCardComponent}
-                    group={group}
-                  />
-                ))}
-              <TemplateList
-                key="other"
+              <TemplateGroups
+                groups={groups}
                 TemplateCardComponent={TemplateCardComponent}
-                group={otherTemplatesGroup} 
-              />*/}
+              />
             </div>
           </div>
         </Content>

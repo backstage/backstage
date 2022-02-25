@@ -29,13 +29,17 @@ import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 export type RouterProps = {
-  TemplateCardComponent?: React.ComponentType<{
-    template: TemplateEntityV1beta3;
-  }>;
+  components: {
+    TemplateCardComponent?: React.ComponentType<{
+      template: TemplateEntityV1beta3;
+    }>;
+    TaskPageComponent?: React.ComponentType<{}>;
+  };
 };
 
 export const Router = (props: PropsWithChildren<RouterProps>) => {
-  const { TemplateCardComponent } = props;
+  const { components: { TaskPageComponent, TemplateCardComponent } = {} } =
+    props;
 
   const outlet = useOutlet() || props.children;
 
