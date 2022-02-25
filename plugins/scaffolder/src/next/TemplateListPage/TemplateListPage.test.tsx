@@ -71,7 +71,7 @@ describe('TemplateListPage', () => {
     expect(getByRole('menuitem', { name: 'Starred' })).toBeInTheDocument();
   });
 
-  it('should render the category picker', () => {
+  it('should render the category picker', async () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -90,5 +90,39 @@ describe('TemplateListPage', () => {
     );
 
     expect(getByText('Categories')).toBeInTheDocument();
+  });
+
+  it('should render the EntityTag picker', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            catalogApiRef,
+            {
+              getEntities: async () => ({
+                items: [
+                  {
+                    apiVersion: 'scaffolder.backstage.io/v1beta3',
+                    kind: 'Template',
+                    metadata: { name: 'blob', tags: ['blob'] },
+                  },
+                ],
+              }),
+            },
+          ],
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <TemplateListPage />
+      </TestApiProvider>,
+    );
+
+    expect(getByText('Tags')).toBeInTheDocument();
   });
 });
