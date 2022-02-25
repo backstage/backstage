@@ -25,6 +25,9 @@ export type { SidebarSubmenuProps } from './SidebarSubmenu';
 export type {
   SidebarSubmenuItemProps,
   SidebarSubmenuItemDropdownItem,
+  SidebarSubmenuInternalLink,
+  SidebarSubmenuExternalLink,
+  SidebarSubmenuDropdownProps,
 } from './SidebarSubmenuItem';
 export type { SidebarClassKey, SidebarProps } from './Bar';
 export {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext, useState } from 'react';
+import React, { HTMLAttributeAnchorTarget, useContext, useState } from 'react';
 import {
   NavLink,
   resolvePath,
@@ -87,31 +87,79 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 /**
  * Clickable item displayed when submenu item is clicked.
- * title: Text content of item
- * to: Path to navigate to when item is clicked
+ * It can be an internal or external link.
  *
  * @public
  */
-export type SidebarSubmenuItemDropdownItem = {
+export type SidebarSubmenuItemDropdownItem =
+  | SidebarSubmenuInternalLink
+  | SidebarSubmenuExternalLink;
+
+/**
+ * Clickable item displayed when submenu item is clicked.
+ * It can be an internal or external link.
+ *
+ * @public
+ *
+ * to: internal relative path to navigate to when item is clicked
+ */
+export type SidebarSubmenuInternalLink = {
   title: string;
+  icon?: IconComponent;
   to: string;
+  href?: never;
+  target?: never;
+  dropdownItems?: never;
 };
+
+/**
+ * Clickable item displayed when submenu item is clicked.
+ * It can be an internal or external link.
+ *
+ * @public
+ *
+ */
+export type SidebarSubmenuExternalLink = {
+  title: string;
+  icon?: IconComponent;
+  href: string;
+  target?: HTMLAttributeAnchorTarget;
+  to?: never;
+  dropdownItems?: never;
+};
+
+/**
+ * Render a drop-down menu.
+ *
+ * @public
+ *
+ * dropdownItems: items to be displayed once the component is clicked
+ */
+export type SidebarSubmenuDropdownProps = {
+  title: string;
+  icon?: IconComponent;
+  dropdownItems: SidebarSubmenuItemDropdownItem[];
+  href?: never;
+  target?: never;
+  to?: never;
+};
+
 /**
  * Holds submenu item content.
  *
  * title: Text content of submenu item
  * to: Path to navigate to when item is clicked
+ * href: External url to navigate to when item is clicked
+ * target: Where to display the external url
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
  *
  * @public
  */
-export type SidebarSubmenuItemProps = {
-  title: string;
-  to: string;
-  icon: IconComponent;
-  dropdownItems?: SidebarSubmenuItemDropdownItem[];
-};
+export type SidebarSubmenuItemProps =
+  | SidebarSubmenuInternalLink
+  | SidebarSubmenuExternalLink
+  | SidebarSubmenuDropdownProps;
 
 /**
  * Item used inside a submenu within the sidebar.
@@ -119,15 +167,15 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, to, icon: Icon, dropdownItems } = props;
+  const { title, to, href, target, icon: Icon, dropdownItems } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };
-  const toLocation = useResolvedPath(to);
+  const toLocation = useResolvedPath(to || '/');
   const currentLocation = useLocation();
-  let isActive = isLocationMatch(currentLocation, toLocation);
+  let isActive = to ? isLocationMatch(currentLocation, toLocation) : false;
 
   const [showDropDown, setShowDropDown] = useState(false);
   const handleClickDropdown = () => {
@@ -135,9 +183,12 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
-      const resolvedPath = resolvePath(item.to);
-      isActive = isLocationMatch(currentLocation, resolvedPath);
-      return isActive;
+      if (item.to) {
+        const resolvedPath = resolvePath(item.to);
+        isActive = isLocationMatch(currentLocation, resolvedPath);
+        return isActive;
+      }
+      return false;
     });
     return (
       <div className={classes.itemContainer}>
@@ -149,7 +200,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             isActive ? classes.selected : undefined,
           )}
         >
-          <Icon fontSize="small" />
+          {Icon && <Icon fontSize="small" />}
           <Typography variant="subtitle1" className={classes.label}>
             {title}
           </Typography>
@@ -159,17 +210,18 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             <ArrowDropDownIcon className={classes.dropdownArrow} />
           )}
         </button>
-        {dropdownItems && showDropDown && (
+        {showDropDown && (
           <div className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
               <Link
-                component={NavLink}
-                to={object.to}
                 underline="none"
                 className={classes.dropdownItem}
                 onClick={closeSubmenu}
                 onTouchStart={e => e.stopPropagation()}
                 key={key}
+                {...(object.href
+                  ? { href: object.href, target: object.target }
+                  : { component: NavLink, to: object.to })}
               >
                 <Typography className={classes.textContent}>
                   {object.title}
@@ -185,8 +237,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   return (
     <div className={classes.itemContainer}>
       <Link
-        component={NavLink}
-        to={to}
         underline="none"
         className={classnames(
           classes.item,
@@ -194,8 +244,9 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
         )}
         onClick={closeSubmenu}
         onTouchStart={e => e.stopPropagation()}
+        {...(href ? { href, target } : { component: NavLink, to })}
       >
-        <Icon fontSize="small" />
+        {Icon && <Icon fontSize="small" />}
         <Typography variant="subtitle1" className={classes.label}>
           {title}
         </Typography>
