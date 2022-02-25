@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 import React, { useContext, useState } from 'react';
-import {
-  NavLink,
-  resolvePath,
-  useLocation,
-  useResolvedPath,
-} from 'react-router-dom';
+import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+import { Link } from '../../components/Link';
 import { IconComponent } from '@backstage/core-plugin-api';
 import classnames from 'classnames';
 import { BackstageTheme } from '@backstage/theme';
@@ -30,8 +25,6 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
-import { Link as BackstageLink } from '../../components/Link';
-import { isExternalLink } from './utils';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   item: {
@@ -135,7 +128,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const handleClickDropdown = () => {
     setShowDropDown(!showDropDown);
   };
-
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
@@ -166,7 +158,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           <div className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
               <Link
-                component={isExternalLink(object.to) ? BackstageLink : NavLink}
                 to={object.to}
                 underline="none"
                 className={classes.dropdownItem}
@@ -188,7 +179,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   return (
     <div className={classes.itemContainer}>
       <Link
-        component={isExternalLink(to) ? BackstageLink : NavLink}
         to={to}
         underline="none"
         className={classnames(

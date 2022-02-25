@@ -96,15 +96,3 @@ describe('isLocationMatching', () => {
     expect(isLocationMatch(currentLocation, toLocation)).toBe(true);
   });
 });
-
-describe('isExternalLink', () => {
-  beforeEach(() => expect.hasAssertions());
-
-  it('should return true if provided with an external link', () => {
-    expect(isExternalLink('https://backstage.io/')).toEqual(true);
-  });
-
-  it('should return false if provided with a relative link', () => {
-    expect(isExternalLink('catalog')).toEqual(false);
-  });
-});
