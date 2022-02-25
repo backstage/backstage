@@ -239,6 +239,7 @@ const NO_WARNING_PACKAGES = [
   'plugins/tech-insights-backend-module-jsonfc',
   'plugins/tech-insights-common',
   'plugins/tech-insights-node',
+  'plugins/techdocs',
   'plugins/todo',
   'plugins/todo-backend',
 ];
