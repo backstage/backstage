@@ -22,6 +22,8 @@ import {
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { parseRepoUrl } from '../publish/util';
 
+const DEFAULT_TIMEOUT_MS = 60_000;
+
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
@@ -30,6 +32,11 @@ export async function getOctokitOptions(options: {
 }): Promise<OctokitOptions> {
   const { integrations, credentialsProvider, repoUrl, token } = options;
   const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
+
+  const requestOptions = {
+    // set timeout to 60 seconds
+    timeout: DEFAULT_TIMEOUT_MS,
+  };
 
   if (!owner) {
     throw new InputError(`No owner provided for repo ${repoUrl}`);
@@ -47,6 +54,7 @@ export async function getOctokitOptions(options: {
       auth: token,
       baseUrl: integrationConfig.apiBaseUrl,
       previews: ['nebula-preview'],
+      request: requestOptions,
     };
   }
 
