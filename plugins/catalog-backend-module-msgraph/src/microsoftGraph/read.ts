@@ -85,7 +85,7 @@ export async function readMicrosoftGraphUsers(
   client: MicrosoftGraphClient,
   options: {
     userFilter?: string;
-    userExpand?: string[];
+    userExpand?: string;
     transformer?: UserTransformer;
     logger: Logger;
   },
@@ -137,6 +137,7 @@ export async function readMicrosoftGraphUsers(
 export async function readMicrosoftGraphUsersInGroups(
   client: MicrosoftGraphClient,
   options: {
+    userExpand?: string;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     transformer?: UserTransformer;
@@ -186,7 +187,9 @@ export async function readMicrosoftGraphUsersInGroups(
         let user;
         let userPhoto;
         try {
-          user = await client.getUserProfile(userId);
+          user = await client.getUserProfile(userId, {
+            expand: options.userExpand,
+          });
         } catch (e) {
           options.logger.warn(`Unable to load user for ${userId}`);
         }
@@ -506,7 +509,7 @@ export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
   options: {
-    userExpand?: string[];
+    userExpand?: string;
     userFilter?: string;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
