@@ -42,6 +42,7 @@ import {
   catalogGraphPlugin,
   EntityCatalogGraphCard,
 } from '../src';
+import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 type DataRelation = [string, string, string];
 type DataEntity = [string, string, DataRelation[]];
@@ -167,6 +168,12 @@ createDevApp()
     ),
   })
   .addPage({
+    path: '/catalog-graph',
     element: <CatalogGraphPage />,
+  })
+  .addPage({
+    path: '/catalog/:kind/:namespace/:name',
+    element: <CatalogEntityPage />,
+    title: 'MockComponent',
   })
   .render();
