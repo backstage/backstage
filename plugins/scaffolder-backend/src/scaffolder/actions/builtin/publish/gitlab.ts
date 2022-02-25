@@ -22,6 +22,12 @@ import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
 
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to GitLab.
+ *
+ * @public
+ */
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;

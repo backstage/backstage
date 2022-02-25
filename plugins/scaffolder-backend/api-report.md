@@ -33,9 +33,7 @@ import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "ActionContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ActionContext<Input extends JsonObject> = {
   baseUrl?: string;
   logger: Logger_2;
@@ -73,9 +71,7 @@ export interface CreateBuiltInActionsOptions {
   reader: UrlReader;
 }
 
-// Warning: (ae-missing-release-tag) "createCatalogRegisterAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
@@ -91,16 +87,12 @@ export function createCatalogRegisterAction(options: {
     }
 >;
 
-// Warning: (ae-missing-release-tag) "createCatalogWriteAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createCatalogWriteAction(): TemplateAction<{
   filePath?: string | undefined;
   entity: Entity;
 }>;
 
-// Warning: (ae-missing-release-tag) "createDebugLogAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function createDebugLogAction(): TemplateAction<{
   message?: string | undefined;
@@ -109,9 +101,7 @@ export function createDebugLogAction(): TemplateAction<{
 
 export { createFetchCookiecutterAction };
 
-// Warning: (ae-missing-release-tag) "createFetchPlainAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createFetchPlainAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -120,9 +110,7 @@ export function createFetchPlainAction(options: {
   targetPath?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createFetchTemplateAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -136,16 +124,12 @@ export function createFetchTemplateAction(options: {
   cookiecutterCompat?: boolean | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createFilesystemDeleteAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createFilesystemDeleteAction: () => TemplateAction<{
   files: string[];
 }>;
 
-// Warning: (ae-missing-release-tag) "createFilesystemRenameAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createFilesystemRenameAction: () => TemplateAction<{
   files: Array<{
     from: string;
@@ -154,9 +138,7 @@ export const createFilesystemRenameAction: () => TemplateAction<{
   }>;
 }>;
 
-// Warning: (ae-missing-release-tag) "createGithubActionsDispatchAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrations;
   githubCredentialsProvider?: GithubCredentialsProvider;
@@ -172,9 +154,29 @@ export function createGithubActionsDispatchAction(options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createGithubWebhookAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
+export interface CreateGithubPullRequestActionOptions {
+  // (undocumented)
+  clientFactory?: (
+    input: CreateGithubPullRequestClientFactoryInput,
+  ) => Promise<OctokitWithPullRequestPluginClient>;
+  // (undocumented)
+  githubCredentialsProvider?: GithubCredentialsProvider;
+  // (undocumented)
+  integrations: ScmIntegrationRegistry;
+}
+
+// @public (undocumented)
+export type CreateGithubPullRequestClientFactoryInput = {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+  host: string;
+  owner: string;
+  repo: string;
+  token?: string;
+};
+
+// @public
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
@@ -190,9 +192,7 @@ export function createGithubWebhookAction(options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createPublishAzureAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -204,9 +204,7 @@ export function createPublishAzureAction(options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createPublishBitbucketAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -220,16 +218,12 @@ export function createPublishBitbucketAction(options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createPublishFileAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function createPublishFileAction(): TemplateAction<{
   path: string;
 }>;
 
-// Warning: (ae-missing-release-tag) "createPublishGithubAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -252,10 +246,7 @@ export function createPublishGithubAction(options: {
   topics?: string[] | undefined;
 }>;
 
-// Warning: (ae-forgotten-export) The symbol "CreateGithubPullRequestActionOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createPublishGithubPullRequestAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createPublishGithubPullRequestAction: ({
   integrations,
   githubCredentialsProvider,
@@ -270,9 +261,7 @@ export const createPublishGithubPullRequestAction: ({
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createPublishGitlabAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -284,9 +273,7 @@ export function createPublishGitlabAction(options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createPublishGitlabMergeRequestAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createPublishGitlabMergeRequestAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<{
@@ -299,14 +286,10 @@ export const createPublishGitlabMergeRequestAction: (options: {
   token?: string | undefined;
 }>;
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "createTemplateAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const createTemplateAction: <TInput extends JsonObject>(
   templateAction: TemplateAction<TInput>,
 ) => TemplateAction<TInput>;
@@ -345,8 +328,6 @@ export class DatabaseTaskStore implements TaskStore {
     status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void>;
-  // Warning: (ae-forgotten-export) The symbol "DatabaseTaskStoreOptions" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   static create(options: DatabaseTaskStoreOptions): Promise<DatabaseTaskStore>;
   // (undocumented)
@@ -377,11 +358,14 @@ export class DatabaseTaskStore implements TaskStore {
   }>;
 }
 
+// @public
+export type DatabaseTaskStoreOptions = {
+  database: Knex;
+};
+
 // @public @deprecated
 export type DispatchResult = TaskBrokerDispatchResult;
 
-// Warning: (ae-forgotten-export) The symbol "RunCommandOptions" needs to be exported by the entry point index.d.ts
-//
 // @public
 export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
@@ -419,6 +403,16 @@ export class OctokitProvider {
   ): Promise<OctokitIntegration>;
 }
 
+// @public (undocumented)
+export interface OctokitWithPullRequestPluginClient {
+  // (undocumented)
+  createPullRequest(options: createPullRequest.Options): Promise<{
+    data: {
+      html_url: string;
+    };
+  } | null>;
+}
+
 // @public
 export interface RouterOptions {
   // (undocumented)
@@ -445,6 +439,14 @@ export interface RouterOptions {
 
 // @public @deprecated
 export const runCommand: (options: RunCommandOptions) => Promise<void>;
+
+// @public (undocumented)
+export type RunCommandOptions = {
+  command: string;
+  args: string[];
+  options?: SpawnOptionsWithoutStdio;
+  logStream?: Writable;
+};
 
 // @public (undocumented)
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
@@ -636,8 +638,6 @@ export class TaskWorker {
   start(): void;
 }
 
-// Warning: (ae-missing-release-tag) "TemplateAction" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
@@ -649,9 +649,7 @@ export type TemplateAction<Input extends JsonObject> = {
   handler: (ctx: ActionContext<Input>) => Promise<void>;
 };
 
-// Warning: (ae-missing-release-tag) "TemplateActionRegistry" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class TemplateActionRegistry {
   // (undocumented)
   get(actionId: string): TemplateAction<JsonObject>;
@@ -661,8 +659,6 @@ export class TemplateActionRegistry {
   register<TInput extends JsonObject>(action: TemplateAction<TInput>): void;
 }
 
-// Warning: (ae-missing-release-tag) "TemplateFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 ```

@@ -18,6 +18,10 @@ import { JsonObject } from '@backstage/types';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { TemplateAction } from './types';
 
+/**
+ * Registry of all registered template actions.
+ * @public
+ */
 export class TemplateActionRegistry {
   private readonly actions = new Map<string, TemplateAction<any>>();
 

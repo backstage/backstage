@@ -23,6 +23,10 @@ import { createTemplateAction } from '../../createTemplateAction';
 import { parseRepoUrl } from '../publish/util';
 import { getOctokitOptions } from './helpers';
 
+/**
+ * Creates a new action that dispatches a GitHub Action workflow for a given branch or tag.
+ * @public
+ */
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrations;
   githubCredentialsProvider?: GithubCredentialsProvider;

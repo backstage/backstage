@@ -19,6 +19,10 @@ import { resolveSafeChildPath } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import fs from 'fs-extra';
 
+/**
+ * Creates a new action that allows renames of files and directories in the workspace.
+ * @public
+ */
 export const createFilesystemRenameAction = () => {
   return createTemplateAction<{
     files: Array<{

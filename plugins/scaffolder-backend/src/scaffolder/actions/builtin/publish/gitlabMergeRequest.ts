@@ -24,6 +24,11 @@ import { InputError } from '@backstage/errors';
 import { parseRepoUrl } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
+/**
+ * Create a new action that creates a gitlab merge request.
+ *
+ * @public
+ */
 export const createPublishGitlabMergeRequestAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
