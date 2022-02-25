@@ -19,6 +19,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
 import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
+import LinkIcon from '@material-ui/icons/Link';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import CloudQueueIcon from '@material-ui/icons/CloudQueue';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
@@ -85,7 +86,6 @@ export const SampleScalableSidebar = () => (
             <SidebarSubmenuItem title="Components" to="/3" icon={AppsIcon} />
             <SidebarSubmenuItem
               title="Misc"
-              to="/6"
               icon={AcUnitIcon}
               dropdownItems={[
                 {
@@ -96,12 +96,23 @@ export const SampleScalableSidebar = () => (
                   title: 'Lorem Ipsum',
                   to: '/8',
                 },
+                {
+                  title: 'External link',
+                  href: 'https://backstage.io',
+                  target: '_blank',
+                },
               ]}
             />
           </SidebarSubmenu>
         </SidebarItem>
         <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
         <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+        <SidebarSubmenuItem
+          title="External link"
+          href="https://backstage.io"
+          icon={LinkIcon}
+          target="_blank"
+        />
       </SidebarGroup>
       <SidebarDivider />
       <SidebarIntro />
