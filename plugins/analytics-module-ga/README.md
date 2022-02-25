@@ -49,7 +49,7 @@ app:
 
 4. Update CSP in your `app-config.yaml`:
 
-The following is the minimul content security policy required to load scripts from GA.
+The following is the minimal content security policy required to load scripts from GA.
 
 ```yaml
 backend:
