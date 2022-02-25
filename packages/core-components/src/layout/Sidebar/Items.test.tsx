@@ -19,6 +19,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { createEvent, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import HomeIcon from '@material-ui/icons/Home';
+import LinkIcon from '@material-ui/icons/Link';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
 import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
@@ -38,6 +39,11 @@ async function renderSidebar() {
     <Sidebar>
       <SidebarSearchField onSearch={() => {}} to="/search" />
       <SidebarItem text="Home" icon={HomeIcon} to="./" />
+      <SidebarItem
+        text="External link"
+        icon={LinkIcon}
+        to="https://backstage.io"
+      />
       <SidebarItem
         icon={CreateComponentIcon}
         onClick={() => {}}
@@ -62,7 +68,13 @@ describe('Items', () => {
       ).toBeInTheDocument();
     });
 
-    it('should render a button when `to` prop is not provided', async () => {
+    it('should render a link when `href` prop provided', async () => {
+      expect(
+        await screen.findByRole('link', { name: 'External link' }),
+      ).toBeInTheDocument();
+    });
+
+    it('should render a button when `to` and `href` props are not provided', async () => {
       expect(
         await screen.findByRole('button', { name: /create/i }),
       ).toBeInTheDocument();
