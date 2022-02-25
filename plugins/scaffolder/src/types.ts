@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, Observable } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
 export type ScaffolderTaskStatus =
@@ -82,7 +82,7 @@ export type LogEvent = {
 
 export interface ScaffolderScaffoldOptions {
   templateRef: string;
-  values: Record<string, any>;
+  values: Record<string, JsonValue>;
   secrets?: Record<string, string>;
 }
 
