@@ -27,19 +27,14 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface TemplateGroupProps {
   templates: TemplateEntityV1beta3[];
-  title?: string;
+  title: React.ReactNode;
   components?: {
-    titleComponent?: React.ReactNode;
     CardComponent?: React.ComponentType<TemplateCardProps>;
   };
 }
 
 export const TemplateGroup = (props: TemplateGroupProps) => {
-  const {
-    templates,
-    title,
-    components: { titleComponent, CardComponent } = {},
-  } = props;
+  const { templates, title, components: { CardComponent } = {} } = props;
 
   if (templates.length === 0) {
     return (
@@ -53,13 +48,14 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
     );
   }
 
-  const titleFragment = titleComponent || <ContentHeader title={title} />;
+  const titleComponent =
+    typeof title === 'string' ? <ContentHeader title={title} /> : title;
 
   const Card = CardComponent || TemplateCard;
 
   return (
     <Content>
-      {titleFragment}
+      {titleComponent}
       <ItemCardGrid>
         {templates.map(template => (
           <Card key={stringifyEntityRef(template)} template={template} />
