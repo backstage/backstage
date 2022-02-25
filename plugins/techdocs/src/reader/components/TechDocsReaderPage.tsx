@@ -50,11 +50,6 @@ export type TechDocsReaderPageProps = {
   children?: TechDocsReaderPageRenderFunction | React.ReactNode;
 };
 
-/**
- * Component responsible for composing a TechDocs reader page experience
- *
- * @public
- */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   const { children } = props;
   const { NotFoundErrorPage } = useApp().getComponents();

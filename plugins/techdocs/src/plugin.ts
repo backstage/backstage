@@ -120,22 +120,6 @@ export const TechDocsCustomHome = techdocsPlugin.provide(
 );
 
 /**
- * Component which renders a default documentation landing page.
- *
- * @public
- */
-export const DefaultTechDocsHome = techdocsPlugin.provide(
-  createRoutableExtension({
-    name: 'DefaultTechDocsHome',
-    component: () =>
-      import('./home/components/DefaultTechDocsHome').then(
-        m => m.DefaultTechDocsHome,
-      ),
-    mountPoint: rootRouteRef,
-  }),
-);
-
-/**
  * Responsible for rendering the provided router element
  *
  * @public
@@ -148,5 +132,21 @@ export const TechDocsIndexPage = techdocsPlugin.provide(
         m => m.TechDocsIndexPage,
       ),
     mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * Component responsible for composing a TechDocs reader page experience
+ *
+ * @public
+ */
+export const TechDocsReaderPage = techdocsPlugin.provide(
+  createRoutableExtension({
+    name: 'TechDocsReaderPage',
+    component: () =>
+      import('./reader/components/TechDocsReaderPage').then(
+        m => m.TechDocsReaderPage,
+      ),
+    mountPoint: rootDocsRouteRef,
   }),
 );

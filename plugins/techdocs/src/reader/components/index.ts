@@ -15,7 +15,12 @@
  */
 
 export * from './Reader';
-export * from './TechDocsReaderPage';
+export type {
+  TechDocsReaderPageProps,
+  TechDocsPageRenderFunction,
+  TechDocsReaderPageRenderFunction,
+} from './TechDocsReaderPage';
+export { TechDocsPage } from './TechDocsReaderPage';
 export * from './TechDocsReaderPageHeader';
 export * from './TechDocsStateIndicator';
 
