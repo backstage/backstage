@@ -20,3 +20,12 @@ To apply this change to an existing app, make the following change to `packages/
          result={document}
        />
 ```
+
+The `TechDocsIndexPage` now uses `DefaultTechDocsHome` as fall back if no children is provided as `LegacyTechDocsHome` is marked as deprecated. If you do not use a custom techdocs homepage, you can therefore update your app to the following:
+
+```diff
+-  <Route path="/docs" element={<TechDocsIndexPage />}>
+-    <DefaultTechDocsHome />
+-  </Route>
++  <Route path="/docs" element={<TechDocsIndexPage />} />
+```
