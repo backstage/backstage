@@ -30,9 +30,11 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/core-app-api": "^0.5.2",
     "@backstage/core-components": "^0.8.7",
     "@backstage/core-plugin-api": "^0.6.0",
     "@backstage/theme": "^0.2.14",
+    "@backstage/version-bridge": "^0.1.1",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
@@ -43,7 +45,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.13.1",
-    "@backstage/core-app-api": "^0.5.2",
     "@backstage/dev-utils": "^0.2.20",
     "@backstage/test-utils": "^0.2.4",
     "@testing-library/jest-dom": "^5.10.1",

@@ -20,7 +20,7 @@ import { EntityRef } from '@backstage/catalog-model';
 
 export type Notification = {
   kind: string;
-  metadata?: {
+  metadata: {
     title: string;
     message: string;
     uuid: string;

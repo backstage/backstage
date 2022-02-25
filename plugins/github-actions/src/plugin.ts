@@ -83,7 +83,7 @@ export const githubActionsPlugin = createPlugin({
             },
           ]);
           notifications.forEach(n => notificationApi.post(n));
-        }, 20 * 1000);
+        }, 5 * 1000);
       },
     },
   ],

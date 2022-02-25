@@ -13,22 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useNotifications } from '@backstage/core-app-api';
 import {
   Content,
   Header,
   Page,
   SidebarPinStateContext,
 } from '@backstage/core-components';
+import { List, ListItem, ListItemText } from '@material-ui/core';
 import React, { useContext } from 'react';
 
 export const NotificationsPage = () => {
   const { isMobile } = useContext(SidebarPinStateContext);
+  const notifications = useNotifications();
 
   return (
     <Page themeId="home">
       {!isMobile && <Header title="Notifications" />}
       <Content>
-        <div>Such empty notifications, wow.</div>
+        {notifications.length ? (
+          <List>
+            {notifications.map(notification => (
+              <ListItem key={notification.metadata.uuid}>
+                <ListItemText>{notification.metadata.title}</ListItemText>
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <div>Such empty notifications, wow.</div>
+        )}
       </Content>
     </Page>
   );

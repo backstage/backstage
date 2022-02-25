@@ -33,7 +33,7 @@ export const SidebarNotifications = () => {
     const subscription = notificationApi
       .notification$()
       .subscribe(notification => {
-        if (notification.kind === 'user') {
+        if (notification.spec?.targetEntityRefs?.length) {
           setNotifications(n => n.concat(notification));
         }
       });

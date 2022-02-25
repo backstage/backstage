@@ -81,6 +81,7 @@ import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
 import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
+import { NotificationContextProvider } from './NotificationContext';
 
 type CompatiblePlugin =
   | BackstagePlugin<any, any>
@@ -326,15 +327,17 @@ export class AppManager implements BackstageApp {
         <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider appContext={appContext}>
             <ThemeProvider>
-              <RoutingProvider
-                routePaths={routePaths}
-                routeParents={routeParents}
-                routeObjects={routeObjects}
-                routeBindings={routeBindings}
-                basePath={getBasePath(loadedConfig.api)}
-              >
-                {children}
-              </RoutingProvider>
+              <NotificationContextProvider>
+                <RoutingProvider
+                  routePaths={routePaths}
+                  routeParents={routeParents}
+                  routeObjects={routeObjects}
+                  routeBindings={routeBindings}
+                  basePath={getBasePath(loadedConfig.api)}
+                >
+                  {children}
+                </RoutingProvider>
+              </NotificationContextProvider>
             </ThemeProvider>
           </AppContextProvider>
         </ApiProvider>

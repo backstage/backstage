@@ -26,6 +26,7 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
+import { Notification } from '@backstage/core-plugin-api';
 
 /**
  * Props for the `BootErrorPage` component of {@link AppComponents}.
@@ -332,4 +333,8 @@ export type AppContext = {
    * Get the components registered for various purposes in the app.
    */
   getComponents(): AppComponents;
+};
+
+export type NotificationContext = {
+  getNotifications(): Notification[];
 };
