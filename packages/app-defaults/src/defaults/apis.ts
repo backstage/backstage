@@ -21,16 +21,13 @@ import {
   ErrorAlerter,
   GoogleAuth,
   GithubAuth,
-  OAuth2,
   OktaAuth,
   GitlabAuth,
-  Auth0Auth,
   MicrosoftAuth,
   BitbucketAuth,
   OAuthRequestManager,
   WebStorage,
   UrlPatternDiscovery,
-  SamlAuth,
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
@@ -49,16 +46,12 @@ import {
   oauthRequestApiRef,
   googleAuthApiRef,
   githubAuthApiRef,
-  oauth2ApiRef,
   oktaAuthApiRef,
   gitlabAuthApiRef,
-  auth0AuthApiRef,
   microsoftAuthApiRef,
   storageApiRef,
   configApiRef,
-  samlAuthApiRef,
   oneloginAuthApiRef,
-  oidcAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
 } from '@backstage/core-plugin-api';
@@ -198,46 +191,6 @@ export const apis = [
       }),
   }),
   createApiFactory({
-    api: auth0AuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-      configApi: configApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
-      Auth0Auth.create({
-        discoveryApi,
-        oauthRequestApi,
-        environment: configApi.getOptionalString('auth.environment'),
-      }),
-  }),
-  createApiFactory({
-    api: oauth2ApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-      configApi: configApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
-      OAuth2.create({
-        discoveryApi,
-        oauthRequestApi,
-        environment: configApi.getOptionalString('auth.environment'),
-      }),
-  }),
-  createApiFactory({
-    api: samlAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      configApi: configApiRef,
-    },
-    factory: ({ discoveryApi, configApi }) =>
-      SamlAuth.create({
-        discoveryApi,
-        environment: configApi.getOptionalString('auth.environment'),
-      }),
-  }),
-  createApiFactory({
     api: oneloginAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
@@ -248,25 +201,6 @@ export const apis = [
       OneLoginAuth.create({
         discoveryApi,
         oauthRequestApi,
-        environment: configApi.getOptionalString('auth.environment'),
-      }),
-  }),
-  createApiFactory({
-    api: oidcAuthApiRef,
-    deps: {
-      discoveryApi: discoveryApiRef,
-      oauthRequestApi: oauthRequestApiRef,
-      configApi: configApiRef,
-    },
-    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
-      OAuth2.create({
-        discoveryApi,
-        oauthRequestApi,
-        provider: {
-          id: 'oidc',
-          title: 'Your Identity Provider',
-          icon: () => null,
-        },
         environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
