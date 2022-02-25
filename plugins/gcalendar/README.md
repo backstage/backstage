@@ -1,12 +1,26 @@
-# gcalendar
+# Google calendar plugin
 
-Welcome to the gcalendar plugin!
-
-_This plugin was created through the Backstage CLI_
+Plugin displays events from google calendar
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/gcalendar](http://localhost:3000/gcalendar).
+The plugin exports a `gcalendarApiRef`. Add this to the App's `apis.ts`:
+
+```ts
+import {
+  GCalendarApiClient,
+  gcalendarApiRef,
+} from '@backstage/plugin-gcalendar';
+
+export const apis = [
+  // ...
+  createApiFactory({
+    api: gcalendarApiRef,
+    deps: { authApi: googleAuthApiRef, fetchApi: fetchApiRef },
+    factory: deps => new GCalendarApiClient(deps),
+  }),
+];
+```
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
