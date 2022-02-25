@@ -18,6 +18,7 @@ import React, {
   createContext,
   PropsWithChildren,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -37,9 +38,13 @@ export const NotificationContextProvider = ({
 }: PropsWithChildren<{}>) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const notificationApi = useApi(notificationApiRef);
-  notificationApi.notification$().subscribe(notification => {
-    setNotifications(prev => prev.concat(notification));
-  });
+
+  useEffect(() => {
+    notificationApi.notification$().subscribe(notification => {
+      setNotifications(prev => prev.concat(notification));
+    });
+  }, [notificationApi]);
+
   const value = useMemo(
     () => ({
       getNotifications: () => notifications,
