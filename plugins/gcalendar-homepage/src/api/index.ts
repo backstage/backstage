@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import axios, { AxiosInstance } from 'axios';
-
-import { OAuthApi, createApiRef } from '@backstage/core-plugin-api';
+import { OAuthApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 
 import { GCalendar, GCalendarEvent } from '../components/CalendarCard/types';
+import { ResponseError } from '@backstage/errors';
 
 type Options = {
   authApi: OAuthApi;
+  fetchApi: FetchApi;
 };
 
 export const gcalendarApiRef = createApiRef<GCalendarApiClient>({
@@ -29,43 +29,45 @@ export const gcalendarApiRef = createApiRef<GCalendarApiClient>({
 
 export class GCalendarApiClient {
   private readonly authApi: OAuthApi;
-  private readonly http: AxiosInstance;
+  private readonly fetchApi: FetchApi;
 
   constructor(options: Options) {
     this.authApi = options.authApi;
-    this.http = axios.create({
-      baseURL: 'https://www.googleapis.com/calendar/v3',
-    });
-    this.http.interceptors.request.use(async config => {
-      const token = await this.authApi.getAccessToken();
-      if (!config.headers) {
-        config.headers = {};
-      }
-      config.headers.Authorization = `Bearer ${token}`;
-
-      return config;
-    });
+    this.fetchApi = options.fetchApi;
   }
 
-  public async getCalendars(params?: any): Promise<{ items: GCalendar[] }> {
-    const { data } = await this.http.get('/users/me/calendarList', {
-      params,
-    });
-
-    return data;
-  }
-
-  public async getEvents(
-    calendarId: string,
-    params?: any,
-  ): Promise<{ items: GCalendarEvent[] }> {
-    const { data } = await this.http.get(
-      `/calendars/${encodeURIComponent(calendarId)}/events`,
-      {
-        params,
-      },
+  private async get<T>(
+    path: string,
+    params: { [key in string]: any },
+  ): Promise<T> {
+    const query = new URLSearchParams(params);
+    const url = new URL(
+      `${path}?${query.toString()}`,
+      'https://www.googleapis.com',
     );
+    const token = await this.authApi.getAccessToken();
+    const response = await this.fetchApi.fetch(url.toString(), {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
 
-    return data;
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json() as Promise<T>;
+  }
+
+  public async getCalendars(params?: any) {
+    return this.get<{ items: GCalendar[] }>(
+      '/calendar/v3/users/me/calendarList',
+      params,
+    );
+  }
+
+  public async getEvents(calendarId: string, params?: any) {
+    return this.get<{ items: GCalendarEvent[] }>(
+      `/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+      params,
+    );
   }
 }

@@ -115,7 +115,7 @@ export const CalendarCard = () => {
       }}
     >
       <Box>
-        {(isCalendarLoading || !isInitialized || isEventLoading) && (
+        {(isCalendarLoading || isEventLoading || !isInitialized) && (
           <Box pt={2} pb={2}>
             <Progress variant="query" />
           </Box>

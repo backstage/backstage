@@ -32,6 +32,7 @@ import {
   configApiRef,
   createApiFactory,
   errorApiRef,
+  fetchApiRef,
   githubAuthApiRef,
   googleAuthApiRef,
 } from '@backstage/core-plugin-api';
@@ -50,7 +51,7 @@ export const apis: AnyApiFactory[] = [
 
   createApiFactory({
     api: gcalendarApiRef,
-    deps: { authApi: googleAuthApiRef },
+    deps: { authApi: googleAuthApiRef, fetchApi: fetchApiRef },
     factory: deps => new GCalendarApiClient(deps),
   }),
 

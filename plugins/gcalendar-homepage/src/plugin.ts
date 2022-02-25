@@ -17,6 +17,7 @@ import {
   createApiFactory,
   createComponentExtension,
   createPlugin,
+  fetchApiRef,
   googleAuthApiRef,
 } from '@backstage/core-plugin-api';
 
@@ -31,7 +32,7 @@ export const gcalendarHomepagePlugin = createPlugin({
   apis: [
     createApiFactory({
       api: gcalendarApiRef,
-      deps: { authApi: googleAuthApiRef },
+      deps: { authApi: googleAuthApiRef, fetchApi: fetchApiRef },
       factory(deps) {
         return new GCalendarApiClient(deps);
       },
