@@ -34,6 +34,11 @@ type CustomFilters = DefaultEntityFilters & {
   techdocs?: TechDocsFilter;
 };
 
+/**
+ * Component responsible for updating TechDocs filters
+ *
+ * @public
+ */
 export const TechDocsPicker = () => {
   const { updateFilters } = useEntityList<CustomFilters>();
 

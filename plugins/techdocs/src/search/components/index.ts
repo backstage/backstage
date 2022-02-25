@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
-
-export type DocsTableRow = {
-  entity: Entity;
-  resolved: {
-    docsUrl: string;
-    ownedByRelationsTitle: string;
-    ownedByRelations: EntityName[];
-  };
-};
+export * from './TechDocsSearchResultListItem';
+export * from './TechDocsSearch';

@@ -48,7 +48,7 @@ const singleResult = Promise.resolve({
   ],
 });
 
-describe('<TechDocsPage />', () => {
+describe('<TechDocsSearch />', () => {
   it('should render techdocs search bar', async () => {
     const query = () => emptyResults;
     const querySpy = jest.fn(query);

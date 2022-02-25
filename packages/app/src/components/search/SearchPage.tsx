@@ -38,7 +38,7 @@ import {
   SearchType,
   useSearch,
 } from '@backstage/plugin-search';
-import { DocsResultListItem } from '@backstage/plugin-techdocs';
+import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
 import React, { useContext } from 'react';
 
@@ -143,7 +143,7 @@ const SearchPage = () => {
                         );
                       case 'techdocs':
                         return (
-                          <DocsResultListItem
+                          <TechDocsSearchResultListItem
                             key={document.location}
                             result={document}
                           />

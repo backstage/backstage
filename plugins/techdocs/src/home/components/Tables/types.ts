@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useOutlet } from 'react-router';
-import { DefaultTechDocsHome } from './DefaultTechDocsHome';
+import { Entity, EntityName } from '@backstage/catalog-model';
 
-export const TechDocsIndexPage = () => {
-  const outlet = useOutlet();
-
-  return outlet || <DefaultTechDocsHome />;
+/**
+ * Generic representing the metadata structure for a docs table row.
+ *
+ * @public
+ */
+export type DocsTableRow = {
+  entity: Entity;
+  resolved: {
+    docsUrl: string;
+    ownedByRelationsTitle: string;
+    ownedByRelations: EntityName[];
+  };
 };

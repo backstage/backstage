@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { DocsCardGrid } from './DocsCardGrid';
 import {
   CodeSnippet,
   Progress,
@@ -20,8 +22,12 @@ import {
 } from '@backstage/core-components';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { DocsCardGrid } from './DocsCardGrid';
 
+/**
+ * Component responsible to get entities from entity list context and pass down to DocsCardGrid
+ *
+ * @public
+ */
 export const EntityListDocsGrid = () => {
   const { loading, error, entities } = useEntityList();
 

@@ -29,19 +29,34 @@ const useStyles = makeStyles({
   },
 });
 
-export const DocsResultListItem = ({
-  result,
-  lineClamp = 5,
-  asListItem = true,
-  asLink = true,
-  title,
-}: {
+/**
+ * Props for {@link TechDocsSearchResultListItem}.
+ *
+ * @public
+ */
+export type TechDocsSearchResultListItemProps = {
   result: any;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;
   title?: string;
-}) => {
+};
+
+/**
+ * Component which renders documentation and related metadata.
+ *
+ * @public
+ */
+export const TechDocsSearchResultListItem = (
+  props: TechDocsSearchResultListItemProps,
+) => {
+  const {
+    result,
+    lineClamp = 5,
+    asListItem = true,
+    asLink = true,
+    title,
+  } = props;
   const classes = useStyles();
   const TextItem = () => (
     <ListItemText
@@ -86,3 +101,9 @@ export const DocsResultListItem = ({
     </LinkWrapper>
   );
 };
+
+/**
+ * @public
+ * @deprecated use {@link TechDocsSearchResultListItem} instead
+ */
+export const DocsResultListItem = TechDocsSearchResultListItem;

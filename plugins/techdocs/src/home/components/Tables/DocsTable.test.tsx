@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { configApiRef } from '@backstage/core-plugin-api';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
 import React from 'react';
-import { rootDocsRouteRef } from '../../routes';
-import { DocsCardGrid } from './DocsCardGrid';
+import { render } from '@testing-library/react';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { DocsTable } from './DocsTable';
+import { rootDocsRouteRef } from '../../../routes';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 // Hacky way to mock a specific boolean config value.
 const getOptionalBooleanMock = jest.fn().mockReturnValue(false);
@@ -40,15 +40,15 @@ jest.mock('@backstage/core-plugin-api', () => ({
   },
 }));
 
-describe('Entity Docs Card Grid', () => {
+describe('DocsTable test', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('should render all entities passed ot it', async () => {
-    const { findByText, findAllByRole } = render(
+  it('should render documents passed', async () => {
+    const { findByText } = render(
       wrapInTestApp(
-        <DocsCardGrid
+        <DocsTable
           entities={[
             {
               apiVersion: 'version',
@@ -57,8 +57,19 @@ describe('Entity Docs Card Grid', () => {
                 name: 'testName',
               },
               spec: {
-                owner: 'techdocs@example.com',
+                owner: 'user:owned',
               },
+              relations: [
+                {
+                  target: {
+                    kind: 'user',
+                    namespace: 'default',
+                    name: 'owned',
+                  },
+                  targetRef: 'user:default/owned',
+                  type: 'ownedBy',
+                },
+              ],
             },
             {
               apiVersion: 'version',
@@ -69,23 +80,37 @@ describe('Entity Docs Card Grid', () => {
               spec: {
                 owner: 'not-owned@example.com',
               },
+              relations: [
+                {
+                  target: {
+                    kind: 'user',
+                    namespace: 'default',
+                    name: 'not-owned',
+                  },
+                  targetRef: 'user:default/not-owned',
+                  type: 'ownedBy',
+                },
+              ],
             },
           ]}
         />,
         {
           mountedRoutes: {
             '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),
     );
-    expect(await findByText('testName')).toBeInTheDocument();
-    expect(await findByText('testName2')).toBeInTheDocument();
-    const [button1, button2] = await findAllByRole('button');
-    expect(button1.getAttribute('href')).toContain(
+
+    const link1 = await findByText('testName');
+    const link2 = await findByText('testName2');
+    expect(link1).toBeInTheDocument();
+    expect(link1.getAttribute('href')).toContain(
       '/docs/default/testkind/testname',
     );
-    expect(button2.getAttribute('href')).toContain(
+    expect(link2).toBeInTheDocument();
+    expect(link2.getAttribute('href')).toContain(
       '/docs/default/testkind2/testname2',
     );
   });
@@ -93,9 +118,9 @@ describe('Entity Docs Card Grid', () => {
   it('should fall back to case-sensitive links when configured', async () => {
     getOptionalBooleanMock.mockReturnValue(true);
 
-    const { findByRole } = render(
+    const { findByText } = render(
       wrapInTestApp(
-        <DocsCardGrid
+        <DocsTable
           entities={[
             {
               apiVersion: 'version',
@@ -105,20 +130,32 @@ describe('Entity Docs Card Grid', () => {
                 namespace: 'SomeNamespace',
               },
               spec: {
-                owner: 'techdocs@example.com',
+                owner: 'user:owned',
               },
+              relations: [
+                {
+                  target: {
+                    kind: 'user',
+                    namespace: 'default',
+                    name: 'owned',
+                  },
+                  targetRef: 'user:default/owned',
+                  type: 'ownedBy',
+                },
+              ],
             },
           ]}
         />,
         {
           mountedRoutes: {
             '/techdocs/:namespace/:kind/:name/*': rootDocsRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       ),
     );
 
-    const button = await findByRole('button');
+    const button = await findByText('testName');
     expect(getOptionalBooleanMock).toHaveBeenCalledWith(
       'techdocs.legacyUseCaseSensitiveTripletPaths',
     );
@@ -127,31 +164,16 @@ describe('Entity Docs Card Grid', () => {
     );
   });
 
-  it('should render entity title if available', async () => {
+  it('should render empty state if no owned documents exist', async () => {
     const { findByText } = render(
-      wrapInTestApp(
-        <DocsCardGrid
-          entities={[
-            {
-              apiVersion: 'version',
-              kind: 'TestKind',
-              metadata: {
-                name: 'testName',
-                title: 'TestTitle',
-              },
-              spec: {
-                owner: 'techdocs@example.com',
-              },
-            },
-          ]}
-        />,
-        {
-          mountedRoutes: {
-            '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
-          },
+      wrapInTestApp(<DocsTable entities={[]} />, {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
-      ),
+      }),
     );
-    expect(await findByText('TestTitle')).toBeInTheDocument();
+
+    expect(await findByText('No documents to show')).toBeInTheDocument();
   });
 });

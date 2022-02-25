@@ -20,29 +20,19 @@
  * @packageDocumentation
  */
 
+export * from './types';
 export * from './api';
-export { techdocsApiRef, techdocsStorageApiRef } from './api';
-export type { TechDocsApi, TechDocsStorageApi } from './api';
-export { TechDocsClient, TechDocsStorageClient } from './client';
-export * from './components/DocsResultListItem';
+export * from './client';
+export * from './reader';
+export * from './search';
+export * from './home';
 export {
-  DefaultTechDocsHome,
-  EntityListDocsGrid,
-  EntityListDocsTable,
-  TechDocsPageWrapper,
-  TechDocsPicker,
-} from './home/components';
-export type { DocsTableRow, PanelType } from './home/components';
-export {
-  DocsCardGrid,
-  DocsTable,
   EntityTechdocsContent,
   TechDocsCustomHome,
   TechDocsIndexPage,
   TechdocsPage,
+  TechDocsReaderPage,
   techdocsPlugin as plugin,
   techdocsPlugin,
-  TechDocsReaderPage,
 } from './plugin';
-export * from './reader';
-export { EmbeddedDocsRouter, isTechDocsAvailable, Router } from './Router';
+export * from './Router';

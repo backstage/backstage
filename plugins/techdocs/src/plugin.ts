@@ -24,7 +24,6 @@ import {
 import {
   configApiRef,
   createApiFactory,
-  createComponentExtension,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
@@ -32,6 +31,11 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+/**
+ * The Backstage plugin that renders technical documentation for your components
+ *
+ * @public
+ */
 export const techdocsPlugin = createPlugin({
   id: 'techdocs',
   apis: [
@@ -73,6 +77,11 @@ export const techdocsPlugin = createPlugin({
   },
 });
 
+/**
+ * Routable extension used to render docs
+ *
+ * @public
+ */
 export const TechdocsPage = techdocsPlugin.provide(
   createRoutableExtension({
     name: 'TechdocsPage',
@@ -81,6 +90,11 @@ export const TechdocsPage = techdocsPlugin.provide(
   }),
 );
 
+/**
+ * Routable extension used to render docs on Entity page
+ *
+ * @public
+ */
 export const EntityTechdocsContent = techdocsPlugin.provide(
   createRoutableExtension({
     name: 'EntityTechdocsContent',
@@ -89,28 +103,11 @@ export const EntityTechdocsContent = techdocsPlugin.provide(
   }),
 );
 
-// takes a list of entities and renders documentation cards
-export const DocsCardGrid = techdocsPlugin.provide(
-  createComponentExtension({
-    name: 'DocsCardGrid',
-    component: {
-      lazy: () =>
-        import('./home/components/DocsCardGrid').then(m => m.DocsCardGrid),
-    },
-  }),
-);
-
-// takes a list of entities and renders table listing documentation
-export const DocsTable = techdocsPlugin.provide(
-  createComponentExtension({
-    name: 'DocsTable',
-    component: {
-      lazy: () => import('./home/components/DocsTable').then(m => m.DocsTable),
-    },
-  }),
-);
-
-// takes a custom tabs config object and renders a documentation landing page
+/**
+ * Component which takes a custom tabs config object and renders a documentation landing page.
+ *
+ * @public
+ */
 export const TechDocsCustomHome = techdocsPlugin.provide(
   createRoutableExtension({
     name: 'TechDocsCustomHome',
@@ -122,6 +119,11 @@ export const TechDocsCustomHome = techdocsPlugin.provide(
   }),
 );
 
+/**
+ * Responsible for rendering the provided router element
+ *
+ * @public
+ */
 export const TechDocsIndexPage = techdocsPlugin.provide(
   createRoutableExtension({
     name: 'TechDocsIndexPage',
@@ -133,11 +135,18 @@ export const TechDocsIndexPage = techdocsPlugin.provide(
   }),
 );
 
+/**
+ * Component responsible for composing a TechDocs reader page experience
+ *
+ * @public
+ */
 export const TechDocsReaderPage = techdocsPlugin.provide(
   createRoutableExtension({
     name: 'TechDocsReaderPage',
     component: () =>
-      import('./reader/components/TechDocsPage').then(m => m.TechDocsPage),
+      import('./reader/components/TechDocsReaderPage').then(
+        m => m.TechDocsReaderPage,
+      ),
     mountPoint: rootDocsRouteRef,
   }),
 );

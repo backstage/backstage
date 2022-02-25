@@ -6,7 +6,7 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
-import { DocsResultListItem } from '@backstage/plugin-techdocs';
+import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
 import {
   SearchBar,
@@ -123,7 +123,7 @@ const SearchPage = () => {
                         );
                       case 'techdocs':
                         return (
-                          <DocsResultListItem
+                          <TechDocsSearchResultListItem
                             key={document.location}
                             result={document}
                           />

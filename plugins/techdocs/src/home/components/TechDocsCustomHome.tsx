@@ -30,8 +30,8 @@ import {
   parseEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { DocsTable } from './DocsTable';
-import { DocsCardGrid } from './DocsCardGrid';
+import { DocsTable } from './Tables';
+import { DocsCardGrid } from './Grids';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 import {
@@ -51,8 +51,18 @@ const panels = {
   DocsCardGrid: DocsCardGrid,
 };
 
+/**
+ * Available panel types
+ *
+ * @public
+ */
 export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
+/**
+ * Type representing a TechDocsCustomHome panel.
+ *
+ * @public
+ */
 export interface PanelConfig {
   title: string;
   description: string;
@@ -61,11 +71,21 @@ export interface PanelConfig {
   filterPredicate: ((entity: Entity) => boolean) | string;
 }
 
+/**
+ * Type representing a TechDocsCustomHome tab.
+ *
+ * @public
+ */
 export interface TabConfig {
   label: string;
   panels: PanelConfig[];
 }
 
+/**
+ * Type representing a list of TechDocsCustomHome tabs.
+ *
+ * @public
+ */
 export type TabsConfig = TabConfig[];
 
 const CustomPanel = ({
@@ -118,11 +138,17 @@ const CustomPanel = ({
   );
 };
 
-export const TechDocsCustomHome = ({
-  tabsConfig,
-}: {
+/**
+ * Props for {@link TechDocsCustomHome}
+ *
+ * @public
+ */
+export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
-}) => {
+};
+
+export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
+  const { tabsConfig } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
 
