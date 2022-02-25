@@ -21,6 +21,7 @@ import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
 import { ErrorInfo } from 'react';
+import { HTMLAttributeAnchorTarget } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
@@ -1052,23 +1053,50 @@ export type SidebarSpacerClassKey = 'root';
 export const SidebarSubmenu: (props: SidebarSubmenuProps) => JSX.Element;
 
 // @public
+export type SidebarSubmenuDropdownProps = {
+  title: string;
+  icon?: IconComponent;
+  dropdownItems: SidebarSubmenuItemDropdownItem[];
+  href?: never;
+  target?: never;
+  to?: never;
+};
+
+// @public
+export type SidebarSubmenuExternalLink = {
+  title: string;
+  icon?: IconComponent;
+  href: string;
+  target?: HTMLAttributeAnchorTarget;
+  to?: never;
+  dropdownItems?: never;
+};
+
+// @public
+export type SidebarSubmenuInternalLink = {
+  title: string;
+  icon?: IconComponent;
+  to: string;
+  href?: never;
+  target?: never;
+  dropdownItems?: never;
+};
+
+// @public
 export const SidebarSubmenuItem: (
   props: SidebarSubmenuItemProps,
 ) => JSX.Element;
 
 // @public
-export type SidebarSubmenuItemDropdownItem = {
-  title: string;
-  to: string;
-};
+export type SidebarSubmenuItemDropdownItem =
+  | SidebarSubmenuInternalLink
+  | SidebarSubmenuExternalLink;
 
 // @public
-export type SidebarSubmenuItemProps = {
-  title: string;
-  to: string;
-  icon: IconComponent;
-  dropdownItems?: SidebarSubmenuItemDropdownItem[];
-};
+export type SidebarSubmenuItemProps =
+  | SidebarSubmenuInternalLink
+  | SidebarSubmenuExternalLink
+  | SidebarSubmenuDropdownProps;
 
 // @public
 export type SidebarSubmenuProps = {
