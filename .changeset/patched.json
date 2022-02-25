@@ -1,3 +1,5 @@
 {
-  "currentReleaseVersion": {}
+  "currentReleaseVersion": {
+    "@backstage/plugin-scaffolder-backend": "0.17.1"
+  }
 }

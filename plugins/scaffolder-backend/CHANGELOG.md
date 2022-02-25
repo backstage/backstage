@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.17.1
+
+### Patch Changes
+
+- bug: fixing `repoUrl` resolution for `publish:github:pull-request` action
+
 ## 0.17.0
 
 ### Minor Changes
