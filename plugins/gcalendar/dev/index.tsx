@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { gcalendarHomepagePlugin } from './plugin';
+import { createDevApp } from '@backstage/dev-utils';
+import { gcalendarPlugin } from '../src/plugin';
 
-describe('gcalendar-homepage', () => {
-  it('should export plugin', () => {
-    expect(gcalendarHomepagePlugin).toBeDefined();
-  });
-});
+createDevApp().registerPlugin(gcalendarPlugin).render();

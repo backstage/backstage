@@ -25,7 +25,7 @@ import {
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
-import { CalendarCard } from '@backstage/plugin-gcalendar-homepage';
+import { CalendarCard } from '@backstage/plugin-gcalendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 

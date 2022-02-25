@@ -29,7 +29,7 @@
     "@backstage/plugin-code-coverage": "^0.1.27",
     "@backstage/plugin-cost-insights": "^0.11.22",
     "@backstage/plugin-explore": "^0.3.31",
-    "@backstage/plugin-gcalendar-homepage": "^0.0.0",
+    "@backstage/plugin-gcalendar": "^0.1.0",
     "@backstage/plugin-gcp-projects": "^0.3.19",
     "@backstage/plugin-github-actions": "^0.5.0",
     "@backstage/plugin-gocd": "^0.1.6",

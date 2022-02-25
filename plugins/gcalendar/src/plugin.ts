@@ -24,7 +24,7 @@ import {
 import { GCalendarApiClient, gcalendarApiRef } from './api';
 import { rootRouteRef } from './routes';
 
-export const gcalendarHomepagePlugin = createPlugin({
+export const gcalendarPlugin = createPlugin({
   id: 'gcalendar-homepage',
   routes: {
     root: rootRouteRef,
@@ -40,7 +40,7 @@ export const gcalendarHomepagePlugin = createPlugin({
   ],
 });
 
-export const CalendarCard = gcalendarHomepagePlugin.provide(
+export const CalendarCard = gcalendarPlugin.provide(
   createComponentExtension({
     name: 'CalendarCard',
     component: {

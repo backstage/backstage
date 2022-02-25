@@ -29,9 +29,9 @@ backend:
   # auth:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
-  baseUrl: http://localhost:7007
+  baseUrl: http://localhost:7000
   listen:
-    port: 7007
+    port: 7000
   database:
     client: sqlite3
     connection: ':memory:'
@@ -308,8 +308,8 @@ auth:
   providers:
     google:
       development:
-        clientId: ${AUTH_GOOGLE_CLIENT_ID}
-        clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
+        clientId: 37202476686-4n78svmvctk411cirj7ds3d9ah682l2g.apps.googleusercontent.com
+        clientSecret: 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
     github:
       development:
         clientId: ${AUTH_GITHUB_CLIENT_ID}

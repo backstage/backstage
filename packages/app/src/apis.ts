@@ -39,7 +39,7 @@ import {
 import {
   GCalendarApiClient,
   gcalendarApiRef,
-} from '@backstage/plugin-gcalendar-homepage';
+} from '@backstage/plugin-gcalendar';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({

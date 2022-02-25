@@ -23,7 +23,7 @@ import {
 } from '@backstage/test-utils';
 
 import { CalendarCardContainer } from '.';
-import { gcalendarApiRef, gcalendarHomepagePlugin } from '../..';
+import { gcalendarApiRef, gcalendarPlugin } from '../..';
 
 describe('<CalendarCard />', () => {
   const primaryCalendar = {
@@ -130,7 +130,7 @@ describe('<CalendarCard />', () => {
 
   it('should select stored calendar', async () => {
     mockStorage
-      .forBucket(gcalendarHomepagePlugin.getId())
+      .forBucket(gcalendarPlugin.getId())
       .set('google_calendars_selected', [nonPrimaryCalendar.id]);
 
     const rendered = await renderInTestApp(

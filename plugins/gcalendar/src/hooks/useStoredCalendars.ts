@@ -16,7 +16,7 @@
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import { useObservable } from 'react-use';
 
-import { gcalendarHomepagePlugin } from '../plugin';
+import { gcalendarPlugin } from '../plugin';
 
 export enum LocalStorageKeys {
   selectedCalendars = 'google_calendars_selected',
@@ -25,7 +25,7 @@ export enum LocalStorageKeys {
 export function useStoredCalendars(
   defaultValue: string[],
 ): [string[], (value: string[]) => void] {
-  const storageBucket = gcalendarHomepagePlugin.getId();
+  const storageBucket = gcalendarPlugin.getId();
   const storageKey = LocalStorageKeys.selectedCalendars;
   const storageApi = useApi(storageApiRef).forBucket(storageBucket);
   const setValue = (value: string[]) => {
