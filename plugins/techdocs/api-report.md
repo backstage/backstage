@@ -47,7 +47,32 @@ export const DocsResultListItem: (
 ) => JSX.Element;
 
 // @public
-export const DocsTable: (props: DocsTableProps) => JSX.Element | null;
+export const DocsTable: {
+  (props: DocsTableProps): JSX.Element | null;
+  columns: {
+    createNameColumn(): TableColumn<DocsTableRow>;
+    createOwnerColumn(): TableColumn<DocsTableRow>;
+    createTypeColumn(): TableColumn<DocsTableRow>;
+  };
+  actions: {
+    createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
+      icon: () => JSX.Element;
+      tooltip: string;
+      onClick: () => any;
+    };
+    createStarEntityAction(
+      isStarredEntity: Function,
+      toggleStarredEntity: Function,
+    ): ({ entity }: DocsTableRow) => {
+      cellStyle: {
+        paddingLeft: string;
+      };
+      icon: () => JSX.Element;
+      tooltip: string;
+      onClick: () => any;
+    };
+  };
+};
 
 // @public
 export type DocsTableProps = {
@@ -199,7 +224,10 @@ export type TechDocsCustomHomeProps = {
 
 // @public
 export type TechDocsEntityMetadata = Entity & {
-  locationMetadata?: LocationSpec;
+  locationMetadata?: {
+    type: string;
+    target: string;
+  };
 };
 
 // @public

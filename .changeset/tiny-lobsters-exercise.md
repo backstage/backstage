@@ -1,6 +1,20 @@
 ---
-'@backstage/plugin-techdocs': patch
+'@backstage/plugin-techdocs': minor
 ---
+
+**BREAKING:**
+Table column utilities `createNameColumn`, `createOwnerColumn`, `createTypeColumn` as well as actions utilities `createCopyDocsUrlAction` and `createStarEntityAction` are no longer directly exported. Instead accessible through DocsTable and EntityListDocsTable.
+
+Use as following:
+
+```tsx
+DocsTable.columns.createNameColumn();
+DocsTable.columns.createOwnerColumn();
+DocsTable.columns.createTypeColumn();
+
+DocsTable.actions.createCopyDocsUrlAction();
+DocsTable.actions.createStarEntityAction();
+```
 
 - Renamed `DocsResultListItem` to `TechDocsSearchResultListItem`, leaving the old name in place as a deprecations.
 

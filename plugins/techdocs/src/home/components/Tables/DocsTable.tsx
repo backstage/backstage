@@ -131,3 +131,6 @@ export const DocsTable = (props: DocsTableProps) => {
     </>
   );
 };
+
+DocsTable.columns = columnFactories;
+DocsTable.actions = actionFactories;
