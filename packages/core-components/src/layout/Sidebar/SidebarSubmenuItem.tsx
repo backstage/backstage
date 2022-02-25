@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 import React, { useContext, useState } from 'react';
-import {
-  NavLink,
-  resolvePath,
-  useLocation,
-  useResolvedPath,
-} from 'react-router-dom';
+import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+import { Link } from '../../components/Link';
 import { IconComponent } from '@backstage/core-plugin-api';
 import classnames from 'classnames';
 import { BackstageTheme } from '@backstage/theme';
@@ -163,7 +158,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
           <div className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
               <Link
-                component={NavLink}
                 to={object.to}
                 underline="none"
                 className={classes.dropdownItem}
@@ -185,7 +179,6 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   return (
     <div className={classes.itemContainer}>
       <Link
-        component={NavLink}
         to={to}
         underline="none"
         className={classnames(
