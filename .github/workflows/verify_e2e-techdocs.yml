@@ -1,5 +1,4 @@
 name: E2E Test Techdocs
-
 on:
   pull_request:
     paths-ignore:

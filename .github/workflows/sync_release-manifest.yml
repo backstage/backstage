@@ -5,6 +5,7 @@ on:
       version:
         description: Version number, without any 'v' prefix
         required: true
+
 jobs:
   create-new-version:
     runs-on: ubuntu-latest

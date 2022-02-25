@@ -1,11 +1,10 @@
 name: Sync Snyk Monitoring
-
 on:
   workflow_dispatch:
   push:
     branches: [master]
     paths:
-      - '.github/workflows/snyk-monitor.yml'
+      - '.github/workflows/sync_snyk-monitor.yml'
       - '**/.snyk'
       - '**/package.json'
       - 'yarn.lock'

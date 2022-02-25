@@ -1,5 +1,4 @@
 name: Sync Snyk GitHub issues
-
 on:
   schedule:
     - cron: '0 */4 * * *'

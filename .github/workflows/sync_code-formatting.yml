@@ -1,5 +1,4 @@
 name: Sync code formatting
-
 on:
   push:
     branches:
