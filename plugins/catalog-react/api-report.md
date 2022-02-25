@@ -564,7 +564,7 @@ export function useEntityOwnership(): {
   isOwnedEntity: (entity: Entity | EntityName) => boolean;
 };
 
-// @public
+// @alpha
 export function useEntityPermission(permission: Permission): {
   loading: boolean;
   allowed: boolean;
