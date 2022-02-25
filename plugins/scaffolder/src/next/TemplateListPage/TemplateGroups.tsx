@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 import { TemplateGroup } from './TemplateGroup';
 import { Entity } from '@backstage/catalog-model';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { Progress, Link } from '@backstage/core-components';
+import { Typography } from '@material-ui/core';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 export type TemplateGroupFilter = {
-  title?: string;
-  titleComponent?: React.ReactNode;
+  title?: React.ReactNode;
   filter: (entity: Entity) => boolean;
 };
 
@@ -33,5 +36,27 @@ export interface TemplateGroupsProps {
 
 export const TemplateGroups = (props: TemplateGroupsProps) => {
   const { loading, error, entities } = useEntityList();
+  const errorApi = useApi(errorApiRef);
+
+  if (loading) {
+    return <Progress />;
+  }
+
+  if (error) {
+    errorApi.post(error);
+  }
+
+  if (!entities) {
+    return (
+      <Typography variant="body2">
+        No templates found that match your filter. Learn more about{' '}
+        <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
+          adding templates
+        </Link>
+        .
+      </Typography>
+    );
+  }
+
   return null;
 };

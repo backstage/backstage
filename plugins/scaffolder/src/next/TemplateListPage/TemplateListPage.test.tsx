@@ -28,11 +28,29 @@ import React from 'react';
 import { TemplateListPage } from './TemplateListPage';
 
 describe('TemplateListPage', () => {
+  const mockCatalogApi = {
+    getEntities: async () => ({
+      items: [
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'blob', tags: ['blob'] },
+          spec: {
+            type: 'service',
+          },
+        },
+      ],
+    }),
+    getEntityFacets: async () => ({
+      facets: { 'spec.type': [{ value: 'service', count: 1 }] },
+    }),
+  };
+
   it('should render the search bar for templates', async () => {
     const { getByPlaceholderText } = await renderInTestApp(
       <TestApiProvider
         apis={[
-          [catalogApiRef, {}],
+          [catalogApiRef, mockCatalogApi],
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
@@ -53,7 +71,7 @@ describe('TemplateListPage', () => {
     const { getByRole } = await renderInTestApp(
       <TestApiProvider
         apis={[
-          [catalogApiRef, {}],
+          [catalogApiRef, mockCatalogApi],
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
@@ -75,7 +93,7 @@ describe('TemplateListPage', () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
-          [catalogApiRef, {}],
+          [catalogApiRef, mockCatalogApi],
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({
@@ -96,20 +114,7 @@ describe('TemplateListPage', () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
-          [
-            catalogApiRef,
-            {
-              getEntities: async () => ({
-                items: [
-                  {
-                    apiVersion: 'scaffolder.backstage.io/v1beta3',
-                    kind: 'Template',
-                    metadata: { name: 'blob', tags: ['blob'] },
-                  },
-                ],
-              }),
-            },
-          ],
+          [catalogApiRef, mockCatalogApi],
           [
             starredEntitiesApiRef,
             new DefaultStarredEntitiesApi({

@@ -22,7 +22,6 @@ import {
   Content,
   ContentHeader,
   Header,
-  Lifecycle,
   Page,
   SupportButton,
 } from '@backstage/core-components';
