@@ -427,7 +427,7 @@ export type TaskPageProps = {
 
 // Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const TemplateList: ({
   TemplateCardComponent,
   group,
@@ -435,7 +435,7 @@ export const TemplateList: ({
 
 // Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type TemplateListProps = {
   TemplateCardComponent?:
     | ComponentType<{

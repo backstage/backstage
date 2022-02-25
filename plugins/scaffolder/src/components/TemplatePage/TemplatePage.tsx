@@ -18,7 +18,7 @@ import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
 import React, { useCallback, useContext, useState } from 'react';
-import { generatePath, Navigate, useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';

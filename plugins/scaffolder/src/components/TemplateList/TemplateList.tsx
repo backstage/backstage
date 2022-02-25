@@ -29,6 +29,9 @@ import { useEntityList } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 
+/**
+ * @deprecated this type is deprecated and will be removed in a future releases, please use the TemplateCard to render your own list.
+ */
 export type TemplateListProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
@@ -40,6 +43,9 @@ export type TemplateListProps = {
   };
 };
 
+/**
+ * @deprecated this component is deprecated and will be removed in a future releases, please use the TemplateCard to render your own list.
+ */
 export const TemplateList = ({
   TemplateCardComponent,
   group,
