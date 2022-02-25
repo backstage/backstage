@@ -37,7 +37,9 @@ export function getEntityLocationRef(entity: Entity): string {
   const ref = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   if (!ref) {
     const entityRef = stringifyEntityRef(entity);
-    throw new InputError(`Entity '${entityRef}' does not have a location`);
+    throw new InputError(
+      `Entity '${entityRef}' does not have the annotation ${ANNOTATION_LOCATION}`,
+    );
   }
   return ref;
 }
@@ -47,7 +49,7 @@ export function getEntityOriginLocationRef(entity: Entity): string {
   if (!ref) {
     const entityRef = stringifyEntityRef(entity);
     throw new InputError(
-      `Entity '${entityRef}' does not have an origin location`,
+      `Entity '${entityRef}' does not have the annotation ${ANNOTATION_ORIGIN_LOCATION}`,
     );
   }
   return ref;
