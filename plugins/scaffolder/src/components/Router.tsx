@@ -32,11 +32,20 @@ import {
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
 
-type RouterProps = {
+export type RouterProps = {
+  /** @deprecated use components.TemplateCardComponent instead */
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
+  /** @deprecated use component.TaskPageComponent instead */
   TaskPageComponent?: ComponentType<{}>;
+
+  components?: {
+    TemplateCardComponent?:
+      | ComponentType<{ template: TemplateEntityV1beta2 }>
+      | undefined;
+    TaskPageComponent?: ComponentType<{}>;
+  };
   groups?: Array<{
     title?: string;
     titleComponent?: React.ReactNode;
@@ -44,13 +53,26 @@ type RouterProps = {
   }>;
 };
 
-export const Router = ({
-  TemplateCardComponent,
-  TaskPageComponent,
-  groups,
-}: RouterProps) => {
+export const Router = (props: RouterProps) => {
+  const {
+    TemplateCardComponent: legacyTemplateCardComponent,
+    TaskPageComponent: legacyTaskPageComponent,
+    groups,
+    components = {},
+  } = props;
+
+  if (legacyTemplateCardComponent || legacyTaskPageComponent) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "DEPRECATION: 'TemplateCardComponent' and 'TaskPageComponent' are deprecated when calling the 'ScaffolderPage'. Use 'components' prop to pass these component overrides instead.",
+    );
+  }
+
+  const { TemplateCardComponent, TaskPageComponent } = components;
+
   const outlet = useOutlet();
-  const TaskPageElement = TaskPageComponent || TaskPage;
+  const TaskPageElement =
+    TaskPageComponent ?? legacyTaskPageComponent ?? TaskPage;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -78,8 +100,10 @@ export const Router = ({
         path="/"
         element={
           <ScaffolderPage
-            TemplateCardComponent={TemplateCardComponent}
             groups={groups}
+            TemplateCardComponent={
+              TemplateCardComponent ?? legacyTemplateCardComponent
+            }
           />
         }
       />

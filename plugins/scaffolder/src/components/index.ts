@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { useTemplateSecrets } from './SecretsContext';
-export type { ScaffolderUseTemplateSecrets } from './SecretsContext';
+export * from './fields';
+export type { RepoUrlPickerUiOptions } from './fields';
+export { FavouriteTemplate } from './FavouriteTemplate';
+export { TemplateList } from './TemplateList';
+export type { TemplateListProps } from './TemplateList';
+export { TemplateTypePicker } from './TemplateTypePicker';
+export * from './secrets';
+export { TaskPage } from './TaskPage';
+export type { RouterProps } from './Router';

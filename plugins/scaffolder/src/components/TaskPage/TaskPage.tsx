@@ -46,9 +46,9 @@ import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { generatePath, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import useInterval from 'react-use/lib/useInterval';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef, selectedTemplateRouteRef } from '../../routes';
 import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
@@ -243,7 +243,8 @@ export type TaskPageProps = {
 export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const rootLink = useRouteRef(rootRouteRef);
+  const rootPath = useRouteRef(rootRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const [userSelectedStepId, setUserSelectedStepId] = useState<
     string | undefined
   >(undefined);
@@ -297,7 +298,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
 
   const handleStartOver = () => {
     if (!taskStream.task || !taskStream.task?.spec.templateInfo?.entityRef) {
-      navigate(generatePath(rootLink()));
+      navigate(rootPath());
       return;
     }
 
@@ -311,14 +312,9 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
     );
 
     navigate(
-      generatePath(
-        `${rootLink()}/templates/:templateName?${qs.stringify({
-          formData: JSON.stringify(formData),
-        })}`,
-        {
-          templateName: name,
-        },
-      ),
+      `${templateRoute({ templateName: name })}?${qs.stringify({
+        formData: JSON.stringify(formData),
+      })}`,
     );
   };
 

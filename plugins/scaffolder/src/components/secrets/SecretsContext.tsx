@@ -49,10 +49,20 @@ export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
 };
 
 /**
+ * The return type from the useTemplateSecrets hook.
+ * @public
+ */
+export interface ScaffolderUseTemplateSecrets {
+  /** @deprecated use setSecrets instead */
+  setSecret: (input: Record<string, string>) => void;
+  setSecrets: (input: Record<string, string>) => void;
+}
+
+/**
  * Hook to access the secrets context.
  * @public
  */
-export const useTemplateSecrets = () => {
+export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {
   const value = useContext(SecretsContext);
   if (!value) {
     throw new Error(
@@ -60,14 +70,14 @@ export const useTemplateSecrets = () => {
     );
   }
 
-  const { setSecrets } = value;
+  const { setSecrets: updateSecrets } = value;
 
-  const setSecret = useCallback(
+  const setSecrets = useCallback(
     (input: Record<string, string>) => {
-      setSecrets(currentSecrets => ({ ...currentSecrets, ...input }));
+      updateSecrets(currentSecrets => ({ ...currentSecrets, ...input }));
     },
-    [setSecrets],
+    [updateSecrets],
   );
 
-  return { setSecret };
+  return { setSecret: setSecrets, setSecrets };
 };

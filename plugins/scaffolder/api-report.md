@@ -20,9 +20,9 @@ import { FieldValidation } from '@rjsf/core';
 import { IconButton } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
+import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { default as React_2 } from 'react';
-import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
@@ -238,6 +238,31 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
+// Warning: (ae-missing-release-tag) "RouterProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type RouterProps = {
+  TemplateCardComponent?:
+    | ComponentType<{
+        template: TemplateEntityV1beta2;
+      }>
+    | undefined;
+  TaskPageComponent?: ComponentType<{}>;
+  components?: {
+    TemplateCardComponent?:
+      | ComponentType<{
+          template: TemplateEntityV1beta2;
+        }>
+      | undefined;
+    TaskPageComponent?: ComponentType<{}>;
+  };
+  groups?: Array<{
+    title?: string;
+    titleComponent?: React_2.ReactNode;
+    filter: (entity: Entity) => boolean;
+  }>;
+};
+
 // @public
 export interface ScaffolderApi {
   // (undocumented)
@@ -316,25 +341,7 @@ export interface ScaffolderGetIntegrationsListResponse {
 // Warning: (ae-missing-release-tag) "ScaffolderPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ScaffolderPage: ({
-  TemplateCardComponent,
-  TaskPageComponent,
-  groups,
-}: {
-  TemplateCardComponent?:
-    | ComponentType<{
-        template: TemplateEntityV1beta2;
-      }>
-    | undefined;
-  TaskPageComponent?: ComponentType<{}> | undefined;
-  groups?:
-    | {
-        title?: string | undefined;
-        titleComponent?: ReactNode;
-        filter: (entity: Entity) => boolean;
-      }[]
-    | undefined;
-}) => JSX.Element;
+export const ScaffolderPage: (props: RouterProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "scaffolderPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -357,7 +364,7 @@ export interface ScaffolderScaffoldOptions {
   // (undocumented)
   templateRef: string;
   // (undocumented)
-  values: Record<string, any>;
+  values: Record<string, JsonValue>;
 }
 
 // Warning: (ae-missing-release-tag) "ScaffolderScaffoldResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -411,6 +418,14 @@ export type ScaffolderTaskStatus =
   | 'skipped';
 
 // @public
+export interface ScaffolderUseTemplateSecrets {
+  // @deprecated (undocumented)
+  setSecret: (input: Record<string, string>) => void;
+  // (undocumented)
+  setSecrets: (input: Record<string, string>) => void;
+}
+
+// @public
 export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 
 // @public
@@ -420,7 +435,7 @@ export type TaskPageProps = {
 
 // Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const TemplateList: ({
   TemplateCardComponent,
   group,
@@ -428,7 +443,7 @@ export const TemplateList: ({
 
 // Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type TemplateListProps = {
   TemplateCardComponent?:
     | ComponentType<{
@@ -436,7 +451,7 @@ export type TemplateListProps = {
       }>
     | undefined;
   group?: {
-    title?: string;
+    title?: React_2.ReactNode;
     titleComponent?: React_2.ReactNode;
     filter: (entity: Entity) => boolean;
   };
@@ -459,9 +474,7 @@ export type TemplateParameterSchema = {
 export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public
-export const useTemplateSecrets: () => {
-  setSecret: (input: Record<string, string>) => void;
-};
+export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
 
 // Warnings were encountered during analysis:
 //

@@ -48,7 +48,9 @@ export function createScaffolderFieldExtension<
   };
 }
 
-export const ScaffolderFieldExtensions: React.ComponentType = () => null;
+export const ScaffolderFieldExtensions: React.ComponentType =
+  (): JSX.Element | null => null;
+
 attachComponentData(
   ScaffolderFieldExtensions,
   FIELD_EXTENSION_WRAPPER_KEY,
