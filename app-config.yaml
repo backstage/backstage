@@ -456,3 +456,10 @@ apacheAirflow:
 
 gocd:
   baseUrl: https://your.gocd.instance.com
+
+periskop:
+  locations:
+    - name: <name of the location 1>
+      host: <HTTP/S host for the Periskop API location>
+    - name: <name of the location 2>
+      host: <HTTP/S host for the Periskop API location>
