@@ -90,14 +90,17 @@ const TechDocsSearchBar = ({
 
   // Update the filter context when the entityId changes, e.g. when the search
   // bar continues to be rendered, navigating between different TechDocs sites.
+  const { kind, name, namespace } = entityId;
   useEffect(() => {
     setFilters(prevFilters => {
       return {
         ...prevFilters,
-        ...entityId,
+        kind,
+        namespace,
+        name,
       };
     });
-  }, [entityId, setFilters]);
+  }, [kind, namespace, name, setFilters]);
 
   const handleQuery = (e: ChangeEvent<HTMLInputElement>) => {
     if (!open) {
