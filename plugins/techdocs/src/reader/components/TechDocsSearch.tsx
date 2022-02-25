@@ -64,6 +64,7 @@ const TechDocsSearchBar = ({
   const {
     term,
     setTerm,
+    setFilters,
     result: { loading, value: searchVal },
   } = useSearch();
   const classes = useStyles();
@@ -86,6 +87,20 @@ const TechDocsSearchBar = ({
   const [value, setValue] = useState<string>(term);
 
   useDebounce(() => setTerm(value), debounceTime, [value]);
+
+  // Update the filter context when the entityId changes, e.g. when the search
+  // bar continues to be rendered, navigating between different TechDocs sites.
+  const { kind, name, namespace } = entityId;
+  useEffect(() => {
+    setFilters(prevFilters => {
+      return {
+        ...prevFilters,
+        kind,
+        namespace,
+        name,
+      };
+    });
+  }, [kind, namespace, name, setFilters]);
 
   const handleQuery = (e: ChangeEvent<HTMLInputElement>) => {
     if (!open) {
