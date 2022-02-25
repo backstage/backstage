@@ -72,7 +72,7 @@ export const defaultClientFactory = async ({
   const octokitOptions = await getOctokitOptions({
     integrations,
     credentialsProvider: githubCredentialsProvider,
-    repoUrl: `https://${encodedHost}/${encodedOwner}/${encodedRepo}`,
+    repoUrl: `${encodedHost}?owner=${encodedOwner}&repo=${encodedRepo}`,
     token: providedToken,
   });
 
