@@ -15,7 +15,7 @@
  */
 import { sortBy } from 'lodash';
 import React from 'react';
-import sanitizeHtml from 'sanitize-html';
+import DOMPurify from 'dompurify';
 
 import { useAnalytics } from '@backstage/core-plugin-api';
 
@@ -101,7 +101,9 @@ export const CalendarEventPopoverContent = ({
           <Box
             className={classes.description}
             dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(event.description),
+              __html: DOMPurify.sanitize(event.description, {
+                USE_PROFILES: { html: true },
+              }),
             }}
           />
         </>
