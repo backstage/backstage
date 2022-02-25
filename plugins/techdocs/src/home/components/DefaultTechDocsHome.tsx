@@ -49,6 +49,11 @@ export type DefaultTechDocsHomeProps = {
   actions?: TableProps<DocsTableRow>['actions'];
 };
 
+/**
+ * Component which renders a default documentation landing page.
+ *
+ * @public
+ */
 export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
   const { initialFilter = 'all', columns, actions } = props;
   return (

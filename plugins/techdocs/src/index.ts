@@ -28,7 +28,6 @@ export * from './search';
 export * from './home';
 export {
   EntityTechdocsContent,
-  DefaultTechDocsHome,
   TechDocsCustomHome,
   TechDocsIndexPage,
   TechdocsPage,
