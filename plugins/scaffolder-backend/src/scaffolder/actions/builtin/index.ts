@@ -26,3 +26,4 @@ export * from './github';
 export { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 
 export { runCommand, executeShellCommand } from './helpers';
+export type { RunCommandOptions } from './helpers';

@@ -34,21 +34,15 @@ export type Encoding = 'utf-8' | 'base64';
 
 class GithubResponseError extends CustomErrorBase {}
 
-type CreatePullRequestResponse = {
-  data: { html_url: string };
-};
-
-export interface PullRequestCreator {
-  createPullRequest(
-    options: createPullRequest.Options,
-  ): Promise<CreatePullRequestResponse | null>;
+/** @public */
+export interface OctokitWithPullRequestPluginClient {
+  createPullRequest(options: createPullRequest.Options): Promise<{
+    data: { html_url: string };
+  } | null>;
 }
 
-export type PullRequestCreatorConstructor = (
-  octokit: Octokit,
-) => PullRequestCreator;
-
-export type ClientFactoryInput = {
+/** @public */
+export type CreateGithubPullRequestClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
   host: string;
@@ -64,7 +58,7 @@ export const defaultClientFactory = async ({
   repo,
   host = 'github.com',
   token: providedToken,
-}: ClientFactoryInput): Promise<PullRequestCreator> => {
+}: CreateGithubPullRequestClientFactoryInput): Promise<OctokitWithPullRequestPluginClient> => {
   const [encodedHost, encodedOwner, encodedRepo] = [host, owner, repo].map(
     encodeURIComponent,
   );
@@ -80,12 +74,19 @@ export const defaultClientFactory = async ({
   return new OctokitPR(octokitOptions);
 };
 
-interface CreateGithubPullRequestActionOptions {
+/** @public */
+export interface CreateGithubPullRequestActionOptions {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
-  clientFactory?: (input: ClientFactoryInput) => Promise<PullRequestCreator>;
+  clientFactory?: (
+    input: CreateGithubPullRequestClientFactoryInput,
+  ) => Promise<OctokitWithPullRequestPluginClient>;
 }
 
+/**
+ * Creates a Github Pull Request action.
+ * @public
+ */
 export const createPublishGithubPullRequestAction = ({
   integrations,
   githubCredentialsProvider,

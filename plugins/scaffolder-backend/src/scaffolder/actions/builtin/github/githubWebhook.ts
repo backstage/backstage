@@ -24,6 +24,10 @@ import { Octokit } from 'octokit';
 import { getOctokitOptions } from './helpers';
 import { parseRepoUrl } from '../publish/util';
 
+/**
+ * Creates new action that creates a webhook for a repository on GitHub.
+ * @public
+ */
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;

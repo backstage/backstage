@@ -24,6 +24,9 @@ import {
   TemplateMetadata,
 } from '@backstage/plugin-scaffolder-common';
 
+/**
+ * ActionContext is passed into scaffolder actions.
+ * @public */
 export type ActionContext<Input extends JsonObject> = {
   /**
    * Base URL for the location of the task spec, typically the url of the source entity file.
@@ -50,6 +53,7 @@ export type ActionContext<Input extends JsonObject> = {
   templateInfo?: TemplateInfo;
 };
 
+/** @public */
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;

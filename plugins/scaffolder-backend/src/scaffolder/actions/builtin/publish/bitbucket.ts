@@ -195,6 +195,11 @@ const performEnableLFS = async (opts: {
     );
 };
 
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to Bitbucket.
+ * @public
+ */
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;

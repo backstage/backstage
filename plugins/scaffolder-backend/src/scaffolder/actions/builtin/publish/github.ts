@@ -28,6 +28,12 @@ import { assertError, InputError } from '@backstage/errors';
 import { getOctokitOptions } from '../github/helpers';
 import { Octokit } from 'octokit';
 
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to GitHub.
+ *
+ * @public
+ */
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;

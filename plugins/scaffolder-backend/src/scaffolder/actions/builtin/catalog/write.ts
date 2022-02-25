@@ -20,6 +20,10 @@ import * as yaml from 'yaml';
 import { Entity } from '@backstage/catalog-model';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
+/**
+ * Writes a catalog descriptor file containing the provided entity to a path in the workspace.
+ * @public
+ */
 export function createCatalogWriteAction() {
   return createTemplateAction<{ filePath?: string; entity: Entity }>({
     id: 'catalog:write',

@@ -21,6 +21,7 @@ import { Git } from '@backstage/backend-common';
 import { Octokit } from 'octokit';
 import { assertError } from '@backstage/errors';
 
+/** @public */
 export type RunCommandOptions = {
   /** command to run */
   command: string;
