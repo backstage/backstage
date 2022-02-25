@@ -20,7 +20,7 @@ import { useQueries } from 'react-query';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { gcalendarApiRef } from '../api';
-import { GCalendar, GCalendarEvent } from '../components/CalendarCard/types';
+import { GCalendar, GCalendarEvent } from '../api';
 
 type Options = {
   selectedCalendars?: string[];

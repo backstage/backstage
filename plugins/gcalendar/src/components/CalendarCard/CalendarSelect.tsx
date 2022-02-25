@@ -27,17 +27,22 @@ import {
   makeStyles,
 } from '@material-ui/core';
 
-import { GCalendar } from './types';
+import { GCalendar } from '../../api';
 
-const useStyles = makeStyles({
-  formControl: {
-    width: 120,
+const useStyles = makeStyles(
+  {
+    formControl: {
+      width: 120,
+    },
+    selectedCalendars: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+    },
   },
-  selectedCalendars: {
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
+  {
+    name: 'GCalendarSelect',
   },
-});
+);
 
 type CalendarSelectProps = {
   disabled: boolean;

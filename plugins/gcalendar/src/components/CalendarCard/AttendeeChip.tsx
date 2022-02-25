@@ -21,7 +21,7 @@ import { Badge, Chip, makeStyles } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckIcon from '@material-ui/icons/CheckCircle';
 
-import { EventAttendee, ResponseStatus } from './types';
+import { EventAttendee, ResponseStatus } from '../../api';
 
 const useStyles = makeStyles((theme: BackstageTheme) => {
   const getIconColor = (responseStatus?: string) => {

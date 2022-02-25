@@ -25,7 +25,7 @@ import { GCalendarApiClient, gcalendarApiRef } from './api';
 import { rootRouteRef } from './routes';
 
 export const gcalendarPlugin = createPlugin({
-  id: 'gcalendar-homepage',
+  id: 'gcalendar',
   routes: {
     root: rootRouteRef,
   },

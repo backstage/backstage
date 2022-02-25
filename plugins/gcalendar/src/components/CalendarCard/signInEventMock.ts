@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GCalendarEvent } from './types';
+import { GCalendarEvent } from '../../api';
 
-export const events: GCalendarEvent[] = [
+export const eventsMock: GCalendarEvent[] = [
   {
     id: '1',
     htmlLink: 'https://www.google.com/calendar/',

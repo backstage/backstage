@@ -15,7 +15,7 @@
  */
 import { DateTime } from 'luxon';
 
-import { GCalendarEvent } from './types';
+import { GCalendarEvent } from '../../api';
 
 export function getZoomLink(event: GCalendarEvent) {
   const videoEntrypoint = event.conferenceData?.entryPoints?.find(

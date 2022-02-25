@@ -18,7 +18,7 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 
 import { AttendeeChip } from './AttendeeChip';
-import { EventAttendee, ResponseStatus } from './types';
+import { EventAttendee, ResponseStatus } from '../../api';
 
 describe('<AttendeeChip />', () => {
   it('renders attendee email', async () => {

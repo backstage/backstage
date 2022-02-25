@@ -15,7 +15,7 @@
  */
 import { gcalendarPlugin } from './plugin';
 
-describe('gcalendar-homepage', () => {
+describe('gcalendar', () => {
   it('should export plugin', () => {
     expect(gcalendarPlugin).toBeDefined();
   });

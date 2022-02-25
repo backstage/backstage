@@ -18,10 +18,12 @@ import React from 'react';
 import { Box, Button, styled } from '@material-ui/core';
 
 import { CalendarEvent } from './CalendarEvent';
-import { events } from './signInEventMock';
+import { eventsMock } from './signInEventMock';
+import { GCalendarEvent } from '../..';
 
-type SignInContentProps = {
+type Props = {
   handleAuthClick: React.MouseEventHandler<HTMLElement>;
+  events?: GCalendarEvent[];
 };
 
 const TransparentBox = styled(Box)({
@@ -29,7 +31,10 @@ const TransparentBox = styled(Box)({
   filter: 'blur(1.5px)',
 });
 
-export const SignInContent = ({ handleAuthClick }: SignInContentProps) => {
+export const SignInContent = ({
+  handleAuthClick,
+  events = eventsMock,
+}: Props) => {
   return (
     <Box position="relative" height="100%" width="100%">
       <TransparentBox p={1}>

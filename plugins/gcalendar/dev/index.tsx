@@ -13,7 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Content, Page } from '@backstage/core-components';
+import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
-import { gcalendarPlugin } from '../src/plugin';
+import { calendarListMock, eventsMock } from './mocks';
+import { gcalendarPlugin, CalendarCard } from '../src/plugin';
+import { gcalendarApiRef } from '../src';
 
-createDevApp().registerPlugin(gcalendarPlugin).render();
+createDevApp()
+  .registerPlugin(gcalendarPlugin)
+  .registerApi({
+    api: googleAuthApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        async getAccessToken() {
+          return Promise.resolve('token');
+        },
+      } as unknown as typeof googleAuthApiRef.T),
+  })
+  .registerApi({
+    api: gcalendarApiRef,
+    deps: {},
+    factory: () =>
+      ({
+        async getCalendars() {
+          return Promise.resolve(calendarListMock);
+        },
+        async getEvents() {
+          return Promise.resolve({
+            items: eventsMock,
+          });
+        },
+      } as unknown as typeof gcalendarApiRef.T),
+  })
+  .addPage({
+    element: (
+      <Page themeId="home">
+        <Content>
+          <CalendarCard />
+        </Content>
+      </Page>
+    ),
+    title: 'Root Page',
+  })
+  .render();

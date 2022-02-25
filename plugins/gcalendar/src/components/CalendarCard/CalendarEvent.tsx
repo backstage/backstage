@@ -35,46 +35,51 @@ import {
 
 import zoomIcon from '../../icons/zoomIcon.svg';
 import { CalendarEventPopoverContent } from './CalendarEventPopoverContent';
-import { GCalendarEvent, ResponseStatus } from './types';
+import { GCalendarEvent, ResponseStatus } from '../../api';
 import { getTimePeriod, getZoomLink, isAllDay, isPassed } from './util';
 
-const useStyles = makeStyles(theme => ({
-  event: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(1),
-    cursor: 'pointer',
-    paddingRight: 12,
-  },
-  declined: {
-    textDecoration: 'line-through',
-  },
-  passed: {
-    opacity: 0.6,
-    transition: 'opacity 0.15s ease-in-out',
-    '&:hover': {
-      opacity: 1,
+const useStyles = makeStyles(
+  theme => ({
+    event: {
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: theme.spacing(1),
+      cursor: 'pointer',
+      paddingRight: 12,
     },
-  },
-  link: {
-    width: 48,
-    height: 48,
-    display: 'inline-block',
-    padding: 8,
-    borderRadius: '50%',
-    '&:hover': {
-      backgroundColor: theme.palette.grey[100],
+    declined: {
+      textDecoration: 'line-through',
     },
-  },
-  calendarColor: ({ event }: any) => ({
-    width: 8,
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-    backgroundColor: event.primary
-      ? theme.palette.primary.light
-      : event.backgroundColor,
+    passed: {
+      opacity: 0.6,
+      transition: 'opacity 0.15s ease-in-out',
+      '&:hover': {
+        opacity: 1,
+      },
+    },
+    link: {
+      width: 48,
+      height: 48,
+      display: 'inline-block',
+      padding: 8,
+      borderRadius: '50%',
+      '&:hover': {
+        backgroundColor: theme.palette.grey[100],
+      },
+    },
+    calendarColor: ({ event }: { event: GCalendarEvent }) => ({
+      width: 8,
+      borderTopLeftRadius: 4,
+      borderBottomLeftRadius: 4,
+      backgroundColor: event.primary
+        ? theme.palette.primary.light
+        : event.backgroundColor,
+    }),
   }),
-}));
+  {
+    name: 'GCalendarEvent',
+  },
+);
 
 export const CalendarEvent = ({ event }: { event: GCalendarEvent }) => {
   const classes = useStyles({ event });

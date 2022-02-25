@@ -31,24 +31,29 @@ import {
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { AttendeeChip } from './AttendeeChip';
-import { GCalendarEvent } from './types';
+import { GCalendarEvent } from '../../api';
 import { getTimePeriod, getZoomLink } from './util';
 
-const useStyles = makeStyles(theme => {
-  return {
-    description: {
-      wordBreak: 'break-word',
-      '& a': {
-        color: theme.palette.primary.main,
-        fontWeight: 500,
+const useStyles = makeStyles(
+  theme => {
+    return {
+      description: {
+        wordBreak: 'break-word',
+        '& a': {
+          color: theme.palette.primary.main,
+          fontWeight: 500,
+        },
       },
-    },
-    divider: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-  };
-});
+      divider: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+      },
+    };
+  },
+  {
+    name: 'GCalendarEventPopoverContent',
+  },
+);
 
 type CalendarEventPopoverProps = {
   event: GCalendarEvent;
