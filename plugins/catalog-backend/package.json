@@ -73,6 +73,7 @@
     "@backstage/backend-test-utils": "^0.1.19",
     "@backstage/cli": "^0.14.1",
     "@backstage/plugin-permission-common": "^0.5.1",
+    "@backstage/plugin-search-backend-node": "0.4.7",
     "@backstage/test-utils": "^0.2.6",
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",

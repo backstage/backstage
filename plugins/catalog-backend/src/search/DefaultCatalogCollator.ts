@@ -23,7 +23,6 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import {
   CatalogApi,
@@ -31,18 +30,14 @@ import {
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
+import { CatalogEntityDocument } from './DefaultCatalogCollatorFactory';
 
-/** @public */
-export interface CatalogEntityDocument extends IndexableDocument {
-  componentType: string;
-  namespace: string;
-  kind: string;
-  lifecycle: string;
-  owner: string;
-}
-
-/** @public */
-export class DefaultCatalogCollator implements DocumentCollator {
+/**
+ * @public
+ * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
+ * use `DefaultCatalogCollatorFactory` instead.
+ */
+export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
   protected filter?: GetEntitiesRequest['filter'];

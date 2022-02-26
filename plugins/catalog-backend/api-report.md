@@ -10,7 +10,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
-import { DocumentCollator } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
@@ -30,6 +30,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Readable } from 'stream';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -415,8 +416,8 @@ export function createRandomRefreshInterval(options: {
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public (undocumented)
-export class DefaultCatalogCollator implements DocumentCollator {
+// @public @deprecated (undocumented)
+export class DefaultCatalogCollator {
   constructor(options: {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
@@ -455,6 +456,31 @@ export class DefaultCatalogCollator implements DocumentCollator {
   // (undocumented)
   readonly visibilityPermission: Permission;
 }
+
+// @public (undocumented)
+export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
+  // (undocumented)
+  static fromConfig(
+    _config: Config,
+    options: DefaultCatalogCollatorFactoryOptions,
+  ): DefaultCatalogCollatorFactory;
+  // (undocumented)
+  getCollator(): Promise<Readable>;
+  // (undocumented)
+  readonly type: string;
+  // (undocumented)
+  readonly visibilityPermission: Permission;
+}
+
+// @public (undocumented)
+export type DefaultCatalogCollatorFactoryOptions = {
+  discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
+  locationTemplate?: string;
+  filter?: GetEntitiesRequest['filter'];
+  batchSize?: number;
+  catalogClient?: CatalogApi;
+};
 
 // @public (undocumented)
 export class DefaultCatalogProcessingOrchestrator
