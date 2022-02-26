@@ -200,6 +200,7 @@ export type RouterProps = {
     titleComponent?: React_2.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  defaultPreviewTemplate?: string;
 };
 
 // @public
