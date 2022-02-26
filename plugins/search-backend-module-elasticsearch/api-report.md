@@ -5,6 +5,8 @@
 ```ts
 /// <reference types="node" />
 
+import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { Client } from '@elastic/elasticsearch';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
 import { IndexableDocument } from '@backstage/search-common';
@@ -114,7 +116,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexPrefix,
   }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
   // (undocumented)
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  getIndexer(type: string): Promise<ElasticSearchSearchEngineIndexer>;
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
@@ -127,4 +129,31 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   // (undocumented)
   protected translator(query: SearchQuery): ConcreteElasticSearchQuery;
 }
+
+// Warning: (ae-missing-release-tag) "ElasticSearchSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
+  constructor(options: ElasticSearchSearchEngineIndexerOptions);
+  // (undocumented)
+  finalize(): Promise<void>;
+  // (undocumented)
+  index(documents: IndexableDocument[]): Promise<void>;
+  // (undocumented)
+  readonly indexName: string;
+  // (undocumented)
+  initialize(): Promise<void>;
+}
+
+// Warning: (ae-missing-release-tag) "ElasticSearchSearchEngineIndexerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ElasticSearchSearchEngineIndexerOptions = {
+  type: string;
+  indexPrefix: string;
+  indexSeparator: string;
+  alias: string;
+  logger: Logger_2;
+  elasticSearchClient: Client;
+};
 ```
