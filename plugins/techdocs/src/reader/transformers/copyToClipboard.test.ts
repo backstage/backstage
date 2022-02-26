@@ -16,6 +16,8 @@
 
 import { createTestShadowDom } from '../../test-utils';
 import { copyToClipboard } from './copyToClipboard';
+import { lightTheme } from '@backstage/theme';
+import { waitFor } from '@testing-library/react';
 
 const clipboardSpy = jest.fn();
 Object.defineProperty(navigator, 'clipboard', {
@@ -38,11 +40,16 @@ describe('copyToClipboard', () => {
     `,
       {
         preTransformers: [],
-        postTransformers: [copyToClipboard()],
+        postTransformers: [copyToClipboard(lightTheme)],
       },
     );
 
     shadowDom.querySelector('button')?.click();
+
+    await waitFor(() => {
+      const tooltip = document.querySelector('[role="tooltip"]');
+      expect(tooltip).toHaveTextContent('Copied to clipboard');
+    });
 
     expect(clipboardSpy).toHaveBeenCalledWith(expectedClipboard);
   });
@@ -60,7 +67,7 @@ describe('copyToClipboard', () => {
     `,
       {
         preTransformers: [],
-        postTransformers: [copyToClipboard()],
+        postTransformers: [copyToClipboard(lightTheme)],
       },
     );
 

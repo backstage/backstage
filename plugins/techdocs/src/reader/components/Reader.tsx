@@ -753,7 +753,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
     async (transformedElement: Element) =>
       transformer(transformedElement, [
         scrollIntoAnchor(),
-        copyToClipboard(),
+        copyToClipboard(theme),
         addLinkClickListener({
           baseUrl: window.location.origin,
           onClick: (event: MouseEvent, url: string) => {
@@ -802,7 +802,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           },
         }),
       ]),
-    [navigate, techdocsStorageApi],
+    [theme, navigate, techdocsStorageApi],
   );
 
   useEffect(() => {
