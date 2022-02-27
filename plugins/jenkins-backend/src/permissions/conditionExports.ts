@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { jenkinsPermissionRules } from './rules';
+import { createConditionExports } from '@backstage/plugin-permission-node';
+import { RESOURCE_TYPE_JENKINS } from '@backstage/plugin-jenkins-common';
 
-/**
- * A Backstage backend plugin that integrates towards Jenkins
- *
- * @packageDocumentation
- */
+const { conditions, createPolicyDecision } = createConditionExports({
+  pluginId: 'jenkins',
+  resourceType: RESOURCE_TYPE_JENKINS,
+  rules: jenkinsPermissionRules,
+});
 
-export * from './service';
-export * from './permissions';
+export const jenkinsConditions = conditions;
+export const createJenkinsPermissionPolicy = createPolicyDecision;

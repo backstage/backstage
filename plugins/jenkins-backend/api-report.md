@@ -4,10 +4,25 @@
 
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
+import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
+import { EntitiesSearchFilter } from '@backstage/plugin-catalog-backend';
+import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+
+// Warning: (ae-missing-release-tag) "createJenkinsPermissionPolicy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const createJenkinsPermissionPolicy: (
+  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
+) => ConditionalPolicyDecision;
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -33,6 +48,17 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   // (undocumented)
   static readonly OLD_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
 }
+
+// Warning: (ae-missing-release-tag) "jenkinsConditions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const jenkinsConditions: Conditions<{
+  isEntityOwner: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [claims: string[]]
+  >;
+}>;
 
 // Warning: (ae-missing-release-tag) "JenkinsConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -86,10 +112,30 @@ export interface JenkinsInstanceConfig {
   username: string;
 }
 
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+//
+// @public
+export const jenkinsPermissionRules: {
+  isEntityOwner: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    [claims: string[]]
+  >;
+};
+
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface RouterOptions {
+  // (undocumented)
+  config?: Config;
+  // (undocumented)
+  discovery?: PluginEndpointDiscovery;
+  // (undocumented)
+  fetchApi?: {
+    fetch: typeof fetch;
+  };
   // (undocumented)
   jenkinsInfoProvider: JenkinsInfoProvider;
   // (undocumented)

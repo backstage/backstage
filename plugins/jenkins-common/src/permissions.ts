@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Permission } from '@backstage/plugin-permission-common';
 
 /**
- * A Backstage backend plugin that integrates towards Jenkins
- *
- * @packageDocumentation
+ * @public
  */
+export const RESOURCE_TYPE_JENKINS = 'jenkins';
 
-export * from './service';
-export * from './permissions';
+/**
+ * This permission is used to determine if a user is allowed to execute an action in jenkins plugin
+ *
+ * @public
+ */
+export const jenkinsExecutePermission: Permission = {
+  name: 'jenkins.execute',
+  attributes: {
+    action: 'update',
+  },
+  resourceType: RESOURCE_TYPE_JENKINS,
+};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { permissionRules } from '@backstage/plugin-catalog-backend';
 /**
- * A Backstage backend plugin that integrates towards Jenkins
  *
- * @packageDocumentation
+ * Jenkins' permission rules can be used to defined different kind of rules to check if the user authorizes an action
+ * (or listing the jobs ever)
+ *
+ * Provided rules:
+ * {isEntityOwner} can be used to determine if a user or the group of the user
+ * owns an entity.
+ *
+ * @public
  */
-
-export * from './service';
-export * from './permissions';
+export const jenkinsPermissionRules = {
+  isEntityOwner: permissionRules.isEntityOwner,
+};

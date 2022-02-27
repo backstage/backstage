@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import {
+  errorHandler,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
+import { Config } from '@backstage/config';
+import { jenkinsPermissionIntegrationRouterFactory } from '../permissions/permission-router-factory';
 
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
+  config?: Config;
+  discovery?: PluginEndpointDiscovery;
+  fetchApi?: { fetch: typeof fetch };
 }
 
 export async function createRouter(
@@ -117,7 +125,18 @@ export async function createRouter(
       response.json({});
     },
   );
-
   router.use(errorHandler());
+
+  if (options.config?.getOptionalBoolean('permission.enabled')) {
+    if (!options.discovery) {
+      throw new Error('Discovery API is required if permissions are enabled.');
+    }
+    router.use(
+      jenkinsPermissionIntegrationRouterFactory(
+        options.discovery,
+        options.fetchApi,
+      ),
+    );
+  }
   return router;
 }
