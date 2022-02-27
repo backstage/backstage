@@ -538,3 +538,53 @@ Done! Now you have a support of the following diagrams along with mermaid:
 - `Vega`
 - `Vega-Lite`
 - `WaveDrom`
+
+## How to implement a hybrid build strategy
+
+One limitation of the [Recommended deployment](./architecture#recommended-deployment) is that
+the experience for users requires modifying their CI/CD process to publish
+their TechDocs. For some users, this may be unnecessary, and provides a barrier
+to entry for onboarding users to Backstage. However, a purely local TechDocs
+build restricts TechDocs creators to using the tooling provided in Backstage,
+as well as the plugins and features provided in the Backstage-included `mkdocs`
+installation.
+
+To accommodate both of these use-cases, users can implement a custom [Build Strategy](./concepts#techdocs-build-strategy)
+with logic to encode which TechDocs should be built locally, and which will be
+built externally.
+
+To achieve this hybrid build model:
+
+1. In your Backstage instance's `app-config.yaml`, set `techdocs.builder` to
+   `'local'`. This ensures that Backstage will build docs for users who want the
+   'out-of-the-box' experience.
+2. Configure external storage of TechDocs as normal for a production deployment.
+   This allows Backstage to publish documentation to your storage, as well as
+   allowing other users to publish documentation from their CI/CD pipelines.
+3. Create a custom build strategy, that implements the `DocsBuildStrategy` interface,
+   and which implements your custom logic for determining whether to build docs for
+   a given entity.
+   For example, to only build docs when an entity has the `company.com/techdocs-builder`
+   annotation set to `'local'`:
+   ```typescript
+   export class AnnotationBasedBuildStrategy {
+     private readonly config: Config;
+
+     constructor(config: Config) {
+       this.config = config;
+     }
+
+     async shouldBuild(_: Entity): Promise<boolean> {
+       return this.entity.metadata?.annotations?.["company.com/techdocs-builder"] === 'local'
+     }
+   }
+   ```
+4. Pass an instance of this Build Strategy as the `docsBuildStrategy` parameter of the
+   TechDocs backend `createRouter` method.
+
+Users should now be able to choose to have their documentation built and published by
+the TechDocs backend by adding the `company.com/techdocs-builder` annotation to their
+entity. If the value of this annotation is `'local'`, the TechDocs backend will build
+and publish the documentation for them. If the value of the `company.com/techdocs-builder`
+annotation is anything other than `'local'`, the user is responsible for publishing
+documentation to the appropriate location in the TechDocs external storage.
