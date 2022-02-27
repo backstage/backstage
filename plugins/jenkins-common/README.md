@@ -1,3 +1,3 @@
 # Jenkins Common
 
-Shared isomorphic code for the jenkins plugin.
+Shared isomorphic code for the Jenkins plugin.
