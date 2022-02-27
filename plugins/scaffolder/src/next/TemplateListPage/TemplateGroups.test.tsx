@@ -18,12 +18,17 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntityList: jest.fn(),
 }));
 
+jest.mock('./TemplateGroup', () => ({
+  TemplateGroup: jest.fn(() => null),
+}));
+
 import React from 'react';
 import { render } from '@testing-library/react';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TemplateGroups } from './TemplateGroups';
 import { TestApiProvider } from '@backstage/test-utils';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { TemplateGroup } from './TemplateGroup';
 
 describe('TemplateGroups', () => {
   it('should return progress if the hook is loading', async () => {
@@ -36,5 +41,132 @@ describe('TemplateGroups', () => {
     );
 
     expect(await findByTestId('progress')).toBeInTheDocument();
+  });
+
+  it('should use the error api if there is an error with the retrieval of entitylist', async () => {
+    const mockError = new Error('tings went poop');
+    (useEntityList as jest.Mock).mockReturnValue({
+      error: mockError,
+    });
+    const errorApi = {
+      post: jest.fn(),
+    };
+    render(
+      <TestApiProvider apis={[[errorApiRef, errorApi]]}>
+        <TemplateGroups groups={[]} />
+      </TestApiProvider>,
+    );
+
+    expect(errorApi.post).toHaveBeenCalledWith(mockError);
+  });
+
+  it('should return a no templates message if entities is unset', async () => {
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: null,
+      loading: false,
+      error: null,
+    });
+
+    const { findByText } = render(
+      <TestApiProvider apis={[[errorApiRef, {}]]}>
+        <TemplateGroups groups={[]} />
+      </TestApiProvider>,
+    );
+
+    expect(await findByText(/No templates found/)).toBeInTheDocument();
+  });
+
+  it('should return a no templates message if entities has no values in it', async () => {
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: [],
+      loading: false,
+      error: null,
+    });
+
+    const { findByText } = render(
+      <TestApiProvider apis={[[errorApiRef, {}]]}>
+        <TemplateGroups groups={[]} />
+      </TestApiProvider>,
+    );
+
+    expect(await findByText(/No templates found/)).toBeInTheDocument();
+  });
+
+  it('should call the template group with the components', async () => {
+    const mockEntities = [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't1',
+        },
+        spec: {},
+      },
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't2',
+        },
+        spec: {},
+      },
+    ];
+
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: mockEntities,
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <TestApiProvider apis={[[errorApiRef, {}]]}>
+        <TemplateGroups groups={[{ title: 'all', filter: () => true }]} />
+      </TestApiProvider>,
+    );
+
+    expect(TemplateGroup).toHaveBeenCalledWith(
+      expect.objectContaining({ templates: mockEntities }),
+      {},
+    );
+  });
+
+  it('should apply the filter for each group', async () => {
+    const mockEntities = [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't1',
+        },
+        spec: {},
+      },
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: {
+          name: 't2',
+        },
+        spec: {},
+      },
+    ];
+
+    (useEntityList as jest.Mock).mockReturnValue({
+      entities: mockEntities,
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <TestApiProvider apis={[[errorApiRef, {}]]}>
+        <TemplateGroups
+          groups={[{ title: 'all', filter: e => e.metadata.name === 't1' }]}
+        />
+      </TestApiProvider>,
+    );
+
+    expect(TemplateGroup).toHaveBeenCalledWith(
+      expect.objectContaining({ templates: [mockEntities[0]] }),
+      {},
+    );
   });
 });

@@ -36,6 +36,7 @@ export interface TemplateGroupsProps {
 
 export const TemplateGroups = (props: TemplateGroupsProps) => {
   const { loading, error, entities } = useEntityList();
+  const { groups, TemplateCardComponent } = props;
   const errorApi = useApi(errorApiRef);
 
   if (loading) {
@@ -44,9 +45,10 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
 
   if (error) {
     errorApi.post(error);
+    return null;
   }
 
-  if (!entities) {
+  if (!entities || !entities.length) {
     return (
       <Typography variant="body2">
         No templates found that match your filter. Learn more about{' '}
@@ -58,5 +60,18 @@ export const TemplateGroups = (props: TemplateGroupsProps) => {
     );
   }
 
-  return null;
+  return (
+    <>
+      {groups.map(({ title, filter }, index) => (
+        <TemplateGroup
+          key={index}
+          templates={entities.filter((e): e is TemplateEntityV1beta3 =>
+            filter(e),
+          )}
+          title={title}
+          components={{ CardComponent: TemplateCardComponent }}
+        />
+      ))}
+    </>
+  );
 };
