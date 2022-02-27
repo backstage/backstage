@@ -18,7 +18,7 @@ import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import { EntityRef } from '@backstage/catalog-model';
+import { EntityName } from '@backstage/catalog-model';
 import { JenkinsInfo } from './jenkinsInfoProvider';
 
 export interface ServerOptions {
@@ -35,7 +35,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     jenkinsInfoProvider: {
-      async getInstance(_: { entityRef: EntityRef }): Promise<JenkinsInfo> {
+      async getInstance(_: { entityRef: EntityName }): Promise<JenkinsInfo> {
         return { baseUrl: 'https://example.com/', jobFullName: 'build-foo' };
       },
     },

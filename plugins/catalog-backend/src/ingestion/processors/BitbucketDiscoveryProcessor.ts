@@ -21,7 +21,6 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { LocationSpec } from '@backstage/catalog-model';
 import {
   BitbucketRepositoryParser,
   BitbucketClient,
@@ -31,12 +30,13 @@ import {
   BitbucketRepository,
   BitbucketRepository20,
 } from './bitbucket';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
 const DEFAULT_BRANCH = 'master';
 const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';
 const EMPTY_CATALOG_LOCATION = '/';
 
+/** @public */
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly parser: BitbucketRepositoryParser;
@@ -62,6 +62,10 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     this.integrations = options.integrations;
     this.parser = options.parser || defaultRepositoryParser;
     this.logger = options.logger;
+  }
+
+  getProcessorName(): string {
+    return 'BitbucketDiscoveryProcessor';
   }
 
   async readLocation(

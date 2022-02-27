@@ -1,5 +1,67 @@
 # @backstage/catalog-client
 
+## 0.7.2
+
+### Patch Changes
+
+- ed09ad8093: Updated usage of the `LocationSpec` type from `@backstage/catalog-model`, which is deprecated.
+- 46dee04eba: Deprecated `AddLocationRequest.presence`, as it is already being ignored.
+- 6e1cbc12a6: Added `CatalogApi.getEntityFacets`. Marking this as a breaking change since it
+  is a non-optional addition to the API and depends on the backend being in place.
+  If you are mocking this interface in your tests, you will need to add an extra
+  `getEntityFacets: jest.fn()` or similar to that interface.
+- Updated dependencies
+  - @backstage/catalog-model@0.11.0
+
+## 0.7.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/catalog-model@0.10.1
+  - @backstage/errors@0.2.2
+
+## 0.7.0
+
+### Minor Changes
+
+- 8eda0e7a9c: **BREAKING**: Removed the explicit `DiscoveryApi` and `FetchApi` export symbols,
+  which were unnecessary duplicates from the well known core ones.
+
+  The `CATALOG_FILTER_EXISTS` symbol's value has changed. However, this should not
+  affect any code in practice.
+
+- deaf6065db: Removed `CatalogApi.geLocationByEntity` and `CatalogApi.getOriginLocationByEntity`, and replaced them with `CatalogApi.getLocationByRef`.
+
+  If you were using one of the two old methods, you can update your code as follows:
+
+  ```diff
+  -const originLocation = catalogApi.getOriginLocationByEntity(entity);
+  +const originLocation = catalogApi.getLocationByRef(entity.metadata.annotations[ANNOTATION_ORIGIN_LOCATION]!);
+  -const location = catalogApi.getLocationByEntity(entity);
+  +const location = catalogApi.getLocationByRef(entity.metadata.annotations[ANNOTATION_LOCATION]!);
+  ```
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- 244d24ebc4: Export the `Location` type that was previously exported by the `@backstage/catalog-model` package.
+- 538ca90790: Deprecated the following types used by the catalog client, and created new
+  corresponding types to make them more consistent:
+
+  - `CatalogEntitiesRequest` -> `GetEntitiesRequest`
+  - `CatalogListResponse` was removed and generally replaced with `GetEntitiesResponse` (which does not use a type parameter argument)
+  - `CatalogEntityAncestorsRequest`-> `GetEntityAncestorsRequest`
+  - `CatalogEntityAncestorsResponse` -> `GetEntityAncestorsResponse`
+
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+
 ## 0.6.0
 
 ### Minor Changes

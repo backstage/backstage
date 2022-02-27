@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 0.1.2
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+
 ## 0.1.1
 
 ### Patch Changes

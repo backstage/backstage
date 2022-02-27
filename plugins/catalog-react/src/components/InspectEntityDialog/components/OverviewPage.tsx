@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AlphaEntity, stringifyEntityRef } from '@backstage/catalog-model';
+import { AlphaEntity } from '@backstage/catalog-model';
 import {
   Box,
   DialogContentText,
@@ -56,7 +56,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
   } = props.entity;
 
   const groupedRelations = groupBy(
-    sortBy(relations, r => stringifyEntityRef(r.target)),
+    sortBy(relations, r => r.targetRef),
     'type',
   );
 
@@ -143,12 +143,14 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
                 <div key={index}>
                   <List dense subheader={<ListSubheader>{type}</ListSubheader>}>
                     {groupRelations.map(group => (
-                      <ListItem key={stringifyEntityRef(group.target)}>
+                      <ListItem key={group.targetRef}>
                         <ListItemIcon>
-                          <EntityKindIcon kind={group.target.kind} />
+                          <EntityKindIcon entityRef={group.targetRef} />
                         </ListItemIcon>
                         <ListItemText
-                          primary={<EntityRefLink entityRef={group.target} />}
+                          primary={
+                            <EntityRefLink entityRef={group.targetRef} />
+                          }
                         />
                       </ListItem>
                     ))}

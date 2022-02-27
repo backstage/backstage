@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
@@ -150,8 +154,17 @@ const samlDefaultSignInResolver: SignInResolver<SamlAuthResult> = async (
 ) => {
   const id = info.result.fullProfile.nameID;
 
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: id,
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: id },
+    claims: {
+      sub: entityRef,
+      ent: [entityRef],
+    },
   });
 
   return { id, token };

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityRelation } from '@backstage/catalog-model';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { chunk, groupBy } from 'lodash';
 import useAsync from 'react-use/lib/useAsync';
@@ -21,30 +21,31 @@ import { catalogApiRef } from '../api';
 
 const BATCH_SIZE = 20;
 
+/** @public */
 export function useRelatedEntities(
   entity: Entity,
-  { type, kind }: { type?: string; kind?: string },
+  relationFilter: { type?: string; kind?: string },
 ): {
   entities: Entity[] | undefined;
   loading: boolean;
   error: Error | undefined;
 } {
+  const filterByTypeLower = relationFilter?.type?.toLocaleLowerCase('en-US');
+  const filterByKindLower = relationFilter?.kind?.toLocaleLowerCase('en-US');
+
   const catalogApi = useApi(catalogApiRef);
   const {
     loading,
     value: entities,
     error,
   } = useAsync(async () => {
-    const relations =
-      entity.relations &&
-      entity.relations.filter(
+    const relations = entity.relations
+      ?.map(r => ({ type: r.type, target: parseEntityRef(r.targetRef) }))
+      .filter(
         r =>
-          (!type ||
-            r.type.toLocaleLowerCase('en-US') ===
-              type.toLocaleLowerCase('en-US')) &&
-          (!kind ||
-            r.target.kind.toLocaleLowerCase('en-US') ===
-              kind.toLocaleLowerCase('en-US')),
+          (!filterByTypeLower ||
+            r.type.toLocaleLowerCase('en-US') === filterByTypeLower) &&
+          (!filterByKindLower || r.target.kind === filterByKindLower),
       );
 
     if (!relations) {
@@ -56,7 +57,7 @@ export function useRelatedEntities(
     // `filter=kind=component,namespace=default,name=example1&filter=kind=component,namespace=default,name=example2`
     // with grouping, we can generate a query a string like
     // `filter=kind=component,namespace=default,name=example1,example2`
-    const relationsByKindAndNamespace: EntityRelation[][] = Object.values(
+    const relationsByKindAndNamespace = Object.values(
       groupBy(relations, ({ target }) => {
         return `${target.kind}:${target.namespace}`.toLocaleLowerCase('en-US');
       }),
@@ -95,7 +96,7 @@ export function useRelatedEntities(
     );
 
     return results.flatMap(r => r.items);
-  }, [entity, type]);
+  }, [entity, filterByTypeLower, filterByKindLower]);
 
   return {
     entities,

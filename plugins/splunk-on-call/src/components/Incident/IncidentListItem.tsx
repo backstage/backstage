@@ -64,6 +64,7 @@ type Props = {
   team: string;
   incident: Incident;
   onIncidentAction: () => void;
+  readOnly: boolean;
 };
 
 const IncidentPhaseStatus = ({
@@ -135,6 +136,7 @@ const IncidentAction = ({
 
 export const IncidentListItem = ({
   incident,
+  readOnly,
   onIncidentAction,
   team,
 }: Props) => {
@@ -241,12 +243,14 @@ export const IncidentListItem = ({
 
       {incident.incidentLink && incident.incidentNumber && (
         <ListItemSecondaryAction>
-          <IncidentAction
-            currentPhase={incident.currentPhase || ''}
-            incidentId={incident.entityId}
-            resolveAction={handleResolveIncident}
-            acknowledgeAction={handleAcknowledgeIncident}
-          />
+          {!readOnly && (
+            <IncidentAction
+              currentPhase={incident.currentPhase || ''}
+              incidentId={incident.entityId}
+              resolveAction={handleResolveIncident}
+              acknowledgeAction={handleAcknowledgeIncident}
+            />
+          )}
           <Tooltip title="View in Splunk On-Call" placement="top">
             <IconButton
               href={incident.incidentLink}

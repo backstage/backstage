@@ -24,7 +24,7 @@ import {
   SidebarPinStateContext,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { CatalogResultListItem } from '@backstage/plugin-catalog';
+import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
@@ -38,7 +38,7 @@ import {
   SearchType,
   useSearch,
 } from '@backstage/plugin-search';
-import { DocsResultListItem } from '@backstage/plugin-techdocs';
+import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
 import React, { useContext } from 'react';
 
@@ -136,14 +136,14 @@ const SearchPage = () => {
                     switch (type) {
                       case 'software-catalog':
                         return (
-                          <CatalogResultListItem
+                          <CatalogSearchResultListItem
                             key={document.location}
                             result={document}
                           />
                         );
                       case 'techdocs':
                         return (
-                          <DocsResultListItem
+                          <TechDocsSearchResultListItem
                             key={document.location}
                             result={document}
                           />

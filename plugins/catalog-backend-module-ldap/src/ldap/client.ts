@@ -106,6 +106,12 @@ export class LdapClient {
             reject(new Error(errorString(e)));
           });
 
+          res.on('page', (_result, cb) => {
+            if (cb) {
+              cb();
+            }
+          });
+
           res.on('end', r => {
             if (!r) {
               reject(new Error('Null response'));

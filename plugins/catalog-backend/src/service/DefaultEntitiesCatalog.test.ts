@@ -469,6 +469,62 @@ describe('DefaultEntitiesCatalog', () => {
         expect(entities.length).toBe(0);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should return both target and targetRef for entities',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+        await addEntity(
+          knex,
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'one' },
+            spec: {},
+            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
+          },
+          [],
+        );
+        await addEntity(
+          knex,
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'two' },
+            spec: {},
+            relations: [
+              {
+                type: 'r',
+                target: { kind: 'x', namespace: 'y', name: 'z' },
+              } as any,
+            ],
+          },
+          [],
+        );
+        const catalog = new DefaultEntitiesCatalog(knex);
+
+        const { entities } = await catalog.entities();
+
+        expect(
+          entities.find(e => e.metadata.name === 'one')!.relations,
+        ).toEqual([
+          {
+            type: 'r',
+            targetRef: 'x:y/z',
+            target: { kind: 'x', namespace: 'y', name: 'z' },
+          },
+        ]);
+        expect(
+          entities.find(e => e.metadata.name === 'two')!.relations,
+        ).toEqual([
+          {
+            type: 'r',
+            targetRef: 'x:y/z',
+            target: { kind: 'x', namespace: 'y', name: 'z' },
+          },
+        ]);
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {
@@ -532,6 +588,131 @@ describe('DefaultEntitiesCatalog', () => {
           { entity_ref: 'k:default/parent2', result_hash: 'child-was-deleted' },
           { entity_ref: 'k:default/unrelated', result_hash: 'not-changed' },
         ]);
+      },
+    );
+  });
+
+  describe('facets', () => {
+    it.each(databases.eachSupportedId())(
+      'can filter and collect properly',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        await addEntityToSearch(knex, {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'one' },
+          spec: {},
+        });
+        await addEntityToSearch(knex, {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'two' },
+          spec: {},
+        });
+        await addEntityToSearch(knex, {
+          apiVersion: 'a',
+          kind: 'k2',
+          metadata: { name: 'two' },
+          spec: {},
+        });
+        const catalog = new DefaultEntitiesCatalog(knex);
+
+        await expect(catalog.facets({ facets: ['kind'] })).resolves.toEqual({
+          facets: {
+            kind: [
+              { value: 'k', count: 2 },
+              { value: 'k2', count: 1 },
+            ],
+          },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'can match on annotations and labels with dots in them',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        await addEntityToSearch(knex, {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+            annotations: { 'a.b/c.d': 'annotation1' },
+            labels: { 'e.f/g.h': 'label1' },
+          },
+          spec: {},
+        });
+        await addEntityToSearch(knex, {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'two',
+            annotations: { 'a.b/c.d': 'annotation2' },
+            labels: { 'e.f/g.h': 'label2' },
+          },
+          spec: {},
+        });
+        const catalog = new DefaultEntitiesCatalog(knex);
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.annotations.a.b/c.d', 'metadata.labels.e.f/g.h'],
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.annotations.a.b/c.d': [
+              { value: 'annotation1', count: 1 },
+              { value: 'annotation2', count: 1 },
+            ],
+            'metadata.labels.e.f/g.h': [
+              { value: 'label1', count: 1 },
+              { value: 'label2', count: 1 },
+            ],
+          },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'can match on strings in arrays',
+      async databaseId => {
+        const { knex } = await createDatabase(databaseId);
+
+        await addEntityToSearch(knex, {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+            tags: ['java', 'rust'],
+          },
+          spec: {},
+        });
+        await addEntityToSearch(knex, {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'two',
+            tags: ['java', 'node'],
+          },
+          spec: {},
+        });
+        const catalog = new DefaultEntitiesCatalog(knex);
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.tags'],
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.tags': expect.arrayContaining([
+              { value: 'java', count: 2 },
+              { value: 'rust', count: 1 },
+              { value: 'node', count: 1 },
+            ]),
+          },
+        });
       },
     );
   });

@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-common';
 import {
   Entity,
+  parseEntityRef,
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -30,7 +31,11 @@ import { Logger } from 'winston';
 import pLimit from 'p-limit';
 import { Config } from '@backstage/config';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import {
+  CatalogApi,
+  CatalogClient,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 
 interface MkSearchIndexDoc {
@@ -39,6 +44,11 @@ interface MkSearchIndexDoc {
   location: string;
 }
 
+/**
+ * Options to configure the TechDocs collator
+ *
+ * @public
+ */
 export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
@@ -55,47 +65,48 @@ type EntityInfo = {
   kind: string;
 };
 
+/**
+ * A search collator responsible for gathering and transforming TechDocs documents.
+ *
+ * @public
+ */
 export class DefaultTechDocsCollator implements DocumentCollator {
-  protected discovery: PluginEndpointDiscovery;
-  protected locationTemplate: string;
-  private readonly logger: Logger;
-  private readonly catalogClient: CatalogApi;
-  private readonly tokenManager: TokenManager;
-  private readonly parallelismLimit: number;
-  private readonly legacyPathCasing: boolean;
   public readonly type: string = 'techdocs';
   public readonly visibilityPermission = catalogEntityReadPermission;
 
-  /**
-   * @deprecated use static fromConfig method instead.
-   */
-  constructor(options: TechDocsCollatorOptions) {
-    this.discovery = options.discovery;
-    this.locationTemplate =
-      options.locationTemplate || '/docs/:namespace/:kind/:name/:path';
-    this.logger = options.logger;
-    this.catalogClient =
-      options.catalogClient ||
-      new CatalogClient({ discoveryApi: options.discovery });
-    this.parallelismLimit = options.parallelismLimit ?? 10;
-    this.legacyPathCasing = options.legacyPathCasing ?? false;
-    this.tokenManager = options.tokenManager;
-  }
+  private constructor(
+    private readonly legacyPathCasing: boolean,
+    private readonly options: TechDocsCollatorOptions,
+  ) {}
 
   static fromConfig(config: Config, options: TechDocsCollatorOptions) {
     const legacyPathCasing =
       config.getOptionalBoolean(
         'techdocs.legacyUseCaseSensitiveTripletPaths',
       ) || false;
-    return new DefaultTechDocsCollator({ ...options, legacyPathCasing });
+    return new DefaultTechDocsCollator(legacyPathCasing, options);
   }
 
   async execute() {
-    const limit = pLimit(this.parallelismLimit);
-    const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
-    const { token } = await this.tokenManager.getToken();
-    const entities = await this.catalogClient.getEntities(
+    const {
+      parallelismLimit,
+      discovery,
+      tokenManager,
+      catalogClient,
+      locationTemplate,
+      logger,
+    } = this.options;
+    const limit = pLimit(parallelismLimit ?? 10);
+    const techDocsBaseUrl = await discovery.getBaseUrl('techdocs');
+    const { token } = await tokenManager.getToken();
+    const entities = await (
+      catalogClient ?? new CatalogClient({ discoveryApi: discovery })
+    ).getEntities(
       {
+        filter: {
+          'metadata.annotations.backstage.io/techdocs-ref':
+            CATALOG_FILTER_EXISTS,
+        },
         fields: [
           'kind',
           'namespace',
@@ -110,61 +121,60 @@ export class DefaultTechDocsCollator implements DocumentCollator {
       },
       { token },
     );
-    const docPromises = entities.items
-      .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
-      .map((entity: Entity) =>
-        limit(async (): Promise<TechDocsDocument[]> => {
-          const entityInfo = DefaultTechDocsCollator.handleEntityInfoCasing(
-            this.legacyPathCasing,
+    const docPromises = entities.items.map((entity: Entity) =>
+      limit(async (): Promise<TechDocsDocument[]> => {
+        const entityInfo = DefaultTechDocsCollator.handleEntityInfoCasing(
+          this.legacyPathCasing ?? false,
+          {
+            kind: entity.kind,
+            namespace: entity.metadata.namespace || 'default',
+            name: entity.metadata.name,
+          },
+        );
+
+        try {
+          const searchIndexResponse = await fetch(
+            DefaultTechDocsCollator.constructDocsIndexUrl(
+              techDocsBaseUrl,
+              entityInfo,
+            ),
             {
-              kind: entity.kind,
-              namespace: entity.metadata.namespace || 'default',
-              name: entity.metadata.name,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             },
           );
+          const searchIndex = await searchIndexResponse.json();
 
-          try {
-            const searchIndexResponse = await fetch(
-              DefaultTechDocsCollator.constructDocsIndexUrl(
-                techDocsBaseUrl,
-                entityInfo,
-              ),
+          return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
+            title: unescape(doc.title),
+            text: unescape(doc.text || ''),
+            location: this.applyArgsToFormat(
+              locationTemplate || '/docs/:namespace/:kind/:name/:path',
               {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              },
-            );
-            const searchIndex = await searchIndexResponse.json();
-
-            return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-              title: unescape(doc.title),
-              text: unescape(doc.text || ''),
-              location: this.applyArgsToFormat(this.locationTemplate, {
                 ...entityInfo,
                 path: doc.location,
-              }),
-              path: doc.location,
-              ...entityInfo,
-              entityTitle: entity.metadata.title,
-              componentType: entity.spec?.type?.toString() || 'other',
-              lifecycle: (entity.spec?.lifecycle as string) || '',
-              owner:
-                entity.relations?.find(r => r.type === RELATION_OWNED_BY)
-                  ?.target?.name || '',
-              authorization: {
-                resourceRef: stringifyEntityRef(entity),
               },
-            }));
-          } catch (e) {
-            this.logger.debug(
-              `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
-              e,
-            );
-            return [];
-          }
-        }),
-      );
+            ),
+            path: doc.location,
+            ...entityInfo,
+            entityTitle: entity.metadata.title,
+            componentType: entity.spec?.type?.toString() || 'other',
+            lifecycle: (entity.spec?.lifecycle as string) || '',
+            owner: getSimpleEntityOwnerString(entity),
+            authorization: {
+              resourceRef: stringifyEntityRef(entity),
+            },
+          }));
+        } catch (e) {
+          logger.debug(
+            `Failed to retrieve tech docs search index for entity ${entityInfo.namespace}/${entityInfo.kind}/${entityInfo.name}`,
+            e,
+          );
+          return [];
+        }
+      }),
+    );
     return (await Promise.all(docPromises)).flat();
   }
 
@@ -196,4 +206,15 @@ export class DefaultTechDocsCollator implements DocumentCollator {
           return { ...acc, [key]: value.toLocaleLowerCase('en-US') };
         }, {} as EntityInfo);
   }
+}
+
+function getSimpleEntityOwnerString(entity: Entity): string {
+  if (entity.relations) {
+    const owner = entity.relations.find(r => r.type === RELATION_OWNED_BY);
+    if (owner) {
+      const { name } = parseEntityRef(owner.targetRef);
+      return name;
+    }
+  }
+  return '';
 }

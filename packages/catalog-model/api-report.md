@@ -69,7 +69,14 @@ export class CommonValidatorFunctions {
 // @public @deprecated
 export function compareEntityToRef(
   entity: Entity,
-  ref: EntityRef | EntityName,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      }
+    | EntityName,
   context?: {
     defaultKind?: string;
     defaultNamespace?: string;
@@ -212,7 +219,7 @@ export type EntityPolicy = {
   enforce(entity: Entity): Promise<Entity | undefined>;
 };
 
-// @public
+// @public @deprecated
 export type EntityRef =
   | string
   | {
@@ -231,13 +238,7 @@ export type EntityRefContext = {
 export type EntityRelation = {
   type: string;
   target: EntityName;
-};
-
-// @public
-export type EntityRelationSpec = {
-  source: EntityName;
-  type: string;
-  target: EntityName;
+  targetRef: string;
 };
 
 // @public
@@ -311,7 +312,7 @@ export { GroupEntityV1alpha1 };
 // @public
 export const groupEntityV1alpha1Validator: KindValidator;
 
-// @public
+// @public @deprecated
 export type JSONSchema = JSONSchema7 & {
   [key in string]?: JsonValue;
 };
@@ -370,7 +371,7 @@ export { LocationEntityV1alpha1 };
 // @public
 export const locationEntityV1alpha1Validator: KindValidator;
 
-// @public
+// @public @deprecated
 export type LocationSpec = {
   type: string;
   target: string;
@@ -391,9 +392,15 @@ export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
 export const ORIGIN_LOCATION_ANNOTATION =
   'backstage.io/managed-by-origin-location';
 
-// @public
+// @public @deprecated
 export function parseEntityName(
-  ref: EntityRef,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
   context?: {
     defaultKind?: string;
     defaultNamespace?: string;
@@ -402,36 +409,18 @@ export function parseEntityName(
 
 // @public
 export function parseEntityRef(
-  ref: EntityRef,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
   context?: {
-    defaultKind: string;
-    defaultNamespace: string;
+    defaultKind?: string;
+    defaultNamespace?: string;
   },
 ): EntityName;
-
-// @public
-export function parseEntityRef(
-  ref: EntityRef,
-  context?: {
-    defaultKind: string;
-  },
-): {
-  kind: string;
-  namespace?: string;
-  name: string;
-};
-
-// @public
-export function parseEntityRef(
-  ref: EntityRef,
-  context?: {
-    defaultNamespace: string;
-  },
-): {
-  kind?: string;
-  namespace: string;
-  name: string;
-};
 
 // @public
 export function parseLocationRef(ref: string): {
@@ -557,33 +546,6 @@ export { SystemEntityV1alpha1 };
 
 // @public
 export const systemEntityV1alpha1Validator: KindValidator;
-
-// @public
-export interface TemplateEntityV1beta2 extends Entity {
-  // (undocumented)
-  apiVersion: 'backstage.io/v1beta2';
-  // (undocumented)
-  kind: 'Template';
-  // (undocumented)
-  spec: {
-    type: string;
-    parameters?: JsonObject | JsonObject[];
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
-    output?: {
-      [name: string]: string;
-    };
-    owner?: string;
-  };
-}
-
-// @public
-export const templateEntityV1beta2Validator: KindValidator;
 
 // @public
 interface UserEntityV1alpha1 extends Entity {

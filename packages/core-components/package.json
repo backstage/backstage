@@ -1,12 +1,15 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.8.8",
+  "version": "0.8.10",
   "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "web-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,18 +24,19 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "backstage-cli build --outputs types,esm",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.13",
-    "@backstage/core-plugin-api": "^0.6.0",
-    "@backstage/errors": "^0.2.0",
-    "@backstage/theme": "^0.2.14",
+    "@backstage/config": "^0.1.15",
+    "@backstage/core-plugin-api": "^0.7.0",
+    "@backstage/errors": "^0.2.2",
+    "@backstage/theme": "^0.2.15",
     "@material-table/core": "^3.1.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
@@ -60,7 +64,8 @@
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^15.4.5",
     "react-text-truncate": "^0.17.0",
-    "react-use": "^17.2.4",
+    "react-use": "^17.3.2",
+    "@react-hookz/web": "^12.3.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "remark-gfm": "^3.0.1",
@@ -73,9 +78,9 @@
     "react-dom": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/core-app-api": "^0.5.2",
-    "@backstage/cli": "^0.13.2",
-    "@backstage/test-utils": "^0.2.4",
+    "@backstage/core-app-api": "^0.5.4",
+    "@backstage/cli": "^0.14.1",
+    "@backstage/test-utils": "^0.2.6",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",

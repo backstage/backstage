@@ -18,24 +18,16 @@ import { PublisherBase } from '@backstage/techdocs-common';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 import { TokenManager } from '@backstage/backend-common';
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// Warning: (ae-missing-release-tag) "DefaultTechDocsCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class DefaultTechDocsCollator implements DocumentCollator {
-  // @deprecated
-  constructor(options: TechDocsCollatorOptions);
   // (undocumented)
   protected applyArgsToFormat(
     format: string,
     args: Record<string, string>,
   ): string;
-  // (undocumented)
-  protected discovery: PluginEndpointDiscovery;
   // (undocumented)
   execute(): Promise<TechDocsDocument[]>;
   // (undocumented)
@@ -44,15 +36,11 @@ export class DefaultTechDocsCollator implements DocumentCollator {
     options: TechDocsCollatorOptions,
   ): DefaultTechDocsCollator;
   // (undocumented)
-  protected locationTemplate: string;
-  // (undocumented)
   readonly type: string;
   // (undocumented)
   readonly visibilityPermission: Permission;
 }
 
-// Warning: (ae-missing-release-tag) "OutOfTheBoxDeploymentOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
@@ -65,8 +53,6 @@ export type OutOfTheBoxDeploymentOptions = {
   cache: PluginCacheManager;
 };
 
-// Warning: (ae-missing-release-tag) "RecommendedDeploymentOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
@@ -76,16 +62,12 @@ export type RecommendedDeploymentOptions = {
   cache: PluginCacheManager;
 };
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
 
-// Warning: (ae-missing-release-tag) "TechDocsCollatorOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
   logger: Logger_2;

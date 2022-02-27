@@ -26,7 +26,6 @@ import {
   GroupEntity,
   groupEntityV1alpha1Validator,
   locationEntityV1alpha1Validator,
-  LocationSpec,
   parseEntityRef,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -46,14 +45,17 @@ import {
   resourceEntityV1alpha1Validator,
   SystemEntity,
   systemEntityV1alpha1Validator,
-  TemplateEntityV1beta2,
-  templateEntityV1beta2Validator,
   UserEntity,
   userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
+import {
+  TemplateEntityV1beta2,
+  templateEntityV1beta2Validator,
+} from '@backstage/plugin-scaffolder-common';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 
+/** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   private readonly validators = [
     apiEntityV1alpha1Validator,
@@ -66,6 +68,10 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     systemEntityV1alpha1Validator,
     domainEntityV1alpha1Validator,
   ];
+
+  getProcessorName(): string {
+    return 'BuiltinKindsEntityProcessor';
+  }
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
@@ -100,11 +106,6 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       }
       for (const target of [targets].flat()) {
         const targetRef = parseEntityRef(target, context);
-        if (targetRef.kind === undefined) {
-          throw new Error(
-            `Entity reference "${target}" did not specify a kind (e.g. starting with "Component:"), and has no default`,
-          );
-        }
         emit(
           result.relation({
             source: selfRef,

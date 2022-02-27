@@ -20,28 +20,23 @@
  * them with .icon.svg
  */
 export function svgrTemplate(
-  { template }: any,
-  _opts: any,
-  { imports, interfaces, componentName, jsx }: any,
+  { imports, interfaces, componentName, props, jsx }: any,
+  { tpl }: any,
 ) {
-  const iconName = {
-    ...componentName,
-    name: `${componentName.name.replace(/icon$/, '')}Icon`,
-  };
+  const name = `${componentName.replace(/icon$/, '')}Icon`;
 
   const defaultExport = {
     type: 'ExportDefaultDeclaration',
-    declaration: iconName,
+    declaration: { type: 'Identifier', name },
   };
 
-  const typeScriptTemplate = template.smart({ plugins: ['typescript'] });
-  return typeScriptTemplate.ast`
+  return tpl`
 ${imports}
 import SvgIcon from '@material-ui/core/SvgIcon';
 
 ${interfaces}
 
-const ${iconName} = props => React.createElement(SvgIcon, props, ${jsx.children});
+const ${name} = (${props}) => React.createElement(SvgIcon, ${props}, ${jsx.children});
 
 ${defaultExport}`;
 }

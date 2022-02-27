@@ -2,7 +2,7 @@ name: Sync Dependabot changeset
 on:
   pull_request_target:
     paths:
-      - .github/workflows/dependabot-changeset-maker.yml
+      - '.github/workflows/sync_dependabot-changesets.yml'
       - '**/yarn.lock'
 
 jobs:

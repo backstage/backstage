@@ -44,7 +44,7 @@ describe('Incidents', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents refreshIncidents={false} team="test" />
+          <Incidents readOnly={false} refreshIncidents={false} team="test" />
         </ApiProvider>,
       ),
     );
@@ -68,7 +68,7 @@ describe('Incidents', () => {
     } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents team="test" refreshIncidents={false} />
+          <Incidents readOnly={false} team="test" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );
@@ -90,6 +90,40 @@ describe('Incidents', () => {
     expect(getAllByTitle('View in Splunk On-Call').length).toEqual(1);
   });
 
+  it('does not render incident action buttons in read only mode', async () => {
+    mockSplunkOnCallApi.getIncidents.mockResolvedValue([MOCK_INCIDENT]);
+    mockSplunkOnCallApi.getTeams.mockResolvedValue([MOCK_TEAM]);
+
+    const { getByText, getAllByTitle, getByLabelText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <Incidents readOnly team="test" refreshIncidents={false} />
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    await waitFor(
+      () =>
+        expect(
+          getByText('user', {
+            exact: false,
+          }),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
+    expect(getByText('test-incident')).toBeInTheDocument();
+    expect(getByLabelText('Status warning')).toBeInTheDocument();
+    expect(() => getAllByTitle('Acknowledge')).toThrow(
+      'Unable to find an element with the title: Acknowledge.',
+    );
+    expect(() => getAllByTitle('Resolve')).toThrow(
+      'Unable to find an element with the title: Resolve.',
+    );
+
+    // assert links, mailto and hrefs, date calculation
+    expect(getAllByTitle('View in Splunk On-Call').length).toEqual(1);
+  });
+
   it('Handle errors', async () => {
     mockSplunkOnCallApi.getIncidents.mockRejectedValueOnce(
       new Error('Error occurred'),
@@ -99,7 +133,7 @@ describe('Incidents', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <Incidents team="test" refreshIncidents={false} />
+          <Incidents readOnly={false} team="test" refreshIncidents={false} />
         </ApiProvider>,
       ),
     );

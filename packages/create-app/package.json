@@ -1,10 +1,13 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.19",
+  "version": "0.4.21",
   "private": false,
   "publishConfig": {
     "access": "public"
+  },
+  "backstage": {
+    "role": "cli"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,16 +24,16 @@
     "backstage-create-app": "bin/backstage-create-app"
   },
   "scripts": {
-    "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "clean": "backstage-cli clean",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "prepack": "node scripts/prepack.js",
     "postpack": "node scripts/postpack.js",
     "start": "nodemon --"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.6",
+    "@backstage/cli-common": "^0.1.8",
     "chalk": "^4.0.0",
     "commander": "^6.1.0",
     "fs-extra": "9.1.0",

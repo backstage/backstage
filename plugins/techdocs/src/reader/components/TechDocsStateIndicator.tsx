@@ -23,7 +23,10 @@ import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import { useTechDocsReader } from './Reader';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
+  root: {
+    marginBottom: theme.spacing(2),
+  },
   message: {
     // `word-break: break-word` is deprecated, but gives legacy support to browsers not supporting `overflow-wrap` yet
     // https://developer.mozilla.org/en-US/docs/Web/CSS/word-break
@@ -58,6 +61,7 @@ export const TechDocsStateIndicator = () => {
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
       <Alert
+        classes={{ root: classes.root }}
         variant="outlined"
         severity="info"
         icon={<CircularProgress size="24px" />}
@@ -76,6 +80,7 @@ export const TechDocsStateIndicator = () => {
         severity="info"
         icon={<CircularProgress size="24px" />}
         action={<TechDocsBuildLogs buildLog={buildLog} />}
+        classes={{ root: classes.root }}
       >
         A newer version of this documentation is being prepared and will be
         available shortly.
@@ -93,6 +98,7 @@ export const TechDocsStateIndicator = () => {
             Refresh
           </Button>
         }
+        classes={{ root: classes.root }}
       >
         A newer version of this documentation is now available, please refresh
         to view.
@@ -106,7 +112,7 @@ export const TechDocsStateIndicator = () => {
         variant="outlined"
         severity="error"
         action={<TechDocsBuildLogs buildLog={buildLog} />}
-        classes={{ message: classes.message }}
+        classes={{ root: classes.root, message: classes.message }}
       >
         Building a newer version of this documentation failed.{' '}
         {syncErrorMessage}
@@ -122,7 +128,7 @@ export const TechDocsStateIndicator = () => {
             variant="outlined"
             severity="error"
             action={<TechDocsBuildLogs buildLog={buildLog} />}
-            classes={{ message: classes.message }}
+            classes={{ root: classes.root, message: classes.message }}
           >
             Building a newer version of this documentation failed.{' '}
             {syncErrorMessage}

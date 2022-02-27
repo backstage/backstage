@@ -1,13 +1,15 @@
 name: Verify Master Branch on Windows
-
 on:
   workflow_dispatch:
   push:
     branches: [master]
+  pull_request:
+    paths:
+      - '.github/workflows/verify_windows.yml'
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     strategy:
       matrix:

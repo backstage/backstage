@@ -34,9 +34,8 @@ import { Cobertura } from './converter/cobertura';
 import { Jacoco } from './converter/jacoco';
 import { Converter } from './converter';
 import {
-  EntityRef,
   getEntitySourceLocation,
-  parseEntityName,
+  parseEntityRef,
 } from '@backstage/catalog-model';
 
 export interface RouterOptions {
@@ -78,7 +77,7 @@ export const makeRouter = async (
    */
   router.get('/report', async (req, res) => {
     const { entity } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
+    const entityName = parseEntityRef(entity as string);
     const entityLookup = await catalogApi.getEntityByName(entityName);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
@@ -101,7 +100,7 @@ export const makeRouter = async (
    */
   router.get('/history', async (req, res) => {
     const { entity } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
+    const entityName = parseEntityRef(entity as string);
     const entityLookup = await catalogApi.getEntityByName(entityName);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
@@ -120,7 +119,7 @@ export const makeRouter = async (
    */
   router.get('/file-content', async (req, res) => {
     const { entity, path } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
+    const entityName = parseEntityRef(entity as string);
     const entityLookup = await catalogApi.getEntityByName(entityName);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
@@ -172,7 +171,7 @@ export const makeRouter = async (
    */
   router.post('/report', async (req, res) => {
     const { entity, coverageType } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
+    const entityName = parseEntityRef(entity as string);
     const entityLookup = await catalogApi.getEntityByName(entityName);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);

@@ -15,13 +15,13 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { codeSearch } from './azure';
 import {
   AzureDevOpsDiscoveryProcessor,
   parseUrl,
 } from './AzureDevOpsDiscoveryProcessor';
+import { LocationSpec } from './types';
 
 jest.mock('./azure');
 const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
@@ -167,7 +167,6 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
             'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -177,7 +176,6 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
             'https://dev.azure.com/shopify/engineering/_git/ios-app?path=/src/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -215,7 +213,6 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
             'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -254,7 +251,6 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
             'https://dev.azure.com/shopify/engineering/_git/backstage?path=/src/main/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 

@@ -33,7 +33,7 @@ import {
 import DescriptionIcon from '@material-ui/icons/Description';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';
-import { useProjectName } from '../useProjectName';
+import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { useDownloadWorkflowRunLogs } from './useDownloadWorkflowRunLogs';
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -77,13 +77,13 @@ export const WorkflowRunLogs = ({
 }) => {
   const config = useApi(configApiRef);
   const classes = useStyles();
-  const projectName = useProjectName(entity);
+  const projectName = getProjectNameFromEntity(entity);
 
   // TODO: Get github hostname from metadata annotation
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
-  const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
+  const [owner, repo] = (projectName && projectName.split('/')) || [];
   const jobLogs = useDownloadWorkflowRunLogs({
     hostname,
     owner,

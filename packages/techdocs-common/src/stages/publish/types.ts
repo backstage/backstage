@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Logger } from 'winston';
 import express from 'express';
 
 /**
+ * Options for building publishers
+ * @public
+ */
+export type PublisherFactory = {
+  logger: Logger;
+  discovery: PluginEndpointDiscovery;
+};
+
+/**
  * Key for all the different types of TechDocs publishers that are supported.
+ * @public
  */
 export type PublisherType =
   | 'local'
@@ -26,6 +38,10 @@ export type PublisherType =
   | 'azureBlobStorage'
   | 'openStackSwift';
 
+/**
+ * Request publish definition
+ * @public
+ */
 export type PublishRequest = {
   entity: Entity;
   /* The Path to the directory where the generated files are stored. */
@@ -35,6 +51,7 @@ export type PublishRequest = {
 /**
  * Response containing metadata about where files were published and what may
  * have been published or updated.
+ * @public
  */
 export type PublishResponse = {
   /**
@@ -51,7 +68,6 @@ export type PublishResponse = {
 
 /**
  * Result for the validation check.
- *
  * @public
  */
 export type ReadinessResponse = {
@@ -62,6 +78,7 @@ export type ReadinessResponse = {
 /**
  * Type to hold metadata found in techdocs_metadata.json and associated with each site
  * @param etag - ETag of the resource used to generate the site. Usually the latest commit sha of the source repository.
+ * @public
  */
 export type TechDocsMetadata = {
   site_name: string;
@@ -71,6 +88,10 @@ export type TechDocsMetadata = {
   files?: string[];
 };
 
+/**
+ * TechDocs entity triplet migration request
+ * @public
+ */
 export type MigrateRequest = {
   /**
    * Whether or not to remove the source file. Defaults to false (acting like a

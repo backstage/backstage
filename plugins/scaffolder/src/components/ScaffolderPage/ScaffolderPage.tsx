@@ -23,7 +23,8 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
@@ -54,7 +55,8 @@ export type ScaffolderPageProps = {
     | ComponentType<{ template: TemplateEntityV1beta2 }>
     | undefined;
   groups?: Array<{
-    title?: string;
+    title?: React.ReactNode;
+    /** @deprcated use title instead as it accepts a string and react component */
     titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;

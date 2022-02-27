@@ -1,0 +1,5 @@
+site_name: Plugin B
+site_description: A description of Plugin B
+
+nav:
+  - Introduction: index.md

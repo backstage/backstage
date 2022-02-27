@@ -25,8 +25,13 @@ import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
 
-export function createScaffolderFieldExtension<T = any>(
-  options: FieldExtensionOptions<T>,
+export function createScaffolderFieldExtension<
+  TReturnValue = unknown,
+  TInputProps = unknown,
+>(
+  options: FieldExtensionOptions<TReturnValue, TInputProps>,
+  // TODO: need know how to embed these types nicely so the api report looks nice.
+  // then we can remove the export of the components
 ): Extension<() => null> {
   return {
     expose() {
@@ -43,7 +48,9 @@ export function createScaffolderFieldExtension<T = any>(
   };
 }
 
-export const ScaffolderFieldExtensions: React.ComponentType = () => null;
+export const ScaffolderFieldExtensions: React.ComponentType =
+  (): JSX.Element | null => null;
+
 attachComponentData(
   ScaffolderFieldExtensions,
   FIELD_EXTENSION_WRAPPER_KEY,

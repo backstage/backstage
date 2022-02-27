@@ -15,7 +15,6 @@
  */
 
 import {
-  Entity,
   ANNOTATION_LOCATION,
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
@@ -72,13 +71,21 @@ const useStyles = makeStyles({
   },
 });
 
-type AboutCardProps = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
+/**
+ * Props for {@link AboutCard}.
+ *
+ * @public
+ */
+export interface AboutCardProps {
   variant?: InfoCardVariants;
-};
+}
 
-export function AboutCard({ variant }: AboutCardProps) {
+/**
+ * @public
+ * @deprecated Please use EntityAboutCard instead
+ */
+export function AboutCard(props: AboutCardProps) {
+  const { variant } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   ScmIntegrationRegistry,
@@ -22,7 +21,7 @@ import {
 } from '@backstage/integration';
 import { Logger } from 'winston';
 import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
 import { codeSearch } from './azure';
 
 /**
@@ -38,6 +37,8 @@ import { codeSearch } from './azure';
  * You may also explicitly specify a single repo:
  *
  *    target: https://dev.azure.com/org/project/_git/repo
+ *
+ * @public
  **/
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
@@ -58,6 +59,10 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
+  }
+
+  getProcessorName(): string {
+    return 'AzureDevOpsDiscoveryProcessor';
   }
 
   async readLocation(
@@ -97,17 +102,14 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
 
     for (const file of files) {
       emit(
-        results.location(
-          {
-            type: 'url',
-            target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
-            presence: 'optional',
-          },
+        results.location({
+          type: 'url',
+          target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
           // an error if it couldn't.
-          true,
-        ),
+          presence: 'optional',
+        }),
       );
     }
 

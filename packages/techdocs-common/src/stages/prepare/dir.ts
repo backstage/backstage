@@ -24,20 +24,43 @@ import {
 } from '@backstage/integration';
 import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
-import { PreparerBase, PreparerResponse } from './types';
+import {
+  PreparerBase,
+  PreparerConfig,
+  PreparerOptions,
+  PreparerResponse,
+} from './types';
 
+/**
+ * Preparer used to retrieve documentation files from a local directory
+ * @public
+ */
 export class DirectoryPreparer implements PreparerBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly reader: UrlReader;
 
-  constructor(config: Config, _logger: Logger, reader: UrlReader) {
+  /**  @deprecated use static fromConfig method instead */
+  constructor(config: Config, _logger: Logger | null, reader: UrlReader) {
     this.reader = reader;
     this.scmIntegrations = ScmIntegrations.fromConfig(config);
   }
 
+  /**
+   * Returns a directory preparer instance
+   * @param config - A backstage config
+   * @param options - A directory preparer options containing a logger and reader
+   */
+  static fromConfig(
+    config: Config,
+    { logger, reader }: PreparerConfig,
+  ): DirectoryPreparer {
+    return new DirectoryPreparer(config, logger, reader);
+  }
+
+  /** {@inheritDoc PreparerBase.prepare} */
   async prepare(
     entity: Entity,
-    options?: { logger?: Logger; etag?: string },
+    options?: PreparerOptions,
   ): Promise<PreparerResponse> {
     const annotation = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',

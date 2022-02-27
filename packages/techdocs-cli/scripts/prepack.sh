@@ -23,4 +23,4 @@ TECHDOCS_CLI_EMBEDDED_APP_DIR="$TECHDOCS_CLI_DIR"/../techdocs-cli-embedded-app
 echo "🚚 Copying embedded app into dist/embedded-app"
 rm -rf "$TECHDOCS_CLI_DIR"/dist/embedded-app
 cp -r "$TECHDOCS_CLI_EMBEDDED_APP_DIR"/dist "$TECHDOCS_CLI_DIR"/dist/embedded-app
-echo "🏁 Ready!"
+echo "🏁 Finished copying embedded app into dist/embedded-app!"

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
@@ -23,7 +22,7 @@ import { DbLocationsRow } from '../database/tables';
 import { getEntityLocationRef } from '../processing/util';
 import { EntityProvider, EntityProviderConnection } from './types';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { LocationStore } from '../service';
+import { LocationInput, LocationStore } from '../service';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
@@ -34,25 +33,25 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     return 'DefaultLocationStore';
   }
 
-  async createLocation(spec: LocationSpec): Promise<Location> {
+  async createLocation(input: LocationInput): Promise<Location> {
     const location = await this.db.transaction(async tx => {
-      // Attempt to find a previous location matching the spec
+      // Attempt to find a previous location matching the input
       const previousLocations = await this.locations(tx);
-      // TODO: when location id's are a compilation of spec target we can remove this full
+      // TODO: when location id's are a compilation of input target we can remove this full
       // lookup of locations first and just grab the by that instead.
       const previousLocation = previousLocations.some(
-        l => spec.type === l.type && spec.target === l.target,
+        l => input.type === l.type && input.target === l.target,
       );
       if (previousLocation) {
         throw new ConflictError(
-          `Location ${spec.type}:${spec.target} already exists`,
+          `Location ${input.type}:${input.target} already exists`,
         );
       }
 
       const inner: DbLocationsRow = {
         id: uuid(),
-        type: spec.type,
-        target: spec.target,
+        type: input.type,
+        target: input.target,
       };
 
       await tx<DbLocationsRow>('locations').insert(inner);

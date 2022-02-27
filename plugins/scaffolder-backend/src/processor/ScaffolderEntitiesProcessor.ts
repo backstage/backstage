@@ -17,31 +17,32 @@
 import {
   Entity,
   getEntityName,
-  LocationSpec,
   parseEntityRef,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
-  entityKindSchemaValidator,
 } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
   results,
 } from '@backstage/plugin-catalog-backend';
 import {
   TemplateEntityV1beta3,
-  templateEntityV1beta3Schema,
+  templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 
 /** @public */
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
-  private readonly validators = [
-    entityKindSchemaValidator(templateEntityV1beta3Schema),
-  ];
+  getProcessorName(): string {
+    return 'ScaffolderEntitiesProcessor';
+  }
+
+  private readonly validators = [templateEntityV1beta3Validator];
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
-      if (validator(entity)) {
+      if (await validator.check(entity)) {
         return true;
       }
     }

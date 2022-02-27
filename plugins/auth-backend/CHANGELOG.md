@@ -1,5 +1,68 @@
 # @backstage/plugin-auth-backend
 
+## 0.11.0
+
+### Minor Changes
+
+- 3884bf0348: **BREAKING**: The default sign-in resolvers for all providers, if you choose to
+  use them, now emit the token `sub` and `ent` claims on the standard,
+  all-lowercase form, instead of the mixed-case form. The mixed-case form causes
+  problems for implementations that naively do string comparisons on refs. The end
+  result is that you may for example see your Backstage token `sub` claim now
+  become `'user:default/my-id'` instead of `'user:default/My-ID'`.
+
+  On a related note, specifically the SAML provider now correctly issues both
+  `sub` and `ent` claims, and on the full entity ref form instead of the short
+  form with only the ID.
+
+  **NOTE**: For a long time, it has been strongly recommended that you provide
+  your own sign-in resolver instead of using the builtin ones, and that will
+  become mandatory in the future.
+
+### Patch Changes
+
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-auth-node@0.1.3
+
+## 0.10.2
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+  - @backstage/plugin-auth-node@0.1.2
+
+## 0.10.1
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- a31559d1f5: Bump `passport-oauth2` to version 1.6.1
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 1433045c08: Removed unused `helmet` dependency.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-auth-node@0.1.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.10.0
 
 ### Minor Changes

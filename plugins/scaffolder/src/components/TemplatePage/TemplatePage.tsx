@@ -18,13 +18,13 @@ import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
 import React, { useCallback, useContext, useState } from 'react';
-import { generatePath, Navigate, useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
 import { SecretsContext } from '../secrets/SecretsContext';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef, scaffolderTaskRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 import {
@@ -41,17 +41,13 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
-const useTemplateParameterSchema = (templateName: string) => {
+const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const { value, loading, error } = useAsync(
-    () =>
-      scaffolderApi.getTemplateParameterSchema({
-        name: templateName,
-        kind: 'template',
-        namespace: 'default',
-      }),
-    [scaffolderApi, templateName],
+    () => scaffolderApi.getTemplateParameterSchema(templateRef),
+    [scaffolderApi, templateRef],
   );
   return { schema: value, loading, error };
 };
@@ -121,7 +117,8 @@ export const TemplatePage = ({
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
   const navigate = useNavigate();
-  const rootLink = useRouteRef(rootRouteRef);
+  const scaffolderTaskRoute = useRouteRef(scaffolderTaskRouteRef);
+  const rootRoute = useRouteRef(rootRouteRef);
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState<Record<string, any>>(() => {
     const query = qs.parse(window.location.search, {
@@ -141,11 +138,15 @@ export const TemplatePage = ({
   );
 
   const handleCreate = async () => {
-    const id = await scaffolderApi.scaffold(
-      templateName,
-      formState,
-      secretsContext?.secrets,
-    );
+    const { taskId } = await scaffolderApi.scaffold({
+      templateRef: stringifyEntityRef({
+        name: templateName,
+        kind: 'template',
+        namespace: 'default',
+      }),
+      values: formState,
+      secrets: secretsContext?.secrets,
+    });
 
     const formParams = qs.stringify(
       { formData: formState },
@@ -158,16 +159,16 @@ export const TemplatePage = ({
     // extra back/forward slots.
     window.history?.replaceState(null, document.title, newUrl);
 
-    navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
+    navigate(scaffolderTaskRoute({ taskId }));
   };
 
   if (error) {
     errorApi.post(new Error(`Failed to load template, ${error}`));
-    return <Navigate to={rootLink()} />;
+    return <Navigate to={rootRoute()} />;
   }
   if (!loading && !schema) {
     errorApi.post(new Error('Template was not found.'));
-    return <Navigate to={rootLink()} />;
+    return <Navigate to={rootRoute()} />;
   }
 
   const customFieldComponents = Object.fromEntries(

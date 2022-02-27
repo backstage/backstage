@@ -42,6 +42,7 @@ import {
   catalogGraphPlugin,
   EntityCatalogGraphCard,
 } from '../src';
+import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 type DataRelation = [string, string, string];
 type DataEntity = [string, string, DataRelation[]];
@@ -118,6 +119,11 @@ const entities = (
     },
     relations: relations.map(([type, k, n]) => ({
       target: { kind: k, name: n, namespace: DEFAULT_NAMESPACE },
+      targetRef: stringifyEntityRef({
+        kind: k,
+        namespace: DEFAULT_NAMESPACE,
+        name: n,
+      }),
       type,
     })),
   };
@@ -162,6 +168,12 @@ createDevApp()
     ),
   })
   .addPage({
+    path: '/catalog-graph',
     element: <CatalogGraphPage />,
+  })
+  .addPage({
+    path: '/catalog/:kind/:namespace/:name',
+    element: <CatalogEntityPage />,
+    title: 'MockComponent',
   })
   .render();

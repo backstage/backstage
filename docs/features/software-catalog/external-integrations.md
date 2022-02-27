@@ -367,11 +367,11 @@ The class will have this basic structure:
 
 ```ts
 import { UrlReader } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import {
   results,
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
 } from '@backstage/plugin-catalog-backend';
 
 // A processor that reads from the fictional System-X
@@ -448,13 +448,14 @@ behavior for `system-x` that we implemented earlier.
 
 ```ts
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import {
   results,
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorCache,
   CatalogProcessorParser,
+  LocationSpec,
 } from '@backstage/plugin-catalog-backend';
 
 // It's recommended to always bump the CACHE_KEY version if you make
@@ -472,8 +473,8 @@ type CacheItem = {
 export class SystemXReaderProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
 
-  // It's recommended to give the processor a unique name.
   getProcessorName() {
+    // The processor name must be unique.
     return 'system-x-processor';
   }
 

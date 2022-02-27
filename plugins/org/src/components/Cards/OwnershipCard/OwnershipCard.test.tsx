@@ -43,10 +43,11 @@ const items = [
     relations: [
       {
         type: 'ownedBy',
+        targetRef: 'group:default/my-team',
         target: {
           name: 'my-team',
           namespace: 'default',
-          kind: 'Group',
+          kind: 'group',
         },
       },
     ],
@@ -62,10 +63,11 @@ const items = [
     relations: [
       {
         type: 'ownedBy',
+        targetRef: 'group:default/my-team',
         target: {
           name: 'my-team',
           namespace: 'default',
-          kind: 'Group',
+          kind: 'group',
         },
       },
     ],
@@ -82,10 +84,11 @@ const items = [
     relations: [
       {
         type: 'ownedBy',
+        targetRef: 'group:default/my-team',
         target: {
           name: 'my-team',
           namespace: 'default',
-          kind: 'Group',
+          kind: 'group',
         },
       },
     ],
@@ -99,10 +102,11 @@ const items = [
     relations: [
       {
         type: 'ownedBy',
+        targetRef: 'group:default/my-team',
         target: {
           name: 'my-team',
           namespace: 'default',
-          kind: 'Group',
+          kind: 'group',
         },
       },
     ],
@@ -135,9 +139,10 @@ describe('OwnershipCard', () => {
     relations: [
       {
         type: 'memberOf',
+        targetRef: 'group:default/examplegroup',
         target: {
           kind: 'group',
-          name: 'ExampleGroup',
+          name: 'examplegroup',
           namespace: 'default',
         },
       },
@@ -260,8 +265,9 @@ describe('OwnershipCard', () => {
       relations: [
         {
           type: 'memberOf',
+          targetRef: 'group:default/my-team',
           target: {
-            kind: 'Group',
+            kind: 'group',
             name: 'my-team',
             namespace: 'default',
           },

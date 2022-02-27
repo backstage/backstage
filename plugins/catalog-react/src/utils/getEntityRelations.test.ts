@@ -31,17 +31,19 @@ describe('getEntityRelations', () => {
       relations: [
         {
           type: RELATION_MEMBER_OF,
-          target: { kind: 'group', name: 'member' },
+          targetRef: 'group:default/member',
+          target: { kind: 'group', namespace: 'default', name: 'member' },
         },
         {
           type: RELATION_CHILD_OF,
-          target: { kind: 'group', name: 'child' },
+          targetRef: 'group:default/child',
+          target: { kind: 'group', namespace: 'default', name: 'child' },
         },
       ],
     } as Entity;
 
     expect(getEntityRelations(entity, RELATION_MEMBER_OF)).toEqual([
-      { kind: 'group', name: 'member' },
+      { kind: 'group', namespace: 'default', name: 'member' },
     ]);
   });
 
@@ -50,17 +52,19 @@ describe('getEntityRelations', () => {
       relations: [
         {
           type: RELATION_MEMBER_OF,
-          target: { kind: 'group', name: 'member' },
+          targetRef: 'group:default/member',
+          target: { kind: 'group', namespace: 'default', name: 'member' },
         },
         {
           type: RELATION_MEMBER_OF,
-          target: { kind: 'user', name: 'child' },
+          targetRef: 'user:default/child',
+          target: { kind: 'user', namespace: 'default', name: 'child' },
         },
       ],
     } as Entity;
 
     expect(
       getEntityRelations(entity, RELATION_MEMBER_OF, { kind: 'Group' }),
-    ).toEqual([{ kind: 'group', name: 'member' }]);
+    ).toEqual([{ kind: 'group', namespace: 'default', name: 'member' }]);
   });
 });

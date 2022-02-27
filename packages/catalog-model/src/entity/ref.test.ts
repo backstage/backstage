@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ENTITY_DEFAULT_NAMESPACE } from './constants';
+import { DEFAULT_NAMESPACE } from './constants';
 import { Entity } from './Entity';
 import { compareEntityToRef, parseEntityName, parseEntityRef } from './ref';
 
@@ -29,7 +29,7 @@ describe('ref', () => {
       expect(() => parseEntityName('b/c')).toThrow(/kind/);
       expect(parseEntityName('a:c')).toEqual({
         kind: 'a',
-        namespace: ENTITY_DEFAULT_NAMESPACE,
+        namespace: DEFAULT_NAMESPACE,
         name: 'c',
       });
       expect(() => parseEntityName('c')).toThrow(/kind/);
@@ -118,7 +118,7 @@ describe('ref', () => {
       ).toEqual({ kind: 'a', namespace: 'y', name: 'c' });
       expect(parseEntityName('a:c', { defaultKind: 'x' })).toEqual({
         kind: 'a',
-        namespace: ENTITY_DEFAULT_NAMESPACE,
+        namespace: DEFAULT_NAMESPACE,
         name: 'c',
       });
       expect(
@@ -126,7 +126,7 @@ describe('ref', () => {
       ).toEqual({ kind: 'x', namespace: 'y', name: 'c' });
       expect(parseEntityName('c', { defaultKind: 'x' })).toEqual({
         kind: 'x',
-        namespace: ENTITY_DEFAULT_NAMESPACE,
+        namespace: DEFAULT_NAMESPACE,
         name: 'c',
       });
     });
@@ -152,7 +152,7 @@ describe('ref', () => {
       ).toEqual({ kind: 'a', namespace: 'y', name: 'c' });
       expect(
         parseEntityName({ kind: 'a', name: 'c' }, { defaultKind: 'x' }),
-      ).toEqual({ kind: 'a', namespace: ENTITY_DEFAULT_NAMESPACE, name: 'c' });
+      ).toEqual({ kind: 'a', namespace: DEFAULT_NAMESPACE, name: 'c' });
       expect(
         parseEntityName(
           { name: 'c' },
@@ -161,7 +161,7 @@ describe('ref', () => {
       ).toEqual({ kind: 'x', namespace: 'y', name: 'c' });
       expect(parseEntityName({ name: 'c' }, { defaultKind: 'x' })).toEqual({
         kind: 'x',
-        namespace: ENTITY_DEFAULT_NAMESPACE,
+        namespace: DEFAULT_NAMESPACE,
         name: 'c',
       });
       // empty strings are errors, not defaults
@@ -187,19 +187,9 @@ describe('ref', () => {
         namespace: 'b',
         name: 'c',
       });
-      expect(parseEntityRef('b/c')).toEqual({
-        kind: undefined,
-        namespace: 'b',
-        name: 'c',
-      });
       expect(parseEntityRef('a:c')).toEqual({
         kind: 'a',
-        namespace: undefined,
-        name: 'c',
-      });
-      expect(parseEntityRef('c')).toEqual({
-        kind: undefined,
-        namespace: undefined,
+        namespace: 'default',
         name: 'c',
       });
     });

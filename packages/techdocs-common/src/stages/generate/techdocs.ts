@@ -34,26 +34,33 @@ import {
 import {
   GeneratorBase,
   GeneratorConfig,
+  GeneratorOptions,
   GeneratorRunInType,
   GeneratorRunOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 
+/**
+ * Generates documentation files
+ * @public
+ */
 export class TechdocsGenerator implements GeneratorBase {
   /**
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-common consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.6';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.7';
   private readonly logger: Logger;
   private readonly containerRunner: ContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
-  static fromConfig(
-    config: Config,
-    options: { containerRunner: ContainerRunner; logger: Logger },
-  ) {
+  /**
+   * Returns a instance of TechDocs generator
+   * @param config - A Backstage configuration
+   * @param options - Options to configure the generator
+   */
+  static fromConfig(config: Config, options: GeneratorOptions) {
     const { containerRunner, logger } = options;
     const scmIntegrations = ScmIntegrations.fromConfig(config);
     return new TechdocsGenerator({
@@ -76,6 +83,7 @@ export class TechdocsGenerator implements GeneratorBase {
     this.scmIntegrations = options.scmIntegrations;
   }
 
+  /** {@inheritDoc GeneratorBase.run} */
   public async run(options: GeneratorRunOptions): Promise<void> {
     const {
       inputDir,

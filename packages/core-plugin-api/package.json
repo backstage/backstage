@@ -1,12 +1,15 @@
 {
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "web-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,21 +24,21 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "backstage-cli build --outputs types,esm",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.13",
-    "@backstage/types": "^0.1.1",
-    "@backstage/version-bridge": "^0.1.1",
+    "@backstage/config": "^0.1.15",
+    "@backstage/types": "^0.1.3",
+    "@backstage/version-bridge": "^0.1.2",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^17.2.4",
     "zen-observable": "^0.8.15"
   },
   "peerDependencies": {
@@ -43,9 +46,9 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2-next.0",
-    "@backstage/core-app-api": "^0.5.2-next.0",
-    "@backstage/test-utils": "^0.2.4-next.0",
+    "@backstage/cli": "^0.14.1",
+    "@backstage/core-app-api": "^0.5.4",
+    "@backstage/test-utils": "^0.2.6",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",

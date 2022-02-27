@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
   results,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
@@ -73,6 +73,9 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     this.groupTransformer = options.groupTransformer;
     this.organizationTransformer = options.organizationTransformer;
   }
+  getProcessorName(): string {
+    return 'MicrosoftGraphOrgReaderProcessor';
+  }
 
   async readLocation(
     location: LocationSpec,
@@ -105,7 +108,9 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
         userExpand: provider.userExpand,
         userFilter: provider.userFilter,
         userGroupMemberFilter: provider.userGroupMemberFilter,
+        userGroupMemberSearch: provider.userGroupMemberSearch,
         groupFilter: provider.groupFilter,
+        groupSearch: provider.groupSearch,
         userTransformer: this.userTransformer,
         groupTransformer: this.groupTransformer,
         organizationTransformer: this.organizationTransformer,

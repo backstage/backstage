@@ -1,5 +1,23 @@
 # @backstage/codemods
 
+## 0.1.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.8
+
+## 0.1.34
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-app-api@0.5.3
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/cli-common@0.1.7
+
 ## 0.1.33
 
 ### Patch Changes

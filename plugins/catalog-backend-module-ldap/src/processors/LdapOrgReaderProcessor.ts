@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import {
@@ -28,6 +27,7 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  LocationSpec,
   results,
 } from '@backstage/plugin-catalog-backend';
 
@@ -67,6 +67,10 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     this.logger = options.logger;
     this.groupTransformer = options.groupTransformer;
     this.userTransformer = options.userTransformer;
+  }
+
+  getProcessorName(): string {
+    return 'LdapOrgReaderProcessor';
   }
 
   async readLocation(

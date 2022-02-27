@@ -21,24 +21,34 @@ import {
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { FieldProps, UiSchema } from '@rjsf/core';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
+import { FieldExtensionComponentProps } from '../../../extensions';
 
-export const allowArbitraryValues = (uiSchema: UiSchema): boolean =>
-  (uiSchema['ui:options']?.allowArbitraryValues as boolean) ?? true;
+export interface EntityPickerUiOptions {
+  allowedKinds?: string[];
+  defaultKind?: string;
+  allowArbitraryValues?: boolean;
+}
 
-export const EntityPicker = ({
-  onChange,
-  schema: { title = 'Entity', description = 'An entity from the catalog' },
-  required,
-  uiSchema,
-  rawErrors,
-  formData,
-  idSchema,
-}: FieldProps<string>) => {
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds as string[];
-  const defaultKind = uiSchema['ui:options']?.defaultKind as string | undefined;
+/**
+ * Entity Picker
+ */
+export const EntityPicker = (
+  props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,
+) => {
+  const {
+    onChange,
+    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    required,
+    uiSchema,
+    rawErrors,
+    formData,
+    idSchema,
+  } = props;
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const defaultKind = uiSchema['ui:options']?.defaultKind;
+
   const catalogApi = useApi(catalogApiRef);
 
   const { value: entities, loading } = useAsync(() =>
@@ -78,7 +88,7 @@ export const EntityPicker = ({
         onChange={onSelect}
         options={entityRefs || []}
         autoSelect
-        freeSolo={allowArbitraryValues(uiSchema)}
+        freeSolo={uiSchema['ui:options']?.allowArbitraryValues ?? true}
         renderInput={params => (
           <TextField
             {...params}

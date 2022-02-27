@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { DefaultCatalogRulesEnforcer } from './CatalogRules';
+import { LocationSpec } from './processors';
 
 const entity = {
   user: {
@@ -35,11 +36,11 @@ const entity = {
 
 const location: Record<string, LocationSpec> = {
   x: {
-    type: 'github',
+    type: 'url',
     target: 'https://github.com/a/b/blob/master/x.yaml',
   },
   y: {
-    type: 'github',
+    type: 'url',
     target: 'https://github.com/a/b/blob/master/y.yaml',
   },
   z: {
@@ -180,7 +181,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
             rules: [{ allow: ['user'] }],
             locations: [
               {
-                type: 'github',
+                type: 'url',
                 target: 'https://github.com/a/b/blob/master/x.yaml',
                 rules: [
                   {
@@ -204,7 +205,7 @@ describe('DefaultCatalogRulesEnforcer', () => {
       const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
         new ConfigReader({
           catalog: {
-            rules: [{ allow: ['Group'], locations: [{ type: 'github' }] }],
+            rules: [{ allow: ['Group'], locations: [{ type: 'url' }] }],
           },
         }),
       );

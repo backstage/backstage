@@ -22,9 +22,7 @@ const EXAMPLE = `import { createPlugin } from '@backstage/core-plugin-api';
 
 export default createPlugin({
   id: 'plugin-name',
-  register({ router, featureFlags }) {
-    featureFlags.register('enable-example-feature');
-  },
+  featureFlags: [{ name: 'enable-example-feature' }],
 });
 `;
 

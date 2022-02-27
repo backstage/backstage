@@ -1,11 +1,14 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.33",
+  "version": "0.1.34",
   "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js"
+  },
+  "backstage": {
+    "role": "cli"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -20,18 +23,18 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon --",
-    "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
     "prepack": "backstage-cli prepack",
     "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "clean": "backstage-cli package clean"
   },
   "bin": {
     "backstage-codemods": "bin/backstage-codemods"
   },
   "dependencies": {
-    "@backstage/cli-common": "0.1.6",
+    "@backstage/cli-common": "^0.1.8",
     "@backstage/core-app-api": "*",
     "@backstage/core-components": "*",
     "@backstage/core-plugin-api": "*",

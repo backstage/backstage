@@ -14,12 +14,38 @@
  * limitations under the License.
  */
 import React from 'react';
-import { FieldProps } from '@rjsf/core';
-import { TextValuePicker } from '../TextValuePicker';
+import { FieldExtensionComponentProps } from '../../../extensions';
+import { TextField } from '@material-ui/core';
 
-export const EntityNamePicker = ({
-  schema: { title = 'Name', description = 'Unique name of the component' },
-  ...props
-}: FieldProps<string>) => (
-  <TextValuePicker schema={{ title, description }} {...props} />
-);
+/**
+ * EntityName Picker
+ */
+export const EntityNamePicker = (
+  props: FieldExtensionComponentProps<string>,
+) => {
+  const {
+    onChange,
+    required,
+    schema: { title = 'Name', description = 'Unique name of the component' },
+    rawErrors,
+    formData,
+    uiSchema: { 'ui:autofocus': autoFocus },
+    idSchema,
+    placeholder,
+  } = props;
+
+  return (
+    <TextField
+      id={idSchema?.$id}
+      label={title}
+      placeholder={placeholder}
+      helperText={description}
+      required={required}
+      value={formData ?? ''}
+      onChange={({ target: { value } }) => onChange(value)}
+      margin="normal"
+      error={rawErrors?.length > 0 && !formData}
+      inputProps={{ autoFocus }}
+    />
+  );
+};

@@ -27,9 +27,9 @@ import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
 import {
-  runCommand,
   createTemplateAction,
   fetchContents,
+  executeShellCommand,
 } from '@backstage/plugin-scaffolder-backend';
 
 export class CookiecutterRunner {
@@ -89,7 +89,7 @@ export class CookiecutterRunner {
       () => false,
     );
     if (cookieCutterInstalled) {
-      await runCommand({
+      await executeShellCommand({
         command: 'cookiecutter',
         args: ['--no-input', '-o', intermediateDir, templateDir, '--verbose'],
         logStream,
@@ -222,7 +222,7 @@ export function createFetchCookiecutterAction(options: {
       await fetchContents({
         reader,
         integrations,
-        baseUrl: ctx.baseUrl,
+        baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath: templateContentsDir,
       });

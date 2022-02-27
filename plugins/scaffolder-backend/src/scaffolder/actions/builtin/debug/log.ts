@@ -19,8 +19,14 @@ import { relative, join } from 'path';
 import { createTemplateAction } from '../../createTemplateAction';
 
 /**
+ * Writes a message into the log or lists all files in the workspace
+ *
+ * @remarks
+ *
  * This task is useful for local development and testing of both the scaffolder
  * and scaffolder templates.
+ *
+ * @public
  */
 export function createDebugLogAction() {
   return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({

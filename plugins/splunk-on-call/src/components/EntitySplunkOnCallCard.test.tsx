@@ -131,6 +131,32 @@ describe('SplunkOnCallCard', () => {
     expect(getByText('Empty escalation policy')).toBeInTheDocument();
   });
 
+  it('does not render a "Create incident" link in read only mode', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementation(async () => [MOCK_TEAM_NO_INCIDENTS]);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityNoIncidents}>
+            <EntitySplunkOnCallCard readOnly />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(() => getByText('Create Incident')).toThrow();
+    await waitFor(
+      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
+    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+  });
+
   it('handles a "splunk.com/on-call-routing-key" annotation', async () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()

@@ -28,7 +28,7 @@ At the end of this tutorial, you can expect:
 
 These instructions can be skipped if you already have a PostgreSQL server
 installed and created a schema and user. The example below is for Linux, but
-luckily there's detailed instructions on how to
+luckily there are detailed instructions on how to
 [install PostgreSQL](https://www.postgresql.org/download/) to help you get
 started.
 
@@ -113,7 +113,7 @@ new component, or register an existing one it will be saved in the database.
 Later in this tutorial you'll add a service, and you can test if it's persistent
 as advertised.
 
-If you want to read more about the database configuration, here's some helpful
+If you want to read more about the database configuration, here are some helpful
 links:
 
 - [Configuring Plugin Databases](../tutorials/configuring-plugin-databases.md#privileges)
@@ -122,7 +122,7 @@ links:
 
 ### Setting up authentication
 
-There's multiple authentication providers available for you to use with
+There are multiple authentication providers available for you to use with
 Backstage, feel free to follow
 [the instructions for adding authentication](../auth/).
 
@@ -191,7 +191,7 @@ components: {
 That should be it. You can stop your Backstage App. When you start it again and
 go to your Backstage portal in your browser, you should have your login prompt!
 
-To learn more about Authentication in Backstage, there's the following docs you
+To learn more about Authentication in Backstage, here are some docs you
 could read:
 
 - [Adding Authentication](../auth/)
@@ -208,7 +208,7 @@ and Groups can also be loaded from an organization. While using GitHub Apps
 might be the best way to set up integrations, for this tutorial you'll use a
 Personal Access Token.
 
-Create your Personal Access Token by opening the
+Create your Personal Access Token by opening
 [the GitHub token creation page](https://github.com/settings/tokens/new). Use a
 name to identify this token and put it in the notes field. Choose a number of
 days for expiration. If you have a hard time picking a number, we suggest to go

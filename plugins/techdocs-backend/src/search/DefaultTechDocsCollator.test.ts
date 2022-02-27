@@ -208,8 +208,13 @@ describe('DefaultTechDocsCollator', () => {
   });
 
   it('maps a returned entity with a custom locationTemplate', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        legacyUseCaseSensitiveTripletPaths: true,
+      },
+    });
     // Provide an alternate location template.
-    collator = new DefaultTechDocsCollator({
+    collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
       discovery: mockDiscoveryApi,
       tokenManager: mockTokenManager,
       locationTemplate: '/software/:name',

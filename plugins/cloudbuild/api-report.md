@@ -149,9 +149,7 @@ export { cloudbuildPlugin as plugin };
 // Warning: (ae-missing-release-tag) "EntityCloudbuildContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityCloudbuildContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityCloudbuildContent: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityLatestCloudbuildRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -159,7 +157,6 @@ export const EntityCloudbuildContent: (_props: {
 export const EntityLatestCloudbuildRunCard: ({
   branch,
 }: {
-  entity?: Entity | undefined;
   branch: string;
 }) => JSX.Element;
 
@@ -169,7 +166,6 @@ export const EntityLatestCloudbuildRunCard: ({
 export const EntityLatestCloudbuildsForBranchCard: ({
   branch,
 }: {
-  entity?: Entity | undefined;
   branch: string;
 }) => JSX.Element;
 
@@ -196,7 +192,6 @@ export { isCloudbuildAvailable as isPluginApplicableToEntity };
 export const LatestWorkflowRunCard: ({
   branch,
 }: {
-  entity?: Entity | undefined;
   branch: string;
 }) => JSX.Element;
 
@@ -206,7 +201,6 @@ export const LatestWorkflowRunCard: ({
 export const LatestWorkflowsForBranchCard: ({
   branch,
 }: {
-  entity?: Entity | undefined;
   branch: string;
 }) => JSX.Element;
 
@@ -256,11 +250,10 @@ export interface Results {
   buildStepOutputs: string[];
 }
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (_props: Props) => JSX.Element;
+export const Router: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Source" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

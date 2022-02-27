@@ -36,7 +36,7 @@ describe('SecretsContext', () => {
     );
     expect(result.current.context?.secrets.foo).toEqual(undefined);
 
-    act(() => result.current.hook.setSecret({ foo: 'bar' }));
+    act(() => result.current.hook.setSecrets({ foo: 'bar' }));
 
     expect(result.current.context?.secrets.foo).toEqual('bar');
   });

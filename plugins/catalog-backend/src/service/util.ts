@@ -40,7 +40,7 @@ export async function requireRequestBody(req: Request): Promise<unknown> {
   return body;
 }
 
-export const locationSpec = z
+export const locationInput = z
   .object({
     type: z.string(),
     target: z.string(),

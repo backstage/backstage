@@ -14,23 +14,54 @@
  * limitations under the License.
  */
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import { useApp } from '@backstage/core-plugin-api';
 import WorkIcon from '@material-ui/icons/Work';
 import React from 'react';
 
+const DEFAULT_ICON = WorkIcon;
+
+function getKind(
+  kind: string | undefined,
+  entityRef: string | undefined,
+): string | undefined {
+  if (kind) {
+    return kind.toLocaleLowerCase('en-US');
+  }
+
+  if (entityRef) {
+    try {
+      return parseEntityRef(entityRef).kind.toLocaleLowerCase('en-US');
+    } catch {
+      return undefined;
+    }
+  }
+
+  return undefined;
+}
+
+function useIcon(kind: string | undefined, entityRef: string | undefined) {
+  const app = useApp();
+
+  const actualKind = getKind(kind, entityRef);
+  if (!actualKind) {
+    return DEFAULT_ICON;
+  }
+
+  const icon = app.getSystemIcon(`kind:${actualKind}`);
+  return icon || DEFAULT_ICON;
+}
+
 export function EntityKindIcon(props: {
-  kind: string;
+  kind?: string;
+  entityRef?: string;
   x?: number;
   y?: number;
   width?: number;
   height?: number;
   className?: string;
 }) {
-  const app = useApp();
-
-  const { kind, ...otherProps } = props;
-  const Icon =
-    app.getSystemIcon(`kind:${kind.toLocaleLowerCase('en-US')}`) ?? WorkIcon;
-
+  const { kind, entityRef, ...otherProps } = props;
+  const Icon = useIcon(kind, entityRef);
   return <Icon {...otherProps} />;
 }

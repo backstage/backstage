@@ -15,19 +15,20 @@
  */
 
 import { GroupEntity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
-import React from 'react';
-import { MemoryRouter } from 'react-router';
+import React, { ComponentType } from 'react';
 import { GroupProfileCard } from './GroupProfileCard';
-
-export default {
-  title: 'Plugins/Org/Group Profile Card',
-  component: GroupProfileCard,
-};
 
 const dummyDepartment = {
   type: 'childOf',
+  targetRef: 'group:default/department-a',
   target: {
     namespace: 'default',
     kind: 'group',
@@ -55,14 +56,34 @@ const defaultEntity: GroupEntity = {
   relations: [dummyDepartment],
 };
 
+const catalogApi: Partial<CatalogApi> = {
+  async refreshEntity() {},
+};
+
 export const Default = () => (
-  <MemoryRouter>
-    <EntityProvider entity={defaultEntity}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
-          <GroupProfileCard variant="gridItem" />
-        </Grid>
+  <EntityProvider entity={defaultEntity}>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={4}>
+        <GroupProfileCard variant="gridItem" />
       </Grid>
-    </EntityProvider>
-  </MemoryRouter>
+    </Grid>
+  </EntityProvider>
 );
+
+export default {
+  title: 'Plugins/Org/Group Profile Card',
+  component: GroupProfileCard,
+  decorators: [
+    (Story: ComponentType<{}>) =>
+      wrapInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <Story />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/a': entityRouteRef,
+          },
+        },
+      ),
+  ],
+};

@@ -31,6 +31,7 @@ const createBitbucketCloudRepository = async (opts: {
   repo: string;
   description?: string;
   repoVisibility: 'private' | 'public';
+  mainBranch: string;
   authorization: string;
 }) => {
   const {
@@ -39,6 +40,7 @@ const createBitbucketCloudRepository = async (opts: {
     repo,
     description,
     repoVisibility,
+    mainBranch,
     authorization,
   } = opts;
 
@@ -82,8 +84,9 @@ const createBitbucketCloudRepository = async (opts: {
     }
   }
 
-  // TODO use the urlReader to get the default branch
-  const repoContentsUrl = `${r.links.html.href}/src/master`;
+  // "mainbranch.name" cannot be set neither at create nor update of the repo
+  // the first pushed branch will be set as "main branch" then
+  const repoContentsUrl = `${r.links.html.href}/src/${mainBranch}`;
   return { remoteUrl, repoContentsUrl };
 };
 
@@ -192,6 +195,11 @@ const performEnableLFS = async (opts: {
     );
 };
 
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to Bitbucket.
+ * @public
+ */
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -324,6 +332,7 @@ export function createPublishBitbucketAction(options: {
         project,
         repo,
         repoVisibility,
+        mainBranch: defaultBranch,
         description,
         apiBaseUrl,
       });

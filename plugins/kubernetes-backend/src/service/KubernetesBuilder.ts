@@ -43,6 +43,21 @@ export interface KubernetesEnvironment {
   config: Config;
 }
 
+/**
+ * The return type of the `KubernetesBuilder.build` method
+ *
+ * @public
+ */
+export type KubernetesBuilderReturn = Promise<{
+  router: express.Router;
+  clusterDetails: ClusterDetails[];
+  clusterSupplier: KubernetesClustersSupplier;
+  customResources: CustomResource[];
+  fetcher: KubernetesFetcher;
+  objectsProvider: KubernetesObjectsProvider;
+  serviceLocator: KubernetesServiceLocator;
+}>;
+
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
   private objectsProvider?: KubernetesObjectsProvider;
@@ -55,11 +70,23 @@ export class KubernetesBuilder {
 
   constructor(protected readonly env: KubernetesEnvironment) {}
 
-  public async build() {
+  public async build(): KubernetesBuilderReturn {
     const logger = this.env.logger;
+    const config = this.env.config;
 
     logger.info('Initializing Kubernetes backend');
 
+    if (!config.has('kubernetes')) {
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error('Kubernetes configuration is missing');
+      }
+      logger.warn(
+        'Failed to initialize kubernetes backend: kubernetes config is missing',
+      );
+      return {
+        router: Router(),
+      } as unknown as KubernetesBuilderReturn;
+    }
     const customResources = this.buildCustomResources();
 
     const fetcher = this.fetcher ?? this.buildFetcher();

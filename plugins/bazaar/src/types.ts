@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { EntityRef } from '@backstage/catalog-model';
-
 export type Member = {
   itemId: number;
   userId: string;
@@ -30,7 +28,7 @@ export type Size = 'small' | 'medium' | 'large';
 export type BazaarProject = {
   name: string;
   id: number;
-  entityRef?: EntityRef;
+  entityRef?: string;
   community: string;
   status: Status;
   description: string;

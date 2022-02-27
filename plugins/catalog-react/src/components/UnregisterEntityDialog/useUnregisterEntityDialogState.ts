@@ -67,7 +67,7 @@ export function useUnregisterEntityDialogState(
   // Load the prerequisite data: what entities that are colocated with us, and
   // what location that spawned us
   const prerequisites = useAsync(async () => {
-    const locationPromise = catalogApi.getOriginLocationByEntity(entity);
+    const locationPromise = catalogApi.getLocationByRef(locationRef!);
 
     let colocatedEntitiesPromise: Promise<Entity[]>;
     if (!locationRef) {

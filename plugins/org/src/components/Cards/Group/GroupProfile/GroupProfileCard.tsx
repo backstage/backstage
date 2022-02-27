@@ -18,8 +18,11 @@ import {
   GroupEntity,
   RELATION_CHILD_OF,
   RELATION_PARENT_OF,
+  ANNOTATION_LOCATION,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
+  catalogApiRef,
   EntityRefLinks,
   getEntityRelations,
   useEntity,
@@ -39,14 +42,16 @@ import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import EditIcon from '@material-ui/icons/Edit';
+import CachedIcon from '@material-ui/icons/Cached';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Avatar,
   InfoCard,
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 const CardTitle = ({ title }: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -58,17 +63,23 @@ const CardTitle = ({ title }: { title: string }) => (
 export const GroupProfileCard = ({
   variant,
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: GroupEntity;
   variant?: InfoCardVariants;
 }) => {
+  const catalogApi = useApi(catalogApiRef);
+  const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
+
+  const refreshEntity = useCallback(async () => {
+    await catalogApi.refreshEntity(stringifyEntityRef(group));
+    alertApi.post({ message: 'Refresh scheduled', severity: 'info' });
+  }, [catalogApi, alertApi, group]);
+
   if (!group) {
     return <Alert severity="error">Group not found</Alert>;
   }
 
   const {
-    metadata: { name, description },
+    metadata: { name, description, annotations },
     spec: { profile },
   } = group;
 
@@ -78,6 +89,10 @@ export const GroupProfileCard = ({
   const parentRelations = getEntityRelations(group, RELATION_CHILD_OF, {
     kind: 'group',
   });
+
+  const entityLocation = annotations?.[ANNOTATION_LOCATION];
+  const allowRefresh =
+    entityLocation?.startsWith('url:') || entityLocation?.startsWith('file:');
 
   const entityMetadataEditUrl = getEntityMetadataEditUrl(group);
 
@@ -103,7 +118,20 @@ export const GroupProfileCard = ({
       title={<CardTitle title={displayName} />}
       subheader={description}
       variant={variant}
-      action={infoCardAction}
+      action={
+        <>
+          {allowRefresh && (
+            <IconButton
+              aria-label="Refresh"
+              title="Schedule entity refresh"
+              onClick={refreshEntity}
+            >
+              <CachedIcon />
+            </IconButton>
+          )}
+          {infoCardAction}
+        </>
+      }
     >
       <Grid container spacing={3}>
         <Grid item xs={12} sm={2} xl={1}>

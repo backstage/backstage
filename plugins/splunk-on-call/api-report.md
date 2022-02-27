@@ -12,10 +12,13 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-forgotten-export) The symbol "EntitySplunkOnCallCardProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EntitySplunkOnCallCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntitySplunkOnCallCard: () => JSX.Element;
+export const EntitySplunkOnCallCard: (
+  props: EntitySplunkOnCallCardProps,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isSplunkOnCallAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

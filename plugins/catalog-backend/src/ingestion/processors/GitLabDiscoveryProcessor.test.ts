@@ -16,11 +16,11 @@
 
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { GitLabProject } from './gitlab';
+import { LocationSpec } from './types';
 
 const server = setupServer();
 
@@ -210,7 +210,6 @@ describe('GitlabDiscoveryProcessor', () => {
             target: 'https://gitlab.fake/1/-/blob/main/catalog-info.yaml',
             presence: 'optional',
           },
-          optional: true,
         },
         {
           type: 'location',
@@ -219,7 +218,6 @@ describe('GitlabDiscoveryProcessor', () => {
             target: 'https://gitlab.fake/2/-/blob/master/catalog-info.yaml',
             presence: 'optional',
           },
-          optional: true,
         },
       ]);
     });
@@ -257,7 +255,6 @@ describe('GitlabDiscoveryProcessor', () => {
             target: 'https://gitlab.fake/1/-/blob/master/catalog-info.yaml',
             presence: 'optional',
           },
-          optional: true,
         },
       ]);
     });

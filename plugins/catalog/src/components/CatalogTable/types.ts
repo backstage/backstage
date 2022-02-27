@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity, EntityName } from '@backstage/catalog-model';
 
-export type EntityRow = {
+/** @public */
+export interface CatalogTableRow {
   entity: Entity;
   resolved: {
     name: string;
@@ -24,4 +26,4 @@ export type EntityRow = {
     ownedByRelationsTitle?: string;
     ownedByRelations: EntityName[];
   };
-};
+}

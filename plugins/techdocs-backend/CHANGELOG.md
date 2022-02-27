@@ -1,5 +1,72 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.14.0
+
+### Minor Changes
+
+- a925ba8385: BREAKING: constructor based initialization of DefaultTechDocsCollator now deprecated. Use static fromConfig method instead.
+
+  ```diff
+  indexBuilder.addCollator({
+    defaultRefreshIntervalSeconds: 600,
+  -   collator: new DefaultTechDocsCollator({
+  +   collator: DefaultTechDocsCollator.fromConfig(config, {
+      discovery,
+      logger,
+      tokenManager,
+    }),
+  });
+  ```
+
+  Note: in an upcoming release, TechDocs backend's /sync/:namespace/:kind/:name endpoint will only respond to text/event-stream-based requests. Update any custom code at your organization accordingly.
+
+### Patch Changes
+
+- 91eb01b5cf: Optimize DefaultTechDocsCollator get entities.
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/techdocs-common@0.11.10
+  - @backstage/integration@0.7.5
+
+## 0.13.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/search-common@0.2.4
+  - @backstage/techdocs-common@0.11.9
+  - @backstage/plugin-catalog-common@0.1.4
+
+## 0.13.4
+
+### Patch Changes
+
+- 453145abba: Do not use cross-fetch in the backend
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 811c710a21: Fix bug where tech docs collator stores search indices with wrong entity ref casing. Make the collator to conform legacyPathCasing configuration option.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/techdocs-common@0.11.8
+  - @backstage/plugin-catalog-common@0.1.3
+
 ## 0.13.3
 
 ### Patch Changes

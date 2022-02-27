@@ -109,8 +109,6 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
 };
 
 export const MembersListCard = (_props: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: GroupEntity;
   memberDisplayTitle?: string;
   pageSize?: number;
 }) => {

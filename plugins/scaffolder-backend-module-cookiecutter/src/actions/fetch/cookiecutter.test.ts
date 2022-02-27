@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const runCommand = jest.fn();
+const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
 const fetchContents = jest.fn();
 
 jest.mock('@backstage/plugin-scaffolder-backend', () => ({
   ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
   fetchContents,
-  runCommand,
+  executeShellCommand,
 }));
 jest.mock('command-exists', () => commandExists);
 
@@ -89,7 +89,10 @@ describe('fetch:cookiecutter', () => {
           help: 'me',
         },
       },
-      baseUrl: 'somebase',
+      templateInfo: {
+        entityRef: 'template:default/cookiecutter',
+        baseUrl: 'somebase',
+      },
       workspacePath: mockTmpDir,
       logger: getVoidLogger(),
       logStream: new PassThrough(),
@@ -112,8 +115,8 @@ describe('fetch:cookiecutter', () => {
       });
     });
 
-    // Mock when runCommand is called it creats some new files in the mock filesystem
-    runCommand.mockImplementation(async () => {
+    // Mock when executeShellCommand is called it creats some new files in the mock filesystem
+    executeShellCommand.mockImplementation(async () => {
       mockFs({
         [`${join(mockTmpDir, 'intermediate')}`]: {
           'testfile.json': '{}',
@@ -149,7 +152,7 @@ describe('fetch:cookiecutter', () => {
       expect.objectContaining({
         reader: mockReader,
         integrations,
-        baseUrl: mockContext.baseUrl,
+        baseUrl: mockContext.templateInfo?.baseUrl,
         fetchUrl: mockContext.input.url,
         outputPath: join(
           mockTmpDir,
@@ -160,12 +163,12 @@ describe('fetch:cookiecutter', () => {
     );
   });
 
-  it('should call out to cookiecutter using runCommand when cookiecutter is installed', async () => {
+  it('should call out to cookiecutter using executeShellCommand when cookiecutter is installed', async () => {
     commandExists.mockResolvedValue(true);
 
     await action.handler(mockContext);
 
-    expect(runCommand).toHaveBeenCalledWith(
+    expect(executeShellCommand).toHaveBeenCalledWith(
       expect.objectContaining({
         command: 'cookiecutter',
         args: [

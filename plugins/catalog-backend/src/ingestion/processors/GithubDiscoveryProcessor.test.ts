@@ -15,9 +15,9 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from './github';
+import { LocationSpec } from './types';
 import { ConfigReader } from '@backstage/config';
 import {
   ScmIntegrations,
@@ -175,7 +175,6 @@ describe('GithubDiscoveryProcessor', () => {
             'https://github.com/backstage/backstage/blob/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -184,7 +183,6 @@ describe('GithubDiscoveryProcessor', () => {
           target: 'https://github.com/backstage/demo/blob/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -217,7 +215,6 @@ describe('GithubDiscoveryProcessor', () => {
             'https://github.com/backstage/tech-docs/blob/main/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -272,7 +269,6 @@ describe('GithubDiscoveryProcessor', () => {
             'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -328,7 +324,6 @@ describe('GithubDiscoveryProcessor', () => {
             'https://github.com/backstage/techdocs-cli/blob/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -338,7 +333,6 @@ describe('GithubDiscoveryProcessor', () => {
             'https://github.com/backstage/techdocs-container/blob/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
 
@@ -394,7 +388,6 @@ describe('GithubDiscoveryProcessor', () => {
           target: 'https://github.com/backstage/test/blob/master/catalog.yaml',
           presence: 'optional',
         },
-        optional: true,
       });
     });
   });

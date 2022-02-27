@@ -138,7 +138,7 @@ export async function getProjectId(
     // Convert
     // to: https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo
     const repoIDLookup = new URL(
-      `${url.protocol + url.hostname}/api/v4/projects/${encodeURIComponent(
+      `${url.origin}/api/v4/projects/${encodeURIComponent(
         repo.replace(/^\//, ''),
       )}`,
     );

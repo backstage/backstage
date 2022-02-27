@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   ScmIntegrationRegistry,
@@ -21,14 +21,19 @@ import {
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { identity, merge, pickBy } from 'lodash';
-import { CatalogProcessor } from './types';
+import { CatalogProcessor, LocationSpec } from './types';
 
 const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
+/** @public */
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   constructor(
     private readonly opts: { scmIntegrationRegistry: ScmIntegrationRegistry },
   ) {}
+
+  getProcessorName(): string {
+    return 'AnnotateScmSlugEntityProcessor';
+  }
 
   static fromConfig(config: Config): AnnotateScmSlugEntityProcessor {
     return new AnnotateScmSlugEntityProcessor({

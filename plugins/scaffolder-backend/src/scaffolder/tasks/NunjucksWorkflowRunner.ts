@@ -15,14 +15,7 @@
  */
 
 import { ScmIntegrations } from '@backstage/integration';
-import {
-  TaskContext,
-  TaskSpec,
-  TaskSpecV1beta3,
-  TaskStep,
-  WorkflowResponse,
-  WorkflowRunner,
-} from './types';
+import { TaskContext, WorkflowResponse, WorkflowRunner } from './types';
 import * as winston from 'winston';
 import fs from 'fs-extra';
 import path from 'path';
@@ -39,6 +32,11 @@ import {
   SecureTemplater,
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
+import {
+  TaskSpec,
+  TaskSpecV1beta3,
+  TaskStep,
+} from '@backstage/plugin-scaffolder-common';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -258,17 +256,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           const tmpDirs = new Array<string>();
           const stepOutput: { [outputName: string]: JsonValue } = {};
 
-          if (!task.spec.metadata) {
-            console.warn(
-              'DEPRECATION NOTICE: metadata is undefined. metadata will be required in the future.',
-            );
-          }
-
           await action.handler({
+            // deprecated in favourof templateInfo.baseUrl
             baseUrl: task.spec.baseUrl,
             input,
-            // this token is deprecated, and will be removed in favour of secrets.backstageToken instead.
-            token: task.secrets?.token,
             secrets: task.secrets ?? {},
             logger: taskLogger,
             logStream: streamLogger,
@@ -283,7 +274,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             output(name: string, value: JsonValue) {
               stepOutput[name] = value;
             },
+            // deprecated in favour of templateInfo
             metadata: task.spec.metadata,
+            templateInfo: task.spec.templateInfo,
           });
 
           // Remove all temporary directories that were created when executing the action

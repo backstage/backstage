@@ -45,8 +45,10 @@ describe('BitbucketIntegration', () => {
     expect(integration.title).toBe('h.com');
   });
 
-  it('resolves url line number correctly', () => {
-    const integration = new BitbucketIntegration({ host: 'h.com' } as any);
+  it('resolves url line number correctly for Bitbucket Cloud', () => {
+    const integration = new BitbucketIntegration({
+      host: 'bitbucket.org',
+    } as any);
 
     expect(
       integration.resolveUrl({
@@ -55,8 +57,20 @@ describe('BitbucketIntegration', () => {
         lineNumber: 14,
       }),
     ).toBe(
-      'https://bitbucket.org/my-owner/my-project/src/master/a.yaml#a.yaml-14',
+      'https://bitbucket.org/my-owner/my-project/src/master/a.yaml#lines-14',
     );
+  });
+
+  it('resolves url line number correctly for Bitbucket Server', () => {
+    const integration = new BitbucketIntegration({ host: 'h.com' } as any);
+
+    expect(
+      integration.resolveUrl({
+        url: './a.yaml',
+        base: 'https://bitbucket.org/my-owner/my-project/src/master/README.md',
+        lineNumber: 14,
+      }),
+    ).toBe('https://bitbucket.org/my-owner/my-project/src/master/a.yaml#14');
   });
 
   it('resolve edit URL', () => {

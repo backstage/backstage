@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 import {
-  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { createTemplateAction } from '../../createTemplateAction';
-import { OctokitProvider } from './OctokitProvider';
 import { emitterEventNames } from '@octokit/webhooks';
-import { assertError } from '@backstage/errors';
+import { assertError, InputError } from '@backstage/errors';
+import { Octokit } from 'octokit';
+import { getOctokitOptions } from './helpers';
+import { parseRepoUrl } from '../publish/util';
 
+/**
+ * Creates new action that creates a webhook for a repository on GitHub.
+ * @public
+ */
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
@@ -30,11 +35,7 @@ export function createGithubWebhookAction(options: {
 }) {
   const { integrations, defaultWebhookSecret, githubCredentialsProvider } =
     options;
-  const octokitProvider = new OctokitProvider(
-    integrations,
-    githubCredentialsProvider ??
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
-  );
+
   const eventNames = emitterEventNames.filter(event => !event.includes('.'));
 
   return createTemplateAction<{
@@ -127,10 +128,19 @@ export function createGithubWebhookAction(options: {
       } = ctx.input;
 
       ctx.logger.info(`Creating webhook ${webhookUrl} for repo ${repoUrl}`);
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
-      const { client, owner, repo } = await octokitProvider.getOctokit(
-        repoUrl,
-        { token: providedToken },
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
+      const client = new Octokit(
+        await getOctokitOptions({
+          integrations,
+          credentialsProvider: githubCredentialsProvider,
+          repoUrl: repoUrl,
+          token: providedToken,
+        }),
       );
 
       try {

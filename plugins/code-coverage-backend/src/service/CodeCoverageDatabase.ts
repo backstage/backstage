@@ -15,7 +15,7 @@
  */
 import { resolvePackagePath } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
-import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { aggregateCoverage } from './CoverageUtils';
@@ -103,7 +103,7 @@ export class CodeCoverageDatabase implements CodeCoverageStore {
       .map(r => JSON.parse(r.coverage))
       .map(c => aggregateCoverage(c));
 
-    const entityName = parseEntityName(entity);
+    const entityName = parseEntityRef(entity);
 
     return {
       entity: {

@@ -1,5 +1,28 @@
 # @backstage/core-components
 
+## 0.8.10
+
+### Patch Changes
+
+- d91d22bb19: When clicking on a log line the URL will be updated from `/task/uid` to
+  `/task/uid/#line-1`. This URL are also sharable, meaning that the UI will
+  highlight the log line in the hash of the URL.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.8.9
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 126074a04b: Port supported react-use functions to react-hookz.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+
 ## 0.8.8
 
 ### Patch Changes

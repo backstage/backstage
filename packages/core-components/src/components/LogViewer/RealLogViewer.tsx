@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import IconButton from '@material-ui/core/IconButton';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -42,6 +43,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
 
   const search = useLogViewerSearch(lines);
   const selection = useLogViewerSelection(lines);
+  const location = useLocation();
 
   useEffect(() => {
     if (search.resultLine !== undefined && listRef.current) {
@@ -49,11 +51,18 @@ export function RealLogViewer(props: RealLogViewerProps) {
     }
   }, [search.resultLine]);
 
+  useEffect(() => {
+    if (location.hash) {
+      // #line-6 -> 6
+      const line = parseInt(location.hash.replace(/\D/g, ''), 10);
+      selection.setSelection(line, false);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleSelectLine = (
     line: number,
     event: { shiftKey: boolean; preventDefault: () => void },
   ) => {
-    event.preventDefault();
     selection.setSelection(line, event.shiftKey);
   };
 

@@ -27,31 +27,32 @@ import {
 import { FieldExtensionOptions } from './types';
 import { OwnedEntityPicker } from '../components/fields/OwnedEntityPicker';
 
-export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
-  {
-    component: EntityPicker,
-    name: 'EntityPicker',
-  },
-  {
-    component: EntityNamePicker,
-    name: 'EntityNamePicker',
-    validation: entityNamePickerValidation,
-  },
-  {
-    component: EntityTagsPicker,
-    name: 'EntityTagsPicker',
-  },
-  {
-    component: RepoUrlPicker,
-    name: 'RepoUrlPicker',
-    validation: repoPickerValidation,
-  },
-  {
-    component: OwnerPicker,
-    name: 'OwnerPicker',
-  },
-  {
-    component: OwnedEntityPicker,
-    name: 'OwnedEntityPicker',
-  },
-];
+export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions<any>[] =
+  [
+    {
+      component: EntityPicker,
+      name: 'EntityPicker',
+    },
+    {
+      component: EntityNamePicker,
+      name: 'EntityNamePicker',
+      validation: entityNamePickerValidation,
+    },
+    {
+      component: EntityTagsPicker,
+      name: 'EntityTagsPicker',
+    },
+    {
+      component: RepoUrlPicker,
+      name: 'RepoUrlPicker',
+      validation: repoPickerValidation,
+    },
+    {
+      component: OwnerPicker,
+      name: 'OwnerPicker',
+    },
+    {
+      component: OwnedEntityPicker,
+      name: 'OwnedEntityPicker',
+    },
+  ];

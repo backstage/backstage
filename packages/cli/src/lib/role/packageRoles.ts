@@ -22,7 +22,7 @@ import { PackageRole, PackageRoleInfo } from './types';
 
 const packageRoleInfos: PackageRoleInfo[] = [
   {
-    role: 'app',
+    role: 'frontend',
     platform: 'web',
     output: ['bundle'],
   },
@@ -52,22 +52,22 @@ const packageRoleInfos: PackageRoleInfo[] = [
     output: ['types', 'esm', 'cjs'],
   },
   {
-    role: 'plugin-frontend',
+    role: 'frontend-plugin',
     platform: 'web',
     output: ['types', 'esm'],
   },
   {
-    role: 'plugin-frontend-module',
+    role: 'frontend-plugin-module',
     platform: 'web',
     output: ['types', 'esm'],
   },
   {
-    role: 'plugin-backend',
+    role: 'backend-plugin',
     platform: 'node',
     output: ['types', 'cjs'],
   },
   {
-    role: 'plugin-backend-module',
+    role: 'backend-plugin-module',
     platform: 'node',
     output: ['types', 'cjs'],
   },
@@ -147,22 +147,22 @@ export function detectRoleFromPackage(
   const pkg = detectionSchema.parse(pkgJson);
 
   if (pkg.scripts?.start?.includes('app:serve')) {
-    return 'app';
+    return 'frontend';
   }
   if (pkg.scripts?.build?.includes('backend:bundle')) {
     return 'backend';
   }
   if (pkg.name?.includes('plugin-') && pkg.name?.includes('-backend-module-')) {
-    return 'plugin-backend-module';
+    return 'backend-plugin-module';
   }
   if (pkg.name?.includes('plugin-') && pkg.name?.includes('-module-')) {
-    return 'plugin-frontend-module';
+    return 'frontend-plugin-module';
   }
   if (pkg.scripts?.start?.includes('plugin:serve')) {
-    return 'plugin-frontend';
+    return 'frontend-plugin';
   }
   if (pkg.scripts?.start?.includes('backend:dev')) {
-    return 'plugin-backend';
+    return 'backend-plugin';
   }
 
   const mainEntry = pkg.publishConfig?.main || pkg.main;

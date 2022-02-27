@@ -15,7 +15,7 @@
  */
 
 import { UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   ScmIntegrationRegistry,
@@ -23,20 +23,13 @@ import {
 } from '@backstage/integration';
 import { Logger } from 'winston';
 import { findCodeOwnerByTarget } from './codeowners';
-import { CatalogProcessor } from './types';
+import { CatalogProcessor, LocationSpec } from './types';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 
-const ALLOWED_LOCATION_TYPES = [
-  'url',
-  'azure/api',
-  'bitbucket/api',
-  'github',
-  'github/api',
-  'gitlab',
-  'gitlab/api',
-];
+const ALLOWED_LOCATION_TYPES = ['url'];
 
+/** @public */
 export class CodeOwnersProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
@@ -62,6 +55,10 @@ export class CodeOwnersProcessor implements CatalogProcessor {
     this.integrations = options.integrations;
     this.logger = options.logger;
     this.reader = options.reader;
+  }
+
+  getProcessorName(): string {
+    return 'CodeOwnersProcessor';
   }
 
   async preProcessEntity(

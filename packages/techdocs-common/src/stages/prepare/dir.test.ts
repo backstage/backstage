@@ -86,7 +86,7 @@ describe('directory preparer', () => {
     );
   });
 
-  it('should reject when managed-by-location is a git repository', async () => {
+  it('should reject when managed-by-location has an unknown type', async () => {
     const directoryPreparer = new DirectoryPreparer(
       mockConfig,
       logger,
@@ -95,12 +95,12 @@ describe('directory preparer', () => {
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
-        'github:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+        'does-not-exist:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       'backstage.io/techdocs-ref': 'dir:./docs',
     });
 
     await expect(directoryPreparer.prepare(mockEntity)).rejects.toThrow(
-      /Unable to resolve location type github/,
+      /Unable to resolve location type does-not-exist/,
     );
   });
 });

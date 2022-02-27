@@ -1,5 +1,101 @@
 # @backstage/plugin-scaffolder
 
+## 0.13.0
+
+### Minor Changes
+
+- 50e0242ac2: - **BREAKING** - `scaffolderApi.scaffold()` now takes one `options` argument instead of 3, the existing arguments should just be wrapped up in one object instead.
+  - **BREAKING** - `scaffolderApi.scaffold()` now returns an object instead of a single string for the job ID. It's now `{ taskId: string }`
+  - **BREAKING** - `scaffolderApi.scaffold()` now takes a `templateRef` instead of `templateName` as an argument in the options. This should be a valid stringified `entityRef`.
+  - **BREAKING** - `scaffolderApi.getIntegrationsList` now returns an object `{ integrations: { type: string, title: string, host: string }[] }` instead of just an array.
+- a2589000ee: - **BREAKING** - Removed the `plugin` export, use `scaffolderPlugin` instead.
+  - **BREAKING** - Removed the `TextValuePicker` component export, you can inline this component instead as it's a simple wrapper around a `TextField` from `@material-ui/core`.
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- b776ce5aab: Replaced use of deprecated `useEntityListProvider` hook with `useEntityList`.
+- 0f37cdef19: Migrated over from the deprecated `spec.metadata` to `spec.templateInfo` for the `name` and the `baseUrl` of the template.
+- 50e0242ac2: - Moved the `JSONSchema` type from `@backstage/catalog-model` to `JSONSchema7`.
+  - Renamed and prefixed some types ready for exporting.
+- a2589000ee: - Reworking the `FieldExtensionComponentType` so we can export the `ui:schema:options` props in the `api-report.md`.
+  - Exporting all of the `UiOptions` types for the `FieldExtensions` so we can see them in the `api-report.md`.
+  - Removing the redundant type in the `CustomFieldValidator` union.
+- 2f2543592c: You can now hide sections or fields in your templates based on a feature flag. For example, take this template:
+
+  ```json
+  {
+    title: 'my-schema',
+    steps: [
+      {
+        title: 'Fill in some steps',
+        schema: {
+          title: 'Fill in some steps',
+          'backstage:featureFlag': 'experimental-feature',
+          properties: {
+            name: {
+              title: 'Name',
+              type: 'string',
+              'backstage:featureFlag': 'should-show-some-stuff-first-option',
+            },
+            description: {
+              title: 'Description',
+              type: 'string',
+              description: 'A description for the component',
+            },
+            owner: {
+              title: 'Owner',
+              type: 'string',
+              description: 'Owner of the component',
+            },
+          },
+          type: 'object',
+        },
+    },
+  }
+
+  ```
+
+  If you have a feature flag that is called `experimental-feature` then your first step would be shown if you that feature flag was not active then it wouldn't be shown. The same goes for the properties in the schema. Make sure to use the key `backstage:featureFlag` in your templates if you want to use this functionality.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-scaffolder-common@0.2.2
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/integration@0.7.5
+  - @backstage/integration-react@0.1.23
+  - @backstage/plugin-permission-react@0.3.2
+
+## 0.12.3
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 538ca90790: Use updated type names from `@backstage/catalog-client`
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- e72d371296: Use `TemplateEntityV1beta2` from `@backstage/plugin-scaffolder-common` instead
+  of `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@0.2.0
+  - @backstage/catalog-client@0.7.0
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/integration-react@0.1.22
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/plugin-permission-react@0.3.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+  - @backstage/types@0.1.2
+  - @backstage/plugin-catalog-common@0.1.3
+
 ## 0.12.2
 
 ### Patch Changes

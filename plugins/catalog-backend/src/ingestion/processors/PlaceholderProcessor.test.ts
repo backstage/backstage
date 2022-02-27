@@ -154,7 +154,7 @@ describe('PlaceholderProcessor', () => {
           spec: { data: { $text: '../file.txt' } },
         },
         {
-          type: 'github',
+          type: 'url',
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
@@ -190,7 +190,7 @@ describe('PlaceholderProcessor', () => {
           spec: { data: { $json: './file.json' } },
         },
         {
-          type: 'github',
+          type: 'url',
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
@@ -224,7 +224,7 @@ describe('PlaceholderProcessor', () => {
           spec: { data: { $yaml: '../file.yaml' } },
         },
         {
-          type: 'github',
+          type: 'url',
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
@@ -262,7 +262,7 @@ describe('PlaceholderProcessor', () => {
           },
         },
         {
-          type: 'github',
+          type: 'url',
           target:
             'https://github.com/backstage/backstage/a/b/catalog-info.yaml',
         },
@@ -300,7 +300,7 @@ describe('PlaceholderProcessor', () => {
           },
         },
         {
-          type: 'github',
+          type: 'url',
           target: './a/b/catalog-info.yaml',
         },
       ),
@@ -340,7 +340,7 @@ describe('PlaceholderProcessor', () => {
           },
         },
         {
-          type: 'github',
+          type: 'url',
           target: './a/b/catalog-info.yaml',
         },
       ),

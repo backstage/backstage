@@ -17,6 +17,9 @@
 import React from 'react';
 import { PanelType, TechDocsCustomHome } from './TechDocsCustomHome';
 
+/**
+ * @deprecated Use {@link TechDocsCustomHome} instead.
+ */
 export const LegacyTechDocsHome = () => {
   const tabsConfig = [
     {

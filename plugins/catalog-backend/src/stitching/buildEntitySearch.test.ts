@@ -141,8 +141,16 @@ describe('buildEntitySearch', () => {
     it('adds relations', () => {
       const input: Entity = {
         relations: [
-          { type: 't1', target: { kind: 'k', namespace: 'ns', name: 'a' } },
-          { type: 't2', target: { kind: 'k', namespace: 'ns', name: 'b' } },
+          {
+            type: 't1',
+            targetRef: 'k:ns/a',
+            target: { kind: 'k', namespace: 'ns', name: 'a' },
+          },
+          {
+            type: 't2',
+            targetRef: 'k:ns/b',
+            target: { kind: 'k', namespace: 'ns', name: 'b' },
+          },
         ],
         apiVersion: 'a',
         kind: 'b',
@@ -182,8 +190,16 @@ describe('buildEntitySearch', () => {
       expect(() =>
         buildEntitySearch('eid', {
           relations: [
-            { type: 'dup', target: { kind: 'k', namespace: 'ns', name: 'a' } },
-            { type: 'DUP', target: { kind: 'k', namespace: 'ns', name: 'b' } },
+            {
+              type: 'dup',
+              targetRef: 'k:ns/a',
+              target: { kind: 'k', namespace: 'ns', name: 'a' },
+            },
+            {
+              type: 'DUP',
+              targetRef: 'k:ns/b',
+              target: { kind: 'k', namespace: 'ns', name: 'b' },
+            },
           ],
           apiVersion: 'a',
           kind: 'b',

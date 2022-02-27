@@ -21,7 +21,21 @@
  */
 
 export { scaffolderApiRef, ScaffolderClient } from './api';
-export type { ScaffolderApi } from './api';
+export type {
+  JobStatus,
+  ListActionsResponse,
+  LogEvent,
+  ScaffolderApi,
+  ScaffolderGetIntegrationsListOptions,
+  ScaffolderGetIntegrationsListResponse,
+  ScaffolderScaffoldOptions,
+  ScaffolderScaffoldResponse,
+  ScaffolderStreamLogsOptions,
+  ScaffolderTask,
+  ScaffolderTaskOutput,
+  ScaffolderTaskStatus,
+  TemplateParameterSchema,
+} from './types';
 export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
@@ -39,23 +53,7 @@ export {
   OwnedEntityPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
-  scaffolderPlugin as plugin,
   scaffolderPlugin,
 } from './plugin';
-export {
-  EntityNamePicker,
-  EntityPicker,
-  EntityTagsPicker,
-  OwnerPicker,
-  RepoUrlPicker,
-  TextValuePicker,
-  OwnedEntityPicker,
-} from './components/fields';
-export type { RepoUrlPickerUiOptions } from './components/fields';
-export { FavouriteTemplate } from './components/FavouriteTemplate';
-export { TemplateList } from './components/TemplateList';
-export type { TemplateListProps } from './components/TemplateList';
-export { TemplateTypePicker } from './components/TemplateTypePicker';
-export * from './components/secrets';
-export { TaskPage } from './components/TaskPage';
+export * from './components';
 export type { TaskPageProps } from './components/TaskPage';

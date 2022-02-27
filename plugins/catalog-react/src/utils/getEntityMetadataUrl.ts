@@ -20,10 +20,12 @@ import {
   Entity,
 } from '@backstage/catalog-model';
 
+/** @public */
 export function getEntityMetadataViewUrl(entity: Entity): string | undefined {
   return entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
 }
 
+/** @public */
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined {
   return entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 }

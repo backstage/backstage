@@ -18,6 +18,7 @@ import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client
 import {
   AlphaEntity,
   parseEntityRef,
+  EntityRelation,
   EntityStatusItem,
 } from '@backstage/catalog-model';
 import { SerializedError, stringifyError } from '@backstage/errors';
@@ -183,9 +184,11 @@ export class Stitcher {
     );
     entity.relations = uniqueRelationRows
       .filter(row => row.relationType /* exclude null row, if relevant */)
-      .map(row => ({
+      .map<EntityRelation>(row => ({
         type: row.relationType!,
+        // TODO(freben): This field is deprecated and should be removed in a future release
         target: parseEntityRef(row.relationTarget!),
+        targetRef: row.relationTarget!,
       }));
     if (statusItems.length) {
       entity.status = {
@@ -210,7 +213,7 @@ export class Stitcher {
     }
 
     // This may throw if the entity is invalid, so we call it before
-    // the final_entites write, even though we may end up not needing
+    // the final_entities write, even though we may end up not needing
     // to write the search index.
     const searchEntries = buildEntitySearch(entityId, entity);
 

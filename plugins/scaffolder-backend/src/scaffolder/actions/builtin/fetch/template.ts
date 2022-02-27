@@ -28,6 +28,13 @@ import {
   SecureTemplater,
 } from '../../../../lib/templating/SecureTemplater';
 
+/**
+ * Downloads a skeleton, templates variables into file and directory names and content.
+ * Then places the result in the workspace, or optionally in a subdirectory
+ * specified by the 'targetPath' input option.
+ *
+ * @public
+ */
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -135,7 +142,7 @@ export function createFetchTemplateAction(options: {
       await fetchContents({
         reader,
         integrations,
-        baseUrl: ctx.baseUrl,
+        baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath: templateDir,
       });

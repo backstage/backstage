@@ -30,11 +30,11 @@ describe('CatalogIdentityClient', () => {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
   const tokenManager: jest.Mocked<TokenManager> = {
     getToken: jest.fn(),
@@ -79,8 +79,9 @@ describe('CatalogIdentityClient', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
+            targetRef: 'group:default/team-a',
             target: {
-              kind: 'Group',
+              kind: 'group',
               namespace: 'default',
               name: 'team-a',
             },
@@ -100,8 +101,9 @@ describe('CatalogIdentityClient', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
+            targetRef: 'group:reality/screen-actors-guild',
             target: {
-              kind: 'Group',
+              kind: 'group',
               namespace: 'reality',
               name: 'screen-actors-guild',
             },

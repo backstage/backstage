@@ -103,6 +103,7 @@ const backendEntities: Entity[] = [
     relations: [
       {
         type: RELATION_OWNED_BY,
+        targetRef: 'user:default/testuser',
         target: { kind: 'User', namespace: 'default', name: 'testUser' },
       },
     ],
@@ -136,6 +137,7 @@ const backendEntities: Entity[] = [
     relations: [
       {
         type: RELATION_OWNED_BY,
+        targetRef: 'user:default/testuser',
         target: { kind: 'User', namespace: 'default', name: 'testUser' },
       },
     ],

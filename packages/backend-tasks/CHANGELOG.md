@@ -1,5 +1,35 @@
 # @backstage/backend-tasks
 
+## 0.1.9
+
+### Patch Changes
+
+- dc97845422: Only output janitor logs when actually timing out tasks
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+
+## 0.1.8
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+
+## 0.1.7
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.1.6
 
 ### Patch Changes
