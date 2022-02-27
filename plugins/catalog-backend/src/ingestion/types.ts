@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { RecursivePartial } from '../util/RecursivePartial';
-import { LocationSpec } from './processors';
+import { LocationSpec } from '../api';
 
 /** @public */
 export type LocationAnalyzer = {

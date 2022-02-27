@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { NotAllowedError } from '@backstage/errors';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common';
 import {
