@@ -6,6 +6,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
 import { Knex } from 'knex';
@@ -51,6 +52,7 @@ export type OutOfTheBoxDeploymentOptions = {
   database?: Knex;
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 // @public
@@ -60,6 +62,7 @@ export type RecommendedDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 // @public
@@ -81,4 +84,8 @@ export type TechDocsCollatorOptions = {
 export { TechDocsDocument };
 
 export * from '@backstage/techdocs-common';
+
+// Warnings were encountered during analysis:
+//
+// src/service/router.d.ts:24:5 - (ae-forgotten-export) The symbol "DocsBuildStrategy" needs to be exported by the entry point index.d.ts
 ```
