@@ -39,6 +39,7 @@
 /plugins/jenkins-backend                            @backstage/reviewers @timja
 /plugins/kafka                                      @backstage/reviewers @nirga
 /plugins/kafka-backend                              @backstage/reviewers @nirga
+/plugins/newrelic                                   @backstage/reviewers @ptahdunbar
 /plugins/newrelic-dashboard                         @backstage/reviewers @mufaddal7
 /plugins/scaffolder-backend-module-rails            @backstage/reviewers @angeliski
 /plugins/scaffolder-backend-module-yeoman           @backstage/reviewers @pawelmitka
