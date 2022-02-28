@@ -17,17 +17,21 @@ The source code is available here:
 - [todo-list](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list)
 - [todo-list-backend](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list-backend)
 
-1.  Copy-paste the two folders into the plugins folder of your backstage application repository. Your application structure should look something like this:
+1.  Copy-paste the two folders into the plugins folder of your backstage application repository by running the following script from the root of your backstage application:
+
+    ```bash
+      $ node -e "const{UrlReaders}=require('@backstage/backend-common');const{ConfigReader}=require('@backstage/config');const winston=require('winston');const{outputFile}=require('fs-extra');const path=require('path');const logger=winston.createLogger({level:'info',});const config=new ConfigReader({});(async function execute(){const reader=UrlReaders.default({logger,config});const files=await reader.readTree('https://github.com/backstage/backstage/tree/permission-docs-plugin-authors/contrib/plugins',);for await(const file of await files.files()){if(file.path==='README.md'){continue}try{await outputFile(path.join(__dirname,'plugins',file.path),await file.content(),)}catch(e){console.log(e)}}})()"
+    ```
+
+    Your application structure should look something like this:
 
     ![backstage application files structure](../../assets/permission/permission-tutorial-backstage-application-initial-structure.png)
-
-    // TODO: check if it's possible to automate this step
 
 2.  add the frontend and backend plugins as dependencies of your Backstage app and backend respectively:
 
     ```
-    $ yarn workspace app add @internal/plugin-todo-list@^1.0.0
     $ yarn workspace backend add @internal/plugin-todo-list-backend@^1.0.0
+    $ yarn workspace app add @internal/plugin-todo-list@^1.0.0
     ```
 
 3.  Include the backend and frontend plugin in your application:
@@ -35,7 +39,7 @@ The source code is available here:
     Create a new `packages/backend/src/plugins/todolist.ts` with the following content:
 
     ```javascript
-    import { IdentityClient } from '@backstage/plugin-auth-backend';
+    import { IdentityClient } from '@backstage/plugin-auth-node';
     import { createRouter } from '@internal/plugin-todo-list-backend';
     import { Router } from 'express';
     import { PluginEnvironment } from '../types';
@@ -46,7 +50,7 @@ The source code is available here:
     }: PluginEnvironment): Promise<Router> {
       return await createRouter({
         logger,
-        identity: new IdentityClient({
+        identity: IdentityClient.create({
           discovery,
           issuer: await discovery.getExternalBaseUrl('auth'),
         }),

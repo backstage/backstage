@@ -61,7 +61,12 @@ Update `plugins/todo-list-backend/src/service/rules.ts`
 `plugins/todo-list-backend/src/service/router.ts`
 
 ```diff
-
+- import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
++ import {
++   createPermissionIntegrationRouter,
++   createConditionTransformer,
++   ConditionTransformer,
++ } from '@backstage/plugin-permission-node';
   import {
     todosListCreate,
     todosListUpdate,
@@ -70,7 +75,9 @@ Update `plugins/todo-list-backend/src/service/rules.ts`
   } from './permissions';
 
   router.get('/todos', async (req, res) => {
-    const token = IdentityClient.getBearerToken(req.header('authorization'));
++   const token = getBearerTokenFromAuthorizationHeader(
++     req.header('authorization'),
++   );
 +   const decision = (
 +     await permissions.authorize([{ permission: todosListRead }], {
 +       token,
@@ -83,12 +90,12 @@ Update `plugins/todo-list-backend/src/service/rules.ts`
 +   if (decision.result === AuthorizeResult.CONDITIONAL) {
 +     const conditionTransformer: ConditionTransformer<TodoFilter> =
 +       createConditionTransformer(rules);
-+     const filter = conditionTransformer(decision.conditions);
++     const filter = conditionTransformer(decision.conditions) as TodoFilter;
 +     res.json(getAll(filter));
 +     return;
 +   }
 
-    res.json(getAll());
+   res.json(getAll());
   });
 ```
 

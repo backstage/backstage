@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-node';
 import express from 'express';
 import request from 'supertest';
 

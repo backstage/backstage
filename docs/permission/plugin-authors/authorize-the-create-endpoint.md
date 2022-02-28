@@ -6,6 +6,12 @@ description: Authorize the create endpoint
 
 The first step we need to do in order to authorize the create endpoint, is to create a new `permission` inside our backend plugin.
 
+Install the following module:
+
+```
+$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-common
+```
+
 Let's create a new `permissions.ts` file under `plugins/todo-list-backend/src/service/permissions.ts` with the following content:
 
 ```typescript
@@ -46,8 +52,10 @@ Authorizing this endpoint now means that the adopters could decide whether some 
 Edit `plugins/todo-list-backend/src/service/router.ts`:
 
 ```diff
-
+- import { InputError } from '@backstage/errors';
++ import { InputError, NotAllowedError } from '@backstage/errors';
   import { add, getAll, getTodo, Todo, TodoFilter, update } from './todos';
++ import { PermissionAuthorizer, AuthorizeResult } from '@backstage/plugin-permission-common';
 + import { todosListCreate } from './permissions';
 
 
@@ -124,13 +132,21 @@ Let's try to test the logic by denying the permission.
 In order to test the logic above, the integrators of your backstage instance need to deny change their permission policy in `packages/backend/src/plugins/permission.ts`:
 
 ```diff
+- import { IdentityClient } from '@backstage/plugin-auth-node';
++ import { BackstageIdentityResponse, IdentityClient } from '@backstage/plugin-auth-node';
+  import {
+    PermissionPolicy,
++   PolicyAuthorizeQuery,
+    PolicyDecision,
+  } from '@backstage/plugin-permission-node';
 
 - class AllowAllPermissionPolicy implements PermissionPolicy
 + class MyPermissionPolicy implements PermissionPolicy {
-    async handle(
-      request: PolicyAuthorizeQuery,
-      user?: BackstageIdentityResponse,
-    ): Promise<PolicyDecision> {
+-   async handle(): Promise<PolicyDecision> {
++   async handle(
++     request: PolicyAuthorizeQuery,
++     user?: BackstageIdentityResponse,
++   ): Promise<PolicyDecision> {
 +     if (request.permission.name === 'todos.list.create') {
 +       return {
 +         result: AuthorizeResult.DENY,

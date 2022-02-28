@@ -16,7 +16,9 @@ To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a
 
 
     router.put('/todos', async (req, res) => {
-+     const token = IdentityClient.getBearerToken(req.header('authorization'));
++     const token = getBearerTokenFromAuthorizationHeader(
++       req.header('authorization'),
++     );
 
       if (!isTodoUpdateRequest(req.body)) {
         throw new InputError('Invalid payload');
@@ -39,7 +41,9 @@ To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a
     });
 ```
 
-**Important:** Notice that we are passing an extra `resourceRef` object, containing the `id` of the todo we want to authorize. This enables decisions based on characteristics of the resource, but it's important to note that to enable authorizing multiple resources at once, **the resourceRef is not passed to PermissionPolicy#handle**. Instead, policies must return a _conditional decision_.
+**Important:** Notice that we are passing an extra `resourceRef` object, containing the `id` of the todo we want to authorize.
+
+This enables decisions based on characteristics of the resource, but it's important to note that to enable authorizing multiple resources at once, **the resourceRef is not passed to PermissionPolicy#handle**. Instead, policies must return a _conditional decision_.
 
 Before diving into the extra steps needed for supporting conditional decisions, let's go back to the permission policy's handle function used by your adopters and try to authorize our new permission.
 
@@ -83,9 +87,16 @@ Unexpected response from plugin upstream when applying conditions. Expected 200 
 
 This happens because our plugin should have exposed a specific endpoint, used by the permission framework to apply conditional decisions. The new endpoint should also be able to support some conditions. In our case, `IS_OWNER` is the only type of condition we want to support. You can add as many built-in conditions as you like to your plugin, and you can also allow Backstage integrators to supply more conditions when starting your backend if you want.
 
+Install the missing module:
+
+```
+$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-node
+```
+
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
 ```diff
++ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 + import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 + import { Todo } from './todos';
 

@@ -19,7 +19,7 @@ import {
   loadBackendConfig,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';

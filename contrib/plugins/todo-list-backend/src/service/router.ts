@@ -19,7 +19,10 @@ import { InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import {
+  IdentityClient,
+  getBearerTokenFromAuthorizationHeader,
+} from '@backstage/plugin-auth-node';
 import { add, getAll, update } from './todos';
 
 export interface RouterOptions {
@@ -45,7 +48,9 @@ export async function createRouter(
   });
 
   router.post('/todos', async (req, res) => {
-    const token = IdentityClient.getBearerToken(req.header('authorization'));
+    const token = getBearerTokenFromAuthorizationHeader(
+      req.header('authorization'),
+    );
     let author: string | undefined = undefined;
 
     const user = token ? await identity.authenticate(token) : undefined;
