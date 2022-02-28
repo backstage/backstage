@@ -20,15 +20,13 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.8.9",
-    "@backstage/core-plugin-api": "^0.6.1",
-    "@backstage/dev-utils": "^0.2.22",
+    "@backstage/core-components": "^0.8.10",
+    "@backstage/core-plugin-api": "^0.7.0",
     "@backstage/errors": "^0.2.2",
     "@backstage/theme": "^0.2.15",
-    "@material-ui/core": "^4.9.13",
+    "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
-    "@testing-library/jest-dom": "^5.16.2",
     "classnames": "^2.3.1",
     "cross-fetch": "^3.1.5",
     "dompurify": "^2.3.6",
@@ -42,10 +40,10 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.14.0",
+    "@backstage/cli": "^0.14.1",
     "@backstage/core-app-api": "^0.5.3",
-    "@backstage/dev-utils": "^0.2.22",
-    "@backstage/test-utils": "^0.2.5",
+    "@backstage/dev-utils": "^0.2.23",
+    "@backstage/test-utils": "^0.2.6",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
@@ -54,7 +52,7 @@
     "@types/gapi.auth2": "^0.0.56",
     "@types/gapi.client.calendar": "^3.0.10",
     "@types/jest": "*",
-    "@types/node": "*",
+    "@types/node": "^14.14.32",
     "@types/sanitize-html": "^2.6.2",
     "cross-fetch": "^3.1.5",
     "msw": "^0.35.0"
