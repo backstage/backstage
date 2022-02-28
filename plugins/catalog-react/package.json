@@ -25,7 +25,7 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "backstage-cli package build --experimental-type-build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
@@ -77,6 +77,7 @@
     "react-test-renderer": "^16.13.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "alpha"
   ]
 }
