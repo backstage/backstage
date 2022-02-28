@@ -20,12 +20,17 @@ import {
   Entity,
 } from '@backstage/catalog-model';
 
-/** @public */
+/**
+ * @public
+ * @deprecated use entity.metadata.annotations?.[ANNOTATION_VIEW_URL] instead. */
 export function getEntityMetadataViewUrl(entity: Entity): string | undefined {
   return entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated use entity.metadata.annotations?.[ANNOTATION_EDIT_URL] instead.
+ */
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined {
   return entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 }

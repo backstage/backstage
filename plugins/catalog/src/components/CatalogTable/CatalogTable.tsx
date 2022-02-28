@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RELATION_OWNED_BY, RELATION_PART_OF } from '@backstage/catalog-model';
+import {
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_VIEW_URL,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import {
   favoriteEntityIcon,
   favoriteEntityTooltip,
   formatEntityRefTitle,
-  getEntityMetadataEditUrl,
-  getEntityMetadataViewUrl,
   getEntityRelations,
   useEntityList,
   useStarredEntities,
@@ -86,7 +89,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const defaultActions: TableProps<CatalogTableRow>['actions'] = [
     ({ entity }) => {
-      const url = getEntityMetadataViewUrl(entity);
+      const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
       return {
         icon: () => <OpenInNew aria-label="View" fontSize="small" />,
         tooltip: 'View',
@@ -98,7 +101,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       };
     },
     ({ entity }) => {
-      const url = getEntityMetadataEditUrl(entity);
+      const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
       return {
         icon: () => <Edit aria-label="Edit" fontSize="small" />,
         tooltip: 'Edit',

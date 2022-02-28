@@ -20,13 +20,13 @@ import {
   RELATION_PARENT_OF,
   ANNOTATION_LOCATION,
   stringifyEntityRef,
+  ANNOTATION_EDIT_URL,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   EntityRefLinks,
   getEntityRelations,
   useEntity,
-  getEntityMetadataEditUrl,
 } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -94,7 +94,8 @@ export const GroupProfileCard = ({
   const allowRefresh =
     entityLocation?.startsWith('url:') || entityLocation?.startsWith('file:');
 
-  const entityMetadataEditUrl = getEntityMetadataEditUrl(group);
+  const entityMetadataEditUrl =
+    group.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
   const displayName = profile?.displayName ?? name;
   const emailHref = profile?.email ? `mailto:${profile.email}` : '#';

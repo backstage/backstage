@@ -443,10 +443,10 @@ export function formatEntityRefTitle(
   },
 ): string;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function getEntityMetadataViewUrl(entity: Entity): string | undefined;
 
 // @public
