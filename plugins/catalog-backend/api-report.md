@@ -213,7 +213,7 @@ export class CatalogBuilder {
   setRefreshIntervalSeconds(seconds: number): CatalogBuilder;
 }
 
-// @public
+// @alpha
 export const catalogConditions: Conditions<{
   hasAnnotation: PermissionRule<
     Entity,
@@ -394,12 +394,12 @@ export class CodeOwnersProcessor implements CatalogProcessor {
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
-// @public
+// @alpha
 export const createCatalogPermissionRule: <TParams extends unknown[]>(
   rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
 
-// @public
+// @alpha
 export const createCatalogPolicyDecision: (
   conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
 ) => ConditionalPolicyDecision;
@@ -896,7 +896,7 @@ export function parseEntityYaml(
   location: LocationSpec,
 ): Iterable<CatalogProcessorResult>;
 
-// @public
+// @alpha
 export const permissionRules: {
   hasAnnotation: PermissionRule<
     Entity,
