@@ -4,10 +4,10 @@ title: Authorize the read endpoint
 description: Authorize the read endpoint
 ---
 
-Authorizing the `GET /todos` is similar to the update endpoint: whenever a `GET /todos` request is received, only the items that the user has created should be returned.
+Authorizing `GET /todos` is similar to the update endpoint, in that it should be possible to authorize read access to todo entries based on their characteristics. When a `GET /todos` request is received, only the items that the user is permitted to see should be returned.
 
 As in the previous case, the permission policy can't take the decision itself, meaning that a conditional decision should be returned.
-Also, here we don't have a `resourceRef` but a list of resources.
+However, this time rather than a single `resourceRef` we have a whole list of resources to authorize.
 
 Potentially, something like this could be done:
 

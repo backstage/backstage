@@ -81,7 +81,7 @@ Expected 200 but got 404 - Not Found type=errorHandler stack=Error:
 Unexpected response from plugin upstream when applying conditions. Expected 200 but got 404 - Not Found
 ```
 
-This happens because our plugin should have exposed a specific endpoint, used by the permission framework to apply conditional decisions. The new endpoint should also be able to support some conditions. In our case, `IS_OWNER` is the only type of condition we want to support.
+This happens because our plugin should have exposed a specific endpoint, used by the permission framework to apply conditional decisions. The new endpoint should also be able to support some conditions. In our case, `IS_OWNER` is the only type of condition we want to support. You can add as many built-in conditions as you like to your plugin, and you can also allow Backstage integrators to supply more conditions when starting your backend if you want.
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
