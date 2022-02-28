@@ -12,6 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -140,5 +141,7 @@ export interface RouterOptions {
   jenkinsInfoProvider: JenkinsInfoProvider;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  permissions?: PermissionAuthorizer;
 }
 ```

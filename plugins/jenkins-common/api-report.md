@@ -8,8 +8,5 @@ import { Permission } from '@backstage/plugin-permission-common';
 // @public
 export const jenkinsExecutePermission: Permission;
 
-// @public (undocumented)
-export const RESOURCE_TYPE_JENKINS = 'jenkins';
-
 // (No @packageDocumentation comment for this package)
 ```

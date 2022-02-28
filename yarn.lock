@@ -11929,7 +11929,6 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-graphiql" "^0.2.32"
     "@backstage/plugin-home" "^0.4.16"
     "@backstage/plugin-jenkins" "^0.6.0"
-    "@backstage/plugin-jenkins-common" "^0.1.0"
     "@backstage/plugin-kafka" "^0.3.0"
     "@backstage/plugin-kubernetes" "^0.6.0"
     "@backstage/plugin-lighthouse" "^0.3.0"

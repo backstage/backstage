@@ -22,6 +22,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/plugin-catalog-common": "^0.1.4",
     "@backstage/plugin-permission-common": "^0.5.1"
   },
   "devDependencies": {

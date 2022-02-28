@@ -15,11 +15,11 @@
  */
 import { jenkinsPermissionRules } from './rules';
 import { createConditionExports } from '@backstage/plugin-permission-node';
-import { RESOURCE_TYPE_JENKINS } from '@backstage/plugin-jenkins-common';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
 const { conditions, createPolicyDecision } = createConditionExports({
   pluginId: 'jenkins',
-  resourceType: RESOURCE_TYPE_JENKINS,
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   rules: jenkinsPermissionRules,
 });
 

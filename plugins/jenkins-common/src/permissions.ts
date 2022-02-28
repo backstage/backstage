@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { Permission } from '@backstage/plugin-permission-common';
-
-/**
- * @public
- */
-export const RESOURCE_TYPE_JENKINS = 'jenkins';
 
 /**
  * This permission is used to determine if a user is allowed to execute an action in jenkins plugin
@@ -30,5 +26,5 @@ export const jenkinsExecutePermission: Permission = {
   attributes: {
     action: 'update',
   },
-  resourceType: RESOURCE_TYPE_JENKINS,
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
 };

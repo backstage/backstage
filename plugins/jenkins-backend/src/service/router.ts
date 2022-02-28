@@ -24,7 +24,8 @@ import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
 import { Config } from '@backstage/config';
-import { jenkinsPermissionIntegrationRouterFactory } from '../permissions/permission-router-factory';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 
 export interface RouterOptions {
   logger: Logger;
@@ -32,6 +33,7 @@ export interface RouterOptions {
   config?: Config;
   discovery?: PluginEndpointDiscovery;
   fetchApi?: { fetch: typeof fetch };
+  permissions?: PermissionAuthorizer;
 }
 
 export async function createRouter(
@@ -39,7 +41,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { jenkinsInfoProvider } = options;
 
-  const jenkinsApi = new JenkinsApiImpl();
+  const jenkinsApi = new JenkinsApiImpl(options.permissions);
 
   const router = Router();
   router.use(express.json());
@@ -111,7 +113,6 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
       const { namespace, kind, name, jobFullName } = request.params;
-
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
           kind,
@@ -120,23 +121,14 @@ export async function createRouter(
         },
         jobFullName,
       });
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
 
-      await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
+      await jenkinsApi.buildProject(jenkinsInfo, jobFullName, { token });
       response.json({});
     },
   );
   router.use(errorHandler());
-
-  if (options.config?.getOptionalBoolean('permission.enabled')) {
-    if (!options.discovery) {
-      throw new Error('Discovery API is required if permissions are enabled.');
-    }
-    router.use(
-      jenkinsPermissionIntegrationRouterFactory(
-        options.discovery,
-        options.fetchApi,
-      ),
-    );
-  }
   return router;
 }

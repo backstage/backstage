@@ -18,6 +18,8 @@ import { JenkinsApiImpl } from './jenkinsApi';
 import jenkins from 'jenkins';
 import { JenkinsInfo } from './jenkinsInfoProvider';
 import { JenkinsBuild, JenkinsProject } from '../types';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 jest.mock('jenkins');
 const mockedJenkinsClient = {
@@ -40,8 +42,16 @@ const jenkinsInfo: JenkinsInfo = {
   jobFullName: 'example-jobName',
 };
 
+const fakePermissionApi = {
+  authorize: jest.fn().mockResolvedValue([
+    {
+      result: AuthorizeResult.ALLOW,
+    },
+  ]),
+};
+
 describe('JenkinsApi', () => {
-  const jenkinsApi = new JenkinsApiImpl();
+  const jenkinsApi = new JenkinsApiImpl(fakePermissionApi);
 
   describe('getProjects', () => {
     const project: JenkinsProject = {
@@ -405,6 +415,34 @@ describe('JenkinsApi', () => {
   it('buildProject', async () => {
     await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
 
+    expect(mockedJenkins).toHaveBeenCalledWith({
+      baseUrl: jenkinsInfo.baseUrl,
+      headers: jenkinsInfo.headers,
+      promisify: true,
+    });
+    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+  });
+
+  it('buildProject should fail if it does not have required permissions', async () => {
+    fakePermissionApi.authorize.mockResolvedValueOnce([
+      {
+        result: AuthorizeResult.DENY,
+      },
+    ]);
+
+    await expect(() =>
+      jenkinsApi.buildProject(jenkinsInfo, jobFullName),
+    ).rejects.toThrow(NotAllowedError);
+  });
+
+  it('buildProject should success if it have required permissions', async () => {
+    fakePermissionApi.authorize.mockResolvedValueOnce([
+      {
+        result: AuthorizeResult.ALLOW,
+      },
+    ]);
+
+    await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
