@@ -31,6 +31,7 @@ import {
   catalogApiRef,
   entityRouteRef,
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import {
   mockBreakpoint,
@@ -42,7 +43,6 @@ import {
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
-import { DefaultStarredEntitiesApi } from '../../apis';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
@@ -141,10 +141,7 @@ describe('DefaultCatalogPage', () => {
             [catalogApiRef, catalogApi],
             [identityApiRef, identityApi],
             [storageApiRef, storageApi],
-            [
-              starredEntitiesApiRef,
-              new DefaultStarredEntitiesApi({ storageApi }),
-            ],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           ]}
         >
           {children}

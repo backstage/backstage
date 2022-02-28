@@ -20,11 +20,11 @@ import {
   configApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
-import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 import {
   CatalogApi,
   catalogApiRef,
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import {
   MockStorageApi,
@@ -73,7 +73,7 @@ describe('TechDocs Home', () => {
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
     [storageApiRef, storageApi],
-    [starredEntitiesApiRef, new DefaultStarredEntitiesApi({ storageApi })],
+    [starredEntitiesApiRef, new MockStarredEntitiesApi()],
   );
 
   it('should render a TechDocs home page', async () => {

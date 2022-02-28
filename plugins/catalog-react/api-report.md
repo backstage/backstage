@@ -476,6 +476,14 @@ export const MockEntityListContextProvider: ({
   value?: Partial<EntityListContextProps<DefaultEntityFilters>> | undefined;
 }>) => JSX.Element;
 
+// @public
+export class MockStarredEntitiesApi implements StarredEntitiesApi {
+  // (undocumented)
+  starredEntitie$(): Observable<Set<string>>;
+  // (undocumented)
+  toggleStarred(entityRef: string): Promise<void>;
+}
+
 // @public @deprecated (undocumented)
 export function reduceCatalogFilters(
   filters: EntityFilter[],

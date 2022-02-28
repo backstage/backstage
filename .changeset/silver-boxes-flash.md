@@ -2,7 +2,7 @@
 '@backstage/plugin-catalog-react': patch
 ---
 
-**BREAKING**: Moved **DefaultStarredEntitiesApi** to `@backstage/plugin-catalog`. If you were using this in tests, you can add `@backstage/plugin-catalog` your packages `devDependencies` instead.
+**BREAKING**: Moved **DefaultStarredEntitiesApi** to `@backstage/plugin-catalog`. If you were using this in tests, you can use the new `MockStarredEntitiesApi` from `@backstage/plugin-catalog-react` instead.
 
 Fixed a risky behavior where `DefaultStarredEntitiesApi` forwarded values to observers that were later mutated.
 

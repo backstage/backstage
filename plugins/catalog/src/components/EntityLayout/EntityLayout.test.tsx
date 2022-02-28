@@ -24,18 +24,17 @@ import {
   EntityProvider,
   entityRouteRef,
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   MockPermissionApi,
-  MockStorageApi,
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Route, Routes } from 'react-router';
-import { DefaultStarredEntitiesApi } from '../../apis';
 import { EntityLayout } from './EntityLayout';
 
 const mockEntity = {
@@ -48,10 +47,7 @@ const mockEntity = {
 const mockApis = TestApiRegistry.from(
   [catalogApiRef, {} as CatalogApi],
   [alertApiRef, {} as AlertApi],
-  [
-    starredEntitiesApiRef,
-    new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
-  ],
+  [starredEntitiesApiRef, new MockStarredEntitiesApi()],
   [permissionApiRef, new MockPermissionApi()],
 );
 

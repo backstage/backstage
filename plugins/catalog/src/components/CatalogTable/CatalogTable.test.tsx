@@ -25,15 +25,11 @@ import {
   MockEntityListContextProvider,
   starredEntitiesApiRef,
   UserListFilter,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
-import {
-  MockStorageApi,
-  renderInTestApp,
-  TestApiRegistry,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import * as React from 'react';
-import { DefaultStarredEntitiesApi } from '../../apis';
 import { CatalogTable } from './CatalogTable';
 
 const entities: Entity[] = [
@@ -57,7 +53,7 @@ const entities: Entity[] = [
 describe('CatalogTable component', () => {
   const mockApis = TestApiRegistry.from([
     starredEntitiesApiRef,
-    new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
+    new MockStarredEntitiesApi(),
   ]);
 
   beforeEach(() => {
