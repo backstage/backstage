@@ -8,7 +8,7 @@ If you prefer to watch a video instead, you can start with this video introducti
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/EQr9tFClgG0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Backstage integrators control permissions by writing a policy. In general terms, a policy is simply an async function which receives a request to authorize a given permission for a user and (optional) resource, and returns a decision on whether to authorize that permission. Integrators can implement their own policies from scratch, or adopt reusable policies written by others.
+Backstage integrators control permissions by writing a policy. In general terms, a policy is simply an async function which receives a request to authorize a specific action for a user and (optional) resource, and returns a decision on whether to authorize that permission. Integrators can implement their own policies from scratch, or adopt reusable policies written by others.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ The permissions framework depends on a few other Backstage systems, which must b
 
 ### Upgrade to the latest version of Backstage
 
-The permissions framework itself is new to Backstage and still evolving quickly. To ensure your version of Backstage has all the latest permission-related functionality, it’s important to upgrade to the latest version. The Backstage upgrade helper is a great tool to help ensure that you’ve made all the necessary changes during the upgrade!
+The permissions framework itself is new to Backstage and still evolving quickly. To ensure your version of Backstage has all the latest permission-related functionality, it’s important to upgrade to the latest version. The [Backstage upgrade helper](https://backstage.github.io/upgrade-helper/) is a great tool to help ensure that you’ve made all the necessary changes during the upgrade!
 
 ### Enable backend-to-backend authentication
 
@@ -28,7 +28,7 @@ To set up backend-to-backend authentication, follow the [backend-to-backend auth
 
 **Note**: If you are working off of an existing Backstage instance, you likely already have some form of an identity resolver set up.
 
-Like many other parts of Backstage, the permissions framework relies on information about group membership. This simplifies authoring policies through the use of groups, rather than requiring each user to be listed in the configuration. Group membership is also often useful for conditional permissions, for example allowing permission to act on an entity to be granted when a user is a member of a group that owns that entity.
+Like many other parts of Backstage, the permissions framework relies on information about group membership. This simplifies authoring policies through the use of groups, rather than requiring each user to be listed in the configuration. Group membership is also often useful for conditional permissions, for example allowing permissions to act on an entity to be granted when a user is a member of a group that owns that entity.
 
 [The IdentityResolver docs](../auth/identity-resolver.md) describe the process for resolving group membership on sign in.
 
@@ -51,11 +51,13 @@ import {
 } from '@backstage/plugin-permission-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+
 class TestPermissionPolicy implements PermissionPolicy {
   async handle(): Promise<PolicyDecision> {
     return { result: AuthorizeResult.ALLOW };
   }
 }
+
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
@@ -89,43 +91,45 @@ permission:
 2. Update the PermissionPolicy in `packages/backend/src/plugins/permission.ts` to disable a permission that’s easy for us to test. This policy rejects any attempt to delete a catalog entity:
 
 ```diff
-import { IdentityClient } from '@backstage/plugin-auth-node';
-import { createRouter } from '@backstage/plugin-permission-backend';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-+  PolicyAuthorizeQuery,
-  PolicyDecision,
-} from '@backstage/plugin-permission-node';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-class TestPermissionPolicy implements PermissionPolicy {
--  async handle(): Promise<PolicyDecision> {
-+  async handle(request: PolicyAuthorizeQuery): Promise<PolicyDecision> {
-+    if (request.permission.name === 'catalog.entity.delete') {
-+      return {
-+        result: AuthorizeResult.DENY,
-+      };
-+    }
+  import { IdentityClient } from '@backstage/plugin-auth-node';
+  import { createRouter } from '@backstage/plugin-permission-backend';
+  import { AuthorizeResult } from '@backstage/plugin-permission-common';
+  import {
+    PermissionPolicy,
++   PolicyAuthorizeQuery,
+    PolicyDecision,
+  } from '@backstage/plugin-permission-node';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  class TestPermissionPolicy implements PermissionPolicy {
+-   async handle(): Promise<PolicyDecision> {
++   async handle(request: PolicyAuthorizeQuery): Promise<PolicyDecision> {
++     if (request.permission.name === 'catalog.entity.delete') {
++       return {
++         result: AuthorizeResult.DENY,
++       };
++     }
 +
-    return { result: AuthorizeResult.ALLOW };
+      return { result: AuthorizeResult.ALLOW };
+    }
   }
-}
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const { config, logger, discovery } = env;
-  return await createRouter({
-    config,
-    logger,
-    discovery,
-    policy: new TestPermissionPolicy(),
-    identity: IdentityClient.create({
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    const { config, logger, discovery } = env;
+    return await createRouter({
+      config,
+      logger,
       discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
-    }),
-  });
-}
+      policy: new TestPermissionPolicy(),
+      identity: IdentityClient.create({
+        discovery,
+        issuer: await discovery.getExternalBaseUrl('auth'),
+      }),
+    });
+  }
 ```
 
 3. Now that you’ve made this change, you should find that the unregister entity menu option on the catalog entity page is disabled.
