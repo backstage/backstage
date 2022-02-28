@@ -43,6 +43,12 @@ export class DefaultTechDocsCollator implements DocumentCollator {
 }
 
 // @public
+export interface DocsBuildStrategy {
+  // (undocumented)
+  shouldBuild(entity: Entity): Promise<boolean>;
+}
+
+// @public
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
@@ -84,8 +90,4 @@ export type TechDocsCollatorOptions = {
 export { TechDocsDocument };
 
 export * from '@backstage/techdocs-common';
-
-// Warnings were encountered during analysis:
-//
-// src/service/router.d.ts:24:5 - (ae-forgotten-export) The symbol "DocsBuildStrategy" needs to be exported by the entry point index.d.ts
 ```

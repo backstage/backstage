@@ -25,6 +25,7 @@ export type {
   RouterOptions,
   RecommendedDeploymentOptions,
   OutOfTheBoxDeploymentOptions,
+  DocsBuildStrategy,
 } from './service';
 
 export { DefaultTechDocsCollator } from './search';
