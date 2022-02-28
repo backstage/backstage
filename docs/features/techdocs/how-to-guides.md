@@ -566,6 +566,7 @@ To achieve this hybrid build model:
    a given entity.
    For example, to only build docs when an entity has the `company.com/techdocs-builder`
    annotation set to `'local'`:
+
    ```typescript
    export class AnnotationBasedBuildStrategy {
      private readonly config: Config;
@@ -575,10 +576,14 @@ To achieve this hybrid build model:
      }
 
      async shouldBuild(_: Entity): Promise<boolean> {
-       return this.entity.metadata?.annotations?.["company.com/techdocs-builder"] === 'local'
+       return (
+         this.entity.metadata?.annotations?.['company.com/techdocs-builder'] ===
+         'local'
+       );
      }
    }
    ```
+
 4. Pass an instance of this Build Strategy as the `docsBuildStrategy` parameter of the
    TechDocs backend `createRouter` method.
 
