@@ -28,8 +28,12 @@ export interface DocsBuildStrategy {
 export class DefaultDocsBuildStrategy {
   private readonly config: Config;
 
-  constructor(config: Config) {
+  private constructor(config: Config) {
     this.config = config;
+  }
+
+  static fromConfig(config: Config): DefaultDocsBuildStrategy {
+    return new DefaultDocsBuildStrategy(config);
   }
 
   async shouldBuild(_: Entity): Promise<boolean> {

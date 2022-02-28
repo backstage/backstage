@@ -106,7 +106,7 @@ export async function createRouter(
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
-    options.docsBuildStrategy ?? new DefaultDocsBuildStrategy(config);
+    options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.

@@ -41,7 +41,8 @@ describe('DefaultDocsBuildStrategy', () => {
 
   describe('shouldBuild', () => {
     it('should return true when techdocs.build is set to local', async () => {
-      const defaultDocsBuildStrategy = new DefaultDocsBuildStrategy(config);
+      const defaultDocsBuildStrategy =
+        DefaultDocsBuildStrategy.fromConfig(config);
 
       MockedConfigReader.prototype.getString.mockReturnValue('local');
 
@@ -51,7 +52,8 @@ describe('DefaultDocsBuildStrategy', () => {
     });
 
     it('should return false when techdocs.build is set to external', async () => {
-      const defaultDocsBuildStrategy = new DefaultDocsBuildStrategy(config);
+      const defaultDocsBuildStrategy =
+        DefaultDocsBuildStrategy.fromConfig(config);
 
       MockedConfigReader.prototype.getString.mockReturnValue('external');
 
