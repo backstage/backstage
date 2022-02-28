@@ -4,8 +4,7 @@ title: Permission framework for plugin authors
 description: How to get started with the permission framework as a plugin author
 ---
 
-The following tutorial is designed for plugin authors who already have knowledge about how to create a backstage plugin. We will provide a "TODO List" plugin to be used as a starting point.
-After integrating the plugin into your application, we will guide you step by step in the process needed for adding support for permissions to your plugin.
+The following tutorial is designed to help plugin authors add support for permissions to their plugins. We'll add support for permissions to example `todo-list` and `todo-list-backend` plugins, but the process should be similar for other plugins!
 
 If you want to add support for permissions to your own plugin, feel free to skip to the [next section](authorize-the-create-endpoint.md).
 
