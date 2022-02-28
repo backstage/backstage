@@ -566,9 +566,7 @@ export type OAuthRequester<TAuthResponse> = (
 
 // @public
 export type OAuthRequesterOptions<TOAuthResponse> = {
-  provider: Omit<AuthProviderInfo, 'id'> & {
-    id?: string;
-  };
+  provider: AuthProviderInfo;
   onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
 };
 
@@ -637,9 +635,7 @@ export type PathParams<S extends string> = {
 
 // @public
 export type PendingOAuthRequest = {
-  provider: Omit<AuthProviderInfo, 'id'> & {
-    id?: string;
-  };
+  provider: AuthProviderInfo;
   reject(): void;
   trigger(): Promise<void>;
 };
