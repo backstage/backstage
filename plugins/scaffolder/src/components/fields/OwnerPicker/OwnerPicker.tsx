@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { EntityPicker } from '../EntityPicker';
+import { EntityPicker } from '../EntityPicker/EntityPicker';
 import { FieldExtensionComponentProps } from '../../../extensions';
 
 export interface OwnerPickerUiOptions {
