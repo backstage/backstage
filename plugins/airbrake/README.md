@@ -20,7 +20,7 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
    yarn add @backstage/plugin-airbrake-backend
    ```
 
-3. Add the `EntityAirbrakeContent` to `packages/app/src/components/catalog/EntityPage.tsx` for all entity pages you want Airbrake to be in:
+3. Add the `EntityAirbrakeContent` to `packages/app/src/components/catalog/EntityPage.tsx` for all the entity pages you want Airbrake to be in:
 
    ```typescript jsx
    import { EntityAirbrakeContent } from '@backstage/plugin-airbrake';
