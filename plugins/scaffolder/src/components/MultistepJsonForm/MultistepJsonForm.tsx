@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as fieldOverrides from './FieldOverrides';
+import { transformSchemaToProps } from './schema';
+import { Content, StructuredMetadataTable } from '@backstage/core-components';
+import {
+  errorApiRef,
+  useApi,
+  featureFlagsApiRef,
+} from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import {
   Box,
@@ -24,20 +32,11 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
-import {
-  errorApiRef,
-  useApi,
-  featureFlagsApiRef,
-} from '@backstage/core-plugin-api';
-import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { useState } from 'react';
-import { transformSchemaToProps } from './schema';
-import { Content, StructuredMetadataTable } from '@backstage/core-components';
+import { FormProps, IChangeEvent, UiSchema } from '@rjsf/core';
+import { MuiForm as Form } from '@rjsf/material-ui';
 import cloneDeep from 'lodash/cloneDeep';
-import * as fieldOverrides from './FieldOverrides';
+import React, { useState } from 'react';
 
-const Form = withTheme(MuiTheme);
 type Step = {
   schema: JsonObject;
   title: string;
