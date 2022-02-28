@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 
 import { gcalendarPlugin } from '../plugin';
 
