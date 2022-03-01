@@ -56,11 +56,7 @@ const renderKey = (
   error: AggregatedError,
   linkTarget: string,
 ): React.ReactNode => {
-  return (
-    <Link to={linkTarget} target="_blank" rel="noreferrer">
-      {error.aggregation_key}
-    </Link>
-  );
+  return <Link to={linkTarget}>{error.aggregation_key}</Link>;
 };
 
 const renderSeverity = (severity: string): React.ReactNode => {
