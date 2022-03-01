@@ -10,36 +10,93 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { RouteRef } from '@backstage/core-plugin-api';
+
+// @public (undocumented)
+export interface AggregatedError {
+  // (undocumented)
+  aggregation_key: string;
+  // (undocumented)
+  latest_errors: ErrorInstance[];
+  // (undocumented)
+  severity: string;
+  // (undocumented)
+  total_count: number;
+}
+
+// @public (undocumented)
+interface Error_2 {
+  // (undocumented)
+  cause?: Error_2 | null;
+  // (undocumented)
+  class: string;
+  // (undocumented)
+  message: string;
+  // (undocumented)
+  stacktrace?: string[];
+}
+export { Error_2 as Error };
+
+// @public (undocumented)
+export interface ErrorInstance {
+  // (undocumented)
+  error: Error_2;
+  // (undocumented)
+  http_context: HttpContext;
+  // (undocumented)
+  severity: string;
+  // (undocumented)
+  timestamp: number;
+  // (undocumented)
+  uuid: string;
+}
+
+// @public (undocumented)
+export interface HttpContext {
+  // (undocumented)
+  request_body: string;
+  // (undocumented)
+  request_headers: RequestHeaders;
+  // (undocumented)
+  request_method: string;
+  // (undocumented)
+  request_url: string;
+}
 
 // @public
 export const isPeriskopAvailable: (entity: Entity) => boolean;
+
+// @public (undocumented)
+export interface NotFoundInInstance {
+  // (undocumented)
+  body: string;
+}
 
 // @public
 export const PERISKOP_NAME_ANNOTATION = 'periskop.io/name';
 
 // @public
 export class PeriskopApi {
-  // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
-  constructor(options: Options);
-  // Warning: (ae-forgotten-export) The symbol "AggregatedError" needs to be exported by the entry point index.d.ts
-  //
+  constructor(options: PeriskopApiOptions);
   // (undocumented)
   getErrorInstanceUrl(
-    locationName: string,
+    instanceName: string,
     serviceName: string,
     error: AggregatedError,
   ): string;
-  // Warning: (ae-forgotten-export) The symbol "NotFoundInLocation" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   getErrors(
-    locationName: string,
+    instanceName: string,
     serviceName: string,
-  ): Promise<AggregatedError[] | NotFoundInLocation>;
+  ): Promise<AggregatedError[] | NotFoundInInstance>;
   // (undocumented)
-  getLocationNames(): string[];
+  getInstanceNames(): string[];
 }
+
+// @public (undocumented)
+export type PeriskopApiOptions = {
+  discoveryApi: DiscoveryApi;
+  configApi: ConfigApi;
+};
 
 // @public (undocumented)
 export const periskopApiRef: ApiRef<PeriskopApi>;
@@ -48,12 +105,13 @@ export const periskopApiRef: ApiRef<PeriskopApi>;
 export const PeriskopErrorsTable: () => JSX.Element;
 
 // @public (undocumented)
-export const periskopPlugin: BackstagePlugin<
-  {
-    root: RouteRef<undefined>;
-  },
-  {}
->;
+export const periskopPlugin: BackstagePlugin<{}, {}>;
+
+// @public (undocumented)
+export interface RequestHeaders {
+  // (undocumented)
+  [k: string]: string;
+}
 
 // (No @packageDocumentation comment for this package)
 ```

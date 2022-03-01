@@ -21,3 +21,4 @@ export {
   PERISKOP_NAME_ANNOTATION,
 } from './components/PeriskopErrorsTable';
 export * from './api/index';
+export * from './types';

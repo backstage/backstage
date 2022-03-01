@@ -17,7 +17,8 @@
 import { ConfigApi, DiscoveryApi } from '@backstage/core-plugin-api';
 import { AggregatedError, NotFoundInInstance } from '../types';
 
-type Options = {
+/** @public */
+export type PeriskopApiOptions = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
 };
@@ -36,7 +37,7 @@ export class PeriskopApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly instances: PeriskopInstance[];
 
-  constructor(options: Options) {
+  constructor(options: PeriskopApiOptions) {
     this.discoveryApi = options.discoveryApi;
     this.instances = options.configApi
       .getConfigArray('periskop.instances')
