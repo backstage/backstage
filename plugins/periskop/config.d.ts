@@ -18,7 +18,7 @@ export interface Config {
   /**
    * Configuration options for the periskop plugin
    */
-  periskop: {
+  periskop?: {
     /**
      * Integration configuration for the periskop servers
      * @visibility frontend
