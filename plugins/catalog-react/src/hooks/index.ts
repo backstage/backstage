@@ -18,11 +18,14 @@ export {
   useEntityFromUrl,
   EntityProvider,
   AsyncEntityProvider,
+  useAsyncEntity,
 } from './useEntity';
 export type {
   EntityLoadingStatus,
   EntityProviderProps,
   AsyncEntityProviderProps,
+  UseEntityResponse,
+  UseAsyncEntityResponse,
 } from './useEntity';
 export { useEntityCompoundName } from './useEntityCompoundName';
 export {

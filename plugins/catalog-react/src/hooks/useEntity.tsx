@@ -128,28 +128,64 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 
   return { entity, loading, error, refresh };
 };
+export interface UseEntityResponse<T> {
+  entity: T;
+  /** @deprecated use useAsyncEntity instead */
+  loading: boolean;
+  /** @deprecated use useAsyncEntity instead */
+  error?: Error;
+  /** @deprecated use useAsyncEntity instead */
+  refresh?: VoidFunction;
+}
+
+export interface UseAsyncEntityResponse<T> {
+  entity?: T;
+  loading: boolean;
+  error?: Error;
+  refresh?: VoidFunction;
+}
 
 /**
- * Grab the current entity from the context and its current loading state.
+ * Grab the current entity from the context, throws if the entity has not yet been loaded
+ * or is not available.
  *
  * @public
  */
-export function useEntity<T extends Entity = Entity>() {
+export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T> {
   const versionedHolder =
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
 
   if (!versionedHolder) {
-    // TODO(Rugvip): Throw this once we fully migrate to the new context
-    // throw new Error('Entity context is not available');
-
-    return {
-      entity: undefined as unknown as T,
-      loading: true,
-      error: undefined,
-      refresh: () => {},
-    };
+    throw new Error('Entity context is not available');
   }
 
+  const value = versionedHolder.atVersion(1);
+  if (!value) {
+    throw new Error('EntityContext v1 not available');
+  }
+
+  if (!value.entity) {
+    throw new Error('Entity has not been loaded yet');
+  }
+
+  const { entity, loading, error, refresh } = value;
+  return { entity: entity as T, loading, error, refresh };
+}
+
+/**
+ * Grab the current entity from the context, provides loading state and errors, and the ability to refresh.
+ *
+ * @public
+ */
+export function useAsyncEntity<
+  T extends Entity = Entity,
+>(): UseAsyncEntityResponse<T> {
+  const versionedHolder =
+    useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
+
+  if (!versionedHolder) {
+    throw new Error('Entity context is not available');
+  }
   const value = versionedHolder.atVersion(1);
   if (!value) {
     throw new Error('EntityContext v1 not available');

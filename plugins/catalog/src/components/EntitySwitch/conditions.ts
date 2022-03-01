@@ -27,7 +27,7 @@ function strCmp(a: string | undefined, b: string | undefined): boolean {
  * @public
  */
 export function isKind(kind: string) {
-  return (entity: Entity) => strCmp(entity?.kind, kind);
+  return (entity: Entity) => strCmp(entity.kind, kind);
 }
 
 /**
@@ -36,7 +36,7 @@ export function isKind(kind: string) {
  */
 export function isComponentType(type: string) {
   return (entity: Entity) => {
-    if (!strCmp(entity?.kind, 'component')) {
+    if (!strCmp(entity.kind, 'component')) {
       return false;
     }
     const componentEntity = entity as ComponentEntity;
@@ -49,5 +49,5 @@ export function isComponentType(type: string) {
  * @public
  */
 export function isNamespace(namespace: string) {
-  return (entity: Entity) => strCmp(entity?.metadata?.namespace, namespace);
+  return (entity: Entity) => strCmp(entity.metadata?.namespace, namespace);
 }
