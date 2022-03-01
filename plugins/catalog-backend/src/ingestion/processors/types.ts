@@ -116,20 +116,6 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
-
-  /**
-   * Handles an emitted error.
-   *
-   * @param error - The error
-   * @param location - The location where the error occurred
-   * @param emit - A sink for items resulting from this handling
-   * @returns Nothing
-   */
-  handleError?(
-    error: Error,
-    location: LocationSpec,
-    emit: CatalogProcessorEmit,
-  ): Promise<void>;
 };
 
 /**
