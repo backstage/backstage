@@ -14,6 +14,7 @@ import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node'
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 
@@ -94,6 +95,8 @@ export interface TechInsightsOptions<
   factRetrievers: FactRetrieverRegistration[];
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  scheduler: PluginTaskScheduler;
 }
 
 // (No @packageDocumentation comment for this package)

@@ -135,6 +135,17 @@ export interface TaskRunner {
  */
 export interface PluginTaskScheduler {
   /**
+   * Manually triggers a task by ID.
+   *
+   * If the task doesn't exist, a NotFoundError is thrown.
+   * If the task is currently running, a ConflictError is thrown.
+   *
+   * @param id - The task ID
+   *
+   */
+  triggerTask(id: string): Promise<void>;
+
+  /**
    * Schedules a task function for coordinated exclusive invocation across
    * workers. This convenience method performs both the scheduling and
    * invocation in one go.
