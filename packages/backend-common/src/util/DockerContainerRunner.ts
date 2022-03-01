@@ -105,6 +105,7 @@ export class DockerContainerRunner implements ContainerRunner {
       await this.dockerClient.run(imageName, args, logStream, {
         Volumes,
         HostConfig: {
+          AutoRemove: true,
           Binds,
         },
         ...(workingDir ? { WorkingDir: workingDir } : {}),
