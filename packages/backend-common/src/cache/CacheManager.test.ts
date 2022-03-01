@@ -195,14 +195,13 @@ describe('CacheManager', () => {
   });
 
   it('returns a Redis client when configured', () => {
-    const redisHostAndPort = '127.0.0.1:6379';
-    const expectedHost = `redis://${redisHostAndPort}`;
+    const redisConnection = 'redis://127.0.0.1:6379';
     const manager = CacheManager.fromConfig(
       new ConfigReader({
         backend: {
           cache: {
             store: 'redis',
-            connection: redisHostAndPort,
+            connection: redisConnection,
           },
         },
       }),
@@ -218,7 +217,7 @@ describe('CacheManager', () => {
     expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
     const redis = KeyvRedis as jest.Mock;
     const mockRedisCalls = redis.mock.calls.splice(-1);
-    expect(mockRedisCalls[0][0]).toEqual(expectedHost);
+    expect(mockRedisCalls[0][0]).toEqual(redisConnection);
   });
 
   describe('connection errors', () => {
