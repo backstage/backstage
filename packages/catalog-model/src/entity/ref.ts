@@ -54,19 +54,6 @@ export function getEntityName(entity: Entity): EntityName {
 }
 
 /**
- * The context of defaults that entity reference parsing happens within.
- *
- * @public
- * @deprecated type inlined, will be removed in a future release.
- */
-export type EntityRefContext = {
-  /** The default kind, if none is given in the reference */
-  defaultKind?: string;
-  /** The default namespace, if none is given in the reference */
-  defaultNamespace?: string;
-};
-
-/**
  * Parses an entity reference, either on string or compound form, and always
  * returns a complete entity name including kind, namespace and name.
  *
@@ -202,68 +189,4 @@ export function stringifyEntityRef(
   return `${kind.toLocaleLowerCase('en-US')}:${namespace.toLocaleLowerCase(
     'en-US',
   )}/${name.toLocaleLowerCase('en-US')}`;
-}
-
-/**
- * Compares an entity to either a string reference or a compound reference.
- *
- * @remarks
- *
- * The comparison is case insensitive, and all of kind, namespace, and name
- * must match (after applying the optional context to the ref).
- *
- * @public
- * @param entity - The entity to match
- * @param ref - A string or compound entity ref
- * @param context - An optional context of default kind and namespace, that apply
- *                to the ref if given
- * @returns True if matching, false otherwise
- * @deprecated compare using stringifyEntityRef instead.
- */
-export function compareEntityToRef(
-  entity: Entity,
-  ref:
-    | string
-    | { kind?: string; namespace?: string; name: string }
-    | EntityName,
-  context?: {
-    /** The default kind, if none is given in the reference */
-    defaultKind?: string;
-    /** The default namespace, if none is given in the reference */
-    defaultNamespace?: string;
-  },
-): boolean {
-  const entityKind = entity.kind;
-  const entityNamespace = entity.metadata.namespace || DEFAULT_NAMESPACE;
-  const entityName = entity.metadata.name;
-
-  let refKind: string | undefined;
-  let refNamespace: string | undefined;
-  let refName: string;
-  if (typeof ref === 'string') {
-    const parsed = parseRefString(ref);
-    refKind = parsed.kind || context?.defaultKind;
-    refNamespace =
-      parsed.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
-    refName = parsed.name;
-  } else {
-    refKind = ref.kind || context?.defaultKind;
-    refNamespace =
-      ref.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
-    refName = ref.name;
-  }
-
-  if (!refKind || !refNamespace) {
-    throw new Error(
-      `Entity reference or context did not contain kind and namespace`,
-    );
-  }
-
-  return (
-    entityKind.toLocaleLowerCase('en-US') ===
-      refKind.toLocaleLowerCase('en-US') &&
-    entityNamespace.toLocaleLowerCase('en-US') ===
-      refNamespace.toLocaleLowerCase('en-US') &&
-    entityName.toLocaleLowerCase('en-US') === refName.toLocaleLowerCase('en-US')
-  );
 }
