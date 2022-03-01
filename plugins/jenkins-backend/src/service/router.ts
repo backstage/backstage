@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  errorHandler,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
-import { JenkinsInfoProvider } from './jenkinsInfoProvider';
+import type { Logger } from 'winston';
+import type { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
-import { Config } from '@backstage/config';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
-  config?: Config;
-  discovery?: PluginEndpointDiscovery;
-  fetchApi?: { fetch: typeof fetch };
   permissions?: PermissionAuthorizer;
 }
 
@@ -125,7 +119,10 @@ export async function createRouter(
         request.header('authorization'),
       );
 
-      await jenkinsApi.buildProject(jenkinsInfo, jobFullName, { token });
+      const resourceRef = stringifyEntityRef({ kind, namespace, name });
+      await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef, {
+        token,
+      });
       response.json({});
     },
   );

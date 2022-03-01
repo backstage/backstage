@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { JenkinsInfo } from './jenkinsInfoProvider';
+import type { JenkinsInfo } from './jenkinsInfoProvider';
 import jenkins from 'jenkins';
-import {
+import type {
   BackstageBuild,
   BackstageProject,
   JenkinsBuild,
@@ -139,13 +139,14 @@ export class JenkinsApiImpl {
   async buildProject(
     jenkinsInfo: JenkinsInfo,
     jobFullName: string,
+    resourceRef?: string,
     options?: { token?: string },
   ) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
 
     if (this.permissionApi) {
       const response = await this.permissionApi.authorize(
-        [{ permission: jenkinsExecutePermission }],
+        [{ permission: jenkinsExecutePermission, resourceRef }],
         { token: options?.token },
       );
       // permission api returns always at least one item, we need to check only one result since we do not expect any additional results
