@@ -29,9 +29,9 @@ import {
 } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  DefaultStarredEntitiesApi,
   entityRouteRef,
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import {
   mockBreakpoint,
@@ -141,10 +141,7 @@ describe('DefaultCatalogPage', () => {
             [catalogApiRef, catalogApi],
             [identityApiRef, identityApi],
             [storageApiRef, storageApi],
-            [
-              starredEntitiesApiRef,
-              new DefaultStarredEntitiesApi({ storageApi }),
-            ],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           ]}
         >
           {children}

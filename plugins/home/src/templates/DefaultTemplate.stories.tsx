@@ -25,8 +25,8 @@ import { wrapInTestApp, TestApiProvider, MockStorageApi} from '@backstage/test-u
 import { Content, Page, InfoCard } from '@backstage/core-components';
 import {
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
   entityRouteRef,
-  DefaultStarredEntitiesApi
 } from '@backstage/plugin-catalog-react';
 import {
   HomePageSearchBar,
@@ -57,9 +57,7 @@ export default {
             apis={[
               [
                 starredEntitiesApiRef,
-                new DefaultStarredEntitiesApi({
-                  storageApi: mockStorageApi,
-                }),
+                new MockStarredEntitiesApi(),
               ],
               [searchApiRef, { query: () => Promise.resolve({ results: [] }) }],
             ]}
@@ -153,4 +151,3 @@ export const DefaultTemplate = () => {
     </SearchContextProvider>
   );
 };
-

@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { starredEntitiesApiRef } from './StarredEntitiesApi';
-export type { StarredEntitiesApi } from './StarredEntitiesApi';
-export { MockStarredEntitiesApi } from './MockStarredEntitiesApi';
+export { DefaultStarredEntitiesApi } from './DefaultStarredEntitiesApi';

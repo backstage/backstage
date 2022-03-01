@@ -16,15 +16,14 @@
 
 import { EntityLayout } from '@backstage/plugin-catalog';
 import {
-  DefaultStarredEntitiesApi,
   EntityProvider,
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
   MockPermissionApi,
-  MockStorageApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -59,12 +58,7 @@ describe('EntityPage Test', () => {
         <TestApiProvider
           apis={[
             [githubActionsApiRef, mockedApi],
-            [
-              starredEntitiesApiRef,
-              new DefaultStarredEntitiesApi({
-                storageApi: MockStorageApi.create(),
-              }),
-            ],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
             [permissionApiRef, mockPermissionApi],
           ]}
         >

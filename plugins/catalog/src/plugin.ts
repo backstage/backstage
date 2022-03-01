@@ -19,7 +19,6 @@ import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   catalogRouteRef,
-  DefaultStarredEntitiesApi,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -33,6 +32,7 @@ import {
   fetchApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
 import { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
