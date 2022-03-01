@@ -184,11 +184,6 @@ export function attachComponentData<P>(
   data: unknown,
 ): void;
 
-// @public @deprecated
-export const auth0AuthApiRef: ApiRef<
-  OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
-
 // @public
 export type AuthProviderInfo = {
   id: string;
@@ -531,15 +526,6 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public @deprecated
-export const oauth2ApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
-
 // @public
 export type OAuthApi = {
   getAccessToken(
@@ -572,15 +558,6 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
 
 // @public
 export type OAuthScope = string | string[];
-
-// @public @deprecated
-export const oidcAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
 
 // @alpha
 export const oktaAuthApiRef: ApiRef<
@@ -679,11 +656,6 @@ export type RouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'absolute';
   params: ParamKeys<Params>;
 };
-
-// @public @deprecated
-export const samlAuthApiRef: ApiRef<
-  ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
 
 // @public
 export type SessionApi = {
