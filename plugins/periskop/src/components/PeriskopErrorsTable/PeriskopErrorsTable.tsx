@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -69,7 +69,9 @@ const renderSeverity = (severity: string): React.ReactNode => {
 };
 
 const renderLastOccurrence = (error: AggregatedError): React.ReactNode => {
-  return moment(new Date(error.latest_errors[0].timestamp * 1000)).fromNow();
+  return DateTime.fromMillis(
+    error.latest_errors[0].timestamp * 1000,
+  ).toRelative();
 };
 
 function isNotFoundInInstance(
