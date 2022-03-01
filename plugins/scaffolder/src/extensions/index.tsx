@@ -25,8 +25,18 @@ import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
 
+/**
+ * A type used to wrap up the FieldExtension to embed the ReturnValue and the InputProps
+ *
+ * @public
+ */
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 
+/**
+ * Method for creating field extensions that can be used in the scaffolder
+ * frontend form.
+ * @public
+ */
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
   TInputProps = unknown,
@@ -48,6 +58,11 @@ export function createScaffolderFieldExtension<
   };
 }
 
+/**
+ * The Wrapping component for defining fields extensions inside
+ *
+ * @public
+ */
 export const ScaffolderFieldExtensions: React.ComponentType =
   (): JSX.Element | null => null;
 

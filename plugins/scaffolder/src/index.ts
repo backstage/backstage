@@ -40,7 +40,12 @@ export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
 } from './extensions';
-
+export type {
+  CustomFieldValidator,
+  FieldExtensionOptions,
+  FieldExtensionComponentProps,
+  FieldExtensionComponent,
+} from './extensions';
 export {
   EntityPickerFieldExtension,
   EntityNamePickerFieldExtension,
@@ -52,5 +57,4 @@ export {
   scaffolderPlugin,
 } from './plugin';
 export * from './components';
-export * from './extensions';
 export type { TaskPageProps } from './components/TaskPage';
