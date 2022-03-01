@@ -15,14 +15,8 @@
  */
 
 import { Groups } from './airbrakeGroups';
-import { AirbrakeApi } from './AirbrakeApi';
+import { AirbrakeApi, NoProjectIdError } from './AirbrakeApi';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-
-export class NoProjectIdError extends Error {
-  constructor() {
-    super('Project ID is not present');
-  }
-}
 
 export class ProductionAirbrakeApi implements AirbrakeApi {
   constructor(private readonly discoveryApi: DiscoveryApi) {}

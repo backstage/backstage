@@ -29,7 +29,7 @@ import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { airbrakeApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
-import { NoProjectIdError } from '../../api/ProductionApi';
+import { NoProjectIdError } from '../../api/AirbrakeApi';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   multilineText: {

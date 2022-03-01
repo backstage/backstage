@@ -24,3 +24,9 @@ export const airbrakeApiRef = createApiRef<AirbrakeApi>({
 export interface AirbrakeApi {
   fetchGroups(projectId: string): Promise<Groups>;
 }
+
+export class NoProjectIdError extends Error {
+  constructor() {
+    super('Project ID is not present');
+  }
+}
