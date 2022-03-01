@@ -25,14 +25,14 @@ import { Extension, attachComponentData } from '@backstage/core-plugin-api';
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
 
-export type FieldExtensionComponent<_TInputProps> = () => null;
+export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
   TInputProps = unknown,
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
-): Extension<FieldExtensionComponent<TInputProps>> {
+): Extension<FieldExtensionComponent<TReturnValue, TInputProps>> {
   return {
     expose() {
       const FieldExtensionDataHolder: any = () => null;
