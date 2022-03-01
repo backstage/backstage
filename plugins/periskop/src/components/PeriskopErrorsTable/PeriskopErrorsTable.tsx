@@ -25,6 +25,7 @@ import {
   Table,
   TableColumn,
   Progress,
+  ResponseErrorPanel,
   StatusWarning,
   StatusError,
   StatusPending,
@@ -32,7 +33,6 @@ import {
   EmptyState,
   Link,
 } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
 import { periskopApiRef } from '../..';
 import { AggregatedError, NotFoundInInstance } from '../../types';
@@ -102,7 +102,7 @@ export const PeriskopErrorsTable = () => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   const columns: TableColumn<AggregatedError>[] = [
