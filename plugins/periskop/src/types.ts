@@ -43,6 +43,6 @@ export interface RequestHeaders {
   [k: string]: string;
 }
 
-export interface NotFoundInLocation {
+export interface NotFoundInInstance {
   body: string;
 }

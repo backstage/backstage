@@ -29,7 +29,7 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       config: new ConfigReader({
         periskop: {
-          locations: [
+          instances: [
             {
               name: 'db',
               host: 'http://periskop-db',

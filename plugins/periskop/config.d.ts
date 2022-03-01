@@ -23,7 +23,7 @@ export interface Config {
      * Integration configuration for the periskop servers
      * @visibility frontend
      */
-    locations: Array<{
+    instances: Array<{
       /**
        * The name of the given Periskop instance
        * @visibility frontend

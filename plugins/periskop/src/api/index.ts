@@ -15,14 +15,14 @@
  */
 
 import { ConfigApi, DiscoveryApi } from '@backstage/core-plugin-api';
-import { AggregatedError, NotFoundInLocation } from '../types';
+import { AggregatedError, NotFoundInInstance } from '../types';
 
 type Options = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
 };
 
-type PeriskopLocation = {
+type PeriskopInstance = {
   name: string;
   host: string;
 };
@@ -34,12 +34,12 @@ type PeriskopLocation = {
  */
 export class PeriskopApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly locations: PeriskopLocation[];
+  private readonly instances: PeriskopInstance[];
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
-    this.locations = options.configApi
-      .getConfigArray('periskop.locations')
+    this.instances = options.configApi
+      .getConfigArray('periskop.instances')
       .flatMap(locConf => {
         const name = locConf.getString('name');
         const host = locConf.getString('host');
@@ -47,31 +47,32 @@ export class PeriskopApi {
       });
   }
 
-  private getApiUrl(locationName: string): string | undefined {
-    return this.locations.find(loc => loc.name === locationName)?.host;
+  private getApiUrl(instanceName: string): string | undefined {
+    return this.instances.find(instance => instance.name === instanceName)
+      ?.host;
   }
 
-  getLocationNames(): string[] {
-    return this.locations.map(e => e.name);
+  getInstanceNames(): string[] {
+    return this.instances.map(e => e.name);
   }
 
   getErrorInstanceUrl(
-    locationName: string,
+    instanceName: string,
     serviceName: string,
     error: AggregatedError,
   ): string {
     return `${this.getApiUrl(
-      locationName,
+      instanceName,
     )}/#/${serviceName}/errors/${encodeURIComponent(error.aggregation_key)}`;
   }
 
   async getErrors(
-    locationName: string,
+    instanceName: string,
     serviceName: string,
-  ): Promise<AggregatedError[] | NotFoundInLocation> {
+  ): Promise<AggregatedError[] | NotFoundInInstance> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl(
       'periskop',
-    )}/${locationName}/${serviceName}`;
+    )}/${instanceName}/${serviceName}`;
     const response = await fetch(apiUrl);
 
     if (!response.ok) {

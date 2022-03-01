@@ -35,7 +35,7 @@ import {
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
 import { periskopApiRef } from '../..';
-import { AggregatedError, NotFoundInLocation } from '../../types';
+import { AggregatedError, NotFoundInInstance } from '../../types';
 
 /**
  * Constant storing Periskop project name.
@@ -72,10 +72,10 @@ const renderLastOccurrence = (error: AggregatedError): React.ReactNode => {
   return moment(new Date(error.latest_errors[0].timestamp * 1000)).fromNow();
 };
 
-function isNotFoundInLocation(
-  apiResult: AggregatedError[] | NotFoundInLocation | undefined,
-): apiResult is NotFoundInLocation {
-  return (apiResult as NotFoundInLocation)?.body !== undefined;
+function isNotFoundInInstance(
+  apiResult: AggregatedError[] | NotFoundInInstance | undefined,
+): apiResult is NotFoundInInstance {
+  return (apiResult as NotFoundInInstance)?.body !== undefined;
 }
 
 export const PeriskopErrorsTable = () => {
@@ -86,17 +86,17 @@ export const PeriskopErrorsTable = () => {
       | undefined) ?? entity.metadata.name;
 
   const periskopApi = useApi(periskopApiRef);
-  const locations = periskopApi.getLocationNames();
-  const [locationOption, setLocationOption] = React.useState<string>(
-    locations[0],
+  const instanceNames = periskopApi.getInstanceNames();
+  const [instanceOption, setInstanceOption] = React.useState<string>(
+    instanceNames[0],
   );
   const {
     value: aggregatedErrors,
     loading,
     error,
-  } = useAsync(async (): Promise<AggregatedError[] | NotFoundInLocation> => {
-    return periskopApi.getErrors(locationOption, entityPeriskopName);
-  }, [locationOption]);
+  } = useAsync(async (): Promise<AggregatedError[] | NotFoundInInstance> => {
+    return periskopApi.getErrors(instanceOption, entityPeriskopName);
+  }, [instanceOption]);
 
   if (loading) {
     return <Progress />;
@@ -112,7 +112,7 @@ export const PeriskopErrorsTable = () => {
       sorting: false,
       render: aggregatedError => {
         const errorUrl = periskopApi.getErrorInstanceUrl(
-          locationOption,
+          instanceOption,
           entityPeriskopName,
           aggregatedError,
         );
@@ -138,13 +138,13 @@ export const PeriskopErrorsTable = () => {
 
   const sortingSelect = (
     <Select
-      selected={locationOption}
-      label="Location"
-      items={locations.map(e => ({
+      selected={instanceOption}
+      label="Instance"
+      items={instanceNames.map(e => ({
         label: e,
         value: e,
       }))}
-      onChange={el => setLocationOption(el.toString())}
+      onChange={el => setInstanceOption(el.toString())}
     />
   );
 
@@ -154,7 +154,7 @@ export const PeriskopErrorsTable = () => {
     </ContentHeader>
   );
 
-  if (isNotFoundInLocation(aggregatedErrors)) {
+  if (isNotFoundInInstance(aggregatedErrors)) {
     return (
       <Content noPadding>
         {contentHeader}

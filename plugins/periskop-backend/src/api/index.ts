@@ -15,24 +15,24 @@
  */
 
 import { Config } from '@backstage/config';
-import { AggregatedError, NotFoundInLocation } from '../types';
+import { AggregatedError, NotFoundInInstance } from '../types';
 import fetch from 'node-fetch';
 
 export type Options = {
   config: Config;
 };
 
-type PeriskopLocation = {
+type PeriskopInstance = {
   name: string;
   host: string;
 };
 
 export class PeriskopApi {
-  private readonly locations: PeriskopLocation[];
+  private readonly instances: PeriskopInstance[];
 
   constructor(options: Options) {
-    this.locations = options.config
-      .getConfigArray('periskop.locations')
+    this.instances = options.config
+      .getConfigArray('periskop.instances')
       .flatMap(locConf => {
         const name = locConf.getString('name');
         const host = locConf.getString('host');
@@ -40,18 +40,19 @@ export class PeriskopApi {
       });
   }
 
-  private getApiUrl(locationName: string): string | undefined {
-    return this.locations.find(loc => loc.name === locationName)?.host;
+  private getApiUrl(instanceName: string): string | undefined {
+    return this.instances.find(instance => instance.name === instanceName)
+      ?.host;
   }
 
   async getErrors(
-    locationName: string,
+    instanceName: string,
     serviceName: string,
-  ): Promise<AggregatedError[] | NotFoundInLocation> {
-    const apiUrl = this.getApiUrl(locationName);
+  ): Promise<AggregatedError[] | NotFoundInInstance> {
+    const apiUrl = this.getApiUrl(instanceName);
     if (!apiUrl) {
       throw new Error(
-        `failed to fetch data, no periskop location with name ${locationName}`,
+        `failed to fetch data, no periskop instance with name ${instanceName}`,
       );
     }
     const response = await fetch(`${apiUrl}/services/${serviceName}/errors/`);
