@@ -15,12 +15,13 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { catalogRouteRef, useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../routes';
 
 /**
  * Returns true if the given entity has the orphan annotation given by the
@@ -40,7 +41,7 @@ export function isOrphan(entity: Entity): boolean {
  */
 export function EntityOrphanWarning() {
   const navigate = useNavigate();
-  const catalogLink = useRouteRef(catalogRouteRef);
+  const catalogLink = useRouteRef(rootRouteRef);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const { entity } = useEntity();
 
