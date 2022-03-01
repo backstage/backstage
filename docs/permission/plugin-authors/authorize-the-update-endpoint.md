@@ -6,6 +6,9 @@ description: Authorize the update endpoint
 
 When performing updates (or other operations) on specific resources, the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource, and deny the operation otherwise.
 
+// TODO(vinzscam): remind that the plugin used in this tutorial is bringing its own types to backstage.
+// for plugins relying on external entities (like catalog entities) please follow [link] tutorial.
+
 To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a similar way as in the previous step.
 
 ```diff

@@ -17,7 +17,7 @@ The source code is available here:
 - [todo-list](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list)
 - [todo-list-backend](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list-backend)
 
-1.  Copy-paste the two folders into the plugins folder of your backstage application repository by running the following script from the root of your backstage application:
+1.  Copy-paste the two folders into the plugins folder of your backstage application repository or run the following script from the root of your backstage application:
 
     ```bash
       $ node -e "const{UrlReaders}=require('@backstage/backend-common');\
@@ -110,6 +110,10 @@ Now if you start your application you should be able to reach the `/todo-list` p
 ![Todo List plugin page](../../assets/permission/permission-todo-list-page.png)
 
 ---
+
+// TODO(vinzscam): split the tutorial in two parts:
+// - plugins relying on external entities
+// - plugins owning their own entities
 
 ## Integrate the new plugin
 
