@@ -24,8 +24,6 @@ export type {
   EntityLoadingStatus,
   EntityProviderProps,
   AsyncEntityProviderProps,
-  UseEntityResponse,
-  UseAsyncEntityResponse,
 } from './useEntity';
 export { useEntityCompoundName } from './useEntityCompoundName';
 export {

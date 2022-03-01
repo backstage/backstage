@@ -27,7 +27,7 @@ import { catalogApiRef } from '../api';
 import { useEntityCompoundName } from './useEntityCompoundName';
 
 /** @public */
-export type EntityLoadingStatus<TEntity = Entity> = {
+export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
   entity?: TEntity;
   loading: boolean;
   error?: Error;
