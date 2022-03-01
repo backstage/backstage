@@ -23,8 +23,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { PeriskopApi } from './api';
 
-import { rootRouteRef } from './routes';
-
 /**
  * @public
  */
@@ -37,9 +35,6 @@ export const periskopApiRef = createApiRef<PeriskopApi>({
  */
 export const periskopPlugin = createPlugin({
   id: 'periskop',
-  routes: {
-    root: rootRouteRef,
-  },
   apis: [
     createApiFactory({
       api: periskopApiRef,
