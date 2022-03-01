@@ -678,8 +678,6 @@ export type SignInPageProps = {
 // @public
 export interface StorageApi {
   forBucket(name: string): StorageApi;
-  // @deprecated
-  get<T extends JsonValue>(key: string): T | undefined;
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>>;
@@ -691,23 +689,17 @@ export interface StorageApi {
 // @public
 export const storageApiRef: ApiRef<StorageApi>;
 
-// @public @deprecated (undocumented)
-export type StorageValueChange<TValue extends JsonValue> =
-  StorageValueSnapshot<TValue>;
-
 // @public
 export type StorageValueSnapshot<TValue extends JsonValue> =
   | {
       key: string;
       presence: 'unknown' | 'absent';
       value?: undefined;
-      newValue?: undefined;
     }
   | {
       key: string;
       presence: 'present';
       value: TValue;
-      newValue?: TValue;
     };
 
 // @public

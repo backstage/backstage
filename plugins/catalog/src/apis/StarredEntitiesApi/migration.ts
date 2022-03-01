@@ -35,13 +35,15 @@ export async function performMigrationToTheNewBucket({
   const source = storageApi.forBucket('settings');
   const target = storageApi.forBucket('starredEntities');
 
-  const oldStarredEntities = source.get('starredEntities');
+  const oldStarredEntities = source.snapshot('starredEntities').value;
 
   if (!isArray(oldStarredEntities)) {
     // nothing to do
     return;
   }
-  const targetEntities = new Set(target.get<string[]>('entityRefs') ?? []);
+  const targetEntities = new Set(
+    target.snapshot<string[]>('entityRefs').value ?? [],
+  );
 
   oldStarredEntities
     .filter(isString)

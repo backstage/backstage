@@ -75,7 +75,7 @@ describe('<DismissableBanner />', () => {
     );
     fireEvent.click(button);
     const dismissedBanners =
-      notifications?.get<string[]>('dismissedBanners') ?? [];
+      notifications?.snapshot<string[]>('dismissedBanners').value ?? [];
     expect(
       dismissedBanners.includes('catalog_page_welcome_banner'),
     ).toBeTruthy();

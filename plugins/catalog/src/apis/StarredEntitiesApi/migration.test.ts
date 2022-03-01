@@ -41,19 +41,19 @@ describe('performMigrationToTheNewBucket', () => {
       'entity:Component:default:a',
       'entity:template:custom:b',
     ]);
-    expect(oldBucket.get('starredEntities')).not.toBeUndefined();
+    expect(oldBucket.snapshot('starredEntities').value).not.toBeUndefined();
 
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(await newBucket.get('entityRefs')).toEqual([
+    expect(await newBucket.snapshot('entityRefs').value).toEqual([
       'component:default/c',
       'component:default/a',
       'template:custom/b',
     ]);
 
     // OLD bucket should be removed
-    expect(oldBucket.get('starredEntities')).toBeUndefined();
+    expect(oldBucket.snapshot('starredEntities').value).toBeUndefined();
   });
 
   it('should ignore invalid entries', async () => {
@@ -67,15 +67,17 @@ describe('performMigrationToTheNewBucket', () => {
       'entity:Component:a',
       'invalid',
     ]);
-    expect(oldBucket.get('starredEntities')).not.toBeUndefined();
+    expect(oldBucket.snapshot('starredEntities')).not.toBeUndefined();
 
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(await newBucket.get('entityRefs')).toEqual(['component:default/a']);
+    expect(await newBucket.snapshot('entityRefs').value).toEqual([
+      'component:default/a',
+    ]);
 
     // OLD bucket should be removed
-    expect(oldBucket.get('starredEntities')).toBeUndefined();
+    expect(oldBucket.snapshot('starredEntities').value).toBeUndefined();
   });
 
   it('should skip migration without old starred entities', async () => {
@@ -88,7 +90,7 @@ describe('performMigrationToTheNewBucket', () => {
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(newBucket.get('entityRefs')).toEqual(expectedEntries);
+    expect(newBucket.snapshot('entityRefs').value).toEqual(expectedEntries);
   });
 
   it('should skip migration with non-array old starred entities', async () => {
@@ -105,9 +107,9 @@ describe('performMigrationToTheNewBucket', () => {
     await performMigrationToTheNewBucket({ storageApi: mockStorage });
 
     // read NEW bucket
-    expect(newBucket.get('entityRefs')).toEqual(expectedEntries);
+    expect(newBucket.snapshot('entityRefs').value).toEqual(expectedEntries);
 
     // OLD bucket should be unchanged
-    expect(oldBucket.get('starredEntities')).toBe('invalid');
+    expect(oldBucket.snapshot('starredEntities').value).toBe('invalid');
   });
 });

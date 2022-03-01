@@ -36,12 +36,12 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
     this.settingsStore = opts.storageApi.forBucket('starredEntities');
 
     this.starredEntities = new Set(
-      this.settingsStore.get<string[]>('entityRefs') ?? [],
+      this.settingsStore.snapshot<string[]>('entityRefs').value ?? [],
     );
 
     this.settingsStore.observe$<string[]>('entityRefs').subscribe({
       next: next => {
-        this.starredEntities = new Set(next.newValue ?? []);
+        this.starredEntities = new Set(next.value ?? []);
         this.notifyChanges();
       },
     });
