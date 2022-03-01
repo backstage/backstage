@@ -95,9 +95,6 @@ export type CatalogReactUserListPickerClassKey =
   | 'menuItem'
   | 'groupWrapper';
 
-// @public @deprecated (undocumented)
-export const catalogRouteRef: RouteRef<undefined>;
-
 // @public (undocumented)
 export const columnFactories: Readonly<{
   createEntityRefColumn<T extends Entity>(options: {
@@ -271,13 +268,6 @@ export type EntityRefLinksProps = {
   entityRefs: (Entity | EntityName)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
-
-// @public @deprecated (undocumented)
-export const entityRoute: RouteRef<{
-  name: string;
-  kind: string;
-  namespace: string;
-}>;
 
 // @public
 export function entityRouteParams(entity: Entity): {
@@ -493,9 +483,6 @@ export function reduceCatalogFilters(
 export function reduceEntityFilters(
   filters: EntityFilter[],
 ): (entity: Entity) => boolean;
-
-// @public @deprecated (undocumented)
-export const rootRoute: RouteRef<undefined>;
 
 // @public
 export interface StarredEntitiesApi {
