@@ -221,7 +221,7 @@ export async function createRouter(
     // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
     // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider
-    const shouldBuild = await docsBuildStrategy.shouldBuild(entity);
+    const shouldBuild = await docsBuildStrategy.shouldBuild({ entity });
     if (!shouldBuild) {
       // However, if caching is enabled, take the opportunity to check and
       // invalidate stale cache entries.

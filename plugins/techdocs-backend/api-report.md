@@ -45,7 +45,7 @@ export class DefaultTechDocsCollator implements DocumentCollator {
 // @public
 export interface DocsBuildStrategy {
   // (undocumented)
-  shouldBuild(entity: Entity): Promise<boolean>;
+  shouldBuild(params: ShouldBuildParameters): Promise<boolean>;
 }
 
 // @public
@@ -75,6 +75,11 @@ export type RecommendedDeploymentOptions = {
 export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
+
+// @public
+export type ShouldBuildParameters = {
+  entity: Entity;
+};
 
 // @public
 export type TechDocsCollatorOptions = {

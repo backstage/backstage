@@ -26,6 +26,7 @@ export type {
   RecommendedDeploymentOptions,
   OutOfTheBoxDeploymentOptions,
   DocsBuildStrategy,
+  ShouldBuildParameters,
 } from './service';
 
 export { DefaultTechDocsCollator } from './search';

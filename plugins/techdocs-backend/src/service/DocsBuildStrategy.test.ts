@@ -46,7 +46,7 @@ describe('DefaultDocsBuildStrategy', () => {
 
       MockedConfigReader.prototype.getString.mockReturnValue('local');
 
-      const result = await defaultDocsBuildStrategy.shouldBuild(entity);
+      const result = await defaultDocsBuildStrategy.shouldBuild({ entity });
 
       expect(result).toBe(true);
     });
@@ -57,7 +57,7 @@ describe('DefaultDocsBuildStrategy', () => {
 
       MockedConfigReader.prototype.getString.mockReturnValue('external');
 
-      const result = await defaultDocsBuildStrategy.shouldBuild(entity);
+      const result = await defaultDocsBuildStrategy.shouldBuild({ entity });
 
       expect(result).toBe(false);
     });
