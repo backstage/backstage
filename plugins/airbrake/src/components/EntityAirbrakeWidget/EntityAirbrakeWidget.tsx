@@ -29,6 +29,7 @@ import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { airbrakeApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
+import { NoProjectIdError } from '../../api/ProductionApi';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   multilineText: {
@@ -56,27 +57,41 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
   useEffect(() => {
     if (!projectId) {
       setComponentState(ComponentState.NoProjectId);
+    } else {
+      setComponentState(ComponentState.Loading);
     }
   }, [projectId]);
 
   const { loading, value, error } = useAsync(async () => {
-    const result = await airbrakeApi.fetchGroups(projectId);
-    setComponentState(ComponentState.Loaded);
-    return result;
-  }, [airbrakeApi, projectId]);
+    try {
+      const result = await airbrakeApi.fetchGroups(projectId);
+      setComponentState(ComponentState.Loaded);
+      return result;
+    } catch (e) {
+      if (e instanceof NoProjectIdError) {
+        setComponentState(ComponentState.NoProjectId);
+      } else {
+        setComponentState(ComponentState.Error);
+      }
+      throw e;
+    }
+  }, [componentState, airbrakeApi, projectId]);
+
+  useEffect(() => {
+    if (
+      componentState === ComponentState.Error &&
+      error &&
+      !(error instanceof NoProjectIdError)
+    ) {
+      errorApi.post(error);
+    }
+  }, [componentState, error, errorApi]);
 
   useEffect(() => {
     if (loading) {
       setComponentState(ComponentState.Loading);
     }
   }, [loading]);
-
-  useEffect(() => {
-    if (componentState !== ComponentState.NoProjectId && error) {
-      setComponentState(ComponentState.Error);
-      errorApi.post(error);
-    }
-  }, [componentState, error, errorApi]);
 
   switch (componentState) {
     case ComponentState.Loaded:

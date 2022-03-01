@@ -18,10 +18,20 @@ import { Groups } from './airbrakeGroups';
 import { AirbrakeApi } from './AirbrakeApi';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
+export class NoProjectIdError extends Error {
+  constructor() {
+    super('Project ID is not present');
+  }
+}
+
 export class ProductionAirbrakeApi implements AirbrakeApi {
   constructor(private readonly discoveryApi: DiscoveryApi) {}
 
   async fetchGroups(projectId: string): Promise<Groups> {
+    if (!projectId) {
+      throw new NoProjectIdError();
+    }
+
     const baseUrl = await this.discoveryApi.getBaseUrl('airbrake');
     const apiUrl = `${baseUrl}/api/v4/projects/${projectId}/groups`;
 
