@@ -23,6 +23,7 @@ import {
   setupRequestMockHandlers,
   renderInTestApp,
 } from '@backstage/test-utils';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 
 describe('ExampleComponent', () => {
   const server = setupServer();
@@ -39,7 +40,15 @@ describe('ExampleComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <AllureReportComponent />
+        <EntityProvider
+          entity={{
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: { name: 'test' },
+          }}
+        >
+          <AllureReportComponent />
+        </EntityProvider>
       </ThemeProvider>,
     );
     expect(rendered.getByText('Missing Annotation')).toBeInTheDocument();
