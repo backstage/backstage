@@ -15,7 +15,7 @@ locations like GitHub or GitLab.
   <source src="https://backstage.io/blog/assets/2020-08-05/feature.mp4" type="video/mp4" />
 </video>
 
-### Getting Started
+## Getting Started
 
 > Be sure to have covered
 > [Getting Started with Backstage](../../getting-started) before proceeding.
@@ -27,7 +27,7 @@ Once there, you should see something that looks similar to this:
 
 ![Create Image](../../assets/software-templates/create.png)
 
-### Choose a template
+## Choose a template
 
 When you select a template that you want to create, you'll be taken to the next
 page which may or may not look different for each template. Each template can
@@ -44,7 +44,7 @@ provider, for instance `https://github.com/backstage/my-new-repository`, or
 
 ![Enter Backstage vars](../../assets/software-templates/template-picked-2.png)
 
-### Run!
+## Run!
 
 Once you've entered values and confirmed, you'll then get a popup box with live
 progress of what is currently happening with the creation of your template.
@@ -60,7 +60,7 @@ step that failed which can be helpful in debugging.
 
 ![Templating failed](../../assets/software-templates/failed.png)
 
-### View Component in Catalog
+## View Component in Catalog
 
 When it's been created, you'll see the `View in Catalog` button, which will take
 you to the registered component in the catalog:
