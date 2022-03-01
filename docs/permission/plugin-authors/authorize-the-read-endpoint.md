@@ -32,32 +32,6 @@ This should do the trick. However, this approach has a downside. It would force 
 
 To avoid this situation, the permissions framework has support for filtering items in the data source itself.
 
-Update `plugins/todo-list-backend/src/service/rules.ts`
-
-```diff
-  import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
-- import { Todo } from './todos';
-+ import { Todo, TodoFilter } from './todos';
-
-  const createTodoListPermissionRule = makeCreatePermissionRule<
-    Todo,
--   undefined
-+   TodoFilter
-  >();
-
-  export const isOwner = createTodoListPermissionRule({
-    name: 'IS_OWNER',
-    description: 'Should allow only if the todo belongs to the user',
-    apply: (resource, userId) => {
-      return resource.author === userId;
-    },
-    toQuery: userId => {
--     throw new Error('toQuery not implemented');
-+     return resource => resource.author === userId;
-    },
-  });
-```
-
 `plugins/todo-list-backend/src/service/router.ts`
 
 ```diff
@@ -138,3 +112,5 @@ Now let's update our permission policy's handler to return a conditional result 
 ```
 
 Once the changes to the permission policy are saved, the UI should should show only the items you have created.
+
+// TODO: add support for boolean operators

@@ -98,11 +98,11 @@ Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append th
 ```diff
 + import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 + import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
-+ import { Todo } from './todos';
++ import { Todo, TodoFilter } from './todos';
 
 + const createTodoListPermissionRule = makeCreatePermissionRule<
 +   Todo,
-+   undefined
++   TodoFilter
 + >();
 
 + export const isOwner = createTodoListPermissionRule({
@@ -112,7 +112,7 @@ Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append th
 +     return resource.author === userId;
 +   },
 +   toQuery: userId => {
-+     throw new Error('toQuery not implemented');
++     return resource => resource.author === userId;
 +   },
 + });
 
