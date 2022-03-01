@@ -15,8 +15,6 @@
  */
 import { defaultRepositoryParser } from './BitbucketRepositoryParser';
 import { results } from '../index';
-import { getVoidLogger } from '@backstage/backend-common';
-import { BitbucketIntegration } from '@backstage/integration';
 
 describe('BitbucketRepositoryParser', () => {
   describe('defaultRepositoryParser', () => {
@@ -32,9 +30,7 @@ describe('BitbucketRepositoryParser', () => {
         }),
       ];
       const actual = await defaultRepositoryParser({
-        integration: {} as BitbucketIntegration,
         target: `${browseUrl}${path}`,
-        logger: getVoidLogger(),
       });
 
       let i = 0;

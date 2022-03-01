@@ -137,14 +137,22 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    parser?: BitbucketRepositoryParser;
+    parser?: (options: {
+      integration: BitbucketIntegration;
+      target: string;
+      logger: Logger_2;
+    }) => AsyncIterable<CatalogProcessorResult>;
     logger: Logger_2;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      parser?: BitbucketRepositoryParser;
+      parser?: (options: {
+        integration: BitbucketIntegration;
+        target: string;
+        logger: Logger_2;
+      }) => AsyncIterable<CatalogProcessorResult>;
       logger: Logger_2;
     },
   ): BitbucketDiscoveryProcessor;
@@ -158,7 +166,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;
