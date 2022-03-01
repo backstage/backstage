@@ -182,7 +182,7 @@ export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T> {
 
     // eslint-disable-next-line no-console
     console.warn(
-      'DEPRECATION: useEntity hook is being called outside of an EntityPage where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead. This warning will be replaced with an error in future releases.',
+      'DEPRECATION: useEntity hook is being called outside of an EntityLayout where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead. This warning will be replaced with an error in future releases.',
     );
   }
 
