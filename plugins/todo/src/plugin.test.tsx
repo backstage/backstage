@@ -50,7 +50,7 @@ describe('todo', () => {
       >
         <EntityProvider
           entity={{
-            apiVersion: 'backstage/v1alpha1 ',
+            apiVersion: 'backstage/v1alpha1',
             kind: 'Component',
             metadata: { name: 'Test TODO' },
           }}
