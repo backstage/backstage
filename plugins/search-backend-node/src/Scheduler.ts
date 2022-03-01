@@ -26,6 +26,9 @@ type TaskEnvelope = {
  * TODO: coordination, error handling
  */
 
+/**
+ * @beta
+ */
 export class Scheduler {
   private logger: Logger;
   private schedule: TaskEnvelope[];

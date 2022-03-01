@@ -19,6 +19,7 @@ import { pipeline, Readable, Transform, Writable } from 'stream';
 
 /**
  * Object resolved after a test pipeline is executed.
+ * @beta
  */
 export type TestPipelineResult = {
   /**
@@ -36,6 +37,7 @@ export type TestPipelineResult = {
 
 /**
  * Test utility for Backstage Search collators, decorators, and indexers.
+ * @beta
  */
 export class TestPipeline {
   private collator?: Readable;

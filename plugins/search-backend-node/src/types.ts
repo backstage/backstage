@@ -17,10 +17,21 @@
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
+  SearchEngine,
 } from '@backstage/search-common';
+import { Logger } from 'winston';
+
+/**
+ * @beta
+ */
+export type IndexBuilderOptions = {
+  searchEngine: SearchEngine;
+  logger: Logger;
+};
 
 /**
  * Parameters required to register a collator.
+ * @beta
  */
 export interface RegisterCollatorParameters {
   /**
@@ -36,6 +47,7 @@ export interface RegisterCollatorParameters {
 
 /**
  * Parameters required to register a decorator
+ * @beta
  */
 export interface RegisterDecoratorParameters {
   /**

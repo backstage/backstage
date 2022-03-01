@@ -19,9 +19,7 @@ import { SearchResultSet } from '@backstage/search-common';
 import { Transform } from 'stream';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "BatchSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export abstract class BatchSearchEngineIndexer extends Writable {
   constructor(options: BatchSearchEngineOptions);
   abstract finalize(): Promise<void>;
@@ -29,16 +27,19 @@ export abstract class BatchSearchEngineIndexer extends Writable {
   abstract initialize(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "BatchSearchEngineOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta (undocumented)
 export type BatchSearchEngineOptions = {
   batchSize: number;
 };
 
-// Warning: (ae-missing-release-tag) "DecoratorBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta (undocumented)
+export type ConcreteLunrQuery = {
+  lunrQueryBuilder: lunr_2.Index.QueryBuilder;
+  documentTypes?: string[];
+  pageSize: number;
+};
+
+// @beta
 export abstract class DecoratorBase extends Transform {
   constructor();
   abstract decorate(
@@ -48,18 +49,13 @@ export abstract class DecoratorBase extends Transform {
   abstract initialize(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "IndexBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta (undocumented)
 export class IndexBuilder {
-  // Warning: (ae-forgotten-export) The symbol "IndexBuilderOptions" needs to be exported by the entry point index.d.ts
   constructor({ logger, searchEngine }: IndexBuilderOptions);
-  // Warning: (ae-forgotten-export) The symbol "RegisterCollatorParameters" needs to be exported by the entry point index.d.ts
   addCollator({
     factory,
     defaultRefreshIntervalSeconds,
   }: RegisterCollatorParameters): void;
-  // Warning: (ae-forgotten-export) The symbol "RegisterDecoratorParameters" needs to be exported by the entry point index.d.ts
   addDecorator({ factory }: RegisterDecoratorParameters): void;
   build(): Promise<{
     scheduler: Scheduler;
@@ -70,9 +66,16 @@ export class IndexBuilder {
   getSearchEngine(): SearchEngine;
 }
 
-// Warning: (ae-missing-release-tag) "LunrSearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta (undocumented)
+export type IndexBuilderOptions = {
+  searchEngine: SearchEngine;
+  logger: Logger_2;
+};
+
+// @beta (undocumented)
+export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
+
+// @beta (undocumented)
 export class LunrSearchEngine implements SearchEngine {
   constructor({ logger }: { logger: Logger_2 });
   // (undocumented)
@@ -85,17 +88,13 @@ export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr_2.Index>;
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
-  // Warning: (ae-forgotten-export) The symbol "LunrQueryTranslator" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   setTranslator(translator: LunrQueryTranslator): void;
   // (undocumented)
   protected translator: QueryTranslator;
 }
 
-// Warning: (ae-missing-release-tag) "LunrSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta (undocumented)
 export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   constructor();
   // (undocumented)
@@ -110,9 +109,18 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   initialize(): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "Scheduler" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
+export interface RegisterCollatorParameters {
+  defaultRefreshIntervalSeconds: number;
+  factory: DocumentCollatorFactory;
+}
+
+// @beta
+export interface RegisterDecoratorParameters {
+  factory: DocumentDecoratorFactory;
+}
+
+// @beta (undocumented)
 export class Scheduler {
   constructor({ logger }: { logger: Logger_2 });
   addToSchedule(task: Function, interval: number): void;
@@ -122,18 +130,14 @@ export class Scheduler {
 
 export { SearchEngine };
 
-// Warning: (ae-missing-release-tag) "TestPipeline" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export class TestPipeline {
   execute(): Promise<TestPipelineResult>;
   withDocuments(documents: IndexableDocument[]): TestPipeline;
   static withSubject(subject: Readable | Transform | Writable): TestPipeline;
 }
 
-// Warning: (ae-missing-release-tag) "TestPipelineResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export type TestPipelineResult = {
   error: unknown;
   documents: IndexableDocument[];

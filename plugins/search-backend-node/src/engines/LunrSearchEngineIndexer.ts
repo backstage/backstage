@@ -18,6 +18,9 @@ import { IndexableDocument } from '@backstage/search-common';
 import lunr from 'lunr';
 import { BatchSearchEngineIndexer } from '../indexing';
 
+/**
+ * @beta
+ */
 export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   private schemaInitialized = false;
   private builder: lunr.Builder;

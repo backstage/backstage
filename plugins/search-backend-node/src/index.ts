@@ -23,7 +23,16 @@
 export { IndexBuilder } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
 export { LunrSearchEngine } from './engines';
-export type { LunrSearchEngineIndexer } from './engines';
+export type {
+  ConcreteLunrQuery,
+  LunrQueryTranslator,
+  LunrSearchEngineIndexer,
+} from './engines';
+export type {
+  IndexBuilderOptions,
+  RegisterCollatorParameters,
+  RegisterDecoratorParameters,
+} from './types';
 export * from './indexing';
 export * from './test-utils';
 

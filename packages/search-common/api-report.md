@@ -11,33 +11,25 @@ import { Readable } from 'stream';
 import { Transform } from 'stream';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "DocumentCollatorFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export interface DocumentCollatorFactory {
   getCollator(): Promise<Readable>;
   readonly type: string;
   readonly visibilityPermission?: Permission;
 }
 
-// Warning: (ae-missing-release-tag) "DocumentDecoratorFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export interface DocumentDecoratorFactory {
   getDecorator(): Promise<Transform>;
   readonly types?: string[];
 }
 
-// Warning: (ae-missing-release-tag) "DocumentTypeInfo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export type DocumentTypeInfo = {
   visibilityPermission?: Permission;
 };
 
-// Warning: (ae-missing-release-tag) "IndexableDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export interface IndexableDocument {
   authorization?: {
     resourceRef: string;
@@ -47,21 +39,15 @@ export interface IndexableDocument {
   title: string;
 }
 
-// Warning: (ae-missing-release-tag) "QueryRequestOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta
 export type QueryRequestOptions = {
   token?: string;
 };
 
-// Warning: (ae-missing-release-tag) "QueryTranslator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
-// Warning: (ae-missing-release-tag) "SearchEngine" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
+// @beta
 export interface SearchEngine {
   getIndexer(type: string): Promise<Writable>;
   query(
@@ -71,9 +57,7 @@ export interface SearchEngine {
   setTranslator(translator: QueryTranslator): void;
 }
 
-// Warning: (ae-missing-release-tag) "SearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta (undocumented)
 export interface SearchQuery {
   // (undocumented)
   filters?: JsonObject;
@@ -85,9 +69,7 @@ export interface SearchQuery {
   types?: string[];
 }
 
-// Warning: (ae-missing-release-tag) "SearchResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta (undocumented)
 export interface SearchResult {
   // (undocumented)
   document: IndexableDocument;
@@ -95,9 +77,7 @@ export interface SearchResult {
   type: string;
 }
 
-// Warning: (ae-missing-release-tag) "SearchResultSet" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @beta (undocumented)
 export interface SearchResultSet {
   // (undocumented)
   nextPageCursor?: string;

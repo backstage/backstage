@@ -18,6 +18,9 @@ import { Permission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 import { Readable, Transform, Writable } from 'stream';
 
+/**
+ * @beta
+ */
 export interface SearchQuery {
   term: string;
   filters?: JsonObject;
@@ -25,11 +28,17 @@ export interface SearchQuery {
   pageCursor?: string;
 }
 
+/**
+ * @beta
+ */
 export interface SearchResult {
   type: string;
   document: IndexableDocument;
 }
 
+/**
+ * @beta
+ */
 export interface SearchResultSet {
   results: SearchResult[];
   nextPageCursor?: string;
@@ -39,6 +48,7 @@ export interface SearchResultSet {
 /**
  * Base properties that all indexed documents must include, as well as some
  * common properties that documents are encouraged to use where appropriate.
+ * @beta
  */
 export interface IndexableDocument {
   /**
@@ -73,6 +83,7 @@ export interface IndexableDocument {
  * Information about a specific document type. Intended to be used in the
  * {@link @backstage/search-backend-node#IndexBuilder} to collect information
  * about the types stored in the index.
+ * @beta
  */
 export type DocumentTypeInfo = {
   /**
@@ -84,6 +95,7 @@ export type DocumentTypeInfo = {
 
 /**
  * Factory class for instantiating collators.
+ * @beta
  */
 export interface DocumentCollatorFactory {
   /**
@@ -106,6 +118,7 @@ export interface DocumentCollatorFactory {
 
 /**
  * Factory class for instantiating decorators.
+ * @beta
  */
 export interface DocumentDecoratorFactory {
   /**
@@ -124,9 +137,14 @@ export interface DocumentDecoratorFactory {
 /**
  * A type of function responsible for translating an abstract search query into
  * a concrete query relevant to a particular search engine.
+ * @beta
  */
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
+/**
+ * Options when querying a search engine.
+ * @beta
+ */
 export type QueryRequestOptions = {
   token?: string;
 };
@@ -135,6 +153,7 @@ export type QueryRequestOptions = {
  * Interface that must be implemented by specific search engines, responsible
  * for performing indexing and querying and translating abstract queries into
  * concrete, search engine-specific queries.
+ * @beta
  */
 export interface SearchEngine {
   /**

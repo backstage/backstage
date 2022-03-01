@@ -18,6 +18,9 @@ import { assertError } from '@backstage/errors';
 import { IndexableDocument } from '@backstage/search-common';
 import { Writable } from 'stream';
 
+/**
+ * @beta
+ */
 export type BatchSearchEngineOptions = {
   batchSize: number;
 };
@@ -25,6 +28,7 @@ export type BatchSearchEngineOptions = {
 /**
  * Base class encapsulating batch-based stream processing. Useful as a base
  * class for search engine indexers.
+ * @beta
  */
 export abstract class BatchSearchEngineIndexer extends Writable {
   private batchSize: number;

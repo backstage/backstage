@@ -24,6 +24,7 @@ import { Transform, pipeline } from 'stream';
 import { Logger } from 'winston';
 import { Scheduler } from './index';
 import {
+  IndexBuilderOptions,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
 } from './types';
@@ -33,11 +34,9 @@ interface CollatorEnvelope {
   refreshInterval: number;
 }
 
-type IndexBuilderOptions = {
-  searchEngine: SearchEngine;
-  logger: Logger;
-};
-
+/**
+ * @beta
+ */
 export class IndexBuilder {
   private collators: Record<string, CollatorEnvelope>;
   private decorators: Record<string, DocumentDecoratorFactory[]>;

@@ -25,6 +25,9 @@ import lunr from 'lunr';
 import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
+/**
+ * @beta
+ */
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
   documentTypes?: string[];
@@ -36,8 +39,14 @@ type LunrResultEnvelope = {
   type: string;
 };
 
-type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
+/**
+ * @beta
+ */
+export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
+/**
+ * @beta
+ */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
