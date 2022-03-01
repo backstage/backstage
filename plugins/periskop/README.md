@@ -41,9 +41,9 @@ const componentPage = (
     </EntityLayout.Route>
 ```
 
-1. [Setup the `app-config.yaml`](#instances) `periskop` block
+4. [Setup the `app-config.yaml`](#instances) `periskop` block
 
-2. Annotate entities with the periskop service name
+5. Annotate entities with the periskop service name
 
 ```yaml
 annotations:
