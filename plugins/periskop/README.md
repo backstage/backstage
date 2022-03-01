@@ -4,21 +4,53 @@
 
 ![periskop-logo](https://i.imgur.com/z8BLePO.png)
 
-### `PeriskopErrorsTable`
+## Periskop aggregated errors
 
-The Periskop Backstage Plugin exposes an entity tab component named `PeriskopErrorsTable`. Each of the entries in the table will direct you to the error details in your deployed Periskop instance location.
+The Periskop Backstage Plugin exposes a component named `PeriskopErrorsTable`.
+Each of the entries in the table will direct you to the error details in your deployed Periskop instance location.
 
 ![periskop-errors-card](./docs/periskop-plugin-screenshot.png)
 
-Now your plugin should be visible as a tab at the top of the entity pages.
-However, it warns of a missing `periskop.io/name` annotation.
+## Setup
 
-Add the annotation to your component descriptor file as shown in the highlighted example below:
+1. Configure the [periskop backend plugin](https://github.com/backstage/backstage/tree/master/plugins/periskop-backend/)
+
+2. If you have standalone app (you didn't clone this repo), then do
+
+```bash
+# From your Backstage root directory
+cd packages/app
+yarn add @backstage/plugin-periskop
+```
+
+3. Add to the app `EntityPage` component:
+
+```tsx
+// In packages/app/src/components/catalog/EntityPage.tsx
+import { PeriskopErrorsTable } from '@backstage/plugin-periskop';
+
+const componentPage = (
+  <EntityLayout>
+    {/* other tabs... */}
+    <EntityLayout.Route path="/periskop" title="Periskop">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item xs={12} sm={12} md={12}>
+          <PeriskopErrorsTable />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+```
+
+4. [Setup the `app-config.yaml`](#instances) and instance name and urls
+
+5. Annotate entities with the periskop service name
 
 ```yaml
 annotations:
   periskop.io/name: '<THE NAME OF THE PERISKOP APP>'
 ```
+
+6. Run app with `yarn start` and navigate to `/periskop` or a catalog entity 'Periskop' tab
 
 ### Instances
 
