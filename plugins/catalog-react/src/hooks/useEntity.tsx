@@ -27,8 +27,8 @@ import { catalogApiRef } from '../api';
 import { useEntityCompoundName } from './useEntityCompoundName';
 
 /** @public */
-export type EntityLoadingStatus = {
-  entity?: Entity;
+export type EntityLoadingStatus<TEntity = Entity> = {
+  entity?: TEntity;
   loading: boolean;
   error?: Error;
   refresh?: VoidFunction;
@@ -130,39 +130,20 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 };
 
 /**
- * @public
- *
- * The response shape for {@link useEntity}
- */
-export interface UseEntityResponse<T> {
-  entity: T;
-  /** @deprecated use {@link useAsyncEntity} instead */
-  loading: boolean;
-  /** @deprecated use {@link useAsyncEntity} instead */
-  error?: Error;
-  /** @deprecated use {@link useAsyncEntity} instead */
-  refresh?: VoidFunction;
-}
-
-/**
- * @public
- *
- * The response shape for {@link useAsyncEntity}
- */
-export interface UseAsyncEntityResponse<T> {
-  entity?: T;
-  loading: boolean;
-  error?: Error;
-  refresh?: VoidFunction;
-}
-
-/**
  * Grab the current entity from the context, throws if the entity has not yet been loaded
  * or is not available.
  *
  * @public
  */
-export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T> {
+export function useEntity<TEntity extends Entity = Entity>(): {
+  entity: TEntity;
+  /** @deprecated use {@link useAsyncEntity} instead */
+  loading: boolean;
+  /** @deprecated use {@link useAsyncEntity} instead */
+  error?: Error;
+  /** @deprecated use {@link useAsyncEntity} instead */
+  refresh?: VoidFunction;
+} {
   const versionedHolder =
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
 
@@ -178,7 +159,7 @@ export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T> {
   if (!value.entity) {
     // Once we have removed the additional fields from being returned we can drop this deprecation
     // and move to the error instead.
-    // throw new Error('useEntity hook is being called outside of an EntityPage where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead.');
+    // throw new Error('useEntity hook is being called outside of an EntityLayout where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead.');
 
     // eslint-disable-next-line no-console
     console.warn(
@@ -187,7 +168,7 @@ export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T> {
   }
 
   const { entity, loading, error, refresh } = value;
-  return { entity: entity as T, loading, error, refresh };
+  return { entity: entity as TEntity, loading, error, refresh };
 }
 
 /**
@@ -196,8 +177,8 @@ export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T> {
  * @public
  */
 export function useAsyncEntity<
-  T extends Entity = Entity,
->(): UseAsyncEntityResponse<T> {
+  TEntity extends Entity = Entity,
+>(): EntityLoadingStatus {
   const versionedHolder =
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
 
@@ -210,5 +191,5 @@ export function useAsyncEntity<
   }
 
   const { entity, loading, error, refresh } = value;
-  return { entity: entity as T, loading, error, refresh };
+  return { entity: entity as TEntity, loading, error, refresh };
 }
