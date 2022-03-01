@@ -20,7 +20,16 @@ The source code is available here:
 1.  Copy-paste the two folders into the plugins folder of your backstage application repository by running the following script from the root of your backstage application:
 
     ```bash
-      $ node -e "const{UrlReaders}=require('@backstage/backend-common');const{ConfigReader}=require('@backstage/config');const winston=require('winston');const{outputFile}=require('fs-extra');const path=require('path');const logger=winston.createLogger({level:'info',});const config=new ConfigReader({});(async function execute(){const reader=UrlReaders.default({logger,config});const files=await reader.readTree('https://github.com/backstage/backstage/tree/permission-docs-plugin-authors/contrib/plugins',);for await(const file of await files.files()){if(file.path==='README.md'){continue}try{await outputFile(path.join(__dirname,'plugins',file.path),await file.content(),)}catch(e){console.log(e)}}})()"
+      $ node -e "const{UrlReaders}=require('@backstage/backend-common');\
+      const{ConfigReader}=require('@backstage/config');\
+      const winston=require('winston');const{outputFile}=require('fs-extra');\
+      const path=require('path');const logger=winston.createLogger({level:'info',});\
+      const config=new ConfigReader({});(async function execute(){\
+      const reader=UrlReaders.default({logger,config});const files=await reader.readTree(\
+      'https://github.com/backstage/backstage/tree/permission-docs-plugin-authors\
+      /contrib/plugins');return Promise.all((await files.files()).map(async file=>\
+      file.path!=='README.md'&&outputFile(path.join(__dirname,'plugins',file.path),\
+      await file.content(),),),).catch(console.log)})()"
     ```
 
     Your application structure should look something like this:
