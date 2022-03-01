@@ -524,12 +524,24 @@ export type UnregisterEntityDialogProps = {
 };
 
 // @public
-export function useEntity<T extends Entity = Entity>(): {
-  entity: T;
+export function useAsyncEntity<
+  T extends Entity = Entity,
+>(): UseAsyncEntityResponse<T>;
+
+// @public
+export interface UseAsyncEntityResponse<T> {
+  // (undocumented)
+  entity?: T;
+  // (undocumented)
+  error?: Error;
+  // (undocumented)
   loading: boolean;
-  error: Error | undefined;
-  refresh: VoidFunction | undefined;
-};
+  // (undocumented)
+  refresh?: VoidFunction;
+}
+
+// @public
+export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T>;
 
 // @public @deprecated
 export const useEntityCompoundName: () => {
@@ -570,6 +582,18 @@ export function useEntityPermission(permission: Permission): {
   allowed: boolean;
   error?: Error;
 };
+
+// @public
+export interface UseEntityResponse<T> {
+  // (undocumented)
+  entity: T;
+  // @deprecated (undocumented)
+  error?: Error;
+  // @deprecated (undocumented)
+  loading: boolean;
+  // @deprecated (undocumented)
+  refresh?: VoidFunction;
+}
 
 // @public
 export function useEntityTypeFilter(): {

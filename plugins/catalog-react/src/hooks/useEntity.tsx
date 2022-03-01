@@ -128,16 +128,27 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 
   return { entity, loading, error, refresh };
 };
+
+/**
+ * @public
+ *
+ * The response shape for {@link useEntity}
+ */
 export interface UseEntityResponse<T> {
   entity: T;
-  /** @deprecated use useAsyncEntity instead */
+  /** @deprecated use {@link useAsyncEntity} instead */
   loading: boolean;
-  /** @deprecated use useAsyncEntity instead */
+  /** @deprecated use {@link useAsyncEntity} instead */
   error?: Error;
-  /** @deprecated use useAsyncEntity instead */
+  /** @deprecated use {@link useAsyncEntity} instead */
   refresh?: VoidFunction;
 }
 
+/**
+ * @public
+ *
+ * The response shape for {@link useAsyncEntity}
+ */
 export interface UseAsyncEntityResponse<T> {
   entity?: T;
   loading: boolean;
@@ -165,7 +176,14 @@ export function useEntity<T extends Entity = Entity>(): UseEntityResponse<T> {
   }
 
   if (!value.entity) {
-    throw new Error('Entity has not been loaded yet');
+    // Once we have removed the additional fields from being returned we can drop this deprecation
+    // and move to the error instead.
+    // throw new Error('useEntity hook is being called outside of an EntityPage where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead.');
+
+    // eslint-disable-next-line no-console
+    console.warn(
+      'DEPRECATION: useEntity hook is being called outside of an EntityPage where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead. This warning will be replaced with an error in future releases.',
+    );
   }
 
   const { entity, loading, error, refresh } = value;
