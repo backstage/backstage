@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32"
+    "@types/node": "^17.0.21"
   },
   "files": [
     "dist"
