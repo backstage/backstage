@@ -62,7 +62,7 @@ However any logic that satisfies the Build Strategy interface can be implemented
 config as well as the entity being processed to make a decision.
 
 For an example of how the Build Strategy can be used to implement a 'hybrid' build model, refer to
-the [How to implement a hybrid build strategy](./how-to-guides#how-to-implement-a-hybrid-build-strategy) guide.
+the [How to implement a hybrid build strategy](./how-to-guides.md#how-to-implement-a-hybrid-build-strategy) guide.
 
 ## TechDocs Container
 

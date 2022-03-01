@@ -541,7 +541,7 @@ Done! Now you have a support of the following diagrams along with mermaid:
 
 ## How to implement a hybrid build strategy
 
-One limitation of the [Recommended deployment](./architecture#recommended-deployment) is that
+One limitation of the [Recommended deployment](./architecture.md#recommended-deployment) is that
 the experience for users requires modifying their CI/CD process to publish
 their TechDocs. For some users, this may be unnecessary, and provides a barrier
 to entry for onboarding users to Backstage. However, a purely local TechDocs
@@ -549,7 +549,7 @@ build restricts TechDocs creators to using the tooling provided in Backstage,
 as well as the plugins and features provided in the Backstage-included `mkdocs`
 installation.
 
-To accommodate both of these use-cases, users can implement a custom [Build Strategy](./concepts#techdocs-build-strategy)
+To accommodate both of these use-cases, users can implement a custom [Build Strategy](./concepts.md#techdocs-build-strategy)
 with logic to encode which TechDocs should be built locally, and which will be
 built externally.
 
