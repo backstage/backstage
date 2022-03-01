@@ -53,9 +53,11 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
     ComponentState.Loading,
   );
 
-  if (!projectId) {
-    setComponentState(ComponentState.NoProjectId);
-  }
+  useEffect(() => {
+    if (!projectId) {
+      setComponentState(ComponentState.NoProjectId);
+    }
+  }, [projectId]);
 
   const { loading, value, error } = useAsync(async () => {
     const result = await airbrakeApi.fetchGroups(projectId);
@@ -63,16 +65,15 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
     return result;
   }, [airbrakeApi, projectId]);
 
-  if (loading) {
-    setComponentState(ComponentState.Loading);
-  }
-
-  if (componentState !== ComponentState.NoProjectId && error) {
-    setComponentState(ComponentState.Error);
-  }
+  useEffect(() => {
+    if (loading) {
+      setComponentState(ComponentState.Loading);
+    }
+  }, [loading]);
 
   useEffect(() => {
-    if (componentState === ComponentState.Error && error) {
+    if (componentState !== ComponentState.NoProjectId && error) {
+      setComponentState(ComponentState.Error);
       errorApi.post(error);
     }
   }, [componentState, error, errorApi]);
