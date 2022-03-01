@@ -350,7 +350,6 @@ export type CatalogProcessorParser = (options: {
 export type CatalogProcessorRelationResult = {
   type: 'relation';
   relation: EntityRelationSpec;
-  entityRef?: string;
 };
 
 // @public (undocumented)
