@@ -27,7 +27,8 @@ const conditionExports = createConditionExports({
 /**
  * These conditions are used when creating conditional decisions that are returned
  * by authorization policies.
- * @public
+ *
+ * @alpha
  */
 export const catalogConditions = conditionExports.conditions;
 
@@ -50,7 +51,8 @@ export const catalogConditions = conditionExports.conditions;
  *   }
  * }
  * ```
- * @public
+ *
+ * @alpha
  */
 export const createCatalogPolicyDecision =
   conditionExports.createPolicyDecision;
