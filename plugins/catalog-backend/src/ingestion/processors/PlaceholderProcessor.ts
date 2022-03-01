@@ -103,7 +103,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
       const resolverKey = keys[0].substr(1);
       const resolverValue = data[keys[0]];
       const resolver = this.options.resolvers[resolverKey];
-      if (!resolver || typeof resolverValue !== 'string') {
+      if (!resolver) {
         // If there was no such placeholder resolver or if the value was not a
         // string, we err on the side of safety and assume that this is
         // something that's best left alone. For example, if the input contains

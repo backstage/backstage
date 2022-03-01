@@ -94,6 +94,47 @@ describe('PlaceholderProcessor', () => {
     );
   });
 
+  it('replaces placeholders with json values', async () => {
+    const jsonValueResolver: PlaceholderResolver = jest.fn(async ({ value }) =>
+      JSON.stringify(value),
+    );
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        jsonValue: jsonValueResolver,
+      },
+      reader,
+      integrations,
+    });
+
+    const jsonPlaceholderValue = { foo: 'one', bar: 'other' };
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: { a: [{ b: { $jsonValue: jsonPlaceholderValue } }] },
+        },
+        { type: 'fake', target: 'http://example.com' },
+      ),
+    ).resolves.toEqual({
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n' },
+      spec: { a: [{ b: JSON.stringify(jsonPlaceholderValue) }] },
+    });
+
+    expect(read).not.toBeCalled();
+    expect(jsonValueResolver).toBeCalledWith(
+      expect.objectContaining({
+        key: 'jsonValue',
+        value: jsonPlaceholderValue,
+        baseUrl: 'http://example.com',
+      }),
+    );
+  });
+
   it('ignores multiple placeholders', async () => {
     const processor = new PlaceholderProcessor({
       resolvers: {
