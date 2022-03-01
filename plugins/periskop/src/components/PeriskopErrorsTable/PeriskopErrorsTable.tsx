@@ -83,9 +83,8 @@ function isNotFoundInInstance(
 export const PeriskopErrorsTable = () => {
   const { entity } = useEntity();
   const entityPeriskopName: string =
-    (entity.metadata.annotations?.[PERISKOP_NAME_ANNOTATION] as
-      | string
-      | undefined) ?? entity.metadata.name;
+    entity.metadata.annotations?.[PERISKOP_NAME_ANNOTATION] ??
+    entity.metadata.name;
 
   const periskopApi = useApi(periskopApiRef);
   const instanceNames = periskopApi.getInstanceNames();
