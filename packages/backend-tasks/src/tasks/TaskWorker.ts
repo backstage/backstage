@@ -15,12 +15,18 @@
  */
 
 import { Knex } from 'knex';
-import { Duration } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
-import { TaskFunction, TaskSettingsV1, taskSettingsV1Schema } from './types';
+import {
+  TaskFunction,
+  TaskSettingsV1,
+  taskSettingsV1Schema,
+  TaskSettingsV2,
+  taskSettingsV2Schema,
+} from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
 import { CronTime } from 'cron';
 
@@ -136,10 +142,29 @@ export class TaskWorker {
       taskSettingsV2Schema.parse(settings);
     }
 
+    let startAt: DateTime = settings.initialDelayDuration
+      ? DateTime.now().plus(Duration.fromISO(settings.initialDelayDuration))
+      : DateTime.now();
+
+    if (!settings.initialDelayDuration && settings.version === 2) {
+      const n = settings as TaskSettingsV2;
+      const time = new CronTime(n.cadence).sendAt().toISOString();
+      // start at the next cadence, sub one second to call the function immediately if we're using "* * * * * *"
+      startAt = DateTime.fromISO(time).minus(
+        Duration.fromObject({ seconds: 1 }),
+      );
+    }
+
+    const startRun =
+      this.knex.client.config.client === 'sqlite3'
+        ? this.knex.raw('datetime(?)', [startAt.toISO()])
+        : this.knex.raw(`?`, [startAt.toISO()]);
+
+    this.logger.debug(
+      `version: ${settings.version} starting task at: ${startAt}`,
+    );
+
     const settingsJson = JSON.stringify(settings);
-    const startAt = settings.initialDelayDuration
-      ? nowPlus(Duration.fromISO(settings.initialDelayDuration), this.knex)
-      : this.knex.fn.now();
 
     // It's OK if the task already exists; if it does, just replace its
     // settings with the new value and start the loop as usual.
@@ -147,7 +172,7 @@ export class TaskWorker {
       .insert({
         id: this.taskId,
         settings_json: settingsJson,
-        next_run_start_at: startAt,
+        next_run_start_at: startRun,
       })
       .onConflict('id')
       .merge(['settings_json']);
@@ -159,7 +184,7 @@ export class TaskWorker {
   async findReadyTask(): Promise<
     | { result: 'not-ready-yet' }
     | { result: 'abort' }
-    | { result: 'ready'; settings: TaskSettingsV1 }
+    | { result: 'ready'; settings: TaskSettingsV1 | TaskSettingsV2 }
   > {
     const [row] = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)
@@ -185,7 +210,15 @@ export class TaskWorker {
     }
 
     try {
-      const settings = taskSettingsV1Schema.parse(JSON.parse(row.settingsJson));
+      let settings: TaskSettingsV1 | TaskSettingsV2;
+      const obj = JSON.parse(row.settingsJson);
+      if (obj.version === 1) {
+        settings = taskSettingsV1Schema.parse(obj);
+      } else if (obj.version === 2) {
+        settings = taskSettingsV2Schema.parse(obj);
+      } else {
+        throw new Error('unrecognized settings version, ignoring task');
+      }
       return { result: 'ready', settings };
     } catch (e) {
       this.logger.info(
@@ -207,7 +240,7 @@ export class TaskWorker {
    */
   async tryClaimTask(
     ticket: string,
-    settings: TaskSettingsV1,
+    settings: TaskSettingsV1 | TaskSettingsV2,
   ): Promise<boolean> {
     const startedAt = this.knex.fn.now();
     const expiresAt = settings.timeoutAfterDuration
@@ -230,23 +263,26 @@ export class TaskWorker {
     ticket: string,
     settings: TaskSettingsV1 | TaskSettingsV2,
   ): Promise<boolean> {
-    let next: any;
+    let next: DateTime;
     if (settings.version === 1) {
       const n = settings as TaskSettingsV1;
-      next = n.recurringAtMostEveryDuration;
+      next = DateTime.now().plus(
+        Duration.fromISO(n.recurringAtMostEveryDuration),
+      );
     } else if (settings.version === 2) {
       const n = settings as TaskSettingsV2;
-      next = new CronTime(n.cadence).sendAt();
+      const time = new CronTime(n.cadence).sendAt().toISOString();
+      next = DateTime.fromISO(time);
+    } else {
+      throw new Error('unrecognized settings version');
     }
 
-    // We make an effort to keep the datetime calculations in the database
-    // layer, making sure to not have to perform conversions back and forth and
-    // leaning on the database as a central clock source
     const dbNull = this.knex.raw('null');
-    const dt = Duration.fromISO(next).as('seconds');
-    const nextRun = this.knex.client.config.client.includes('sqlite3')
-      ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])
-      : this.knex.raw(`next_run_start_at + interval '${dt} seconds'`);
+
+    const nextRun =
+      this.knex.client.config.client === 'sqlite3'
+        ? this.knex.raw('next_run_start_at=datetime(?)', [next.toISO()])
+        : this.knex.raw(`next_run_start_at=?`, [next.toISO()]);
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)

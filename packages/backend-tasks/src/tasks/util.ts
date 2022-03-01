@@ -34,7 +34,7 @@ export function dbTime(t: Date | string): DateTime {
 }
 
 export function nowPlus(duration: Duration | undefined, knex: Knex) {
-  const seconds = duration?.as('seconds') ?? 0;
+  const seconds: number = duration?.seconds ?? 0;
   if (!seconds) {
     return knex.fn.now();
   }

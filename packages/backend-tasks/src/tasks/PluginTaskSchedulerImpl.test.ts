@@ -19,7 +19,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
-import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
+import { PluginTaskScheduler } from './PluginTaskSchedulerImpl';
 
 describe('PluginTaskManagerImpl', () => {
   const databases = TestDatabases.create({
@@ -29,10 +29,7 @@ describe('PluginTaskManagerImpl', () => {
   async function init(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
     await migrateBackendTasks(knex);
-    const manager = new PluginTaskSchedulerImpl(
-      async () => knex,
-      getVoidLogger(),
-    );
+    const manager = new PluginTaskScheduler(async () => knex, getVoidLogger());
     return { knex, manager };
   }
 
@@ -40,7 +37,7 @@ describe('PluginTaskManagerImpl', () => {
   // TaskWorker.test.ts
   describe('scheduleTask', () => {
     it.each(databases.eachSupportedId())(
-      'can run the happy path, %p',
+      'can run the v1 happy path, %p',
       async databaseId => {
         const { manager } = await init(databaseId);
 
@@ -49,6 +46,26 @@ describe('PluginTaskManagerImpl', () => {
           id: 'task1',
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromMillis(5000),
+          fn,
+        });
+
+        await waitForExpect(() => {
+          expect(fn).toBeCalled();
+        });
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'can run the v2 happy path, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        const fn = jest.fn();
+        await manager.scheduleTask({
+          id: 'task2',
+          timeout: Duration.fromMillis(5000),
+          cadence: '* * * * * *',
           fn,
         });
 
