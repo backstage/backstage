@@ -17,6 +17,7 @@
 import { Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
+import { CronTime } from 'cron';
 
 /**
  * A function that can be called as a scheduled task.
@@ -48,6 +49,7 @@ export interface TaskScheduleDefinition {
   /**
    * The amount of time that should pass between task invocation starts.
    * Essentially, this equals roughly how often you want the task to run.
+   * The system does its best to avoid overlapping invocations.
    *
    * This is a best effort value; under some circumstances there can be
    * deviations. For example, if the task runtime is longer than the frequency
@@ -55,11 +57,24 @@ export interface TaskScheduleDefinition {
    * invocation of this task will be delayed until after the previous one
    * finishes.
    *
-   * The system does its best to avoid overlapping invocations.
+   * This value can be a crontab style string (see below), or an ISO period
+   * string (e.g. 'PT1M').
    *
    * This is a required field.
+   *
+   * Cron expressions help:
+   *
+   *   ┌────────────── second (optional)
+   *   │ ┌──────────── minute
+   *   │ │ ┌────────── hour
+   *   │ │ │ ┌──────── day of month
+   *   │ │ │ │ ┌────── month
+   *   │ │ │ │ │ ┌──── day of week
+   *   │ │ │ │ │ │
+   *   │ │ │ │ │ │
+   *   * * * * * *
    */
-  frequency: Duration;
+  frequency: string | Duration;
 
   /**
    * The amount of time that should pass before the first invocation happens.
@@ -68,7 +83,7 @@ export interface TaskScheduleDefinition {
    * compute jobs.
    *
    * If no value is given for this field then the first invocation will happen
-   * as soon as possible.
+   * as soon as possible according to the cadence.
    */
   initialDelay?: Duration;
 }
@@ -150,7 +165,21 @@ export interface PluginTaskScheduler {
 
 function isValidOptionalDurationString(d: string | undefined): boolean {
   try {
-    return !d || Duration.fromISO(d).isValid === true;
+    return !d || Duration.fromISO(d).isValid;
+  } catch {
+    return false;
+  }
+}
+
+function isValidCronFormat(c: string | undefined): boolean {
+  try {
+    if (!c) {
+      return false;
+    }
+    // parse cron format to ensure it's a valid format.
+    // eslint-disable-next-line no-new
+    new CronTime(c);
+    return true;
   } catch {
     return false;
   }
@@ -161,16 +190,46 @@ export const taskSettingsV1Schema = z.object({
   initialDelayDuration: z
     .string()
     .optional()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration, expecting ISO Period',
+    }),
   recurringAtMostEveryDuration: z
     .string()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
-  timeoutAfterDuration: z
-    .string()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration, expecting ISO Period',
+    }),
+  timeoutAfterDuration: z.string().refine(isValidOptionalDurationString, {
+    message: 'Invalid duration, expecting ISO Period',
+  }),
 });
 
 /**
  * The properties that control a scheduled task (version 1).
  */
 export type TaskSettingsV1 = z.infer<typeof taskSettingsV1Schema>;
+
+export const taskSettingsV2Schema = z.object({
+  version: z.literal(2),
+  cadence: z
+    .string()
+    .refine(isValidCronFormat, { message: 'Invalid cron' })
+    .or(
+      z.string().refine(isValidOptionalDurationString, {
+        message: 'Invalid duration, expecting ISO Period',
+      }),
+    ),
+  timeoutAfterDuration: z.string().refine(isValidOptionalDurationString, {
+    message: 'Invalid duration, expecting ISO Period',
+  }),
+  initialDelayDuration: z
+    .string()
+    .optional()
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration, expecting ISO Period',
+    }),
+});
+
+/**
+ * The properties that control a scheduled task (version 2).
+ */
+export type TaskSettingsV2 = z.infer<typeof taskSettingsV2Schema>;

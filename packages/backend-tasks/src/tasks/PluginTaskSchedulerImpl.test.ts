@@ -40,7 +40,7 @@ describe('PluginTaskManagerImpl', () => {
   // TaskWorker.test.ts
   describe('scheduleTask', () => {
     it.each(databases.eachSupportedId())(
-      'can run the happy path, %p',
+      'can run the v1 happy path, %p',
       async databaseId => {
         const { manager } = await init(databaseId);
 
@@ -49,6 +49,26 @@ describe('PluginTaskManagerImpl', () => {
           id: 'task1',
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromMillis(5000),
+          fn,
+        });
+
+        await waitForExpect(() => {
+          expect(fn).toBeCalled();
+        });
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'can run the v2 happy path, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        const fn = jest.fn();
+        await manager.scheduleTask({
+          id: 'task2',
+          timeout: Duration.fromMillis(5000),
+          frequency: '* * * * * *',
           fn,
         });
 

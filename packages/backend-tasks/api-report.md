@@ -36,7 +36,7 @@ export interface TaskRunner {
 
 // @public
 export interface TaskScheduleDefinition {
-  frequency: Duration;
+  frequency: string | Duration;
   initialDelay?: Duration;
   timeout: Duration;
 }

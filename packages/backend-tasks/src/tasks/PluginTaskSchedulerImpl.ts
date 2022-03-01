@@ -40,13 +40,16 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     validateId(task.id);
 
     const knex = await this.databaseFactory();
-
     const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
+
     await worker.start(
       {
-        version: 1,
+        version: 2,
+        cadence:
+          typeof task.frequency === 'string'
+            ? task.frequency
+            : task.frequency.toISO(),
         initialDelayDuration: task.initialDelay?.toISO(),
-        recurringAtMostEveryDuration: task.frequency.toISO(),
         timeoutAfterDuration: task.timeout.toISO(),
       },
       {

@@ -39,7 +39,7 @@ describe('TaskScheduler', () => {
   }
 
   it.each(databases.eachSupportedId())(
-    'can return a working plugin impl, %p',
+    'can return a working v1 plugin impl, %p',
     async databaseId => {
       const database = await createDatabase(databaseId);
       const manager = new TaskScheduler(database, logger).forPlugin('test');
@@ -49,6 +49,27 @@ describe('TaskScheduler', () => {
         id: 'task1',
         timeout: Duration.fromMillis(5000),
         frequency: Duration.fromMillis(5000),
+        fn,
+      });
+
+      await waitForExpect(() => {
+        expect(fn).toBeCalled();
+      });
+    },
+    60_000,
+  );
+
+  it.each(databases.eachSupportedId())(
+    'can return a working v2 plugin impl, %p',
+    async databaseId => {
+      const database = await createDatabase(databaseId);
+      const manager = new TaskScheduler(database, logger).forPlugin('test');
+      const fn = jest.fn();
+
+      await manager.scheduleTask({
+        id: 'task2',
+        timeout: Duration.fromMillis(5000),
+        frequency: '* * * * * *',
         fn,
       });
 
