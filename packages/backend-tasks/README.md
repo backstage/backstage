@@ -22,7 +22,7 @@ const scheduler = TaskScheduler.fromConfig(rootConfig).forPlugin('my-plugin');
 
 await scheduler.scheduleTask({
   id: 'refresh_things',
-  frequency: Duration.fromObject({ minutes: 10 }),
+  cadence: '*/5 * * * *', // every 5 minutes
   timeout: Duration.fromObject({ minutes: 15 }),
   fn: async () => {
     await entityProvider.run();
