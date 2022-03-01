@@ -17,6 +17,7 @@
 import { Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
+import { CronTime } from 'cron';
 
 /**
  * A function that can be called as a scheduled task.
@@ -47,8 +48,40 @@ export interface TaskScheduleDefinition {
   timeout: Duration;
 
   /**
+   * The cron format for when to run this task. Follows Unix cron format
+   * and parsed by the `cron` npm package.
+   *
+   * If no value is given for this field then the task will only be invoked
+   * once (on any worker) and then unscheduled automatically.
+   *
+   * This is a best effort value; under some circumstances there can be
+   * deviations. For example, if the task runtime is longer than the cadence
+   * and the timeout has not been given or not been exceeded yet, the next
+   * invocation of this task will be delayed until after the previous one
+   * finishes.
+   *
+   * The system does its best to avoid overlapping invocations.
+   * @remarks
+   *
+   * Cron expressions help:
+   *
+   * ┌────────────── second (optional)
+   # │ ┌──────────── minute
+   # │ │ ┌────────── hour
+   # │ │ │ ┌──────── day of month
+   # │ │ │ │ ┌────── month
+   # │ │ │ │ │ ┌──── day of week
+   # │ │ │ │ │ │
+   # │ │ │ │ │ │
+   # * * * * * *
+   *
+   */
+  cadence?: string;
+
+  /*
    * The amount of time that should pass between task invocation starts.
    * Essentially, this equals roughly how often you want the task to run.
+   * The system does its best to avoid overlapping invocations.
    *
    * This is a best effort value; under some circumstances there can be
    * deviations. For example, if the task runtime is longer than the frequency
@@ -56,7 +89,7 @@ export interface TaskScheduleDefinition {
    * invocation of this task will be delayed until after the previous one
    * finishes.
    *
-   * The system does its best to avoid overlapping invocations.
+   * If set, overrides the `cadence` setting in the definition.
    *
    * If no value is given for this field then the task will only be invoked
    * once (on any worker) and then unscheduled automatically.
@@ -152,7 +185,21 @@ export interface PluginTaskScheduler {
 
 function isValidOptionalDurationString(d: string | undefined): boolean {
   try {
-    return !d || Duration.fromISO(d).isValid === true;
+    return !d || Duration.fromISO(d).isValid;
+  } catch {
+    return false;
+  }
+}
+
+function isValidCronFormat(c: string | undefined): boolean {
+  try {
+    if (!c) {
+      return false;
+    }
+    // parse cron format to ensure it's a valid format.
+    // eslint-disable-next-line no-new
+    new CronTime(c);
+    return true;
   } catch {
     return false;
   }
@@ -176,3 +223,22 @@ export const taskSettingsV1Schema = z.object({
  * The properties that control a scheduled task (version 1).
  */
 export type TaskSettingsV1 = z.infer<typeof taskSettingsV1Schema>;
+
+export const taskSettingsV2Schema = z.object({
+  version: z.literal(2),
+  cadence: z
+    .string()
+    .refine(isValidCronFormat, { message: 'Invalid cron format' }),
+  timeoutAfterDuration: z
+    .string()
+    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+  initialDelayDuration: z
+    .string()
+    .optional()
+    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+});
+
+/**
+ * The properties that control a scheduled task (version 1).
+ */
+export type TaskSettingsV2 = z.infer<typeof taskSettingsV2Schema>;

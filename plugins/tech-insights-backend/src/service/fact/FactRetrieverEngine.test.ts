@@ -24,18 +24,11 @@ import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { FactRetrieverEngine } from './FactRetrieverEngine';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { schedule } from 'node-cron';
-
-jest.mock('node-cron', () => {
-  const original = jest.requireActual('node-cron');
-  return {
-    ...original,
-    schedule: jest.fn(),
-  };
-});
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 const testFactRetriever: FactRetriever = {
-  id: 'test-factretriever',
+  id: 'test_factretriever',
   version: '0.0.1',
   entityFilter: [{ kind: 'component' }],
   schema: {
@@ -85,68 +78,85 @@ describe('FactRetrieverEngine', () => {
     listRegistrations(): FactRetrieverRegistration[] {
       return [{ factRetriever: testFactRetriever, cadence }];
     },
+    get: (_: string): FactRetrieverRegistration => {
+      return { factRetriever: testFactRetriever, cadence };
+    },
   } as unknown as FactRetrieverRegistry;
 
-  const defaultEngineConfig = {
-    factRetrieverContext: {
-      logger: getVoidLogger(),
-      config: ConfigReader.fromConfigs([]),
-      discovery: {
-        getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
-        getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
+  const databases = TestDatabases.create({
+    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+  });
+
+  async function defaultEngineConfig(databaseId: TestDatabaseId) {
+    const knex = await databases.init(databaseId);
+    const manager = new PluginTaskScheduler(async () => knex, getVoidLogger());
+    return {
+      factRetrieverContext: {
+        logger: getVoidLogger(),
+        config: ConfigReader.fromConfigs([]),
+        discovery: {
+          getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
+          getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
+        },
       },
+      factRetrieverRegistry: mockFactRetrieverRegistry,
+      repository: mockRepository,
+      scheduler: manager,
+    };
+  }
+
+  it.each(databases.eachSupportedId())(
+    'Should update fact retriever schemas on initialization',
+    async databaseId => {
+      factSchemaAssertionCallback = ({ id, schema, version, entityFilter }) => {
+        expect(id).toEqual('test_factretriever');
+        expect(version).toEqual('0.0.1');
+        expect(entityFilter).toEqual([{ kind: 'component' }]);
+        expect(schema).toEqual({
+          testnumberfact: {
+            type: 'integer',
+            description: '',
+          },
+        });
+      };
+
+      engine = await FactRetrieverEngine.create(
+        await defaultEngineConfig(databaseId),
+      );
     },
-    factRetrieverRegistry: mockFactRetrieverRegistry,
-    repository: mockRepository,
-  };
+  );
 
-  it('Should update fact retriever schemas on initialization', async () => {
-    factSchemaAssertionCallback = ({ id, schema, version, entityFilter }) => {
-      expect(id).toEqual('test-factretriever');
-      expect(version).toEqual('0.0.1');
-      expect(entityFilter).toEqual([{ kind: 'component' }]);
-      expect(schema).toEqual({
-        testnumberfact: {
-          type: 'integer',
-          description: '',
-        },
-      });
-    };
-
-    engine = await FactRetrieverEngine.create(defaultEngineConfig);
-  });
-  it('Should insert facts when scheduled step is run', async () => {
-    (schedule as jest.Mock).mockImplementation(
-      (cronCadence: string, retrieverAction: Function) => {
-        return {
-          cadence: cronCadence,
-          triggerScheduledJobNow: retrieverAction,
-        };
-      },
-    );
-
-    factSchemaAssertionCallback = () => {};
-    factInsertionAssertionCallback = facts => {
-      expect(facts).toHaveLength(1);
-      expect(facts[0]).toEqual({
-        ref: 'test-factretriever',
-        entity: {
-          namespace: 'a',
-          kind: 'a',
-          name: 'a',
-        },
-        facts: {
-          testnumberfact: 1,
-        },
-      });
-    };
-    engine = await FactRetrieverEngine.create(defaultEngineConfig);
-    engine.schedule();
-    const job: any = engine.getJob('test-factretriever');
-    job.triggerScheduledJobNow();
-    expect(job.cadence!!).toEqual(cadence);
-    expect(testFactRetriever.handler).toHaveBeenCalledWith(
-      expect.objectContaining({ entityFilter: testFactRetriever.entityFilter }),
-    );
-  });
+  it.each(databases.eachSupportedId())(
+    'Should insert facts when scheduled step is run',
+    async databaseId => {
+      factSchemaAssertionCallback = () => {};
+      factInsertionAssertionCallback = facts => {
+        expect(facts).toHaveLength(1);
+        expect(facts[0]).toEqual({
+          ref: 'test_factretriever',
+          entity: {
+            namespace: 'a',
+            kind: 'a',
+            name: 'a',
+          },
+          facts: {
+            testnumberfact: 1,
+          },
+        });
+      };
+      engine = await FactRetrieverEngine.create(
+        await defaultEngineConfig(databaseId),
+      );
+      engine.schedule();
+      const job: FactRetrieverRegistration =
+        engine.getJobRegistration('test_factretriever');
+      await engine.runJobOnce(job.factRetriever.id);
+      expect(job.cadence!!).toEqual(cadence);
+      expect(testFactRetriever.handler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entityFilter: testFactRetriever.entityFilter,
+        }),
+      );
+    },
+  );
 });

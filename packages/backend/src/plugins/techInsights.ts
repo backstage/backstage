@@ -33,12 +33,14 @@ export default async function createPlugin({
   config,
   discovery,
   database,
+  scheduler,
 }: PluginEnvironment): Promise<Router> {
   const techInsightsContext = await buildTechInsightsContext({
     logger,
     config,
     database,
     discovery,
+    scheduler,
     factRetrievers: [
       createFactRetrieverRegistration({
         cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
