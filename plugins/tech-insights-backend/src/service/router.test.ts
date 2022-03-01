@@ -15,7 +15,7 @@
  */
 import { buildTechInsightsContext } from './techInsightsContextBuilder';
 import { createRouter } from './router';
-import { getVoidLogger } from '@backstage/backend-common';
+import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import request from 'supertest';
 import express from 'express';
@@ -23,6 +23,7 @@ import { PersistenceContext } from './persistence/persistenceContext';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
+import { TaskScheduler } from '@backstage/backend-tasks';
 
 describe('Tech Insights router tests', () => {
   let app: express.Express;
@@ -44,6 +45,18 @@ describe('Tech Insights router tests', () => {
   });
 
   beforeAll(async () => {
+    const databaseManager: Partial<DatabaseManager> = {
+      forPlugin: () => ({
+        getClient: () => {
+          return Promise.resolve({
+            migrate: {
+              latest: () => {},
+            },
+          }) as unknown as Promise<Knex>;
+        },
+      }),
+    };
+    const manager = databaseManager as DatabaseManager;
     const techInsightsContext = await buildTechInsightsContext({
       database: {
         getClient: () => {
@@ -56,6 +69,9 @@ describe('Tech Insights router tests', () => {
       },
       logger: getVoidLogger(),
       factRetrievers: [],
+      scheduler: new TaskScheduler(manager, getVoidLogger()).forPlugin(
+        'tech-insights',
+      ),
       config: ConfigReader.fromConfigs([]),
       discovery: {
         getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),

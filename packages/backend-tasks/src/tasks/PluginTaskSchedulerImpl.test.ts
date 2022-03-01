@@ -20,6 +20,9 @@ import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
+import { ConflictError, NotFoundError } from '@backstage/errors';
+
+jest.useFakeTimers();
 
 describe('PluginTaskManagerImpl', () => {
   const databases = TestDatabases.create({
@@ -75,6 +78,72 @@ describe('PluginTaskManagerImpl', () => {
         await waitForExpect(() => {
           expect(fn).toBeCalled();
         });
+      },
+      60_000,
+    );
+  });
+
+  describe('triggerTask', () => {
+    it.each(databases.eachSupportedId())(
+      'can manually trigger a task, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        const fn = jest.fn();
+        await manager.scheduleTask({
+          id: 'task1',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromObject({ years: 1 }),
+          initialDelay: Duration.fromObject({ years: 1 }),
+          fn,
+        });
+
+        await manager.triggerTask('task1');
+        jest.advanceTimersByTime(5000);
+
+        await waitForExpect(() => {
+          expect(fn).toBeCalled();
+        });
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'cant trigger a non-existent task, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        const fn = jest.fn();
+        await manager.scheduleTask({
+          id: 'task1',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromObject({ years: 1 }),
+          fn,
+        });
+
+        await expect(() => manager.triggerTask('task2')).rejects.toThrow(
+          NotFoundError,
+        );
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'cant trigger a running task, %p',
+      async databaseId => {
+        const { manager } = await init(databaseId);
+
+        const fn = jest.fn();
+        await manager.scheduleTask({
+          id: 'task1',
+          timeout: Duration.fromMillis(5000),
+          frequency: Duration.fromObject({ years: 1 }),
+          fn,
+        });
+
+        await expect(() => manager.triggerTask('task1')).rejects.toThrow(
+          ConflictError,
+        );
       },
       60_000,
     );
