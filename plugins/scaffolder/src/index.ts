@@ -44,6 +44,7 @@ export type {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  FieldExtensionComponent,
 } from './extensions';
 export {
   EntityPickerFieldExtension,
