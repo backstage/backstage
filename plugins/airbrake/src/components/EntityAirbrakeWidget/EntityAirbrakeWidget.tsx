@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import {
   EmptyState,
@@ -36,59 +36,80 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
   },
 }));
 
+enum ComponentState {
+  Loading,
+  NoProjectId,
+  Error,
+  Loaded,
+}
+
 export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
   const classes = useStyles();
 
   const projectId = useProjectId(entity);
   const errorApi = useApi<ErrorApi>(errorApiRef);
   const airbrakeApi = useApi(airbrakeApiRef);
-
-  const { loading, value, error } = useAsync(
-    () => airbrakeApi.fetchGroups(projectId),
-    [airbrakeApi, projectId],
+  const [componentState, setComponentState] = useState<ComponentState>(
+    ComponentState.Loading,
   );
 
-  useEffect(() => {
-    if (error) {
-      errorApi.post(error);
-    }
-  }, [error, errorApi]);
-
-  if (loading || !projectId || error) {
-    return (
-      <InfoCard title="Airbrake groups" variant="gridItem">
-        {loading && <Progress />}
-
-        {!loading && !projectId && (
-          <MissingAnnotationEmptyState
-            annotation={AIRBRAKE_PROJECT_ID_ANNOTATION}
-          />
-        )}
-
-        {!loading && error && (
-          <EmptyState
-            missing="info"
-            title="No information to display"
-            description={`There is no Airbrake project with id '${projectId}' or there was an issue communicating with Airbrake.`}
-          />
-        )}
-      </InfoCard>
-    );
+  if (!projectId) {
+    setComponentState(ComponentState.NoProjectId);
   }
 
-  return (
-    <Grid container spacing={3} direction="column">
-      {value?.groups?.map(group => (
-        <Grid item key={group.id}>
-          {group.errors?.map(groupError => (
-            <InfoCard title={groupError.type} key={hash(groupError)}>
-              <Typography variant="body1" className={classes.multilineText}>
-                {groupError.message}
-              </Typography>
-            </InfoCard>
+  const { loading, value, error } = useAsync(async () => {
+    const result = await airbrakeApi.fetchGroups(projectId);
+    setComponentState(ComponentState.Loaded);
+    return result;
+  }, [airbrakeApi, projectId]);
+
+  if (loading) {
+    setComponentState(ComponentState.Loading);
+  }
+
+  if (componentState !== ComponentState.NoProjectId && error) {
+    setComponentState(ComponentState.Error);
+  }
+
+  useEffect(() => {
+    if (componentState === ComponentState.Error && error) {
+      errorApi.post(error);
+    }
+  }, [componentState, error, errorApi]);
+
+  switch (componentState) {
+    case ComponentState.Loaded:
+      return (
+        <Grid container spacing={3} direction="column">
+          {value?.groups?.map(group => (
+            <Grid item key={group.id}>
+              {group.errors?.map(groupError => (
+                <InfoCard title={groupError.type} key={hash(groupError)}>
+                  <Typography variant="body1" className={classes.multilineText}>
+                    {groupError.message}
+                  </Typography>
+                </InfoCard>
+              ))}
+            </Grid>
           ))}
         </Grid>
-      ))}
-    </Grid>
-  );
+      );
+    case ComponentState.NoProjectId:
+      return (
+        <MissingAnnotationEmptyState
+          annotation={AIRBRAKE_PROJECT_ID_ANNOTATION}
+        />
+      );
+    case ComponentState.Loading:
+      return <Progress />;
+    case ComponentState.Error:
+    default:
+      return (
+        <EmptyState
+          missing="info"
+          title="No information to display"
+          description={`There is no Airbrake project with id '${projectId}' or there was an issue communicating with Airbrake.`}
+        />
+      );
+  }
 };
