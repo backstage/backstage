@@ -33,7 +33,7 @@ export interface Config {
        * The hostname of the given Periskop instance
        * @visibility frontend
        */
-      host: string;
+      url: string;
     }>;
   };
 }

@@ -24,7 +24,7 @@ export type Options = {
 
 type PeriskopInstance = {
   name: string;
-  host: string;
+  url: string;
 };
 
 export class PeriskopApi {
@@ -35,14 +35,13 @@ export class PeriskopApi {
       .getConfigArray('periskop.instances')
       .flatMap(locConf => {
         const name = locConf.getString('name');
-        const host = locConf.getString('host');
-        return { name: name, host: host };
+        const url = locConf.getString('url');
+        return { name: name, url: url };
       });
   }
 
   private getApiUrl(instanceName: string): string | undefined {
-    return this.instances.find(instance => instance.name === instanceName)
-      ?.host;
+    return this.instances.find(instance => instance.name === instanceName)?.url;
   }
 
   async getErrors(

@@ -31,5 +31,5 @@ The plugin requires to configure _at least one_ Periskop API location in the [ap
 periskop:
   instances:
     - name: <name of the instance>
-      host: <HTTP/S host for the Periskop API instance>
+      url: <HTTP/S url for the Periskop instance's API>
 ```

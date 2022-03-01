@@ -32,7 +32,7 @@ describe('createRouter', () => {
           instances: [
             {
               name: 'db',
-              host: 'http://periskop-db',
+              url: 'http://periskop-db',
             },
           ],
         },
