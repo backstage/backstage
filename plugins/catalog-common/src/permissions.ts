@@ -17,8 +17,10 @@
 import { Permission } from '@backstage/plugin-permission-common';
 
 /**
+ * Permission resource type which corresponds to catalog entities.
+ *
  * {@link https://backstage.io/docs/features/software-catalog/software-catalog-overview}
- * @public
+ * @alpha
  */
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 
@@ -28,7 +30,7 @@ export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
  *
  * If this permission is not authorized, it will appear that the entity does not
  * exist in the catalog — both in the frontend and in API responses.
- * @public
+ * @alpha
  */
 export const catalogEntityReadPermission: Permission = {
   name: 'catalog.entity.read',
@@ -42,7 +44,7 @@ export const catalogEntityReadPermission: Permission = {
  * This permission is used to authorize actions that involve creating a new
  * catalog entity. This includes registering an existing component into the
  * catalog.
- * @public
+ * @alpha
  */
 export const catalogEntityCreatePermission: Permission = {
   name: 'catalog.entity.create',
@@ -55,7 +57,7 @@ export const catalogEntityCreatePermission: Permission = {
 /**
  * This permission is used to designate actions that involve removing one or
  * more entities from the catalog.
- * @public
+ * @alpha
  */
 export const catalogEntityDeletePermission: Permission = {
   name: 'catalog.entity.delete',
@@ -68,7 +70,7 @@ export const catalogEntityDeletePermission: Permission = {
 /**
  * This permission is used to designate refreshing one or more entities from the
  * catalog.
- * @public
+ * @alpha
  */
 export const catalogEntityRefreshPermission: Permission = {
   name: 'catalog.entity.refresh',
@@ -84,7 +86,7 @@ export const catalogEntityRefreshPermission: Permission = {
  *
  * If this permission is not authorized, it will appear that the location does
  * not exist in the catalog — both in the frontend and in API responses.
- * @public
+ * @alpha
  */
 export const catalogLocationReadPermission: Permission = {
   name: 'catalog.location.read',
@@ -96,7 +98,7 @@ export const catalogLocationReadPermission: Permission = {
 /**
  * This permission is used to designate actions that involve creating catalog
  * locations.
- * @public
+ * @alpha
  */
 export const catalogLocationCreatePermission: Permission = {
   name: 'catalog.location.create',
@@ -108,7 +110,7 @@ export const catalogLocationCreatePermission: Permission = {
 /**
  * This permission is used to designate actions that involve deleting locations
  * from the catalog.
- * @public
+ * @alpha
  */
 export const catalogLocationDeletePermission: Permission = {
   name: 'catalog.location.delete',
