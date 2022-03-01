@@ -22,20 +22,44 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 
-export const isAndCriteria = (
-  filter: PermissionCriteria<unknown>,
-): filter is AllOfCriteria<unknown> =>
-  Object.prototype.hasOwnProperty.call(filter, 'allOf');
+/**
+ * Utility function used to parse a PermissionCriteria
+ * @param criteria - a PermissionCriteria
+ * @alpha
+ *
+ * @returns `true` if the permission criteria is of type allOf,
+ * narrowing down `criteria` to the specific type.
+ */
+export const isAndCriteria = <T>(
+  criteria: PermissionCriteria<T>,
+): criteria is AllOfCriteria<T> =>
+  Object.prototype.hasOwnProperty.call(criteria, 'allOf');
 
-export const isOrCriteria = (
-  filter: PermissionCriteria<unknown>,
-): filter is AnyOfCriteria<unknown> =>
-  Object.prototype.hasOwnProperty.call(filter, 'anyOf');
+/**
+ * Utility function used to parse a PermissionCriteria of type
+ * @param criteria - a PermissionCriteria
+ * @alpha
+ *
+ * @returns `true` if the permission criteria is of type anyOf,
+ * narrowing down `criteria` to the specific type.
+ */
+export const isOrCriteria = <T>(
+  criteria: PermissionCriteria<T>,
+): criteria is AnyOfCriteria<T> =>
+  Object.prototype.hasOwnProperty.call(criteria, 'anyOf');
 
-export const isNotCriteria = (
-  filter: PermissionCriteria<unknown>,
-): filter is NotCriteria<unknown> =>
-  Object.prototype.hasOwnProperty.call(filter, 'not');
+/**
+ * Utility function used to parse a PermissionCriteria
+ * @param criteria - a PermissionCriteria
+ * @alpha
+ *
+ * @returns `true` if the permission criteria is of type not,
+ * narrowing down `criteria` to the specific type.
+ */
+export const isNotCriteria = <T>(
+  criteria: PermissionCriteria<T>,
+): criteria is NotCriteria<T> =>
+  Object.prototype.hasOwnProperty.call(criteria, 'not');
 
 export const createGetRule = <TResource, TQuery>(
   rules: PermissionRule<TResource, TQuery>[],
