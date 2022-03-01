@@ -18,7 +18,6 @@ import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 import { ConfigReader } from '@backstage/config';
 import {
   BitbucketRepository20,
-  BitbucketRepositoryParser,
   PagedResponse,
   PagedResponse20,
 } from './bitbucket';
@@ -742,15 +741,6 @@ describe('BitbucketDiscoveryProcessor', () => {
   });
 
   describe('Custom repository parser', () => {
-    const customRepositoryParser: BitbucketRepositoryParser =
-      async function* customRepositoryParser({}) {
-        yield results.location({
-          type: 'custom-location-type',
-          target: 'custom-target',
-          presence: 'optional',
-        });
-      };
-
     const processor = BitbucketDiscoveryProcessor.fromConfig(
       new ConfigReader({
         integrations: {
@@ -763,7 +753,16 @@ describe('BitbucketDiscoveryProcessor', () => {
           ],
         },
       }),
-      { parser: customRepositoryParser, logger: getVoidLogger() },
+      {
+        parser: async function* customRepositoryParser({}) {
+          yield results.location({
+            type: 'custom-location-type',
+            target: 'custom-target',
+            presence: 'optional',
+          });
+        },
+        logger: getVoidLogger(),
+      },
     );
 
     it('use custom repository parser', async () => {

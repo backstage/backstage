@@ -22,7 +22,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import {
-  BitbucketRepositoryParser,
   BitbucketClient,
   defaultRepositoryParser,
   paginated,
@@ -30,7 +29,12 @@ import {
   BitbucketRepository,
   BitbucketRepository20,
 } from './bitbucket';
-import { CatalogProcessor, CatalogProcessorEmit, LocationSpec } from './types';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  CatalogProcessorResult,
+  LocationSpec,
+} from './types';
 
 const DEFAULT_BRANCH = 'master';
 const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';
@@ -39,12 +43,23 @@ const EMPTY_CATALOG_LOCATION = '/';
 /** @public */
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly parser: BitbucketRepositoryParser;
+  private readonly parser: (options: {
+    integration: BitbucketIntegration;
+    target: string;
+    logger: Logger;
+  }) => AsyncIterable<CatalogProcessorResult>;
   private readonly logger: Logger;
 
   static fromConfig(
     config: Config,
-    options: { parser?: BitbucketRepositoryParser; logger: Logger },
+    options: {
+      parser?: (options: {
+        integration: BitbucketIntegration;
+        target: string;
+        logger: Logger;
+      }) => AsyncIterable<CatalogProcessorResult>;
+      logger: Logger;
+    },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
 
@@ -56,7 +71,11 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    parser?: BitbucketRepositoryParser;
+    parser?: (options: {
+      integration: BitbucketIntegration;
+      target: string;
+      logger: Logger;
+    }) => AsyncIterable<CatalogProcessorResult>;
     logger: Logger;
   }) {
     this.integrations = options.integrations;
