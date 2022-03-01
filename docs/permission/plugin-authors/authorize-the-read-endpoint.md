@@ -113,4 +113,6 @@ Now let's update our permission policy's handler to return a conditional result 
 
 Once the changes to the permission policy are saved, the UI should should show only the items you have created.
 
-// TODO: add support for boolean operators
+// TODO(vinzscam): add support for boolean operators
+
+// TODO(vinzscam): add frontend documentation

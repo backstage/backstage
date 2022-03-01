@@ -6,7 +6,7 @@ description: Authorize the create endpoint
 
 The first step we need to do in order to authorize the create endpoint, is to create a new `permission` inside our backend plugin.
 
-// TODO: add links to the core concepts
+// TODO(vinzscam): add links to the core concepts
 
 Install the following module:
 
