@@ -526,7 +526,7 @@ export type UnregisterEntityDialogProps = {
 // @public
 export function useAsyncEntity<
   TEntity extends Entity = Entity,
->(): EntityLoadingStatus;
+>(): EntityLoadingStatus<TEntity>;
 
 // @public
 export function useEntity<TEntity extends Entity = Entity>(): {
