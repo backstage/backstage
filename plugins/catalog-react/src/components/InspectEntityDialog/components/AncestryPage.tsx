@@ -33,7 +33,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../../api';
-import { humanizeEntityRef } from '../../../components/EntityRefLink/format';
+import { humanizeEntityRef } from '../../EntityRefLink';
 import { entityRouteRef } from '../../../routes';
 import { EntityKindIcon } from './EntityKindIcon';
 
