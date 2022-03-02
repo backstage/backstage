@@ -57,39 +57,36 @@ export class CookiecutterRunner {
     workspacePath,
     values,
     logStream,
+    imageName,
+    templateDir,
+    templateContentsDir,
   }: {
     workspacePath: string;
     values: JsonObject;
     logStream: Writable;
+    imageName?: string;
+    templateDir: string;
+    templateContentsDir: string;
   }): Promise<void> {
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
     const resultDir = path.join(workspacePath, 'result');
-    const {
-      templateContentsDir,
-      templateDir,
-      imageName,
-      ...valuesForCookieCutterJson
-    } = values;
 
     // First lets grab the default cookiecutter.json file
     const cookieCutterJson = await this.fetchTemplateCookieCutter(
-      templateContentsDir as string,
+      templateContentsDir,
     );
 
     const cookieInfo = {
       ...cookieCutterJson,
-      ...valuesForCookieCutterJson,
+      ...values,
     };
 
-    await fs.writeJSON(
-      path.join(templateDir as string, 'cookiecutter.json'),
-      cookieInfo,
-    );
+    await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);
 
     // Directories to bind on container
     const mountDirs = {
-      [templateDir as string]: '/input',
+      [templateDir]: '/input',
       [intermediateDir]: '/output',
     };
 
@@ -100,13 +97,7 @@ export class CookiecutterRunner {
     if (cookieCutterInstalled) {
       await runCommand({
         command: 'cookiecutter',
-        args: [
-          '--no-input',
-          '-o',
-          intermediateDir,
-          templateDir as string,
-          '--verbose',
-        ],
+        args: ['--no-input', '-o', intermediateDir, templateDir, '--verbose'],
         logStream,
       });
     } else {
@@ -247,16 +238,16 @@ export function createFetchCookiecutterAction(options: {
         ...ctx.input.values,
         _copy_without_render: ctx.input.copyWithoutRender,
         _extensions: ctx.input.extensions,
-        imageName: ctx.input.imageName,
-        templateDir: templateDir,
-        templateContentsDir: templateContentsDir,
       };
 
       // Will execute the template in ./template and put the result in ./result
       await cookiecutter.run({
         workspacePath: workDir,
         logStream: ctx.logStream,
-        values,
+        values: values,
+        imageName: ctx.input.imageName,
+        templateDir: templateDir,
+        templateContentsDir: templateContentsDir,
       });
 
       // Finally move the template result into the task workspace
