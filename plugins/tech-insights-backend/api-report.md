@@ -11,9 +11,10 @@ import { FactCheckerFactory } from '@backstage/plugin-tech-insights-node';
 import { FactLifecycle } from '@backstage/plugin-tech-insights-node';
 import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 
@@ -63,7 +64,7 @@ export interface RouterOptions<
 > {
   config: Config;
   factChecker?: FactChecker<CheckType, CheckResultType>;
-  logger: Logger;
+  logger: Logger_2;
   persistenceContext: PersistenceContext;
 }
 
@@ -93,7 +94,9 @@ export interface TechInsightsOptions<
   factCheckerFactory?: FactCheckerFactory<CheckType, CheckResultType>;
   factRetrievers: FactRetrieverRegistration[];
   // (undocumented)
-  logger: Logger;
+  logger: Logger_2;
+  // (undocumented)
+  scheduler: PluginTaskScheduler;
 }
 
 // (No @packageDocumentation comment for this package)
