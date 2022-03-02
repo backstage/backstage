@@ -26,7 +26,7 @@ The source code is available here:
       const path=require('path');const logger=winston.createLogger({level:'info',});\
       const config=new ConfigReader({});(async function execute(){\
       const reader=UrlReaders.default({logger,config});const files=await reader.readTree(\
-      'https://github.com/backstage/backstage/tree/permission-docs-plugin-authors\
+      'https://github.com/backstage/backstage/tree/permission-docs\
       /contrib/plugins');return Promise.all((await files.files()).map(async file=>\
       file.path!=='README.md'&&outputFile(path.join(__dirname,'plugins',file.path),\
       await file.content(),),),).catch(console.log)})()"

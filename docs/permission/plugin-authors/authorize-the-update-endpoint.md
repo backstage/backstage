@@ -99,7 +99,6 @@ $ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permis
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
 ```diff
-+ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 + import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 + import { Todo, TodoFilter } from './todos';
 
@@ -119,7 +118,7 @@ Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append th
 +   },
 + });
 
-+ export const rules = [isOwner];
++ export const rules = { isOwner };
 ```
 
 `makeCreatePermissionRule` is a helper used to ensure that rules created for this plugin use consistent types for the resource and query.
@@ -132,6 +131,7 @@ Let's skip the `toQuery` function for now.
 Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/service/router.ts`:
 
 ```diff
++ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 - import { todosListCreate, todosListUpdate } from './permissions';
 + import { todosListCreate, todosListUpdate, TODO_LIST_RESOURCE_TYPE } from './permissions';
 + import { rules } from './rules;
@@ -146,7 +146,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 +       return resourceRefs.map(getTodo);
 +     },
 +     resourceType: TODO_LIST_RESOURCE_TYPE,
-+     rules,
++     rules: Object.values(rules),
 +   });
 
     const router = Router();
