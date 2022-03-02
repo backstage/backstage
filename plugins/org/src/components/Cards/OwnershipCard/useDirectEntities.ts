@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, UserEntity } from '@backstage/catalog-model';
+import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   formatEntityRefTitle,
   isOwnerOf,
+  getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import qs from 'qs';
 import useAsync from 'react-use/lib/useAsync';
@@ -43,8 +44,11 @@ const getQueryParams = (
     user: 'all',
   };
   if (owner.kind === 'User') {
-    const user = owner as UserEntity;
-    filters.owners = [...filters.owners, ...user.spec.memberOf];
+    const ownerGroups = getEntityRelations(owner, RELATION_MEMBER_OF, {
+      kind: 'Group',
+    });
+    const ownerGroupsName = ownerGroups.map(ownerGroup => ownerGroup.name);
+    filters.owners = [...filters.owners, ...ownerGroupsName];
   }
   const queryParams = qs.stringify({
     filters,
