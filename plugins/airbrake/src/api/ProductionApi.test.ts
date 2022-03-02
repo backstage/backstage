@@ -20,6 +20,7 @@ import mockGroupsData from './mock/airbrakeGroupsApiMock.json';
 import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { localDiscoveryApi } from './mock';
+import { NoProjectIdError } from './AirbrakeApi';
 
 describe('The production Airbrake API', () => {
   const productionApi = new ProductionAirbrakeApi(localDiscoveryApi);
@@ -52,5 +53,11 @@ describe('The production Airbrake API', () => {
     );
 
     await expect(productionApi.fetchGroups('123456')).rejects.toThrow();
+  });
+
+  it('throws if project ID is empty', async () => {
+    await expect(productionApi.fetchGroups('')).rejects.toThrowError(
+      NoProjectIdError,
+    );
   });
 });

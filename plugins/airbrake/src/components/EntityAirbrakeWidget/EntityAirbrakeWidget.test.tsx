@@ -23,9 +23,9 @@ import {
   setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { createEntity } from '../../api';
 import {
   airbrakeApiRef,
+  createEntity,
   localDiscoveryApi,
   MockAirbrakeApi,
   ProductionAirbrakeApi,
@@ -52,15 +52,23 @@ describe('EntityAirbrakeContent', () => {
     }
   });
 
-  it('states that the annotation is missing if no project ID annotation is provided', async () => {
+  it('states that the annotation is missing if no project ID annotation is provided but does not error', async () => {
+    const mockErrorApi = new MockErrorApi({ collect: true });
+
     const widget = await renderInTestApp(
-      <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
+      <TestApiProvider
+        apis={[
+          [airbrakeApiRef, new ProductionAirbrakeApi(localDiscoveryApi)],
+          [errorApiRef, mockErrorApi],
+        ]}
+      >
         <EntityAirbrakeWidget entity={createEntity()} />
       </TestApiProvider>,
     );
     await expect(
       widget.findByText('Missing Annotation'),
     ).resolves.toBeInTheDocument();
+    expect(mockErrorApi.getErrors().length).toBe(0);
   });
 
   it('states that an error occurred if the API call fails', async () => {
