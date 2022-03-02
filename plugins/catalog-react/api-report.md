@@ -413,13 +413,8 @@ export const favoriteEntityTooltip: (
   isStarred: boolean,
 ) => 'Remove from favorites' | 'Add to favorites';
 
-// @public (undocumented)
-export function formatEntityRefTitle(
-  entityRef: Entity | EntityName,
-  opts?: {
-    defaultKind?: string;
-  },
-): string;
+// @public @deprecated (undocumented)
+export const formatEntityRefTitle: typeof humanizeEntityRef;
 
 // @public @deprecated (undocumented)
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
@@ -441,6 +436,14 @@ export function getEntitySourceLocation(
   entity: Entity,
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined;
+
+// @public (undocumented)
+export function humanizeEntityRef(
+  entityRef: Entity | EntityName,
+  opts?: {
+    defaultKind?: string;
+  },
+): string;
 
 // @public
 export function InspectEntityDialog(props: {
