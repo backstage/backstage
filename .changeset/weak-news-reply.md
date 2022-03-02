@@ -2,7 +2,7 @@
 '@backstage/catalog-model': minor
 ---
 
-**Breaking**: The following changes are all breaking changes.
+**BREAKING**: The following changes are all breaking changes.
 
 Removed `EDIT_URL_ANNOTATION` and `VIEW_URL_ANNOTATION`, `LOCATION_ANNOTATION`, `ORIGIN_LOCATION_ANNOTATION`, `LOCATION_ANNOTATION`, `SOURCE_LOCATION_ANNOTATION`. All of these constants have been prefixed with ANNOTATION to be easier to find meaning `SOURCE_LOCATION_ANNOTATION` is available as `ANNOTATION_SOURCE_LOCATION`.
 
