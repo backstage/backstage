@@ -31,7 +31,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
-import { formatEntityRefTitle } from '../EntityRefLink';
+import { humanizeEntityRef } from '../EntityRefLink';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -86,7 +86,7 @@ export const EntityOwnerPicker = () => {
           backendEntities
             .flatMap((e: Entity) =>
               getEntityRelations(e, RELATION_OWNED_BY).map(o =>
-                formatEntityRefTitle(o, { defaultKind: 'group' }),
+                humanizeEntityRef(o, { defaultKind: 'group' }),
               ),
             )
             .filter(Boolean) as string[],

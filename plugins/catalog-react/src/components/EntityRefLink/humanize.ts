@@ -21,7 +21,7 @@ import {
 } from '@backstage/catalog-model';
 
 /** @public */
-export function formatEntityRefTitle(
+export function humanizeEntityRef(
   entityRef: Entity | EntityName,
   opts?: { defaultKind?: string },
 ) {
