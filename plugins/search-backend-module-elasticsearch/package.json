@@ -25,6 +25,7 @@
   "dependencies": {
     "@backstage/config": "^0.1.15",
     "@backstage/search-common": "^0.2.4",
+    "@backstage/plugin-search-backend-node": "^0.4.7",
     "@elastic/elasticsearch": "7.13.0",
     "@acuris/aws-es-connection": "^2.2.0",
     "aws-sdk": "^2.948.0",

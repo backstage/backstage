@@ -23,10 +23,12 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@backstage/errors": "^0.2.2",
     "@backstage/search-common": "^0.2.4",
-    "winston": "^3.2.1",
+    "@types/lunr": "^2.3.3",
+    "lodash": "^4.17.21",
     "lunr": "^2.3.9",
-    "@types/lunr": "^2.3.3"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/backend-common": "^0.11.0",
