@@ -17,7 +17,6 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
-  EntityName,
   parseEntityRef,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
@@ -77,7 +76,7 @@ export async function loadCatalogOwnerRefs(
  */
 export function useEntityOwnership(): {
   loading: boolean;
-  isOwnedEntity: (entity: Entity | EntityName) => boolean;
+  isOwnedEntity: (entity: Entity) => boolean;
 } {
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -94,12 +93,10 @@ export function useEntityOwnership(): {
 
   const isOwnedEntity = useMemo(() => {
     const myOwnerRefs = new Set(refs ?? []);
-    return (entity: Entity | EntityName) => {
-      const entityOwnerRefs = (
-        'metadata' in entity
-          ? getEntityRelations(entity, RELATION_OWNED_BY)
-          : [entity]
-      ).map(stringifyEntityRef);
+    return (entity: Entity) => {
+      const entityOwnerRefs = getEntityRelations(entity, RELATION_OWNED_BY).map(
+        stringifyEntityRef,
+      );
       for (const ref of entityOwnerRefs) {
         if (myOwnerRefs.has(ref)) {
           return true;
