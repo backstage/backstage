@@ -25,17 +25,21 @@ import { CatalogProcessorResult, processingResult } from '../../../api';
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;
+  presence?: 'optional' | 'required';
   logger: Logger;
 }) => AsyncIterable<CatalogProcessorResult>;
 
 export const defaultRepositoryParser =
-  async function* defaultRepositoryParser(options: { target: string }) {
+  async function* defaultRepositoryParser(options: {
+    target: string;
+    presence?: 'optional' | 'required';
+  }) {
     yield processingResult.location({
       type: 'url',
       target: options.target,
       // Not all locations may actually exist, since the user defined them as a wildcard pattern.
       // Thus, we emit them as optional and let the downstream processor find them while not outputting
       // an error if it couldn't.
-      presence: 'optional',
+      presence: options.presence ?? 'optional',
     });
   };
