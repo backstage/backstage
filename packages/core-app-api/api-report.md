@@ -380,17 +380,6 @@ export class GithubAuth {
   static normalizeScope(scope?: string): Set<string>;
 }
 
-// @public @deprecated
-export type GithubSession = {
-  providerInfo: {
-    accessToken: string;
-    scopes: Set<string>;
-    expiresAt?: Date;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
-};
-
 // @public
 export class GitlabAuth {
   // (undocumented)
@@ -531,13 +520,6 @@ export class SamlAuth
   // (undocumented)
   signOut(): Promise<void>;
 }
-
-// @public @deprecated
-export type SamlSession = {
-  userId: string;
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
-};
 
 // @public
 export type SignInPageProps = {
