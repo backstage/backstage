@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_MEMBER_OF,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   formatEntityRefTitle,
-  isOwnerOf,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import qs from 'qs';
@@ -80,10 +83,13 @@ export function useDirectEntities(
     value: componentsWithCounters,
   } = useAsync(async () => {
     const kinds = entityFilterKind ?? ['Component', 'API', 'System'];
-    const entitiesList = await catalogApi.getEntities({
-      filter: {
-        kind: kinds,
-      },
+    const ownedEntitiesListResponse = await catalogApi.getEntities({
+      filter: [
+        {
+          kind: kinds,
+          'relations.ownedBy': [stringifyEntityRef(entity)],
+        },
+      ],
       fields: [
         'kind',
         'metadata.name',
@@ -93,11 +99,7 @@ export function useDirectEntities(
       ],
     });
 
-    const ownedEntitiesList = entitiesList.items.filter(component =>
-      isOwnerOf(entity, component),
-    );
-
-    const counts = ownedEntitiesList.reduce(
+    const counts = ownedEntitiesListResponse.items.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
         const match = acc.find(
           x =>
