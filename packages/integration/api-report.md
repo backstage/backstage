@@ -88,7 +88,7 @@ export class BitbucketIntegration implements ScmIntegration {
 // @public
 export type BitbucketIntegrationConfig = {
   host: string;
-  apiBaseUrl?: string;
+  apiBaseUrl: string;
   token?: string;
   username?: string;
   appPassword?: string;
