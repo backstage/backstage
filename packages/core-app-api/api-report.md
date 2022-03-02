@@ -376,8 +376,6 @@ export type FlatRoutesProps = {
 export class GithubAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T;
-  // @deprecated (undocumented)
-  static normalizeScope(scope?: string): Set<string>;
 }
 
 // @public
