@@ -310,7 +310,7 @@ backend:
 backend:
   cache:
     store: redis
-    connection: user:pass@cache.example.com:6379
+    connection: redis://user:pass@cache.example.com:6379
 ```
 
 Contributions supporting other cache stores are welcome!
