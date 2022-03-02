@@ -20,8 +20,6 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
-  favoriteEntityIcon,
-  favoriteEntityTooltip,
   formatEntityRefTitle,
   getEntityRelations,
   useEntityList,
@@ -40,6 +38,9 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
+import StarBorder from '@material-ui/icons/StarBorder';
+import { withStyles } from '@material-ui/core/styles';
+import Star from '@material-ui/icons/Star';
 
 /**
  * Props for {@link CatalogTable}.
@@ -50,6 +51,12 @@ export interface CatalogTableProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
 }
+
+const YellowStar = withStyles({
+  root: {
+    color: '#f3ba37',
+  },
+})(Star);
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
@@ -116,8 +123,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
       const isStarred = isStarredEntity(entity);
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => favoriteEntityIcon(isStarred),
-        tooltip: favoriteEntityTooltip(isStarred),
+        icon: () => (isStarred ? <YellowStar /> : <StarBorder />),
+        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
         onClick: () => toggleStarredEntity(entity),
       };
     },
