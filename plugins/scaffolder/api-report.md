@@ -8,7 +8,6 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentProps } from 'react';
 import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -17,7 +16,6 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
-import { IconButton } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -86,12 +84,6 @@ export interface EntityTagsPickerUiOptions {
   // (undocumented)
   kinds?: string[];
 }
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "FavouriteTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const FavouriteTemplate: (props: Props) => JSX.Element;
 
 // @public
 export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;

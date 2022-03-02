@@ -22,7 +22,7 @@ import {
 } from '@backstage/catalog-model';
 import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
-import { formatEntityRefTitle } from './format';
+import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
@@ -72,7 +72,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
 
     const routeParams = { kind, namespace, name };
-    const formattedEntityRefTitle = formatEntityRefTitle(
+    const formattedEntityRefTitle = humanizeEntityRef(
       { kind, namespace, name },
       { defaultKind },
     );

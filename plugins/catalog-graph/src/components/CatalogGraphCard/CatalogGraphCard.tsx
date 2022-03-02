@@ -21,7 +21,7 @@ import {
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  formatEntityRefTitle,
+  humanizeEntityRef,
   useEntity,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
@@ -94,7 +94,7 @@ export const CatalogGraphCard = ({
       });
       analytics.captureEvent(
         'click',
-        node.title ?? formatEntityRefTitle(nodeEntityName),
+        node.title ?? humanizeEntityRef(nodeEntityName),
         { attributes: { to: path } },
       );
       navigate(path);

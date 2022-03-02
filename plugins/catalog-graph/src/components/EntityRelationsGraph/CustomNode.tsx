@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { formatEntityRefTitle } from '@backstage/plugin-catalog-react';
+import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
@@ -95,7 +95,7 @@ export function CustomNode({
   const displayTitle =
     title ??
     (kind && name && namespace
-      ? formatEntityRefTitle({ kind, name, namespace })
+      ? humanizeEntityRef({ kind, name, namespace })
       : id);
 
   return (

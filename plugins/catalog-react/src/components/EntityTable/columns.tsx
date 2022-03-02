@@ -26,7 +26,7 @@ import { getEntityRelations } from '../../utils';
 import {
   EntityRefLink,
   EntityRefLinks,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '../EntityRefLink';
 
 /** @public */
@@ -38,7 +38,7 @@ export const columnFactories = Object.freeze({
     function formatContent(entity: T): string {
       return (
         entity.metadata?.title ||
-        formatEntityRefTitle(entity, {
+        humanizeEntityRef(entity, {
           defaultKind,
         })
       );
@@ -87,7 +87,7 @@ export const columnFactories = Object.freeze({
 
     function formatContent(entity: T): string {
       return getRelations(entity)
-        .map(r => formatEntityRefTitle(r, { defaultKind }))
+        .map(r => humanizeEntityRef(r, { defaultKind }))
         .join(', ');
     }
 

@@ -18,7 +18,7 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 import { useApp } from '@backstage/core-plugin-api';
 import {
   EntityRefLink,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import {
   Collapse,
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 function sortEntities(entities: Array<EntityName | Entity>) {
   return entities.sort((a, b) =>
-    formatEntityRefTitle(a).localeCompare(formatEntityRefTitle(b)),
+    humanizeEntityRef(a).localeCompare(humanizeEntityRef(b)),
   );
 }
 
@@ -130,7 +130,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                   ) ?? WorkIcon;
                 return (
                   <ListItem
-                    key={formatEntityRefTitle(entity)}
+                    key={humanizeEntityRef(entity)}
                     className={classes.nested}
                     {...(withLinks
                       ? {
@@ -143,7 +143,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                     <ListItemIcon>
                       <Icon />
                     </ListItemIcon>
-                    <ListItemText primary={formatEntityRefTitle(entity)} />
+                    <ListItemText primary={humanizeEntityRef(entity)} />
                   </ListItem>
                 );
               })}

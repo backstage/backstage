@@ -31,7 +31,7 @@ import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   entityRouteRef,
-  formatEntityRefTitle,
+  humanizeEntityRef,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
@@ -193,7 +193,7 @@ export function GroupsDiagram() {
       kind: catalogItem.kind,
       name:
         (catalogItem as GroupEntity).spec?.profile?.displayName ||
-        formatEntityRefTitle(catalogItem, { defaultKind: 'Group' }),
+        humanizeEntityRef(catalogItem, { defaultKind: 'Group' }),
     });
 
     // Edge to parent
