@@ -21,7 +21,7 @@ import {
   HomePageCompanyLogo,
   HomePageStarredEntities,
 } from '../plugin';
-import { wrapInTestApp, TestApiProvider, MockStorageApi} from '@backstage/test-utils';
+import { wrapInTestApp, TestApiProvider} from '@backstage/test-utils';
 import { Content, Page, InfoCard } from '@backstage/core-components';
 import {
   starredEntitiesApiRef,
@@ -37,15 +37,11 @@ import {
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 
-const mockStorageApi = MockStorageApi.create();
-mockStorageApi
-  .forBucket('starredEntities')
-  .set('entityRefs', [
-    'component:default/example-starred-entity',
-    'component:default/example-starred-entity-2',
-    'component:default/example-starred-entity-3',
-    'component:default/example-starred-entity-4'
-  ]);
+const starredEntitiesApi = new MockStarredEntitiesApi();
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity');
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity-2');
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity-3');
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity-4');
 
 export default {
   title: 'Plugins/Home/Templates',
@@ -57,7 +53,7 @@ export default {
             apis={[
               [
                 starredEntitiesApiRef,
-                new MockStarredEntitiesApi(),
+                starredEntitiesApi,
               ],
               [searchApiRef, { query: () => Promise.resolve({ results: [] }) }],
             ]}
