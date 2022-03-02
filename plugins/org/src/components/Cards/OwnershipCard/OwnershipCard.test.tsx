@@ -112,9 +112,9 @@ const getEntitiesMock = (
   request?: GetEntitiesRequest,
 ): Promise<GetEntitiesResponse> => {
   const filterKinds =
-    !Array.isArray(request?.filter) && Array.isArray(request?.filter?.kind)
-      ? request?.filter?.kind ?? []
-      : []; // we expect the request to be like { filter: { kind: ['API','System'], .... }. If changed in OwnerShipCard, let's change in also here
+    Array.isArray(request?.filter) && Array.isArray(request?.filter[0].kind)
+      ? request?.filter[0].kind ?? []
+      : []; // we expect the request to be like { filter: [{ kind: ['API','System'], 'relations.ownedBy': [group:default/my-team], .... }]. If changed in OwnerShipCard, let's change in also here
   return Promise.resolve({
     items: items.filter(item => filterKinds.find(k => k === item.kind)),
   } as GetEntitiesResponse);
@@ -160,7 +160,13 @@ describe('OwnershipCard', () => {
     );
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
-      filter: { kind: ['Component', 'API', 'System'] },
+      filter: [
+        {
+          kind: ['Component', 'API', 'System'],
+          'relations.ownedBy': ['group:default/my-team'],
+        },
+      ],
+      // filter: { kind: ['Component', 'API', 'System'] },
       fields: [
         'kind',
         'metadata.name',
@@ -182,6 +188,7 @@ describe('OwnershipCard', () => {
     expect(
       queryByText(getByText('LIBRARY').parentElement!, '1'),
     ).toBeInTheDocument();
+    expect(getByText('SYSTEM')).toBeInTheDocument();
     expect(
       queryByText(getByText('SYSTEM').parentElement!, '1'),
     ).toBeInTheDocument();
