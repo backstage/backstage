@@ -57,7 +57,7 @@ export type MicrosoftGraphProviderConfig = {
    *
    * E.g. "manager"
    */
-  userExpand?: string[];
+  userExpand?: string;
   /**
    * The filter to apply to extract users by groups memberships.
    *
@@ -106,6 +106,8 @@ export function readMicrosoftGraphConfig(
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getString('clientId');
     const clientSecret = providerConfig.getString('clientSecret');
+
+    const userExpand = providerConfig.getOptionalString('userExpand');
     const userFilter = providerConfig.getOptionalString('userFilter');
     const userGroupMemberFilter = providerConfig.getOptionalString(
       'userGroupMemberFilter',
@@ -133,6 +135,7 @@ export function readMicrosoftGraphConfig(
       tenantId,
       clientId,
       clientSecret,
+      userExpand,
       userFilter,
       userGroupMemberFilter,
       userGroupMemberSearch,

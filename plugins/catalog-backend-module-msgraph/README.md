@@ -35,6 +35,12 @@ catalog:
           # the App registration in the Microsoft Azure Portal.
           clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
           clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
+          # Optional parameter to include the expanded resource or collection referenced
+          # by a single relationship (navigation property) in your results.
+          # Only one relationship can be expanded in a single request.
+          # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
+          # Can be combined with userGroupMember[...] instead of userFilter.
+          userExpand: manager
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
