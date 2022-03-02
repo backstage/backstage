@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export type { GithubSession } from './types';
 export { default as GithubAuth } from './GithubAuth';

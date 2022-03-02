@@ -20,18 +20,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { z } from 'zod';
 
-/**
- * Session information for SAML auth.
- *
- * @public
- * @deprecated This type is internal and will be removed
- */
-export type ExportedSamlSession = {
-  userId: string;
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
-};
-
 /** @internal */
 export type SamlSession = {
   profile: ProfileInfo;
