@@ -4,8 +4,15 @@ Welcome to the explore plugin!
 This plugin helps to visualize the domains and tools in your ecosystem.
 
 ## Getting started
+If you have a standalone app (you didn't clone this repo), then do
 
-To install the plugin, add and bind the route in `App.tsx`:
+```
+# From the Backstage repository root
+cd packages/app
+yarn add @backstage/plugin-explore
+```
+
+To use the plugin, add and bind the route in `App.tsx`:
 
 ```typescript
 import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
