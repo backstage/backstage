@@ -17,30 +17,6 @@
 /**
  * Constant storing location annotation.
  *
- * @public
- * @deprecated use {@link ANNOTATION_LOCATION} instead.
- * */
-export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
-/**
- * Constant storing origin location annotation
- *
- * @public
- * @deprecated use {@link ANNOTATION_ORIGIN_LOCATION} instead.
- */
-export const ORIGIN_LOCATION_ANNOTATION =
-  'backstage.io/managed-by-origin-location';
-
-/**
- * Contant storing source location annotation
- *
- * @public
- * @deprecated use {@link ANNOTATION_SOURCE_LOCATION} instead.
- * */
-export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';
-
-/**
- * Constant storing location annotation.
- *
  * @public */
 export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
 /**

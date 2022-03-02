@@ -31,13 +31,3 @@ export type LocationSpec = {
   target: string;
   presence?: 'optional' | 'required';
 };
-
-/**
- * Entity location for a specific entity.
- *
- * @public
- * @deprecated import from {@link @backstage/catalog-client#Location} instead.
- */
-export type Location = {
-  id: string;
-} & LocationSpec;
