@@ -18,6 +18,7 @@ export {
   useEntityFromUrl,
   EntityProvider,
   AsyncEntityProvider,
+  useAsyncEntity,
 } from './useEntity';
 export type {
   EntityLoadingStatus,

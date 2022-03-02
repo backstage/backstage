@@ -27,8 +27,8 @@ import { catalogApiRef } from '../api';
 import { useEntityCompoundName } from './useEntityCompoundName';
 
 /** @public */
-export type EntityLoadingStatus = {
-  entity?: Entity;
+export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
+  entity?: TEntity;
   loading: boolean;
   error?: Error;
   refresh?: VoidFunction;
@@ -130,24 +130,25 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 };
 
 /**
- * Grab the current entity from the context and its current loading state.
+ * Grab the current entity from the context, throws if the entity has not yet been loaded
+ * or is not available.
  *
  * @public
  */
-export function useEntity<T extends Entity = Entity>() {
+export function useEntity<TEntity extends Entity = Entity>(): {
+  entity: TEntity;
+  /** @deprecated use {@link useAsyncEntity} instead */
+  loading: boolean;
+  /** @deprecated use {@link useAsyncEntity} instead */
+  error?: Error;
+  /** @deprecated use {@link useAsyncEntity} instead */
+  refresh?: VoidFunction;
+} {
   const versionedHolder =
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
 
   if (!versionedHolder) {
-    // TODO(Rugvip): Throw this once we fully migrate to the new context
-    // throw new Error('Entity context is not available');
-
-    return {
-      entity: undefined as unknown as T,
-      loading: true,
-      error: undefined,
-      refresh: () => {},
-    };
+    throw new Error('Entity context is not available');
   }
 
   const value = versionedHolder.atVersion(1);
@@ -155,6 +156,40 @@ export function useEntity<T extends Entity = Entity>() {
     throw new Error('EntityContext v1 not available');
   }
 
+  if (!value.entity) {
+    // Once we have removed the additional fields from being returned we can drop this deprecation
+    // and move to the error instead.
+    // throw new Error('useEntity hook is being called outside of an EntityLayout where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead.');
+
+    // eslint-disable-next-line no-console
+    console.warn(
+      'DEPRECATION: useEntity hook is being called outside of an EntityLayout where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead. This warning will be replaced with an error in future releases.',
+    );
+  }
+
   const { entity, loading, error, refresh } = value;
-  return { entity: entity as T, loading, error, refresh };
+  return { entity: entity as TEntity, loading, error, refresh };
+}
+
+/**
+ * Grab the current entity from the context, provides loading state and errors, and the ability to refresh.
+ *
+ * @public
+ */
+export function useAsyncEntity<
+  TEntity extends Entity = Entity,
+>(): EntityLoadingStatus<TEntity> {
+  const versionedHolder =
+    useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
+
+  if (!versionedHolder) {
+    throw new Error('Entity context is not available');
+  }
+  const value = versionedHolder.atVersion(1);
+  if (!value) {
+    throw new Error('EntityContext v1 not available');
+  }
+
+  const { entity, loading, error, refresh } = value;
+  return { entity: entity as TEntity, loading, error, refresh };
 }

@@ -210,8 +210,8 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @public (undocumented)
-export type EntityLoadingStatus = {
-  entity?: Entity;
+export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
+  entity?: TEntity;
   loading: boolean;
   error?: Error;
   refresh?: VoidFunction;
@@ -507,11 +507,16 @@ export type UnregisterEntityDialogProps = {
 };
 
 // @public
-export function useEntity<T extends Entity = Entity>(): {
-  entity: T;
+export function useAsyncEntity<
+  TEntity extends Entity = Entity,
+>(): EntityLoadingStatus<TEntity>;
+
+// @public
+export function useEntity<TEntity extends Entity = Entity>(): {
+  entity: TEntity;
   loading: boolean;
-  error: Error | undefined;
-  refresh: VoidFunction | undefined;
+  error?: Error;
+  refresh?: VoidFunction;
 };
 
 // @public @deprecated
