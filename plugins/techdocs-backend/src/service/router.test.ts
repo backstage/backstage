@@ -216,7 +216,7 @@ describe('createRouter', () => {
 
         expect(response.status).toBe(500);
         expect(response.text).toMatch(
-          /Invalid configuration\. 'techdocs\.builder' was set to 'local' but no 'preparer' was provided to the router initialization/,
+          /Invalid configuration\. docsBuildStrategy\.shouldBuild returned 'true', but no 'preparer' was provided to the router initialization./,
         );
 
         expect(MockDocsSynchronizer.prototype.doSync).toBeCalledTimes(0);
@@ -343,7 +343,7 @@ data: {"updated":false}
         expect(response.get('content-type')).toBe('text/event-stream');
         expect(response.text).toEqual(
           `event: error
-data: "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'preparer' was provided to the router initialization."
+data: "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but no 'preparer' was provided to the router initialization."
 
 `,
         );

@@ -255,7 +255,7 @@ export async function createRouter(
 
     responseHandler.error(
       new Error(
-        "Invalid configuration. 'docsBuildStrategy.shouldBuild returned 'true', but no 'preparer' was provided to the router initialization.",
+        "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but no 'preparer' was provided to the router initialization.",
       ),
     );
   });
