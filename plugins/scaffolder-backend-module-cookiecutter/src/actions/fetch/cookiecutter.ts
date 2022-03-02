@@ -102,7 +102,7 @@ export class CookiecutterRunner {
       });
     } else {
       await this.containerRunner.runContainer({
-        imageName: (imageName as string) ?? 'spotify/backstage-cookiecutter',
+        imageName: imageName ?? 'spotify/backstage-cookiecutter',
         command: 'cookiecutter',
         args: ['--no-input', '-o', '/output', '/input', '--verbose'],
         mountDirs,
