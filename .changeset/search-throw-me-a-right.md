@@ -9,5 +9,5 @@ continue to be available for those unable to upgrade to the stream-based
 marked as deprecated and will be removed in a future version.
 
 To upgrade this plugin and the search indexing subsystem in one go, check
-[this changelog](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md)
+[this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
 for necessary changes to your search backend plugin configuration.
