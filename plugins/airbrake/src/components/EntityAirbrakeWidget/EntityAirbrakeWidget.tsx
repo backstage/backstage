@@ -75,7 +75,7 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
       }
       throw e;
     }
-  }, [componentState, airbrakeApi, projectId]);
+  }, [airbrakeApi, projectId]);
 
   useEffect(() => {
     if (
