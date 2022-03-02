@@ -435,7 +435,7 @@ describe('JenkinsApi', () => {
     ).rejects.toThrow(NotAllowedError);
   });
 
-  it('buildProject should success if it have required permissions', async () => {
+  it('buildProject should succeed if it have required permissions', async () => {
     fakePermissionApi.authorize.mockResolvedValueOnce([
       {
         result: AuthorizeResult.ALLOW,
