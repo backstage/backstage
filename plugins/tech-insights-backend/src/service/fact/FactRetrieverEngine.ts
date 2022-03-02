@@ -23,7 +23,7 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { Logger } from 'winston';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskScheduler } from '@backstage/backend-tasks';
 import { Duration } from 'luxon';
 import { CronTime } from 'cron';
 
@@ -61,7 +61,7 @@ export class FactRetrieverEngine {
     repository: TechInsightsStore;
     factRetrieverRegistry: FactRetrieverRegistry;
     factRetrieverContext: FactRetrieverContext;
-    scheduler: PluginTaskScheduler;
+    scheduler: TaskScheduler;
     defaultCadence?: string;
     defaultTimeout?: Duration;
   }) {
@@ -76,7 +76,7 @@ export class FactRetrieverEngine {
       factRetrieverRegistry,
       factRetrieverContext,
       factRetrieverContext.logger,
-      scheduler,
+      scheduler.forPlugin('tech-insights'),
       defaultCadence,
       defaultTimeout,
     );

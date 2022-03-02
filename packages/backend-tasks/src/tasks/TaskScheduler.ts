@@ -20,9 +20,9 @@ import { once } from 'lodash';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
-import { PluginTaskScheduler } from './PluginTaskSchedulerImpl';
+import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
-import { IPluginTaskScheduler } from './types';
+import { PluginTaskScheduler } from './types';
 
 /**
  * Deals with the scheduling of distributed tasks.
@@ -56,7 +56,7 @@ export class TaskScheduler {
    * @param pluginId - The unique ID of the plugin, for example "catalog"
    * @returns A {@link PluginTaskScheduler} instance
    */
-  forPlugin(pluginId: string): IPluginTaskScheduler {
+  forPlugin(pluginId: string): PluginTaskScheduler {
     const databaseFactory = once(async () => {
       const knex = await this.databaseManager.forPlugin(pluginId).getClient();
 
@@ -72,7 +72,7 @@ export class TaskScheduler {
       return knex;
     });
 
-    return new PluginTaskScheduler(
+    return new PluginTaskSchedulerImpl(
       databaseFactory,
       this.logger.child({ plugin: pluginId }),
     );

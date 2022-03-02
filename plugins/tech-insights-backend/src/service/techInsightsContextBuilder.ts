@@ -33,7 +33,7 @@ import {
   PersistenceContext,
 } from './persistence/persistenceContext';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { TaskScheduler } from '@backstage/backend-tasks';
 
 /**
  * @public
@@ -62,7 +62,7 @@ export interface TechInsightsOptions<
   config: Config;
   discovery: PluginEndpointDiscovery;
   database: PluginDatabaseManager;
-  scheduler: PluginTaskScheduler;
+  scheduler: TaskScheduler;
 }
 
 /**

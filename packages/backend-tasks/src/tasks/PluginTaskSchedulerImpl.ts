@@ -44,9 +44,9 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
     await worker.start(
       {
-        version: 1,
+        version: 2,
         initialDelayDuration: task.initialDelay?.toISO(),
-        recurringAtMostEveryDuration: task.frequency.toISO(),
+        cadence: task.frequency.toISO(),
         timeoutAfterDuration: task.timeout.toISO(),
       },
       {

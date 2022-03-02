@@ -22,10 +22,10 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { FactRetrieverEngine } from './FactRetrieverEngine';
-import { getVoidLogger } from '@backstage/backend-common';
+import { DatabaseManager, getRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { TaskScheduler } from '@backstage/backend-tasks';
 
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
@@ -55,21 +55,39 @@ const testFactRetriever: FactRetriever = {
 const cadence = '1 * * * *';
 describe('FactRetrieverEngine', () => {
   let engine: FactRetrieverEngine;
-  let factSchemaAssertionCallback: (
+  type FactSchemaAssertionCallback = (
     factSchemaDefinition: FactSchemaDefinition,
   ) => void;
-  let factInsertionAssertionCallback: (facts: TechInsightFact[]) => void;
 
-  const mockRepository: TechInsightsStore = {
-    insertFacts: (facts: TechInsightFact[]) => {
-      factInsertionAssertionCallback(facts);
-      return Promise.resolve();
-    },
-    insertFactSchema: (def: FactSchemaDefinition) => {
-      factSchemaAssertionCallback(def);
-      return Promise.resolve();
-    },
-  } as unknown as TechInsightsStore;
+  type FactInsertionAssertionCallback = ({
+    facts,
+    id,
+  }: {
+    id: string;
+    facts: TechInsightFact[];
+  }) => void;
+
+  function createMockRepository(
+    insertCallback: FactInsertionAssertionCallback,
+    assertionCallback: FactSchemaAssertionCallback,
+  ): TechInsightsStore {
+    return {
+      insertFacts: ({
+        facts,
+        id,
+      }: {
+        facts: TechInsightFact[];
+        id: string;
+      }) => {
+        insertCallback({ facts, id });
+        return Promise.resolve();
+      },
+      insertFactSchema: (def: FactSchemaDefinition) => {
+        assertionCallback(def);
+        return Promise.resolve();
+      },
+    } as unknown as TechInsightsStore;
+  }
 
   const mockFactRetrieverRegistry: FactRetrieverRegistry = {
     listRetrievers(): FactRetriever[] {
@@ -87,12 +105,22 @@ describe('FactRetrieverEngine', () => {
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
-  async function defaultEngineConfig(databaseId: TestDatabaseId) {
+  async function createEngine(
+    databaseId: TestDatabaseId,
+    insert: FactInsertionAssertionCallback,
+    schema: FactSchemaAssertionCallback,
+  ): Promise<FactRetrieverEngine> {
     const knex = await databases.init(databaseId);
-    const manager = new PluginTaskScheduler(async () => knex, getVoidLogger());
-    return {
+    const databaseManager: Partial<DatabaseManager> = {
+      forPlugin: (_: string) => ({
+        getClient: async () => knex,
+      }),
+    };
+    const manager = databaseManager as DatabaseManager;
+    const scheduler = new TaskScheduler(manager, getRootLogger());
+    return await FactRetrieverEngine.create({
       factRetrieverContext: {
-        logger: getVoidLogger(),
+        logger: getRootLogger(),
         config: ConfigReader.fromConfigs([]),
         discovery: {
           getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
@@ -100,28 +128,30 @@ describe('FactRetrieverEngine', () => {
         },
       },
       factRetrieverRegistry: mockFactRetrieverRegistry,
-      repository: mockRepository,
-      scheduler: manager,
-    };
+      repository: createMockRepository(insert, schema),
+      scheduler: scheduler,
+    });
   }
 
   it.each(databases.eachSupportedId())(
     'Should update fact retriever schemas on initialization',
     async databaseId => {
-      factSchemaAssertionCallback = ({ id, schema, version, entityFilter }) => {
-        expect(id).toEqual('test_factretriever');
-        expect(version).toEqual('0.0.1');
-        expect(entityFilter).toEqual([{ kind: 'component' }]);
-        expect(schema).toEqual({
+      function schemaAssertionCallback(def: FactSchemaDefinition) {
+        expect(def.id).toEqual('test_factretriever');
+        expect(def.version).toEqual('0.0.1');
+        expect(def.entityFilter).toEqual([{ kind: 'component' }]);
+        expect(def.schema).toEqual({
           testnumberfact: {
             type: 'integer',
             description: '',
           },
         });
-      };
+      }
 
-      engine = await FactRetrieverEngine.create(
-        await defaultEngineConfig(databaseId),
+      engine = await createEngine(
+        databaseId,
+        () => {},
+        schemaAssertionCallback,
       );
     },
   );
@@ -129,11 +159,16 @@ describe('FactRetrieverEngine', () => {
   it.each(databases.eachSupportedId())(
     'Should insert facts when scheduled step is run',
     async databaseId => {
-      factSchemaAssertionCallback = () => {};
-      factInsertionAssertionCallback = facts => {
+      function insertCallback({
+        facts,
+        id,
+      }: {
+        id: string;
+        facts: TechInsightFact[];
+      }) {
         expect(facts).toHaveLength(1);
+        expect(id).toEqual('test_factretriever');
         expect(facts[0]).toEqual({
-          ref: 'test_factretriever',
           entity: {
             namespace: 'a',
             kind: 'a',
@@ -143,10 +178,9 @@ describe('FactRetrieverEngine', () => {
             testnumberfact: 1,
           },
         });
-      };
-      engine = await FactRetrieverEngine.create(
-        await defaultEngineConfig(databaseId),
-      );
+      }
+
+      engine = await createEngine(databaseId, insertCallback, () => {});
       engine.schedule();
       const job: FactRetrieverRegistration =
         engine.getJobRegistration('test_factretriever');
