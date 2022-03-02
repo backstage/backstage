@@ -49,7 +49,6 @@ export const catalogEntityCreatePermission: Permission = {
   attributes: {
     action: 'create',
   },
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
 };
 
 /**
