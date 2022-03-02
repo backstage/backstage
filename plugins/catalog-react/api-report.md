@@ -549,7 +549,7 @@ export function useEntityListProvider<
 // @public
 export function useEntityOwnership(): {
   loading: boolean;
-  isOwnedEntity: (entity: Entity | EntityName) => boolean;
+  isOwnedEntity: (entity: Entity) => boolean;
 };
 
 // @alpha
