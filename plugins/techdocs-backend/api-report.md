@@ -6,6 +6,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollator } from '@backstage/search-common';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
 import { Knex } from 'knex';
@@ -42,6 +43,12 @@ export class DefaultTechDocsCollator implements DocumentCollator {
 }
 
 // @public
+export interface DocsBuildStrategy {
+  // (undocumented)
+  shouldBuild(params: ShouldBuildParameters): Promise<boolean>;
+}
+
+// @public
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
@@ -51,6 +58,7 @@ export type OutOfTheBoxDeploymentOptions = {
   database?: Knex;
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 // @public
@@ -60,12 +68,18 @@ export type RecommendedDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 // @public
 export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
+
+// @public
+export type ShouldBuildParameters = {
+  entity: Entity;
+};
 
 // @public
 export type TechDocsCollatorOptions = {
