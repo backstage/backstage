@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  getEntityName,
+  getCompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -77,7 +77,7 @@ export const CatalogGraphCard = ({
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 }) => {
   const { entity } = useEntity();
-  const entityName = getEntityName(entity);
+  const entityName = getCompoundEntityRef(entity);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
   const navigate = useNavigate();

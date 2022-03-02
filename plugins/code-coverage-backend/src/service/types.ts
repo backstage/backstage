@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 export type JsonCodeCoverage = {
   metadata: CoverageMetadata;
-  entity: EntityName;
+  entity: CompoundEntityRef;
   files: Array<FileEntry>;
 };
 
 export type JsonCoverageHistory = {
-  entity: EntityName;
+  entity: CompoundEntityRef;
   history: Array<AggregateCoverage>;
 };
 

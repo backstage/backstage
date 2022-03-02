@@ -16,7 +16,7 @@
 import { GetEntitiesResponse } from '@backstage/catalog-client';
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   DEFAULT_NAMESPACE,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -139,7 +139,9 @@ createDevApp()
     deps: {},
     factory() {
       return {
-        async getEntityByName(name: EntityName): Promise<Entity | undefined> {
+        async getEntityByName(
+          name: CompoundEntityRef,
+        ): Promise<Entity | undefined> {
           return entities[stringifyEntityRef(name)];
         },
         async getEntities(): Promise<GetEntitiesResponse> {

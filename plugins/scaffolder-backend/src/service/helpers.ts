@@ -20,7 +20,7 @@ import {
   ANNOTATION_LOCATION,
   parseLocationRef,
   ANNOTATION_SOURCE_LOCATION,
-  EntityName,
+  CompoundEntityRef,
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -91,7 +91,7 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
  * Returns the matching template, or throws a NotFoundError if no such template existed.
  */
 export async function findTemplate(options: {
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   token?: string;
   catalogApi: CatalogApi;
 }): Promise<TemplateEntityV1beta3 | TemplateEntityV1beta2> {

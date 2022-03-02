@@ -8,11 +8,11 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { Controller } from 'react-hook-form';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { FieldErrors } from 'react-hook-form';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -33,7 +33,7 @@ export type AnalyzeResult =
       locations: Array<{
         target: string;
         exists?: boolean;
-        entities: EntityName[];
+        entities: CompoundEntityRef[];
       }>;
     }
   | {
@@ -165,7 +165,7 @@ export interface EntityListComponentProps {
   // (undocumented)
   locations: Array<{
     target: string;
-    entities: (Entity | EntityName)[];
+    entities: (Entity | CompoundEntityRef)[];
   }>;
   // (undocumented)
   onItemClick?: (target: string) => void;
@@ -246,7 +246,7 @@ export type PrepareResult =
       locations: Array<{
         exists?: boolean;
         target: string;
-        entities: EntityName[];
+        entities: CompoundEntityRef[];
       }>;
     }
   | {
@@ -258,7 +258,7 @@ export type PrepareResult =
       };
       locations: Array<{
         target: string;
-        entities: EntityName[];
+        entities: CompoundEntityRef[];
       }>;
     };
 

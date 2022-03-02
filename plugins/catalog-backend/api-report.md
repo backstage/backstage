@@ -7,12 +7,12 @@
 
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/search-common';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
@@ -649,9 +649,9 @@ export type EntityProviderMutation =
 
 // @public
 export type EntityRelationSpec = {
-  source: EntityName;
+  source: CompoundEntityRef;
   type: string;
-  target: EntityName;
+  target: CompoundEntityRef;
 };
 
 // @public (undocumented)

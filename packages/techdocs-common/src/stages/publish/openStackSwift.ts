@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
@@ -194,7 +194,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
   }
 
   async fetchTechDocsMetadata(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
   ): Promise<TechDocsMetadata> {
     return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
       const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;

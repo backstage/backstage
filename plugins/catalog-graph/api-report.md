@@ -6,8 +6,8 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DependencyGraphTypes } from '@backstage/core-components';
-import { EntityName } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { MouseEvent as MouseEvent_2 } from 'react';
@@ -129,7 +129,7 @@ export const EntityRelationsGraph: ({
   className,
   zoom,
 }: {
-  rootEntityNames: EntityName | EntityName[];
+  rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number | undefined;
   unidirectional?: boolean | undefined;
   mergeRelations?: boolean | undefined;

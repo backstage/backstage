@@ -16,7 +16,7 @@
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { CatalogClient } from '@backstage/catalog-client';
 import { CacheClient } from '@backstage/backend-common';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 describe('CachedEntityLoader', () => {
   const catalog: jest.Mocked<CatalogClient> = {
@@ -28,7 +28,7 @@ describe('CachedEntityLoader', () => {
     set: jest.fn(),
   } as any;
 
-  const entityName: EntityName = {
+  const entityName: CompoundEntityRef = {
     kind: 'component',
     namespace: 'default',
     name: 'test',

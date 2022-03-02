@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 
 /**
  * Generic representing the metadata structure for a docs table row.
@@ -26,6 +26,6 @@ export type DocsTableRow = {
   resolved: {
     docsUrl: string;
     ownedByRelationsTitle: string;
-    ownedByRelations: EntityName[];
+    ownedByRelations: CompoundEntityRef[];
   };
 };

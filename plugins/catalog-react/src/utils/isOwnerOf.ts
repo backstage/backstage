@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  getEntityName,
+  getCompoundEntityRef,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
   stringifyEntityRef,
@@ -31,7 +31,7 @@ export function isOwnerOf(owner: Entity, owned: Entity) {
   const possibleOwners = new Set(
     [
       ...getEntityRelations(owner, RELATION_MEMBER_OF, { kind: 'group' }),
-      ...(owner ? [getEntityName(owner)] : []),
+      ...(owner ? [getCompoundEntityRef(owner)] : []),
     ].map(stringifyEntityRef),
   );
 

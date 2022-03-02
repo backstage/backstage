@@ -18,7 +18,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  EntityName,
+  CompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
   stringifyLocationRef,
@@ -174,7 +174,7 @@ export class CatalogClient implements CatalogApi {
    * {@inheritdoc CatalogApi.getEntityByName}
    */
   async getEntityByName(
-    compoundName: EntityName,
+    compoundName: CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;

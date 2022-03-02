@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, ForwardedError } from '@backstage/errors';
 import aws, { Credentials } from 'aws-sdk';
@@ -321,7 +321,7 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   async fetchTechDocsMetadata(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
   ): Promise<TechDocsMetadata> {
     try {
       return await new Promise<TechDocsMetadata>(async (resolve, reject) => {

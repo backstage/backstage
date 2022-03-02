@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -310,7 +310,7 @@ export interface CatalogApi {
    * @param options - Additional options
    */
   getEntityByName(
-    name: EntityName,
+    name: CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
 

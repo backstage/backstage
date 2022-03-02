@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
@@ -24,7 +24,9 @@ import { useCallback } from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import { starredEntitiesApiRef } from '../apis';
 
-function getEntityRef(entityOrRef: Entity | EntityName | string): string {
+function getEntityRef(
+  entityOrRef: Entity | CompoundEntityRef | string,
+): string {
   return typeof entityOrRef === 'string'
     ? entityOrRef
     : stringifyEntityRef(entityOrRef);
@@ -33,8 +35,12 @@ function getEntityRef(entityOrRef: Entity | EntityName | string): string {
 /** @public */
 export function useStarredEntities(): {
   starredEntities: Set<string>;
-  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
-  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+  toggleStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => void;
+  isStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => boolean;
 } {
   const starredEntitiesApi = useApi(starredEntitiesApiRef);
 
@@ -44,13 +50,13 @@ export function useStarredEntities(): {
   );
 
   const isStarredEntity = useCallback(
-    (entityOrRef: Entity | EntityName | string) =>
+    (entityOrRef: Entity | CompoundEntityRef | string) =>
       starredEntities.has(getEntityRef(entityOrRef)),
     [starredEntities],
   );
 
   const toggleStarredEntity = useCallback(
-    (entityOrRef: Entity | EntityName | string) =>
+    (entityOrRef: Entity | CompoundEntityRef | string) =>
       starredEntitiesApi.toggleStarred(getEntityRef(entityOrRef)).then(),
     [starredEntitiesApi],
   );

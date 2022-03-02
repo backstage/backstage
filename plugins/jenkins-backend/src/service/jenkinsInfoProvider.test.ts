@@ -15,7 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultJenkinsInfoProvider,
@@ -163,7 +163,7 @@ describe('DefaultJenkinsInfoProvider', () => {
     getEntityByName: jest.fn(),
   } as any as jest.Mocked<CatalogApi>;
 
-  const entityRef: EntityName = {
+  const entityRef: CompoundEntityRef = {
     kind: 'Component',
     namespace: 'foo',
     name: 'bar',

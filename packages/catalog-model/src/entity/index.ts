@@ -34,6 +34,7 @@ export type {
 } from './EntityStatus';
 export * from './policies';
 export {
+  getCompoundEntityRef,
   getEntityName,
   parseEntityName,
   parseEntityRef,

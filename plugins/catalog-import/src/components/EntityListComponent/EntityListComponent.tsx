@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { useApp } from '@backstage/core-plugin-api';
 import {
   EntityRefLink,
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function sortEntities(entities: Array<EntityName | Entity>) {
+function sortEntities(entities: Array<CompoundEntityRef | Entity>) {
   return entities.sort((a, b) =>
     humanizeEntityRef(a).localeCompare(humanizeEntityRef(b)),
   );
@@ -53,7 +53,10 @@ function sortEntities(entities: Array<EntityName | Entity>) {
  * @public
  */
 export interface EntityListComponentProps {
-  locations: Array<{ target: string; entities: (Entity | EntityName)[] }>;
+  locations: Array<{
+    target: string;
+    entities: (Entity | CompoundEntityRef)[];
+  }>;
   locationListItemIcon: (target: string) => React.ReactElement;
   collapsed?: boolean;
   firstListItem?: React.ReactElement;

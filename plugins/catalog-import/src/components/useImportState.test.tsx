@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { cleanup } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { AnalyzeResult } from '../api';
@@ -37,7 +37,7 @@ describe('useImportState', () => {
     locations: [
       {
         target: 'https://0',
-        entities: [] as EntityName[],
+        entities: [] as CompoundEntityRef[],
       },
     ],
   };

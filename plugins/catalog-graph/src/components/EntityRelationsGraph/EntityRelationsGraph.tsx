@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   DependencyGraph,
   DependencyGraphTypes,
@@ -77,7 +80,7 @@ export const EntityRelationsGraph = ({
   className,
   zoom = 'enabled',
 }: {
-  rootEntityNames: EntityName | EntityName[];
+  rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number;
   unidirectional?: boolean;
   mergeRelations?: boolean;

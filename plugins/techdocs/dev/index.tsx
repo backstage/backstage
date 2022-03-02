@@ -17,7 +17,7 @@
 import { createDevApp } from '@backstage/dev-utils';
 import { NotFoundError } from '@backstage/errors';
 import React from 'react';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   Reader,
   SyncResult,
@@ -82,7 +82,10 @@ function createPage({
       });
     }
 
-    async syncEntityDocs(_: EntityName, logHandler?: (line: string) => void) {
+    async syncEntityDocs(
+      _: CompoundEntityRef,
+      logHandler?: (line: string) => void,
+    ) {
       if (syncDocsDelay) {
         for (let i = 0; i < 10; i++) {
           setTimeout(
