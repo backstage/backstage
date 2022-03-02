@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { FactRetrieverEngine } from './FactRetrieverEngine';
-import { DatabaseManager, getRootLogger } from '@backstage/backend-common';
+import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
@@ -117,10 +117,10 @@ describe('FactRetrieverEngine', () => {
       }),
     };
     const manager = databaseManager as DatabaseManager;
-    const scheduler = new TaskScheduler(manager, getRootLogger());
+    const scheduler = new TaskScheduler(manager, getVoidLogger());
     return await FactRetrieverEngine.create({
       factRetrieverContext: {
-        logger: getRootLogger(),
+        logger: getVoidLogger(),
         config: ConfigReader.fromConfigs([]),
         discovery: {
           getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
@@ -129,7 +129,7 @@ describe('FactRetrieverEngine', () => {
       },
       factRetrieverRegistry: mockFactRetrieverRegistry,
       repository: createMockRepository(insert, schema),
-      scheduler: scheduler,
+      scheduler: scheduler.forPlugin('tech-insights'),
     });
   }
 

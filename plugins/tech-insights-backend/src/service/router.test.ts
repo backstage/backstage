@@ -69,7 +69,9 @@ describe('Tech Insights router tests', () => {
       },
       logger: getVoidLogger(),
       factRetrievers: [],
-      scheduler: new TaskScheduler(manager, getVoidLogger()),
+      scheduler: new TaskScheduler(manager, getVoidLogger()).forPlugin(
+        'tech-insights',
+      ),
       config: ConfigReader.fromConfigs([]),
       discovery: {
         getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
