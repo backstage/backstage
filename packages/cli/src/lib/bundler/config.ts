@@ -167,13 +167,16 @@ export async function createConfig(
     }),
   );
 
+  // Detect and use the appropriate react-dom hot-loader patch based on what
+  // version of React is used within the target repo.
   const resolveAliases: Record<string, string> = {};
   try {
     // eslint-disable-next-line import/no-extraneous-dependencies
     const { version: reactDomVersion } = require('react-dom/package.json');
-    // Only apply the alias for hook support if we're running with React 16
     if (reactDomVersion.startsWith('16.')) {
-      resolveAliases['react-dom'] = '@hot-loader/react-dom';
+      resolveAliases['react-dom'] = '@hot-loader/react-dom-v16';
+    } else {
+      resolveAliases['react-dom'] = '@hot-loader/react-dom-v17';
     }
   } catch (error) {
     console.warn(`WARNING: Failed to read react-dom version, ${error}`);
