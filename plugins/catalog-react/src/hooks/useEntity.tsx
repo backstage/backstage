@@ -178,7 +178,7 @@ export function useEntity<TEntity extends Entity = Entity>(): {
  */
 export function useAsyncEntity<
   TEntity extends Entity = Entity,
->(): EntityLoadingStatus {
+>(): EntityLoadingStatus<TEntity> {
   const versionedHolder =
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
 
