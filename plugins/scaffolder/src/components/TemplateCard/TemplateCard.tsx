@@ -21,6 +21,7 @@ import {
 } from '@backstage/integration-react';
 import {
   EntityRefLinks,
+  FavoriteEntity,
   getEntityRelations,
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
@@ -42,7 +43,6 @@ import {
 import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
 
 import { Button, ItemCardHeader } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
@@ -73,6 +73,12 @@ const useStyles = makeStyles(theme => ({
   },
   leftButton: {
     marginRight: 'auto',
+  },
+  starButton: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(0.5),
+    padding: '0.25rem',
   },
 }));
 
@@ -159,7 +165,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   return (
     <Card>
       <CardMedia className={classes.cardHeader}>
-        <FavouriteTemplate entity={template} />
+        <FavoriteEntity className={classes.starButton} entity={template} />
         {deprecated && <DeprecationWarning />}
         <ItemCardHeader
           title={templateProps.title}
