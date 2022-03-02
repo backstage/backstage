@@ -2,7 +2,7 @@
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone.
 
-Therefore we want to create strong community of contributors -- all working together to create the kind of delightful experience that our developers deserve.
+Therefore we want to create a strong community of contributors -- all working together to create the kind of delightful experience that our developers deserve.
 
 Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given. ❤️
 
@@ -100,7 +100,7 @@ Signed-off-by: Jane Smith <jane.smith@example.com>
 - In case you forgot to add it to the last N commits in your branch, use `git rebase --signoff HEAD~N` and replace N with the number of new commits you created in your branch.
 - If you have a very deep branch with a lot of commits, run `git rebase -i --signoff $(git merge-base -a master HEAD)`, double check to make sense of the commits (keep all lines as `pick`) and save and close the editor. This should bulk sign all the commits in your PR. Do be careful though. If you have a complex flow with a lot of branching and re-merging of work branches and stuff, merge-base may not be the right solution for you.
 
-Note: If you have already pushed you branch to a remote, you might have to force push: `git push -f` after the rebase.
+Note: If you have already pushed your branch to a remote, you might have to force push: `git push -f` after the rebase.
 
 ### Using GitHub Desktop?
 

@@ -57,7 +57,7 @@ export type MicrosoftGraphProviderConfig = {
    *
    * E.g. "manager"
    */
-  userExpand?: string[];
+  userExpand?: string;
   /**
    * The filter to apply to extract users by groups memberships.
    *
@@ -65,11 +65,23 @@ export type MicrosoftGraphProviderConfig = {
    */
   userGroupMemberFilter?: string;
   /**
+   * The search criteria to apply to extract users by groups memberships.
+   *
+   * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
+   */
+  userGroupMemberSearch?: string;
+  /**
    * The filter to apply to extract groups.
    *
    * E.g. "securityEnabled eq false and mailEnabled eq true"
    */
   groupFilter?: string;
+  /**
+   * The search criteria to apply to extract groups.
+   *
+   * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
+   */
+  groupSearch?: string;
 };
 
 /**
@@ -94,15 +106,26 @@ export function readMicrosoftGraphConfig(
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getString('clientId');
     const clientSecret = providerConfig.getString('clientSecret');
+
+    const userExpand = providerConfig.getOptionalString('userExpand');
     const userFilter = providerConfig.getOptionalString('userFilter');
     const userGroupMemberFilter = providerConfig.getOptionalString(
       'userGroupMemberFilter',
     );
+    const userGroupMemberSearch = providerConfig.getOptionalString(
+      'userGroupMemberSearch',
+    );
     const groupFilter = providerConfig.getOptionalString('groupFilter');
+    const groupSearch = providerConfig.getOptionalString('groupSearch');
 
     if (userFilter && userGroupMemberFilter) {
       throw new Error(
         `userFilter and userGroupMemberFilter are mutually exclusive, only one can be specified.`,
+      );
+    }
+    if (userFilter && userGroupMemberSearch) {
+      throw new Error(
+        `userGroupMemberSearch cannot be specified when userFilter is defined.`,
       );
     }
 
@@ -112,9 +135,12 @@ export function readMicrosoftGraphConfig(
       tenantId,
       clientId,
       clientSecret,
+      userExpand,
       userFilter,
       userGroupMemberFilter,
+      userGroupMemberSearch,
       groupFilter,
+      groupSearch,
     });
   }
 

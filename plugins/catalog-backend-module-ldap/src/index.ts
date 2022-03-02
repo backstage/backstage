@@ -15,7 +15,7 @@
  */
 
 /**
- * A Backstage catalog backend modules that helps integrate towards LDAP
+ * A Backstage catalog backend module that helps integrate towards LDAP
  *
  * @packageDocumentation
  */

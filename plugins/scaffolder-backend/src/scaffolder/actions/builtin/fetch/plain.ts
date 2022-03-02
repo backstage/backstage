@@ -19,6 +19,11 @@ import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
 import { createTemplateAction } from '../../createTemplateAction';
 
+/**
+ * Downloads content and places it in the workspace, or optionally
+ * in a subdirectory specified by the 'targetPath' input option.
+ * @public
+ */
 export function createFetchPlainAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -59,7 +64,7 @@ export function createFetchPlainAction(options: {
       await fetchContents({
         reader,
         integrations,
-        baseUrl: ctx.baseUrl,
+        baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath,
       });

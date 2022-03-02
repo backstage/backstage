@@ -14,30 +14,43 @@
  * limitations under the License.
  */
 import {
-  formatEntityRefTitle,
+  humanizeEntityRef,
   useOwnedEntities,
 } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { FieldProps } from '@rjsf/core';
 import React from 'react';
 
-export const OwnedEntityPicker = ({
-  onChange,
-  schema: { title = 'Entity', description = 'An entity from the catalog' },
-  required,
-  uiSchema,
-  rawErrors,
-  formData,
-  idSchema,
-}: FieldProps<string>) => {
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds as string[];
-  const defaultKind = uiSchema['ui:options']?.defaultKind as string | undefined;
+import { FieldExtensionComponentProps } from '../../../extensions';
+
+export interface OwnedEntityPickerUiOptions {
+  allowedKinds?: string[];
+  defaultKind?: string;
+}
+
+/**
+ * Owned Entity Picker
+ */
+export const OwnedEntityPicker = (
+  props: FieldExtensionComponentProps<string, OwnedEntityPickerUiOptions>,
+) => {
+  const {
+    onChange,
+    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    required,
+    uiSchema,
+    rawErrors,
+    formData,
+    idSchema,
+  } = props;
+
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const defaultKind = uiSchema['ui:options']?.defaultKind;
   const { ownedEntities, loading } = useOwnedEntities(allowedKinds);
 
   const entityRefs = ownedEntities?.items
-    .map(e => formatEntityRefTitle(e, { defaultKind }))
+    .map(e => humanizeEntityRef(e, { defaultKind }))
     .filter(n => n);
 
   const onSelect = (_: any, value: string | null) => {

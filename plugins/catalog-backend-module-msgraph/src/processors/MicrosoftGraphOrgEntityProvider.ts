@@ -15,9 +15,9 @@
  */
 
 import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -123,7 +123,9 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       {
         userFilter: provider.userFilter,
         userGroupMemberFilter: provider.userGroupMemberFilter,
+        userGroupMemberSearch: provider.userGroupMemberSearch,
         groupFilter: provider.groupFilter,
+        groupSearch: provider.groupSearch,
         groupTransformer: this.options.groupTransformer,
         userTransformer: this.options.userTransformer,
         organizationTransformer: this.options.organizationTransformer,
@@ -180,8 +182,8 @@ export function withLocations(providerId: string, entity: Entity): Entity {
     {
       metadata: {
         annotations: {
-          [LOCATION_ANNOTATION]: location,
-          [ORIGIN_LOCATION_ANNOTATION]: location,
+          [ANNOTATION_LOCATION]: location,
+          [ANNOTATION_ORIGIN_LOCATION]: location,
         },
       },
     },

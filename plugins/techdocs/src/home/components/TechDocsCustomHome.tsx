@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/styles';
 import {
@@ -23,11 +23,15 @@ import {
   catalogApiRef,
   CatalogApi,
   isOwnerOf,
-  useOwnUser,
 } from '@backstage/plugin-catalog-react';
-import { Entity } from '@backstage/catalog-model';
-import { DocsTable } from './DocsTable';
-import { DocsCardGrid } from './DocsCardGrid';
+import {
+  DEFAULT_NAMESPACE,
+  Entity,
+  parseEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { DocsTable } from './Tables';
+import { DocsCardGrid } from './Grids';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 import {
@@ -40,15 +44,25 @@ import {
   ContentHeader,
 } from '@backstage/core-components';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 const panels = {
   DocsTable: DocsTable,
   DocsCardGrid: DocsCardGrid,
 };
 
+/**
+ * Available panel types
+ *
+ * @public
+ */
 export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
+/**
+ * Type representing a TechDocsCustomHome panel.
+ *
+ * @public
+ */
 export interface PanelConfig {
   title: string;
   description: string;
@@ -57,11 +71,21 @@ export interface PanelConfig {
   filterPredicate: ((entity: Entity) => boolean) | string;
 }
 
+/**
+ * Type representing a TechDocsCustomHome tab.
+ *
+ * @public
+ */
 export interface TabConfig {
   label: string;
   panels: PanelConfig[];
 }
 
+/**
+ * Type representing a list of TechDocsCustomHome tabs.
+ *
+ * @public
+ */
 export type TabsConfig = TabConfig[];
 
 const CustomPanel = ({
@@ -114,11 +138,17 @@ const CustomPanel = ({
   );
 };
 
-export const TechDocsCustomHome = ({
-  tabsConfig,
-}: {
+/**
+ * Props for {@link TechDocsCustomHome}
+ *
+ * @public
+ */
+export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
-}) => {
+};
+
+export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
+  const { tabsConfig } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
 
@@ -195,3 +225,18 @@ export const TechDocsCustomHome = ({
     </TechDocsPageWrapper>
   );
 };
+
+function useOwnUser(): AsyncState<UserEntity | undefined> {
+  const catalogApi = useApi(catalogApiRef);
+  const identityApi = useApi(identityApiRef);
+
+  return useAsync(async () => {
+    const identity = await identityApi.getBackstageIdentity();
+    return catalogApi.getEntityByName(
+      parseEntityRef(identity.userEntityRef, {
+        defaultKind: 'User',
+        defaultNamespace: DEFAULT_NAMESPACE,
+      }),
+    ) as Promise<UserEntity | undefined>;
+  }, [catalogApi, identityApi]);
+}

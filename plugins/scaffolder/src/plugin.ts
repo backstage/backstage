@@ -16,16 +16,12 @@
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
-import { EntityPicker } from './components/fields/EntityPicker';
-import {
-  entityNamePickerValidation,
-  EntityNamePicker,
-} from './components/fields/EntityNamePicker';
-import { OwnerPicker } from './components/fields/OwnerPicker';
-import {
-  repoPickerValidation,
-  RepoUrlPicker,
-} from './components/fields/RepoUrlPicker';
+import { EntityPicker } from './components/fields/EntityPicker/EntityPicker';
+import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
+import { EntityNamePicker } from './components/fields/EntityNamePicker/EntityNamePicker';
+import { OwnerPicker } from './components/fields/OwnerPicker/OwnerPicker';
+import { repoPickerValidation } from './components/fields/RepoUrlPicker';
+import { RepoUrlPicker } from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
 import { registerComponentRouteRef, rootRouteRef } from './routes';
 import {
@@ -35,8 +31,8 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker';
-import { EntityTagsPicker } from './components/fields/EntityTagsPicker';
+import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTagsPicker';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',

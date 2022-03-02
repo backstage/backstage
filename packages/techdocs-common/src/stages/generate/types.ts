@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { Logger } from 'winston';
@@ -23,12 +24,22 @@ import { ParsedLocationAnnotation } from '../../helpers';
 export type GeneratorRunInType = 'docker' | 'local';
 
 /**
+ * Options for building generators
+ * @public
+ */
+export type GeneratorOptions = {
+  containerRunner: ContainerRunner;
+  logger: Logger;
+};
+
+/**
  * The techdocs generator configurations options.
  */
 export type GeneratorConfig = {
   runIn: GeneratorRunInType;
   dockerImage?: string;
   pullImage?: boolean;
+  omitTechdocsCoreMkdocsPlugin?: boolean;
 };
 
 /**
@@ -51,18 +62,27 @@ export type GeneratorRunOptions = {
   logStream?: Writable;
 };
 
+/**
+ * Generates documentation files
+ * @public
+ */
 export type GeneratorBase = {
-  // Runs the generator with the values
+  /**
+   * Runs the generator with the values
+   * @public
+   */
   run(opts: GeneratorRunOptions): Promise<void>;
 };
 
 /**
  * List of supported generator options
+ * @public
  */
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 /**
  * The generator builder holds the generator ready for run time
+ * @public
  */
 export type GeneratorBuilder = {
   register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;

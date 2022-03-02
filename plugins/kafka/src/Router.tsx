@@ -25,10 +25,7 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
+type Props = {};
 
 export const Router = (_props: Props) => {
   const { entity } = useEntity();

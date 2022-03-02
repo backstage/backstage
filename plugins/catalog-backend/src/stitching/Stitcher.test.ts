@@ -93,6 +93,7 @@ describe('Stitcher', () => {
         relations: [
           {
             type: 'looksAt',
+            targetRef: 'k:ns/other',
             target: {
               kind: 'k',
               namespace: 'ns',
@@ -159,6 +160,7 @@ describe('Stitcher', () => {
         relations: expect.arrayContaining([
           {
             type: 'looksAt',
+            targetRef: 'k:ns/other',
             target: {
               kind: 'k',
               namespace: 'ns',
@@ -167,6 +169,7 @@ describe('Stitcher', () => {
           },
           {
             type: 'looksAt',
+            targetRef: 'k:ns/third',
             target: {
               kind: 'k',
               namespace: 'ns',

@@ -28,13 +28,17 @@ import { MicrosoftGraphProviderConfig } from './config';
  */
 export type ODataQuery = {
   /**
+   * search resources within a collection matching a free-text search expression.
+   */
+  search?: string;
+  /**
    * filter a collection of resources
    */
   filter?: string;
   /**
    * specifies the related resources or media streams to be included in line with retrieved resources
    */
-  expand?: string[];
+  expand?: string;
   /**
    * request a specific set of properties for each entity or complex type
    */
@@ -102,7 +106,15 @@ export class MicrosoftGraphClient {
     path: string,
     query?: ODataQuery,
   ): AsyncIterable<T> {
-    let response = await this.requestApi(path, query);
+    const headers: Record<string, string> = query?.search
+      ? {
+          // Eventual consistency is required to use $search.
+          // If a new user/group is not found, it'll eventually be imported on a subsequent read
+          ConsistencyLevel: 'eventual',
+        }
+      : {};
+
+    let response = await this.requestApi(path, query, headers);
 
     for (;;) {
       if (response.status !== 200) {
@@ -121,7 +133,7 @@ export class MicrosoftGraphClient {
         return;
       }
 
-      response = await this.requestRaw(result['@odata.nextLink']);
+      response = await this.requestRaw(result['@odata.nextLink'], headers);
     }
   }
 
@@ -131,13 +143,19 @@ export class MicrosoftGraphClient {
    * @public
    * @param path - Resource in Microsoft Graph
    * @param query - OData Query {@link ODataQuery}
+   * @param headers - optional HTTP headers
    */
-  async requestApi(path: string, query?: ODataQuery): Promise<Response> {
+  async requestApi(
+    path: string,
+    query?: ODataQuery,
+    headers?: Record<string, string>,
+  ): Promise<Response> {
     const queryString = qs.stringify(
       {
+        $search: query?.search,
         $filter: query?.filter,
         $select: query?.select?.join(','),
-        $expand: query?.expand?.join(','),
+        $expand: query?.expand,
       },
       {
         addQueryPrefix: true,
@@ -146,15 +164,22 @@ export class MicrosoftGraphClient {
       },
     );
 
-    return await this.requestRaw(`${this.baseUrl}/${path}${queryString}`);
+    return await this.requestRaw(
+      `${this.baseUrl}/${path}${queryString}`,
+      headers,
+    );
   }
 
   /**
    * Makes a HTTP call to Graph API with token
    *
    * @param url - HTTP Endpoint of Graph API
+   * @param headers - optional HTTP headers
    */
-  async requestRaw(url: string): Promise<Response> {
+  async requestRaw(
+    url: string,
+    headers?: Record<string, string>,
+  ): Promise<Response> {
     // Make sure that we always have a valid access token (might be cached)
     const token = await this.pca.acquireTokenByClientCredential({
       scopes: ['https://graph.microsoft.com/.default'],
@@ -166,6 +191,7 @@ export class MicrosoftGraphClient {
 
     return await fetch(url, {
       headers: {
+        ...headers,
         Authorization: `Bearer ${token.accessToken}`,
       },
     });
@@ -177,10 +203,14 @@ export class MicrosoftGraphClient {
    *
    * @public
    * @param userId - The unique identifier for the `User` resource
+   * @param query - OData Query {@link ODataQuery}
    *
    */
-  async getUserProfile(userId: string): Promise<MicrosoftGraph.User> {
-    const response = await this.requestApi(`users/${userId}`);
+  async getUserProfile(
+    userId: string,
+    query?: ODataQuery,
+  ): Promise<MicrosoftGraph.User> {
+    const response = await this.requestApi(`users/${userId}`, query);
 
     if (response.status !== 200) {
       await this.handleError('user profile', response);

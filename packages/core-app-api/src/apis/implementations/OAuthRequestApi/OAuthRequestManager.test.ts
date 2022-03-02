@@ -25,6 +25,7 @@ describe('OAuthRequestManager', () => {
 
     const requester = manager.createAuthRequester({
       provider: {
+        id: 'my-provider',
         title: 'My Provider',
         icon: () => null,
       },

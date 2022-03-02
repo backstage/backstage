@@ -1,5 +1,38 @@
 # @backstage/plugin-home
 
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/plugin-search@0.7.1
+
+## 0.4.15
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 651b919dbb: Add Renderer support for the HomePageToolkit component.
+
+  Previously `<HomePageToolkit Renderer={ComponentAccordion} Tools={[]} />` would
+  result in the error `can't access property "map", props.tools is undefined`.
+  This change adds a context that can pass props down to the HomePageToolkit.
+  Also introduced is an `expanded` prop on the `ComponentAccordion` to setting
+  the default expanded state. See `In Accordian` story for details.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/plugin-search@0.7.0
+  - @backstage/catalog-model@0.10.0
+  - @backstage/theme@0.2.15
+
 ## 0.4.14
 
 ### Patch Changes

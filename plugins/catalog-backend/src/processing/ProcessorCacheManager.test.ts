@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { CatalogProcessor } from '../ingestion/processors';
+import { CatalogProcessor } from '../api';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
 
 class MyProcessor implements CatalogProcessor {
   getProcessorName = () => 'my-processor';
 }
 
-class OtherProcessor implements CatalogProcessor {}
+class OtherProcessor implements CatalogProcessor {
+  getProcessorName(): string {
+    return 'OtherProcessor';
+  }
+}
 
 describe('ProcessorCacheManager', () => {
   const myProcessor = new MyProcessor();

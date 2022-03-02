@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
+import os from 'os';
 import { ErrorLike } from '@backstage/errors';
 import { Worker } from 'worker_threads';
 
-export const DEFAULT_PARALLELISM = 4;
+const defaultParallelism = Math.ceil(os.cpus().length / 2);
 
-export const PARALLEL_ENV_VAR = 'BACKSTAGE_CLI_BUILD_PARALLEL';
+const PARALLEL_ENV_VAR = 'BACKSTAGE_CLI_BUILD_PARALLEL';
 
 export type ParallelismOption = boolean | string | number | null | undefined;
 
 export function parseParallelismOption(parallel: ParallelismOption): number {
   if (parallel === undefined || parallel === null) {
-    return DEFAULT_PARALLELISM;
+    return defaultParallelism;
   } else if (typeof parallel === 'boolean') {
-    return parallel ? DEFAULT_PARALLELISM : 1;
+    return parallel ? defaultParallelism : 1;
   } else if (typeof parallel === 'number' && Number.isInteger(parallel)) {
     if (parallel < 1) {
       return 1;
@@ -134,10 +135,14 @@ export type WorkerQueueThreadsOptions<TItem, TResult, TData> = {
    * note that they are both copied by value into the worker thread, except for
    * types that are explicitly shareable across threads, such as `SharedArrayBuffer`.
    */
-  workerFactory: (data: TData) => (item: TItem) => Promise<TResult>;
+  workerFactory: (
+    data: TData,
+  ) =>
+    | ((item: TItem) => Promise<TResult>)
+    | Promise<(item: TItem) => Promise<TResult>>;
   /** Data supplied to each worker factory */
   workerData?: TData;
-  /** Number of threads, defaults to the environment parallelism */
+  /** Number of threads, defaults to half of the number of available CPUs */
   threadCount?: number;
 };
 
@@ -148,13 +153,14 @@ export type WorkerQueueThreadsOptions<TItem, TResult, TData> = {
 export async function runWorkerQueueThreads<TItem, TResult, TData>(
   options: WorkerQueueThreadsOptions<TItem, TResult, TData>,
 ): Promise<TResult[]> {
+  const items = Array.from(options.items);
   const {
     workerFactory,
     workerData,
-    threadCount = getEnvironmentParallelism(),
+    threadCount = Math.min(getEnvironmentParallelism(), items.length),
   } = options;
 
-  const iterator = options.items[Symbol.iterator]();
+  const iterator = items[Symbol.iterator]();
   const results = new Array<TResult>();
   let itemIndex = 0;
 
@@ -208,31 +214,39 @@ export async function runWorkerQueueThreads<TItem, TResult, TData>(
 }
 
 function workerQueueThread(
-  workerFuncFactory: (data: unknown) => (item: unknown) => Promise<unknown>,
+  workerFuncFactory: (
+    data: unknown,
+  ) => Promise<(item: unknown) => Promise<unknown>>,
 ) {
   const { parentPort, workerData } = require('worker_threads');
-  const workerFunc = workerFuncFactory(workerData);
 
-  parentPort.on('message', async (message: WorkerThreadMessage) => {
-    if (message.type === 'done') {
-      parentPort.close();
-      return;
-    }
-    if (message.type === 'item') {
-      try {
-        const result = await workerFunc(message.item);
-        parentPort.postMessage({
-          type: 'result',
-          index: message.index,
-          result,
+  Promise.resolve()
+    .then(() => workerFuncFactory(workerData))
+    .then(
+      workerFunc => {
+        parentPort.on('message', async (message: WorkerThreadMessage) => {
+          if (message.type === 'done') {
+            parentPort.close();
+            return;
+          }
+          if (message.type === 'item') {
+            try {
+              const result = await workerFunc(message.item);
+              parentPort.postMessage({
+                type: 'result',
+                index: message.index,
+                result,
+              });
+            } catch (error) {
+              parentPort.postMessage({ type: 'error', error });
+            }
+          }
         });
-      } catch (error) {
-        parentPort.postMessage({ type: 'error', error });
-      }
-    }
-  });
 
-  parentPort.postMessage({ type: 'start' });
+        parentPort.postMessage({ type: 'start' });
+      },
+      error => parentPort.postMessage({ type: 'error', error }),
+    );
 }
 
 export type WorkerThreadsOptions<TResult, TData, TMessage> = {

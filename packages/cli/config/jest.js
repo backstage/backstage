@@ -102,9 +102,10 @@ async function getProjectConfig(targetPath, displayName) {
     },
 
     transform: {
-      '\\.(js|jsx|ts|tsx|mjs|cjs)$': require.resolve(
-        './jestSucraseTransform.js',
-      ),
+      '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
+        require.resolve('./jestSucraseTransform.js'),
+        { enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS) },
+      ],
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
       '\\.(yaml)$': require.resolve('jest-transform-yaml'),
@@ -174,7 +175,10 @@ async function getRootConfig() {
       // script to determine whether a given package should be tested
       const packageData = await fs.readJson(packagePath);
       const testScript = packageData.scripts && packageData.scripts.test;
-      if (testScript && testScript.includes('backstage-cli test')) {
+      const isSupportedTestScript =
+        testScript?.includes('backstage-cli test') ||
+        testScript?.includes('backstage-cli package test');
+      if (testScript && isSupportedTestScript) {
         return await getProjectConfig(projectPath, packageData.name);
       }
 

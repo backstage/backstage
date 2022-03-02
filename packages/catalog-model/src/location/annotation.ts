@@ -18,16 +18,16 @@
  * Constant storing location annotation.
  *
  * @public */
-export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
+export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
 /**
  * Constant storing origin location annotation
  *
  * @public */
-export const ORIGIN_LOCATION_ANNOTATION =
+export const ANNOTATION_ORIGIN_LOCATION =
   'backstage.io/managed-by-origin-location';
 
 /**
  * Contant storing source location annotation
  *
  * @public */
-export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';
+export const ANNOTATION_SOURCE_LOCATION = 'backstage.io/source-location';

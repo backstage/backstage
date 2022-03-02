@@ -17,36 +17,35 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "DirectoryPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class DirectoryPreparer implements PreparerBase {
-  constructor(config: Config, _logger: Logger_2, reader: UrlReader);
-  // Warning: (ae-forgotten-export) The symbol "PreparerResponse" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
-  prepare(
-    entity: Entity,
-    options?: {
-      logger?: Logger_2;
-      etag?: string;
-    },
-  ): Promise<PreparerResponse>;
+  // @deprecated
+  constructor(config: Config, _logger: Logger_2 | null, reader: UrlReader);
+  static fromConfig(
+    config: Config,
+    { logger, reader }: PreparerConfig,
+  ): DirectoryPreparer;
+  prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "GeneratorBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type ETag = string;
+
+// @public
 export type GeneratorBase = {
   run(opts: GeneratorRunOptions): Promise<void>;
 };
 
-// Warning: (ae-missing-release-tag) "GeneratorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GeneratorBuilder = {
   register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
   get(entity: Entity): GeneratorBase;
+};
+
+// @public
+export type GeneratorOptions = {
+  containerRunner: ContainerRunner;
+  logger: Logger_2;
 };
 
 // @public
@@ -59,11 +58,8 @@ export type GeneratorRunOptions = {
   logStream?: Writable;
 };
 
-// Warning: (ae-missing-release-tag) "Generators" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class Generators implements GeneratorBuilder {
-  // (undocumented)
   static fromConfig(
     config: Config,
     options: {
@@ -71,15 +67,11 @@ export class Generators implements GeneratorBuilder {
       containerRunner: ContainerRunner;
     },
   ): Promise<GeneratorBuilder>;
-  // (undocumented)
   get(entity: Entity): GeneratorBase;
-  // (undocumented)
   register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase): void;
 }
 
-// Warning: (ae-missing-release-tag) "getDocFilesFromRepository" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const getDocFilesFromRepository: (
   reader: UrlReader,
   entity: Entity,
@@ -91,78 +83,74 @@ export const getDocFilesFromRepository: (
     | undefined,
 ) => Promise<PreparerResponse>;
 
-// Warning: (ae-missing-release-tag) "getLocationForEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const getLocationForEntity: (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
 ) => ParsedLocationAnnotation;
 
-// Warning: (ae-missing-release-tag) "ParsedLocationAnnotation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type MigrateRequest = {
+  removeOriginal?: boolean;
+  concurrency?: number;
+};
+
+// @public
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
   target: string;
 };
 
-// Warning: (ae-missing-release-tag) "parseReferenceAnnotation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const parseReferenceAnnotation: (
   annotationName: string,
   entity: Entity,
 ) => ParsedLocationAnnotation;
 
-// Warning: (ae-missing-release-tag) "PreparerBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type PreparerBase = {
-  prepare(
-    entity: Entity,
-    options?: {
-      logger?: Logger_2;
-      etag?: string;
-    },
-  ): Promise<PreparerResponse>;
+  prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 };
 
-// Warning: (ae-missing-release-tag) "PreparerBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type PreparerBuilder = {
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
   get(entity: Entity): PreparerBase;
 };
 
-// Warning: (ae-missing-release-tag) "Preparers" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type PreparerConfig = {
+  logger: Logger_2;
+  reader: UrlReader;
+};
+
+// @public
+export type PreparerOptions = {
+  logger?: Logger_2;
+  etag?: ETag;
+};
+
+// @public
+export type PreparerResponse = {
+  preparedDir: string;
+  etag: ETag;
+};
+
+// @public
 export class Preparers implements PreparerBuilder {
-  // Warning: (ae-forgotten-export) The symbol "factoryOptions" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
   static fromConfig(
-    config: Config,
-    { logger, reader }: factoryOptions,
+    backstageConfig: Config,
+    { logger, reader }: PreparerConfig,
   ): Promise<PreparerBuilder>;
-  // (undocumented)
   get(entity: Entity): PreparerBase;
-  // (undocumented)
   register(protocol: RemoteProtocol, preparer: PreparerBase): void;
 }
 
-// Warning: (ae-missing-release-tag) "Publisher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class Publisher {
-  // Warning: (ae-forgotten-export) The symbol "factoryOptions" needs to be exported by the entry point index.d.ts
-  //
-  // (undocumented)
   static fromConfig(
     config: Config,
-    { logger, discovery }: factoryOptions_2,
+    { logger, discovery }: PublisherFactory,
   ): Promise<PublisherBase>;
 }
 
@@ -172,15 +160,16 @@ export interface PublisherBase {
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
   getReadiness(): Promise<ReadinessResponse>;
   hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
-  // Warning: (ae-forgotten-export) The symbol "MigrateRequest" needs to be exported by the entry point index.d.ts
   migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
-  // Warning: (ae-forgotten-export) The symbol "PublishRequest" needs to be exported by the entry point index.d.ts
-  // Warning: (ae-forgotten-export) The symbol "PublishResponse" needs to be exported by the entry point index.d.ts
   publish(request: PublishRequest): Promise<PublishResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "PublisherType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export type PublisherFactory = {
+  logger: Logger_2;
+  discovery: PluginEndpointDiscovery;
+};
+
 // @public
 export type PublisherType =
   | 'local'
@@ -190,36 +179,39 @@ export type PublisherType =
   | 'openStackSwift';
 
 // @public
+export type PublishRequest = {
+  entity: Entity;
+  directory: string;
+};
+
+// @public
+export type PublishResponse = {
+  remoteUrl?: string;
+  objects?: string[];
+} | void;
+
+// @public
 export type ReadinessResponse = {
   isAvailable: boolean;
 };
 
-// Warning: (ae-missing-release-tag) "RemoteProtocol" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type RemoteProtocol = 'url' | 'dir';
 
-// Warning: (ae-missing-release-tag) "TechDocsDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type SupportedGeneratorKey = 'techdocs' | string;
+
+// @public
 export interface TechDocsDocument extends IndexableDocument {
-  // (undocumented)
   kind: string;
-  // (undocumented)
   lifecycle: string;
-  // (undocumented)
   name: string;
-  // (undocumented)
   namespace: string;
-  // (undocumented)
   owner: string;
-  // (undocumented)
   path: string;
 }
 
-// Warning: (ae-missing-release-tag) "TechdocsGenerator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
     logger: Logger_2;
@@ -227,21 +219,14 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });
-  static readonly defaultDockerImage = 'spotify/techdocs:v0.3.6';
-  // (undocumented)
+  static readonly defaultDockerImage = 'spotify/techdocs:v0.3.7';
   static fromConfig(
     config: Config,
-    options: {
-      containerRunner: ContainerRunner;
-      logger: Logger_2;
-    },
+    options: GeneratorOptions,
   ): TechdocsGenerator;
-  // (undocumented)
   run(options: GeneratorRunOptions): Promise<void>;
 }
 
-// Warning: (ae-missing-release-tag) "TechDocsMetadata" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type TechDocsMetadata = {
   site_name: string;
@@ -251,8 +236,6 @@ export type TechDocsMetadata = {
   files?: string[];
 };
 
-// Warning: (ae-missing-release-tag) "transformDirLocation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const transformDirLocation: (
   entity: Entity,
@@ -263,21 +246,11 @@ export const transformDirLocation: (
   target: string;
 };
 
-// Warning: (ae-missing-release-tag) "UrlPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class UrlPreparer implements PreparerBase {
+  // @deprecated
   constructor(reader: UrlReader, logger: Logger_2);
-  // (undocumented)
-  prepare(
-    entity: Entity,
-    options?: {
-      etag?: string;
-    },
-  ): Promise<PreparerResponse>;
+  static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer;
+  prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/stages/generate/types.d.ts:45:5 - (ae-forgotten-export) The symbol "SupportedGeneratorKey" needs to be exported by the entry point index.d.ts
 ```

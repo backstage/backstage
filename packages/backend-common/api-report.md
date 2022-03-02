@@ -235,6 +235,21 @@ export type ErrorHandlerOptions = {
 };
 
 // @public
+export class FetchUrlReader implements UrlReader {
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
 export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;

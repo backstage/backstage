@@ -54,6 +54,7 @@ const makeUser = ({
   relations: [
     {
       type: 'memberOf',
+      targetRef: 'group:default/team-a',
       target: {
         namespace: 'default',
         kind: 'group',

@@ -83,7 +83,7 @@ export class GoogleGCSPublish implements PublisherBase {
     const credentials = config.getOptionalString(
       'techdocs.publisher.googleGcs.credentials',
     );
-    let credentialsJson = {};
+    let credentialsJson: any = {};
     if (credentials) {
       try {
         credentialsJson = JSON.parse(credentials);
@@ -96,6 +96,7 @@ export class GoogleGCSPublish implements PublisherBase {
 
     const storageClient = new Storage({
       ...(credentials && {
+        projectId: credentialsJson.project_id,
         credentials: credentialsJson,
       }),
     });

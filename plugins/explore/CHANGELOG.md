@@ -1,5 +1,32 @@
 # @backstage/plugin-explore
 
+## 0.3.31
+
+### Patch Changes
+
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/plugin-explore-react@0.0.13
+
+## 0.3.30
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/plugin-explore-react@0.0.12
+  - @backstage/catalog-model@0.10.0
+  - @backstage/theme@0.2.15
+
 ## 0.3.29
 
 ### Patch Changes

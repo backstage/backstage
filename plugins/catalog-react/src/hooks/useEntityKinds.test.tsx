@@ -16,45 +16,21 @@
 
 import React, { PropsWithChildren } from 'react';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '../api';
 import { renderHook } from '@testing-library/react-hooks';
 import { useEntityKinds } from './useEntityKinds';
 import { TestApiProvider } from '@backstage/test-utils';
 
-const entities: Entity[] = [
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-1',
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-2',
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Template',
-    metadata: {
-      name: 'template',
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'System',
-    metadata: {
-      name: 'system',
-    },
-  },
-];
-
 const mockCatalogApi: Partial<CatalogApi> = {
-  getEntities: jest.fn().mockResolvedValue({ items: entities }),
+  getEntityFacets: jest.fn().mockResolvedValue({
+    facets: {
+      kind: [
+        { value: 'Template', count: 2 },
+        { value: 'System', count: 1 },
+        { value: 'Component', count: 3 },
+      ],
+    },
+  }),
 };
 
 const wrapper = ({ children }: PropsWithChildren<{}>) => {
@@ -66,24 +42,10 @@ const wrapper = ({ children }: PropsWithChildren<{}>) => {
 };
 
 describe('useEntityKinds', () => {
-  it('does not return duplicate kinds', async () => {
+  it('gets entity kinds', async () => {
     const { result, waitForValueToChange } = renderHook(
       () => useEntityKinds(),
-      {
-        wrapper,
-      },
-    );
-    await waitForValueToChange(() => result.current);
-    expect(result.current.kinds).toBeDefined();
-    expect(result.current.kinds!.length).toBe(3);
-  });
-
-  it('sorts entity kinds', async () => {
-    const { result, waitForValueToChange } = renderHook(
-      () => useEntityKinds(),
-      {
-        wrapper,
-      },
+      { wrapper },
     );
     await waitForValueToChange(() => result.current);
     expect(result.current.kinds).toEqual(['Component', 'System', 'Template']);

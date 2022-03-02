@@ -1,5 +1,29 @@
 # @backstage/test-utils
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/core-app-api@0.5.4
+  - @backstage/plugin-permission-react@0.3.2
+
+## 0.2.5
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-app-api@0.5.3
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/plugin-permission-react@0.3.1
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+  - @backstage/types@0.1.2
+
 ## 0.2.4
 
 ### Patch Changes

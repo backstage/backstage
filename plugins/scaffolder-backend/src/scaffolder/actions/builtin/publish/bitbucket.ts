@@ -29,9 +29,11 @@ const createBitbucketCloudRepository = async (opts: {
   workspace: string;
   project: string;
   repo: string;
-  description: string;
+  description?: string;
   repoVisibility: 'private' | 'public';
+  mainBranch: string;
   authorization: string;
+  apiBaseUrl: string;
 }) => {
   const {
     workspace,
@@ -39,7 +41,9 @@ const createBitbucketCloudRepository = async (opts: {
     repo,
     description,
     repoVisibility,
+    mainBranch,
     authorization,
+    apiBaseUrl,
   } = opts;
 
   const options: RequestInit = {
@@ -59,7 +63,7 @@ const createBitbucketCloudRepository = async (opts: {
   let response: Response;
   try {
     response = await fetch(
-      `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo}`,
+      `${apiBaseUrl}/repositories/${workspace}/${repo}`,
       options,
     );
   } catch (e) {
@@ -82,22 +86,21 @@ const createBitbucketCloudRepository = async (opts: {
     }
   }
 
-  // TODO use the urlReader to get the default branch
-  const repoContentsUrl = `${r.links.html.href}/src/master`;
+  // "mainbranch.name" cannot be set neither at create nor update of the repo
+  // the first pushed branch will be set as "main branch" then
+  const repoContentsUrl = `${r.links.html.href}/src/${mainBranch}`;
   return { remoteUrl, repoContentsUrl };
 };
 
 const createBitbucketServerRepository = async (opts: {
-  host: string;
   project: string;
   repo: string;
-  description: string;
+  description?: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
-  apiBaseUrl?: string;
+  apiBaseUrl: string;
 }) => {
   const {
-    host,
     project,
     repo,
     description,
@@ -121,8 +124,7 @@ const createBitbucketServerRepository = async (opts: {
   };
 
   try {
-    const baseUrl = apiBaseUrl ? apiBaseUrl : `https://${host}/rest/api/1.0`;
-    response = await fetch(`${baseUrl}/projects/${project}/repos`, options);
+    response = await fetch(`${apiBaseUrl}/projects/${project}/repos`, options);
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
@@ -192,6 +194,11 @@ const performEnableLFS = async (opts: {
     );
 };
 
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to Bitbucket.
+ * @public
+ */
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -200,11 +207,11 @@ export function createPublishBitbucketAction(options: {
 
   return createTemplateAction<{
     repoUrl: string;
-    description: string;
+    description?: string;
     defaultBranch?: string;
-    repoVisibility: 'private' | 'public';
+    repoVisibility?: 'private' | 'public';
     sourcePath?: string;
-    enableLFS: boolean;
+    enableLFS?: boolean;
     token?: string;
   }>({
     id: 'publish:bitbucket',
@@ -306,7 +313,11 @@ export function createPublishBitbucketAction(options: {
 
       const authorization = getAuthorizationHeader(
         ctx.input.token
-          ? { host: integrationConfig.config.host, token: ctx.input.token }
+          ? {
+              host: integrationConfig.config.host,
+              apiBaseUrl: integrationConfig.config.apiBaseUrl,
+              token: ctx.input.token,
+            }
           : integrationConfig.config,
       );
 
@@ -319,11 +330,11 @@ export function createPublishBitbucketAction(options: {
 
       const { remoteUrl, repoContentsUrl } = await createMethod({
         authorization,
-        host,
         workspace: workspace || '',
         project,
         repo,
         repoVisibility,
+        mainBranch: defaultBranch,
         description,
         apiBaseUrl,
       });

@@ -18,6 +18,8 @@ import { useRouteRefParams } from '@backstage/core-plugin-api';
 
 /**
  * Grabs entity kind, namespace, and name from the location
+ * @public
+ * @deprecated use {@link @backstage/core-plugin-api#useRouteRefParams} instead
  */
 export const useEntityCompoundName = () => {
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);

@@ -76,11 +76,6 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public @deprecated
-export type AnyAnalyticsContext = {
-  [param in string]: string | boolean | number | undefined;
-};
-
 // @public
 export type AnyApiFactory = ApiFactory<
   unknown,
@@ -188,11 +183,6 @@ export function attachComponentData<P>(
   type: string,
   data: unknown,
 ): void;
-
-// @public @deprecated
-export const auth0AuthApiRef: ApiRef<
-  OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
 
 // @public
 export type AuthProviderInfo = {
@@ -536,15 +526,6 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public @deprecated
-export const oauth2ApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
-
 // @public
 export type OAuthApi = {
   getAccessToken(
@@ -571,23 +552,12 @@ export type OAuthRequester<TAuthResponse> = (
 
 // @public
 export type OAuthRequesterOptions<TOAuthResponse> = {
-  provider: Omit<AuthProviderInfo, 'id'> & {
-    id?: string;
-  };
+  provider: AuthProviderInfo;
   onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
 };
 
 // @public
 export type OAuthScope = string | string[];
-
-// @public @deprecated
-export const oidcAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
->;
 
 // @alpha
 export const oktaAuthApiRef: ApiRef<
@@ -642,9 +612,7 @@ export type PathParams<S extends string> = {
 
 // @public
 export type PendingOAuthRequest = {
-  provider: Omit<AuthProviderInfo, 'id'> & {
-    id?: string;
-  };
+  provider: AuthProviderInfo;
   reject(): void;
   trigger(): Promise<void>;
 };
@@ -689,11 +657,6 @@ export type RouteRef<Params extends AnyParams = any> = {
   params: ParamKeys<Params>;
 };
 
-// @public @deprecated
-export const samlAuthApiRef: ApiRef<
-  ProfileInfoApi & BackstageIdentityApi & SessionApi
->;
-
 // @public
 export type SessionApi = {
   signIn(): Promise<void>;
@@ -715,8 +678,6 @@ export type SignInPageProps = {
 // @public
 export interface StorageApi {
   forBucket(name: string): StorageApi;
-  // @deprecated
-  get<T extends JsonValue>(key: string): T | undefined;
   observe$<T extends JsonValue>(
     key: string,
   ): Observable<StorageValueSnapshot<T>>;
@@ -728,23 +689,17 @@ export interface StorageApi {
 // @public
 export const storageApiRef: ApiRef<StorageApi>;
 
-// @public @deprecated (undocumented)
-export type StorageValueChange<TValue extends JsonValue> =
-  StorageValueSnapshot<TValue>;
-
 // @public
 export type StorageValueSnapshot<TValue extends JsonValue> =
   | {
       key: string;
       presence: 'unknown' | 'absent';
       value?: undefined;
-      newValue?: undefined;
     }
   | {
       key: string;
       presence: 'present';
       value: TValue;
-      newValue?: TValue;
     };
 
 // @public

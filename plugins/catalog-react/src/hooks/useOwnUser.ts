@@ -15,7 +15,7 @@
  */
 
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   parseEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
@@ -25,6 +25,8 @@ import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 /**
  * Get the catalog User entity (if any) that matches the logged-in user.
+ * @public
+ * @deprecated due to low external usage.
  */
 export function useOwnUser(): AsyncState<UserEntity | undefined> {
   const catalogApi = useApi(catalogApiRef);
@@ -35,7 +37,7 @@ export function useOwnUser(): AsyncState<UserEntity | undefined> {
     return catalogApi.getEntityByName(
       parseEntityRef(identity.userEntityRef, {
         defaultKind: 'User',
-        defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+        defaultNamespace: DEFAULT_NAMESPACE,
       }),
     ) as Promise<UserEntity | undefined>;
   }, [catalogApi, identityApi]);

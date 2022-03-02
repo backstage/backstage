@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import { Logger } from 'winston';
 import { Profile as PassportProfile } from 'passport';
@@ -247,10 +251,16 @@ export const githubDefaultSignInResolver: SignInResolver<
 
   const userId = fullProfile.username || fullProfile.id;
 
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: userId,
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
     claims: {
-      sub: `user:default/${userId}`,
-      ent: [`user:default/${userId}`],
+      sub: entityRef,
+      ent: [entityRef],
     },
   });
 

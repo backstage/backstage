@@ -24,18 +24,10 @@
  *  default value: 'required'.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-catalog-backend` instead.
  */
 export type LocationSpec = {
   type: string;
   target: string;
   presence?: 'optional' | 'required';
 };
-
-/**
- * Entity location for a specific entity.
- *
- * @public
- */
-export type Location = {
-  id: string;
-} & LocationSpec;

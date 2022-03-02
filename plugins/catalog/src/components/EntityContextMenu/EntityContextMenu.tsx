@@ -41,30 +41,31 @@ const useStyles = makeStyles({
 
 // NOTE(freben): Intentionally not exported at this point, since it's part of
 // the unstable extra context menu items concept below
-type ExtraContextMenuItem = {
+interface ExtraContextMenuItem {
   title: string;
   Icon: IconComponent;
   onClick: () => void;
-};
+}
 
 // unstable context menu option, eg: disable the unregister entity menu
-type contextMenuOptions = {
+interface contextMenuOptions {
   disableUnregister: boolean;
-};
+}
 
-type Props = {
+interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: contextMenuOptions;
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
-};
+}
 
-export const EntityContextMenu = ({
-  UNSTABLE_extraContextMenuItems,
-  UNSTABLE_contextMenuOptions,
-  onUnregisterEntity,
-  onInspectEntity,
-}: Props) => {
+export function EntityContextMenu(props: EntityContextMenuProps) {
+  const {
+    UNSTABLE_extraContextMenuItems,
+    UNSTABLE_contextMenuOptions,
+    onUnregisterEntity,
+    onInspectEntity,
+  } = props;
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
   const unregisterPermission = useEntityPermission(
@@ -150,4 +151,4 @@ export const EntityContextMenu = ({
       </Popover>
     </>
   );
-};
+}

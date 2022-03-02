@@ -1,5 +1,45 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.2.2
+
+### Patch Changes
+
+- 0f37cdef19: Migrated over from the deprecated `spec.metadata` to `spec.templateInfo` for the `name` and the `baseUrl` of the template.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-scaffolder-backend@0.17.0
+  - @backstage/integration@0.7.5
+
+## 0.2.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/types@0.1.3
+  - @backstage/plugin-scaffolder-backend@0.16.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 661594bf43: Updated to the latest version of `@backstage/plugin-scaffolder-backend`, meaning the `TemplateAction` now exposes the precise input type rather than `any`.
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/plugin-scaffolder-backend@0.16.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.1.11
 
 ### Patch Changes

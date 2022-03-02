@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Entity,
-  Location,
-  LocationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { Location } from '@backstage/catalog-client';
 import {
   CatalogProcessingOrchestrator,
   DeferredEntity,
 } from '../processing/types';
-import { LocationService, LocationStore } from './types';
+import { LocationInput, LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from '../util/conversion';
 
 export class DefaultLocationService implements LocationService {
@@ -35,13 +35,13 @@ export class DefaultLocationService implements LocationService {
   ) {}
 
   async createLocation(
-    spec: LocationSpec,
+    input: LocationInput,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
     if (dryRun) {
-      return this.dryRunCreateLocation(spec);
+      return this.dryRunCreateLocation(input);
     }
-    const location = await this.store.createLocation(spec);
+    const location = await this.store.createLocation(input);
     return { location, entities: [] };
   }
 
@@ -93,7 +93,7 @@ export class DefaultLocationService implements LocationService {
   }
 
   private async dryRunCreateLocation(
-    spec: LocationSpec,
+    spec: LocationInput,
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }> {
     // Run the existence check in parallel with the processing
     const existsPromise = this.store
@@ -112,8 +112,8 @@ export class DefaultLocationService implements LocationService {
         }),
         namespace: 'default',
         annotations: {
-          [LOCATION_ANNOTATION]: `${spec.type}:${spec.target}`,
-          [ORIGIN_LOCATION_ANNOTATION]: `${spec.type}:${spec.target}`,
+          [ANNOTATION_LOCATION]: `${spec.type}:${spec.target}`,
+          [ANNOTATION_ORIGIN_LOCATION]: `${spec.type}:${spec.target}`,
         },
       },
       spec: {

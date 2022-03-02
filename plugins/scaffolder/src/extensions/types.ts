@@ -21,13 +21,11 @@ import { FieldValidation, FieldProps } from '@rjsf/core';
  *
  * @public
  */
-export type CustomFieldValidator<T> =
-  | ((data: T, field: FieldValidation) => void)
-  | ((
-      data: T,
-      field: FieldValidation,
-      context: { apiHolder: ApiHolder },
-    ) => void);
+export type CustomFieldValidator<TFieldReturnValue> = (
+  data: TFieldReturnValue,
+  field: FieldValidation,
+  context: { apiHolder: ApiHolder },
+) => void;
 
 /**
  * Type for the Custom Field Extension with the
@@ -35,10 +33,15 @@ export type CustomFieldValidator<T> =
  *
  * @public
  */
-export type FieldExtensionOptions<T = any> = {
+export type FieldExtensionOptions<
+  TFieldReturnValue = unknown,
+  TInputProps = unknown,
+> = {
   name: string;
-  component: (props: FieldProps<T>) => JSX.Element | null;
-  validation?: CustomFieldValidator<T>;
+  component: (
+    props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+  ) => JSX.Element | null;
+  validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 
 /**
@@ -48,10 +51,10 @@ export type FieldExtensionOptions<T = any> = {
  * @public
  */
 export interface FieldExtensionComponentProps<
-  ReturnValue,
-  UiOptions extends {} = {},
-> extends FieldProps<ReturnValue> {
-  uiSchema: {
-    'ui:options'?: UiOptions;
+  TFieldReturnValue,
+  TUiOptions extends {} = {},
+> extends FieldProps<TFieldReturnValue> {
+  uiSchema: FieldProps['uiSchema'] & {
+    'ui:options'?: TUiOptions;
   };
 }

@@ -1,5 +1,46 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.7
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-tech-insights-node@0.2.5
+
+## 0.2.6
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/plugin-tech-insights-common@0.2.3
+  - @backstage/plugin-tech-insights-node@0.2.4
+
+## 0.2.5
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 538ca90790: Use updated type names from `@backstage/catalog-client`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/plugin-tech-insights-common@0.2.2
+  - @backstage/plugin-tech-insights-node@0.2.3
+
 ## 0.2.4
 
 ### Patch Changes

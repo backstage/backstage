@@ -1,5 +1,29 @@
 # @backstage/plugin-shortcuts
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.2.0
+
+### Minor Changes
+
+- dc9fd0acf9: Use Avatar instead of custom icon for ShortcutIcon
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/theme@0.2.15
+  - @backstage/types@0.1.2
+
 ## 0.1.22
 
 ### Patch Changes

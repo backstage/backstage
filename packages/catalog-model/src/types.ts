@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
-
-/**
- * JSONSchema extendable by arbitrary JSON attributes
- *
- * @public
- */
-export type JSONSchema = JSONSchema7 & { [key in string]?: JsonValue };
-
 /**
  * A complete entity name, with the full kind-namespace-name triplet.
  *
@@ -39,6 +29,7 @@ export type EntityName = {
  * A reference by name to an entity, either as a compact string representation,
  * or as a compound reference structure.
  *
+ * @deprecated Please use string directly, or EntityName (depending on what you actually need)
  * @remarks
  *
  * The string representation is on the form `[<kind>:][<namespace>/]<name>`.

@@ -15,16 +15,16 @@
  */
 
 export type PackageRole =
-  | 'app'
+  | 'frontend'
   | 'backend'
   | 'cli'
   | 'web-library'
   | 'node-library'
   | 'common-library'
-  | 'plugin-frontend'
-  | 'plugin-frontend-module'
-  | 'plugin-backend'
-  | 'plugin-backend-module';
+  | 'frontend-plugin'
+  | 'frontend-plugin-module'
+  | 'backend-plugin'
+  | 'backend-plugin-module';
 
 export type PackagePlatform = 'node' | 'web' | 'common';
 export type PackageOutputType = 'bundle' | 'types' | 'esm' | 'cjs';

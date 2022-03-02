@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 import { catalogApiRef } from './../api';
-import {
-  loadCatalogOwnerRefs,
-  loadIdentityOwnerRefs,
-} from './useEntityOwnership';
+import { loadCatalogOwnerRefs } from './useEntityOwnership';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { CatalogListResponse } from '@backstage/catalog-client';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import useAsync from 'react-use/lib/useAsync';
 import { useMemo } from 'react';
 
@@ -32,17 +29,18 @@ import { useMemo } from 'react';
  * @public
  *
  * @param allowedKinds - Array of allowed kinds to filter the entities
- * @returns CatalogListResponse<Entity>
+ * @deprecated Use `ownershipEntityRefs` from `identityApi.getBackstageIdentity()` instead.
  */
 export function useOwnedEntities(allowedKinds?: string[]): {
   loading: boolean;
-  ownedEntities: CatalogListResponse<Entity> | undefined;
+  ownedEntities: GetEntitiesResponse | undefined;
 } {
   const identityApi = useApi(identityApiRef);
   const catalogApi = useApi(catalogApiRef);
 
   const { loading, value: refs } = useAsync(async () => {
-    const identityRefs = await loadIdentityOwnerRefs(identityApi);
+    const identity = await identityApi.getBackstageIdentity();
+    const identityRefs = identity.ownershipEntityRefs;
     const catalogRefs = await loadCatalogOwnerRefs(catalogApi, identityRefs);
     const catalogs = await catalogApi.getEntities(
       allowedKinds

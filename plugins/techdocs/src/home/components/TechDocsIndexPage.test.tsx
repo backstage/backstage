@@ -24,8 +24,8 @@ jest.mock('react-router', () => ({
   useOutlet: jest.fn().mockReturnValue('Route Children'),
 }));
 
-jest.mock('./LegacyTechDocsHome', () => ({
-  LegacyTechDocsHome: jest.fn().mockReturnValue('LegacyTechDocsHomeMock'),
+jest.mock('./DefaultTechDocsHome', () => ({
+  DefaultTechDocsHome: jest.fn().mockReturnValue('DefaultTechDocsHomeMock'),
 }));
 
 describe('TechDocsIndexPage', () => {
@@ -35,10 +35,10 @@ describe('TechDocsIndexPage', () => {
     expect(getByText('Route Children')).toBeInTheDocument();
   });
 
-  it('renders legacy TechDocs home when no router children are provided', async () => {
+  it('renders DefaultTechDocsHome when no router children are provided', async () => {
     (useOutlet as jest.Mock).mockReturnValueOnce(null);
     const { getByText } = await renderInTestApp(<TechDocsIndexPage />);
 
-    expect(getByText('LegacyTechDocsHomeMock')).toBeInTheDocument();
+    expect(getByText('DefaultTechDocsHomeMock')).toBeInTheDocument();
   });
 });

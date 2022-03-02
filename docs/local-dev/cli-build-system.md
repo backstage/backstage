@@ -334,13 +334,19 @@ The following is an example of a `Dockerfile` that can be used to package the
 output of `backstage-cli backend:bundle` into an image:
 
 ```Dockerfile
-FROM node:14-buster-slim
+FROM node:16-bullseye-slim
 WORKDIR /app
 
 COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN yarn install --production --frozen-lockfile --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+# install sqlite3 dependencies
+RUN apt-get update && \
+    apt-get install -y libsqlite3-dev python3 cmake g++ && \
+    rm -rf /var/lib/apt/lists/* && \
+    yarn config set python /usr/bin/python3
+
+RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
@@ -444,8 +450,9 @@ working directory to the package that the test is in.
 
 Where small customizations are needed, such as setting coverage thresholds or
 support for specific transforms, it is possible to override the Jest
-configuration through the `"jest"` field in `package.json`. These overrides will
-be loaded in from all `package.json` files in the directory ancestry, meaning
+configuration through the `"jest"` field in `package.json`. For a full list of
+options, see the [Jest documentation](https://jestjs.io/docs/en/configuration).
+These overrides will be loaded in from all `package.json` files in the directory ancestry, meaning
 that you can place common configuration in the `package.json` at the root of a
 monorepo. If multiple overrides are found, they will be merged together with
 configuration further down in the directory tree taking precedence.
@@ -462,6 +469,45 @@ The overrides in a single `package.json` may for example look like this:
       }
     }
   },
+```
+
+If you want to configure editor integration for tests we recommend executing the bundled configuration directly with Jest rather than running through the Yarn test script. For example, with the Jest extension for VS Code the configuration would look something like this:
+
+```jsonc
+{
+  "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js",
+  // In a large repo like the Backstage main repo you likely want to disable
+  // watch mode and the initial test run too, leaving just manual and perhaps
+  // on-save test runs in place.
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-src-file"
+  }
+}
+```
+
+If you also want to enable source maps when debugging tests, you can do so by setting the `ENABLE_SOURCE_MAPS` environment variable. For example, a complete launch configuration for VS Code debugging may look like this:
+
+```json
+{
+  "type": "node",
+  "name": "vscode-jest-tests",
+  "request": "launch",
+  "console": "integratedTerminal",
+  "internalConsoleOptions": "neverOpen",
+  "disableOptimisticBPs": true,
+  "program": "${workspaceFolder}/node_modules/.bin/jest",
+  "cwd": "${workspaceFolder}",
+  "env": {
+    "ENABLE_SOURCE_MAPS": "true"
+  },
+  "args": [
+    "--config",
+    "node_modules/@backstage/cli/config/jest.js",
+    "--runInBand",
+    "--watchAll=false"
+  ]
+}
 ```
 
 ## Publishing
@@ -506,3 +552,36 @@ The following is an excerpt of a typical setup of an isomorphic library package:
   },
   "files": ["dist"],
 ```
+
+## Experimental Type Build
+
+The Backstage CLI has an experimental feature where multiple different type definition files can be generated for different release stages. The release stages are marked in the [TSDoc](https://tsdoc.org/) for each individual export, using either `@public`, `@alpha`, or `@beta`. Rather than just building a single `index.d.ts` file, the build process will instead output `index.d.ts`, `index.beta.d.ts`, and `index.alpha.d.ts`. Each of these files will have exports from more unstable release stages stripped, meaning that `index.d.ts` will omit all exports marked with `@alpha` or `@beta`, while `index.beta.d.ts` will omit all exports marked with `@alpha`.
+
+This feature is aimed at projects that publish to package registries and wish to maintain different levels of API stability within each package. There is no need to use this within a single monorepo, as it has no effect due to only applying to built and published packages.
+
+In order for the experimental type build to work, `@microsoft/api-extractor` must be installed in your project, as it is an optional peer dependency of the Backstage CLI. There are then three steps that need to be taken for each package where you want to enable this feature:
+
+- Add the `--experimental-type-build` flag to the `"build"` script of the package.
+- Add either one or both of `"alphaTypes"` and `"betaTypes"` to the `"publishConfig"` of the package:
+  ```json
+  "publishConfig": {
+    ...
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts",
+    "betaTypes": "dist/index.beta.d.ts"
+  },
+  ```
+- Add either one or both of `"alpha"` and `"beta"` to the `"files"` of the package:
+  ```json
+  "files": [
+    "dist",
+    "alpha",
+    "beta"
+  ]
+  ```
+
+Once this setup is complete, users of the published packages will only be able to access the stable API via the main package entry point, for example `@acme/my-plugin`. Exports marked with `@alpha` or `@beta` will only be available via the `/alpha` entry point, for example `@acme/my-plugin/alpha`, and exports marked with `@beta` will only be available via `/beta`. This does not apply within the monorepo that contains the package. There all exports still have to be imported via the main entry point.
+
+Note that these different entry points are only separated during type checking. At runtime they all share the same code which contains the exports from all releases stages.
+
+An example of this setup can be seen in the [`@backstage/catalog-model`](https://github.com/backstage/backstage/blob/da0675bf9f28ed1460f03635a22d3c26abd14707/packages/catalog-model/package.json#L14) package, which has enabled `alpha` type exports. With this setup, exports marked as `@alpha` are only available for import via `@backstage/catalog-model/alpha`. The `@backstage/catalog-model` package currently does not have any exports marked as `@beta`, or a `/beta` entry point.

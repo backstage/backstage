@@ -38,6 +38,7 @@ import {
   Output,
 } from '../builder';
 import { copyPackageDist } from './copyPackageDist';
+import { getRoleInfo } from '../role';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [
@@ -131,7 +132,9 @@ export async function createDistWorkspace(
       }
       const role = pkg.packageJson.backstage?.role;
       if (!role) {
-        console.warn(`Ignored ${pkg.packageJson.name} because it has no role`);
+        console.warn(
+          `Building ${pkg.packageJson.name} separately because it has no role`,
+        );
         customBuild.push(pkg.packageJson.name);
         continue;
       }
@@ -142,9 +145,17 @@ export async function createDistWorkspace(
         continue;
       }
 
-      if (!buildScript.startsWith('backstage-cli script build')) {
+      if (!buildScript.startsWith('backstage-cli package build')) {
         console.warn(
-          `Ignored ${pkg.packageJson.name} because it has a custom build script, '${buildScript}'`,
+          `Building ${pkg.packageJson.name} separately because it has a custom build script, '${buildScript}'`,
+        );
+        customBuild.push(pkg.packageJson.name);
+        continue;
+      }
+
+      if (getRoleInfo(role).output.includes('bundle')) {
+        console.warn(
+          `Building ${pkg.packageJson.name} separately because it is a bundled package`,
         );
         customBuild.push(pkg.packageJson.name);
         continue;
@@ -216,7 +227,7 @@ export async function createDistWorkspace(
 const FAST_PACK_SCRIPTS = [
   undefined,
   'backstage-cli prepack',
-  'backstage-cli script prepack',
+  'backstage-cli package prepack',
 ];
 
 async function moveToDistWorkspace(

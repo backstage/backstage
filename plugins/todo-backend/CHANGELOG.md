@@ -1,5 +1,69 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.24
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- be9e010da0: Add support to exclude certain folders in `todo` plugin.
+
+  You can add function by configuring your own exclusion logic, for example:
+
+  ```ts
+  import {
+    TodoScmReader,
+    createTodoParser,
+  } from '@backstage/plugin-todo-backend';
+
+  // ...
+
+  const todoReader = TodoScmReader.fromConfig(config, {
+    logger,
+    reader,
+    filePathFilter: (filePath: string): boolean => {
+        ...
+        YOUR LOGIC HERE
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/integration@0.7.5
+
+## 0.1.23
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+
+## 0.1.22
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- edbc03814a: Replace usage of `serializeEntityRef` with `stringifyEntityRef`
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+
 ## 0.1.21
 
 ### Patch Changes

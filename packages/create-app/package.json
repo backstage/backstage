@@ -1,10 +1,13 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.19",
+  "version": "0.4.21",
   "private": false,
   "publishConfig": {
     "access": "public"
+  },
+  "backstage": {
+    "role": "cli"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,16 +24,16 @@
     "backstage-create-app": "bin/backstage-create-app"
   },
   "scripts": {
-    "build": "backstage-cli build --outputs cjs",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "clean": "backstage-cli clean",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "prepack": "node scripts/prepack.js",
     "postpack": "node scripts/postpack.js",
     "start": "nodemon --"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.6",
+    "@backstage/cli-common": "^0.1.8",
     "chalk": "^4.0.0",
     "commander": "^6.1.0",
     "fs-extra": "9.1.0",
@@ -48,6 +51,7 @@
     "ts-node": "^10.0.0"
   },
   "peerDependencies": {
+    "@backstage/app-defaults": "",
     "@backstage/backend-common": "",
     "@backstage/backend-tasks": "",
     "@backstage/catalog-client": "",
@@ -58,30 +62,35 @@
     "@backstage/core-components": "",
     "@backstage/core-plugin-api": "",
     "@backstage/errors": "",
+    "@backstage/integration-react": "",
     "@backstage/plugin-api-docs": "",
     "@backstage/plugin-app-backend": "",
     "@backstage/plugin-auth-backend": "",
     "@backstage/plugin-catalog": "",
     "@backstage/plugin-catalog-backend": "",
+    "@backstage/plugin-catalog-common": "",
     "@backstage/plugin-catalog-graph": "",
     "@backstage/plugin-catalog-import": "",
+    "@backstage/plugin-catalog-react": "",
+    "@backstage/plugin-circleci": "",
     "@backstage/plugin-explore": "",
     "@backstage/plugin-github-actions": "",
     "@backstage/plugin-lighthouse": "",
+    "@backstage/plugin-org": "",
     "@backstage/plugin-permission-common": "",
     "@backstage/plugin-permission-node": "",
+    "@backstage/plugin-permission-react": "",
     "@backstage/plugin-proxy-backend": "",
     "@backstage/plugin-rollbar-backend": "",
     "@backstage/plugin-scaffolder": "",
+    "@backstage/plugin-scaffolder-backend": "",
     "@backstage/plugin-search": "",
     "@backstage/plugin-search-backend": "",
     "@backstage/plugin-search-backend-node": "",
-    "@backstage/plugin-scaffolder-backend": "",
     "@backstage/plugin-tech-radar": "",
     "@backstage/plugin-techdocs": "",
     "@backstage/plugin-techdocs-backend": "",
     "@backstage/plugin-user-settings": "",
-    "@backstage/integration-react": "",
     "@backstage/test-utils": "",
     "@backstage/theme": ""
   },

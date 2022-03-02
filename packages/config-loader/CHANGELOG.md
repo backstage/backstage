@@ -1,5 +1,34 @@
 # @backstage/config-loader
 
+## 0.9.6
+
+### Patch Changes
+
+- c3a1300f79: Include any files included in configuration via $include or $file directives when watching for configuration changes.
+
+## 0.9.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/cli-common@0.1.8
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+
+## 0.9.4
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/errors@0.2.1
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.9.3
 
 ### Patch Changes

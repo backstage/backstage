@@ -1,5 +1,61 @@
 # @backstage/cli
 
+## 0.14.1
+
+### Patch Changes
+
+- 5cc7f48400: Fixed a bug in the built-in Jest configuration that prevented it from identifying packages that had migrated to using the new package scripts to run tests.
+- 49ae6c9573: chore(deps-dev): bump `@types/rollup-plugin-postcss` from 2.0.1 to 3.1.4
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- d2e9d2a34f: chore(deps): bump `@hot-loader/react-dom` from 16.13.0 to 17.0.2
+- c2f3a548cf: Fix building of backends with `repo build --all`, where it would previously only work if the build was executed within the backend package.
+- 3d7ed5377a: Ignore setupTests and the file inside ./dev folder recursively. Eslint
+  can not resolve relative paths as we defined in the rule import/no-extraneous-dependencies, and it does not apply this rule.
+
+  A downside to use a recursive definition would be to checking all `dev` folders, which might not be wanted. Ensure you don't use
+  the `dev` folder out of scope (must be used for dev. env. only)
+
+- Updated dependencies
+  - @backstage/config-loader@0.9.6
+
+## 0.14.0
+
+### Minor Changes
+
+- 1fc0cd3896: Bumped Webpack and Rollup `svgr` dependencies and updated the AST template for `.icon.svg` modules. This means that SVG icon imports are now using SVGO v2.
+
+### Patch Changes
+
+- 0b74c72987: Added a new experimental and hidden `backstage-cli repo lint` command that can be used to lint all packages in the project, similar to `lerna run lint`.
+- 532dae9c4c: The `versions:bump --release next` command is updated to compare the `main` and `next` release manifests and prefer the latest.
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 22862486de: The `versions:bump` command now filters out `npm_` environment configuration when running `yarn install`. This has the effect of allowing it to consider local configuration files within the repository, which is the behavior that one would expect.
+- 22862486de: The `versions:bump` command now also considers the root `package.json` when searching for updates. It has also received updates to its output, including a link the [Backstage upgrade helper](https://backstage.github.io/upgrade-helper) and silenced `yarn install` output.
+- 7410e12268: Several changes were made to the new experimental package roles system. Unless you have been experimenting with using this new system, these changes have no affect on your project.
+
+  Renamed the `backstage-cli migrate package-role` command to `backstage-cli migrate package-roles`.
+
+  Updated the package role definitions by renaming `app` to `frontend`, `plugin-frontend` to `frontend-plugin`, `plugin-frontend-module` to `frontend-plugin-module`, `plugin-backend` to `backend-plugin`, and `plugin-backend-module` to `backend-plugin-module`
+
+  The `backstage-cli migrate package-scripts` received several tweaks to make it more accurate. It now tries to maintain existing script arguments, like `--config` parameters for `build` and `start` scripts.
+
+  The `script` command category has been renamed to `package`.
+
+  The `backstage-cli package build` command set an incorrect target directory for `app` and `backend` packages, which has been fixed.
+
+  The `backend:bundle` and `repo build` command for the `backend` role was previously ignoring building of bundled packages that had migrated to use package roles and the standard build script, this has now been fixed.
+
+- c6bbafb516: Updated the default [sucrase](https://github.com/alangpierce/sucrase)-based Jest transform to include source maps if the environment variable `ENABLE_SOURCE_MAPS` is non-empty. This can be used to better support editor test debugging integrations.
+- 7410e12268: The `test` command now automatically adds `--passWithNoTests` to the Jest invocation. To revert this behavior, pass `--passWithNoTests=false` or `--no-passWithNoTests`.
+- Updated dependencies
+  - @backstage/config-loader@0.9.4
+  - @backstage/errors@0.2.1
+  - @backstage/release-manifests@0.0.2
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.13.2
 
 ### Patch Changes

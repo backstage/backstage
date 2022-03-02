@@ -24,7 +24,7 @@ describe('WebStorage Storage API', () => {
   it('should return undefined for values which are unset', async () => {
     const storage = createMockStorage();
 
-    expect(storage.get('myfakekey')).toBeUndefined();
+    expect(storage.snapshot('myfakekey').value).toBeUndefined();
     expect(storage.snapshot('myfakekey')).toEqual({
       key: 'myfakekey',
       presence: 'absent',
@@ -33,32 +33,29 @@ describe('WebStorage Storage API', () => {
     });
   });
 
-  it('should allow the setting and getting of the simple data structures', async () => {
+  it('should allow the setting and snapshotting of the simple data structures', async () => {
     const storage = createMockStorage();
 
     await storage.set('myfakekey', 'helloimastring');
     await storage.set('mysecondfakekey', 1234);
     await storage.set('mythirdfakekey', true);
-    expect(storage.get('myfakekey')).toBe('helloimastring');
-    expect(storage.get('mysecondfakekey')).toBe(1234);
-    expect(storage.get('mythirdfakekey')).toBe(true);
+    expect(storage.snapshot('myfakekey').value).toBe('helloimastring');
+    expect(storage.snapshot('mysecondfakekey').value).toBe(1234);
+    expect(storage.snapshot('mythirdfakekey').value).toBe(true);
     expect(storage.snapshot('myfakekey')).toEqual({
       key: 'myfakekey',
       presence: 'present',
       value: 'helloimastring',
-      newValue: 'helloimastring',
     });
     expect(storage.snapshot('mysecondfakekey')).toEqual({
       key: 'mysecondfakekey',
       presence: 'present',
       value: 1234,
-      newValue: 1234,
     });
     expect(storage.snapshot('mythirdfakekey')).toEqual({
       key: 'mythirdfakekey',
       presence: 'present',
       value: true,
-      newValue: true,
     });
   });
 
@@ -72,12 +69,11 @@ describe('WebStorage Storage API', () => {
 
     await storage.set('myfakekey', mockData);
 
-    expect(storage.get('myfakekey')).toEqual(mockData);
+    expect(storage.snapshot('myfakekey').value).toEqual(mockData);
     expect(storage.snapshot('myfakekey')).toEqual({
       key: 'myfakekey',
       presence: 'present',
       value: mockData,
-      newValue: mockData,
     });
   });
 
@@ -107,7 +103,6 @@ describe('WebStorage Storage API', () => {
       key: 'correctKey',
       presence: 'present',
       value: mockData,
-      newValue: mockData,
     });
   });
 
@@ -153,9 +148,11 @@ describe('WebStorage Storage API', () => {
     await firstStorage.set(keyName, 'boop');
     await secondStorage.set(keyName, 'deerp');
 
-    expect(firstStorage.get(keyName)).not.toBe(secondStorage.get(keyName));
-    expect(firstStorage.get(keyName)).toBe('boop');
-    expect(secondStorage.get(keyName)).toBe('deerp');
+    expect(firstStorage.snapshot(keyName)).not.toBe(
+      secondStorage.snapshot(keyName),
+    );
+    expect(firstStorage.snapshot(keyName).value).toBe('boop');
+    expect(secondStorage.snapshot(keyName).value).toBe('deerp');
     expect(firstStorage.snapshot(keyName)).not.toEqual(
       secondStorage.snapshot(keyName),
     );
@@ -163,13 +160,11 @@ describe('WebStorage Storage API', () => {
       key: keyName,
       presence: 'present',
       value: 'boop',
-      newValue: 'boop',
     });
     expect(secondStorage.snapshot(keyName)).toEqual({
       key: keyName,
       presence: 'present',
       value: 'deerp',
-      newValue: 'deerp',
     });
   });
 
@@ -186,7 +181,7 @@ describe('WebStorage Storage API', () => {
 
     await firstStorage.set('test2', { error: true });
 
-    expect(secondStorage.get('deep/test2')).toBe(undefined);
+    expect(secondStorage.snapshot('deep/test2').value).toBe(undefined);
     expect(secondStorage.snapshot('deep/test2')).toMatchObject({
       presence: 'absent',
     });
@@ -201,19 +196,17 @@ describe('WebStorage Storage API', () => {
 
     await firstStorage.set('test2', true);
 
-    expect(firstStorage.get('test2')).toBe(true);
-    expect(secondStorage.get('test2')).toBe(undefined);
+    expect(firstStorage.snapshot('test2').value).toBe(true);
+    expect(secondStorage.snapshot('test2').value).toBe(undefined);
     expect(firstStorage.snapshot('test2')).toEqual({
       key: 'test2',
       presence: 'present',
       value: true,
-      newValue: true,
     });
     expect(secondStorage.snapshot('test2')).toEqual({
       key: 'test2',
       presence: 'absent',
       value: undefined,
-      newValue: undefined,
     });
   });
 

@@ -18,10 +18,9 @@ import {
   Entity,
   EntityPolicy,
   LocationEntity,
-  LocationSpec,
-  parseLocationReference,
+  parseLocationRef,
   stringifyEntityRef,
-  stringifyLocationReference,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import {
   assertError,
@@ -36,8 +35,9 @@ import { Logger } from 'winston';
 import {
   CatalogProcessor,
   CatalogProcessorParser,
-} from '../ingestion/processors';
-import * as results from '../ingestion/processors/results';
+  LocationSpec,
+  processingResult,
+} from '../api';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingRequest,
@@ -64,6 +64,7 @@ type Context = {
   cache: ProcessorCacheManager;
 };
 
+/** @public */
 export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator
 {
@@ -119,10 +120,8 @@ export class DefaultCatalogProcessingOrchestrator
       // source-location? - maybe probably doesn't exist yet?
       const context: Context = {
         entityRef: stringifyEntityRef(entity),
-        location: parseLocationReference(getEntityLocationRef(entity)),
-        originLocation: parseLocationReference(
-          getEntityOriginLocationRef(entity),
-        ),
+        location: parseLocationRef(getEntityLocationRef(entity)),
+        originLocation: parseLocationRef(getEntityOriginLocationRef(entity)),
         cache,
         collector,
       };
@@ -149,9 +148,9 @@ export class DefaultCatalogProcessingOrchestrator
           throw new NotAllowedError(
             `Entity ${stringifyEntityRef(
               deferredEntity.entity,
-            )} at ${stringifyLocationReference(
+            )} at ${stringifyLocationRef(
               context.location,
-            )}, originated at ${stringifyLocationReference(
+            )}, originated at ${stringifyLocationRef(
               context.originLocation,
             )}, is not of an allowed kind for that location`,
           );
@@ -179,13 +178,13 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let result = entity;
+    let res = entity;
 
     for (const processor of this.options.processors) {
       if (processor.preProcessEntity) {
         try {
-          result = await processor.preProcessEntity(
-            result,
+          res = await processor.preProcessEntity(
+            res,
             context.location,
             context.collector.onEmit,
             context.originLocation,
@@ -200,7 +199,7 @@ export class DefaultCatalogProcessingOrchestrator
       }
     }
 
-    return result;
+    return res;
   }
 
   /**
@@ -296,7 +295,7 @@ export class DefaultCatalogProcessingOrchestrator
     for (const maybeRelativeTarget of targets) {
       if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
         context.collector.onEmit(
-          results.inputError(
+          processingResult.inputError(
             context.location,
             `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
           ),
@@ -352,13 +351,13 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let result = entity;
+    let res = entity;
 
     for (const processor of this.options.processors) {
       if (processor.postProcessEntity) {
         try {
-          result = await processor.postProcessEntity(
-            result,
+          res = await processor.postProcessEntity(
+            res,
             context.location,
             context.collector.onEmit,
             context.cache.forProcessor(processor),
@@ -372,6 +371,6 @@ export class DefaultCatalogProcessingOrchestrator
       }
     }
 
-    return result;
+    return res;
   }
 }

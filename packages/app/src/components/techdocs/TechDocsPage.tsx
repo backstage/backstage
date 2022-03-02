@@ -16,18 +16,18 @@
 
 import { Content } from '@backstage/core-components';
 import {
-  TechDocsPageHeader,
-  TechDocsPage,
+  TechDocsReaderPageHeader,
+  TechDocsReaderPage,
   Reader,
 } from '@backstage/plugin-techdocs';
 import React from 'react';
 
 const DefaultTechDocsPage = () => {
   return (
-    <TechDocsPage>
+    <TechDocsReaderPage>
       {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
         <>
-          <TechDocsPageHeader
+          <TechDocsReaderPageHeader
             techDocsMetadata={techdocsMetadataValue}
             entityMetadata={entityMetadataValue}
             entityRef={entityRef}
@@ -37,7 +37,7 @@ const DefaultTechDocsPage = () => {
           </Content>
         </>
       )}
-    </TechDocsPage>
+    </TechDocsReaderPage>
   );
 };
 

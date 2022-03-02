@@ -28,8 +28,7 @@ import { DateTime } from 'luxon';
 import { PersistenceContext } from './persistence/persistenceContext';
 import {
   EntityName,
-  EntityRef,
-  parseEntityName,
+  parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { errorHandler } from '@backstage/backend-common';
@@ -130,7 +129,7 @@ export async function createRouter<
    */
   router.get('/facts/latest', async (req, res) => {
     const { entity } = req.query;
-    const { namespace, kind, name } = parseEntityName(entity as EntityRef);
+    const { namespace, kind, name } = parseEntityRef(entity as string);
     const ids = req.query.ids as string[];
     return res.send(
       await techInsightsStore.getLatestFactsByIds(
@@ -145,7 +144,7 @@ export async function createRouter<
    */
   router.get('/facts/range', async (req, res) => {
     const { entity } = req.query;
-    const { namespace, kind, name } = parseEntityName(entity as EntityRef);
+    const { namespace, kind, name } = parseEntityRef(entity as string);
 
     const ids = req.query.ids as string[];
     const startDatetime = DateTime.fromISO(req.query.startDatetime as string);

@@ -36,12 +36,10 @@ export type BitbucketIntegrationConfig = {
    * The base URL of the API of this provider, e.g. "https://api.bitbucket.org/2.0",
    * with no trailing slash.
    *
-   * May be omitted specifically for Bitbucket Cloud; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
+   * Values omitted at the optional property at the app-config will be deduced
+   * from the "host" value.
    */
-  apiBaseUrl?: string;
+  apiBaseUrl: string;
 
   /**
    * The authorization token to use for requests to a Bitbucket Server provider.
@@ -90,6 +88,8 @@ export function readBitbucketIntegrationConfig(
     apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === BITBUCKET_HOST) {
     apiBaseUrl = BITBUCKET_API_BASE_URL;
+  } else {
+    apiBaseUrl = `https://${host}/rest/api/1.0`;
   }
 
   return {

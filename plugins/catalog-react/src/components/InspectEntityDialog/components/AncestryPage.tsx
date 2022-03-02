@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -33,7 +33,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef } from '../../../api';
-import { formatEntityRefTitle } from '../../../components/EntityRefLink/format';
+import { humanizeEntityRef } from '../../EntityRefLink';
 import { entityRouteRef } from '../../../routes';
 import { EntityKindIcon } from './EntityKindIcon';
 
@@ -132,7 +132,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
   const displayTitle =
     node.metadata.title ||
     (node.kind && node.metadata.name && node.metadata.namespace
-      ? formatEntityRefTitle({
+      ? humanizeEntityRef({
           kind: node.kind,
           name: node.metadata.name,
           namespace: node.metadata.namespace || '',
@@ -143,7 +143,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
     navigate(
       entityRoute({
         kind: node.kind,
-        namespace: node.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+        namespace: node.metadata.namespace || DEFAULT_NAMESPACE,
         name: node.metadata.name,
       }),
     );

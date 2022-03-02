@@ -31,9 +31,7 @@ export enum BuildStatus {
 // Warning: (ae-missing-release-tag) "EntityGithubActionsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityGithubActionsContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityGithubActionsContent: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityLatestGithubActionRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -42,7 +40,6 @@ export const EntityLatestGithubActionRunCard: ({
   branch,
   variant,
 }: {
-  entity?: Entity | undefined;
   branch: string;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
@@ -54,7 +51,6 @@ export const EntityLatestGithubActionsForBranchCard: ({
   branch,
   variant,
 }: {
-  entity?: Entity | undefined;
   branch: string;
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
@@ -315,7 +311,7 @@ export type Jobs = {
 export const LatestWorkflowRunCard: ({
   branch,
   variant,
-}: Props_3) => JSX.Element;
+}: Props_2) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "LatestWorkflowsForBranchCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -323,7 +319,7 @@ export const LatestWorkflowRunCard: ({
 export const LatestWorkflowsForBranchCard: ({
   branch,
   variant,
-}: Props_3) => JSX.Element;
+}: Props_2) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "RecentWorkflowRunsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -335,11 +331,10 @@ export const RecentWorkflowRunsCard: ({
   variant,
 }: Props) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: (_props: Props_2) => JSX.Element;
+export const Router: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "Step" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

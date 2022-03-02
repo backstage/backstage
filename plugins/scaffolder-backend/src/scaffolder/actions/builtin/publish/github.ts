@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
@@ -22,26 +21,25 @@ import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
 } from '../helpers';
-import { getRepoSourceDirectory } from './util';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
-import { OctokitProvider } from '../github/OctokitProvider';
-import { assertError } from '@backstage/errors';
+import { assertError, InputError } from '@backstage/errors';
+import { getOctokitOptions } from '../github/helpers';
+import { Octokit } from 'octokit';
 
-type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-type Collaborator = { access: Permission; username: string };
-
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to GitHub.
+ *
+ * @public
+ */
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
-  const octokitProvider = new OctokitProvider(
-    integrations,
-    githubCredentialsProvider ||
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
-  );
 
   return createTemplateAction<{
     repoUrl: string;
@@ -50,8 +48,11 @@ export function createPublishGithubAction(options: {
     defaultBranch?: string;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
-    repoVisibility: 'private' | 'internal' | 'public';
-    collaborators: Collaborator[];
+    repoVisibility?: 'private' | 'internal' | 'public';
+    collaborators?: Array<{
+      username: string;
+      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+    }>;
     token?: string;
     topics?: string[];
   }>({
@@ -160,10 +161,20 @@ export function createPublishGithubAction(options: {
         token: providedToken,
       } = ctx.input;
 
-      const { client, token, owner, repo } = await octokitProvider.getOctokit(
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
         repoUrl,
-        { token: providedToken },
-      );
+      });
+
+      const client = new Octokit(octokitOptions);
 
       const user = await client.rest.users.getByUsername({
         username: owner,
@@ -253,7 +264,7 @@ export function createPublishGithubAction(options: {
         defaultBranch,
         auth: {
           username: 'x-access-token',
-          password: token,
+          password: octokitOptions.auth,
         },
         logger: ctx.logger,
         commitMessage: config.getOptionalString(

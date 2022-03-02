@@ -1,5 +1,21 @@
 # @backstage/plugin-explore-react
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.0.12
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.1
+
 ## 0.0.11
 
 ### Patch Changes

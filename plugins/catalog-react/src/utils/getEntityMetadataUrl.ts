@@ -15,15 +15,22 @@
  */
 
 import {
-  EDIT_URL_ANNOTATION,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_VIEW_URL,
   Entity,
-  VIEW_URL_ANNOTATION,
 } from '@backstage/catalog-model';
 
+/**
+ * @public
+ * @deprecated use entity.metadata.annotations?.[ANNOTATION_VIEW_URL] instead. */
 export function getEntityMetadataViewUrl(entity: Entity): string | undefined {
-  return entity.metadata.annotations?.[VIEW_URL_ANNOTATION];
+  return entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
 }
 
+/**
+ * @public
+ * @deprecated use entity.metadata.annotations?.[ANNOTATION_EDIT_URL] instead.
+ */
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined {
-  return entity.metadata.annotations?.[EDIT_URL_ANNOTATION];
+  return entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 }

@@ -67,7 +67,7 @@ Bitbucket username to `bitbucket.org/username` annotations of `User` entities in
 the catalog. Note that you must populate your catalog with matching entities or
 users will not be able to sign in.
 
-The second resolver is the `bitbucketUsernameSignInResolver`, which works the
+The second resolver is the `bitbucketUserIdSignInResolver`, which works the
 same way, but uses the Bitbucket user ID instead, and matches on the
 `bitbucket.org/user-id` annotation.
 

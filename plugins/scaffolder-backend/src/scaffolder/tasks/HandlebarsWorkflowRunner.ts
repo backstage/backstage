@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  TaskContext,
-  WorkflowRunner,
-  WorkflowResponse,
-  TaskSpecV1beta2,
-  TaskSpec,
-} from './types';
+import { TaskContext, WorkflowRunner, WorkflowResponse } from './types';
 import * as Handlebars from 'handlebars';
 import { TemplateActionRegistry } from '..';
 import { ScmIntegrations } from '@backstage/integration';
@@ -33,6 +27,7 @@ import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
+import { TaskSpec, TaskSpecV1beta2 } from '@backstage/plugin-scaffolder-common';
 
 type Options = {
   workingDirectory: string;
@@ -225,19 +220,12 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
             input: JSON.stringify(input, null, 2),
           });
 
-          if (!task.spec.metadata) {
-            console.warn(
-              'DEPRECATION NOTICE: metadata is undefined. metadata will be required in the future.',
-            );
-          }
-
           await action.handler({
+            // deprecated in favor of templateInfo.baseUrl
             baseUrl: task.spec.baseUrl,
             logger: taskLogger,
             logStream: stream,
             input,
-            // this token is deprecated, and will be removed in favour of secrets.backstageToken instead.
-            token: task.secrets?.token,
             secrets: task.secrets ?? {},
             workspacePath,
             async createTemporaryDirectory() {
@@ -250,7 +238,9 @@ export class HandlebarsWorkflowRunner implements WorkflowRunner {
             output(name: string, value: JsonValue) {
               stepOutputs[name] = value;
             },
+            // deprecated in favor of templateInfo
             metadata: task.spec.metadata,
+            templateInfo: task.spec.templateInfo,
           });
 
           // Remove all temporary directories that were created when executing the action

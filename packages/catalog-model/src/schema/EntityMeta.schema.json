@@ -38,7 +38,8 @@
       "type": "integer",
       "description": "A positive nonzero number that indicates the current generation of data for this entity; the value is incremented each time the spec changes. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations.",
       "examples": [1],
-      "minimum": 1
+      "minimum": 1,
+      "deprecated": true
     },
     "name": {
       "type": "string",

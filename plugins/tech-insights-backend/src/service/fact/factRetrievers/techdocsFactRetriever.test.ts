@@ -15,13 +15,13 @@
  */
 
 import { techdocsFactRetriever } from './techdocsFactRetriever';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   PluginEndpointDiscovery,
   getVoidLogger,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { CatalogListResponse } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 
 const getEntitiesMock = jest.fn();
 jest.mock('@backstage/catalog-client', () => {
@@ -36,7 +36,7 @@ const discovery: jest.Mocked<PluginEndpointDiscovery> = {
   getExternalBaseUrl: jest.fn(),
 };
 
-const defaultEntityListResponse: CatalogListResponse<Entity> = {
+const defaultEntityListResponse: GetEntitiesResponse = {
   items: [
     {
       apiVersion: 'backstage.io/v1beta1',
@@ -57,6 +57,7 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
       relations: [
         {
           type: RELATION_OWNED_BY,
+          targetRef: 'group:default/team-a',
           target: { name: 'team-a', kind: 'group', namespace: 'default' },
         },
       ],

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   PluginEndpointDiscovery,
   getVoidLogger,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { CatalogListResponse } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { entityMetadataFactRetriever } from './entityMetadataFactRetriever';
 
 const getEntitiesMock = jest.fn();
@@ -36,7 +36,7 @@ const discovery: jest.Mocked<PluginEndpointDiscovery> = {
   getExternalBaseUrl: jest.fn(),
 };
 
-const defaultEntityListResponse: CatalogListResponse<Entity> = {
+const defaultEntityListResponse: GetEntitiesResponse = {
   items: [
     {
       apiVersion: 'backstage.io/v1beta1',
@@ -57,6 +57,7 @@ const defaultEntityListResponse: CatalogListResponse<Entity> = {
       relations: [
         {
           type: RELATION_OWNED_BY,
+          targetRef: 'group:default/my-team',
           target: { name: 'team-a', kind: 'group', namespace: 'default' },
         },
       ],

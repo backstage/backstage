@@ -18,6 +18,10 @@ import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import fs from 'fs-extra';
 
+/**
+ * Creates new action that enables deletion of files and directories in the workspace.
+ * @public
+ */
 export const createFilesystemDeleteAction = () => {
   return createTemplateAction<{ files: string[] }>({
     id: 'fs:delete',

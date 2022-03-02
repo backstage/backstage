@@ -13,26 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import { parseReferenceAnnotation } from '../../helpers';
 import { DirectoryPreparer } from './dir';
 import { UrlPreparer } from './url';
-import { PreparerBase, PreparerBuilder, RemoteProtocol } from './types';
+import {
+  PreparerBase,
+  PreparerBuilder,
+  PreparerConfig,
+  RemoteProtocol,
+} from './types';
 
-type factoryOptions = {
-  logger: Logger;
-  reader: UrlReader;
-};
-
+/**
+ * Collection of docs preparers (dir and url)
+ * @public
+ */
 export class Preparers implements PreparerBuilder {
   private preparerMap = new Map<RemoteProtocol, PreparerBase>();
 
+  /**
+   * Returns a generators instance containing a generator for TechDocs
+   * @public
+   * @param backstageConfig - A Backstage configuration
+   * @param preparerConfig - Options to configure preparers
+   */
   static async fromConfig(
-    config: Config,
-    { logger, reader }: factoryOptions,
+    backstageConfig: Config,
+    { logger, reader }: PreparerConfig,
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
@@ -43,16 +51,30 @@ export class Preparers implements PreparerBuilder {
      * Dir preparer is a syntactic sugar for users to define techdocs-ref annotation.
      * When using dir preparer, the docs will be fetched using URL Reader.
      */
-    const directoryPreparer = new DirectoryPreparer(config, logger, reader);
+    const directoryPreparer = new DirectoryPreparer(
+      backstageConfig,
+      logger,
+      reader,
+    );
     preparers.register('dir', directoryPreparer);
 
     return preparers;
   }
 
+  /**
+   * Register a preparer in the preparers collection
+   * @param protocol - url or dir to associate with preparer
+   * @param preparer - The preparer instance to set
+   */
   register(protocol: RemoteProtocol, preparer: PreparerBase) {
     this.preparerMap.set(protocol, preparer);
   }
 
+  /**
+   * Returns the preparer for a given TechDocs entity
+   * @param entity - A TechDocs entity instance
+   * @returns
+   */
   get(entity: Entity): PreparerBase {
     const { type } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',

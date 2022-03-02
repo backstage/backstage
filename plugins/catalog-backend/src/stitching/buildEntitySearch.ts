@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  ENTITY_DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import { DbSearchRow } from '../database/tables';
 
@@ -174,14 +170,14 @@ export function buildEntitySearch(
   // Namespace not specified has the default value "default", so we want to
   // match on that as well
   if (!entity.metadata.namespace) {
-    raw.push({ key: 'metadata.namespace', value: ENTITY_DEFAULT_NAMESPACE });
+    raw.push({ key: 'metadata.namespace', value: DEFAULT_NAMESPACE });
   }
 
   // Visit relations
   for (const relation of entity.relations ?? []) {
     raw.push({
       key: `relations.${relation.type}`,
-      value: stringifyEntityRef(relation.target),
+      value: relation.targetRef,
     });
   }
 

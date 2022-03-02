@@ -1,5 +1,62 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-permission-node@0.5.2
+  - @backstage/plugin-auth-node@0.1.3
+
+## 0.5.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/plugin-auth-node@0.1.2
+  - @backstage/plugin-permission-common@0.5.1
+  - @backstage/plugin-permission-node@0.5.1
+
+## 0.5.0
+
+### Minor Changes
+
+- e2cf0662eb: Add a warning if the permission backend is used without setting `permission.enabled=true`.
+
+  **BREAKING** Permission backend's `createRouter` now requires a `config` option.
+
+  ```diff
+  // packages/backend/src/plugins/permission.ts
+
+  ...
+  export default async function createPlugin({
+    ...
+  + config,
+  }: PluginEnvironment) {
+    return createRouter({
+      ...
+  +   config,
+    });
+  }
+  ```
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-auth-node@0.1.1
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/config@0.1.14
+  - @backstage/plugin-permission-node@0.5.0
+
 ## 0.4.3
 
 ### Patch Changes

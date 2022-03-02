@@ -34,20 +34,28 @@ import {
   UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { EntityListDocsTable } from './EntityListDocsTable';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
-import { DocsTableRow } from './types';
+import { DocsTableRow, EntityListDocsTable } from './Tables';
 
-export const DefaultTechDocsHome = ({
-  initialFilter = 'all',
-  columns,
-  actions,
-}: {
+/**
+ * Props for {@link DefaultTechDocsHome}
+ *
+ * @public
+ */
+export type DefaultTechDocsHomeProps = {
   initialFilter?: UserListFilterKind;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
-}) => {
+};
+
+/**
+ * Component which renders a default documentation landing page.
+ *
+ * @public
+ */
+export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
+  const { initialFilter = 'all', columns, actions } = props;
   return (
     <TechDocsPageWrapper>
       <Content>

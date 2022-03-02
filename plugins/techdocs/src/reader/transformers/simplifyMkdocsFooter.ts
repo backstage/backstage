@@ -18,9 +18,10 @@ import type { Transformer } from './transformer';
 
 export const simplifyMkdocsFooter = (): Transformer => {
   return dom => {
-    // Remove mkdocs copyright
+    // Remove new mkdocs copyright
+    dom.querySelector('.md-footer .md-copyright')?.remove();
+    // Remove old mkdocs copyright
     dom.querySelector('.md-footer-copyright')?.remove();
-
     return dom;
   };
 };

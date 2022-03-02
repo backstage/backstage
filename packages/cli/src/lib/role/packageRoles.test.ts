@@ -31,8 +31,8 @@ describe('getRoleInfo', () => {
       output: ['types', 'esm'],
     });
 
-    expect(getRoleInfo('app')).toEqual({
-      role: 'app',
+    expect(getRoleInfo('frontend')).toEqual({
+      role: 'frontend',
       platform: 'web',
       output: ['bundle'],
     });
@@ -56,10 +56,10 @@ describe('getRoleFromPackage', () => {
     expect(
       getRoleFromPackage({
         backstage: {
-          role: 'app',
+          role: 'frontend',
         },
       }),
-    ).toEqual('app');
+    ).toEqual('frontend');
 
     expect(() =>
       getRoleFromPackage({
@@ -135,7 +135,7 @@ describe('detectRoleFromPackage', () => {
           'cy:run': 'cypress run',
         },
       }),
-    ).toEqual('app');
+    ).toEqual('frontend');
   });
 
   it('detects the role of example-backend', () => {
@@ -180,7 +180,7 @@ describe('detectRoleFromPackage', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual('plugin-frontend');
+    ).toEqual('frontend-plugin');
   });
 
   it('detects the role of @backstage/plugin-catalog-backend', () => {
@@ -204,7 +204,7 @@ describe('detectRoleFromPackage', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual('plugin-backend');
+    ).toEqual('backend-plugin');
   });
 
   it('detects the role of @backstage/plugin-catalog-react', () => {
@@ -274,7 +274,7 @@ describe('detectRoleFromPackage', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual('plugin-backend-module');
+    ).toEqual('backend-plugin-module');
   });
 
   it('detects the role of @backstage/plugin-permission-node', () => {
@@ -323,6 +323,6 @@ describe('detectRoleFromPackage', () => {
           clean: 'backstage-cli clean',
         },
       }),
-    ).toEqual('plugin-frontend-module');
+    ).toEqual('frontend-plugin-module');
   });
 });

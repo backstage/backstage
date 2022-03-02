@@ -22,8 +22,8 @@ import {
 } from '@backstage/test-utils';
 import {
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
   entityRouteRef,
-  DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType } from 'react';
@@ -44,14 +44,7 @@ export default {
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
         <TestApiProvider
-          apis={[
-            [
-              starredEntitiesApiRef,
-              new DefaultStarredEntitiesApi({
-                storageApi: mockStorageApi,
-              }),
-            ],
-          ]}
+          apis={[[starredEntitiesApiRef, new MockStarredEntitiesApi()]]}
         >
           <Story />
         </TestApiProvider>,

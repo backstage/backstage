@@ -39,7 +39,7 @@ import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { Job, Jobs, Step } from '../../api';
-import { useProjectName } from '../useProjectName';
+import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
@@ -164,25 +164,25 @@ const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
 
 export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   const config = useApi(configApiRef);
-  const projectName = useProjectName(entity);
+  const projectName = getProjectNameFromEntity(entity);
 
   // TODO: Get github hostname from metadata annotation
   const hostname = readGitHubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].host;
-  const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
+  const [owner, repo] = (projectName && projectName.split('/')) || [];
   const details = useWorkflowRunsDetails({ hostname, owner, repo });
   const jobs = useWorkflowRunJobs({ hostname, owner, repo });
 
-  const error = projectName.error || (projectName.value && details.error);
   const classes = useStyles();
-  if (error) {
+
+  if (details.error && details.error.message) {
     return (
       <Typography variant="h6" color="error">
-        Failed to load build, {error.message}
+        Failed to load build, {details.error.message}
       </Typography>
     );
-  } else if (projectName.loading || details.loading) {
+  } else if (details.loading) {
     return <LinearProgress />;
   }
   return (

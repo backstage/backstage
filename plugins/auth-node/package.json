@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -10,25 +10,29 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "node-library"
+  },
   "scripts": {
-    "build": "backstage-cli backend:build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.7",
-    "@backstage/catalog-model": "^0.9.10",
-    "@backstage/config": "^0.1.13",
-    "@backstage/errors": "^0.2.0",
+    "@backstage/backend-common": "^0.11.0",
+    "@backstage/catalog-model": "^0.11.0",
+    "@backstage/config": "^0.1.15",
+    "@backstage/errors": "^0.2.2",
     "jose": "^1.27.1",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2",
+    "@backstage/cli": "^0.14.1",
     "msw": "^0.35.0",
     "uuid": "^8.0.0"
   },

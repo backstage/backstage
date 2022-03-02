@@ -1,12 +1,15 @@
 {
   "name": "@backstage/app-defaults",
   "description": "Provides the default wiring of a Backstage App",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "web-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,19 +24,20 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "backstage-cli build --outputs types,esm",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.8.8",
-    "@backstage/core-app-api": "^0.5.2",
-    "@backstage/core-plugin-api": "^0.6.0",
-    "@backstage/plugin-permission-react": "^0.3.0",
-    "@backstage/theme": "^0.2.14",
+    "@backstage/core-components": "^0.8.10",
+    "@backstage/core-app-api": "^0.5.4",
+    "@backstage/core-plugin-api": "^0.7.0",
+    "@backstage/plugin-permission-react": "^0.3.2",
+    "@backstage/theme": "^0.2.15",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "react-router-dom": "6.0.0-beta.0"
@@ -42,8 +46,8 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2",
-    "@backstage/test-utils": "^0.2.4",
+    "@backstage/cli": "^0.14.1",
+    "@backstage/test-utils": "^0.2.6",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@types/jest": "^26.0.7",

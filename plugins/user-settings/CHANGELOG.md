@@ -1,5 +1,25 @@
 # @backstage/plugin-user-settings
 
+## 0.3.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.3.20
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 12dd25c2a1: Updated example code for registering feature flags in the `EmptyFlags` component
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/theme@0.2.15
+
 ## 0.3.19
 
 ### Patch Changes

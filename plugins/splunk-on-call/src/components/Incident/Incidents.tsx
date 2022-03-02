@@ -49,9 +49,10 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
   refreshIncidents: boolean;
   team: string;
+  readOnly: boolean;
 };
 
-export const Incidents = ({ refreshIncidents, team }: Props) => {
+export const Incidents = ({ readOnly, refreshIncidents, team }: Props) => {
   const classes = useStyles();
   const api = useApi(splunkOnCallApiRef);
 
@@ -108,6 +109,7 @@ export const Incidents = ({ refreshIncidents, team }: Props) => {
             key={index}
             team={team}
             incident={incident}
+            readOnly={readOnly}
           />
         ))
       )}

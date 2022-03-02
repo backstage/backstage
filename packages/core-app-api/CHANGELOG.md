@@ -1,5 +1,24 @@
 # @backstage/core-app-api
 
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.5.3
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+  - @backstage/version-bridge@0.1.2
+
 ## 0.5.2
 
 ### Patch Changes

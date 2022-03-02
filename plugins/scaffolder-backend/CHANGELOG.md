@@ -1,5 +1,123 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.17.2
+
+### Patch Changes
+
+- bug: `repoUrl` does not have a protocol in `publish:github:pull-request`
+
+## 0.17.1
+
+### Patch Changes
+
+- bug: fixing `repoUrl` resolution for `publish:github:pull-request` action
+
+## 0.17.0
+
+### Minor Changes
+
+- 91c6faeb7b: - **BREAKING** - the `/v2/tasks` endpoint now takes `templateRef` instead of `templateName` in the POST body. This should be a valid stringified `entityRef`.
+- 7f193ff019: - **BREAKING** - `DatabaseTaskStore()` constructor is now removed. Please use the `DatabaseTaskStore.create()` method instead.
+
+  - **BREAKING** - `TaskStore.createTask()` method now only takes one argument of type `TaskStoreCreateTaskOptions` which encapsulates the `spec` and `secrets`
+
+  ```diff
+  - TaskStore.createTask(spec, secrets)
+  + TaskStore.createTask({ spec, secrets})
+  ```
+
+  - **BREAKING** - `TaskBroker.dispatch()` method now only takes one argument of type `TaskBrokerDispatchOptions` which encapsulates the `spec` and `secrets`
+
+  ```diff
+  - TaskBroker.dispatch(spec, secrets)
+  + TaskBroker.dispatch({ spec, secrets})
+  ```
+
+- 9d9b2bab47: - **BREAKING** - Removed the re-export of types `TaskSpec` `TaskSpecV1Beta2` and `TaskSpecV1Beta3` these should now be import from `@backstage/plugin-scaffolder-common` directly.
+  - **BREAKING** - Removed the `observe` method from the `TaskBroker` interface, this has now been replaced with an `Observable` implementation under `event# @backstage/plugin-scaffolder-backend.
+
+### Patch Changes
+
+- 9d9b2bab47: - **DEPRECATED** - Deprecated the `runCommand` export in favour of `executeShellCommand`. Please migrate to using the new method.
+  - Added a type parameter to `TaskStoreEmitOptions` to type the `body` property
+- 65a7939c6c: - **DEPRECATED** - `TaskState` has been deprecated in favour of `CurrentClaimedTask`
+  - Narrowed the types from `JSONValue` to `JSONObject` as the usage is and should always be `JSONObject` for `complete` and `emitLog` `metadata` in `TaskContext`
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- ed09ad8093: Updated usage of the `LocationSpec` type from `@backstage/catalog-model`, which is deprecated.
+- 6981ac4ad2: - **DEPRECATED** - The `containerRunner` option passed to `createBuiltinActions` has now been deprecated.
+
+  - **DEPRECATED** - The `createFetchCookiecutterAction` export has also been deprecated and will soon disappear from this plugin.
+
+  The `fetch:cookiecutter` action will soon be removed from the default list of actions that are provided out of the box from the scaffolder plugin. It will still be supported, and maintained by the community, so you can install the package (`@backstage/plugin-scaffolder-backend-module-cookiecutter`) and pass it in as a custom action. Or you can migrate your templates to use [`fetch:template`](https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetchcookiecutter-to-fetchtemplate) with the `cookiecutterCompat` option.
+
+- b1744f1153: - **DEPRECATED** - `OctokitProvider` has been deprecated and will be removed in upcoming versions
+  This helper doesn't make sense to be export from the `plugin-scaffolder-backend` and possibly will be moved into the `integrations` package at a later date.
+  All implementations have been moved over to a private implementation called `getOctokitOptions` which is then passed to the `Octokit` constructor. If you're using this API you should consider duplicating the logic that lives in `getOctokitOptions` and move away from the deprecated export.
+- 0f37cdef19: Migrated over from the deprecated `spec.metadata` to `spec.templateInfo` for the `name` and the `baseUrl` of the template.
+- 7f193ff019: - **DEPRECATED** - `Status` has been deprecated in favour of `TaskStatus`
+  - **DEPRECATED** - `CompletedTaskState` has been deprecated in favour of `TaskCompletionState`
+  - **DEPRECATED** - `DispatchResult` has been deprecated in favour of `TaskBrokerDispatchResult`
+- df61ca71dd: Implemented required `getProcessorName` method for catalog processor.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-catalog-backend@0.22.0
+  - @backstage/plugin-scaffolder-common@0.2.2
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.2
+  - @backstage/integration@0.7.5
+
+## 0.16.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/types@0.1.3
+  - @backstage/plugin-catalog-backend@0.21.5
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.1
+  - @backstage/plugin-scaffolder-common@0.2.1
+
+## 0.16.0
+
+### Minor Changes
+
+- 661594bf43: **BREAKING**: Updated `TemplateAction` and related types to have its type parameter extend `JsonObject` instead of `InputBase`. The `createTemplateAction` has also been updated to pass through the `TInput` type parameter to the return type, meaning the `TemplateAction` retains its type. This can lead to breakages during type checking especially within tests.
+- 8db2b671c6: **BREAKING**: `ctx.token` is now `ctx.secrets.backstageToken` in Actions. Please update any of your Actions that might call out to Backstage API's with this token.
+- 5a1594330e: **BREAKING** - Removed the `CatalogEntityClient` export. This is no longer provider by this package,
+  but you can implement one pretty simply yourself using the `CatalogApi` and applying filters to fetch templates.
+- 7d3471db94: Remove the previously deprecated `scaffolder.provider` config for all providers.
+  This config is no longer used anywhere, and adopters should use [`integrations` config](https://backstage.io/docs/integrations) instead.
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- 3e59f90b51: Fix error handling of the `runCommand` helper to return `Error`
+  instance.
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- e72d371296: Use `TemplateEntityV1beta2` from `@backstage/plugin-scaffolder-common` instead
+  of `@backstage/catalog-model`.
+- 1433045c08: Removed unused `helmet` dependency.
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@0.2.0
+  - @backstage/plugin-catalog-backend@0.21.4
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.0
+
 ## 0.15.24
 
 ### Patch Changes

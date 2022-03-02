@@ -13,40 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  renderInTestApp,
-  TestApiProvider,
-  MockStorageApi,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
   entityRouteRef,
-  DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { Content } from './Content';
 
 describe('StarredEntitiesContent', () => {
   it('should render list of tools', async () => {
-    const mockStorageApi = MockStorageApi.create();
-    await mockStorageApi
-      .forBucket('starredEntities')
-      .set('entityRefs', [
-        'component:default/mock-starred-entity',
-        'component:default/mock-starred-entity-2',
-      ]);
+    const mockedApi = new MockStarredEntitiesApi();
+    mockedApi.toggleStarred('component:default/mock-starred-entity');
+    mockedApi.toggleStarred('component:default/mock-starred-entity-2');
 
     const { getByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({
-              storageApi: mockStorageApi,
-            }),
-          ],
-        ]}
-      >
+      <TestApiProvider apis={[[starredEntitiesApiRef, mockedApi]]}>
         <Content />
       </TestApiProvider>,
       {

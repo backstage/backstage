@@ -15,3 +15,4 @@
  */
 export { SearchModal } from './SearchModal';
 export type { SearchModalProps } from './SearchModal';
+export { useSearchModal } from './useSearchModal';

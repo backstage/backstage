@@ -15,12 +15,15 @@
  */
 
 export * from './catalog';
-export { createBuiltinActions } from './createBuiltinActions';
+export * from './createBuiltinActions';
 export * from './debug';
 export * from './fetch';
 export * from './filesystem';
 export * from './publish';
 export * from './github';
 
+/** @deprecated please add this package to your own installation manually */
 export { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
-export { runCommand } from './helpers';
+
+export { runCommand, executeShellCommand } from './helpers';
+export type { RunCommandOptions } from './helpers';

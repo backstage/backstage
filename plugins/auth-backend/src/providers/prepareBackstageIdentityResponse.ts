@@ -15,7 +15,7 @@
  */
 
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -44,7 +44,7 @@ export function prepareBackstageIdentityResponse(
   const userEntityRef = stringifyEntityRef(
     parseEntityRef(sub, {
       defaultKind: 'user',
-      defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+      defaultNamespace: DEFAULT_NAMESPACE,
     }),
   );
   return {

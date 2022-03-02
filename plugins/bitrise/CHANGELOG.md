@@ -1,5 +1,28 @@
 # @backstage/plugin-bitrise
 
+## 0.1.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.1.26
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/catalog-model@0.10.0
+  - @backstage/theme@0.2.15
+
 ## 0.1.25
 
 ### Patch Changes

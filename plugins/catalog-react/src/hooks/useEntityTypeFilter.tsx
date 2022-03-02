@@ -17,12 +17,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import isEqual from 'lodash/isEqual';
+import sortBy from 'lodash/sortBy';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../api';
-import { useEntityListProvider } from './useEntityListProvider';
+import { useEntityList } from './useEntityListProvider';
 import { EntityTypeFilter } from '../filters';
 
-type EntityTypeReturn = {
+/** @public
+ * @deprecated type inlined with {@link useEntityTypeFilter}.
+ */
+export type EntityTypeReturn = {
   loading: boolean;
   error?: Error;
   availableTypes: string[];
@@ -31,16 +35,23 @@ type EntityTypeReturn = {
 };
 
 /**
- * A hook built on top of `useEntityListProvider` for enabling selection of valid `spec.type` values
+ * A hook built on top of `useEntityList` for enabling selection of valid `spec.type` values
  * based on the selected EntityKindFilter.
+ * @public
  */
-export function useEntityTypeFilter(): EntityTypeReturn {
+export function useEntityTypeFilter(): {
+  loading: boolean;
+  error?: Error;
+  availableTypes: string[];
+  selectedTypes: string[];
+  setSelectedTypes: (types: string[]) => void;
+} {
   const catalogApi = useApi(catalogApiRef);
   const {
     filters: { kind: kindFilter, type: typeFilter },
     queryParameters,
     updateFilters,
-  } = useEntityListProvider();
+  } = useEntityList();
 
   const queryParamTypes = useMemo(
     () => [queryParameters.type].flat().filter(Boolean) as string[],
@@ -67,51 +78,34 @@ export function useEntityTypeFilter(): EntityTypeReturn {
   const {
     error,
     loading,
-    value: entities,
+    value: facets,
   } = useAsync(async () => {
     if (kind) {
       const items = await catalogApi
-        .getEntities({
+        .getEntityFacets({
           filter: { kind },
-          fields: ['spec.type'],
+          facets: ['spec.type'],
         })
-        .then(response => response.items);
+        .then(response => response.facets['spec.type'] || []);
       return items;
     }
     return [];
   }, [kind, catalogApi]);
 
-  const entitiesRef = useRef(entities);
+  const facetsRef = useRef(facets);
   useEffect(() => {
-    const oldEntities = entitiesRef.current;
-    entitiesRef.current = entities;
-    // Delay processing hook until kind and entity load updates have settled to generate list of types;
-    // This prevents reseting the type filter due to saved type value from query params not matching the
+    const oldFacets = facetsRef.current;
+    facetsRef.current = facets;
+    // Delay processing hook until kind and facets load updates have settled to generate list of types;
+    // This prevents resetting the type filter due to saved type value from query params not matching the
     // empty set of type values while values are still being loaded; also only run this hook on changes
-    // to entities
-    if (loading || !kind || oldEntities === entities) {
+    // to facets
+    if (loading || !kind || oldFacets === facets || !facets) {
       return;
     }
 
-    // Resolve the unique set of types from returned entities; could be optimized by a new endpoint
-    // in the catalog-backend that does this, rather than loading entities with redundant types.
-    if (!entities) return;
-
-    // Sort by entity count descending, so the most common types appear on top
-    const countByType = entities.reduce((acc, entity) => {
-      if (typeof entity.spec?.type !== 'string') return acc;
-
-      const entityType = entity.spec.type.toLocaleLowerCase('en-US');
-      if (!acc[entityType]) {
-        acc[entityType] = 0;
-      }
-      acc[entityType] += 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const newTypes = Object.entries(countByType)
-      .sort(([, count1], [, count2]) => count2 - count1)
-      .map(([type]) => type);
+    // Sort by facet count descending, so the most common types appear on top
+    const newTypes = sortBy(facets, f => -f.count).map(f => f.value);
     setAvailableTypes(newTypes);
 
     // Update type filter to only valid values when the list of available types has changed
@@ -121,7 +115,7 @@ export function useEntityTypeFilter(): EntityTypeReturn {
     if (!isEqual(selectedTypes, stillValidTypes)) {
       setSelectedTypes(stillValidTypes);
     }
-  }, [loading, kind, selectedTypes, setSelectedTypes, entities]);
+  }, [loading, kind, selectedTypes, setSelectedTypes, facets]);
 
   useEffect(() => {
     updateFilters({

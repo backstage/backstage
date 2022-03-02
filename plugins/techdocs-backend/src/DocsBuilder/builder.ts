@@ -15,7 +15,7 @@
  */
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -111,8 +111,7 @@ export class DocsBuilder {
       try {
         storedEtag = (
           await this.publisher.fetchTechDocsMetadata({
-            namespace:
-              this.entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE,
+            namespace: this.entity.metadata.namespace ?? DEFAULT_NAMESPACE,
             kind: this.entity.kind,
             name: this.entity.metadata.name,
           })

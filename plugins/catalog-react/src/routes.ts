@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
-
-// TODO(Rugvip): Move these route refs back to the catalog plugin once we're all ported to using external routes
-/**
- * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
- */
-export const rootRoute = createRouteRef({
-  id: 'catalog',
-});
-
-/**
- * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
- */
-export const catalogRouteRef = rootRoute;
 
 /**
  * A stable route ref that points to the catalog page for an individual entity.
@@ -39,6 +26,7 @@ export const catalogRouteRef = rootRoute;
  *
  * If you want to replace the `EntityPage` from `@backstage/catalog-plugin` in your app,
  * you need to use the `entityRouteRef` as the mount point instead of your own.
+ * @public
  */
 export const entityRouteRef = getOrCreateGlobalSingleton(
   'catalog:entity-route-ref',
@@ -50,18 +38,15 @@ export const entityRouteRef = getOrCreateGlobalSingleton(
 );
 
 /**
- * @deprecated use `entityRouteRef` instead.
+ * Utility function to get suitable route params for entityRoute, given an
+ * @public
  */
-export const entityRoute = entityRouteRef;
-
-// Utility function to get suitable route params for entityRoute, given an
-// entity instance
 export function entityRouteParams(entity: Entity) {
   return {
     kind: entity.kind.toLocaleLowerCase('en-US'),
     namespace:
       entity.metadata.namespace?.toLocaleLowerCase('en-US') ??
-      ENTITY_DEFAULT_NAMESPACE,
+      DEFAULT_NAMESPACE,
     name: entity.metadata.name,
   } as const;
 }

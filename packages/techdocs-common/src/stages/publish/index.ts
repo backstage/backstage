@@ -17,6 +17,10 @@ export { Publisher } from './publish';
 export type {
   PublisherBase,
   PublisherType,
-  TechDocsMetadata,
+  PublisherFactory,
+  PublishRequest,
+  PublishResponse,
+  MigrateRequest,
   ReadinessResponse,
+  TechDocsMetadata,
 } from './types';

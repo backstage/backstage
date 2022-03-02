@@ -1,5 +1,32 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+
+## 0.3.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/plugin-azure-devops-common@0.2.2
+
+## 0.3.4
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/config@0.1.14
+  - @backstage/plugin-azure-devops-common@0.2.1
+
 ## 0.3.3
 
 ### Patch Changes

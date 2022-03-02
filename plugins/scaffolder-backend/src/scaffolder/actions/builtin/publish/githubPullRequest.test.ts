@@ -26,20 +26,27 @@ import { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
 import { ActionContext, TemplateAction } from '../../types';
 import {
-  ClientFactoryInput,
+  CreateGithubPullRequestClientFactoryInput,
   createPublishGithubPullRequestAction,
-  GithubPullRequestActionInput,
-  PullRequestCreator,
+  OctokitWithPullRequestPluginClient,
 } from './githubPullRequest';
 
 const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
 const workspacePath = resolvePath(root, 'my-workspace');
 
+type GithubPullRequestActionInput = ReturnType<
+  typeof createPublishGithubPullRequestAction
+> extends TemplateAction<infer U>
+  ? U
+  : never;
+
 describe('createPublishGithubPullRequestAction', () => {
   let instance: TemplateAction<GithubPullRequestActionInput>;
-  let fakeClient: PullRequestCreator;
+  let fakeClient: OctokitWithPullRequestPluginClient;
 
-  let clientFactory: (input: ClientFactoryInput) => Promise<PullRequestCreator>;
+  let clientFactory: (
+    input: CreateGithubPullRequestClientFactoryInput,
+  ) => Promise<OctokitWithPullRequestPluginClient>;
 
   beforeEach(() => {
     const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));

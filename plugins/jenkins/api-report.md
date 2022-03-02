@@ -10,7 +10,6 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import type { EntityName } from '@backstage/catalog-model';
-import type { EntityRef } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -18,9 +17,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // Warning: (ae-missing-release-tag) "EntityJenkinsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityJenkinsContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityJenkinsContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityLatestJenkinsRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -57,7 +54,7 @@ export interface JenkinsApi {
   }): Promise<Build>;
   // Warning: (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
   getProjects(options: {
-    entity: EntityRef;
+    entity: EntityName;
     filter: {
       branch?: string;
     };
@@ -84,31 +81,20 @@ export class JenkinsClient implements JenkinsApi {
     identityApi: IdentityApi;
   });
   // (undocumented)
-  getBuild({
-    entity,
-    jobFullName,
-    buildNumber,
-  }: {
+  getBuild(options: {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
   // (undocumented)
-  getProjects({
-    entity,
-    filter,
-  }: {
+  getProjects(options: {
     entity: EntityName;
     filter: {
       branch?: string;
     };
   }): Promise<Project[]>;
   // (undocumented)
-  retry({
-    entity,
-    jobFullName,
-    buildNumber,
-  }: {
+  retry(options: {
     entity: EntityName;
     jobFullName: string;
     buildNumber: string;

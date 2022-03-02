@@ -1,5 +1,4 @@
 name: Deploy Microsite
-
 on:
   push:
     branches:

@@ -29,6 +29,7 @@ function getEntityRef(entityOrRef: Entity | EntityName | string): string {
     : stringifyEntityRef(entityOrRef);
 }
 
+/** @public */
 export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
   toggleStarredEntity: () => void;
   isStarredEntity: boolean;

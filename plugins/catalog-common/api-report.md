@@ -5,27 +5,27 @@
 ```ts
 import { Permission } from '@backstage/plugin-permission-common';
 
-// @public
+// @alpha
 export const catalogEntityCreatePermission: Permission;
 
-// @public
+// @alpha
 export const catalogEntityDeletePermission: Permission;
 
-// @public
+// @alpha
 export const catalogEntityReadPermission: Permission;
 
-// @public
+// @alpha
 export const catalogEntityRefreshPermission: Permission;
 
-// @public
+// @alpha
 export const catalogLocationCreatePermission: Permission;
 
-// @public
+// @alpha
 export const catalogLocationDeletePermission: Permission;
 
-// @public
+// @alpha
 export const catalogLocationReadPermission: Permission;
 
-// @public (undocumented)
+// @alpha
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
 ```

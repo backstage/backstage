@@ -1,5 +1,4 @@
 name: Deploy Packages
-
 on:
   workflow_dispatch:
   push:
@@ -189,7 +188,7 @@ jobs:
         run: yarn tsc:full
 
       - name: build packages
-        run: yarn lerna -- run --ignore example-app build
+        run: yarn lerna -- run --ignore example-app --ignore example-backend build
 
       # Publishes current version of packages that are not already present in the registry
       - name: publish

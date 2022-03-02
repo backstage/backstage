@@ -17,7 +17,7 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import path from 'path';
-import { runCommand } from '@backstage/plugin-scaffolder-backend';
+import { executeShellCommand } from '@backstage/plugin-scaffolder-backend';
 import commandExists from 'command-exists';
 import {
   railsArgumentResolver,
@@ -64,7 +64,7 @@ export class RailsNewRunner {
         railsArguments as RailsRunOptions,
       );
 
-      await runCommand({
+      await executeShellCommand({
         command: baseCommand,
         args: [
           ...baseArguments,

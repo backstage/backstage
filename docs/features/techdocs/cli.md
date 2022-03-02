@@ -123,13 +123,15 @@ Options:
   --no-pull                       Do not pull the latest docker image
   --no-docker                     Do not use Docker, use MkDocs executable and plugins in current user environment.
   --techdocs-ref <HOST_TYPE:URL>  The repository hosting documentation source files e.g.
-                                  github:https://ghe.mycompany.net.com/org/repo.
+                                  url:https://ghe.mycompany.net.com/org/repo.
                                   This value is same as the backstage.io/techdocs-ref annotation of the corresponding
                                   Backstage entity.
                                   It is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml
                                   if not found.
   --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
                                   in techdocs_metadata.json.
+  --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
+                                  Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
   -v --verbose                    Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```

@@ -13,13 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import React from 'react';
 import type { FieldValidation } from '@rjsf/core';
 import {
   createScaffolderFieldExtension,
-  TextValuePicker,
+  FieldExtensionComponentProps,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
+
+import { TextField } from '@material-ui/core';
+
+const TextValuePicker = (props: FieldExtensionComponentProps<string>) => {
+  const {
+    onChange,
+    required,
+    schema: { title, description },
+    rawErrors,
+    formData,
+    uiSchema: { 'ui:autofocus': autoFocus },
+    idSchema,
+    placeholder,
+  } = props;
+
+  return (
+    <TextField
+      id={idSchema?.$id}
+      label={title}
+      placeholder={placeholder}
+      helperText={description}
+      required={required}
+      value={formData ?? ''}
+      onChange={({ target: { value } }) => onChange(value)}
+      margin="normal"
+      error={rawErrors?.length > 0 && !formData}
+      inputProps={{ autoFocus }}
+    />
+  );
+};
 
 export const LowerCaseValuePickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({

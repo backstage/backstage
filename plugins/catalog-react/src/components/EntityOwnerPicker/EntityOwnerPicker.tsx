@@ -28,10 +28,10 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
-import { formatEntityRefTitle } from '../EntityRefLink';
+import { humanizeEntityRef } from '../EntityRefLink';
 
 /** @public */
 export type CatalogReactEntityOwnerPickerClassKey = 'input';
@@ -52,7 +52,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityOwnerPicker = () => {
   const classes = useStyles();
   const { updateFilters, backendEntities, filters, queryParameters } =
-    useEntityListProvider();
+    useEntityList();
 
   const queryParamOwners = useMemo(
     () => [queryParameters.owners].flat().filter(Boolean) as string[],
@@ -86,7 +86,7 @@ export const EntityOwnerPicker = () => {
           backendEntities
             .flatMap((e: Entity) =>
               getEntityRelations(e, RELATION_OWNED_BY).map(o =>
-                formatEntityRefTitle(o, { defaultKind: 'group' }),
+                humanizeEntityRef(o, { defaultKind: 'group' }),
               ),
             )
             .filter(Boolean) as string[],

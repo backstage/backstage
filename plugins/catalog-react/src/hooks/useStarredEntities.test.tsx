@@ -15,15 +15,18 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { StorageApi } from '@backstage/core-plugin-api';
-import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
-import { DefaultStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
+import {
+  starredEntitiesApiRef,
+  StarredEntitiesApi,
+  MockStarredEntitiesApi,
+} from '../apis';
 import { useStarredEntities } from './useStarredEntities';
 
 describe('useStarredEntities', () => {
-  let mockStorage: StorageApi;
+  let mockApi: StarredEntitiesApi;
   let wrapper: React.ComponentType;
 
   const mockEntity: Entity = {
@@ -44,22 +47,15 @@ describe('useStarredEntities', () => {
   };
 
   beforeEach(() => {
-    mockStorage = MockStorageApi.create();
+    mockApi = new MockStarredEntitiesApi();
     wrapper = ({ children }: PropsWithChildren<{}>) => (
-      <TestApiProvider
-        apis={[
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({ storageApi: mockStorage }),
-          ],
-        ]}
-      >
+      <TestApiProvider apis={[[starredEntitiesApiRef, mockApi]]}>
         {children}
       </TestApiProvider>
     );
   });
 
-  it('should return an empty set for when there is no items in storage', async () => {
+  it('should return an empty set', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useStarredEntities(),
       { wrapper },
@@ -70,10 +66,11 @@ describe('useStarredEntities', () => {
     expect(result.current.starredEntities.size).toBe(0);
   });
 
-  it('should return a set with the current items when there are items in storage', async () => {
+  it('should return a set with the current items', async () => {
     const expectedIds = ['i', 'am', 'some', 'test', 'ids'];
-    const store = mockStorage?.forBucket('starredEntities');
-    await store?.set('entityRefs', expectedIds);
+    for (const id of expectedIds) {
+      mockApi.toggleStarred(id);
+    }
 
     const { result, waitForNextUpdate } = renderHook(
       () => useStarredEntities(),

@@ -24,7 +24,7 @@ To become a maintainer you need to demonstrate the following:
 - Monitor Discord (delayed response is perfectly acceptable).
 - Triage GitHub issues and perform pull request reviews for other maintainers and the community.
 - Triage build issues - file issues for known flaky builds or bugs, and either fix or find someone to fix any master build breakages.
-- During GitHub issue triage, apply all applicable ([labels](https://github.com/backstage/backstage/labels)) to each new issue. Labels are extremely useful for future issue follow up. Which labels to apply is somewhat subjective so just use your best judgment. A few of the most important labels that are not self explanatory are:
+- During GitHub issue triage, apply all applicable ([labels](https://github.com/backstage/backstage/labels)) to each new issue. Labels are extremely useful for future issue follow-up. Which labels to apply is somewhat subjective so just use your best judgment. A few of the most important labels that are not self-explanatory are:
   - good first issue: Mark any issue that can reasonably be accomplished by a new contributor with this label.
   - help wanted: Unless it is immediately obvious that someone is going to work on an issue (and if so assign it), mark it help wanted.
 - Make sure that ongoing PRs are moving forward at the right pace or closing them.

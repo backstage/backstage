@@ -5,7 +5,6 @@
 ```ts
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
-import { Location as Location_2 } from '@backstage/catalog-model';
 
 // @public
 export type AddLocationRequest = {
@@ -32,27 +31,27 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   getEntityByName(
     name: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
-  getLocationByEntity(
-    entity: Entity,
+  getEntityFacets(
+    request: GetEntityFacetsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
+  ): Promise<GetEntityFacetsResponse>;
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
-  getOriginLocationByEntity(
-    entity: Entity,
+  getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   refreshEntity(
@@ -84,17 +83,22 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>>;
+  ): Promise<GetEntitiesResponse>;
   getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse>;
+  ): Promise<GetEntityAncestorsResponse>;
   getEntityByName(
     compoundName: EntityName,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
+  getEntityFacets(
+    request: GetEntityFacetsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntityFacetsResponse>;
+  // @deprecated (undocumented)
   getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
@@ -103,6 +107,11 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
+  getLocationByRef(
+    locationRef: string,
+    options?: CatalogRequestOptions,
+  ): Promise<Location_2 | undefined>;
+  // @deprecated (undocumented)
   getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
@@ -121,43 +130,89 @@ export class CatalogClient implements CatalogApi {
   ): Promise<void>;
 }
 
-// @public
-export type CatalogEntitiesRequest = {
-  filter?:
-    | Record<string, string | symbol | (string | symbol)[]>[]
-    | Record<string, string | symbol | (string | symbol)[]>
-    | undefined;
-  fields?: string[] | undefined;
-  offset?: number;
-  limit?: number;
-  after?: string;
-};
+// @public @deprecated (undocumented)
+export type CatalogEntitiesRequest = GetEntitiesRequest;
+
+// @public @deprecated (undocumented)
+export type CatalogEntityAncestorsRequest = GetEntityAncestorsRequest;
+
+// @public @deprecated (undocumented)
+export type CatalogEntityAncestorsResponse = GetEntityAncestorsResponse;
+
+// @public @deprecated (undocumented)
+export type CatalogListResponse<_Entity> = GetEntitiesResponse;
 
 // @public
-export type CatalogEntityAncestorsRequest = {
-  entityRef: string;
-};
-
-// @public
-export type CatalogEntityAncestorsResponse = {
-  rootEntityRef: string;
-  items: {
-    entity: Entity;
-    parentEntityRefs: string[];
-  }[];
-};
-
-// @public
-export type CatalogListResponse<T> = {
-  items: T[];
-};
-
-// @public
-export type CatalogRequestOptions = {
+export interface CatalogRequestOptions {
+  // (undocumented)
   token?: string;
-};
+}
 
 // @public
 export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
+
+// @public
+export interface GetEntitiesRequest {
+  after?: string;
+  fields?: string[] | undefined;
+  filter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+  limit?: number;
+  offset?: number;
+}
+
+// @public
+export interface GetEntitiesResponse {
+  // (undocumented)
+  items: Entity[];
+}
+
+// @public
+export interface GetEntityAncestorsRequest {
+  // (undocumented)
+  entityRef: string;
+}
+
+// @public
+export interface GetEntityAncestorsResponse {
+  // (undocumented)
+  items: Array<{
+    entity: Entity;
+    parentEntityRefs: string[];
+  }>;
+  // (undocumented)
+  rootEntityRef: string;
+}
+
+// @public
+export interface GetEntityFacetsRequest {
+  facets: string[];
+  filter?:
+    | Record<string, string | symbol | (string | symbol)[]>[]
+    | Record<string, string | symbol | (string | symbol)[]>
+    | undefined;
+}
+
+// @public
+export interface GetEntityFacetsResponse {
+  facets: Record<
+    string,
+    Array<{
+      value: string;
+      count: number;
+    }>
+  >;
+}
+
+// @public
+type Location_2 = {
+  id: string;
+  type: string;
+  target: string;
+  presence?: 'optional' | 'required';
+};
+export { Location_2 as Location };
 ```

@@ -1,5 +1,174 @@
 # @backstage/plugin-catalog-backend
 
+## 0.22.0
+
+### Minor Changes
+
+- 209fd128e6: The `CodeOwnersProcessor` no longer supports the deprecated SCM-specific location types like `'github/api'`. This is a breaking change but it is unlikely to have an impact, as these location types haven't been supported by the rest of the catalog for a long time.
+- 9876e7f172: **BREAKING**: Removed unused `durationText` utility.
+- 25e97e7242: **BREAKING**: Removed `AwsOrganizationCloudAccountProcessor` from the default
+  set of builtin processors, and instead moved it into its own module
+  `@backstage/plugin-catalog-backend-module-aws`.
+
+  If you were using this processor, through making use of the location type
+  `aws-cloud-accounts` and/or using the configuration key
+  `catalog.processors.awsOrganization`, you will from now on have to add the
+  processor manually to your catalog.
+
+  First, add the `@backstage/plugin-catalog-backend-module-aws` dependency to your
+  `packages/backend` package.
+
+  Then, in `packages/backend/src/plugins/catalog.ts`:
+
+  ```diff
+  +import { AwsOrganizationCloudAccountProcessor } from '@backstage/plugin-catalog-backend-module-aws';
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+  +  builder.addProcessor(
+  +    AwsOrganizationCloudAccountProcessor.fromConfig(
+  +      env.config,
+  +      { logger: env.logger }
+  +    )
+  +  );
+     // ...
+  ```
+
+- e9cf0dd03e: Made the `GitLabDiscoveryProcessor.updateLastActivity` method private, as it was accidentally exposed. It has also been fixed to properly operate in its own cache namespace to avoid collisions with other processors.
+- df61ca71dd: Updated all processors to implement `getProcessorName`.
+
+  **BREAKING**: The `CatalogProcessor` interface now require that the `CatalogProcessor` class implements `getProcessorName()`.
+  The processor name has previously defaulted processor class name. It's therefore _recommended_ to keep your return the same name as the class name if you did not implement this method previously.
+
+  For example:
+
+  ```ts
+  class CustomProcessor implements CatalogProcessor {
+    getProcessorName() {
+      // Use the same name as the class name if this method was not previously implemented.
+      return 'CustomProcessor';
+    }
+  }
+  ```
+
+### Patch Changes
+
+- 919cf2f836: The catalog API now returns entity relations that have three fields: The old
+  `type` and `target` fields, as well as a new `targetRef` field. The last one is
+  the stringified form of the second one.
+
+  **DEPRECATION**: The `target` field is hereby deprecated, both as seen from the
+  catalog API as well as from the `@backstage/catalog-model` package. Both
+  `target` and `targetRef` will be produced for some time, but eventually,
+  `target` will be removed entirely. Please update your readers to stop consuming
+  the `relations.[].target` field from the catalog API as soon as possible.
+
+- 957cb4cb20: Deprecated the `runPeriodically` function which is no longer in use.
+- 01e124ea60: Added an `/entity-facets` endpoint, which lets you query the distribution of
+  possible values for fields of entities.
+
+  This can be useful for example when populating a dropdown in the user interface,
+  such as listing all tag values that are actually being used right now in your
+  catalog instance, along with putting the most common ones at the top.
+
+- 082c32f948: Deprecated the second parameter of `results.location()` that determines whether an emitted location is optional. In cases where this is currently being set to `false`, the parameter can simply be dropped, as that is the default. Usage where this was being set to `true` should be migrated to set the `presence` option of the emitted location to `optional`. For example:
+
+  ```ts
+  results.location(
+    {
+      type: 'url',
+      target: 'http://example.com/foo',
+    },
+    true,
+  );
+
+  // migrated to
+
+  results.location({
+    type: 'url',
+    target: 'http://example.com/foo',
+    presence: 'optional',
+  });
+  ```
+
+- ed09ad8093: Added `LocationSpec`, which was moved over from `@backstage/catalog-model`.
+
+  Added `LocationInput`, which replaced `LocationSpec` where it was used in the `LocationService` and `LocationStore` interfaces. The `LocationInput` type deprecates the `presence` field, which was not being used in those contexts.
+
+- 6d994fd9da: Cleanup catalog-backend API report.
+- 7010349c9a: Added `EntityRelationSpec`, which was moved over from `@backstage/catalog-model`.
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- 420f8d710f: Removed the `processors.githubOrg` config section which is unused and has been replaced by the integrations config.
+- b1296f1f57: Deprecated `StaticLocationProcessor` which is unused and replaced by `ConfigLocationEntityProvider`.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-scaffolder-common@0.2.2
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-permission-node@0.5.2
+  - @backstage/integration@0.7.5
+
+## 0.21.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/search-common@0.2.4
+  - @backstage/types@0.1.3
+  - @backstage/plugin-catalog-common@0.1.4
+  - @backstage/plugin-permission-common@0.5.1
+  - @backstage/plugin-permission-node@0.5.1
+  - @backstage/plugin-scaffolder-common@0.2.1
+
+## 0.21.4
+
+### Patch Changes
+
+- 379da9fb1d: The following processors now properly accept an `ScmIntegrationRegistry` (an
+  interface) instead of an `ScmIntegrations` (which is a concrete class).
+
+  - `AzureDevOpsDiscoveryProcessor`
+  - `CodeOwnersProcessor`
+  - `GitLabDiscoveryProcessor`
+  - `GithubDiscoveryProcessor`
+  - `GithubMultiOrgReaderProcessor`
+  - `GithubOrgReaderProcessor`
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 538ca90790: Use updated type names from `@backstage/catalog-client`
+- ca1d6c1788: Support "dependencyOf" relation in Resource entities
+- 244d24ebc4: Import `Location` from the `@backstage/catalog-client` package.
+- e483dd6c72: Update internal `Location` validation.
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- e72d371296: Use `TemplateEntityV1beta2` from `@backstage/plugin-scaffolder-common` instead
+  of `@backstage/catalog-model`.
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- b590e9b58d: Optimized entity provider mutations with large numbers of new additions, such as big initial startup commits
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@0.2.0
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/types@0.1.2
+  - @backstage/plugin-catalog-common@0.1.3
+  - @backstage/plugin-permission-node@0.5.0
+
 ## 0.21.3
 
 ### Patch Changes
@@ -725,16 +894,16 @@
 
 ### Minor Changes
 
-- 8bfc0571c: Add a default catalog value for BitBucketDiscoveryProcessor. This allows to have a target like so: https://bitbucket.mycompany.com/projects/backstage/repos/service-*
-  which will be expanded to https://bitbucket.mycompany.com/projects/backstage/repos/service-a/catalog-info.yaml given that repository 'service-a' exists.
+- 8bfc0571c: Add a default catalog value for BitBucketDiscoveryProcessor. This allows to have a target like so: `https://bitbucket.mycompany.com/projects/backstage/repos/service-*`
+  which will be expanded to `https://bitbucket.mycompany.com/projects/backstage/repos/service-a/catalog-info.yaml` given that repository 'service-a' exists.
 
   ## Migration
 
   If you are using a custom [Bitbucket parser](https://backstage.io/docs/integrations/bitbucket/discovery#custom-repository-processing) and your `bitbucket-discovery` target (e.g. in your app-config.yaml) omits the catalog path in any of the following ways:
 
-  - https://bitbucket.mycompany.com/projects/backstage/repos/service-*
-  - https://bitbucket.mycompany.com/projects/backstage/repos/*
-  - https://bitbucket.mycompany.com/projects/backstage/repos/*/
+  - `https://bitbucket.mycompany.com/projects/backstage/repos/service-*`
+  - `https://bitbucket.mycompany.com/projects/backstage/repos/*`
+  - `https://bitbucket.mycompany.com/projects/backstage/repos/*/`
 
   then you will be affected by this change.
   The 'target' input to your parser before this commit would be '/', and after this commit it will be '/catalog-info.yaml', and as such needs to be handled to maintain the same functionality.
@@ -1052,7 +1221,7 @@
 
 - 0fd4ea443: Updates the `GithubCredentialsProvider` to return the token type, it can either be `token` or `app` depending on the authentication method.
 
-  Update the `GithubOrgReaderProcessor` NOT to query for email addresses if GitHub Apps is used for authentication, this is due to inconsistencies in the GitHub API when using server to server communications and installation tokens. https://github.community/t/api-v4-unable-to-retrieve-email-resource-not-accessible-by-integration/13831/4 for more info.
+  Update the `GithubOrgReaderProcessor` NOT to query for email addresses if GitHub Apps is used for authentication, this is due to inconsistencies in the GitHub API when using server to server communications and installation tokens. See [this community discussion](https://github.community/t/api-v4-unable-to-retrieve-email-resource-not-accessible-by-integration/13831/4) for more info.
 
   **Removes** deprecated GithubOrgReaderProcessor provider configuration(`catalog.processors.githubOrg`). If you're using the deprecated config section make sure to migrate to [integrations](https://backstage.io/docs/integrations/github/locations) instead.
 

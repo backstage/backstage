@@ -114,15 +114,13 @@ const routes = (
 In `Root.tsx`, add the `SidebarSearchModal` component:
 
 ```bash
-import { SidebarSearchModal, SearchContextProvider } from '@backstage/plugin-search';
+import { SidebarSearchModal } from '@backstage/plugin-search';
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SearchContextProvider>
-        <SidebarSearchModal />
-      </SearchContextProvider>
+      <SidebarSearchModal />
       <SidebarDivider />
 ...
 ```
