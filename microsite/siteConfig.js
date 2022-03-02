@@ -45,6 +45,11 @@ const siteConfig = {
       label: 'Blog',
     },
     {
+      doc: 'releases/overview',
+      href: '/releases',
+      label: 'Releases',
+    },
+    {
       page: 'demos',
       label: 'Demos',
     },
