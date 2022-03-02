@@ -25,7 +25,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
-  results,
+  processingResult,
 } from '@backstage/plugin-catalog-backend';
 import {
   TemplateEntityV1beta3,
@@ -70,7 +70,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
           defaultNamespace: selfRef.namespace,
         });
         emit(
-          results.relation({
+          processingResult.relation({
             source: selfRef,
             type: RELATION_OWNED_BY,
             target: {
@@ -81,7 +81,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
           }),
         );
         emit(
-          results.relation({
+          processingResult.relation({
             source: {
               kind: targetRef.kind,
               namespace: targetRef.namespace,

@@ -23,7 +23,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
-} from '../providers/types';
+} from '../api';
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();

@@ -39,11 +39,14 @@ import lodash, { keyBy } from 'lodash';
 import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
 
 import {
+  CatalogProcessor,
+  CatalogProcessorParser,
+  EntityProvider,
+} from '../api';
+import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
   BuiltinKindsEntityProcessor,
-  CatalogProcessor,
-  CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
   AzureDevOpsDiscoveryProcessor,
@@ -53,23 +56,22 @@ import {
   PlaceholderProcessor,
   PlaceholderResolver,
   UrlReaderProcessor,
-} from '../ingestion';
+} from '../modules';
+import { ConfigLocationEntityProvider } from '../modules/core/ConfigLocationEntityProvider';
+import { DefaultLocationStore } from '../modules/core/DefaultLocationStore';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
-} from '../ingestion/processors/PlaceholderProcessor';
-import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
+} from '../modules/core/PlaceholderProcessor';
+import { defaultEntityDataParser } from '../modules/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { EntityProvider } from '../providers/types';
 import { CatalogProcessingEngine } from '../processing/types';
-import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { DefaultLocationService } from './DefaultLocationService';
-import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import { Stitcher } from '../stitching/Stitcher';

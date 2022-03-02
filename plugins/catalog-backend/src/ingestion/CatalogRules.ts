@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import path from 'path';
-import { LocationSpec } from './processors';
+import { LocationSpec } from '../api';
 
 /**
  * Rules to apply to catalog entities.
