@@ -26,12 +26,6 @@ import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
  * @public
  */
 export type ActionContext<Input extends JsonObject> = {
-  /**
-   * Base URL for the location of the task spec, typically the url of the source entity file.
-   * @deprecated please use templateInfo.baseUrl instead
-   */
-  baseUrl?: string;
-
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;

@@ -78,6 +78,7 @@ export const createBuiltinActions = (
     config,
     additionalTemplateFilters,
   } = options;
+
   const githubCredentialsProvider: GithubCredentialsProvider =
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 

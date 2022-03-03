@@ -71,13 +71,6 @@ export const executeShellCommand = async (options: RunCommandOptions) => {
   });
 };
 
-/**
- * Run a command in a sub-process, normally a shell command.
- * @public
- * @deprecated use {@link executeShellCommand} instead
- */
-export const runCommand = executeShellCommand;
-
 export async function initRepoAndPush({
   dir,
   remoteUrl,

@@ -30,27 +30,11 @@ export type TaskStatus =
   | 'completed';
 
 /**
- * The status of each step of the Task
- *
- * @public
- * @deprecated use TaskStatus instead
- */
-export type Status = TaskStatus;
-
-/**
  * The state of a completed task.
  *
  * @public
  */
 export type TaskCompletionState = 'failed' | 'completed';
-
-/**
- * The state of a completed task.
- *
- * @public
- * @deprecated use TaskCompletionState instead
- */
-export type CompletedTaskState = TaskCompletionState;
 
 /**
  * SerializedTask
@@ -114,14 +98,6 @@ export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
   secrets?: TaskSecrets;
 };
-
-/**
- * DispatchResult
- *
- * @public
- * @deprecated use TaskBrokerDispatchResult instead
- */
-export type DispatchResult = TaskBrokerDispatchResult;
 
 /**
  * Task
