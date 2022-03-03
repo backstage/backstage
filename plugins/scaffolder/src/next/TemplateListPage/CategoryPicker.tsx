@@ -34,6 +34,10 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/**
+ * The Category Picker that is rendered on the left side for picking
+ * categories and filtering the template list.
+ */
 export const CategoryPicker = () => {
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =

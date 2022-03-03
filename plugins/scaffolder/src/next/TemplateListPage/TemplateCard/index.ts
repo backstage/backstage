@@ -13,14 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-
-export interface TemplateCardProps {
-  template: TemplateEntityV1beta3;
-  deprecated?: boolean;
-}
-
-export const TemplateCard = (props: TemplateCardProps) => {
-  return null;
-};
+export { TemplateCard } from './TemplateCard';

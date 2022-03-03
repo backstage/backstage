@@ -35,21 +35,23 @@ export interface TemplateGroupProps {
 
 export const TemplateGroup = (props: TemplateGroupProps) => {
   const { templates, title, components: { CardComponent } = {} } = props;
+  const titleComponent =
+    typeof title === 'string' ? <ContentHeader title={title} /> : title;
 
   if (templates.length === 0) {
     return (
-      <Typography variant="body2">
-        No templates found that match your filter. Learn more about{' '}
-        <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
-          adding templates
-        </Link>
-        .
-      </Typography>
+      <Content>
+        {titleComponent}
+        <Typography variant="body2">
+          No templates found that match your filter. Learn more about{' '}
+          <Link to="https://backstage.io/docs/features/software-templates/adding-templates">
+            adding templates
+          </Link>
+          .
+        </Typography>
+      </Content>
     );
   }
-
-  const titleComponent =
-    typeof title === 'string' ? <ContentHeader title={title} /> : title;
 
   const Card = CardComponent || TemplateCard;
 

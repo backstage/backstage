@@ -109,4 +109,35 @@ describe('TemplateGroup', () => {
       );
     }
   });
+
+  it('should render the title when no templates passed', () => {
+    const { getByText } = render(<TemplateGroup title="Test" templates={[]} />);
+    expect(getByText('Test')).toBeInTheDocument();
+  });
+
+  it('should render the title when there are templates in the list', () => {
+    const mockTemplates: TemplateEntityV1beta3[] = [
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: { name: 'test' },
+        spec: { parameters: [], steps: [], type: 'website' },
+      },
+    ];
+
+    const { getByText } = render(
+      <TemplateGroup title="Test" templates={mockTemplates} />,
+    );
+
+    expect(getByText('Test')).toBeInTheDocument();
+  });
+
+  it('should allow for passing through a user given title component', () => {
+    const TitleComponent = <p>Im a custom header</p>;
+    const { getByText } = render(
+      <TemplateGroup templates={[]} title={TitleComponent} />,
+    );
+
+    expect(getByText('Im a custom header')).toBeInTheDocument();
+  });
 });
