@@ -447,12 +447,36 @@ export const useTechDocsReaderDom = (
               width: 16rem;
               overflow-y: auto;
               overflow-x: hidden;
+              scrollbar-color: rgb(193, 193, 193) #eee;
+              scrollbar-width: thin;
             }
             .md-sidebar .md-sidebar__scrollwrap {
-              width: calc(16rem - 16px);
+              width: calc(16rem - 10px);
             }
             .md-sidebar--secondary {
               right: ${theme.spacing(3)}px;
+            }
+            .md-sidebar::-webkit-scrollbar {
+              width: 5px;
+            }
+            .md-sidebar::-webkit-scrollbar-button {
+              width: 5px;
+              height: 5px;
+            }
+            .md-sidebar::-webkit-scrollbar-track {
+              background: #eee;
+              border: 1 px solid rgb(250, 250, 250);
+              box-shadow: 0px 0px 3px #dfdfdf inset;
+              border-radius: 3px;
+            }
+            .md-sidebar::-webkit-scrollbar-thumb {
+              width: 5px;
+              background: rgb(193, 193, 193);
+              border: transparent;
+              border-radius: 3px;
+            }
+            .md-sidebar::-webkit-scrollbar-thumb:hover {
+              background: rgb(125, 125, 125);
             }
 
             .md-content {
