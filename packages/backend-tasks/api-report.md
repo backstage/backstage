@@ -11,35 +11,26 @@ import { Logger } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
-  createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
-  scheduleTask(
-    task: TaskScheduleDefinition & TaskInvocationDefinition,
-  ): Promise<void>;
+  scheduleTask(task: TaskDefinition): Promise<void>;
+  // Warning: (tsdoc-undefined-tag) The TSDoc tag "@return" is not defined in this configuration
+  triggerTask(id: string): Promise<boolean>;
+}
+
+// @public
+export interface TaskDefinition {
+  fn: TaskFunction;
+  // (undocumented)
+  frequency: string | Duration;
+  id: string;
+  initialDelay?: Duration;
+  signal?: AbortSignal_2;
+  timeout: Duration;
 }
 
 // @public
 export type TaskFunction =
   | ((abortSignal: AbortSignal_2) => void | Promise<void>)
   | (() => void | Promise<void>);
-
-// @public
-export interface TaskInvocationDefinition {
-  fn: TaskFunction;
-  id: string;
-  signal?: AbortSignal_2;
-}
-
-// @public
-export interface TaskRunner {
-  run(task: TaskInvocationDefinition): Promise<void>;
-}
-
-// @public
-export interface TaskScheduleDefinition {
-  frequency: Duration;
-  initialDelay?: Duration;
-  timeout: Duration;
-}
 
 // @public
 export class TaskScheduler {
