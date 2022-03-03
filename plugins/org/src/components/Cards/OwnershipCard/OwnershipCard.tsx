@@ -120,9 +120,14 @@ const getQueryParams = (
     const user = owner as UserEntity;
     filters.owners = [...filters.owners, ...user.spec.memberOf];
   }
-  const queryParams = qs.stringify({
-    filters,
-  });
+  const queryParams = qs.stringify(
+    {
+      filters,
+    },
+    {
+      arrayFormat: 'repeat',
+    },
+  );
 
   return queryParams;
 };

@@ -195,7 +195,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         });
         const newParams = qs.stringify(
           { ...oldParams, filters: queryParams },
-          { addQueryPrefix: true },
+          { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
         const newUrl = `${window.location.pathname}${newParams}`;
         // We use direct history manipulation since useSearchParams and
