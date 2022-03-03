@@ -1,5 +1,15 @@
 # @backstage/plugin-pagerduty
 
+## 0.3.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.3.27
 
 ### Patch Changes

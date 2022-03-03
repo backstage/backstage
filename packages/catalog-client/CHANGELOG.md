@@ -1,5 +1,23 @@
 # @backstage/catalog-client
 
+## 0.8.0
+
+### Minor Changes
+
+- bb2ba5f10d: **BREAKING**: Removed the old deprecated request/response types:
+
+  - `CatalogEntitiesRequest` - please use `GetEntitiesRequest` instead
+  - `CatalogEntityAncestorsRequest` - please use `GetEntityAncestorsRequest` instead
+  - `CatalogEntityAncestorsResponse` - please use `GetEntityAncestorsResponse` instead
+  - `CatalogListResponse` - please use `GetEntitiesResponse` instead
+
+### Patch Changes
+
+- a52f69987a: **DEPRECATION**: Deprecated `getEntityByName` from `CatalogApi` and added `getEntityByRef` instead, which accepts both string and compound ref forms.
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+
 ## 0.7.2
 
 ### Patch Changes

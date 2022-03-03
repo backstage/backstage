@@ -1,5 +1,16 @@
 # @backstage/plugin-rollbar
 
+## 0.4.1
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.4.0
 
 ### Minor Changes
