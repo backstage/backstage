@@ -2,4 +2,4 @@
 '@backstage/backend-tasks': minor
 ---
 
-Adds support from crontab task syntax
+Adds support from Cron task syntax
