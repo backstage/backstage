@@ -16,6 +16,7 @@
 
 import { Groups } from './airbrakeGroups';
 import { createApiRef } from '@backstage/core-plugin-api';
+import { CustomErrorBase } from '@backstage/errors';
 
 export const airbrakeApiRef = createApiRef<AirbrakeApi>({
   id: 'plugin.airbrake.service',
@@ -25,7 +26,7 @@ export interface AirbrakeApi {
   fetchGroups(projectId: string): Promise<Groups>;
 }
 
-export class NoProjectIdError extends Error {
+export class NoProjectIdError extends CustomErrorBase {
   constructor() {
     super('Project ID is not present');
   }

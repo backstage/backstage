@@ -27,6 +27,7 @@
     "@backstage/core-components": "^0.8.10",
     "@backstage/core-plugin-api": "^0.7.0",
     "@backstage/dev-utils": "^0.2.23",
+    "@backstage/errors": "^0.2.2",
     "@backstage/plugin-catalog-react": "^0.7.0",
     "@backstage/test-utils": "^0.2.6",
     "@backstage/theme": "^0.2.15",

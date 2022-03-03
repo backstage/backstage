@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import {
   EmptyState,
+  ErrorPanel,
   InfoCard,
   MissingAnnotationEmptyState,
   Progress,
@@ -25,7 +26,7 @@ import {
 import hash from 'object-hash';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { airbrakeApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
@@ -47,33 +48,22 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
   const classes = useStyles();
 
   const projectId = useProjectId(entity);
-  const errorApi = useApi<ErrorApi>(errorApiRef);
   const airbrakeApi = useApi(airbrakeApiRef);
-  const [componentState, setComponentState] = useState<ComponentState>(
-    ComponentState.Loading,
-  );
+  let componentState = ComponentState.Loading;
 
-  const { loading, value } = useAsync(async () => {
-    try {
-      const result = await airbrakeApi.fetchGroups(projectId);
-      setComponentState(ComponentState.Loaded);
-      return result;
-    } catch (e) {
-      if (!projectId) {
-        setComponentState(ComponentState.NoProjectId);
-      } else {
-        setComponentState(ComponentState.Error);
-        errorApi.post(e);
-      }
-      throw e;
-    }
-  }, [airbrakeApi, errorApi, projectId]);
+  const { loading, value, error } = useAsync(() => {
+    return airbrakeApi.fetchGroups(projectId);
+  }, [airbrakeApi, projectId]);
 
-  useEffect(() => {
-    if (loading) {
-      setComponentState(ComponentState.Loading);
-    }
-  }, [loading]);
+  if (loading) {
+    componentState = ComponentState.Loading;
+  } else if (!projectId) {
+    componentState = ComponentState.NoProjectId;
+  } else if (error) {
+    componentState = ComponentState.Error;
+  } else if (value) {
+    componentState = ComponentState.Loaded;
+  }
 
   switch (componentState) {
     case ComponentState.Loaded:
@@ -103,11 +93,14 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
     case ComponentState.Error:
     default:
       return (
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description={`There is no Airbrake project with id '${projectId}' or there was an issue communicating with Airbrake.`}
-        />
+        <>
+          <ErrorPanel error={error as Error} />
+          <EmptyState
+            missing="info"
+            title="No information to display"
+            description={`There is no Airbrake project with id '${projectId}' or there was an issue communicating with Airbrake.`}
+          />
+        </>
       );
   }
 };
