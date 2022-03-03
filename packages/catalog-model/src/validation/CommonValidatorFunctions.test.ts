@@ -226,4 +226,20 @@ describe('CommonValidatorFunctions', () => {
   ])(`isValidString %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isValidString(value)).toBe(result);
   });
+
+  it.each([
+    [null, false],
+    [true, false],
+    [7, false],
+    [{}, false],
+    ['', false],
+    [' ', false],
+    ['    ', false],
+    ['abc', true],
+    [' abc ', true],
+    ['abc xyz', true],
+    ['abc xyz abc.', true],
+  ])(`isNonEmptyString %p ? %p`, (value, result) => {
+    expect(CommonValidatorFunctions.isNonEmptyString(value)).toBe(result);
+  });
 });

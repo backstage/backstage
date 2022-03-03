@@ -51,6 +51,7 @@ export const apiEntityV1alpha1Validator: KindValidator;
 // @public
 export class CommonValidatorFunctions {
   static isJsonSafe(value: unknown): boolean;
+  static isNonEmptyString(value: unknown): value is string;
   static isValidDnsLabel(value: unknown): boolean;
   static isValidDnsSubdomain(value: unknown): boolean;
   static isValidPrefixAndOrSuffix(
@@ -59,7 +60,9 @@ export class CommonValidatorFunctions {
     isValidPrefix: (value: string) => boolean,
     isValidSuffix: (value: string) => boolean,
   ): boolean;
+  // @deprecated
   static isValidString(value: unknown): boolean;
+  // @deprecated
   static isValidTag(value: unknown): boolean;
   static isValidUrl(value: unknown): boolean;
 }
