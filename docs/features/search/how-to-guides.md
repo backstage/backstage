@@ -219,7 +219,7 @@ export class YourCollatorFactory implements DocumentCollatorFactory {
       };
     }
   }
-  getCollator() {
+  async getCollator() {
     return Readable.from(this.execute());
   }
 }
