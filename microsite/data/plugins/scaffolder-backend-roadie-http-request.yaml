@@ -7,4 +7,3 @@ description: An action to fire an arbitrary HTTP request
 documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/plugins/scaffolder-actions/scaffolder-backend-module-http-request/README.md
 iconUrl: img/scaffolder-http-request-logo.svg
 npmPackageName: '@roadiehq/scaffolder-backend-module-http-request'
-
