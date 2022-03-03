@@ -15,15 +15,24 @@
  */
 
 /**
- * A complete entity name, with the full kind-namespace-name triplet.
+ * All parts of a complete entity ref, forming a full kind-namespace-name
+ * triplet.
  *
  * @public
  */
-export type EntityName = {
+export type CompoundEntityRef = {
   kind: string;
   namespace: string;
   name: string;
 };
+
+/**
+ * A complete entity name, with the full kind-namespace-name triplet.
+ *
+ * @deprecated Use CompoundEntityRef instead
+ * @public
+ */
+export type EntityName = CompoundEntityRef;
 
 /**
  * A reference by name to an entity, either as a compact string representation,

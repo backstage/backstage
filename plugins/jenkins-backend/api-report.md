@@ -4,8 +4,8 @@
 
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
 
@@ -25,7 +25,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   }): DefaultJenkinsInfoProvider;
   // (undocumented)
   getInstance(opt: {
-    entityRef: EntityName;
+    entityRef: CompoundEntityRef;
     jobFullName?: string;
   }): Promise<JenkinsInfo>;
   // (undocumented)
@@ -65,7 +65,7 @@ export interface JenkinsInfo {
 export interface JenkinsInfoProvider {
   // (undocumented)
   getInstance(options: {
-    entityRef: EntityName;
+    entityRef: CompoundEntityRef;
     jobFullName?: string;
   }): Promise<JenkinsInfo>;
 }

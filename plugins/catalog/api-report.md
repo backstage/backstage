@@ -7,8 +7,8 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/search-common';
@@ -157,9 +157,9 @@ export interface CatalogTableRow {
   resolved: {
     name: string;
     partOfSystemRelationTitle?: string;
-    partOfSystemRelations: EntityName[];
+    partOfSystemRelations: CompoundEntityRef[];
     ownedByRelationsTitle?: string;
-    ownedByRelations: EntityName[];
+    ownedByRelations: CompoundEntityRef[];
   };
 }
 

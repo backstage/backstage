@@ -17,7 +17,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -27,7 +27,7 @@ export interface JenkinsInfoProvider {
     /**
      * The entity to get the info about.
      */
-    entityRef: EntityName;
+    entityRef: CompoundEntityRef;
     /**
      * A specific job to get. This is only passed in when we know about a job name we are interested in.
      */
@@ -182,7 +182,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   }
 
   async getInstance(opt: {
-    entityRef: EntityName;
+    entityRef: CompoundEntityRef;
     jobFullName?: string;
   }): Promise<JenkinsInfo> {
     // load entity

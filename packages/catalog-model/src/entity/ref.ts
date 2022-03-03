@@ -15,7 +15,7 @@
  */
 
 import { DEFAULT_NAMESPACE } from './constants';
-import { EntityName } from '../types';
+import { CompoundEntityRef } from '../types';
 import { Entity } from './Entity';
 
 function parseRefString(ref: string): {
@@ -38,14 +38,25 @@ function parseRefString(ref: string): {
 }
 
 /**
- * Extracts the kind, namespace and name that form the name triplet of the
- * given entity.
+ * Extracts the kind, namespace and name that form the compound entity ref
+ * triplet of the given entity.
+ *
+ * @public
+ * @deprecated Use getCompoundEntityRef instead
+ * @param entity - An entity
+ * @returns The compound entity ref
+ */
+export const getEntityName = getCompoundEntityRef;
+
+/**
+ * Extracts the kind, namespace and name that form the compound entity ref
+ * triplet of the given entity.
  *
  * @public
  * @param entity - An entity
- * @returns The complete entity name
+ * @returns The compound entity ref
  */
-export function getEntityName(entity: Entity): EntityName {
+export function getCompoundEntityRef(entity: Entity): CompoundEntityRef {
   return {
     kind: entity.kind,
     namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
@@ -77,7 +88,7 @@ export function parseEntityName(
     /** The default namespace, if none is given in the reference */
     defaultNamespace?: string;
   } = {},
-): EntityName {
+): CompoundEntityRef {
   const { kind, namespace, name } = parseEntityRef(ref, {
     defaultNamespace: DEFAULT_NAMESPACE,
     ...context,
@@ -114,7 +125,7 @@ export function parseEntityRef(
     /** The default namespace, if none is given in the reference */
     defaultNamespace?: string;
   },
-): EntityName {
+): CompoundEntityRef {
   if (!ref) {
     throw new Error(`Entity reference must not be empty`);
   }

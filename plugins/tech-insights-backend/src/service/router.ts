@@ -27,7 +27,7 @@ import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import { PersistenceContext } from './persistence/persistenceContext';
 import {
-  EntityName,
+  CompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -99,8 +99,10 @@ export async function createRouter<
     });
 
     router.post('/checks/run', async (req, res) => {
-      const { checks, entities }: { checks: string[]; entities: EntityName[] } =
-        req.body;
+      const {
+        checks,
+        entities,
+      }: { checks: string[]; entities: CompoundEntityRef[] } = req.body;
       const tasks = entities.map(async entity => {
         const entityTriplet =
           typeof entity === 'string' ? entity : stringifyEntityRef(entity);

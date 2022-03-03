@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName, parseEntityRef } from '@backstage/catalog-model';
+import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -52,7 +52,7 @@ export async function createRouter(
     if (entityRef && typeof entityRef !== 'string') {
       throw new InputError(`entity query must be a string`);
     }
-    let entity: EntityName | undefined = undefined;
+    let entity: CompoundEntityRef | undefined = undefined;
     if (entityRef) {
       try {
         entity = parseEntityRef(entityRef);

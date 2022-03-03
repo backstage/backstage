@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
@@ -56,7 +56,7 @@ type FossaRow = {
   resolved: {
     name: string;
     ownedByRelationsTitle?: string;
-    ownedByRelations: EntityName[];
+    ownedByRelations: CompoundEntityRef[];
     loading: boolean;
     details?: FindingSummary;
   };

@@ -11,8 +11,8 @@ import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
@@ -250,7 +250,7 @@ export const EntityRefLink: (props: EntityRefLinkProps) => JSX.Element;
 
 // @public
 export type EntityRefLinkProps = {
-  entityRef: Entity | EntityName | string;
+  entityRef: Entity | CompoundEntityRef | string;
   defaultKind?: string;
   title?: string;
   children?: React_2.ReactNode;
@@ -265,7 +265,7 @@ export const EntityRefLinks: ({
 
 // @public
 export type EntityRefLinksProps = {
-  entityRefs: (Entity | EntityName)[];
+  entityRefs: (Entity | CompoundEntityRef)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
 
@@ -429,7 +429,7 @@ export function getEntityRelations(
   filter?: {
     kind: string;
   },
-): EntityName[];
+): CompoundEntityRef[];
 
 // @public (undocumented)
 export function getEntitySourceLocation(
@@ -439,7 +439,7 @@ export function getEntitySourceLocation(
 
 // @public (undocumented)
 export function humanizeEntityRef(
-  entityRef: Entity | EntityName,
+  entityRef: Entity | CompoundEntityRef,
   opts?: {
     defaultKind?: string;
   },
@@ -627,12 +627,18 @@ export type UserListPickerProps = {
 // @public (undocumented)
 export function useStarredEntities(): {
   starredEntities: Set<string>;
-  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
-  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+  toggleStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => void;
+  isStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => boolean;
 };
 
 // @public (undocumented)
-export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+export function useStarredEntity(
+  entityOrRef: Entity | CompoundEntityRef | string,
+): {
   toggleStarredEntity: () => void;
   isStarredEntity: boolean;
 };

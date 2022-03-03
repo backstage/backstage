@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
@@ -81,7 +81,7 @@ export const columnFactories = Object.freeze({
     defaultKind?: string;
     filter?: { kind: string };
   }): TableColumn<T> {
-    function getRelations(entity: T): EntityName[] {
+    function getRelations(entity: T): CompoundEntityRef[] {
       return getEntityRelations(entity, relation, entityFilter);
     }
 

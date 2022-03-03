@@ -5,10 +5,10 @@
 ```ts
 /// <reference types="node" />
 
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { IndexableDocument } from '@backstage/search-common';
 import { Logger as Logger_2 } from 'winston';
@@ -157,7 +157,9 @@ export class Publisher {
 // @public
 export interface PublisherBase {
   docsRouter(): express.Handler;
-  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
+  fetchTechDocsMetadata(
+    entityName: CompoundEntityRef,
+  ): Promise<TechDocsMetadata>;
   getReadiness(): Promise<ReadinessResponse>;
   hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
   migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;

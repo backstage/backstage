@@ -16,8 +16,8 @@
 
 import {
   Entity,
-  EntityName,
-  getEntityName,
+  CompoundEntityRef,
+  getCompoundEntityRef,
   ANNOTATION_ORIGIN_LOCATION,
 } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
@@ -44,7 +44,7 @@ export type UseUnregisterEntityDialogState =
   | {
       type: 'unregister';
       location: string;
-      colocatedEntities: EntityName[];
+      colocatedEntities: CompoundEntityRef[];
       unregisterLocation: () => Promise<void>;
       deleteEntity: () => Promise<void>;
     }
@@ -141,7 +141,7 @@ export function useUnregisterEntityDialogState(
   return {
     type: 'unregister',
     location: locationRef!,
-    colocatedEntities: colocatedEntities.map(getEntityName),
+    colocatedEntities: colocatedEntities.map(getCompoundEntityRef),
     unregisterLocation,
     deleteEntity,
   };
