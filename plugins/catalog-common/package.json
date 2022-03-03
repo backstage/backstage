@@ -34,7 +34,8 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/plugin-permission-common": "^0.5.1"
+    "@backstage/plugin-permission-common": "^0.5.1",
+    "@backstage/search-common": "^0.2.4"
   },
   "devDependencies": {
     "@backstage/cli": "^0.14.0"

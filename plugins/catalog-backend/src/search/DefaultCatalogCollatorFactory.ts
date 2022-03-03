@@ -29,21 +29,17 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { DocumentCollatorFactory } from '@backstage/search-common';
 import {
-  DocumentCollatorFactory,
-  IndexableDocument,
-} from '@backstage/search-common';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
+  catalogEntityReadPermission,
+  CatalogEntityDocument,
+} from '@backstage/plugin-catalog-common';
 import { Readable } from 'stream';
 
-/** @public */
-export interface CatalogEntityDocument extends IndexableDocument {
-  componentType: string;
-  namespace: string;
-  kind: string;
-  lifecycle: string;
-  owner: string;
-}
+/**
+ * @deprecated import from `@backstage/plugin-catalog-common` instead
+ */
+export type { CatalogEntityDocument };
 
 /** @public */
 export type DefaultCatalogCollatorFactoryOptions = {
