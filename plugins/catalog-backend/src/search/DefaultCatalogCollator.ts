@@ -29,14 +29,11 @@ import {
   CatalogClient,
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
-import { CatalogEntityDocument } from './DefaultCatalogCollatorFactory';
+import {
+  catalogEntityReadPermission,
+  CatalogEntityDocument,
+} from '@backstage/plugin-catalog-common';
 
-/**
- * @public
- * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
- * use `DefaultCatalogCollatorFactory` instead.
- */
 export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;

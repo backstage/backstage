@@ -16,7 +16,9 @@
 
 export { DefaultCatalogCollatorFactory } from './DefaultCatalogCollatorFactory';
 export type { DefaultCatalogCollatorFactoryOptions } from './DefaultCatalogCollatorFactory';
-export type { CatalogEntityDocument } from './DefaultCatalogCollatorFactory';
+
+/** @public @deprecated use the export from `plugin-catalog-common` instead */
+export type { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 
 /**
  * todo(backstage/techdocs-core): stop exporting this in a future release.
