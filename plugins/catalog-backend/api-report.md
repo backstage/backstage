@@ -218,7 +218,13 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
+  setProcessingInterval(
+    processingInterval: ProcessingIntervalFunction,
+  ): CatalogBuilder;
+  setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
+  // @deprecated
   setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder;
+  // @deprecated
   setRefreshIntervalSeconds(seconds: number): CatalogBuilder;
 }
 
@@ -408,6 +414,12 @@ export const createCatalogPolicyDecision: (
 ) => ConditionalPolicyDecision;
 
 // @public
+export function createRandomProcessingInterval(options: {
+  minSeconds: number;
+  maxSeconds: number;
+}): ProcessingIntervalFunction;
+
+// @public @deprecated
 export function createRandomRefreshInterval(options: {
   minSeconds: number;
   maxSeconds: number;
@@ -990,6 +1002,9 @@ export type PlaceholderResolverResolveUrl = (
 ) => string;
 
 // @public
+export type ProcessingIntervalFunction = () => number;
+
+// @public
 export const processingResult: Readonly<{
   readonly notFoundError: (
     atLocation: LocationSpec,
@@ -1023,7 +1038,7 @@ export type RecursivePartial<T> = {
     : T[P];
 };
 
-// @public
+// @public @deprecated
 export type RefreshIntervalFunction = () => number;
 
 // @public

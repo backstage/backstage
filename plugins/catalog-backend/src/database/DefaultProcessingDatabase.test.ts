@@ -28,7 +28,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
-import { createRandomRefreshInterval } from '../processing/refresh';
+import { createRandomProcessingInterval } from '../processing/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 
@@ -49,7 +49,7 @@ describe('Default Processing Database', () => {
       db: new DefaultProcessingDatabase({
         database: knex,
         logger,
-        refreshInterval: createRandomRefreshInterval({
+        refreshInterval: createRandomProcessingInterval({
           minSeconds: 100,
           maxSeconds: 150,
         }),
