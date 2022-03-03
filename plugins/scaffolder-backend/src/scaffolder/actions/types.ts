@@ -19,10 +19,7 @@ import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { TaskSecrets } from '../tasks/types';
-import {
-  TemplateInfo,
-  TemplateMetadata,
-} from '@backstage/plugin-scaffolder-common';
+import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -47,10 +44,6 @@ export type ActionContext<Input extends JsonObject> = {
    */
   createTemporaryDirectory(): Promise<string>;
 
-  /**
-   * @deprecated please use templateInfo instead
-   */
-  metadata?: TemplateMetadata;
   templateInfo?: TemplateInfo;
 };
 

@@ -26,10 +26,7 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, InputError, NotFoundError } from '@backstage/errors';
-import {
-  TemplateEntityV1beta2,
-  TemplateEntityV1beta3,
-} from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import fs from 'fs-extra';
 import os from 'os';
 import { Logger } from 'winston';
@@ -95,7 +92,7 @@ export async function findTemplate(options: {
   entityRef: CompoundEntityRef;
   token?: string;
   catalogApi: CatalogApi;
-}): Promise<TemplateEntityV1beta3 | TemplateEntityV1beta2> {
+}): Promise<TemplateEntityV1beta3> {
   const { entityRef, token, catalogApi } = options;
 
   if (entityRef.namespace.toLocaleLowerCase('en-US') !== DEFAULT_NAMESPACE) {
@@ -114,5 +111,5 @@ export async function findTemplate(options: {
     );
   }
 
-  return template as TemplateEntityV1beta3 | TemplateEntityV1beta2;
+  return template as TemplateEntityV1beta3;
 }

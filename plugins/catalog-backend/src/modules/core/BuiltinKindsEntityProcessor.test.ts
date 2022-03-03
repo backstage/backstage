@@ -23,7 +23,6 @@ import {
   SystemEntity,
   UserEntity,
 } from '@backstage/catalog-model';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 
 describe('BuiltinKindsEntityProcessor', () => {
@@ -536,39 +535,6 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Group', namespace: 'default', name: 'n' },
           type: 'hasMember',
           target: { kind: 'User', namespace: 'default', name: 'm' },
-        },
-      });
-    });
-    it('generates relations for template entities', async () => {
-      const entity: TemplateEntityV1beta2 = {
-        apiVersion: 'backstage.io/v1beta2',
-        kind: 'Template',
-        metadata: { name: 'n' },
-        spec: {
-          parameters: {},
-          steps: [],
-          type: 'service',
-          owner: 'o',
-        },
-      };
-
-      await processor.postProcessEntity(entity, location, emit);
-
-      expect(emit).toBeCalledTimes(2);
-      expect(emit).toBeCalledWith({
-        type: 'relation',
-        relation: {
-          source: { kind: 'Group', namespace: 'default', name: 'o' },
-          type: 'ownerOf',
-          target: { kind: 'Template', namespace: 'default', name: 'n' },
-        },
-      });
-      expect(emit).toBeCalledWith({
-        type: 'relation',
-        relation: {
-          source: { kind: 'Template', namespace: 'default', name: 'n' },
-          type: 'ownedBy',
-          target: { kind: 'Group', namespace: 'default', name: 'o' },
         },
       });
     });
