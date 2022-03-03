@@ -8,6 +8,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -94,5 +95,7 @@ export interface RouterOptions {
   jenkinsInfoProvider: JenkinsInfoProvider;
   // (undocumented)
   logger: Logger_2;
+  // (undocumented)
+  permissions?: PermissionAuthorizer;
 }
 ```
