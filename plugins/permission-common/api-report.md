@@ -54,6 +54,12 @@ export enum AuthorizeResult {
 }
 
 // @public
+export type BasicPermission = {
+  name: string;
+  attributes: PermissionAttributes;
+};
+
+// @public
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
@@ -81,11 +87,7 @@ export type NotCriteria<TQuery> = {
 };
 
 // @public
-export type Permission = {
-  name: string;
-  attributes: PermissionAttributes;
-  resourceType?: string;
-};
+export type Permission = BasicPermission | ResourcePermission;
 
 // @public
 export type PermissionAttributes = {
@@ -122,4 +124,9 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
+
+// @public
+export type ResourcePermission<T extends string = string> = BasicPermission & {
+  resourceType: T;
+};
 ```

@@ -29,8 +29,10 @@ export type {
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export type {
+  BasicPermission,
   PermissionAttributes,
   Permission,
   PermissionAuthorizer,
+  ResourcePermission,
   AuthorizeRequestOptions,
 } from './permission';
