@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-jenkins-backend': minor
+'@backstage/plugin-jenkins-backend': patch
 ---
 
 Jenkins plugin supports permissions now. We have added a new permission, so you can manage the permission for the users.

@@ -17,10 +17,10 @@
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import type { Logger } from 'winston';
-import type { JenkinsInfoProvider } from './jenkinsInfoProvider';
+import { Logger } from 'winston';
+import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
-import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 

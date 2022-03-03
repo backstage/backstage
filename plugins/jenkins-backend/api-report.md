@@ -7,8 +7,8 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
-import type { Logger as Logger_2 } from 'winston';
-import type { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { Logger as Logger_2 } from 'winston';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
