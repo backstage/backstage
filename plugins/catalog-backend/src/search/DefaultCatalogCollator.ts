@@ -126,6 +126,7 @@ export class DefaultCatalogCollator {
         }),
         text: this.getDocumentText(entity),
         componentType: entity.spec?.type?.toString() || 'other',
+        type: entity.spec?.type?.toString() || 'other',
         namespace: entity.metadata.namespace || 'default',
         kind: entity.kind,
         lifecycle: (entity.spec?.lifecycle as string) || '',

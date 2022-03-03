@@ -21,7 +21,9 @@ import { IndexableDocument } from '@backstage/search-common';
  * @public
  */
 export interface CatalogEntityDocument extends IndexableDocument {
+  /** @deprecated use `type` as well, as `componentType` will be removed after a few releases but we dont want to break indexing */
   componentType: string;
+  type: string;
   namespace: string;
   kind: string;
   lifecycle: string;

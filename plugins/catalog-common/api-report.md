@@ -14,7 +14,7 @@ export const catalogEntityDeletePermission: Permission;
 
 // @public
 export interface CatalogEntityDocument extends IndexableDocument {
-  // (undocumented)
+  // @deprecated (undocumented)
   componentType: string;
   // (undocumented)
   kind: string;
@@ -24,6 +24,8 @@ export interface CatalogEntityDocument extends IndexableDocument {
   namespace: string;
   // (undocumented)
   owner: string;
+  // (undocumented)
+  type: string;
 }
 
 // @alpha
