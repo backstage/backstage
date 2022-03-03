@@ -152,6 +152,17 @@ export interface TaskRunner {
  */
 export interface PluginTaskScheduler {
   /**
+   * Manually updates a task next_run timestamp to be picked up by the next worker.
+   *
+   * If the task doesn't exist, an error is thrown.
+   *
+   * @param id - The task ID
+   * @return Promise<boolean> - whether the task could be successfully triggered.
+   *
+   */
+  triggerTask(id: string): Promise<boolean>;
+
+  /**
    * Schedules a task function for coordinated exclusive invocation across
    * workers. This convenience method performs both the scheduling and
    * invocation in one go.

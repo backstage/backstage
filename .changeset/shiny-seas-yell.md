@@ -5,4 +5,6 @@
 ---
 
 Updates tech-insights to work with backend-tasks and adds support for Unix cron scheduling (best effort) in
-backend-tasks
+backend-tasks.
+
+Updates backend-tasks additionally to be able to trigger tasks manually if necessary.

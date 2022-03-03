@@ -90,6 +90,7 @@ export class FactRetrieverEngine {
       const cronExpression =
         cadence || this.defaultCadence || randomDailyCron();
       try {
+        // disabling eslint here so we can parse the CronTime and verify it's properly formatted
         // eslint-disable-next-line no-new
         new CronTime(cronExpression);
       } catch {
@@ -117,13 +118,8 @@ export class FactRetrieverEngine {
     return this.factRetrieverRegistry.get(ref);
   }
 
-  async runJobOnce(ref: string) {
-    const retriever = this.getJobRegistration(ref);
-    const handle = this.createFactRetrieverHandler(
-      retriever.factRetriever,
-      retriever.lifecycle,
-    );
-    await handle();
+  async triggerJob(ref: string): Promise<boolean> {
+    return this.scheduler.triggerTask(ref);
   }
 
   private createFactRetrieverHandler(

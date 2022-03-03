@@ -26,6 +26,13 @@ import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
+import waitForExpect from 'wait-for-expect';
+
+function sleep(ms: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
@@ -52,12 +59,14 @@ const testFactRetriever: FactRetriever = {
     ];
   }),
 };
-const cadence = '1 * * * *';
+const defaultCadence = '1 * * * *';
 describe('FactRetrieverEngine', () => {
   let engine: FactRetrieverEngine;
   type FactSchemaAssertionCallback = (
     factSchemaDefinition: FactSchemaDefinition,
   ) => void;
+
+  jest.setTimeout(15000);
 
   type FactInsertionAssertionCallback = ({
     facts,
@@ -89,17 +98,22 @@ describe('FactRetrieverEngine', () => {
     } as unknown as TechInsightsStore;
   }
 
-  const mockFactRetrieverRegistry: FactRetrieverRegistry = {
-    listRetrievers(): FactRetriever[] {
-      return [testFactRetriever];
-    },
-    listRegistrations(): FactRetrieverRegistration[] {
-      return [{ factRetriever: testFactRetriever, cadence }];
-    },
-    get: (_: string): FactRetrieverRegistration => {
-      return { factRetriever: testFactRetriever, cadence };
-    },
-  } as unknown as FactRetrieverRegistry;
+  function createMockFactRetrieverRegistry(
+    cadence?: string,
+  ): FactRetrieverRegistry {
+    const cron = cadence ? cadence : defaultCadence;
+    return {
+      listRetrievers(): FactRetriever[] {
+        return [testFactRetriever];
+      },
+      listRegistrations(): FactRetrieverRegistration[] {
+        return [{ factRetriever: testFactRetriever, cadence: cron }];
+      },
+      get: (_: string): FactRetrieverRegistration => {
+        return { factRetriever: testFactRetriever, cadence: cron };
+      },
+    } as unknown as FactRetrieverRegistry;
+  }
 
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -109,6 +123,7 @@ describe('FactRetrieverEngine', () => {
     databaseId: TestDatabaseId,
     insert: FactInsertionAssertionCallback,
     schema: FactSchemaAssertionCallback,
+    cadence?: string,
   ): Promise<FactRetrieverEngine> {
     const knex = await databases.init(databaseId);
     const databaseManager: Partial<DatabaseManager> = {
@@ -127,7 +142,7 @@ describe('FactRetrieverEngine', () => {
           getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
         },
       },
-      factRetrieverRegistry: mockFactRetrieverRegistry,
+      factRetrieverRegistry: createMockFactRetrieverRegistry(cadence),
       repository: createMockRepository(insert, schema),
       scheduler: scheduler.forPlugin('tech-insights'),
     });
@@ -182,10 +197,63 @@ describe('FactRetrieverEngine', () => {
 
       engine = await createEngine(databaseId, insertCallback, () => {});
       engine.schedule();
-      const job: FactRetrieverRegistration =
-        engine.getJobRegistration('test_factretriever');
-      await engine.runJobOnce(job.factRetriever.id);
-      expect(job.cadence!!).toEqual(cadence);
+      const job: FactRetrieverRegistration = engine.getJobRegistration(
+        testFactRetriever.id,
+      );
+      await engine.triggerJob(job.factRetriever.id);
+      await sleep(6000);
+      expect(job.cadence!!).toEqual(defaultCadence);
+      expect(testFactRetriever.handler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entityFilter: testFactRetriever.entityFilter,
+        }),
+      );
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'Should run fact retriever manually twice',
+    async databaseId => {
+      function insertCallback({
+        facts,
+        id,
+      }: {
+        id: string;
+        facts: TechInsightFact[];
+      }) {
+        expect(facts).toHaveLength(1);
+        expect(id).toEqual(testFactRetriever.id);
+        expect(facts[0]).toEqual({
+          entity: {
+            namespace: 'a',
+            kind: 'a',
+            name: 'a',
+          },
+          facts: {
+            testnumberfact: 1,
+          },
+        });
+      }
+      // testing with a cron that is valid, but will allow us to manually trigger the job.
+      const leapCron = '0 0 29 2 1';
+      engine = await createEngine(
+        databaseId,
+        insertCallback,
+        () => {},
+        leapCron,
+      );
+      engine.schedule();
+      const job: FactRetrieverRegistration = engine.getJobRegistration(
+        testFactRetriever.id,
+      );
+      expect(job.cadence!!).toEqual(leapCron);
+      await engine.triggerJob(job.factRetriever.id);
+      while (!(await engine.triggerJob(job.factRetriever.id))) {
+        await sleep(6000);
+      }
+      await waitForExpect(() => {
+        expect(testFactRetriever.handler).toHaveBeenCalledTimes(2);
+      });
       expect(testFactRetriever.handler).toHaveBeenCalledWith(
         expect.objectContaining({
           entityFilter: testFactRetriever.entityFilter,
