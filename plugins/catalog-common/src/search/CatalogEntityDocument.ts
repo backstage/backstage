@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { IndexableDocument } from '@backstage/search-common';
 
 /**
- * Provides shared objects useful for interacting with the catalog and its
- * entities, such as catalog permissions.
+ * The Document format for an Entity in the Catalog for search
  *
- * @packageDocumentation
+ * @public
  */
-
-export {
-  RESOURCE_TYPE_CATALOG_ENTITY,
-  catalogEntityReadPermission,
-  catalogEntityCreatePermission,
-  catalogEntityDeletePermission,
-  catalogEntityRefreshPermission,
-  catalogLocationReadPermission,
-  catalogLocationCreatePermission,
-  catalogLocationDeletePermission,
-} from './permissions';
-
-export * from './search';
+export interface CatalogEntityDocument extends IndexableDocument {
+  /** @deprecated `componentType` is being renamed to `type`. During the transition both of these fields should be set to the same value, in order to avoid issues with indexing. */
+  componentType: string;
+  type: string;
+  namespace: string;
+  kind: string;
+  lifecycle: string;
+  owner: string;
+}
