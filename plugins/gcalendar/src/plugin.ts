@@ -40,12 +40,12 @@ export const gcalendarPlugin = createPlugin({
   ],
 });
 
-export const CalendarCard = gcalendarPlugin.provide(
+export const HomePageCalendar = gcalendarPlugin.provide(
   createComponentExtension({
-    name: 'CalendarCard',
+    name: 'HomePageCalendar',
     component: {
       lazy: () =>
-        import('./components/CalendarCard').then(m => m.CalendarCardContainer),
+        import('./components/CalendarCard').then(m => m.HomePageCalendar),
     },
   }),
 );

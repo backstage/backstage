@@ -22,10 +22,10 @@ import {
   renderInTestApp,
 } from '@backstage/test-utils';
 
-import { CalendarCardContainer } from '.';
+import { HomePageCalendar } from '.';
 import { gcalendarApiRef, gcalendarPlugin } from '../..';
 
-describe('<CalendarCard />', () => {
+describe('<HomePageCalendar />', () => {
   const primaryCalendar = {
     id: 'test-1@test.com',
     summary: 'test-1@test.com',
@@ -71,7 +71,7 @@ describe('<CalendarCard />', () => {
           [googleAuthApiRef, getAuthMockApi('')],
         ]}
       >
-        <CalendarCardContainer />
+        <HomePageCalendar />
       </TestApiProvider>,
     );
 
@@ -86,7 +86,7 @@ describe('<CalendarCard />', () => {
           [googleAuthApiRef, getAuthMockApi()],
         ]}
       >
-        <CalendarCardContainer />
+        <HomePageCalendar />
       </TestApiProvider>,
     );
 
@@ -102,7 +102,7 @@ describe('<CalendarCard />', () => {
           [googleAuthApiRef, getAuthMockApi()],
         ]}
       >
-        <CalendarCardContainer />
+        <HomePageCalendar />
       </TestApiProvider>,
     );
 
@@ -120,7 +120,7 @@ describe('<CalendarCard />', () => {
           [googleAuthApiRef, getAuthMockApi()],
         ]}
       >
-        <CalendarCardContainer />
+        <HomePageCalendar />
       </TestApiProvider>,
     );
 
@@ -141,7 +141,7 @@ describe('<CalendarCard />', () => {
           [storageApiRef, mockStorage],
         ]}
       >
-        <CalendarCardContainer />
+        <HomePageCalendar />
       </TestApiProvider>,
     );
 

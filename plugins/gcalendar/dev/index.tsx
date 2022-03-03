@@ -18,7 +18,7 @@ import { Content, Page } from '@backstage/core-components';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
 import { calendarListMock, eventsMock } from './mocks';
-import { gcalendarPlugin, CalendarCard } from '../src/plugin';
+import { gcalendarPlugin, HomePageCalendar } from '../src/plugin';
 import { gcalendarApiRef } from '../src';
 
 createDevApp()
@@ -52,7 +52,7 @@ createDevApp()
     element: (
       <Page themeId="home">
         <Content>
-          <CalendarCard />
+          <HomePageCalendar />
         </Content>
       </Page>
     ),
