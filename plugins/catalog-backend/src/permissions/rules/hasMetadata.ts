@@ -23,6 +23,6 @@ import { createPropertyRule } from './createPropertyRule';
  *
  * The key argument to the `apply` and `toQuery` methods can be nested, such as
  * 'field.nestedfield'.
- * @public
+ * @alpha
  */
 export const hasMetadata = createPropertyRule('metadata');
