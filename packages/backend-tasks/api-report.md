@@ -12,7 +12,6 @@ import { Logger } from 'winston';
 // @public
 export interface PluginTaskScheduler {
   scheduleTask(task: TaskDefinition): Promise<void>;
-  // Warning: (tsdoc-undefined-tag) The TSDoc tag "@return" is not defined in this configuration
   triggerTask(id: string): Promise<boolean>;
 }
 

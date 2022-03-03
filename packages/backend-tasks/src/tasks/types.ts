@@ -142,7 +142,7 @@ export interface PluginTaskScheduler {
    * If the task doesn't exist, an error is thrown.
    *
    * @param id - The task ID
-   * @return Promise<boolean> - whether the task could be successfully triggered.
+   * @returns Promise<boolean> - whether the task could be successfully triggered.
    *
    */
   triggerTask(id: string): Promise<boolean>;
