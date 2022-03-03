@@ -35,6 +35,7 @@ import {
   Identified,
   AuthorizeRequest,
   AuthorizeResponse,
+  isResourcePermission,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -109,7 +110,7 @@ const handleRequest = async (
           };
         }
 
-        if (!('resourceType' in request.permission)) {
+        if (!isResourcePermission(request.permission)) {
           throw new Error(
             `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
           );

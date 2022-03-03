@@ -16,10 +16,10 @@
 
 import { ServerPermissionClient } from './ServerPermissionClient';
 import {
-  Permission,
   Identified,
   AuthorizeQuery,
   AuthorizeResult,
+  createPermission,
 } from '@backstage/plugin-permission-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -48,11 +48,10 @@ const discovery: PluginEndpointDiscovery = {
     return mockBaseUrl;
   },
 };
-const testPermission: Permission = {
+const testPermission = createPermission({
   name: 'test.permission',
   attributes: {},
-  resourceType: 'test-resource',
-};
+});
 const config = new ConfigReader({
   permission: { enabled: true },
   backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },
