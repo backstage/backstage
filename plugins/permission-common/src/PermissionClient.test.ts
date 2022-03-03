@@ -20,7 +20,7 @@ import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
 import { AuthorizeQuery, AuthorizeResult, Identified } from './types/api';
 import { DiscoveryApi } from './types/discovery';
-import { Permission } from './types/permission';
+import { createPermission } from './permissions';
 
 const server = setupServer();
 const token = 'fake-token';
@@ -36,16 +36,11 @@ const client: PermissionClient = new PermissionClient({
   config: new ConfigReader({ permission: { enabled: true } }),
 });
 
-const mockPermission: Permission = {
+const mockPermission = createPermission({
   name: 'test.permission',
   attributes: {},
-  resourceType: 'test-resource',
-};
-
-const mockAuthorizeQuery = {
-  permission: mockPermission,
-  resourceRef: 'foo',
-};
+  resourceType: 'foo',
+});
 
 describe('PermissionClient', () => {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -53,6 +48,11 @@ describe('PermissionClient', () => {
   afterEach(() => server.resetHandlers());
 
   describe('authorize', () => {
+    const mockAuthorizeQuery = {
+      permission: mockPermission,
+      resourceRef: 'foo:bar',
+    };
+
     const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
       const responses = req.body.items.map((a: Identified<AuthorizeQuery>) => ({
         id: a.id,
@@ -84,7 +84,7 @@ describe('PermissionClient', () => {
         items: [
           expect.objectContaining({
             permission: mockPermission,
-            resourceRef: 'foo',
+            resourceRef: 'foo:bar',
           }),
         ],
       });
