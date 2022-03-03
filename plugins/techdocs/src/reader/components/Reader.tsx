@@ -442,12 +442,14 @@ export const useTechDocsReaderDom = (
             }
 
             .md-sidebar {
-              height: calc(100% - 100px);
+              bottom: 75px;
               position: fixed;
               width: 16rem;
+              overflow-y: auto;
+              overflow-x: hidden;
             }
             .md-sidebar .md-sidebar__scrollwrap {
-              max-height: calc(100% - 100px);
+              width: calc(16rem - 16px);
             }
             .md-sidebar--secondary {
               right: ${theme.spacing(3)}px;
@@ -474,6 +476,12 @@ export const useTechDocsReaderDom = (
               background-color: unset;
             }
 
+            @media screen and (min-width: 76.25em) {
+              .md-sidebar {
+                height: auto;
+              }
+            }
+            
             @media screen and (max-width: 76.1875em) {
               .md-nav {
                 transition: none !important;
