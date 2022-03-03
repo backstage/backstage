@@ -452,8 +452,8 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
 }): JSX.Element | null;
 
-// @public
-export function isOwnerOf(owner: Entity, owned: Entity): boolean;
+// @alpha
+export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
 // @public @deprecated
 export function loadCatalogOwnerRefs(
