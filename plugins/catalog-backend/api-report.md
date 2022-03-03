@@ -225,7 +225,7 @@ export class CatalogBuilder {
   // @deprecated
   setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder;
   // @deprecated
-  setRefreshIntervalSecon0ds(seconds: number): CatalogBuilder;
+  setRefreshIntervalSeconds(seconds: number): CatalogBuilder;
 }
 
 // @alpha

@@ -196,7 +196,7 @@ export class CatalogBuilder {
    *
    * @deprecated use {@link CatalogBuilder#setProcessingIntervalSeconds} instead
    */
-  setRefreshIntervalSecon0ds(seconds: number): CatalogBuilder {
+  setRefreshIntervalSeconds(seconds: number): CatalogBuilder {
     this.env.logger.warn(
       '[DEPRECATION] - CatalogBuilder.setRefreshIntervalSeconds is deprecated. Use CatalogBuilder.setProcessingIntervalSeconds instead.',
     );
