@@ -17,7 +17,7 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
@@ -25,22 +25,21 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
-import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
 // @public
 export type ActionContext<Input extends JsonObject> = {
   baseUrl?: string;
-  logger: Logger_2;
+  logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: Input;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
-  metadata?: TemplateMetadata;
   templateInfo?: TemplateInfo;
 };
 
@@ -297,7 +296,7 @@ export type CreateWorkerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger_2;
+  logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
@@ -404,7 +403,7 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)
@@ -519,7 +518,7 @@ export class TaskManager implements TaskContext {
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
-    logger: Logger_2,
+    logger: Logger,
   ): TaskManager;
   // (undocumented)
   get done(): boolean;
@@ -530,7 +529,7 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get secrets(): TaskSecrets | undefined;
   // (undocumented)
-  get spec(): TaskSpec;
+  get spec(): TaskSpecV1beta3;
 }
 
 // @public

@@ -6,7 +6,7 @@
 import { Config } from '@backstage/config';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import express from 'express';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
@@ -23,6 +23,6 @@ export type RouterOptions = {
   types: Record<string, DocumentTypeInfo>;
   permissions: PermissionAuthorizer;
   config: Config;
-  logger: Logger_2;
+  logger: Logger;
 };
 ```

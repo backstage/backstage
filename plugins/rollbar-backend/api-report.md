@@ -5,7 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -25,7 +25,7 @@ export function getRequestHeaders(token: string): {
 //
 // @public (undocumented)
 export class RollbarApi {
-  constructor(accessToken: string, logger: Logger_2);
+  constructor(accessToken: string, logger: Logger);
   // (undocumented)
   getActivatedCounts(
     projectName: string,
@@ -107,7 +107,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // (undocumented)
   rollbarApi?: RollbarApi;
 }

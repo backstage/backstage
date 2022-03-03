@@ -5,7 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 
 // @public
 export interface AirbrakeConfig {
@@ -21,6 +21,6 @@ export function extractAirbrakeConfig(config: Config): AirbrakeConfig;
 // @public
 export interface RouterOptions {
   airbrakeConfig: AirbrakeConfig;
-  logger: Logger_2;
+  logger: Logger;
 }
 ```
