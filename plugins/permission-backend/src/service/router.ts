@@ -109,6 +109,12 @@ const handleRequest = async (
           };
         }
 
+        if (!('resourceType' in request.permission)) {
+          throw new Error(
+            `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
+          );
+        }
+
         if (decision.resourceType !== request.permission.resourceType) {
           throw new Error(
             `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
