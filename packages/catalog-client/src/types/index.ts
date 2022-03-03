@@ -28,5 +28,4 @@ export type {
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
 } from './api';
-export * from './deprecated';
 export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';
