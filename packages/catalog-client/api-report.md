@@ -130,18 +130,6 @@ export class CatalogClient implements CatalogApi {
   ): Promise<void>;
 }
 
-// @public @deprecated (undocumented)
-export type CatalogEntitiesRequest = GetEntitiesRequest;
-
-// @public @deprecated (undocumented)
-export type CatalogEntityAncestorsRequest = GetEntityAncestorsRequest;
-
-// @public @deprecated (undocumented)
-export type CatalogEntityAncestorsResponse = GetEntityAncestorsResponse;
-
-// @public @deprecated (undocumented)
-export type CatalogListResponse<_Entity> = GetEntitiesResponse;
-
 // @public
 export interface CatalogRequestOptions {
   // (undocumented)
