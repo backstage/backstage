@@ -164,6 +164,7 @@ export type MicrosoftGraphProviderConfig = {
   userExpand?: string;
   userGroupMemberFilter?: string;
   userGroupMemberSearch?: string;
+  groupExpand?: string;
   groupFilter?: string;
   groupSearch?: string;
 };
@@ -198,6 +199,7 @@ export function readMicrosoftGraphOrg(
     userFilter?: string;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
     userTransformer?: UserTransformer;

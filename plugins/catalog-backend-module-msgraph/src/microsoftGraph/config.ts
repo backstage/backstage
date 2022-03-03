@@ -71,6 +71,12 @@ export type MicrosoftGraphProviderConfig = {
    */
   userGroupMemberSearch?: string;
   /**
+   * The "expand" argument to apply to groups.
+   *
+   * E.g. "member"
+   */
+  groupExpand?: string;
+  /**
    * The filter to apply to extract groups.
    *
    * E.g. "securityEnabled eq false and mailEnabled eq true"
@@ -115,6 +121,7 @@ export function readMicrosoftGraphConfig(
     const userGroupMemberSearch = providerConfig.getOptionalString(
       'userGroupMemberSearch',
     );
+    const groupExpand = providerConfig.getOptionalString('groupExpand');
     const groupFilter = providerConfig.getOptionalString('groupFilter');
     const groupSearch = providerConfig.getOptionalString('groupSearch');
 
@@ -139,6 +146,7 @@ export function readMicrosoftGraphConfig(
       userFilter,
       userGroupMemberFilter,
       userGroupMemberSearch,
+      groupExpand,
       groupFilter,
       groupSearch,
     });

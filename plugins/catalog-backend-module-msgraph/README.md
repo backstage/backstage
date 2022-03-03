@@ -51,6 +51,12 @@ catalog:
           # This and userFilter are mutually exclusive, only one can be specified
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           userGroupMemberFilter: "displayName eq 'Backstage Users'"
+          # Optional parameter to include the expanded resource or collection referenced
+          # by a single relationship (navigation property) in your results.
+          # Only one relationship can be expanded in a single request.
+          # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
+          # Can be combined with userGroupMember[...] instead of userFilter.
+          groupExpand: member
           # Optional search for users, use group membership to get users.
           # (Search for groups and fetch their members.)
           # This and userFilter are mutually exclusive, only one can be specified

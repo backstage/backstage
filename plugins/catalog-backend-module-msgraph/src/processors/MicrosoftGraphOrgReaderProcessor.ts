@@ -109,6 +109,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
         userFilter: provider.userFilter,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
+        groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
         userTransformer: this.userTransformer,

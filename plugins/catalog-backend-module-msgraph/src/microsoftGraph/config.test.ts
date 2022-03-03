@@ -55,6 +55,7 @@ describe('readMicrosoftGraphConfig', () => {
           authority: 'https://login.example.com/',
           userExpand: 'manager',
           userFilter: 'accountEnabled eq true',
+          groupExpand: 'member',
           groupFilter: 'securityEnabled eq false',
         },
       ],
@@ -69,6 +70,7 @@ describe('readMicrosoftGraphConfig', () => {
         authority: 'https://login.example.com',
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
+        groupExpand: 'member',
         groupFilter: 'securityEnabled eq false',
       },
     ];
