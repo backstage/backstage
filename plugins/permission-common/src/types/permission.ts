@@ -28,6 +28,8 @@ export type PermissionAttributes = {
 /**
  * A permission that can be checked through authorization.
  *
+ * @remarks
+ *
  * Permissions are the "what" part of authorization, the action to be performed. This may be reading
  * an entity from the catalog, executing a software template, or any other action a plugin author
  * may wish to protect.
@@ -36,7 +38,13 @@ export type PermissionAttributes = {
  * evaluated using an authorization policy.
  * @public
  */
-export type Permission = {
+export type Permission = BasicPermission | ResourcePermission;
+
+/**
+ * A standard {@link Permission} with no additional capabilities or restrictions.
+ * @public
+ */
+export type BasicPermission = {
   /**
    * The name of the permission.
    */
@@ -47,13 +55,19 @@ export type Permission = {
    * all by name.
    */
   attributes: PermissionAttributes;
+};
+
+/**
+ * ResourcePermissions are {@link Permission}s that can be authorized based on
+ * characteristics of a resource such a catalog entity.
+ * @public
+ */
+export type ResourcePermission<T extends string = string> = BasicPermission & {
   /**
-   * Some permissions can be authorized based on characteristics of a resource
-   * such a catalog entity. For these permissions, the resourceType field
-   * denotes the type of the resource whose resourceRef should be passed when
+   * Denotes the type of the resource whose resourceRef should be passed when
    * authorizing.
    */
-  resourceType?: string;
+  resourceType: T;
 };
 
 /**
