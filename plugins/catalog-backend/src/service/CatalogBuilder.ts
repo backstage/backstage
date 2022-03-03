@@ -76,8 +76,9 @@ import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import { Stitcher } from '../stitching/Stitcher';
 import {
-  createRandomRefreshInterval,
+  createRandomProcessingInterval,
   RefreshIntervalFunction,
+  ProcessingIntervalFunction,
 } from '../processing/refresh';
 import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
@@ -139,8 +140,8 @@ export class CatalogBuilder {
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
-  private refreshInterval: RefreshIntervalFunction =
-    createRandomRefreshInterval({
+  private processingInterval: ProcessingIntervalFunction =
+    createRandomProcessingInterval({
       minSeconds: 100,
       maxSeconds: 150,
     });
@@ -192,9 +193,25 @@ export class CatalogBuilder {
    * Seconds provided will be multiplied by 1.5
    * The default refresh duration is 100-150 seconds.
    * setting this too low will potentially deplete request quotas to upstream services.
+   *
+   * @deprecated use {@link CatalogBuilder#setProcessingIntervalSeconds} instead
    */
   setRefreshIntervalSeconds(seconds: number): CatalogBuilder {
-    this.refreshInterval = createRandomRefreshInterval({
+    this.processingInterval = createRandomProcessingInterval({
+      minSeconds: seconds,
+      maxSeconds: seconds * 1.5,
+    });
+    return this;
+  }
+
+  /**
+   * Processing interval determines how often entities should be processed.
+   * Seconds provided will be multiplied by 1.5
+   * The default processing duration is 100-150 seconds.
+   * setting this too low will potentially deplete request quotas to upstream services.
+   */
+  setProcessingIntervalSeconds(seconds: number): CatalogBuilder {
+    this.processingInterval = createRandomProcessingInterval({
       minSeconds: seconds,
       maxSeconds: seconds * 1.5,
     });
@@ -204,9 +221,22 @@ export class CatalogBuilder {
   /**
    * Overwrites the default refresh interval function used to spread
    * entity updates in the catalog.
+   *
+   * @deprecated use {@link CatalogBuilder#setProcessingInterval} instead
    */
   setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder {
-    this.refreshInterval = refreshInterval;
+    this.processingInterval = refreshInterval;
+    return this;
+  }
+
+  /**
+   * Overwrites the default processing interval function used to spread
+   * entity updates in the catalog.
+   */
+  setProcessingInterval(
+    processingInterval: ProcessingIntervalFunction,
+  ): CatalogBuilder {
+    this.processingInterval = processingInterval;
     return this;
   }
 
@@ -396,7 +426,7 @@ export class CatalogBuilder {
     const processingDatabase = new DefaultProcessingDatabase({
       database: dbClient,
       logger,
-      refreshInterval: this.refreshInterval,
+      refreshInterval: this.processingInterval,
     });
     const integrations = ScmIntegrations.fromConfig(config);
     const rulesEnforcer = DefaultCatalogRulesEnforcer.fromConfig(config);
