@@ -35,8 +35,9 @@ import {
 } from '@backstage/plugin-catalog-common';
 
 /**
- * The DefaultCatalogCollator for Search
  * @public
+ * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
+ * use `DefaultCatalogCollatorFactory` instead.
  */
 export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;
