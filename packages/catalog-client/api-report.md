@@ -38,8 +38,13 @@ export interface CatalogApi {
     request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntityAncestorsResponse>;
+  // @deprecated
   getEntityByName(
     name: CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Entity | undefined>;
+  getEntityByRef(
+    entityRef: string | CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
   getEntityFacets(
@@ -92,6 +97,10 @@ export class CatalogClient implements CatalogApi {
   ): Promise<GetEntityAncestorsResponse>;
   getEntityByName(
     compoundName: CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Entity | undefined>;
+  getEntityByRef(
+    entityRef: string | CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
   getEntityFacets(

@@ -88,7 +88,10 @@ describe('<CatalogGraphPage/>', () => {
     };
     catalog = {
       getEntities: jest.fn(),
-      getEntityByName: jest.fn(async n => (n.name === 'e' ? entityE : entityC)),
+      getEntityByRef: jest.fn(async (n: any) =>
+        n === 'b:d/e' ? entityE : entityC,
+      ),
+      getEntityByName: jest.fn(),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
       getLocationByRef: jest.fn(),
@@ -128,7 +131,7 @@ describe('<CatalogGraphPage/>', () => {
     expect(await findByText('b:d/c')).toBeInTheDocument();
     expect(await findByText('b:d/e')).toBeInTheDocument();
     expect(await findAllByTestId('node')).toHaveLength(2);
-    expect(catalog.getEntityByName).toBeCalledTimes(2);
+    expect(catalog.getEntityByRef).toBeCalledTimes(2);
   });
 
   test('should toggle filters', async () => {

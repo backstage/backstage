@@ -20,7 +20,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 
 describe('CachedEntityLoader', () => {
   const catalog: jest.Mocked<CatalogClient> = {
-    getEntityByName: jest.fn(),
+    getEntityByRef: jest.fn(),
   } as any;
 
   const cache: jest.Mocked<CacheClient> = {
@@ -53,7 +53,7 @@ describe('CachedEntityLoader', () => {
 
   it('writes entities to cache', async () => {
     cache.get.mockResolvedValue(undefined);
-    catalog.getEntityByName.mockResolvedValue(entity);
+    catalog.getEntityByRef.mockResolvedValue(entity);
 
     const result = await loader.load(entityName, token);
 
@@ -71,12 +71,12 @@ describe('CachedEntityLoader', () => {
     const result = await loader.load(entityName, token);
 
     expect(result).toEqual(entity);
-    expect(catalog.getEntityByName).not.toBeCalled();
+    expect(catalog.getEntityByRef).not.toBeCalled();
   });
 
   it('does not cache missing entites', async () => {
     cache.get.mockResolvedValue(undefined);
-    catalog.getEntityByName.mockResolvedValue(undefined);
+    catalog.getEntityByRef.mockResolvedValue(undefined);
 
     const result = await loader.load(entityName, token);
 
@@ -86,7 +86,7 @@ describe('CachedEntityLoader', () => {
 
   it('uses entity ref as cache key for anonymous users', async () => {
     cache.get.mockResolvedValue(undefined);
-    catalog.getEntityByName.mockResolvedValue(entity);
+    catalog.getEntityByRef.mockResolvedValue(entity);
 
     const result = await loader.load(entityName, undefined);
 
@@ -103,7 +103,7 @@ describe('CachedEntityLoader', () => {
           setTimeout(() => resolve(undefined), 10000);
         }),
     );
-    catalog.getEntityByName.mockResolvedValue(entity);
+    catalog.getEntityByRef.mockResolvedValue(entity);
 
     const result = await loader.load(entityName, token);
 

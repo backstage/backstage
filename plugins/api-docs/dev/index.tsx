@@ -53,8 +53,8 @@ createDevApp()
             items: mockEntities.slice(),
           };
         },
-        async getEntityByName(name: string) {
-          return mockEntities.find(e => e.metadata.name === name);
+        async getEntityByRef(ref: string) {
+          return mockEntities.find(e => e.metadata.name === ref);
         },
       } as unknown as typeof catalogApiRef.T),
   })

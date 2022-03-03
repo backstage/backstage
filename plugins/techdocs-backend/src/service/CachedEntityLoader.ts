@@ -37,17 +37,17 @@ export class CachedEntityLoader {
   }
 
   async load(
-    entityName: CompoundEntityRef,
+    entityRef: CompoundEntityRef,
     token: string | undefined,
   ): Promise<Entity | undefined> {
-    const cacheKey = this.getCacheKey(entityName, token);
+    const cacheKey = this.getCacheKey(entityRef, token);
     let result = await this.getFromCache(cacheKey);
 
     if (result) {
       return result;
     }
 
-    result = await this.catalog.getEntityByName(entityName, { token });
+    result = await this.catalog.getEntityByRef(entityRef, { token });
 
     if (result) {
       this.cache.set(cacheKey, result, { ttl: 5000 });

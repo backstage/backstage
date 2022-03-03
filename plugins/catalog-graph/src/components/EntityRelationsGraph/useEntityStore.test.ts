@@ -29,6 +29,7 @@ describe('useEntityStore', () => {
   beforeEach(() => {
     catalogApi = {
       getEntities: jest.fn(),
+      getEntityByRef: jest.fn(),
       getEntityByName: jest.fn(),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
@@ -64,7 +65,7 @@ describe('useEntityStore', () => {
       },
     };
 
-    catalogApi.getEntityByName.mockResolvedValue(entity);
+    catalogApi.getEntityByRef.mockResolvedValue(entity);
 
     const { result, waitFor } = renderHook(() => useEntityStore());
 
@@ -84,7 +85,7 @@ describe('useEntityStore', () => {
 
   test('handles request failures', async () => {
     const err = new Error('Hello World');
-    catalogApi.getEntityByName.mockRejectedValue(err);
+    catalogApi.getEntityByRef.mockRejectedValue(err);
 
     const { result, waitFor } = renderHook(() => useEntityStore());
 
@@ -101,7 +102,7 @@ describe('useEntityStore', () => {
   });
 
   test('handles loading', async () => {
-    catalogApi.getEntityByName.mockReturnValue(new Promise(() => {}));
+    catalogApi.getEntityByRef.mockReturnValue(new Promise(() => {}));
 
     const { result } = renderHook(() => useEntityStore());
 
@@ -133,7 +134,7 @@ describe('useEntityStore', () => {
       },
     };
 
-    catalogApi.getEntityByName.mockResolvedValue(entity1);
+    catalogApi.getEntityByRef.mockResolvedValue(entity1);
 
     const { result, waitFor } = renderHook(() => useEntityStore());
 
@@ -150,7 +151,7 @@ describe('useEntityStore', () => {
       });
     });
 
-    catalogApi.getEntityByName.mockResolvedValue(entity2);
+    catalogApi.getEntityByRef.mockResolvedValue(entity2);
 
     act(() => {
       result.current.requestEntities([
@@ -188,7 +189,7 @@ describe('useEntityStore', () => {
       },
     };
 
-    catalogApi.getEntityByName.mockResolvedValue(entity1);
+    catalogApi.getEntityByRef.mockResolvedValue(entity1);
 
     const { result, waitFor } = renderHook(() => useEntityStore());
 
@@ -205,7 +206,7 @@ describe('useEntityStore', () => {
       });
     });
 
-    catalogApi.getEntityByName.mockResolvedValue(entity2);
+    catalogApi.getEntityByRef.mockResolvedValue(entity2);
 
     act(() => {
       result.current.requestEntities(['kind:namespace/name2']);
@@ -233,6 +234,6 @@ describe('useEntityStore', () => {
       });
     });
 
-    expect(catalogApi.getEntityByName).toBeCalledTimes(2);
+    expect(catalogApi.getEntityByRef).toBeCalledTimes(2);
   });
 });

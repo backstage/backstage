@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  RELATION_MEMBER_OF,
+} from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/core-app-api';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import {
@@ -60,11 +64,11 @@ describe('DefaultApiExplorerPage', () => {
       }),
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
-    getEntityByName: async entityName => {
+    getEntityByRef: async entityRef => {
       return {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'User',
-        metadata: { name: entityName.name },
+        metadata: { name: parseEntityRef(entityRef).name },
         relations: [
           {
             type: RELATION_MEMBER_OF,

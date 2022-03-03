@@ -186,7 +186,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
     jobFullName?: string;
   }): Promise<JenkinsInfo> {
     // load entity
-    const entity = await this.catalog.getEntityByName(opt.entityRef);
+    const entity = await this.catalog.getEntityByRef(opt.entityRef);
     if (!entity) {
       throw new Error(
         `Couldn't find entity with name: ${stringifyEntityRef(opt.entityRef)}`,
