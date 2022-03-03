@@ -29,7 +29,6 @@ import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { airbrakeApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
-import { NoProjectIdError } from '../../api/AirbrakeApi';
 
 const useStyles = makeStyles<BackstageTheme>(() => ({
   multilineText: {
@@ -54,38 +53,21 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
     ComponentState.Loading,
   );
 
-  useEffect(() => {
-    if (!projectId) {
-      setComponentState(ComponentState.NoProjectId);
-    } else {
-      setComponentState(ComponentState.Loading);
-    }
-  }, [projectId]);
-
-  const { loading, value, error } = useAsync(async () => {
+  const { loading, value } = useAsync(async () => {
     try {
       const result = await airbrakeApi.fetchGroups(projectId);
       setComponentState(ComponentState.Loaded);
       return result;
     } catch (e) {
-      if (e instanceof NoProjectIdError) {
+      if (!projectId) {
         setComponentState(ComponentState.NoProjectId);
       } else {
         setComponentState(ComponentState.Error);
+        errorApi.post(e);
       }
       throw e;
     }
-  }, [airbrakeApi, projectId]);
-
-  useEffect(() => {
-    if (
-      componentState === ComponentState.Error &&
-      error &&
-      !(error instanceof NoProjectIdError)
-    ) {
-      errorApi.post(error);
-    }
-  }, [componentState, error, errorApi]);
+  }, [airbrakeApi, errorApi, projectId]);
 
   useEffect(() => {
     if (loading) {

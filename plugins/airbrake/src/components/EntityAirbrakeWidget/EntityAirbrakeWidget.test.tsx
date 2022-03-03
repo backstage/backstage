@@ -34,7 +34,7 @@ import { errorApiRef } from '@backstage/core-plugin-api';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-describe('EntityAirbrakeContent', () => {
+describe('EntityAirbrakeWidget', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
