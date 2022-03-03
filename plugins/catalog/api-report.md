@@ -74,7 +74,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps): JSX.Element;
 
 // @public
 export interface CatalogKindHeaderProps {
-  // (undocumented)
+  allowedKinds?: string[];
   initialFilter?: string;
 }
 
