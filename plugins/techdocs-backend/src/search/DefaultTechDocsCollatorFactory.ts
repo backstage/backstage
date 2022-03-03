@@ -32,7 +32,7 @@ import {
 import { Config } from '@backstage/config';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
 import { DocumentCollatorFactory } from '@backstage/search-common';
-import { TechDocsDocument } from '@backstage/techdocs-common';
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import unescape from 'lodash/unescape';
 import fetch from 'node-fetch';
 import pLimit from 'p-limit';

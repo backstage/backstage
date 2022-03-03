@@ -15,7 +15,7 @@
  */
 
 import { CommanderStatic } from 'commander';
-import { TechdocsGenerator } from '@backstage/techdocs-common';
+import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
 

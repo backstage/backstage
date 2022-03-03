@@ -49,7 +49,7 @@ try {
   );
 } catch (err) {
   // This will most probably never be used.
-  // The try/catch is introduced so that techdocs-cli can import @backstage/techdocs-common
+  // The try/catch is introduced so that techdocs-cli can import @backstage/plugin-techdocs-node
   // on CI/CD without installing techdocs backend plugin.
   staticDocsDir = os.tmpdir();
 }

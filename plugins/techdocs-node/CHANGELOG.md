@@ -1,4 +1,4 @@
-# @backstage/techdocs-common
+# @backstage/plugin-techdocs-node
 
 ## 0.11.11
 

@@ -238,6 +238,7 @@ const NO_WARNING_PACKAGES = [
   'plugins/scaffolder-common',
   'plugins/search-backend-node',
   'plugins/techdocs-backend',
+  'plugins/techdocs-node',
   'plugins/tech-insights',
   'plugins/tech-insights-backend',
   'plugins/tech-insights-backend-module-jsonfc',

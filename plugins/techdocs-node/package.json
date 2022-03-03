@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/techdocs-common",
-  "description": "Common functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
+  "name": "@backstage/plugin-techdocs-node",
+  "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
   "version": "0.11.11",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/techdocs-common"
+    "directory": "plugins/techdocs-node"
   },
   "keywords": [
     "techdocs",
