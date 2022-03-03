@@ -28,10 +28,6 @@ const execFile = promisify(execFileCb);
 // All of these are considered to be main-line release branches
 const MAIN_BRANCHES = ['master', 'origin/master', 'changeset-release/master'];
 
-// This prefix is used for patch branches, followed by the release version WITH a 'v' prefix
-// For example, `patch/v1.2.0`
-const PATCH_BRANCH_PREFIX = 'patch/';
-
 const DEPENDENCY_TYPES = [
   'dependencies',
   'devDependencies',
@@ -40,83 +36,24 @@ const DEPENDENCY_TYPES = [
 ];
 
 /**
- * Returns the most recent release version on the main branch that is not a pre-release.
- */
-async function getPreviousReleaseVersion(repo) {
-  // TODO(Rugvip): Figure out which field to sort by to avoid manual sort after
-  const { stdout: tagsStr } = await execFile(
-    'git',
-    ['tag', '--list', 'v*', '--merged=HEAD'],
-    { shell: true, cwd: repo.root.dir },
-  );
-  const tags = tagsStr.trim().split(/\r\n|\n/);
-  const [latestTag] = semver.rsort(tags).filter(t => !semver.prerelease(t));
-  return latestTag;
-}
-
-/**
- * Finds the tip of the patch branch of a given release version.
- * Returns undefined if no patch branch exists.
- */
-async function findTipOfPatchBranch(repo, release) {
-  try {
-    await execFile('git', ['fetch', 'origin', PATCH_BRANCH_PREFIX + release], {
-      shell: true,
-      cwd: repo.root.dir,
-    });
-  } catch (error) {
-    if (error.stderr?.match(/fatal: couldn't find remote ref/i)) {
-      return undefined;
-    }
-    throw error;
-  }
-  const { stdout: refStr } = await execFile('git', ['rev-parse', 'FETCH_HEAD']);
-  return refStr.trim();
-}
-
-/**
- * Returns a map of packages to their versions for any package version
- * in <ref> that does not match the current version in the working directory.
- */
-async function detectPatchVersionsForRef(repo, ref) {
-  const patchVersions = new Map();
-
-  for (const pkg of repo.packages) {
-    const pkgJsonPath = path.join(
-      path.relative(repo.root.dir, pkg.dir),
-      'package.json',
-    );
-    const { stdout: pkgJsonStr } = await execFile('git', [
-      'show',
-      `${ref}:${pkgJsonPath}`,
-    ]);
-    if (pkgJsonStr) {
-      const releasePkgJson = JSON.parse(pkgJsonStr);
-      const pkgJson = pkg.packageJson;
-      if (releasePkgJson.name !== pkgJson.name) {
-        throw new Error(
-          `Mismatched package name at ${pkg.dir}, ${releasePkgJson.name} !== ${pkgJson.name}`,
-        );
-      }
-      if (releasePkgJson.version !== pkgJson.version) {
-        patchVersions.set(pkgJson.name, releasePkgJson.version);
-      }
-    }
-  }
-
-  return patchVersions;
-}
-
-/**
  * Bumps up the versions of packages to account for
  * the base versions that are set in .changeset/patched.json.
  * This may be needed when we have made emergency releases.
  */
-async function applyPatchVersions(repo, patchVersions) {
+async function updatePatchVersions() {
+  const patchedJsonPath = path.resolve('.changeset', 'patched.json');
+  const { currentReleaseVersion } = await fs.readJson(patchedJsonPath);
+  if (Object.keys(currentReleaseVersion).length === 0) {
+    console.log('No currentReleaseVersion overrides found, skipping.');
+    return;
+  }
+
+  const { packages } = await getPackages(path.resolve('.'));
+
   const pendingVersionBumps = new Map();
 
-  for (const [name, version] of patchVersions) {
-    const pkg = repo.packages.find(p => p.packageJson.name === name);
+  for (const [name, version] of Object.entries(currentReleaseVersion)) {
+    const pkg = packages.find(p => p.packageJson.name === name);
     if (!pkg) {
       throw new Error(`Package ${name} not found`);
     }
@@ -144,7 +81,7 @@ async function applyPatchVersions(repo, patchVersions) {
     });
   }
 
-  for (const { dir, packageJson } of [repo.root, ...repo.packages]) {
+  for (const { dir, packageJson } of packages) {
     let hasChanges = false;
 
     if (pendingVersionBumps.has(packageJson.name)) {
@@ -180,44 +117,20 @@ async function applyPatchVersions(repo, patchVersions) {
       });
     }
   }
-}
 
-/**
- * Detects any patched packages version since the most recent release on
- * the main branch, and then bumps all packages in the repo accordingly.
- */
-async function updatePackageVersions(repo) {
-  const previousRelease = await getPreviousReleaseVersion(repo);
-  console.log(`Found release version: ${previousRelease}`);
-
-  const patchRef = await findTipOfPatchBranch(repo, previousRelease);
-  if (patchRef) {
-    console.log(`Tip of the patch branch: ${patchRef}`);
-
-    const patchVersions = await detectPatchVersionsForRef(repo, patchRef);
-    if (patchVersions.size > 0) {
-      console.log(
-        `Found ${patchVersions.size} packages that were patched since the last release`,
-      );
-      for (const [name, version] of patchVersions) {
-        console.log(`  ${name}: ${version}`);
-      }
-
-      await applyPatchVersions(repo, patchVersions);
-    } else {
-      console.log('No packages were patched since the last release');
-    }
-  } else {
-    console.log('No patch branch found');
-  }
+  await fs.writeJSON(
+    patchedJsonPath,
+    { currentReleaseVersion: {} },
+    { spaces: 2, encoding: 'utf8' },
+  );
 }
 
 /**
  * Returns the mode and tag that is currently set
  * in the .changeset/pre.json file
  */
-async function getPreInfo(repo) {
-  const pre = path.join(repo.root.dir, '.changeset', 'pre.json');
+async function getPreInfo(rootPath) {
+  const pre = path.join(rootPath, '.changeset', 'pre.json');
   if (!(await fs.pathExists(pre))) {
     return { mode: undefined, tag: undefined };
   }
@@ -227,29 +140,25 @@ async function getPreInfo(repo) {
 }
 
 /**
- * Returns the name of the current git branch
- */
-async function getCurrentBranch(repo) {
-  const { stdout } = await execFile(
-    'git',
-    ['rev-parse', '--abbrev-ref', 'HEAD'],
-    { cwd: repo.root.dir, shell: true },
-  );
-  return stdout.trim();
-}
-
-/**
  * Bumps the release version in the root package.json.
  *
  * This takes into account whether we're in pre-release mode or on a patch branch.
  */
-async function updateBackstageReleaseVersion(repo, type) {
-  const { mode: preMode, tag: preTag } = await getPreInfo(repo);
+async function updateBackstageReleaseVersion() {
+  const rootPath = path.resolve(__dirname, '..');
+  const branchName = await execFile(
+    'git',
+    ['rev-parse', '--abbrev-ref', 'HEAD'],
+    { shell: true },
+  ).then(({ stdout }) => stdout.trim());
+  const { mode: preMode, tag: preTag } = await getPreInfo(rootPath);
 
-  const { version: currentVersion } = repo.root.packageJson;
+  const packagePath = path.join(rootPath, 'package.json');
+  const package = await fs.readJson(packagePath);
+  const { version: currentVersion } = package;
 
   let nextVersion;
-  if (type === 'minor') {
+  if (MAIN_BRANCHES.includes(branchName)) {
     if (preMode === 'pre') {
       if (semver.prerelease(currentVersion)) {
         nextVersion = semver.inc(currentVersion, 'pre', preTag);
@@ -261,7 +170,7 @@ async function updateBackstageReleaseVersion(repo, type) {
     } else {
       nextVersion = semver.inc(currentVersion, 'minor');
     }
-  } else if (type === 'patch') {
+  } else {
     if (preMode) {
       throw new Error(`Unexpected pre mode ${preMode} on branch ${branchName}`);
     }
@@ -269,9 +178,9 @@ async function updateBackstageReleaseVersion(repo, type) {
   }
 
   await fs.writeJson(
-    path.join(repo.root.dir, 'package.json'),
+    packagePath,
     {
-      ...repo.root.packageJson,
+      ...package,
       version: nextVersion,
     },
     { spaces: 2, encoding: 'utf8' },
@@ -279,17 +188,8 @@ async function updateBackstageReleaseVersion(repo, type) {
 }
 
 async function main() {
-  const repo = await getPackages(__dirname);
-  const branchName = await getCurrentBranch(repo);
-  const isMainBranch = MAIN_BRANCHES.includes(branchName);
-
-  console.log(`Current branch: ${branchName}`);
-  if (isMainBranch) {
-    console.log('Main release, updating package versions');
-    await updatePackageVersions(repo);
-  }
-
-  await updateBackstageReleaseVersion(repo, isMainBranch ? 'minor' : 'patch');
+  await updatePatchVersions();
+  await updateBackstageReleaseVersion();
 }
 
 main().catch(error => {

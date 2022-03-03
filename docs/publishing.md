@@ -67,3 +67,12 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
   - [ ] The fix, which you can likely cherry-pick from your patch branch: `git cherry-pick origin/patch/v1.18.0^`
   - [ ] An updated `CHANGELOG.md` of all patched packages from the tip of the patch branch, `git checkout origin/patch/v1.18.0 -- {packages,plugins}/*/CHANGELOG.md`.
   - [ ] A changeset with the message "Applied the fix from version `6.5.1` of this package, which is part of the `v1.18.1` release of Backstage."
+  - [ ] An entry in `.changeset/patched.json` that sets the current release version to `6.5.1`:
+
+    ```json
+    {
+      "currentReleaseVersion": {
+        "@backstage/plugin-foo": "6.5.1"
+      }
+    }
+    ```
