@@ -257,6 +257,7 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
+scrollbar
 seb
 semlas
 semver
