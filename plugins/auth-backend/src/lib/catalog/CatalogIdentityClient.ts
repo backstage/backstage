@@ -18,7 +18,7 @@ import { Logger } from 'winston';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  EntityName,
+  CompoundEntityRef,
   parseEntityRef,
   RELATION_MEMBER_OF,
   stringifyEntityRef,
@@ -96,7 +96,7 @@ export class CatalogIdentityClient {
           return null;
         }
       })
-      .filter((ref): ref is EntityName => ref !== null);
+      .filter((ref): ref is CompoundEntityRef => ref !== null);
 
     const filter = resolvedEntityRefs.map(ref => ({
       kind: ref.kind,

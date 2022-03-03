@@ -19,7 +19,7 @@ import {
   ContainerClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, ForwardedError } from '@backstage/errors';
 import express from 'express';
@@ -300,7 +300,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
   }
 
   async fetchTechDocsMetadata(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
   ): Promise<TechDocsMetadata> {
     const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
     const entityRootDir = this.legacyPathCasing

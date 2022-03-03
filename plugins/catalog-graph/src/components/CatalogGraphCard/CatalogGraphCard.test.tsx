@@ -57,7 +57,8 @@ describe('<CatalogGraphCard/>', () => {
     };
     catalog = {
       getEntities: jest.fn(),
-      getEntityByName: jest.fn(async _ => ({ ...entity, relations: [] })),
+      getEntityByRef: jest.fn(async _ => ({ ...entity, relations: [] })),
+      getEntityByName: jest.fn(),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
       getLocationByRef: jest.fn(),
@@ -88,7 +89,7 @@ describe('<CatalogGraphCard/>', () => {
 
     expect(await findByText('b:d/c')).toBeInTheDocument();
     expect(await findAllByTestId('node')).toHaveLength(1);
-    expect(catalog.getEntityByName).toBeCalledTimes(1);
+    expect(catalog.getEntityByRef).toBeCalledTimes(1);
   });
 
   test('renders with custom title', async () => {

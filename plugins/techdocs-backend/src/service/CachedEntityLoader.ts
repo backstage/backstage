@@ -17,7 +17,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { CacheClient } from '@backstage/backend-common';
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 
@@ -37,17 +37,17 @@ export class CachedEntityLoader {
   }
 
   async load(
-    entityName: EntityName,
+    entityRef: CompoundEntityRef,
     token: string | undefined,
   ): Promise<Entity | undefined> {
-    const cacheKey = this.getCacheKey(entityName, token);
+    const cacheKey = this.getCacheKey(entityRef, token);
     let result = await this.getFromCache(cacheKey);
 
     if (result) {
       return result;
     }
 
-    result = await this.catalog.getEntityByName(entityName, { token });
+    result = await this.catalog.getEntityByRef(entityRef, { token });
 
     if (result) {
       this.cache.set(cacheKey, result, { ttl: 5000 });
@@ -66,7 +66,7 @@ export class CachedEntityLoader {
   }
 
   private getCacheKey(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
     token: string | undefined,
   ): string {
     const key = ['catalog', stringifyEntityRef(entityName)];

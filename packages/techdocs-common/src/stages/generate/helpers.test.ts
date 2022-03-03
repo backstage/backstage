@@ -28,10 +28,14 @@ import {
   getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
   patchIndexPreBuild,
-  patchMkdocsYmlPreBuild,
   storeEtagMetadata,
   validateMkdocsYaml,
 } from './helpers';
+import {
+  patchMkdocsYmlPreBuild,
+  pathMkdocsYmlWithTechdocsPlugin,
+} from './mkDocsPatchers';
+import yaml from 'js-yaml';
 
 const mockEntity = {
   apiVersion: 'version',
@@ -64,6 +68,15 @@ const mkdocsYmlWithInvalidDocDir2 = fs.readFileSync(
 );
 const mkdocsYmlWithComments = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_comments.yml'),
+);
+const mkdocsYmlWithTechdocsPlugins = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_techdocs_plugin.yml'),
+);
+const mkdocsYmlWithoutPlugins = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_without_plugins.yml'),
+);
+const mkdocsYmlWithAdditionalPlugins = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_additional_plugins.yml'),
 );
 const mockLogger = getVoidLogger();
 const warn = jest.spyOn(mockLogger, 'warn');
@@ -286,6 +299,60 @@ describe('helpers', () => {
       );
       expect(updatedMkdocsYml.toString()).not.toContain('edit_uri');
       expect(updatedMkdocsYml.toString()).not.toContain('repo_url');
+    });
+  });
+
+  describe('pathMkdocsYmlWithTechdocsPlugin', () => {
+    beforeEach(() => {
+      mockFs({
+        '/mkdocs_with_techdocs_plugin.yml': mkdocsYmlWithTechdocsPlugins,
+        '/mkdocs_without_plugins.yml': mkdocsYmlWithoutPlugins,
+        '/mkdocs_with_additional_plugins.yml': mkdocsYmlWithAdditionalPlugins,
+      });
+    });
+    it('should not add additional plugins if techdocs exists already in mkdocs file', async () => {
+      await pathMkdocsYmlWithTechdocsPlugin(
+        '/mkdocs_with_techdocs_plugin.yml',
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        '/mkdocs_with_techdocs_plugin.yml',
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(1);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+    });
+    it("should add the needed plugin if it doesn't exist in mkdocs file", async () => {
+      await pathMkdocsYmlWithTechdocsPlugin(
+        '/mkdocs_without_plugins.yml',
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile('/mkdocs_without_plugins.yml');
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(1);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+    });
+    it('should not override existing plugins', async () => {
+      await pathMkdocsYmlWithTechdocsPlugin(
+        '/mkdocs_with_additional_plugins.yml',
+        mockLogger,
+      );
+      const updatedMkdocsYml = await fs.readFile(
+        '/mkdocs_with_additional_plugins.yml',
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(3);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+      expect(parsedYml.plugins).toContain('not-techdocs-core');
+      expect(parsedYml.plugins).toContain('also-not-techdocs-core');
     });
   });
 

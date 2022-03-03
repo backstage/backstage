@@ -11,8 +11,8 @@ import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
@@ -250,7 +250,7 @@ export const EntityRefLink: (props: EntityRefLinkProps) => JSX.Element;
 
 // @public
 export type EntityRefLinkProps = {
-  entityRef: Entity | EntityName | string;
+  entityRef: Entity | CompoundEntityRef | string;
   defaultKind?: string;
   title?: string;
   children?: React_2.ReactNode;
@@ -265,7 +265,7 @@ export const EntityRefLinks: ({
 
 // @public
 export type EntityRefLinksProps = {
-  entityRefs: (Entity | EntityName)[];
+  entityRefs: (Entity | CompoundEntityRef)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
 
@@ -413,13 +413,8 @@ export const favoriteEntityTooltip: (
   isStarred: boolean,
 ) => 'Remove from favorites' | 'Add to favorites';
 
-// @public (undocumented)
-export function formatEntityRefTitle(
-  entityRef: Entity | EntityName,
-  opts?: {
-    defaultKind?: string;
-  },
-): string;
+// @public @deprecated (undocumented)
+export const formatEntityRefTitle: typeof humanizeEntityRef;
 
 // @public @deprecated (undocumented)
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
@@ -434,13 +429,21 @@ export function getEntityRelations(
   filter?: {
     kind: string;
   },
-): EntityName[];
+): CompoundEntityRef[];
 
 // @public (undocumented)
 export function getEntitySourceLocation(
   entity: Entity,
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined;
+
+// @public (undocumented)
+export function humanizeEntityRef(
+  entityRef: Entity | CompoundEntityRef,
+  opts?: {
+    defaultKind?: string;
+  },
+): string;
 
 // @public
 export function InspectEntityDialog(props: {
@@ -449,8 +452,8 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
 }): JSX.Element | null;
 
-// @public
-export function isOwnerOf(owner: Entity, owned: Entity): boolean;
+// @alpha
+export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
 // @public @deprecated
 export function loadCatalogOwnerRefs(
@@ -624,12 +627,18 @@ export type UserListPickerProps = {
 // @public (undocumented)
 export function useStarredEntities(): {
   starredEntities: Set<string>;
-  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
-  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+  toggleStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => void;
+  isStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => boolean;
 };
 
 // @public (undocumented)
-export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+export function useStarredEntity(
+  entityOrRef: Entity | CompoundEntityRef | string,
+): {
   toggleStarredEntity: () => void;
   isStarredEntity: boolean;
 };

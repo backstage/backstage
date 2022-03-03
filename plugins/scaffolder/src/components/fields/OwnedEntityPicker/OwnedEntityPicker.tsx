@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  formatEntityRefTitle,
+  humanizeEntityRef,
   useOwnedEntities,
 } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
@@ -50,7 +50,7 @@ export const OwnedEntityPicker = (
   const { ownedEntities, loading } = useOwnedEntities(allowedKinds);
 
   const entityRefs = ownedEntities?.items
-    .map(e => formatEntityRefTitle(e, { defaultKind }))
+    .map(e => humanizeEntityRef(e, { defaultKind }))
     .filter(n => n);
 
   const onSelect = (_: any, value: string | null) => {

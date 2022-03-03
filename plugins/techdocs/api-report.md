@@ -7,11 +7,11 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { CSSProperties } from '@material-ui/styles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -89,7 +89,7 @@ export type DocsTableRow = {
   resolved: {
     docsUrl: string;
     ownedByRelationsTitle: string;
-    ownedByRelations: EntityName[];
+    ownedByRelations: CompoundEntityRef[];
   };
 };
 
@@ -161,7 +161,7 @@ export const Reader: (props: ReaderProps) => JSX.Element;
 
 // @public
 export type ReaderProps = {
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   withSearch?: boolean;
   onReady?: () => void;
 };
@@ -187,9 +187,11 @@ export type TabsConfig = TabConfig[];
 export interface TechDocsApi {
   getApiOrigin(): Promise<string>;
   // (undocumented)
-  getEntityMetadata(entityId: EntityName): Promise<TechDocsEntityMetadata>;
+  getEntityMetadata(
+    entityId: CompoundEntityRef,
+  ): Promise<TechDocsEntityMetadata>;
   // (undocumented)
-  getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
+  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
 }
 
 // @public
@@ -208,8 +210,10 @@ export class TechDocsClient implements TechDocsApi {
   discoveryApi: DiscoveryApi;
   // (undocumented)
   getApiOrigin(): Promise<string>;
-  getEntityMetadata(entityId: EntityName): Promise<TechDocsEntityMetadata>;
-  getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
+  getEntityMetadata(
+    entityId: CompoundEntityRef,
+  ): Promise<TechDocsEntityMetadata>;
+  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
 }
 
 // @public
@@ -297,7 +301,7 @@ export const TechDocsReaderPageHeader: (
 
 // @public
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
 }>;
@@ -315,7 +319,7 @@ export type TechDocsReaderPageRenderFunction = ({
 }: {
   techdocsMetadataValue?: TechDocsMetadata | undefined;
   entityMetadataValue?: TechDocsEntityMetadata | undefined;
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   onReady: () => void;
 }) => JSX.Element;
 
@@ -324,7 +328,7 @@ export const TechDocsSearch: (props: TechDocsSearchProps) => JSX.Element;
 
 // @public
 export type TechDocsSearchProps = {
-  entityId: EntityName;
+  entityId: CompoundEntityRef;
   debounceTime?: number;
 };
 
@@ -348,18 +352,18 @@ export interface TechDocsStorageApi {
   // (undocumented)
   getBaseUrl(
     oldBaseUrl: string,
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     path: string,
   ): Promise<string>;
   // (undocumented)
   getBuilder(): Promise<string>;
   // (undocumented)
-  getEntityDocs(entityId: EntityName, path: string): Promise<string>;
+  getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
   // (undocumented)
   getStorageUrl(): Promise<string>;
   // (undocumented)
   syncEntityDocs(
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }
@@ -384,18 +388,18 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   // (undocumented)
   getBaseUrl(
     oldBaseUrl: string,
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     path: string,
   ): Promise<string>;
   // (undocumented)
   getBuilder(): Promise<string>;
-  getEntityDocs(entityId: EntityName, path: string): Promise<string>;
+  getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
   // (undocumented)
   getStorageUrl(): Promise<string>;
   // (undocumented)
   identityApi: IdentityApi;
   syncEntityDocs(
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }

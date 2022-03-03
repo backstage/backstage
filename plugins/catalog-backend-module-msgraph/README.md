@@ -35,17 +35,38 @@ catalog:
           # the App registration in the Microsoft Azure Portal.
           clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
           clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
+          # Optional parameter to include the expanded resource or collection referenced
+          # by a single relationship (navigation property) in your results.
+          # Only one relationship can be expanded in a single request.
+          # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
+          # Can be combined with userGroupMember[...] instead of userFilter.
+          userExpand: manager
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
           # This and userGroupMemberFilter are mutually exclusive, only one can be specified
           userFilter: accountEnabled eq true and userType eq 'member'
           # Optional filter for users, use group membership to get users.
+          # (Filtered groups and fetch their members.)
           # This and userFilter are mutually exclusive, only one can be specified
+          # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           userGroupMemberFilter: "displayName eq 'Backstage Users'"
+          # Optional parameter to include the expanded resource or collection referenced
+          # by a single relationship (navigation property) in your results.
+          # Only one relationship can be expanded in a single request.
+          # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
+          # Can be combined with userGroupMember[...] instead of userFilter.
+          groupExpand: member
+          # Optional search for users, use group membership to get users.
+          # (Search for groups and fetch their members.)
+          # This and userFilter are mutually exclusive, only one can be specified
+          userGroupMemberSearch: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
           # Optional filter for group, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/group?view=graph-rest-1.0#properties
           groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+          # Optional search for groups, see Microsoft Graph API for the syntax
+          # See https://docs.microsoft.com/en-us/graph/search-query-parameter
+          groupSearch: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
 
 `userFilter` and `userGroupMemberFilter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.

@@ -25,7 +25,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  formatEntityRefTitle,
+  humanizeEntityRef,
   isOwnerOf,
   useEntity,
 } from '@backstage/plugin-catalog-react';
@@ -108,7 +108,7 @@ const getQueryParams = (
   owner: Entity,
   selectedEntity: EntityTypeProps,
 ): string => {
-  const ownerName = formatEntityRefTitle(owner, { defaultKind: 'group' });
+  const ownerName = humanizeEntityRef(owner, { defaultKind: 'group' });
   const { kind, type } = selectedEntity;
   const filters = {
     kind,

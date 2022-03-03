@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import limiterFactory from 'p-limit';
@@ -73,9 +73,7 @@ export function useEntityStore(): {
             return;
           }
 
-          const promise = catalogClient.getEntityByName(
-            parseEntityRef(entityRef),
-          );
+          const promise = catalogClient.getEntityByRef(entityRef);
 
           outstandingEntities.set(entityRef, promise);
 

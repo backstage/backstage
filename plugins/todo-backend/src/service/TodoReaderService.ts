@@ -66,7 +66,7 @@ export class TodoReaderService implements TodoService {
       throw new InputError('Entity filter is required to list TODOs');
     }
     const token = options?.token;
-    const entity = await this.catalogClient.getEntityByName(req.entity, {
+    const entity = await this.catalogClient.getEntityByRef(req.entity, {
       token,
     });
     if (!entity) {

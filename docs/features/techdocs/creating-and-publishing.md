@@ -79,6 +79,9 @@ plugins:
   - techdocs-core
 ```
 
+> Note - The plugins section above is optional. Backstage automatically adds the `techdocs-core` plugin to the
+> mkdocs file if it is missing. This functionality can be turned off with a [configuration option](./configuration.md) in Backstage.
+
 Update your component's entity description by adding the following lines to its
 `catalog-info.yaml` in the root of its repository:
 

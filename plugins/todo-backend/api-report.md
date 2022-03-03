@@ -4,8 +4,8 @@
 
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
 import { Logger as Logger_2 } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
@@ -19,7 +19,7 @@ export function createTodoParser(options?: TodoParserOptions): TodoParser;
 
 // @public (undocumented)
 export type ListTodosRequest = {
-  entity?: EntityName;
+  entity?: CompoundEntityRef;
   offset?: number;
   limit?: number;
   orderBy?: {

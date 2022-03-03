@@ -30,7 +30,7 @@ export function useCatalogEntity() {
     error,
     loading,
   } = useAsync(
-    () => catalogApi.getEntityByName({ kind: 'Component', namespace, name }),
+    () => catalogApi.getEntityByRef({ kind: 'Component', namespace, name }),
     [catalogApi, namespace, name],
   );
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 /**
  * Holds the entity location information.
@@ -42,7 +42,7 @@ export type EntityRelationSpec = {
   /**
    * The source entity of this relation.
    */
-  source: EntityName;
+  source: CompoundEntityRef;
 
   /**
    * The type of the relation.
@@ -52,5 +52,5 @@ export type EntityRelationSpec = {
   /**
    * The target entity of this relation.
    */
-  target: EntityName;
+  target: CompoundEntityRef;
 };

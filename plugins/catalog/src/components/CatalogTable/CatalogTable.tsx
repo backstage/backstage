@@ -20,7 +20,7 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
-  formatEntityRefTitle,
+  humanizeEntityRef,
   getEntityRelations,
   useEntityList,
   useStarredEntities,
@@ -139,16 +139,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
     return {
       entity,
       resolved: {
-        name: formatEntityRefTitle(entity, {
+        name: humanizeEntityRef(entity, {
           defaultKind: 'Component',
         }),
         ownedByRelationsTitle: ownedByRelations
-          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
           .join(', '),
         ownedByRelations,
         partOfSystemRelationTitle: partOfSystemRelations
           .map(r =>
-            formatEntityRefTitle(r, {
+            humanizeEntityRef(r, {
               defaultKind: 'system',
             }),
           )

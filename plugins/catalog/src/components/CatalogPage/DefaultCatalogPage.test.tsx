@@ -17,6 +17,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
+  parseEntityRef,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
@@ -104,11 +105,11 @@ describe('DefaultCatalogPage', () => {
       }),
     getLocationByRef: () =>
       Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
-    getEntityByName: async entityName => {
+    getEntityByRef: async entityRef => {
       return {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'User',
-        metadata: { name: entityName.name },
+        metadata: { name: parseEntityRef(entityRef).name },
         relations: [
           {
             type: RELATION_MEMBER_OF,

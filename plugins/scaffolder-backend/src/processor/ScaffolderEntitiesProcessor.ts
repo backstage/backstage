@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  getEntityName,
+  getCompoundEntityRef,
   parseEntityRef,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
@@ -55,7 +55,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
     _location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
-    const selfRef = getEntityName(entity);
+    const selfRef = getCompoundEntityRef(entity);
 
     if (
       entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&

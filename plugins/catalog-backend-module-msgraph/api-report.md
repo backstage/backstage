@@ -78,7 +78,10 @@ export class MicrosoftGraphClient {
     userId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  getUserProfile(userId: string): Promise<MicrosoftGraph.User>;
+  getUserProfile(
+    userId: string,
+    query?: ODataQuery,
+  ): Promise<MicrosoftGraph.User>;
   getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
   requestApi(
     path: string,
@@ -158,9 +161,10 @@ export type MicrosoftGraphProviderConfig = {
   clientId: string;
   clientSecret: string;
   userFilter?: string;
-  userExpand?: string[];
+  userExpand?: string;
   userGroupMemberFilter?: string;
   userGroupMemberSearch?: string;
+  groupExpand?: string;
   groupFilter?: string;
   groupSearch?: string;
 };
@@ -172,7 +176,7 @@ export function normalizeEntityName(name: string): string;
 export type ODataQuery = {
   search?: string;
   filter?: string;
-  expand?: string[];
+  expand?: string;
   select?: string[];
 };
 
@@ -191,10 +195,11 @@ export function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
   options: {
-    userExpand?: string[];
+    userExpand?: string;
     userFilter?: string;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
     userTransformer?: UserTransformer;

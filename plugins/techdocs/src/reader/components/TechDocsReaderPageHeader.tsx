@@ -19,7 +19,7 @@ import CodeIcon from '@material-ui/icons/Code';
 
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Header, HeaderLabel } from '@backstage/core-components';
-import { EntityName, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { CompoundEntityRef, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   EntityRefLink,
   EntityRefLinks,
@@ -35,7 +35,7 @@ import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
  * @public
  */
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
 }>;

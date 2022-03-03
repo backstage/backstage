@@ -25,7 +25,6 @@ import {
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
-  IndexableDocument,
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
@@ -35,6 +34,7 @@ import {
 } from '@backstage/search-common';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
+import { Writable } from 'stream';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
@@ -78,8 +78,8 @@ export class AuthorizedSearchEngine implements SearchEngine {
     this.searchEngine.setTranslator(translator);
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    this.searchEngine.index(type, documents);
+  async getIndexer(type: string): Promise<Writable> {
+    return this.searchEngine.getIndexer(type);
   }
 
   async query(

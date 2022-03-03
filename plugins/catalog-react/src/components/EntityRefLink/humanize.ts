@@ -16,13 +16,16 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 
+/** @public @deprecated please use {@link humanizeEntityRef} instead */
+export const formatEntityRefTitle = humanizeEntityRef;
+
 /** @public */
-export function formatEntityRefTitle(
-  entityRef: Entity | EntityName,
+export function humanizeEntityRef(
+  entityRef: Entity | CompoundEntityRef,
   opts?: { defaultKind?: string },
 ) {
   const defaultKind = opts?.defaultKind;

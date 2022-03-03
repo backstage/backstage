@@ -15,7 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   ConfigApi,
   DiscoveryApi,
@@ -212,7 +212,7 @@ the component will become available.\n\nFor more information, read an \
   }): Promise<
     Array<{
       target: string;
-      entities: EntityName[];
+      entities: CompoundEntityRef[];
     }>
   > {
     const { url, owner, repo, githubIntegrationConfig } = options;

@@ -85,7 +85,7 @@ describe('MicrosoftGraphClient', () => {
 
     const response = await client.requestApi('users', {
       filter: 'test eq true',
-      expand: ['children'],
+      expand: 'children',
       select: ['id', 'children'],
     });
 

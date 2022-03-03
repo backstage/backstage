@@ -20,7 +20,7 @@ import { createCatalogPermissionRule } from './util';
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for entities with a specified label in its metadata.
- * @public
+ * @alpha
  */
 export const hasLabel = createCatalogPermissionRule({
   name: 'HAS_LABEL',

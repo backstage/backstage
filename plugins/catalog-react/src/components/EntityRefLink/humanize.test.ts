@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { formatEntityRefTitle } from './format';
+import { humanizeEntityRef } from './humanize';
 
 describe('formatEntityRefTitle', () => {
   it('formats entity in default namespace', () => {
@@ -30,7 +30,7 @@ describe('formatEntityRefTitle', () => {
         lifecycle: 'production',
       },
     };
-    const title = formatEntityRefTitle(entity);
+    const title = humanizeEntityRef(entity);
     expect(title).toEqual('component:software');
   });
 
@@ -48,7 +48,7 @@ describe('formatEntityRefTitle', () => {
         lifecycle: 'production',
       },
     };
-    const title = formatEntityRefTitle(entity);
+    const title = humanizeEntityRef(entity);
     expect(title).toEqual('component:test/software');
   });
 
@@ -66,7 +66,7 @@ describe('formatEntityRefTitle', () => {
         lifecycle: 'production',
       },
     };
-    const title = formatEntityRefTitle(entity, { defaultKind: 'Component' });
+    const title = humanizeEntityRef(entity, { defaultKind: 'Component' });
     expect(title).toEqual('test/software');
   });
 
@@ -76,7 +76,7 @@ describe('formatEntityRefTitle', () => {
       namespace: 'default',
       name: 'software',
     };
-    const title = formatEntityRefTitle(entityName);
+    const title = humanizeEntityRef(entityName);
     expect(title).toEqual('component:software');
   });
 
@@ -87,7 +87,7 @@ describe('formatEntityRefTitle', () => {
       name: 'software',
     };
 
-    const title = formatEntityRefTitle(entityName);
+    const title = humanizeEntityRef(entityName);
     expect(title).toEqual('component:test/software');
   });
 
@@ -98,7 +98,7 @@ describe('formatEntityRefTitle', () => {
       name: 'software',
     };
 
-    const title = formatEntityRefTitle(entityName, {
+    const title = humanizeEntityRef(entityName, {
       defaultKind: 'component',
     });
     expect(title).toEqual('test/software');

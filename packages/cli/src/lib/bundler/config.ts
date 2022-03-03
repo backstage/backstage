@@ -15,7 +15,6 @@
  */
 
 import fs from 'fs-extra';
-import chalk from 'chalk';
 import { resolve as resolvePath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -118,43 +117,11 @@ export async function createConfig(
     }),
   );
 
-  const appParamDeprecationMsg = chalk.red(
-    'DEPRECATION WARNING: using `app.<key>` in the index.html template is deprecated, use `config.getString("app.<key>")` instead.',
-  );
   plugins.push(
     new HtmlWebpackPlugin({
       template: paths.targetHtml,
       templateParameters: {
         publicPath: validBaseUrl.pathname.replace(/\/$/, ''),
-        app: {
-          get title() {
-            console.warn(appParamDeprecationMsg);
-            return frontendConfig.getString('app.title');
-          },
-          get baseUrl() {
-            console.warn(appParamDeprecationMsg);
-            return validBaseUrl.href;
-          },
-          get googleAnalyticsTrackingId() {
-            console.warn(appParamDeprecationMsg);
-            return frontendConfig.getOptionalString(
-              'app.googleAnalyticsTrackingId',
-            );
-          },
-          get datadogRum() {
-            console.warn(appParamDeprecationMsg);
-            return {
-              env: frontendConfig.getOptionalString('app.datadogRum.env'),
-              clientToken: frontendConfig.getOptionalString(
-                'app.datadogRum.clientToken',
-              ),
-              applicationId: frontendConfig.getOptionalString(
-                'app.datadogRum.applicationId',
-              ),
-              site: frontendConfig.getOptionalString('app.datadogRum.site'),
-            };
-          },
-        },
         config: frontendConfig,
       },
     }),

@@ -89,6 +89,13 @@ export { ComponentEntityV1alpha1 };
 export const componentEntityV1alpha1Validator: KindValidator;
 
 // @public
+export type CompoundEntityRef = {
+  kind: string;
+  namespace: string;
+  name: string;
+};
+
+// @public
 export const DEFAULT_NAMESPACE = 'default';
 
 // @public
@@ -166,12 +173,8 @@ export type EntityMeta = JsonObject & {
   links?: EntityLink[];
 };
 
-// @public
-export type EntityName = {
-  kind: string;
-  namespace: string;
-  name: string;
-};
+// @public @deprecated
+export type EntityName = CompoundEntityRef;
 
 // @public
 export const EntityPolicies: {
@@ -196,7 +199,7 @@ export type EntityRef =
 // @public
 export type EntityRelation = {
   type: string;
-  target: EntityName;
+  target: CompoundEntityRef;
   targetRef: string;
 };
 
@@ -229,7 +232,10 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
 }
 
 // @public
-export function getEntityName(entity: Entity): EntityName;
+export function getCompoundEntityRef(entity: Entity): CompoundEntityRef;
+
+// @public @deprecated
+export const getEntityName: typeof getCompoundEntityRef;
 
 // @public
 export function getEntitySourceLocation(entity: Entity): {
@@ -337,7 +343,7 @@ export function parseEntityName(
     defaultKind?: string;
     defaultNamespace?: string;
   },
-): EntityName;
+): CompoundEntityRef;
 
 // @public
 export function parseEntityRef(
@@ -352,7 +358,7 @@ export function parseEntityRef(
     defaultKind?: string;
     defaultNamespace?: string;
   },
-): EntityName;
+): CompoundEntityRef;
 
 // @public
 export function parseLocationRef(ref: string): {

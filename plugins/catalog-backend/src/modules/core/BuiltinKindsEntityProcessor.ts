@@ -22,7 +22,7 @@ import {
   DomainEntity,
   domainEntityV1alpha1Validator,
   Entity,
-  getEntityName,
+  getCompoundEntityRef,
   GroupEntity,
   groupEntityV1alpha1Validator,
   locationEntityV1alpha1Validator,
@@ -93,7 +93,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     _location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
-    const selfRef = getEntityName(entity);
+    const selfRef = getCompoundEntityRef(entity);
 
     /*
      * Utilities

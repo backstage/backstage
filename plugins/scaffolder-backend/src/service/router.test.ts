@@ -53,7 +53,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const createCatalogClient = (template: any) =>
   ({
-    getEntityByName: async () => template,
+    getEntityByRef: async () => template,
   } as unknown as CatalogApi);
 
 function createDatabase(): PluginDatabaseManager {

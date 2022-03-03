@@ -72,18 +72,6 @@ const expectedEntities: Entity[] = [
       owner: 'someone',
     },
   },
-  {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'test-entity',
-      description: 'The expected description',
-    },
-    spec: {
-      type: 'some-type',
-      lifecycle: 'experimental',
-    },
-  },
 ];
 
 describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {

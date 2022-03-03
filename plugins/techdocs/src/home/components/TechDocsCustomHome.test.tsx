@@ -31,7 +31,7 @@ jest.mock('@backstage/plugin-catalog-react', () => {
 });
 
 const mockCatalogApi = {
-  getEntityByName: jest.fn(),
+  getEntityByRef: jest.fn(),
   getEntities: async () => ({
     items: [
       {
