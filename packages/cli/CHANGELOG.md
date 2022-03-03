@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.15.0
+
+### Minor Changes
+
+- 8c3f30cb28: **BREAKING**: Removed the deprecated `app.<key>` template variables from the `index.html` templating. These should be replaced by using `config.getString("app.<key>")` instead.
+
+### Patch Changes
+
+- 46a19c599f: The CLI now bundles both version 16 and 17 of the patched `@hot-loader/react-dom` dependency, and selects the appropriate one based on what version of `react-dom` is installed within the app.
+
 ## 0.14.1
 
 ### Patch Changes

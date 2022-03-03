@@ -44,7 +44,11 @@ import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
 import { selectedTemplateRouteRef } from '../../routes';
 
-import { Button, ItemCardHeader } from '@backstage/core-components';
+import {
+  Button,
+  ItemCardHeader,
+  MarkdownContent,
+} from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
@@ -178,7 +182,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          {templateProps.description}
+          <MarkdownContent content={templateProps.description} />
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>

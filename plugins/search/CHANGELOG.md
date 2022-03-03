@@ -1,5 +1,17 @@
 # @backstage/plugin-search
 
+## 0.7.2
+
+### Patch Changes
+
+- 64b430f80d: chore(deps): bump `react-text-truncate` from 0.17.0 to 0.18.0
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/search-common@0.3.0
+
 ## 0.7.1
 
 ### Patch Changes

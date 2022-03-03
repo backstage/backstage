@@ -15,6 +15,7 @@
  */
 import { Link, Progress, Table, TableColumn } from '@backstage/core-components';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useEntityPermission } from '@backstage/plugin-catalog-react';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
 import { default as React, useState } from 'react';
@@ -23,6 +24,7 @@ import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { buildRouteRef } from '../../../../plugin';
 import { useBuilds } from '../../../useBuilds';
 import { JenkinsRunStatus } from '../Status';
+import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 
 const FailCount = ({ count }: { count: number }): JSX.Element | null => {
   if (count !== 0) {
@@ -174,6 +176,10 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<Project>) => {
       const ActionWrapper = () => {
         const [isLoadingRebuild, setIsLoadingRebuild] = useState(false);
+        const { allowed, loading } = useEntityPermission(
+          jenkinsExecutePermission,
+        );
+
         const alertApi = useApi(alertApiRef);
 
         const onRebuild = async () => {
@@ -201,7 +207,7 @@ const generatedColumns: TableColumn[] = [
             <>
               {isLoadingRebuild && <Progress />}
               {!isLoadingRebuild && (
-                <IconButton onClick={onRebuild}>
+                <IconButton onClick={onRebuild} disabled={loading || !allowed}>
                   <RetryIcon />
                 </IconButton>
               )}

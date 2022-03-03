@@ -1,5 +1,16 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.8
+
+### Patch Changes
+
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-tech-insights-node@0.2.6
+
 ## 0.2.7
 
 ### Patch Changes

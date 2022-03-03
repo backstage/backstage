@@ -1,5 +1,11 @@
 # @backstage/plugin-permission-common
 
+## 0.5.2
+
+### Patch Changes
+
+- 79b9d8a861: Add api doc comments to `Permission` type properties.
+
 ## 0.5.1
 
 ### Patch Changes
