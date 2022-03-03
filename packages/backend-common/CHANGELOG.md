@@ -1,5 +1,27 @@
 # @backstage/backend-common
 
+## 0.12.0
+
+### Minor Changes
+
+- 9a0510144f: **BREAKING**: The connection string for `redis` cache store now requires a protocol prefix.
+
+  ```diff
+  backend:
+    cache:
+      store: redis
+  -   connection: user:pass@cache.example.com:6379
+  +   connection: redis://user:pass@cache.example.com:6379
+  ```
+
+### Patch Changes
+
+- 0df6077ab5: DockerContainerRunner.runContainer now automatically removes the container when its execution terminates
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+- b838717e92: Export FetchUrlReader to facilitate more flexible configuration of the backend.
+- Updated dependencies
+  - @backstage/integration@0.8.0
+
 ## 0.11.0
 
 ### Minor Changes

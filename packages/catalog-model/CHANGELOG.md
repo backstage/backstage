@@ -1,5 +1,38 @@
 # @backstage/catalog-model
 
+## 0.12.0
+
+### Minor Changes
+
+- ac7b1161a6: **BREAKING**: The following changes are all breaking changes.
+
+  Removed `EDIT_URL_ANNOTATION` and `VIEW_URL_ANNOTATION`, `LOCATION_ANNOTATION`, `ORIGIN_LOCATION_ANNOTATION`, `LOCATION_ANNOTATION`, `SOURCE_LOCATION_ANNOTATION`. All of these constants have been prefixed with ANNOTATION to be easier to find meaning `SOURCE_LOCATION_ANNOTATION` is available as `ANNOTATION_SOURCE_LOCATION`.
+
+  Removed `parseLocationReference`, replaced by `parseLocationRef`.
+
+  Removed `stringifyLocationReference`, replaced by `stringifyLocationRef`.
+
+  Removed `Location` type which has been moved to `catalog-client`.
+
+  Removed `ENTITY_DEFAULT_NAMESPACE`, replaced by `DEFAULT_NAMESPACE`.
+
+  Removed `compareEntityToRef` compare using `stringifyEntityRef` instead.
+
+  Removed `JSONSchema` type which should be imported from `json-schema` package instead.
+
+  Removed utility methods: `entityHasChanges`, `generateEntityEtag`, `generateEntityUid`, `generateUpdatedEntity`.
+
+  Removed `ENTITY_META_GENERATED_FIELDS` and `EntityRefContext`.
+
+### Patch Changes
+
+- debfcd9515: Move `@types/json-schema` to be a dev dependency
+- 36aa63022b: **DEPRECATION**: Deprecated the `EntityName` type, and added the better-named `CompoundEntityRef` to replace it.
+
+  **DEPRECATION**: Deprecated the `getEntityName` function, and added the better-named `getCompoundEntityRef` to replace it.
+
+  Please switch over to using the new symbols, as the old ones may be removed in a future release.
+
 ## 0.11.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @backstage/integration
 
+## 0.8.0
+
+### Minor Changes
+
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+
+### Patch Changes
+
+- 33d5e79822: Fix Bitbucket Cloud and Bitbucket Server line number reference.
+
 ## 0.7.5
 
 ### Patch Changes

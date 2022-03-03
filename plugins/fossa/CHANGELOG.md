@@ -1,5 +1,18 @@
 # @backstage/plugin-fossa
 
+## 0.2.33
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- f41a293231: - **DEPRECATION**: Deprecated `formatEntityRefTitle` in favor of the new `humanizeEntityRef` method instead. Please migrate to using the new method instead.
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.2.32
 
 ### Patch Changes

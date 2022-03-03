@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.14.1
+
+### Patch Changes
+
+- 6537a601c7: Added a new interface that allows for customization of when to build techdocs
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 022507c860: A `DefaultTechDocsCollatorFactory`, which works with the new stream-based
+  search indexing subsystem, is now available. The `DefaultTechDocsCollator` will
+  continue to be available for those unable to upgrade to the stream-based
+  `@backstage/search-backend-node` (and related packages), however it is now
+  marked as deprecated and will be removed in a future version.
+
+  To upgrade this plugin and the search indexing subsystem in one go, check
+  [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  for necessary changes to your search backend plugin configuration.
+
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-catalog-common@0.2.0
+  - @backstage/integration@0.8.0
+  - @backstage/search-common@0.3.0
+  - @backstage/techdocs-common@0.11.11
+
 ## 0.14.0
 
 ### Minor Changes

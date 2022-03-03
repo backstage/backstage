@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.9.0
+
+### Minor Changes
+
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+
+### Patch Changes
+
+- 64b430f80d: chore(deps): bump `react-text-truncate` from 0.17.0 to 0.18.0
+- bb2bb36651: Updated usage of `StorageApi` to use `snapshot` method instead of `get`
+- 689840dcbe: Added ability for SidebarSubmenuItem to handle external links correctly via the "to" prop
+- Updated dependencies
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.8.10
 
 ### Patch Changes
