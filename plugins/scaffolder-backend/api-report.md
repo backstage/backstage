@@ -233,10 +233,10 @@ export function createPublishGithubAction(options: {
   description?: string | undefined;
   access?: string | undefined;
   defaultBranch?: string | undefined;
-  deleteBranchOnMerge: boolean;
-  allowRebaseMerge: boolean;
-  allowSquashMerge: boolean;
-  allowMergeCommit: boolean;
+  deleteBranchOnMerge?: boolean | undefined;
+  allowRebaseMerge?: boolean | undefined;
+  allowSquashMerge?: boolean | undefined;
+  allowMergeCommit?: boolean | undefined;
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;

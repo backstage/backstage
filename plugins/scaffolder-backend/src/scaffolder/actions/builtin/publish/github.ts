@@ -46,10 +46,10 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     defaultBranch?: string;
-    deleteBranchOnMerge: boolean;
-    allowRebaseMerge: boolean;
-    allowSquashMerge: boolean;
-    allowMergeCommit: boolean;
+    deleteBranchOnMerge?: boolean;
+    allowRebaseMerge?: boolean;
+    allowSquashMerge?: boolean;
+    allowMergeCommit?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
