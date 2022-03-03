@@ -34,6 +34,7 @@ import {
   catalogEntityReadPermission,
   CatalogEntityDocument,
 } from '@backstage/plugin-catalog-common';
+import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
 
 /** @public */
@@ -49,7 +50,8 @@ export type DefaultCatalogCollatorFactoryOptions = {
 /** @public */
 export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'software-catalog';
-  public readonly visibilityPermission = catalogEntityReadPermission;
+  public readonly visibilityPermission: Permission =
+    catalogEntityReadPermission;
 
   private locationTemplate: string;
   private filter?: GetEntitiesRequest['filter'];
