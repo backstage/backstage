@@ -32,7 +32,6 @@ import { Writable } from 'stream';
 
 // @public
 export type ActionContext<Input extends JsonObject> = {
-  baseUrl?: string;
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
@@ -42,9 +41,6 @@ export type ActionContext<Input extends JsonObject> = {
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
 };
-
-// @public @deprecated
-export type CompletedTaskState = TaskCompletionState;
 
 // @public
 export const createBuiltinActions: (
@@ -359,9 +355,6 @@ export type DatabaseTaskStoreOptions = {
   database: Knex;
 };
 
-// @public @deprecated
-export type DispatchResult = TaskBrokerDispatchResult;
-
 // @public
 export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
@@ -412,9 +405,6 @@ export interface RouterOptions {
   taskWorkers?: number;
 }
 
-// @public @deprecated
-export const runCommand: (options: RunCommandOptions) => Promise<void>;
-
 // @public (undocumented)
 export type RunCommandOptions = {
   command: string;
@@ -455,9 +445,6 @@ export type SerializedTaskEvent = {
   type: TaskEventType;
   createdAt: string;
 };
-
-// @public @deprecated
-export type Status = TaskStatus;
 
 // @public
 export interface TaskBroker {
@@ -536,9 +523,6 @@ export class TaskManager implements TaskContext {
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
-
-// @public @deprecated
-export type TaskState = CurrentClaimedTask;
 
 // @public
 export type TaskStatus =
