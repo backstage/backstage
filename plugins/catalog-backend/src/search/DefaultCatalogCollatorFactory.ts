@@ -36,11 +36,6 @@ import {
 } from '@backstage/plugin-catalog-common';
 import { Readable } from 'stream';
 
-/**
- * @deprecated import from `@backstage/plugin-catalog-common` instead
- */
-export type { CatalogEntityDocument };
-
 /** @public */
 export type DefaultCatalogCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
