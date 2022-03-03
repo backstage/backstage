@@ -60,6 +60,19 @@ export type BasicPermission = {
 };
 
 // @public
+export function createPermission<TResourceType extends string>(input: {
+  name: string;
+  attributes: PermissionAttributes;
+  resourceType: TResourceType;
+}): ResourcePermission<TResourceType>;
+
+// @public
+export function createPermission(input: {
+  name: string;
+  attributes: PermissionAttributes;
+}): BasicPermission;
+
+// @public
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
@@ -77,6 +90,12 @@ export function isDeletePermission(permission: Permission): boolean;
 
 // @public
 export function isReadPermission(permission: Permission): boolean;
+
+// @public
+export function isResourcePermission<T extends string = string>(
+  permission: Permission,
+  resourceType?: T,
+): permission is ResourcePermission<T>;
 
 // @public
 export function isUpdatePermission(permission: Permission): boolean;
