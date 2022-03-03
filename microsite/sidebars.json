@@ -253,7 +253,17 @@
       "permission/overview",
       "permission/getting-started",
       "permission/writing-a-policy",
-      "permission/concepts"
+      "permission/concepts",
+      {
+        "type": "subcategory",
+        "label": "Permission framework for plugin authors",
+        "ids": [
+          "permission/plugin-authors/setup-for-the-tutorial",
+          "permission/plugin-authors/authorize-the-create-endpoint",
+          "permission/plugin-authors/authorize-the-update-endpoint",
+          "permission/plugin-authors/authorize-the-read-endpoint"
+        ]
+      }
     ],
     "Deployment": [
       "deployment/index",
