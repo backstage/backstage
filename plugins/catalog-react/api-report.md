@@ -400,7 +400,7 @@ export type EntityTypeReturn = {
 // @public
 export const FavoriteEntity: (props: FavoriteEntityProps) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const favoriteEntityIcon: (isStarred: boolean) => JSX.Element;
 
 // @public (undocumented)
@@ -408,7 +408,7 @@ export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
   entity: Entity;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const favoriteEntityTooltip: (
   isStarred: boolean,
 ) => 'Remove from favorites' | 'Add to favorites';

@@ -1,5 +1,19 @@
 # @backstage/core-app-api
 
+## 0.6.0
+
+### Minor Changes
+
+- bb2bb36651: **BREAKING**: Removed the deprecated `get` method from `StorageAPI` and its implementations, this method has been replaced by the `snapshot` method. The return value from snapshot no longer includes `newValue` which has been replaced by `value`. For getting notified when a value changes, use `observe# @backstage/core-app-api.
+- f3cce3dcf7: **BREAKING**: Removed export of `GithubSession` and `SamlSession` which are only used internally.
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+- dbf84eee55: **BREAKING**: Removed the deprecated `GithubAuth.normalizeScopes` method.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.5.4
 
 ### Patch Changes

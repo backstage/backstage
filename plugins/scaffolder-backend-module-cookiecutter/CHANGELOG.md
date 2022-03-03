@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.2.3
+
+### Patch Changes
+
+- 6c7a879660: Fixed bug where existing cookiecutter.json file is not used.
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-scaffolder-backend@0.17.3
+  - @backstage/integration@0.8.0
+
 ## 0.2.2
 
 ### Patch Changes

@@ -1,5 +1,47 @@
 # @backstage/plugin-catalog-react
 
+## 0.8.0
+
+### Minor Changes
+
+- da79aac2a6: Removed some previously deprecated `routeRefs` as follows:
+
+  - **BREAKING**: Removed `entityRoute` in favor of `entityRouteRef`.
+  - **BREAKING**: Removed the previously deprecated `rootRoute` and `catalogRouteRef`. If you want to refer to the catalog index page from a public plugin you now need to use an `ExternalRouteRef` instead. For private plugins it is possible to take the shortcut of referring directly to `catalogPlugin.routes.indexPage` instead.
+
+- e26fd1c7ab: Marked `useEntityPermission` as alpha since the underlying permission framework is under active development.
+- 2de1d82bd1: Removing the `EntityName` path for the `useEntityOwnership` as it has never worked correctly. Please pass in an entire `Entity` instead.
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- f41a293231: - **DEPRECATION**: Deprecated `formatEntityRefTitle` in favor of the new `humanizeEntityRef` method instead. Please migrate to using the new method instead.
+- f590d1681b: Deprecated `favoriteEntityTooltip` and `favoriteEntityIcon` since the utility value is very low.
+- 72431d7bed: - **BREAKING**: The `isOwnerOf` function has been marked as `@alpha` and is now only available via the `@backstage/plugin-catalog-react/alpha` import. The limitations of this function with regards to only supporting direct relations have also been documented.
+- 03ec06bf7f: **BREAKING**: Moved **DefaultStarredEntitiesApi** to `@backstage/plugin-catalog`. If you were using this in tests, you can use the new `MockStarredEntitiesApi` from `@backstage/plugin-catalog-react` instead.
+
+  Fixed a risky behavior where `DefaultStarredEntitiesApi` forwarded values to observers that were later mutated.
+
+  Removed the `isStarred` method from `DefaultStarredEntitiesApi`, as it is not part of the `StarredEntitiesApi`.
+
+- 44403296e7: Added the following deprecations to the `catalog-react` package:
+
+  - **DEPRECATION**: `useEntity` will now warn if the entity has not yet been loaded, and will soon throw errors instead. If you're using the default implementation of `EntityLayout` and `EntitySwitch` then these components will ensure that there is an entity loaded before rendering children. If you're implementing your own `EntityLayout` or `EntitySwitch` or something that operates outside or adjacent to them, then use `useAsyncEntity`.
+
+  - **DEPRECATION**: the `loading`, `error` and `refresh` properties that are returned from `useEntity` have been deprecated, and are available on `useAsyncEntity` instead.
+
+- 8f0e8e039b: Deprecated `getEntityMetadataEditUrl` and `getEntityMetadataViewUrl` as these just return one annotation from the entity passed in.
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- bb2bb36651: Updated usage of `StorageApi` to use `snapshot` method instead of `get`
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/core-components@0.9.0
+  - @backstage/integration@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/plugin-permission-common@0.5.2
+  - @backstage/plugin-permission-react@0.3.3
+
 ## 0.7.0
 
 ### Minor Changes
