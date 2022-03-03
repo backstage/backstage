@@ -306,6 +306,20 @@ export interface CatalogApi {
    * Gets a single entity from the catalog by its ref (kind, namespace, name)
    * triplet.
    *
+   * @param entityRef - A complete entity ref, either on string or compound form
+   * @param options - Additional options
+   * @returns The matching entity, or undefined if there was no entity with that ref
+   */
+  getEntityByRef(
+    entityRef: string | CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Entity | undefined>;
+
+  /**
+   * Gets a single entity from the catalog by its ref (kind, namespace, name)
+   * triplet.
+   *
+   * @deprecated Use getEntityRef instead
    * @param name - A complete entity ref
    * @param options - Additional options
    */
