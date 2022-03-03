@@ -34,6 +34,10 @@ import {
   CatalogEntityDocument,
 } from '@backstage/plugin-catalog-common';
 
+/**
+ * The DefaultCatalogCollator for Search
+ * @public
+ */
 export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;

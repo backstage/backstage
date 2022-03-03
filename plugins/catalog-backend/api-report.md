@@ -404,7 +404,7 @@ export function createRandomRefreshInterval(options: {
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public @deprecated (undocumented)
+// @public
 export class DefaultCatalogCollator {
   constructor(options: {
     discovery: PluginEndpointDiscovery;
