@@ -226,17 +226,13 @@ export const taskSettingsV2Schema = z.object({
     .string()
     .refine(isValidCronFormat, { message: 'Invalid cron' })
     .or(
-      z
-        .string()
-        .refine(isValidOptionalDurationString, {
-          message: 'invalid duration, expecting ISO Period',
-        }),
+      z.string().refine(isValidOptionalDurationString, {
+        message: 'invalid duration, expecting ISO Period',
+      }),
     ),
-  timeoutAfterDuration: z
-    .string()
-    .refine(isValidOptionalDurationString, {
-      message: 'Invalid duration expecting ISO Period',
-    }),
+  timeoutAfterDuration: z.string().refine(isValidOptionalDurationString, {
+    message: 'Invalid duration expecting ISO Period',
+  }),
   initialDelayDuration: z
     .string()
     .optional()
