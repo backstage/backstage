@@ -22,6 +22,7 @@ import {
   ANNOTATION_SOURCE_LOCATION,
   CompoundEntityRef,
   DEFAULT_NAMESPACE,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, InputError, NotFoundError } from '@backstage/errors';
@@ -106,9 +107,11 @@ export async function findTemplate(options: {
     throw new InputError(`Invalid kind, only 'Template' kind is supported`);
   }
 
-  const template = await catalogApi.getEntityByName(entityRef, { token });
+  const template = await catalogApi.getEntityByRef(entityRef, { token });
   if (!template) {
-    throw new NotFoundError(`Template ${entityRef} not found`);
+    throw new NotFoundError(
+      `Template ${stringifyEntityRef(entityRef)} not found`,
+    );
   }
 
   return template as TemplateEntityV1beta3 | TemplateEntityV1beta2;

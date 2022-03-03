@@ -48,7 +48,7 @@ export async function loadCatalogOwnerRefs(
 
   const primaryUserRef = identityOwnerRefs.find(ref => ref.startsWith('user:'));
   if (primaryUserRef) {
-    const entity = await catalogApi.getEntityByName(
+    const entity = await catalogApi.getEntityByRef(
       parseEntityRef(primaryUserRef),
     );
     if (entity) {

@@ -139,10 +139,12 @@ createDevApp()
     deps: {},
     factory() {
       return {
-        async getEntityByName(
-          name: CompoundEntityRef,
+        async getEntityByRef(
+          ref: string | CompoundEntityRef,
         ): Promise<Entity | undefined> {
-          return entities[stringifyEntityRef(name)];
+          return entities[
+            typeof ref === 'string' ? ref : stringifyEntityRef(ref)
+          ];
         },
         async getEntities(): Promise<GetEntitiesResponse> {
           return { items: Object.values(entities) };

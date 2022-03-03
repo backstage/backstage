@@ -76,7 +76,7 @@ const mockIdentityApi: Partial<IdentityApi> = {
 };
 const mockCatalogApi: Partial<CatalogApi> = {
   getEntities: jest.fn().mockImplementation(async () => ({ items: entities })),
-  getEntityByName: async () => undefined,
+  getEntityByRef: async () => undefined,
 };
 
 const wrapper = ({

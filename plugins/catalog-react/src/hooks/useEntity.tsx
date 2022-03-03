@@ -115,7 +115,7 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
     loading,
     retry: refresh,
   } = useAsyncRetry(
-    () => catalogApi.getEntityByName({ kind, namespace, name }),
+    () => catalogApi.getEntityByRef({ kind, namespace, name }),
     [catalogApi, kind, namespace, name],
   );
 

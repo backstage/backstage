@@ -26,6 +26,7 @@ import { CatalogIdentityClient } from './CatalogIdentityClient';
 describe('CatalogIdentityClient', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
+    getEntityByRef: jest.fn(),
     getEntityByName: jest.fn(),
     getEntities: jest.fn(),
     addLocation: jest.fn(),

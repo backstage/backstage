@@ -30,13 +30,13 @@ import { loadCatalogOwnerRefs, useEntityOwnership } from './useEntityOwnership';
 
 describe('useEntityOwnership', () => {
   type MockIdentityApi = jest.Mocked<Pick<IdentityApi, 'getBackstageIdentity'>>;
-  type MockCatalogApi = jest.Mocked<Pick<CatalogApi, 'getEntityByName'>>;
+  type MockCatalogApi = jest.Mocked<Pick<CatalogApi, 'getEntityByRef'>>;
 
   const mockIdentityApi: MockIdentityApi = {
     getBackstageIdentity: jest.fn(),
   };
   const mockCatalogApi: MockCatalogApi = {
-    getEntityByName: jest.fn(),
+    getEntityByRef: jest.fn(),
   };
 
   const identityApi = mockIdentityApi as unknown as IdentityApi;
@@ -102,11 +102,11 @@ describe('useEntityOwnership', () => {
 
   describe('loadCatalogOwnerRefs', () => {
     it('loads the first user from the catalog', async () => {
-      mockCatalogApi.getEntityByName.mockResolvedValueOnce(user2Entity);
+      mockCatalogApi.getEntityByRef.mockResolvedValueOnce(user2Entity);
       await expect(
         loadCatalogOwnerRefs(catalogApi, ['user:default/user2']),
       ).resolves.toEqual(['group:default/group1']);
-      expect(mockCatalogApi.getEntityByName).toBeCalledWith({
+      expect(mockCatalogApi.getEntityByRef).toBeCalledWith({
         kind: 'user',
         namespace: 'default',
         name: 'user2',
@@ -114,11 +114,11 @@ describe('useEntityOwnership', () => {
     });
 
     it('gracefully handles missing user', async () => {
-      mockCatalogApi.getEntityByName.mockResolvedValueOnce(undefined);
+      mockCatalogApi.getEntityByRef.mockResolvedValueOnce(undefined);
       await expect(
         loadCatalogOwnerRefs(catalogApi, ['user:default/user2']),
       ).resolves.toEqual([]);
-      expect(mockCatalogApi.getEntityByName).toBeCalledWith({
+      expect(mockCatalogApi.getEntityByRef).toBeCalledWith({
         kind: 'user',
         namespace: 'default',
         name: 'user2',
@@ -133,7 +133,7 @@ describe('useEntityOwnership', () => {
         userEntityRef: 'user:default/user1',
         ownershipEntityRefs: ['user:default/user1', 'group:default/group1'],
       });
-      mockCatalogApi.getEntityByName.mockResolvedValue(undefined);
+      mockCatalogApi.getEntityByRef.mockResolvedValue(undefined);
 
       const { result, waitForValueToChange } = renderHook(
         () => useEntityOwnership(),

@@ -44,6 +44,7 @@ function mockCatalogClient(entity?: Entity): jest.Mocked<CatalogApi> {
   const mock = {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
     getEntityByName: jest.fn(),
     getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
@@ -54,7 +55,7 @@ function mockCatalogClient(entity?: Entity): jest.Mocked<CatalogApi> {
     getEntityFacets: jest.fn(),
   };
   if (entity) {
-    mock.getEntityByName.mockReturnValue(entity);
+    mock.getEntityByRef.mockReturnValue(entity);
   }
   return mock;
 }
@@ -93,7 +94,7 @@ describe('TodoReaderService', () => {
       offset: 0,
       limit: 10,
     });
-    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName, {
+    expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(entityName, {
       token: undefined,
     });
   });
@@ -304,7 +305,7 @@ describe('TodoReaderService', () => {
         message: 'Entity not found, component:default/my-component',
       }),
     );
-    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName, {
+    expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(entityName, {
       token: undefined,
     });
   });

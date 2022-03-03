@@ -232,7 +232,12 @@ function useOwnUser(): AsyncState<UserEntity | undefined> {
 
   return useAsync(async () => {
     const identity = await identityApi.getBackstageIdentity();
-    return catalogApi.getEntityByName(
+    // TODO(freben): Defensively parse with defaults even though getEntityByRef
+    // supports the string form, since some auth resolvers have been known to
+    // return incomplete refs (just the name part) historically. This can be
+    // simplified in the future to just pass the ref immediately to
+    // getEntityByRef.
+    return catalogApi.getEntityByRef(
       parseEntityRef(identity.userEntityRef, {
         defaultKind: 'User',
         defaultNamespace: DEFAULT_NAMESPACE,
