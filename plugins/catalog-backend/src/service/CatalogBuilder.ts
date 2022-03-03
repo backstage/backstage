@@ -196,7 +196,10 @@ export class CatalogBuilder {
    *
    * @deprecated use {@link CatalogBuilder#setProcessingIntervalSeconds} instead
    */
-  setRefreshIntervalSeconds(seconds: number): CatalogBuilder {
+  setRefreshIntervalSecon0ds(seconds: number): CatalogBuilder {
+    this.env.logger.warn(
+      '[DEPRECATION] - CatalogBuilder.setRefreshIntervalSeconds is deprecated. Use CatalogBuilder.setProcessingIntervalSeconds instead.',
+    );
     this.processingInterval = createRandomProcessingInterval({
       minSeconds: seconds,
       maxSeconds: seconds * 1.5,
@@ -225,6 +228,9 @@ export class CatalogBuilder {
    * @deprecated use {@link CatalogBuilder#setProcessingInterval} instead
    */
   setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder {
+    this.env.logger.warn(
+      '[DEPRECATION] - CatalogBuilder.setRefreshInterval is deprecated. Use CatalogBuilder.setProcessingInterval instead.',
+    );
     this.processingInterval = refreshInterval;
     return this;
   }
