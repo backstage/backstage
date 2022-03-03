@@ -20,7 +20,7 @@ import { createCatalogPermissionRule } from './util';
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for entities with a specified kind.
- * @public
+ * @alpha
  */
 export const isEntityKind = createCatalogPermissionRule({
   name: 'IS_ENTITY_KIND',

@@ -21,7 +21,7 @@ import { createCatalogPermissionRule } from './util';
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for the presence of an annotation on a given entity.
  *
- * @public
+ * @alpha
  */
 export const hasAnnotation = createCatalogPermissionRule({
   name: 'HAS_ANNOTATION',
