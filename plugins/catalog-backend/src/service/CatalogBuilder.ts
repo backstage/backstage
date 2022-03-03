@@ -210,7 +210,7 @@ export class CatalogBuilder {
   /**
    * Processing interval determines how often entities should be processed.
    * Seconds provided will be multiplied by 1.5
-   * The default processing duration is 100-150 seconds.
+   * The default processing interval is 100-150 seconds.
    * setting this too low will potentially deplete request quotas to upstream services.
    */
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder {
