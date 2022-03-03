@@ -41,6 +41,7 @@
     "@backstage/errors": "^0.2.2",
     "@backstage/integration": "^0.8.0",
     "@backstage/plugin-catalog-common": "^0.2.2",
+    "@backstage/plugin-permission-common": "^0.5.2",
     "@backstage/plugin-search-common": "^0.3.1",
     "@backstage/plugin-techdocs-node": "^0.11.12",
     "@types/express": "^4.17.6",
