@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
 import { File, FileExistsResponse, Storage } from '@google-cloud/storage';
@@ -238,7 +238,9 @@ export class GoogleGCSPublish implements PublisherBase {
     return { objects };
   }
 
-  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {
+  fetchTechDocsMetadata(
+    entityName: CompoundEntityRef,
+  ): Promise<TechDocsMetadata> {
     return new Promise((resolve, reject) => {
       const entityTriplet = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
       const entityDir = this.legacyPathCasing

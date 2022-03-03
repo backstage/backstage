@@ -17,7 +17,7 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -45,7 +45,7 @@ const createMockEntity = (annotations = {}): Entity => {
   };
 };
 
-const createMockEntityName = (): EntityName => ({
+const createMockEntityName = (): CompoundEntityRef => ({
   kind: 'TestKind',
   name: 'test-component-name',
   namespace: 'test-namespace',

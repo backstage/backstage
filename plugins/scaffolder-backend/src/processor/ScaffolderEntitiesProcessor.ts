@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  getEntityName,
+  getCompoundEntityRef,
   parseEntityRef,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
@@ -25,7 +25,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
-  results,
+  processingResult,
 } from '@backstage/plugin-catalog-backend';
 import {
   TemplateEntityV1beta3,
@@ -55,7 +55,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
     _location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
-    const selfRef = getEntityName(entity);
+    const selfRef = getCompoundEntityRef(entity);
 
     if (
       entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
@@ -70,7 +70,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
           defaultNamespace: selfRef.namespace,
         });
         emit(
-          results.relation({
+          processingResult.relation({
             source: selfRef,
             type: RELATION_OWNED_BY,
             target: {
@@ -81,7 +81,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
           }),
         );
         emit(
-          results.relation({
+          processingResult.relation({
             source: {
               kind: targetRef.kind,
               namespace: targetRef.namespace,

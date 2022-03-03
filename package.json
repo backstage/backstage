@@ -45,9 +45,7 @@
     ]
   },
   "resolutions": {
-    "**/@graphql-codegen/cli/**/ws": "^7.4.6",
-    "**/@roadiehq/**/@backstage/plugin-catalog": "*",
-    "**/@roadiehq/**/@backstage/catalog-model": "*"
+    "**/@graphql-codegen/cli/**/ws": "^7.4.6"
   },
   "version": "0.69.0",
   "dependencies": {

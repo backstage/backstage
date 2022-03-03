@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
@@ -55,14 +55,14 @@ export interface TechDocsStorageApi {
   getApiOrigin(): Promise<string>;
   getStorageUrl(): Promise<string>;
   getBuilder(): Promise<string>;
-  getEntityDocs(entityId: EntityName, path: string): Promise<string>;
+  getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
   syncEntityDocs(
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
   getBaseUrl(
     oldBaseUrl: string,
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     path: string,
   ): Promise<string>;
 }
@@ -77,6 +77,8 @@ export interface TechDocsApi {
    * Set to techdocs.requestUrl as the URL for techdocs-backend API.
    */
   getApiOrigin(): Promise<string>;
-  getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
-  getEntityMetadata(entityId: EntityName): Promise<TechDocsEntityMetadata>;
+  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
+  getEntityMetadata(
+    entityId: CompoundEntityRef,
+  ): Promise<TechDocsEntityMetadata>;
 }

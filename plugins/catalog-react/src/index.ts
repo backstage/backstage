@@ -27,13 +27,7 @@ export * from './apis';
 export * from './components';
 export * from './hooks';
 export * from './filters';
-export {
-  catalogRouteRef,
-  entityRoute,
-  entityRouteParams,
-  entityRouteRef,
-  rootRoute,
-} from './routes';
+export { entityRouteParams, entityRouteRef } from './routes';
 export * from './testUtils';
 export * from './types';
 export * from './utils';

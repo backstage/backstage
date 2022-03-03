@@ -18,7 +18,7 @@ import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
-  EntityName,
+  CompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
   stringifyLocationRef,
@@ -171,10 +171,31 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
+   * {@inheritdoc CatalogApi.getEntityByRef}
+   */
+  async getEntityByRef(
+    entityRef: string | CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Entity | undefined> {
+    const { kind, namespace, name } = parseEntityRef(entityRef);
+    return this.requestOptional(
+      'GET',
+      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
+        namespace,
+      )}/${encodeURIComponent(name)}`,
+      options,
+    );
+  }
+
+  // NOTE(freben): When we deprecate getEntityByName from the interface, we may
+  // still want to leave this implementation in place for quite some time
+  // longer, to minimize the risk for breakages. Suggested date for removal:
+  // August 2022
+  /**
    * {@inheritdoc CatalogApi.getEntityByName}
    */
   async getEntityByName(
-    compoundName: EntityName,
+    compoundName: CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;

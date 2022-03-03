@@ -21,12 +21,12 @@ import useAsync from 'react-use/lib/useAsync';
 import { techdocsApiRef } from '../../api';
 import { LegacyTechDocsPage } from './LegacyTechDocsPage';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useApi, useApp } from '@backstage/core-plugin-api';
 import { Page } from '@backstage/core-components';
 
 /**
- * Helper function that gives the children of {@link TechDocsReaderPage} acccess to techdocs and entity metadata
+ * Helper function that gives the children of {@link TechDocsReaderPage} access to techdocs and entity metadata
  *
  * @public
  */
@@ -37,7 +37,7 @@ export type TechDocsReaderPageRenderFunction = ({
 }: {
   techdocsMetadataValue?: TechDocsMetadata | undefined;
   entityMetadataValue?: TechDocsEntityMetadata | undefined;
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   onReady: () => void;
 }) => JSX.Element;
 

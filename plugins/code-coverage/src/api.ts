@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import { JsonCodeCoverage, JsonCoverageHistory } from './types';
 import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 export type CodeCoverageApi = {
   discovery: DiscoveryApi;
-  getCoverageForEntity: (entity: EntityName) => Promise<JsonCodeCoverage>;
+  getCoverageForEntity: (
+    entity: CompoundEntityRef,
+  ) => Promise<JsonCodeCoverage>;
   getFileContentFromEntity: (
-    entity: EntityName,
+    entity: CompoundEntityRef,
     filePath: string,
   ) => Promise<string>;
   getCoverageHistoryForEntity: (
-    entity: EntityName,
+    entity: CompoundEntityRef,
     limit?: number,
   ) => Promise<JsonCoverageHistory>;
 };
@@ -59,7 +64,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   }
 
   async getCoverageForEntity(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
   ): Promise<JsonCodeCoverage> {
     const entity = encodeURIComponent(stringifyEntityRef(entityName));
     return (await this.fetch<JsonCodeCoverage>(
@@ -68,7 +73,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   }
 
   async getFileContentFromEntity(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
     filePath: string,
   ): Promise<string> {
     const entity = encodeURIComponent(stringifyEntityRef(entityName));
@@ -78,7 +83,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   }
 
   async getCoverageHistoryForEntity(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
     limit?: number,
   ): Promise<JsonCoverageHistory> {
     const entity = encodeURIComponent(stringifyEntityRef(entityName));

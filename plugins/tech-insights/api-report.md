@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { BulkCheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
@@ -52,11 +52,14 @@ export interface TechInsightsApi {
   ) => CheckResultRenderer | undefined;
   // (undocumented)
   runBulkChecks(
-    entities: EntityName[],
+    entities: CompoundEntityRef[],
     checks?: Check[],
   ): Promise<BulkCheckResponse>;
   // (undocumented)
-  runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
+  runChecks(
+    entityParams: CompoundEntityRef,
+    checks?: Check[],
+  ): Promise<CheckResult[]>;
 }
 
 // @public

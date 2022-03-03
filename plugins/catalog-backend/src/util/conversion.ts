@@ -23,7 +23,7 @@ import {
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
-import { LocationSpec } from '../ingestion';
+import { LocationSpec } from '../api';
 
 export function locationSpecToMetadataName(location: LocationSpec) {
   const hash = createHash('sha1')

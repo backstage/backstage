@@ -19,7 +19,7 @@ import {
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import type { EntityName } from '@backstage/catalog-model';
+import type { CompoundEntityRef } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 
 export const jenkinsApiRef = createApiRef<JenkinsApi>({
@@ -80,7 +80,7 @@ export interface JenkinsApi {
    */
   getProjects(options: {
     /** the entity whose jobs should be retrieved. */
-    entity: EntityName;
+    entity: CompoundEntityRef;
     /** a filter on jobs. Currently this just takes a branch (and assumes certain structures in jenkins) */
     filter: { branch?: string };
   }): Promise<Project[]>;
@@ -93,13 +93,13 @@ export interface JenkinsApi {
    * TODO: abstract jobFullName (so we could support differentiating between the same named job on multiple instances).
    */
   getBuild(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
 
   retry(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<void>;
@@ -118,7 +118,7 @@ export class JenkinsClient implements JenkinsApi {
   }
 
   async getProjects(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     filter: { branch?: string };
   }): Promise<Project[]> {
     const { entity, filter } = options;
@@ -157,7 +157,7 @@ export class JenkinsClient implements JenkinsApi {
   }
 
   async getBuild(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build> {
@@ -182,7 +182,7 @@ export class JenkinsClient implements JenkinsApi {
   }
 
   async retry(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<void> {

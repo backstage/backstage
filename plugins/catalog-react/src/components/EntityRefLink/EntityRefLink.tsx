@@ -16,13 +16,13 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   DEFAULT_NAMESPACE,
   parseEntityRef,
 } from '@backstage/catalog-model';
 import React, { forwardRef } from 'react';
 import { entityRouteRef } from '../../routes';
-import { formatEntityRefTitle } from './format';
+import { humanizeEntityRef } from './humanize';
 import { Link, LinkProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Tooltip } from '@material-ui/core';
@@ -33,7 +33,7 @@ import { Tooltip } from '@material-ui/core';
  * @public
  */
 export type EntityRefLinkProps = {
-  entityRef: Entity | EntityName | string;
+  entityRef: Entity | CompoundEntityRef | string;
   defaultKind?: string;
   title?: string;
   children?: React.ReactNode;
@@ -72,7 +72,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
 
     const routeParams = { kind, namespace, name };
-    const formattedEntityRefTitle = formatEntityRefTitle(
+    const formattedEntityRefTitle = humanizeEntityRef(
       { kind, namespace, name },
       { defaultKind },
     );

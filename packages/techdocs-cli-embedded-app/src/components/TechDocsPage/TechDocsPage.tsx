@@ -29,7 +29,7 @@ import LightIcon from '@material-ui/icons/Brightness7';
 import DarkIcon from '@material-ui/icons/Brightness4';
 
 import { lightTheme, darkTheme } from '@backstage/theme';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 import { Content } from '@backstage/core-components';
 
@@ -127,7 +127,7 @@ const TechDocsPageContent = ({
   onReady,
   entityRef,
 }: {
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   onReady: () => void;
 }) => {
   const classes = useStyles();

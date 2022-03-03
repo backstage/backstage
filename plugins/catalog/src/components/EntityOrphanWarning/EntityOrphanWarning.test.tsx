@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  catalogApiRef,
-  catalogRouteRef,
-  EntityProvider,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
+import { rootRouteRef } from '../../routes';
 import { EntityOrphanWarning } from './EntityOrphanWarning';
 
 describe('<EntityOrphanWarning />', () => {
@@ -59,7 +56,7 @@ describe('<EntityOrphanWarning />', () => {
       </TestApiProvider>,
       {
         mountedRoutes: {
-          '/create': catalogRouteRef,
+          '/create': rootRouteRef,
         },
       },
     );

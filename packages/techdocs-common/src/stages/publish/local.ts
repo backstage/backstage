@@ -17,7 +17,7 @@ import {
   PluginEndpointDiscovery,
   resolvePackagePath,
 } from '@backstage/backend-common';
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
@@ -142,7 +142,7 @@ export class LocalPublish implements PublisherBase {
   }
 
   async fetchTechDocsMetadata(
-    entityName: EntityName,
+    entityName: CompoundEntityRef,
   ): Promise<TechDocsMetadata> {
     const metadataPath = this.staticEntityPathJoin(
       entityName.namespace,

@@ -8,7 +8,6 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentProps } from 'react';
 import { ComponentType } from 'react';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -17,7 +16,6 @@ import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldProps } from '@rjsf/core';
 import { FieldValidation } from '@rjsf/core';
-import { IconButton } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -28,15 +26,13 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 
-// Warning: (ae-missing-release-tag) "createScaffolderFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export function createScaffolderFieldExtension<
   TReturnValue = unknown,
   TInputProps = unknown,
 >(
   options: FieldExtensionOptions<TReturnValue, TInputProps>,
-): Extension<() => null>;
+): Extension<FieldExtensionComponent<TReturnValue, TInputProps>>;
 
 // @public
 export type CustomFieldValidator<TFieldReturnValue> = (
@@ -50,19 +46,18 @@ export type CustomFieldValidator<TFieldReturnValue> = (
 // Warning: (ae-missing-release-tag) "EntityNamePickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityNamePickerFieldExtension: () => null;
-
-// Warning: (ae-missing-release-tag) "EntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const EntityPicker: (
-  props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,
-) => JSX.Element;
+export const EntityNamePickerFieldExtension: FieldExtensionComponent<
+  string,
+  {}
+>;
 
 // Warning: (ae-missing-release-tag) "EntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityPickerFieldExtension: () => null;
+export const EntityPickerFieldExtension: FieldExtensionComponent<
+  string,
+  EntityPickerUiOptions
+>;
 
 // Warning: (ae-missing-release-tag) "EntityPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -76,15 +71,11 @@ export interface EntityPickerUiOptions {
   defaultKind?: string;
 }
 
-// Warning: (ae-missing-release-tag) "EntityTagsPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export const EntityTagsPicker: (
-  props: FieldExtensionComponentProps<string[], EntityTagsPickerUiOptions>,
-) => JSX.Element;
-
-// @public
-export const EntityTagsPickerFieldExtension: () => null;
+export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
+  string[],
+  EntityTagsPickerUiOptions
+>;
 
 // Warning: (ae-missing-release-tag) "EntityTagsPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -94,11 +85,8 @@ export interface EntityTagsPickerUiOptions {
   kinds?: string[];
 }
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "FavouriteTemplate" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export const FavouriteTemplate: (props: Props) => JSX.Element;
+export type FieldExtensionComponent<_TReturnValue, _TInputProps> = () => null;
 
 // @public
 export interface FieldExtensionComponentProps<
@@ -114,10 +102,12 @@ export interface FieldExtensionComponentProps<
 // @public
 export type FieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TProps = FieldProps<TFieldReturnValue>,
+  TInputProps = unknown,
 > = {
   name: string;
-  component: (props: TProps) => JSX.Element | null;
+  component: (
+    props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+  ) => JSX.Element | null;
   validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 
@@ -153,17 +143,13 @@ export type LogEvent = {
   taskId: string;
 };
 
-// Warning: (ae-missing-release-tag) "OwnedEntityPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const OwnedEntityPicker: (
-  props: FieldExtensionComponentProps<string, OwnedEntityPickerUiOptions>,
-) => JSX.Element;
-
 // Warning: (ae-missing-release-tag) "OwnedEntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const OwnedEntityPickerFieldExtension: () => null;
+export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
+  string,
+  OwnedEntityPickerUiOptions
+>;
 
 // Warning: (ae-missing-release-tag) "OwnedEntityPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -175,17 +161,13 @@ export interface OwnedEntityPickerUiOptions {
   defaultKind?: string;
 }
 
-// Warning: (ae-missing-release-tag) "OwnerPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const OwnerPicker: (
-  props: FieldExtensionComponentProps<string, OwnerPickerUiOptions>,
-) => JSX.Element;
-
 // Warning: (ae-missing-release-tag) "OwnerPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const OwnerPickerFieldExtension: () => null;
+export const OwnerPickerFieldExtension: FieldExtensionComponent<
+  string,
+  OwnerPickerUiOptions
+>;
 
 // Warning: (ae-missing-release-tag) "OwnerPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -206,17 +188,13 @@ export const repoPickerValidation: (
   },
 ) => void;
 
-// Warning: (ae-missing-release-tag) "RepoUrlPicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export const RepoUrlPicker: (
-  props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
-) => JSX.Element;
-
 // Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const RepoUrlPickerFieldExtension: () => null;
+export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
+  string,
+  RepoUrlPickerUiOptions
+>;
 
 // Warning: (ae-missing-release-tag) "RepoUrlPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -313,9 +291,7 @@ export class ScaffolderClient implements ScaffolderApi {
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 }
 
-// Warning: (ae-missing-release-tag) "ScaffolderFieldExtensions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const ScaffolderFieldExtensions: React_2.ComponentType;
 
 // Warning: (ae-missing-release-tag) "ScaffolderGetIntegrationsListOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

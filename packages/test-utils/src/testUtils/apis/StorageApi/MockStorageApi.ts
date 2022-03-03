@@ -61,10 +61,6 @@ export class MockStorageApi implements StorageApi {
     return this.bucketStorageApis.get(name)!;
   }
 
-  get<T>(key: string): T | undefined {
-    return this.snapshot(key).value as T | undefined;
-  }
-
   snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T> {
     if (this.data.hasOwnProperty(this.getKeyName(key))) {
       const data = this.data[this.getKeyName(key)];
@@ -72,14 +68,12 @@ export class MockStorageApi implements StorageApi {
         key,
         presence: 'present',
         value: data,
-        newValue: data,
       };
     }
     return {
       key,
       presence: 'absent',
       value: undefined,
-      newValue: undefined,
     };
   }
 
@@ -95,7 +89,6 @@ export class MockStorageApi implements StorageApi {
       key,
       presence: 'present',
       value: serialized,
-      newValue: serialized,
     });
   }
 
@@ -105,7 +98,6 @@ export class MockStorageApi implements StorageApi {
       key,
       presence: 'absent',
       value: undefined,
-      newValue: undefined,
     });
   }
 

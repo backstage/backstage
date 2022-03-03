@@ -22,9 +22,9 @@ import {
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
-import { CatalogProcessorResult } from '../ingestion';
+import { CatalogProcessorResult, EntityRelationSpec } from '../api';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { DeferredEntity, EntityRelationSpec } from './types';
+import { DeferredEntity } from './types';
 import {
   getEntityLocationRef,
   getEntityOriginLocationRef,

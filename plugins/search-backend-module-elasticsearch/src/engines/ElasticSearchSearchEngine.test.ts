@@ -15,7 +15,8 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { Client } from '@elastic/elasticsearch';
+import { ConfigReader } from '@backstage/config';
+import { Client, errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
 import {
   ConcreteElasticSearchQuery,
@@ -23,7 +24,7 @@ import {
   ElasticSearchSearchEngine,
   encodePageCursor,
 } from './ElasticSearchSearchEngine';
-import { ConfigReader } from '@backstage/config';
+import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {
@@ -36,6 +37,16 @@ const options = {
   node: 'http://localhost:9200',
   Connection: mock.getConnection(),
 };
+
+const indexerMock = {
+  on: jest.fn(),
+  indexName: 'expected-index-name',
+};
+jest.mock('./ElasticSearchSearchEngineIndexer', () => ({
+  ElasticSearchSearchEngineIndexer: jest
+    .fn()
+    .mockImplementation(() => indexerMock),
+}));
 
 describe('ElasticSearchSearchEngine', () => {
   let testSearchEngine: ElasticSearchSearchEngine;
@@ -542,23 +553,67 @@ describe('ElasticSearchSearchEngine', () => {
     });
   });
 
-  describe('index', () => {
-    it('should index document', async () => {
-      const indexSpy = jest.spyOn(testSearchEngine, 'index');
-      const mockDocuments = [
-        {
-          title: 'testTerm',
-          text: 'testText',
-          location: 'test/location',
-        },
-      ];
+  describe('indexer', () => {
+    it('should get indexer', async () => {
+      const indexer = await testSearchEngine.getIndexer('test-index');
 
-      // call index func and ensure the index func was invoked.
-      await testSearchEngine.index('test-index', mockDocuments);
-      expect(indexSpy).toHaveBeenCalled();
-      expect(indexSpy).toHaveBeenCalledWith('test-index', [
-        { title: 'testTerm', text: 'testText', location: 'test/location' },
-      ]);
+      expect(indexer).toStrictEqual(indexerMock);
+      expect(ElasticSearchSearchEngineIndexer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          alias: 'test-index__search',
+          type: 'test-index',
+          indexPrefix: '',
+          indexSeparator: '-index__',
+          elasticSearchClient: client,
+        }),
+      );
+      expect(indexerMock.on).toHaveBeenCalledWith(
+        'error',
+        expect.any(Function),
+      );
+    });
+
+    describe('onError', () => {
+      let errorHandler: Function;
+      const error = new Error('some error');
+
+      beforeEach(async () => {
+        mock.clearAll();
+        await testSearchEngine.getIndexer('test-index');
+        errorHandler = indexerMock.on.mock.calls[0][1];
+      });
+
+      it('should check for and delete expected index', async () => {
+        const existsSpy = jest.fn().mockReturnValue('truthy value');
+        const deleteSpy = jest.fn().mockReturnValue({});
+        mock.add({ method: 'HEAD', path: '/expected-index-name' }, existsSpy);
+        mock.add({ method: 'DELETE', path: '/expected-index-name' }, deleteSpy);
+
+        await errorHandler(error);
+
+        // Check and delete HTTP requests were made.
+        expect(existsSpy).toHaveBeenCalled();
+        expect(deleteSpy).toHaveBeenCalled();
+      });
+
+      it('should not delete index if none exists', async () => {
+        // Exists call returns 404 on no index.
+        const existsSpy = jest.fn().mockReturnValue(
+          new errors.ResponseError({
+            statusCode: 404,
+            body: { status: 404 },
+          } as unknown as any),
+        );
+        const deleteSpy = jest.fn().mockReturnValue({});
+        mock.add({ method: 'HEAD', path: '/expected-index-name' }, existsSpy);
+        mock.add({ method: 'DELETE', path: '/expected-index-name' }, deleteSpy);
+
+        await errorHandler(error);
+
+        // Check request was made, but no delete request was made.
+        expect(existsSpy).toHaveBeenCalled();
+        expect(deleteSpy).not.toHaveBeenCalled();
+      });
     });
   });
 

@@ -20,7 +20,7 @@ import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 import { useRouteRef, useApi, configApiRef } from '@backstage/core-plugin-api';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
-  formatEntityRefTitle,
+  humanizeEntityRef,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../../routes';
@@ -76,7 +76,7 @@ export const DocsTable = (props: DocsTableProps) => {
         }),
         ownedByRelations,
         ownedByRelationsTitle: ownedByRelations
-          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
           .join(', '),
       },
     };

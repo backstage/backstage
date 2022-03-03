@@ -37,8 +37,22 @@ export type PermissionAttributes = {
  * @public
  */
 export type Permission = {
+  /**
+   * The name of the permission.
+   */
   name: string;
+  /**
+   * {@link PermissionAttributes} which describe characteristics of the permission, to help
+   * policy authors make consistent decisions for similar permissions without referring to them
+   * all by name.
+   */
   attributes: PermissionAttributes;
+  /**
+   * Some permissions can be authorized based on characteristics of a resource
+   * such a catalog entity. For these permissions, the resourceType field
+   * denotes the type of the resource whose resourceRef should be passed when
+   * authorizing.
+   */
   resourceType?: string;
 };
 

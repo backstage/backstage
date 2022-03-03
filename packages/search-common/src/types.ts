@@ -16,7 +16,11 @@
 
 import { Permission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
+import { Readable, Transform, Writable } from 'stream';
 
+/**
+ * @beta
+ */
 export interface SearchQuery {
   term: string;
   filters?: JsonObject;
@@ -24,11 +28,17 @@ export interface SearchQuery {
   pageCursor?: string;
 }
 
+/**
+ * @beta
+ */
 export interface SearchResult {
   type: string;
   document: IndexableDocument;
 }
 
+/**
+ * @beta
+ */
 export interface SearchResultSet {
   results: SearchResult[];
   nextPageCursor?: string;
@@ -38,6 +48,7 @@ export interface SearchResultSet {
 /**
  * Base properties that all indexed documents must include, as well as some
  * common properties that documents are encouraged to use where appropriate.
+ * @beta
  */
 export interface IndexableDocument {
   /**
@@ -72,6 +83,7 @@ export interface IndexableDocument {
  * Information about a specific document type. Intended to be used in the
  * {@link @backstage/search-backend-node#IndexBuilder} to collect information
  * about the types stored in the index.
+ * @beta
  */
 export type DocumentTypeInfo = {
   /**
@@ -82,10 +94,10 @@ export type DocumentTypeInfo = {
 };
 
 /**
- * Interface that must be implemented in order to expose new documents to
- * search.
+ * Factory class for instantiating collators.
+ * @beta
  */
-export interface DocumentCollator {
+export interface DocumentCollatorFactory {
   /**
    * The type or name of the document set returned by this collator. Used as an
    * index name by Search Engines.
@@ -98,29 +110,41 @@ export interface DocumentCollator {
    */
   readonly visibilityPermission?: Permission;
 
-  execute(): Promise<IndexableDocument[]>;
+  /**
+   * Instantiates and resolves a document collator.
+   */
+  getCollator(): Promise<Readable>;
 }
 
 /**
- * Interface that must be implemented in order to decorate existing documents with
- * additional metadata.
+ * Factory class for instantiating decorators.
+ * @beta
  */
-export interface DocumentDecorator {
+export interface DocumentDecoratorFactory {
   /**
    * An optional array of document/index types on which this decorator should
    * be applied. If no types are provided, this decorator will be applied to
    * all document/index types.
    */
   readonly types?: string[];
-  execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+
+  /**
+   * Instantiates and resolves a document decorator.
+   */
+  getDecorator(): Promise<Transform>;
 }
 
 /**
  * A type of function responsible for translating an abstract search query into
  * a concrete query relevant to a particular search engine.
+ * @beta
  */
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
+/**
+ * Options when querying a search engine.
+ * @beta
+ */
 export type QueryRequestOptions = {
   token?: string;
 };
@@ -129,6 +153,7 @@ export type QueryRequestOptions = {
  * Interface that must be implemented by specific search engines, responsible
  * for performing indexing and querying and translating abstract queries into
  * concrete, search engine-specific queries.
+ * @beta
  */
 export interface SearchEngine {
   /**
@@ -137,9 +162,15 @@ export interface SearchEngine {
   setTranslator(translator: QueryTranslator): void;
 
   /**
-   * Add the given documents to the SearchEngine index of the given type.
+   * Factory method for getting a search engine indexer for a given document
+   * type.
+   *
+   * @param type - The type or name of the document set for which an indexer
+   *   should be retrieved. This corresponds to the `type` property on the
+   *   document collator/decorator factories and will most often be used to
+   *   identify an index or group to which documents should be written.
    */
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  getIndexer(type: string): Promise<Writable>;
 
   /**
    * Perform a search query against the SearchEngine.

@@ -71,6 +71,10 @@ export class DatabaseDocumentStore implements DatabaseStore {
     return await this.db.transaction(fn);
   }
 
+  async getTransaction(): Promise<Knex.Transaction> {
+    return this.db.transaction();
+  }
+
   async prepareInsert(tx: Knex.Transaction): Promise<void> {
     // We create a temporary table to collect the hashes of the documents that
     // we expect to be in the documents table at the end. The table is deleted

@@ -62,7 +62,7 @@ describe('AuthorizedSearchEngine', () => {
     setTranslator: () => {
       throw new Error('Function not implemented. 1');
     },
-    index: () => {
+    getIndexer: () => {
       throw new Error('Function not implemented.2');
     },
     query: mockedQuery,

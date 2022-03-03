@@ -130,6 +130,8 @@ Options:
                                   if not found.
   --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
                                   in techdocs_metadata.json.
+  --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
+                                  Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
   -v --verbose                    Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```

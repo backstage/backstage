@@ -19,7 +19,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';
 import {
   catalogApiRef,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -139,7 +139,7 @@ export const StepPrepareCreatePullRequest = (
     });
 
     return groupEntities.items
-      .map(e => formatEntityRefTitle(e, { defaultKind: 'group' }))
+      .map(e => humanizeEntityRef(e, { defaultKind: 'group' }))
       .sort();
   });
 

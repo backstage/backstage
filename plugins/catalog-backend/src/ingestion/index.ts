@@ -16,8 +16,6 @@
 
 export { DefaultCatalogRulesEnforcer } from './CatalogRules';
 export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
-export * from './processors';
-export * from './providers';
 export type {
   AnalyzeLocationEntityField,
   AnalyzeLocationExistingEntity,

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import {
-  getEntityName,
+  getCompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  formatEntityRefTitle,
+  humanizeEntityRef,
   useEntity,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
@@ -77,7 +77,7 @@ export const CatalogGraphCard = ({
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 }) => {
   const { entity } = useEntity();
-  const entityName = getEntityName(entity);
+  const entityName = getCompoundEntityRef(entity);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const catalogGraphRoute = useRouteRef(catalogGraphRouteRef);
   const navigate = useNavigate();
@@ -94,7 +94,7 @@ export const CatalogGraphCard = ({
       });
       analytics.captureEvent(
         'click',
-        node.title ?? formatEntityRefTitle(nodeEntityName),
+        node.title ?? humanizeEntityRef(nodeEntityName),
         { attributes: { to: path } },
       );
       navigate(path);

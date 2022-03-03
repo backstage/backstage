@@ -36,8 +36,8 @@ import {
   CatalogProcessor,
   CatalogProcessorParser,
   LocationSpec,
-} from '../ingestion/processors';
-import * as results from '../ingestion/processors/results';
+  processingResult,
+} from '../api';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingRequest,
@@ -178,13 +178,13 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let result = entity;
+    let res = entity;
 
     for (const processor of this.options.processors) {
       if (processor.preProcessEntity) {
         try {
-          result = await processor.preProcessEntity(
-            result,
+          res = await processor.preProcessEntity(
+            res,
             context.location,
             context.collector.onEmit,
             context.originLocation,
@@ -199,7 +199,7 @@ export class DefaultCatalogProcessingOrchestrator
       }
     }
 
-    return result;
+    return res;
   }
 
   /**
@@ -295,7 +295,7 @@ export class DefaultCatalogProcessingOrchestrator
     for (const maybeRelativeTarget of targets) {
       if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
         context.collector.onEmit(
-          results.inputError(
+          processingResult.inputError(
             context.location,
             `LocationEntityProcessor cannot handle ${type} type location with target ${context.location.target} that ends with a path separator`,
           ),
@@ -351,13 +351,13 @@ export class DefaultCatalogProcessingOrchestrator
     entity: Entity,
     context: Context,
   ): Promise<Entity> {
-    let result = entity;
+    let res = entity;
 
     for (const processor of this.options.processors) {
       if (processor.postProcessEntity) {
         try {
-          result = await processor.postProcessEntity(
-            result,
+          res = await processor.postProcessEntity(
+            res,
             context.location,
             context.collector.onEmit,
             context.cache.forProcessor(processor),
@@ -371,6 +371,6 @@ export class DefaultCatalogProcessingOrchestrator
       }
     }
 
-    return result;
+    return res;
   }
 }

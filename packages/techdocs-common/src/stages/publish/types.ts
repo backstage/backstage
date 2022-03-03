@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Logger } from 'winston';
 import express from 'express';
@@ -133,7 +133,9 @@ export interface PublisherBase {
    * Retrieve TechDocs Metadata about a site e.g. name, contributors, last updated, etc.
    * This API uses the techdocs_metadata.json file that co-exists along with the generated docs.
    */
-  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
+  fetchTechDocsMetadata(
+    entityName: CompoundEntityRef,
+  ): Promise<TechDocsMetadata>;
 
   /**
    * Route middleware to serve static documentation files for an entity.

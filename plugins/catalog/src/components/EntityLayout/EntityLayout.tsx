@@ -40,7 +40,7 @@ import {
   getEntityRelations,
   InspectEntityDialog,
   UnregisterEntityDialog,
-  useEntity,
+  useAsyncEntity,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
@@ -177,7 +177,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     children,
   } = props;
   const { kind, namespace, name } = useEntityCompoundName();
-  const { entity, loading, error } = useEntity();
+  const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
   const routes = useElementFilter(
     children,
@@ -190,7 +190,9 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         })
         .getElements<EntityLayoutRouteProps>() // all nodes, element data, maintain structure or not?
         .flatMap(({ props: elementProps }) => {
-          if (elementProps.if && entity && !elementProps.if(entity)) {
+          if (!entity) {
+            return [];
+          } else if (elementProps.if && !elementProps.if(entity)) {
             return [];
           }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { useReducer } from 'react';
 import { AnalyzeResult } from '../api';
 
@@ -43,7 +43,7 @@ export type PrepareResult =
       locations: Array<{
         exists?: boolean;
         target: string;
-        entities: EntityName[];
+        entities: CompoundEntityRef[];
       }>;
     }
   | {
@@ -55,7 +55,7 @@ export type PrepareResult =
       };
       locations: Array<{
         target: string;
-        entities: EntityName[];
+        entities: CompoundEntityRef[];
       }>;
     };
 

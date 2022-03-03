@@ -20,7 +20,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
-  results,
+  processingResult,
 } from '@backstage/plugin-catalog-backend';
 import AWS, { Credentials, Organizations } from 'aws-sdk';
 import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
@@ -112,7 +112,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
         return true;
       })
       .forEach(entity => {
-        emit(results.entity(location, entity));
+        emit(processingResult.entity(location, entity));
       });
 
     return true;

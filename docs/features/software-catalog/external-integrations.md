@@ -57,7 +57,7 @@ The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
 [example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
 We will create a new
-[`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/providers/types.ts)
+[`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/api/provider.ts)
 subclass that can be added to this catalog builder.
 
 Let's make a simple provider that can refresh a set of entities based on a
@@ -355,7 +355,7 @@ The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
 [example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
 We will create a new
-[`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/ingestion/processors/types.ts)
+[`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/api/processor.ts)
 subclass that can be added to this catalog builder.
 
 It is up to you where you put the code for this new processor class. For quick

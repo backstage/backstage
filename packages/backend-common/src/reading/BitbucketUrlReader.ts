@@ -62,14 +62,9 @@ export class BitbucketUrlReader implements UrlReader {
     private readonly integration: BitbucketIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, apiBaseUrl, token, username, appPassword } =
-      integration.config;
+    const { host, token, username, appPassword } = integration.config;
 
-    if (!apiBaseUrl) {
-      throw new Error(
-        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
-      );
-    } else if (!token && username && !appPassword) {
+    if (!token && username && !appPassword) {
       throw new Error(
         `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
