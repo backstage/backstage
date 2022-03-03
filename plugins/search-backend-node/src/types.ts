@@ -18,7 +18,7 @@ import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
   SearchEngine,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 
 /**

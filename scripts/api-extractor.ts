@@ -237,6 +237,7 @@ const NO_WARNING_PACKAGES = [
   'plugins/scaffolder-backend-module-yeoman',
   'plugins/scaffolder-common',
   'plugins/search-backend-node',
+  'plugins/search-common',
   'plugins/techdocs-backend',
   'plugins/techdocs-node',
   'plugins/tech-insights',

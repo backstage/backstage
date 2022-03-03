@@ -10,7 +10,7 @@ import { Config } from '@backstage/config';
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';

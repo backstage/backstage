@@ -19,7 +19,7 @@ import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
   SearchEngine,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Transform, pipeline } from 'stream';
 import { Logger } from 'winston';
 import { Scheduler } from './index';

@@ -11,7 +11,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InfoCardVariants } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';

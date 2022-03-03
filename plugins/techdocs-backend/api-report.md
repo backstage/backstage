@@ -7,7 +7,7 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { DocumentCollatorFactory } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';

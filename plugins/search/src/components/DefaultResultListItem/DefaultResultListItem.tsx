@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import {
   ListItem,
   ListItemIcon,

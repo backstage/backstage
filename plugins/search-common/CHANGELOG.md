@@ -1,4 +1,4 @@
-# @backstage/search-common
+# @backstage/plugin-search-common
 
 ## 0.3.0
 

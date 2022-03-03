@@ -365,7 +365,7 @@ implement the factory method that instantiates the stream:
 
 ```ts
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { SearchEngine } from '@backstage/search-common';
+import { SearchEngine } from '@backstage/plugin-search-common';
 export class YourSearchEngineIndexer extends BatchSearchEngineIndexer {
   constructor({ type }: { type: string }) {
     // Customize the number of documents passed to the index method per batch.

@@ -31,7 +31,7 @@ import {
   SearchQuery,
   SearchResult,
   SearchResultSet,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { Writable } from 'stream';

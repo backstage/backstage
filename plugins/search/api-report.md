@@ -9,16 +9,16 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InputBaseProps } from '@material-ui/core';
 import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { SearchQuery } from '@backstage/search-common';
-import { SearchResult as SearchResult_2 } from '@backstage/search-common';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "DefaultResultListItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

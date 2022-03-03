@@ -20,7 +20,7 @@ import {
   SearchResultSet,
   QueryTranslator,
   SearchEngine,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
