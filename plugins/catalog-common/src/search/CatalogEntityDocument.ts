@@ -21,7 +21,7 @@ import { IndexableDocument } from '@backstage/search-common';
  * @public
  */
 export interface CatalogEntityDocument extends IndexableDocument {
-  /** @deprecated use `type` as well, as `componentType` will be removed after a few releases but we dont want to break indexing */
+  /** @deprecated `componentType` is being renamed to `type`. During the transition both of these fields should be set to the same value, in order to avoid issues with indexing. */
   componentType: string;
   type: string;
   namespace: string;
