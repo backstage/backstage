@@ -30,6 +30,7 @@ import { Logger } from 'winston';
 import pLimit from 'p-limit';
 import { Config } from '@backstage/config';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
+import { Permission } from '@backstage/plugin-permission-common';
 import {
   CatalogApi,
   CatalogClient,
@@ -73,7 +74,8 @@ type EntityInfo = {
  */
 export class DefaultTechDocsCollator {
   public readonly type: string = 'techdocs';
-  public readonly visibilityPermission = catalogEntityReadPermission;
+  public readonly visibilityPermission: Permission =
+    catalogEntityReadPermission;
 
   private constructor(
     private readonly legacyPathCasing: boolean,
