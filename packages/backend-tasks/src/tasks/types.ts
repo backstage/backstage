@@ -60,8 +60,7 @@ export interface TaskScheduleDefinition {
    * invocation of this task will be delayed until after the previous one
    * finishes.
    *
-   * The system does its best to avoid overlapping invocations.
-   * @remarks
+   * This value can be a crontab style string or an ISO period string
    *
    * Cron expressions help:
    *
@@ -75,26 +74,12 @@ export interface TaskScheduleDefinition {
    # │ │ │ │ │ │
    # * * * * * *
    *
-   */
-  cadence?: string;
-
-  /*
-   * The amount of time that should pass between task invocation starts.
-   * Essentially, this equals roughly how often you want the task to run.
-   * The system does its best to avoid overlapping invocations.
-   *
-   * This is a best effort value; under some circumstances there can be
-   * deviations. For example, if the task runtime is longer than the frequency
-   * and the timeout has not been given or not been exceeded yet, the next
-   * invocation of this task will be delayed until after the previous one
-   * finishes.
-   *
-   * If set, overrides the `cadence` setting in the definition.
    *
    * If no value is given for this field then the task will only be invoked
    * once (on any worker) and then unscheduled automatically.
    */
-  frequency: Duration;
+
+  frequency: string | Duration;
 
   /**
    * The amount of time that should pass before the first invocation happens.
@@ -239,14 +224,25 @@ export const taskSettingsV2Schema = z.object({
   version: z.literal(2),
   cadence: z
     .string()
-    .refine(isValidCronFormat, { message: 'Invalid cron format' }),
+    .refine(isValidCronFormat, { message: 'Invalid cron' })
+    .or(
+      z
+        .string()
+        .refine(isValidOptionalDurationString, {
+          message: 'invalid duration, expecting ISO Period',
+        }),
+    ),
   timeoutAfterDuration: z
     .string()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration expecting ISO Period',
+    }),
   initialDelayDuration: z
     .string()
     .optional()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration expecting ISO Period',
+    }),
 });
 
 /**

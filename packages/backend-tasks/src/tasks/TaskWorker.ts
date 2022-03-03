@@ -20,13 +20,7 @@ import { AbortSignal } from 'node-abort-controller';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
-import {
-  TaskFunction,
-  TaskSettingsV1,
-  taskSettingsV1Schema,
-  TaskSettingsV2,
-  taskSettingsV2Schema,
-} from './types';
+import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
 import { CronTime } from 'cron';
 
@@ -50,10 +44,7 @@ export class TaskWorker {
     this.logger = logger;
   }
 
-  async start(
-    settings: TaskSettingsV1 | TaskSettingsV2,
-    options?: { signal?: AbortSignal },
-  ) {
+  async start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
     try {
       await this.persistTask(settings);
     } catch (e) {
@@ -133,20 +124,20 @@ export class TaskWorker {
   /**
    * Perform the initial store of the task info
    */
-  async persistTask(settings: TaskSettingsV1 | TaskSettingsV2) {
+  async persistTask(settings: TaskSettingsV2) {
     // Perform an initial parse to ensure that we will definitely be able to
     // read it back again.
-    if (settings.version === 1) {
-      taskSettingsV1Schema.parse(settings);
-    } else if (settings.version === 2) {
-      taskSettingsV2Schema.parse(settings);
-    }
+    taskSettingsV2Schema.parse(settings);
 
     let startAt: DateTime = settings.initialDelayDuration
       ? DateTime.now().plus(Duration.fromISO(settings.initialDelayDuration))
       : DateTime.now();
 
-    if (!settings.initialDelayDuration && settings.version === 2) {
+    const isCron = !settings?.cadence.startsWith('P');
+
+    // if we don't have a delay setting, and this is a crontab configuration, then the next start time is simply the
+    // time cron should trigger he job.
+    if (!settings.initialDelayDuration && isCron) {
       const n = settings as TaskSettingsV2;
       const time = new CronTime(n.cadence).sendAt().toISOString();
       // start at the next cadence, sub one second to call the function immediately if we're using "* * * * * *"
@@ -184,7 +175,7 @@ export class TaskWorker {
   async findReadyTask(): Promise<
     | { result: 'not-ready-yet' }
     | { result: 'abort' }
-    | { result: 'ready'; settings: TaskSettingsV1 | TaskSettingsV2 }
+    | { result: 'ready'; settings: TaskSettingsV2 }
   > {
     const [row] = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)
@@ -210,15 +201,8 @@ export class TaskWorker {
     }
 
     try {
-      let settings: TaskSettingsV1 | TaskSettingsV2;
       const obj = JSON.parse(row.settingsJson);
-      if (obj.version === 1) {
-        settings = taskSettingsV1Schema.parse(obj);
-      } else if (obj.version === 2) {
-        settings = taskSettingsV2Schema.parse(obj);
-      } else {
-        throw new Error('unrecognized settings version, ignoring task');
-      }
+      const settings = taskSettingsV2Schema.parse(obj);
       return { result: 'ready', settings };
     } catch (e) {
       this.logger.info(
@@ -240,7 +224,7 @@ export class TaskWorker {
    */
   async tryClaimTask(
     ticket: string,
-    settings: TaskSettingsV1 | TaskSettingsV2,
+    settings: TaskSettingsV2,
   ): Promise<boolean> {
     const startedAt = this.knex.fn.now();
     const expiresAt = settings.timeoutAfterDuration
@@ -261,28 +245,23 @@ export class TaskWorker {
 
   async tryReleaseTask(
     ticket: string,
-    settings: TaskSettingsV1 | TaskSettingsV2,
+    settings: TaskSettingsV2,
   ): Promise<boolean> {
-    let next: DateTime;
-    if (settings.version === 1) {
-      const n = settings as TaskSettingsV1;
-      next = DateTime.now().plus(
-        Duration.fromISO(n.recurringAtMostEveryDuration),
-      );
-    } else if (settings.version === 2) {
-      const n = settings as TaskSettingsV2;
-      const time = new CronTime(n.cadence).sendAt().toISOString();
-      next = DateTime.fromISO(time);
-    } else {
-      throw new Error('unrecognized settings version');
-    }
+    const isCron = !settings?.cadence.startsWith('P');
+
+    const n = settings as TaskSettingsV2;
+    const time = isCron
+      ? new CronTime(n.cadence).sendAt().toISOString()
+      : DateTime.now().plus(Duration.fromISO(n.cadence)).toISO();
 
     const dbNull = this.knex.raw('null');
 
     const nextRun =
       this.knex.client.config.client === 'sqlite3'
-        ? this.knex.raw('next_run_start_at=datetime(?)', [next.toISO()])
-        : this.knex.raw(`next_run_start_at=?`, [next.toISO()]);
+        ? this.knex.raw('next_run_start_at=datetime(?)', [time])
+        : this.knex.raw(`next_run_start_at=?`, [time]);
+
+    this.logger.debug(`next run will occur around ${time}`);
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)

@@ -103,7 +103,7 @@ export class FactRetrieverEngine {
         timeout || this.defaultTimeout || Duration.fromObject({ minutes: 5 });
       await this.scheduler.scheduleTask({
         id: factRetriever.id,
-        cadence: cronExpression,
+        frequency: cronExpression,
         fn: this.createFactRetrieverHandler(factRetriever, lifecycle),
         timeout: timeLimit,
       });

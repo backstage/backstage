@@ -68,7 +68,7 @@ describe('PluginTaskManagerImpl', () => {
         await manager.scheduleTask({
           id: 'task2',
           timeout: Duration.fromMillis(5000),
-          cadence: '* * * * * *',
+          frequency: '* * * * * *',
           fn,
         });
 
