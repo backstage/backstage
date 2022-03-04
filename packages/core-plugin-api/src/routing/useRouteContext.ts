@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-export type {
-  AnyParams,
-  RouteRef,
-  SubRouteRef,
-  ExternalRouteRef,
-  OptionalParams,
-  ParamKeys,
-  RouteFunc,
-  BackstageRouteObject,
-} from './types';
-export { createRouteRef } from './RouteRef';
-export { createSubRouteRef } from './SubRouteRef';
-export type {
-  MakeSubRouteRef,
-  MergeParams,
-  ParamNames,
-  ParamPart,
-  PathParams,
-} from './SubRouteRef';
-export { createExternalRouteRef } from './ExternalRouteRef';
-export { useRouteRef } from './useRouteRef';
-export { useRouteRefParams } from './useRouteRefParams';
-export { useRouteContext } from './useRouteContext';
+import { useVersionedContext } from '@backstage/version-bridge';
+import { RouteResolver } from './useRouteRef';
+
+export function useRouteContext(): RouteResolver | undefined {
+  const versionedContext =
+    useVersionedContext<{ 1: RouteResolver }>('routing-context');
+  if (!versionedContext) {
+    throw new Error('Routing context is not available');
+  }
+
+  const resolver = versionedContext.atVersion(1);
+
+  if (!resolver) {
+    throw new Error('RoutingContext v1 not available');
+  }
+
+  return resolver;
+}
