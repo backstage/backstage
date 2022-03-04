@@ -86,6 +86,7 @@
     "@backstage/plugin-scaffolder-backend": "",
     "@backstage/plugin-search": "",
     "@backstage/plugin-search-backend": "",
+    "@backstage/plugin-search-backend-module-pg": "",
     "@backstage/plugin-search-backend-node": "",
     "@backstage/plugin-tech-radar": "",
     "@backstage/plugin-techdocs": "",
