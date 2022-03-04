@@ -73,15 +73,3 @@ export function CatalogSearchResultListItem(
     </Link>
   );
 }
-
-/**
- * @public
- * @deprecated use {@link CatalogSearchResultListItemProps} instead
- */
-export type CatalogResultListItemProps = CatalogSearchResultListItemProps;
-
-/**
- * @public
- * @deprecated use {@link CatalogSearchResultListItem} instead
- */
-export const CatalogResultListItem = CatalogSearchResultListItem;

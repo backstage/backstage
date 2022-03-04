@@ -101,12 +101,6 @@ export const catalogPlugin: BackstagePlugin<
   }
 >;
 
-// @public @deprecated (undocumented)
-export const CatalogResultListItem: typeof CatalogSearchResultListItem;
-
-// @public @deprecated (undocumented)
-export type CatalogResultListItemProps = CatalogSearchResultListItemProps;
-
 // @public (undocumented)
 export function CatalogSearchResultListItem(
   props: CatalogSearchResultListItemProps,
