@@ -147,8 +147,6 @@ export type CatalogProcessorEmit = (generated: CatalogProcessorResult) => void;
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
-  /** @deprecated Set `location.presence = 'optional'` instead  */
-  optional?: boolean;
 };
 
 /** @public */

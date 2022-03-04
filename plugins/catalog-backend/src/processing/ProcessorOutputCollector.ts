@@ -106,9 +106,8 @@ export class ProcessorOutputCollector {
 
       this.deferredEntities.push({ entity, locationKey: location });
     } else if (i.type === 'location') {
-      const presence = i.optional ? 'optional' : 'required';
       const entity = locationSpecToLocationEntity(
-        { presence, ...i.location },
+        i.location,
         this.parentEntity,
       );
       const locationKey = getEntityLocationRef(entity);
