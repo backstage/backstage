@@ -54,11 +54,8 @@ export const processingResult = Object.freeze({
     return { type: 'error', location: atLocation, error: new Error(message) };
   },
 
-  location(
-    newLocation: LocationSpec,
-    optional?: boolean,
-  ): CatalogProcessorResult {
-    return { type: 'location', location: newLocation, optional };
+  location(newLocation: LocationSpec): CatalogProcessorResult {
+    return { type: 'location', location: newLocation };
   },
 
   entity(atLocation: LocationSpec, newEntity: Entity): CatalogProcessorResult {

@@ -15,7 +15,6 @@
  */
 export {
   useEntity,
-  useEntityFromUrl,
   EntityProvider,
   AsyncEntityProvider,
   useAsyncEntity,
@@ -25,11 +24,9 @@ export type {
   EntityProviderProps,
   AsyncEntityProviderProps,
 } from './useEntity';
-export { useEntityCompoundName } from './useEntityCompoundName';
 export {
   EntityListContext,
   EntityListProvider,
-  useEntityListProvider,
   useEntityList,
 } from './useEntityListProvider';
 export type {
@@ -37,7 +34,6 @@ export type {
   EntityListContextProps,
 } from './useEntityListProvider';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
-export type { EntityTypeReturn } from './useEntityTypeFilter';
 export { useEntityKinds } from './useEntityKinds';
 export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';

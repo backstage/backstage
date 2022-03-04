@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend
 
+## 0.23.1
+
+### Patch Changes
+
+- Marked `GithubMultiOrgReaderProcessor` as stable, as it was moved to `/alpha` by mistake.
+- Fixed runtime resolution of the `/alpha` entry point.
+- Updated dependencies
+  - @backstage/backend-common@0.12.1
+  - @backstage/catalog-model@0.12.1
+  - @backstage/plugin-catalog-common@0.2.1
+
 ## 0.23.0
 
 ### Minor Changes

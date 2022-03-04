@@ -107,22 +107,12 @@ export class CatalogClient implements CatalogApi {
     request: GetEntityFacetsRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntityFacetsResponse>;
-  // @deprecated (undocumented)
-  getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
   getLocationById(
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   getLocationByRef(
     locationRef: string,
-    options?: CatalogRequestOptions,
-  ): Promise<Location_2 | undefined>;
-  // @deprecated (undocumented)
-  getOriginLocationByEntity(
-    entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location_2 | undefined>;
   refreshEntity(

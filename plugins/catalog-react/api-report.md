@@ -387,15 +387,6 @@ export interface EntityTypePickerProps {
   initialFilter?: string;
 }
 
-// @public @deprecated (undocumented)
-export type EntityTypeReturn = {
-  loading: boolean;
-  error?: Error;
-  availableTypes: string[];
-  selectedTypes: string[];
-  setSelectedTypes: (types: string[]) => void;
-};
-
 // @public
 export const FavoriteEntity: (props: FavoriteEntityProps) => JSX.Element;
 
@@ -470,16 +461,6 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
-// @public @deprecated (undocumented)
-export function reduceCatalogFilters(
-  filters: EntityFilter[],
-): Record<string, string | symbol | (string | symbol)[]>;
-
-// @public @deprecated (undocumented)
-export function reduceEntityFilters(
-  filters: EntityFilter[],
-): (entity: Entity) => boolean;
-
 // @public
 export interface StarredEntitiesApi {
   starredEntitie$(): Observable<Set<string>>;
@@ -516,16 +497,6 @@ export function useEntity<TEntity extends Entity = Entity>(): {
 };
 
 // @public @deprecated
-export const useEntityCompoundName: () => {
-  kind: string;
-  namespace: string;
-  name: string;
-};
-
-// @public @deprecated (undocumented)
-export const useEntityFromUrl: () => EntityLoadingStatus;
-
-// @public @deprecated
 export function useEntityKinds(): {
   error: Error | undefined;
   loading: boolean;
@@ -534,11 +505,6 @@ export function useEntityKinds(): {
 
 // @public
 export function useEntityList<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
->(): EntityListContextProps<EntityFilters>;
-
-// @public @deprecated
-export function useEntityListProvider<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 

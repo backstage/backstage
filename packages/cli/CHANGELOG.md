@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.15.1
+
+### Patch Changes
+
+- Fixed an issue where the release stage entry point of packages were not resolved correctly.
+
 ## 0.15.0
 
 ### Minor Changes

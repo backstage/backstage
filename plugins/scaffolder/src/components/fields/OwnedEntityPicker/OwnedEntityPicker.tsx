@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { GetEntitiesResponse } from '@backstage/catalog-client';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import {
+  catalogApiRef,
   humanizeEntityRef,
-  useOwnedEntities,
 } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React from 'react';
+import React, { useMemo } from 'react';
+import useAsync from 'react-use/lib/useAsync';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
 
@@ -86,3 +90,45 @@ export const OwnedEntityPicker = (
     </FormControl>
   );
 };
+
+/**
+ * Takes the relevant parts of the Backstage identity, and translates them into
+ * a list of entities which are owned by the user. Takes an optional parameter
+ * to filter the entities based on allowedKinds
+ *
+ *
+ * @param allowedKinds - Array of allowed kinds to filter the entities
+ */
+function useOwnedEntities(allowedKinds?: string[]): {
+  loading: boolean;
+  ownedEntities: GetEntitiesResponse | undefined;
+} {
+  const identityApi = useApi(identityApiRef);
+  const catalogApi = useApi(catalogApiRef);
+
+  const { loading, value: refs } = useAsync(async () => {
+    const identity = await identityApi.getBackstageIdentity();
+    const identityRefs = identity.ownershipEntityRefs;
+    const catalogs = await catalogApi.getEntities(
+      allowedKinds
+        ? {
+            filter: {
+              kind: allowedKinds,
+              [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
+            },
+          }
+        : {
+            filter: {
+              [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
+            },
+          },
+    );
+    return catalogs;
+  }, []);
+
+  const ownedEntities = useMemo(() => {
+    return refs;
+  }, [refs]);
+
+  return useMemo(() => ({ loading, ownedEntities }), [loading, ownedEntities]);
+}

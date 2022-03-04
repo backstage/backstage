@@ -333,7 +333,6 @@ export type CatalogProcessorErrorResult = {
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
-  optional?: boolean;
 };
 
 // @public
@@ -706,7 +705,7 @@ export type GithubMultiOrgConfig = Array<{
   userNamespace: string | undefined;
 }>;
 
-// @alpha
+// @public
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
@@ -812,7 +811,7 @@ function inputError(
 // @public @deprecated (undocumented)
 function location_2(
   newLocation: LocationSpec,
-  optional?: boolean,
+  _optional?: boolean,
 ): CatalogProcessorResult;
 
 // @public (undocumented)
@@ -1007,10 +1006,7 @@ export const processingResult: Readonly<{
     atLocation: LocationSpec,
     message: string,
   ) => CatalogProcessorResult;
-  readonly location: (
-    newLocation: LocationSpec,
-    optional?: boolean | undefined,
-  ) => CatalogProcessorResult;
+  readonly location: (newLocation: LocationSpec) => CatalogProcessorResult;
   readonly entity: (
     atLocation: LocationSpec,
     newEntity: Entity,
@@ -1072,22 +1068,6 @@ export interface RouterOptions {
   permissionIntegrationRouter?: express.Router;
   // (undocumented)
   refreshService?: RefreshService;
-}
-
-// @public @deprecated
-export function runPeriodically(fn: () => any, delayMs: number): () => void;
-
-// @public @deprecated (undocumented)
-export class StaticLocationProcessor implements StaticLocationProcessor {
-  constructor(staticLocations: LocationSpec[]);
-  // (undocumented)
-  static fromConfig(config: Config): StaticLocationProcessor;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
 }
 
 // @public (undocumented)
