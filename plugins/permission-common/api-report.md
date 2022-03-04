@@ -54,10 +54,7 @@ export enum AuthorizeResult {
 }
 
 // @public
-export type BasicPermission = {
-  name: string;
-  attributes: PermissionAttributes;
-};
+export type BasicPermission = PermissionBase<'basic', {}>;
 
 // @public
 export function createPermission<TResourceType extends string>(input: {
@@ -123,6 +120,14 @@ export interface PermissionAuthorizer {
 }
 
 // @public
+export type PermissionBase<TType extends string, TFields extends object> = {
+  name: string;
+  attributes: PermissionAttributes;
+} & {
+  type: TType;
+} & TFields;
+
+// @public
 export class PermissionClient implements PermissionAuthorizer {
   constructor(options: { discovery: DiscoveryApi; config: Config });
   authorize(
@@ -145,7 +150,11 @@ export type PermissionCriteria<TQuery> =
   | TQuery;
 
 // @public
-export type ResourcePermission<T extends string = string> = BasicPermission & {
-  resourceType: T;
-};
+export type ResourcePermission<TResourceType extends string = string> =
+  PermissionBase<
+    'resource',
+    {
+      resourceType: TResourceType;
+    }
+  >;
 ```

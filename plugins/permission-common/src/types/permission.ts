@@ -26,6 +26,23 @@ export type PermissionAttributes = {
 };
 
 /**
+ * Generic type for building {@link Permission} types.
+ * @public
+ */
+export type PermissionBase<TType extends string, TFields extends object> = {
+  /**
+   * The name of the permission.
+   */
+  name: string;
+  /**
+   * {@link PermissionAttributes} which describe characteristics of the permission, to help
+   * policy authors make consistent decisions for similar permissions without referring to them
+   * all by name.
+   */
+  attributes: PermissionAttributes;
+} & { type: TType } & TFields;
+
+/**
  * A permission that can be checked through authorization.
  *
  * @remarks
@@ -44,31 +61,24 @@ export type Permission = BasicPermission | ResourcePermission;
  * A standard {@link Permission} with no additional capabilities or restrictions.
  * @public
  */
-export type BasicPermission = {
-  /**
-   * The name of the permission.
-   */
-  name: string;
-  /**
-   * {@link PermissionAttributes} which describe characteristics of the permission, to help
-   * policy authors make consistent decisions for similar permissions without referring to them
-   * all by name.
-   */
-  attributes: PermissionAttributes;
-};
+export type BasicPermission = PermissionBase<'basic', {}>;
 
 /**
  * ResourcePermissions are {@link Permission}s that can be authorized based on
  * characteristics of a resource such a catalog entity.
  * @public
  */
-export type ResourcePermission<T extends string = string> = BasicPermission & {
-  /**
-   * Denotes the type of the resource whose resourceRef should be passed when
-   * authorizing.
-   */
-  resourceType: T;
-};
+export type ResourcePermission<TResourceType extends string = string> =
+  PermissionBase<
+    'resource',
+    {
+      /**
+       * Denotes the type of the resource whose resourceRef should be passed when
+       * authorizing.
+       */
+      resourceType: TResourceType;
+    }
+  >;
 
 /**
  * A client interacting with the permission backend can implement this authorizer interface.

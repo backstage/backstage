@@ -18,6 +18,7 @@ import React from 'react';
 import { PermissionedRoute } from '.';
 import { usePermission } from '../hooks';
 import { renderInTestApp } from '@backstage/test-utils';
+import { createPermission } from '@backstage/plugin-permission-common';
 
 jest.mock('../hooks', () => ({
   usePermission: jest.fn(),
@@ -26,10 +27,10 @@ const mockUsePermission = usePermission as jest.MockedFunction<
   typeof usePermission
 >;
 
-const permission = {
+const permission = createPermission({
   name: 'access.something',
   attributes: { action: 'read' as const },
-};
+});
 
 describe('PermissionedRoute', () => {
   it('Does not render when loading', async () => {
