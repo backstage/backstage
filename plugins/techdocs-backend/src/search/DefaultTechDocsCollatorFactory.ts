@@ -31,7 +31,6 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common';
-import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/search-common';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 import unescape from 'lodash/unescape';
@@ -75,8 +74,7 @@ type EntityInfo = {
  */
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'techdocs';
-  public readonly visibilityPermission: Permission =
-    catalogEntityReadPermission;
+  public readonly visibilityPermission = catalogEntityReadPermission;
 
   private discovery: PluginEndpointDiscovery;
   private locationTemplate: string;

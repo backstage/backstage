@@ -33,7 +33,6 @@ import {
   catalogEntityReadPermission,
   CatalogEntityDocument,
 } from '@backstage/plugin-catalog-common';
-import { Permission } from '@backstage/plugin-permission-common';
 
 /**
  * @public
@@ -46,8 +45,7 @@ export class DefaultCatalogCollator {
   protected filter?: GetEntitiesRequest['filter'];
   protected readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
-  public readonly visibilityPermission: Permission =
-    catalogEntityReadPermission;
+  public readonly visibilityPermission = catalogEntityReadPermission;
   protected tokenManager: TokenManager;
 
   static fromConfig(

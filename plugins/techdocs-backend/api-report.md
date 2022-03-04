@@ -13,12 +13,12 @@ import express from 'express';
 import { GeneratorBuilder } from '@backstage/techdocs-common';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
-import { Permission } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PreparerBuilder } from '@backstage/techdocs-common';
 import { PublisherBase } from '@backstage/techdocs-common';
 import { Readable } from 'stream';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TechDocsDocument } from '@backstage/techdocs-common';
 import { TokenManager } from '@backstage/backend-common';
 
@@ -42,7 +42,7 @@ export class DefaultTechDocsCollator {
   // (undocumented)
   readonly type: string;
   // (undocumented)
-  readonly visibilityPermission: Permission;
+  readonly visibilityPermission: ResourcePermission<'catalog-entity'>;
 }
 
 // @public
@@ -57,7 +57,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   readonly type: string;
   // (undocumented)
-  readonly visibilityPermission: Permission;
+  readonly visibilityPermission: ResourcePermission<'catalog-entity'>;
 }
 
 // @public

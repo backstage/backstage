@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Permission } from '@backstage/plugin-permission-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 import { Readable, Transform, Writable } from 'stream';
 
@@ -87,10 +87,10 @@ export interface IndexableDocument {
  */
 export type DocumentTypeInfo = {
   /**
-   * The {@link @backstage/plugin-permission-common#Permission} that controls
-   * visibility of resources associated with this collator's documents.
+   * The {@link @backstage/plugin-permission-common#ResourcePermission} that
+   * controls visibility of resources associated with this collator's documents.
    */
-  visibilityPermission?: Permission;
+  visibilityPermission?: ResourcePermission;
 };
 
 /**
@@ -105,10 +105,10 @@ export interface DocumentCollatorFactory {
   readonly type: string;
 
   /**
-   * The {@link @backstage/plugin-permission-common#Permission} that controls
-   * visibility of resources associated with this collator's documents.
+   * The {@link @backstage/plugin-permission-common#ResourcePermission} that
+   * controls visibility of resources associated with this collator's documents.
    */
-  readonly visibilityPermission?: Permission;
+  readonly visibilityPermission?: ResourcePermission;
 
   /**
    * Instantiates and resolves a document collator.

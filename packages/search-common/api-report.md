@@ -6,8 +6,8 @@
 /// <reference types="node" />
 
 import { JsonObject } from '@backstage/types';
-import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Transform } from 'stream';
 import { Writable } from 'stream';
 
@@ -15,7 +15,7 @@ import { Writable } from 'stream';
 export interface DocumentCollatorFactory {
   getCollator(): Promise<Readable>;
   readonly type: string;
-  readonly visibilityPermission?: Permission;
+  readonly visibilityPermission?: ResourcePermission;
 }
 
 // @beta
@@ -26,7 +26,7 @@ export interface DocumentDecoratorFactory {
 
 // @beta
 export type DocumentTypeInfo = {
-  visibilityPermission?: Permission;
+  visibilityPermission?: ResourcePermission;
 };
 
 // @beta

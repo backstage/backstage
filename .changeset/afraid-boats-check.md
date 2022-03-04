@@ -3,4 +3,4 @@
 '@backstage/plugin-techdocs-backend': patch
 ---
 
-Specify type of `visibilityPermission` property on collators and collator factories.
+Use more restrictive `ResourcePermission` type for `visibilityPermission` property on collator and collator factory.

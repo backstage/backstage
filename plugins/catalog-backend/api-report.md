@@ -23,7 +23,6 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { Logger as Logger_2 } from 'winston';
-import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -31,6 +30,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -455,7 +455,7 @@ export class DefaultCatalogCollator {
   // (undocumented)
   readonly type: string;
   // (undocumented)
-  readonly visibilityPermission: Permission;
+  readonly visibilityPermission: ResourcePermission<'catalog-entity'>;
 }
 
 // @public (undocumented)
@@ -470,7 +470,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
   // (undocumented)
   readonly type: string;
   // (undocumented)
-  readonly visibilityPermission: Permission;
+  readonly visibilityPermission: ResourcePermission<'catalog-entity'>;
 }
 
 // @public (undocumented)

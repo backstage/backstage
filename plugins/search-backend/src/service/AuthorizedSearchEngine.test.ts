@@ -18,6 +18,7 @@ import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeDecision,
   AuthorizeResult,
+  createPermission,
   PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 import {
@@ -78,28 +79,32 @@ describe('AuthorizedSearchEngine', () => {
 
   const defaultTypes: Record<string, DocumentTypeInfo> = {
     [typeUsers]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.users.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'user',
+      }),
     },
     [typeTemplates]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.templates.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'template',
+      }),
     },
     [typeServices]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.services.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'service',
+      }),
     },
     [typeGroups]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.groups.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'group',
+      }),
     },
   };
 
