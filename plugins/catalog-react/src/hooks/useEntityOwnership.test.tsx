@@ -15,18 +15,13 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  ComponentEntity,
-  RELATION_MEMBER_OF,
-  RELATION_OWNED_BY,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { ComponentEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { catalogApiRef } from '../api';
-import { loadCatalogOwnerRefs, useEntityOwnership } from './useEntityOwnership';
+import { useEntityOwnership } from './useEntityOwnership';
 
 describe('useEntityOwnership', () => {
   type MockIdentityApi = jest.Mocked<Pick<IdentityApi, 'getBackstageIdentity'>>;
@@ -77,53 +72,8 @@ describe('useEntityOwnership', () => {
     ],
   };
 
-  const user2Entity: UserEntity = {
-    apiVersion: 'backstage.io/v1beta1',
-    kind: 'User',
-    metadata: {
-      name: 'user2',
-      namespace: 'default',
-    },
-    spec: {
-      /* should not be accessed */
-    } as any,
-    relations: [
-      {
-        type: RELATION_MEMBER_OF,
-        targetRef: 'group:default/group1',
-        target: { kind: 'Group', namespace: 'default', name: 'group1' },
-      },
-    ],
-  };
-
   afterEach(() => {
     jest.resetAllMocks();
-  });
-
-  describe('loadCatalogOwnerRefs', () => {
-    it('loads the first user from the catalog', async () => {
-      mockCatalogApi.getEntityByRef.mockResolvedValueOnce(user2Entity);
-      await expect(
-        loadCatalogOwnerRefs(catalogApi, ['user:default/user2']),
-      ).resolves.toEqual(['group:default/group1']);
-      expect(mockCatalogApi.getEntityByRef).toBeCalledWith({
-        kind: 'user',
-        namespace: 'default',
-        name: 'user2',
-      });
-    });
-
-    it('gracefully handles missing user', async () => {
-      mockCatalogApi.getEntityByRef.mockResolvedValueOnce(undefined);
-      await expect(
-        loadCatalogOwnerRefs(catalogApi, ['user:default/user2']),
-      ).resolves.toEqual([]);
-      expect(mockCatalogApi.getEntityByRef).toBeCalledWith({
-        kind: 'user',
-        namespace: 'default',
-        name: 'user2',
-      });
-    });
   });
 
   describe('useEntityOwnership', () => {

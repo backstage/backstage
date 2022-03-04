@@ -13,7 +13,6 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
@@ -455,12 +454,6 @@ export function InspectEntityDialog(props: {
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
-// @public @deprecated
-export function loadCatalogOwnerRefs(
-  catalogApi: CatalogApi,
-  identityOwnerRefs: string[],
-): Promise<string[]>;
-
 // @public (undocumented)
 export const MockEntityListContextProvider: ({
   children,
@@ -569,12 +562,6 @@ export function useEntityTypeFilter(): {
   availableTypes: string[];
   selectedTypes: string[];
   setSelectedTypes: (types: string[]) => void;
-};
-
-// @public @deprecated
-export function useOwnedEntities(allowedKinds?: string[]): {
-  loading: boolean;
-  ownedEntities: GetEntitiesResponse | undefined;
 };
 
 // @public @deprecated
