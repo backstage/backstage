@@ -51,7 +51,7 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.7",
+    "@types/jest": "^27.4.1",
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^14.14.32",

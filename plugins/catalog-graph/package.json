@@ -54,7 +54,7 @@
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.1.8",
-    "@types/jest": "^26.0.7"
+    "@types/jest": "^27.4.1"
   },
   "files": [
     "dist"
