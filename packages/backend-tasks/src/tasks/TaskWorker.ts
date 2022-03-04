@@ -258,8 +258,8 @@ export class TaskWorker {
 
     const nextRun =
       this.knex.client.config.client === 'sqlite3'
-        ? this.knex.raw('next_run_start_at=datetime(?)', [time])
-        : this.knex.raw(`next_run_start_at=?`, [time]);
+        ? this.knex.raw('datetime(?)', [time])
+        : this.knex.raw(`?`, [time]);
 
     this.logger.debug(`next run will occur around ${time}`);
 
