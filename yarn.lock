@@ -4851,6 +4851,13 @@
   dependencies:
     "@react-hookz/deep-equal" "^1.0.1"
 
+"@react-hookz/web@^13.0.0":
+  version "13.0.0"
+  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-13.0.0.tgz#7c4d54fb4c1edf885879914d719e35086964e46e"
+  integrity sha512-sAMTOiOnAvxpJtHea7Vk+2+KJdTC/o77wPII+glnH+astNUSSiduptLaMPeoIXXwqjfJT+IJ9JzWyZPrLpdyFw==
+  dependencies:
+    "@react-hookz/deep-equal" "^1.0.1"
+
 "@rjsf/core@^3.2.1":
   version "3.2.1"
   resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.2.1.tgz#8a7b24c9a6f01f0ecb093fdfc777172c12b1b009"
