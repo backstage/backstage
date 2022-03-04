@@ -29,7 +29,6 @@ export { useEntityCompoundName } from './useEntityCompoundName';
 export {
   EntityListContext,
   EntityListProvider,
-  useEntityListProvider,
   useEntityList,
 } from './useEntityListProvider';
 export type {
