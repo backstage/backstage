@@ -33,15 +33,16 @@ import {
   attachComponentData,
   IconComponent,
   useElementFilter,
+  useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import {
   EntityRefLinks,
+  entityRouteRef,
   FavoriteEntity,
   getEntityRelations,
   InspectEntityDialog,
   UnregisterEntityDialog,
   useAsyncEntity,
-  useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -176,7 +177,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     UNSTABLE_contextMenuOptions,
     children,
   } = props;
-  const { kind, namespace, name } = useEntityCompoundName();
+  const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
   const routes = useElementFilter(
