@@ -29,7 +29,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { DocumentCollatorFactory } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import {
   catalogEntityReadPermission,
   CatalogEntityDocument,

@@ -51,7 +51,7 @@ import { ForwardedError } from '@backstage/errors';
 export class TechdocsGenerator implements GeneratorBase {
   /**
    * The default docker image (and version) used to generate content. Public
-   * and static so that techdocs-common consumers can use the same version.
+   * and static so that techdocs-node consumers can use the same version.
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v0.3.7';
   private readonly logger: Logger;

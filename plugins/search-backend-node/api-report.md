@@ -5,17 +5,17 @@
 ```ts
 /// <reference types="node" />
 
-import { DocumentCollatorFactory } from '@backstage/search-common';
-import { DocumentDecoratorFactory } from '@backstage/search-common';
-import { DocumentTypeInfo } from '@backstage/search-common';
-import { IndexableDocument } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+import { DocumentDecoratorFactory } from '@backstage/plugin-search-common';
+import { DocumentTypeInfo } from '@backstage/plugin-search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger as Logger_2 } from 'winston';
 import { default as lunr_2 } from 'lunr';
-import { QueryTranslator } from '@backstage/search-common';
+import { QueryTranslator } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
-import { SearchEngine } from '@backstage/search-common';
-import { SearchQuery } from '@backstage/search-common';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchEngine } from '@backstage/plugin-search-common';
+import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 import { Transform } from 'stream';
 import { Writable } from 'stream';
 

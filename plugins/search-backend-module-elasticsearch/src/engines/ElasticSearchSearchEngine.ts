@@ -24,7 +24,7 @@ import {
   SearchEngine,
   SearchQuery,
   SearchResultSet,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Client } from '@elastic/elasticsearch';
 import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';

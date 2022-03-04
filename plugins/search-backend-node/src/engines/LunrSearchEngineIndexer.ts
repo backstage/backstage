@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import lunr from 'lunr';
 import { BatchSearchEngineIndexer } from '../indexing';
 

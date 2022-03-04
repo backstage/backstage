@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { DatabaseDocumentStore } from './DatabaseDocumentStore';
 
 describe('DatabaseDocumentStore', () => {

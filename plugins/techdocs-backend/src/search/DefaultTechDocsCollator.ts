@@ -35,7 +35,7 @@ import {
   CatalogClient,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
-import { TechDocsDocument } from '@backstage/techdocs-common';
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 
 interface MkSearchIndexDoc {
   title: string;

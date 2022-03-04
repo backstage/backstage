@@ -15,7 +15,7 @@
  */
 
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Client } from '@elastic/elasticsearch';
 import { Readable } from 'stream';
 import { Logger } from 'winston';

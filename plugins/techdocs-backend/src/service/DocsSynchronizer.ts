@@ -23,7 +23,7 @@ import {
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import fetch from 'node-fetch';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';

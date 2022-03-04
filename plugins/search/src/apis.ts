@@ -20,7 +20,7 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { SearchQuery, SearchResultSet } from '@backstage/search-common';
+import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
 import qs from 'qs';
 
 export const searchApiRef = createApiRef<SearchApi>({

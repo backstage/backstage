@@ -153,7 +153,7 @@ export interface PublisherBase {
    * `techdocs-cli` version `{0.x.y}` and `techdocs-backend` version `{0.x.y}`.
    *
    * Implementation of this method is unnecessary in publishers introduced
-   * after version `{0.x.y}` of `techdocs-common`.
+   * after version `{0.x.y}` of `techdocs-node`.
    */
   migrateDocsCase?(migrateRequest: MigrateRequest): Promise<void>;
 }
