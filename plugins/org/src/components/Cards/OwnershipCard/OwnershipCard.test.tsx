@@ -166,7 +166,6 @@ describe('OwnershipCard', () => {
           'relations.ownedBy': ['group:default/my-team'],
         },
       ],
-      // filter: { kind: ['Component', 'API', 'System'] },
       fields: [
         'kind',
         'metadata.name',
@@ -247,7 +246,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D%5B0%5D=my-team&filters%5Buser%5D=all',
     );
   });
 
@@ -289,7 +288,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D%5B0%5D=user%3Athe-user&filters%5Bowners%5D%5B1%5D=my-team&filters%5Buser%5D=all',
     );
   });
 });
