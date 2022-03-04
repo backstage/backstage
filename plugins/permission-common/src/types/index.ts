@@ -33,6 +33,7 @@ export type {
   PermissionAttributes,
   Permission,
   PermissionAuthorizer,
+  PermissionBase,
   ResourcePermission,
   AuthorizeRequestOptions,
 } from './permission';

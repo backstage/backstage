@@ -41,10 +41,27 @@ export function createPermission(input: {
   name: string;
   attributes: PermissionAttributes;
 }): BasicPermission;
-export function createPermission(input: {
+export function createPermission({
+  name,
+  attributes,
+  resourceType,
+}: {
   name: string;
   attributes: PermissionAttributes;
   resourceType?: string;
 }): Permission {
-  return input;
+  if (resourceType) {
+    return {
+      type: 'resource',
+      name,
+      attributes,
+      resourceType,
+    };
+  }
+
+  return {
+    type: 'basic',
+    name,
+    attributes,
+  };
 }
