@@ -284,6 +284,9 @@ catalog:
     - type: file
       target: ../../cypress/e2e-fixture.catalog.info.yaml
 
+    - type: file
+      target: '../../template-test.yaml'
+
     - type: url
       target: https://github.com/benjdlambert/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
 scaffolder:

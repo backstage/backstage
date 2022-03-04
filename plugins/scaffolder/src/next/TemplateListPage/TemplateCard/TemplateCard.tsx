@@ -34,10 +34,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
   const { template } = props;
   return (
     <Card>
-      <CardHeader
-        type={template.spec.type}
-        title={template.metadata.title ?? template.metadata.name}
-      />
+      <CardHeader template={template} />
     </Card>
   );
 };
