@@ -527,11 +527,6 @@ export function useEntityList<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 
-// @public @deprecated
-export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
->(): EntityListContextProps<EntityFilters>;
-
 // @public
 export function useEntityOwnership(): {
   loading: boolean;
