@@ -37,7 +37,7 @@ export const StackOverflowSearchResultListItem = (
   const { location, title, text, answers, tags } = props.result;
 
   return (
-    <Link to={location} target="_blank">
+    <Link to={location}>
       <ListItem alignItems="center">
         {props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
         <Box flexWrap="wrap">

@@ -17,7 +17,6 @@
 import { StackOverflowSearchResultListItem } from '../../plugin';
 import { wrapInTestApp } from '@backstage/test-utils';
 import React, { ComponentType } from 'react';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 export default {
   title: 'Plugins/Search/StackOverflowResultListItem',

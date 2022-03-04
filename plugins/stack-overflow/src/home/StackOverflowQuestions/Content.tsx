@@ -24,7 +24,7 @@ import {
   ListItemSecondaryAction,
 } from '@material-ui/core';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import qs from 'qs';
 import React from 'react';
 import {
