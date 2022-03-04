@@ -15,7 +15,7 @@ Each of the entries in the table will direct you to the error details in your de
 
 1. Configure the [periskop backend plugin](https://github.com/backstage/backstage/tree/master/plugins/periskop-backend/)
 
-2. If you have standalone app (you didn't clone this repo), then do
+2. Install the plugin by running:
 
 ```bash
 # From your Backstage root directory
