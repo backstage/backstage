@@ -314,6 +314,14 @@ export interface ScaffolderGetIntegrationsListResponse {
   }[];
 }
 
+// @public (undocumented)
+export type ScaffolderOutputLink = {
+  title?: string;
+  icon?: string;
+  url?: string;
+  entityRef?: string;
+};
+
 // Warning: (ae-missing-release-tag) "ScaffolderPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -372,12 +380,8 @@ export type ScaffolderTask = {
   createdAt: string;
 };
 
-// Warning: (ae-missing-release-tag) "ScaffolderTaskOutput" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ScaffolderTaskOutput = {
-  entityRef?: string;
-  remoteUrl?: string;
   links?: ScaffolderOutputLink[];
 } & {
   [key: string]: unknown;
@@ -451,8 +455,4 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-
-// Warnings were encountered during analysis:
-//
-// src/types.d.ts:32:5 - (ae-forgotten-export) The symbol "ScaffolderOutputLink" needs to be exported by the entry point index.d.ts
 ```
