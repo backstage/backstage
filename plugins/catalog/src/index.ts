@@ -22,7 +22,12 @@
 
 export * from './apis';
 
-export * from './components/AboutCard';
+export type {
+  AboutCardProps,
+  AboutContentProps,
+  AboutFieldProps,
+} from './components/AboutCard';
+export { AboutContent, AboutField } from './components/AboutCard';
 export * from './components/CatalogKindHeader';
 export * from './components/CatalogSearchResultListItem';
 export * from './components/CatalogTable';
