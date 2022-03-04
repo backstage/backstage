@@ -30,7 +30,6 @@ jest.doMock('fs-extra', () => ({
 
 import {
   DatabaseManager,
-  DockerContainerRunner,
   getVoidLogger,
   PluginDatabaseManager,
   UrlReaders,
@@ -122,7 +121,6 @@ describe('createRouter', () => {
       config: new ConfigReader({}),
       database: createDatabase(),
       catalogClient: createCatalogClient(template),
-      containerRunner: new DockerContainerRunner({} as any),
       reader: mockUrlReader,
       taskBroker,
     });

@@ -12,7 +12,6 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
@@ -386,15 +385,6 @@ export interface EntityTypePickerProps {
   initialFilter?: string;
 }
 
-// @public @deprecated (undocumented)
-export type EntityTypeReturn = {
-  loading: boolean;
-  error?: Error;
-  availableTypes: string[];
-  selectedTypes: string[];
-  setSelectedTypes: (types: string[]) => void;
-};
-
 // @public
 export const FavoriteEntity: (props: FavoriteEntityProps) => JSX.Element;
 
@@ -510,9 +500,6 @@ export function useEntity<TEntity extends Entity = Entity>(): {
   refresh?: VoidFunction;
 };
 
-// @public @deprecated (undocumented)
-export const useEntityFromUrl: () => EntityLoadingStatus;
-
 // @public @deprecated
 export function useEntityKinds(): {
   error: Error | undefined;
@@ -545,12 +532,6 @@ export function useEntityTypeFilter(): {
   availableTypes: string[];
   selectedTypes: string[];
   setSelectedTypes: (types: string[]) => void;
-};
-
-// @public @deprecated
-export function useOwnedEntities(allowedKinds?: string[]): {
-  loading: boolean;
-  ownedEntities: GetEntitiesResponse | undefined;
 };
 
 // @public (undocumented)

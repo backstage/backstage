@@ -347,8 +347,8 @@ export function createEventStream(
 }
 
 /**
- *  @deprecated use event-stream implementation of the sync endpoint
- * */
+ * @deprecated use event-stream implementation of the sync endpoint
+ */
 export function createHttpResponse(
   res: Response<any, any>,
 ): DocsSynchronizerSyncOpts {
