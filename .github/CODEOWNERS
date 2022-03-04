@@ -45,6 +45,7 @@
 /plugins/search                                     @backstage/reviewers @backstage/techdocs-core
 /plugins/search-*                                   @backstage/reviewers @backstage/techdocs-core
 /plugins/stack-overflow                             @backstage/reviewers @backstage/techdocs-core
+/plugins/stack-overflow-backend                     @backstage/reviewers @backstage/techdocs-core
 /plugins/sonarqube                                  @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/techdocs                                   @backstage/reviewers @backstage/techdocs-core
 /plugins/techdocs-*                                 @backstage/reviewers @backstage/techdocs-core
