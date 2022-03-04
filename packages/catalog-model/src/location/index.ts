@@ -24,4 +24,3 @@ export {
   parseLocationRef,
   stringifyLocationRef,
 } from './helpers';
-export type { LocationSpec } from './types';

@@ -72,16 +72,16 @@ export class ProcessorOutputCollector {
 
     if (i.type === 'entity') {
       let entity: Entity;
+      const location = stringifyLocationRef(i.location);
+
       try {
         entity = validateEntityEnvelope(i.entity);
       } catch (e) {
         assertError(e);
-        this.logger.debug(`Envelope validation failed at ${i.location}, ${e}`);
+        this.logger.debug(`Envelope validation failed at ${location}, ${e}`);
         this.errors.push(e);
         return;
       }
-
-      const location = stringifyLocationRef(i.location);
 
       // Note that at this point, we have only validated the envelope part of
       // the entity data. Annotations are not part of that, so we have to be

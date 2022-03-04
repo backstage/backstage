@@ -190,15 +190,6 @@ export type EntityPolicy = {
   enforce(entity: Entity): Promise<Entity | undefined>;
 };
 
-// @public @deprecated
-export type EntityRef =
-  | string
-  | {
-      kind?: string;
-      namespace?: string;
-      name: string;
-    };
-
 // @public
 export type EntityRelation = {
   type: string;
@@ -316,13 +307,6 @@ export { LocationEntityV1alpha1 };
 // @public
 export const locationEntityV1alpha1Validator: KindValidator;
 
-// @public @deprecated
-export type LocationSpec = {
-  type: string;
-  target: string;
-  presence?: 'optional' | 'required';
-};
-
 // @public
 export function makeValidator(overrides?: Partial<Validators>): Validators;
 
@@ -332,21 +316,6 @@ export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
   // (undocumented)
   enforce(entity: Entity): Promise<Entity>;
 }
-
-// @public @deprecated
-export function parseEntityName(
-  ref:
-    | string
-    | {
-        kind?: string;
-        namespace?: string;
-        name: string;
-      },
-  context?: {
-    defaultKind?: string;
-    defaultNamespace?: string;
-  },
-): CompoundEntityRef;
 
 // @public
 export function parseEntityRef(

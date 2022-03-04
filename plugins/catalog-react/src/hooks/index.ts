@@ -34,11 +34,9 @@ export type {
   EntityListContextProps,
 } from './useEntityListProvider';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
-export type { EntityTypeReturn } from './useEntityTypeFilter';
 export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
 export { useStarredEntity } from './useStarredEntity';
 export { loadCatalogOwnerRefs, useEntityOwnership } from './useEntityOwnership';
-export { useOwnedEntities } from './useOwnedEntities';
 export { useEntityPermission } from './useEntityPermission';

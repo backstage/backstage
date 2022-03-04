@@ -4,6 +4,9 @@ import {
   IndexBuilder,
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
+{{#if dbTypePG}}
+import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
+{{/if}}
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
@@ -16,7 +19,14 @@ export default async function createPlugin({
   tokenManager,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
+  {{#if dbTypeSqlite}}
   const searchEngine = new LunrSearchEngine({ logger });
+  {{/if}}
+  {{#if dbTypePG}}
+  const searchEngine = (await PgSearchEngine.supported(database))
+    ? await PgSearchEngine.from({ database })
+    : new LunrSearchEngine({ logger });
+  {{/if}}
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   // Collators are responsible for gathering documents known to plugins. This

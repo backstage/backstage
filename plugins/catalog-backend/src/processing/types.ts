@@ -48,7 +48,7 @@ export type EntityProcessingResult =
 /**
  * Responsible for executing the individual processing steps in order to fully process an entity.
  * @public
- * */
+ */
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
@@ -56,7 +56,7 @@ export interface CatalogProcessingOrchestrator {
 /**
  * Entities that are not yet processed.
  * @public
- * */
+ */
 export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;

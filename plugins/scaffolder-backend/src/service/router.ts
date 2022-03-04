@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ContainerRunner,
-  PluginDatabaseManager,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
@@ -61,7 +57,6 @@ export interface RouterOptions {
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
-  containerRunner?: ContainerRunner;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 }
@@ -89,7 +84,6 @@ export async function createRouter(
     database,
     catalogClient,
     actions,
-    containerRunner,
     taskWorkers,
     additionalTemplateFilters,
   } = options;
@@ -128,7 +122,6 @@ export async function createRouter(
     : createBuiltinActions({
         integrations,
         catalogClient,
-        containerRunner,
         reader,
         config,
         additionalTemplateFilters,
