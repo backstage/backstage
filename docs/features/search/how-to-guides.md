@@ -137,9 +137,10 @@ entities are indexed by the search engine.
 
 For the purposes of this guide, Search Beta version is defined as:
 
-- **Search Plugin**: At least `v0.x.y`
-- **Search Backend Plugin**: At least `v0.x.y`
-- **Search Backend Node**: At least `v0.x.y`
+- **Search Plugin**: At least `v0.7.2`
+- **Search Backend Plugin**: At least `v0.4.6`
+- **Search Backend Node**: At least `v0.5.0`
+- **Search Common**: At least `v0.3.0`
 
 In the Beta version, the Search Platform's indexing process has been rewritten
 as a stream pipeline in order to improve efficiency and performance on large
@@ -149,11 +150,14 @@ If you've not yet extended the Search Platform with custom code, and have
 instead taken advantage of default collators, decorators, and search engines
 provided by existing plugins, the migration process is fairly straightforward:
 
-1. Upgrade to at least version `0.x.y` of
+1. Upgrade to at least version `0.5.0` of
    `@backstage/plugin-search-backend-node`, as well as any backend plugins whose
-   collators you are using (e.g. at least version `0.x.y` of
-   `@backstage/plugin-catalog-backend` and/or version `0.x.y` of
-   `@backstage/plugin-techdocs-backend`).
+   collators you are using (e.g. at least version `0.23.0` of
+   `@backstage/plugin-catalog-backend` and/or version `0.14.1` of
+   `@backstage/plugin-techdocs-backend`), as well as any search-engine specific
+   plugin you are using (e.g. at least version `0.3.0` of
+   `@backstage/plugin-search-backend-module-pg` or version `0.1.0` of
+   `@backstage/plugin-search-backend-module-elasticsearch`).
 2. Then, make the following changes to your
    `/packages/backend/src/plugins/search.ts` file:
 
