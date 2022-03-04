@@ -23,6 +23,11 @@ const SKIPPED_KEYS = ['access', 'registry', 'tag', 'alphaTypes', 'betaTypes'];
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
 
+function resolveEntrypoint(pkg: any, name: string) {
+  const targetEntry = pkg.publishConfig[name] || pkg[name];
+  return targetEntry && joinPath('..', targetEntry);
+}
+
 // Writes e.g. alpha/package.json
 async function writeReleaseStageEntrypoint(pkg: any, stage: 'alpha' | 'beta') {
   await fs.ensureDir(paths.resolveTarget(stage));
@@ -31,9 +36,9 @@ async function writeReleaseStageEntrypoint(pkg: any, stage: 'alpha' | 'beta') {
     {
       name: pkg.name,
       version: pkg.version,
-      main: (pkg.publishConfig.main || pkg.main) && '..',
-      module: (pkg.publishConfig.module || pkg.module) && '..',
-      browser: (pkg.publishConfig.browser || pkg.browser) && '..',
+      main: resolveEntrypoint(pkg, 'main'),
+      module: resolveEntrypoint(pkg, 'module'),
+      browser: resolveEntrypoint(pkg, 'browser'),
       types: joinPath('..', pkg.publishConfig[`${stage}Types`]),
     },
     { encoding: 'utf8', spaces: 2 },
