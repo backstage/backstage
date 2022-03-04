@@ -84,6 +84,7 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+ecco
 env
 Env
 elasticsearch
