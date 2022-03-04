@@ -272,7 +272,7 @@ export async function createBackendConfig(
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
-      mainFields: ['browser', 'module', 'main'],
+      mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
         new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
