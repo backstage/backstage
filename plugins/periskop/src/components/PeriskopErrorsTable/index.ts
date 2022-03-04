@@ -15,7 +15,7 @@
  */
 
 export {
-  PeriskopErrorsTable,
+  EntityPeriskopErrorsCard,
   isPeriskopAvailable,
   PERISKOP_NAME_ANNOTATION,
-} from './PeriskopErrorsTable';
+} from './EntityPeriskopErrorsCard';

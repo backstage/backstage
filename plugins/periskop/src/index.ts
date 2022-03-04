@@ -15,10 +15,10 @@
  */
 
 export { periskopPlugin, periskopApiRef } from './plugin';
-export { PeriskopErrorsTable } from './extensions';
+export { EntityPeriskopErrorsCard } from './extensions';
 export {
   isPeriskopAvailable,
   PERISKOP_NAME_ANNOTATION,
-} from './components/PeriskopErrorsTable';
+} from './components/EntityPeriskopErrorsCard';
 export * from './api/index';
 export * from './types';

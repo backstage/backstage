@@ -6,7 +6,7 @@
 
 ## Periskop aggregated errors
 
-The Periskop Backstage Plugin exposes a component named `PeriskopErrorsTable`.
+The Periskop Backstage Plugin exposes a component named `EntityPeriskopErrorsCard`.
 Each of the entries in the table will direct you to the error details in your deployed Periskop instance location.
 
 ![periskop-errors-card](./docs/periskop-plugin-screenshot.png)
@@ -27,7 +27,7 @@ yarn add @backstage/plugin-periskop
 
 ```tsx
 // In packages/app/src/components/catalog/EntityPage.tsx
-import { PeriskopErrorsTable } from '@backstage/plugin-periskop';
+import { EntityPeriskopErrorsCard } from '@backstage/plugin-periskop';
 
 const componentPage = (
   <EntityLayout>
@@ -35,7 +35,7 @@ const componentPage = (
     <EntityLayout.Route path="/periskop" title="Periskop">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item xs={12} sm={12} md={12}>
-          <PeriskopErrorsTable />
+          <EntityPeriskopErrorsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>

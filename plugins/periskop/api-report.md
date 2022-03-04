@@ -102,7 +102,7 @@ export type PeriskopApiOptions = {
 export const periskopApiRef: ApiRef<PeriskopApi>;
 
 // @public (undocumented)
-export const PeriskopErrorsTable: () => JSX.Element;
+export const EntityPeriskopErrorsCard: () => JSX.Element;
 
 // @public (undocumented)
 export const periskopPlugin: BackstagePlugin<{}, {}>;

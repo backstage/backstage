@@ -20,13 +20,13 @@ import { createComponentExtension } from '@backstage/core-plugin-api';
 /**
  * @public
  */
-export const PeriskopErrorsTable = periskopPlugin.provide(
+export const EntityPeriskopErrorsCard = periskopPlugin.provide(
   createComponentExtension({
-    name: 'PeriskopErrorsTable',
+    name: 'EntityPeriskopErrorsCard',
     component: {
       lazy: () =>
-        import('./components/PeriskopErrorsTable').then(
-          m => m.PeriskopErrorsTable,
+        import('./components/EntityPeriskopErrorsCard').then(
+          m => m.EntityPeriskopErrorsCard,
         ),
     },
   }),

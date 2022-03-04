@@ -80,7 +80,7 @@ function isNotFoundInInstance(
   return (apiResult as NotFoundInInstance)?.body !== undefined;
 }
 
-export const PeriskopErrorsTable = () => {
+export const EntityPeriskopErrorsCard = () => {
   const { entity } = useEntity();
   const entityPeriskopName: string =
     entity.metadata.annotations?.[PERISKOP_NAME_ANNOTATION] ??
