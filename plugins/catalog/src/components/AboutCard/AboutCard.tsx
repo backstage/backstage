@@ -72,7 +72,7 @@ const useStyles = makeStyles({
 });
 
 /**
- * Props for {@link AboutCard}.
+ * Props for {@link EntityAboutCard}.
  *
  * @public
  */
@@ -82,7 +82,6 @@ export interface AboutCardProps {
 
 /**
  * @public
- * @deprecated Please use EntityAboutCard instead
  */
 export function AboutCard(props: AboutCardProps) {
   const { variant } = props;
