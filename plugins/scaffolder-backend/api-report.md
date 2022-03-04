@@ -21,7 +21,6 @@ import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger as Logger_2 } from 'winston';
 import { Observable } from '@backstage/types';
-import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -387,25 +386,6 @@ export function fetchContents({
   fetchUrl?: string;
   outputPath: string;
 }): Promise<void>;
-
-// Warning: (ae-missing-release-tag) "OctokitProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated
-export class OctokitProvider {
-  constructor(
-    integrations: ScmIntegrationRegistry,
-    githubCredentialsProvider?: GithubCredentialsProvider,
-  );
-  // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
-  //
-  // @deprecated
-  getOctokit(
-    repoUrl: string,
-    options?: {
-      token?: string;
-    },
-  ): Promise<OctokitIntegration>;
-}
 
 // @public (undocumented)
 export interface OctokitWithPullRequestPluginClient {
