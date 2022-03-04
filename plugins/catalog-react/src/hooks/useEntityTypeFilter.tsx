@@ -23,17 +23,6 @@ import { catalogApiRef } from '../api';
 import { useEntityList } from './useEntityListProvider';
 import { EntityTypeFilter } from '../filters';
 
-/** @public
- * @deprecated type inlined with {@link useEntityTypeFilter}.
- */
-export type EntityTypeReturn = {
-  loading: boolean;
-  error?: Error;
-  availableTypes: string[];
-  selectedTypes: string[];
-  setSelectedTypes: (types: string[]) => void;
-};
-
 /**
  * A hook built on top of `useEntityList` for enabling selection of valid `spec.type` values
  * based on the selected EntityKindFilter.
