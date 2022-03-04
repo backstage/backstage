@@ -208,7 +208,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     // sure that all adopters have re-stitched their entities so that the new
     // targetRef field is present on them, and that they have stopped consuming
     // the now-removed old field
-    // TODO(jhaals): Remove this in April 2021
+    // TODO(jhaals): Remove this in April 2022
     for (const entity of entities) {
       if (entity.relations) {
         for (const relation of entity.relations as any) {
