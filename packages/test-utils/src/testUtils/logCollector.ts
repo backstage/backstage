@@ -18,37 +18,44 @@
 
 /**
  * Severity levels of {@link CollectedLogs}
- * @public */
+ * @public
+ */
 export type LogFuncs = 'log' | 'warn' | 'error';
 /**
  * AsyncLogCollector type used in {@link (withLogCollector:1)} callback function.
- * @public */
+ * @public
+ */
 export type AsyncLogCollector = () => Promise<void>;
 /**
  * SyncLogCollector type used in {@link (withLogCollector:2)} callback function.
- * @public */
+ * @public
+ */
 export type SyncLogCollector = () => void;
 /**
  * Union type used in {@link (withLogCollector:3)} callback function.
- * @public */
+ * @public
+ */
 export type LogCollector = AsyncLogCollector | SyncLogCollector;
 /**
  * Map of severity level and corresponding log lines.
- * @public */
+ * @public
+ */
 export type CollectedLogs<T extends LogFuncs> = { [key in T]: string[] };
 
 const allCategories = ['log', 'warn', 'error'];
 
 /**
  * Asynchronous log collector with that collects all categories
- * @public */
+ * @public
+ */
 export function withLogCollector(
   callback: AsyncLogCollector,
 ): Promise<CollectedLogs<LogFuncs>>;
 
 /**
  * Synchronous log collector with that collects all categories
- * @public */
+ * @public
+ */
 export function withLogCollector(
   callback: SyncLogCollector,
 ): CollectedLogs<LogFuncs>;
@@ -64,7 +71,8 @@ export function withLogCollector<T extends LogFuncs>(
 
 /**
  * Synchronous log collector with that only collects selected categories
- * @public */
+ * @public
+ */
 export function withLogCollector<T extends LogFuncs>(
   logsToCollect: T[],
   callback: SyncLogCollector,
@@ -73,7 +81,7 @@ export function withLogCollector<T extends LogFuncs>(
 /**
  * Log collector that collect logs either from a sync or async collector.
  * @public
- * */
+ */
 export function withLogCollector(
   logsToCollect: LogFuncs[] | LogCollector,
   callback?: LogCollector,

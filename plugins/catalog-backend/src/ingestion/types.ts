@@ -62,7 +62,7 @@ export type AnalyzeLocationExistingEntity = {
  * enough info for the frontend to know what form data to show to the user
  * for overriding/completing the info.
  * @public
- * */
+ */
 export type AnalyzeLocationGenerateEntity = {
   // Some form of partial representation of the entity
   entity: RecursivePartial<Entity>;
