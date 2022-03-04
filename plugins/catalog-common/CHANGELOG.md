@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-common
 
+## 0.2.1
+
+### Patch Changes
+
+- Fixed runtime resolution of the `/alpha` entry point.
+
 ## 0.2.0
 
 ### Minor Changes
