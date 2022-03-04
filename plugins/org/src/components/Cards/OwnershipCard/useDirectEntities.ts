@@ -22,8 +22,8 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  formatEntityRefTitle,
   getEntityRelations,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import qs from 'qs';
 import useAsync from 'react-use/lib/useAsync';
@@ -38,7 +38,7 @@ const getQueryParams = (
   owner: Entity,
   selectedEntity: EntityTypeProps,
 ): string => {
-  const ownerName = formatEntityRefTitle(owner, { defaultKind: 'group' });
+  const ownerName = humanizeEntityRef(owner, { defaultKind: 'group' });
   const { kind, type } = selectedEntity;
   const filters = {
     kind,
@@ -58,6 +58,24 @@ const getQueryParams = (
   });
 
   return queryParams;
+};
+
+const getOwnersEntityRef = (owner: Entity): string[] => {
+  let owners = [stringifyEntityRef(owner)];
+  if (owner.kind === 'User') {
+    const ownerGroups = getEntityRelations(owner, RELATION_MEMBER_OF, {
+      kind: 'Group',
+    });
+    const ownerGroupsName = ownerGroups.map(ownerGroup =>
+      stringifyEntityRef({
+        kind: ownerGroup.kind,
+        namespace: ownerGroup.namespace,
+        name: ownerGroup.name,
+      }),
+    );
+    owners = [...owners, ...ownerGroupsName];
+  }
+  return owners;
 };
 
 export function useDirectEntities(
@@ -83,11 +101,12 @@ export function useDirectEntities(
     value: componentsWithCounters,
   } = useAsync(async () => {
     const kinds = entityFilterKind ?? ['Component', 'API', 'System'];
-    const ownedEntitiesListResponse = await catalogApi.getEntities({
+    const owners = getOwnersEntityRef(entity);
+    const ownedEntitiesList = await catalogApi.getEntities({
       filter: [
         {
           kind: kinds,
-          'relations.ownedBy': [stringifyEntityRef(entity)],
+          'relations.ownedBy': owners,
         },
       ],
       fields: [
@@ -99,7 +118,7 @@ export function useDirectEntities(
       ],
     });
 
-    const counts = ownedEntitiesListResponse.items.reduce(
+    const counts = ownedEntitiesList.items.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
         const match = acc.find(
           x =>
