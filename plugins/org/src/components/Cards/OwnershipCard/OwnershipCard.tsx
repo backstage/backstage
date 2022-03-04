@@ -97,8 +97,9 @@ export const OwnershipCard = ({
             <Tooltip
               placement="top"
               arrow
-              title={`${relationsType === 'direct' ? 'Direct' : 'Aggregated'
-                } Relations`}
+              title={`${
+                relationsType === 'direct' ? 'Direct' : 'Aggregated'
+              } Relations`}
             >
               <Switch
                 color="primary"
