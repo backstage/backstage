@@ -9,8 +9,6 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
-import { ContainerRunner } from '@backstage/backend-common';
-import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
@@ -63,8 +61,6 @@ export interface CreateBuiltInActionsOptions {
   catalogClient: CatalogApi;
   // (undocumented)
   config: Config;
-  // @deprecated (undocumented)
-  containerRunner?: ContainerRunner;
   // (undocumented)
   integrations: ScmIntegrations;
   // (undocumented)
@@ -98,8 +94,6 @@ export function createDebugLogAction(): TemplateAction<{
   message?: string | undefined;
   listWorkspace?: boolean | undefined;
 }>;
-
-export { createFetchCookiecutterAction };
 
 // @public
 export function createFetchPlainAction(options: {
@@ -427,8 +421,6 @@ export interface RouterOptions {
   catalogClient: CatalogApi;
   // (undocumented)
   config: Config;
-  // (undocumented)
-  containerRunner?: ContainerRunner;
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
