@@ -64,6 +64,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           validator.name as
             | keyof typeof KubernetesValidatorFunctions
             | keyof typeof CommonValidatorFunctions
+            | keyof Validators
         ) {
           case 'isValidLabelValue':
           case 'isValidObjectName':
@@ -82,7 +83,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
             break;
           case 'isValidTag':
             expectation =
-              'a string that is sequences of [a-z0-9+#] separated by [-], at most 63 characters in total';
+              'a string that is sequences of [a-z0-9:+#] separated by [-], at most 63 characters in total';
             break;
           case 'isValidAnnotationValue':
             expectation = 'a string';
@@ -94,7 +95,6 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
           case 'isValidUrl':
             expectation = 'a string that is a valid url';
             break;
-          case 'isValidString':
           case 'isNonEmptyString':
             expectation = 'a non empty string';
             break;

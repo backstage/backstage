@@ -163,31 +163,6 @@ describe('CommonValidatorFunctions', () => {
   });
 
   it.each([
-    // These are identical to isValidDnsLabel
-    [null, false],
-    [7, false],
-    ['', false],
-    ['a', true],
-    ['a-b', true],
-    ['-a-b', false],
-    ['a-b-', false],
-    ['a--b', false],
-    ['a_b', false],
-    [`${'a'.repeat(63)}`, true],
-    [`${'a'.repeat(64)}`, false],
-    // Tags can have other characters though
-    ['a+b', true],
-    ['+a+b', true],
-    ['a+b+', true],
-    ['a++b', true],
-    ['c++', true],
-    ['c#', true],
-    ['#c++', true],
-  ])(`isValidTag %p ? %p`, (value, result) => {
-    expect(CommonValidatorFunctions.isValidTag(value)).toBe(result);
-  });
-
-  it.each([
     [null, false],
     [7, false],
     ['', false],
@@ -209,22 +184,6 @@ describe('CommonValidatorFunctions', () => {
     ['xyz://custom-protocol:4444/path', true],
   ])(`isValidUrl %p ? %p`, (value, result) => {
     expect(CommonValidatorFunctions.isValidUrl(value)).toBe(result);
-  });
-
-  it.each([
-    [null, false],
-    [true, false],
-    [7, false],
-    [{}, false],
-    ['', false],
-    [' ', false],
-    ['    ', false],
-    ['abc', true],
-    [' abc ', true],
-    ['abc xyz', true],
-    ['abc xyz abc.', true],
-  ])(`isValidString %p ? %p`, (value, result) => {
-    expect(CommonValidatorFunctions.isValidString(value)).toBe(result);
   });
 
   it.each([

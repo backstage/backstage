@@ -60,10 +60,6 @@ export class CommonValidatorFunctions {
     isValidPrefix: (value: string) => boolean,
     isValidSuffix: (value: string) => boolean,
   ): boolean;
-  // @deprecated
-  static isValidString(value: unknown): boolean;
-  // @deprecated
-  static isValidTag(value: unknown): boolean;
   static isValidUrl(value: unknown): boolean;
 }
 
