@@ -35,10 +35,10 @@ type EntityTypeProps = {
 };
 
 const getQueryParams = (
-  owner: Entity,
+  ownerEntity: Entity,
   selectedEntity: EntityTypeProps,
 ): string => {
-  const ownerName = humanizeEntityRef(owner, { defaultKind: 'group' });
+  const ownerName = humanizeEntityRef(ownerEntity, { defaultKind: 'group' });
   const { kind, type } = selectedEntity;
   const filters = {
     kind,
@@ -46,8 +46,8 @@ const getQueryParams = (
     owners: [ownerName],
     user: 'all',
   };
-  if (owner.kind === 'User') {
-    const ownerGroups = getEntityRelations(owner, RELATION_MEMBER_OF, {
+  if (ownerEntity.kind === 'User') {
+    const ownerGroups = getEntityRelations(ownerEntity, RELATION_MEMBER_OF, {
       kind: 'Group',
     });
     const ownerGroupsName = ownerGroups.map(ownerGroup => ownerGroup.name);
