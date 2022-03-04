@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': minor
 ---
 
-**BREAKING**: Removed `useEntityKinds` hook.
+**BREAKING**: Removed the `useEntityKinds` hook, use `catalogApi.getEntityFacets({ facets: ['kind'] })` instead.
