@@ -65,45 +65,6 @@ export function getCompoundEntityRef(entity: Entity): CompoundEntityRef {
 }
 
 /**
- * Parses an entity reference, either on string or compound form, and always
- * returns a complete entity name including kind, namespace and name.
- *
- * @remarks
- *
- * This function automatically assumes the default namespace "default" unless
- * otherwise specified as part of the options, and will throw an error if no
- * kind was specified in the input reference and no default kind was given.
- *
- * @deprecated Please use parseEntityRef instead
- * @public
- * @param ref - The reference to parse
- * @param context - The context of defaults that the parsing happens within
- * @returns A complete entity name
- */
-export function parseEntityName(
-  ref: string | { kind?: string; namespace?: string; name: string },
-  context: {
-    /** The default kind, if none is given in the reference */
-    defaultKind?: string;
-    /** The default namespace, if none is given in the reference */
-    defaultNamespace?: string;
-  } = {},
-): CompoundEntityRef {
-  const { kind, namespace, name } = parseEntityRef(ref, {
-    defaultNamespace: DEFAULT_NAMESPACE,
-    ...context,
-  });
-
-  if (!kind) {
-    throw new Error(
-      `Entity reference ${namespace}/${name} did not contain a kind`,
-    );
-  }
-
-  return { kind, namespace, name };
-}
-
-/**
  * Parses an entity reference, either on string or compound form, and returns
  * a structure with a name, and optional kind and namespace.
  *
