@@ -42,7 +42,7 @@ import { AggregatedError, NotFoundInInstance } from '../../types';
  *
  * @public
  */
-export const PERISKOP_NAME_ANNOTATION = 'periskop.io/name';
+export const PERISKOP_NAME_ANNOTATION = 'periskop.io/service-name';
 
 /**
  * Returns true if Periskop annotation is present in the given entity.
