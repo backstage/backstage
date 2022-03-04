@@ -72,7 +72,7 @@ export interface NotFoundInInstance {
 }
 
 // @public
-export const PERISKOP_NAME_ANNOTATION = 'periskop.io/name';
+export const PERISKOP_NAME_ANNOTATION = 'periskop.io/service-name';
 
 // @public
 export class PeriskopApi {

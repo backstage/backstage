@@ -222,13 +222,13 @@ definition.
 Specifying this annotation will enable GoCD related features in Backstage for
 that entity.
 
-### periskop.io/name
+### periskop.io/service-name
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    periskop.io/name: pump-station
+    periskop.io/service-name: pump-station
 ```
 
 The value of this annotation is the periskop project name for the given entity.

@@ -47,7 +47,7 @@ const componentPage = (
 
 ```yaml
 annotations:
-  periskop.io/name: '<THE NAME OF THE PERISKOP APP>'
+  periskop.io/service-name: '<THE NAME OF THE PERISKOP APP>'
 ```
 
 6. Run app with `yarn start` and navigate to `/periskop` or a catalog entity 'Periskop' tab
