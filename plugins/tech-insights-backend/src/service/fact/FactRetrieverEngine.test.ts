@@ -26,7 +26,6 @@ import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
-import waitForExpect from 'wait-for-expect';
 
 function sleep(ms: number) {
   return new Promise(resolve => {
