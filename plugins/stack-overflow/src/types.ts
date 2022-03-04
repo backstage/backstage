@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Type representing a stack overflow question
+ *
+ * @public
+ */
 export type StackOverflowQuestion = {
   title: string;
   link: string;
@@ -22,10 +27,20 @@ export type StackOverflowQuestion = {
   answer_count: number;
 };
 
+/**
+ * Props for HomePageStackOverflowQuestions
+ *
+ * @public
+ */
 export type StackOverflowQuestionsContentProps = {
   requestParams: StackOverflowQuestionsRequestParams;
 };
 
+/**
+ * Type representing the request parameters accepted by the HomePageStackOverflowQuestions component
+ *
+ * @public
+ */
 export type StackOverflowQuestionsRequestParams = {
   [key: string]: string | string[] | number;
 };

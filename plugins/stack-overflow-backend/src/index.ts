@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export { StackOverflowQuestionsCollatorFactory } from './search';
+/**
+ * Stack Overflow backend plugin
+ *
+ * @packageDocumentation
+ */
+
+export * from './search';

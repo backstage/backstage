@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createPlugin,
   createComponentExtension,
@@ -20,6 +21,11 @@ import {
 import { createCardExtension } from '@backstage/plugin-home';
 import { StackOverflowQuestionsContentProps } from './types';
 
+/**
+ * The Backstage plugin that holds stack overflow specific components
+ *
+ * @public
+ */
 export const stackOverflowPlugin = createPlugin({
   id: 'stack-overflow',
 });
@@ -29,7 +35,6 @@ export const stackOverflowPlugin = createPlugin({
  *
  * @public
  */
-
 export const StackOverflowSearchResultListItem = stackOverflowPlugin.provide(
   createComponentExtension({
     name: 'StackOverflowResultListItem',

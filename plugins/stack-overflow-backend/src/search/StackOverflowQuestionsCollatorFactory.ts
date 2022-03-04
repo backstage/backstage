@@ -24,21 +24,41 @@ import fetch from 'cross-fetch';
 import qs from 'qs';
 import { Logger } from 'winston';
 
-interface StackOverflowDocument extends IndexableDocument {
+/**
+ * Extended IndexableDocument with stack overflow specific properties
+ *
+ * @public
+ */
+export interface StackOverflowDocument extends IndexableDocument {
   answers: number;
   tags: string[];
 }
 
-type StackOverflowQuestionsRequestParams = {
+/**
+ * Type representing the request parameters accepted by the {@link StackOverflowQuestionsCollatorFactory}
+ *
+ * @public
+ */
+export type StackOverflowQuestionsRequestParams = {
   [key: string]: string | string[] | number;
 };
 
-type StackOverflowQuestionsCollatorFactoryOptions = {
+/**
+ * Options for {@link StackOverflowQuestionsCollatorFactory}
+ *
+ * @public
+ */
+export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
 };
 
+/**
+ * Search collator responsible for collecting stack overflow questions to index.
+ *
+ * @public
+ */
 export class StackOverflowQuestionsCollatorFactory
   implements DocumentCollatorFactory
 {
