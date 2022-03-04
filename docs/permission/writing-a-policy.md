@@ -75,9 +75,13 @@ The `isEntityOwner` rule needs a list of claims as a parameter, and the second a
 
 You should now be able to see in your Backstage app that the unregister entity button is enabled for entities that you own, but disabled for all other entities!
 
+### Custom conditions
+
+In addition to the conditions provided by the catalog plugin, you can write your own conditions for the catalog (or for any plugin that implements permissions, for that matter). This is done by using the [`createConditionFactory` helper](https://backstage.io/docs/reference/plugin-permission-node.createconditionfactory) provided by the `@backstage/plugin-permission-node` package.
+
 ## Resource types
 
-Now let's say we would also like to restrict users from viewing catalog entities that they do not own, just like we did for unregistering entities. One way to achieve this may be to simply duplicate our if statement and check for the `catalog.entti.read` permission:
+Now let's say we would also like to restrict users from viewing catalog entities that they do not own, just like we did for unregistering entities. One way to achieve this may be to simply duplicate our if statement and check for the `catalog.entity.read` permission:
 
 ```diff
     async handle(
@@ -133,6 +137,8 @@ If you choose to write your policy this way, it will certainly work! You should 
 ```
 
 In this example, we use the `catalog-entity` resource type to catch all authorization requests that have to do with resources from the catalog. Now, you should be able to see the same functionality as before (only see the catalog entities that you own) - success!
+
+_Note:_ Notice that while the `catalogEntityDeletePermission` and the `catalogEntityReadPermission` used here have the `'catalog-entity'` resource type, the [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49) does not have a resource type associated with it, as it does not make sense to apply conditions to an entity that has not yet been created.
 
 ## Conclusion
 
