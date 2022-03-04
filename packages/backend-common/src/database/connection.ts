@@ -58,14 +58,6 @@ export function createDatabaseClient(
 }
 
 /**
- * Alias for {@link createDatabaseClient}
- *
- * @public
- * @deprecated Use createDatabaseClient instead
- */
-export const createDatabase = createDatabaseClient;
-
-/**
  * Ensures that the given databases all exist, creating them if they do not.
  *
  * @public
