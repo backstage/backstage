@@ -181,6 +181,10 @@ export class AppManager implements BackstageApp {
     this.apiFactoryRegistry = new ApiFactoryRegistry();
   }
 
+  getApis(): AnyApiFactory[] {
+    return Array.from(this.apis);
+  }
+
   getPlugins(): BackstagePlugin<any, any>[] {
     return Array.from(this.plugins) as BackstagePlugin<any, any>[];
   }
