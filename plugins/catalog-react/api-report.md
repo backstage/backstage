@@ -477,16 +477,6 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
-// @public @deprecated (undocumented)
-export function reduceCatalogFilters(
-  filters: EntityFilter[],
-): Record<string, string | symbol | (string | symbol)[]>;
-
-// @public @deprecated (undocumented)
-export function reduceEntityFilters(
-  filters: EntityFilter[],
-): (entity: Entity) => boolean;
-
 // @public
 export interface StarredEntitiesApi {
   starredEntitie$(): Observable<Set<string>>;
