@@ -765,6 +765,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrationRegistry;
     logger: Logger_2;
     githubCredentialsProvider?: GithubCredentialsProvider;
+    useOrgAsNamespace?: Boolean;
   });
   // (undocumented)
   static fromConfig(
@@ -772,6 +773,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     options: {
       logger: Logger_2;
       githubCredentialsProvider?: GithubCredentialsProvider;
+      useOrgAsNamespace?: Boolean;
     },
   ): GithubOrgReaderProcessor;
   // (undocumented)

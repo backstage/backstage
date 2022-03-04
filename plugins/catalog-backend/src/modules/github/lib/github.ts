@@ -145,6 +145,7 @@ export async function getOrganizationUsers(
  *
  * @param client - An octokit graphql client
  * @param org - The slug of the org to read
+ * @param orgNamespace - The namespace to create the team in Backstage
  */
 export async function getOrganizationTeams(
   client: typeof graphql,

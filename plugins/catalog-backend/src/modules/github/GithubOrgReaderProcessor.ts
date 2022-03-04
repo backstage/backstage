@@ -47,12 +47,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
+  private readonly useOrgAsNamespace: Boolean | undefined;
 
   static fromConfig(
     config: Config,
     options: {
       logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
+      useOrgAsNamespace?: Boolean;
     },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -67,12 +69,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     integrations: ScmIntegrationRegistry;
     logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
+    useOrgAsNamespace?: Boolean;
   }) {
     this.integrations = options.integrations;
     this.githubCredentialsProvider =
       options.githubCredentialsProvider ||
       DefaultGithubCredentialsProvider.fromIntegrations(this.integrations);
     this.logger = options.logger;
+    this.useOrgAsNamespace = options.useOrgAsNamespace;
   }
   getProcessorName(): string {
     return 'GithubOrgReaderProcessor';
@@ -98,6 +102,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     const { groups, groupMemberUsers } = await getOrganizationTeams(
       client,
       org,
+      this.useOrgAsNamespace ? org : 'default',
     );
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
