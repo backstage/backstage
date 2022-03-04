@@ -75,19 +75,73 @@ describe('BitbucketUrlReader', () => {
   setupRequestMockHandlers(worker);
 
   describe('readUrl', () => {
-    worker.use(
-      rest.get(
-        'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
-        (_, res, ctx) => res(ctx.status(200), ctx.body('foo')),
-      ),
-    );
+    it('should be able to readUrl without ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBeNull();
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'etag-value'),
+            );
+          },
+        ),
+      );
 
-    it('should be able to readUrl', async () => {
       const result = await bitbucketProcessor.readUrl(
         'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
+    });
+
+    it('should be able to readUrl with matching ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBe(
+              'matching-etag-value',
+            );
+            return res(ctx.status(304));
+          },
+        ),
+      );
+
+      await expect(
+        bitbucketProcessor.readUrl(
+          'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+          { etag: 'matching-etag-value' },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should be able to readUrl without matching ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBe(
+              'previous-etag-value',
+            );
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'new-etag-value'),
+            );
+          },
+        ),
+      );
+
+      const result = await bitbucketProcessor.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        { etag: 'previous-etag-value' },
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe('foo');
+      expect(result.etag).toBe('new-etag-value');
     });
   });
 
