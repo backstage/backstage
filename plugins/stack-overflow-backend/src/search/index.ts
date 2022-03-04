@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { StackOverflowQuestionsCollator } from './StackOverflowQuestionsCollator';
+export { StackOverflowQuestionsCollatorFactory } from './StackOverflowQuestionsCollatorFactory';

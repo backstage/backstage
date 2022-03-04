@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  stackOverflowPlugin,
-  StackOverflowSearchResultListItem,
-  HomePageStackOverflowQuestions,
-} from './plugin';
+export { StackOverflowQuestionsCollatorFactory } from './search';

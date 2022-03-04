@@ -17,30 +17,9 @@ stackoverflow:
 
 ## Areas of Responsibility
 
-This search plugin is primarily responsible for the following:
+This stack overflow frontend plugin is primarily responsible for the following:
 
 - Exposing various stack-overflow related components like `<StackOverflowSearchResultListItem />` which can be used for composing the search page, and `<HomePageStackOverflowQuestions/>` which can be used for composing the homepage.
-- Provides a `StackOverflowQuestionsCollator`, which can be used in the search backend to index stack overflow questions to your Backstage Search.
-
-### Index Stack Overflow Questions to search
-
-Before you are able to start index stack overflow questions to search, you need to go through the [search getting started guide](https://backstage.io/docs/features/search/getting-started).
-
-When you have your `packages/backend/src/plugins/search.ts` file ready to make modifications, add the following code snippet to add the `StackOverflowQuestionsCollator`. Note that you can modify the `requestParams`.
-
-```ts
-indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 60,
-  collator: new StackOverflowQuestionsCollator({
-    config,
-    requestParams: {
-      tagged: ['backstage'],
-      site: 'stackoverflow',
-      pagesize: 100,
-    },
-  }),
-});
-```
 
 #### Use specific search result list item for Stack Overflow Question
 
