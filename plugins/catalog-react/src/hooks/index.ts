@@ -35,7 +35,6 @@ export type {
 } from './useEntityListProvider';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
 export type { EntityTypeReturn } from './useEntityTypeFilter';
-export { useEntityKinds } from './useEntityKinds';
 export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
