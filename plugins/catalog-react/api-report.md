@@ -522,13 +522,6 @@ export function useEntity<TEntity extends Entity = Entity>(): {
   refresh?: VoidFunction;
 };
 
-// @public @deprecated
-export const useEntityCompoundName: () => {
-  kind: string;
-  namespace: string;
-  name: string;
-};
-
 // @public @deprecated (undocumented)
 export const useEntityFromUrl: () => EntityLoadingStatus;
 
