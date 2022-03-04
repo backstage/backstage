@@ -70,6 +70,116 @@ describe('GithubOrgReaderProcessor', () => {
       );
     });
 
+    it('should not emit the org name and the namespace if required', async () => {
+      githubCredentialsProvider = {
+        getCredentials() {
+          return Promise.resolve({
+            type: 'token',
+            headers: { token: 'blah' },
+          });
+        },
+      };
+
+      const mockClient = jest.fn();
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: { pageInfo: { hasNextPage: false }, nodes: [{}] },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                { members: { pageInfo: { hasNextPage: false }, nodes: [{}] } },
+              ],
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      const processor = new GithubOrgReaderProcessor({
+        integrations,
+        logger,
+        githubCredentialsProvider,
+        useOrgAsNamespace: false,
+      });
+      const location: LocationSpec = {
+        type: 'github-org',
+        target: 'https://github.com/backstage',
+      };
+
+      const emit = jest.fn();
+      await processor.readLocation(location, false, emit);
+
+      expect(emit).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          entity: expect.objectContaining({
+            metadata: expect.objectContaining({ namespace: 'default' }),
+          }),
+        }),
+      );
+    });
+
+    it('should emit the org name and the namespace if required', async () => {
+      githubCredentialsProvider = {
+        getCredentials() {
+          return Promise.resolve({
+            type: 'token',
+            headers: { token: 'blah' },
+          });
+        },
+      };
+
+      const mockClient = jest.fn();
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: { pageInfo: { hasNextPage: false }, nodes: [{}] },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                { members: { pageInfo: { hasNextPage: false }, nodes: [{}] } },
+              ],
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      const processor = new GithubOrgReaderProcessor({
+        integrations,
+        logger,
+        githubCredentialsProvider,
+        useOrgAsNamespace: true,
+      });
+      const location: LocationSpec = {
+        type: 'github-org',
+        target: 'https://github.com/backstage',
+      };
+
+      const emit = jest.fn();
+      await processor.readLocation(location, false, emit);
+
+      expect(emit).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          entity: expect.objectContaining({
+            metadata: expect.objectContaining({ namespace: 'backstage' }),
+          }),
+        }),
+      );
+    });
+
     it('should not query for email addresses when GitHub Apps is used for authentication', async () => {
       githubCredentialsProvider = {
         getCredentials() {
