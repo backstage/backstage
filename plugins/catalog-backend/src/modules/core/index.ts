@@ -28,6 +28,5 @@ export type {
   PlaceholderResolverRead,
   PlaceholderResolverResolveUrl,
 } from './PlaceholderProcessor';
-export { StaticLocationProcessor } from './StaticLocationProcessor';
 export { UrlReaderProcessor } from './UrlReaderProcessor';
 export { parseEntityYaml } from '../util/parse';

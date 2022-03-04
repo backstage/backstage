@@ -49,29 +49,6 @@ yarn add sqlite3
 From an operational perspective, you only need to install drivers for clients
 that are actively used.
 
-### Database Manager
-
-Existing Backstage instances should be updated to use `DatabaseManager` from
-`@backstage/backend-common` in your `packages/backend/src/index.ts` file, the
-`SingleConnectionDatabaseManager` has been deprecated. Import the manager and
-update the references as shown below if this is not the case:
-
-```diff
-import {
--  SingleConnectionDatabaseManager,
-+  DatabaseManager,
-} from '@backstage/backend-common';
-
-// ...
-
-function makeCreateEnv(config: Config) {
-  // ...
--  const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
-+  const databaseManager = DatabaseManager.fromConfig(config);
-  // ...
-}
-```
-
 ## Configuration
 
 You should set the base database client and connection information in your

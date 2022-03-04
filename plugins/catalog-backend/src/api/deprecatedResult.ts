@@ -68,9 +68,9 @@ export function generalError(
  */
 export function location(
   newLocation: LocationSpec,
-  optional?: boolean,
+  _optional?: boolean,
 ): CatalogProcessorResult {
-  return { type: 'location', location: newLocation, optional };
+  return { type: 'location', location: newLocation };
 }
 
 /**

@@ -477,16 +477,6 @@ export class MockStarredEntitiesApi implements StarredEntitiesApi {
   toggleStarred(entityRef: string): Promise<void>;
 }
 
-// @public @deprecated (undocumented)
-export function reduceCatalogFilters(
-  filters: EntityFilter[],
-): Record<string, string | symbol | (string | symbol)[]>;
-
-// @public @deprecated (undocumented)
-export function reduceEntityFilters(
-  filters: EntityFilter[],
-): (entity: Entity) => boolean;
-
 // @public
 export interface StarredEntitiesApi {
   starredEntitie$(): Observable<Set<string>>;
@@ -522,13 +512,6 @@ export function useEntity<TEntity extends Entity = Entity>(): {
   refresh?: VoidFunction;
 };
 
-// @public @deprecated
-export const useEntityCompoundName: () => {
-  kind: string;
-  namespace: string;
-  name: string;
-};
-
 // @public @deprecated (undocumented)
 export const useEntityFromUrl: () => EntityLoadingStatus;
 
@@ -541,11 +524,6 @@ export function useEntityKinds(): {
 
 // @public
 export function useEntityList<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
->(): EntityListContextProps<EntityFilters>;
-
-// @public @deprecated
-export function useEntityListProvider<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 

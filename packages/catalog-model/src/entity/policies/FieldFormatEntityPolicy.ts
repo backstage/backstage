@@ -95,6 +95,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
             expectation = 'a string that is a valid url';
             break;
           case 'isValidString':
+          case 'isNonEmptyString':
             expectation = 'a non empty string';
             break;
           default:
@@ -156,7 +157,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
       optional(
         `links.${i}.title`,
         links[i]?.title,
-        CommonValidatorFunctions.isValidString,
+        CommonValidatorFunctions.isNonEmptyString,
       );
       optional(
         `links.${i}.icon`,

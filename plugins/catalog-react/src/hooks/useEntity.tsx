@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  errorApiRef,
+  useApi,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 import {
   createVersionedContext,
   createVersionedValueMap,
@@ -24,7 +28,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { catalogApiRef } from '../api';
-import { useEntityCompoundName } from './useEntityCompoundName';
+import { entityRouteRef } from '../routes';
 
 /** @public */
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
@@ -104,7 +108,7 @@ export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
  * @deprecated will be deleted shortly due to low external usage, re-implement if needed.
  */
 export const useEntityFromUrl = (): EntityLoadingStatus => {
-  const { kind, namespace, name } = useEntityCompoundName();
+  const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const navigate = useNavigate();
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);

@@ -26,9 +26,6 @@ import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
-// @public @deprecated (undocumented)
-export function AboutCard(props: AboutCardProps): JSX.Element;
-
 // @public
 export interface AboutCardProps {
   // (undocumented)
@@ -103,12 +100,6 @@ export const catalogPlugin: BackstagePlugin<
     >;
   }
 >;
-
-// @public @deprecated (undocumented)
-export const CatalogResultListItem: typeof CatalogSearchResultListItem;
-
-// @public @deprecated (undocumented)
-export type CatalogResultListItemProps = CatalogSearchResultListItemProps;
 
 // @public (undocumented)
 export function CatalogSearchResultListItem(

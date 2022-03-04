@@ -43,18 +43,16 @@ export type ListActionsResponse = Array<{
   };
 }>;
 
-type ScaffolderOutputLink = {
+/** @public */
+export type ScaffolderOutputLink = {
   title?: string;
   icon?: string;
   url?: string;
   entityRef?: string;
 };
 
+/** @public */
 export type ScaffolderTaskOutput = {
-  /** @deprecated use the `links` property to link out to relevant resources */
-  entityRef?: string;
-  /** @deprecated use the `links` property to link out to relevant resources */
-  remoteUrl?: string;
   links?: ScaffolderOutputLink[];
 } & {
   [key: string]: unknown;

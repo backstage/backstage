@@ -15,8 +15,6 @@
  */
 
 import {
-  ANNOTATION_LOCATION,
-  ANNOTATION_ORIGIN_LOCATION,
   Entity,
   CompoundEntityRef,
   parseEntityRef,
@@ -306,49 +304,6 @@ export class CatalogClient implements CatalogApi {
       entities,
       exists,
     };
-  }
-
-  /**
-   * @deprecated please use getLocationByRef instead
-   */
-  async getOriginLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location | undefined> {
-    const locationCompound =
-      entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
-    if (!locationCompound) {
-      return undefined;
-    }
-    const all: { data: Location }[] = await this.requestRequired(
-      'GET',
-      '/locations',
-      options,
-    );
-    return all
-      .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationRef(l));
-  }
-
-  /**
-   * @deprecated please use getLocationByRef instead
-   */
-  async getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location | undefined> {
-    const locationCompound = entity.metadata.annotations?.[ANNOTATION_LOCATION];
-    if (!locationCompound) {
-      return undefined;
-    }
-    const all: { data: Location }[] = await this.requestRequired(
-      'GET',
-      '/locations',
-      options,
-    );
-    return all
-      .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationRef(l));
   }
 
   /**

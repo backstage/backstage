@@ -28,6 +28,7 @@ export type {
   ScaffolderApi,
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
+  ScaffolderOutputLink,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,

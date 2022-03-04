@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.12.1
+
+### Patch Changes
+
+- Fixed runtime resolution of the `/alpha` entry point.
+
 ## 0.12.0
 
 ### Minor Changes
