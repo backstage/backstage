@@ -40,10 +40,11 @@ import {
 import { buildOrgHierarchy } from '../util/org';
 
 /**
- * @alpha
  * Extracts teams and users out of a multiple GitHub orgs namespaced per org.
  *
  * Be aware that this processor may not be compatible with future org structures in the catalog.
+ *
+ * @public
  */
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
