@@ -80,11 +80,6 @@ describe('<DependsOnResourcesCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'resource',
-            namespace: 'my-namespace',
-            name: 'target-name',
-          },
           targetRef: 'resource:my-namespace/target-name',
           type: RELATION_DEPENDS_ON,
         },

@@ -75,7 +75,6 @@ describe('DefaultCatalogPage', () => {
               {
                 type: RELATION_OWNED_BY,
                 targetRef: 'group:default/tools',
-                target: { kind: 'group', name: 'tools', namespace: 'default' },
               },
             ],
           },

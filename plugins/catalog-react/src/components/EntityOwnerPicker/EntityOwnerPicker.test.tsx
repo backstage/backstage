@@ -32,20 +32,10 @@ const sampleEntities: Entity[] = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/some-owner',
-        target: {
-          name: 'some-owner',
-          namespace: 'default',
-          kind: 'Group',
-        },
       },
       {
         type: 'ownedBy',
         targetRef: 'group:default/some-owner-2',
-        target: {
-          name: 'some-owner-2',
-          namespace: 'default',
-          kind: 'Group',
-        },
       },
     ],
   },
@@ -59,11 +49,6 @@ const sampleEntities: Entity[] = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/another-owner',
-        target: {
-          name: 'another-owner',
-          namespace: 'default',
-          kind: 'Group',
-        },
       },
     ],
   },
@@ -77,11 +62,6 @@ const sampleEntities: Entity[] = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/some-owner',
-        target: {
-          name: 'some-owner',
-          namespace: 'default',
-          kind: 'Group',
-        },
       },
     ],
   },

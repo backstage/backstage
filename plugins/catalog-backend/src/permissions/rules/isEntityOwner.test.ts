@@ -30,11 +30,6 @@ describe('isEntityOwner', () => {
           {
             type: 'ownedBy',
             targetRef: 'user:default/spiderman',
-            target: {
-              kind: 'user',
-              namespace: 'default',
-              name: 'spiderman',
-            },
           },
         ],
       };
@@ -54,11 +49,6 @@ describe('isEntityOwner', () => {
           {
             type: 'ownedBy',
             targetRef: 'user:default/green-goblin',
-            target: {
-              kind: 'user',
-              namespace: 'default',
-              name: 'green-goblin',
-            },
           },
         ],
       };

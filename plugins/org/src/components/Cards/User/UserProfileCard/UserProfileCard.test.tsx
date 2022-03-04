@@ -43,11 +43,6 @@ describe('UserSummary Test', () => {
       {
         type: 'memberOf',
         targetRef: 'group:default/examplegroup',
-        target: {
-          kind: 'group',
-          name: 'ExampleGroup',
-          namespace: 'default',
-        },
       },
     ],
   };

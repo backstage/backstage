@@ -32,7 +32,6 @@ describe('isOwnerOf', () => {
         {
           type: RELATION_OWNED_BY,
           targetRef: 'user:default/user',
-          target: { kind: 'user', namespace: 'default', name: 'user' },
         },
       ],
     } as Entity;
@@ -48,7 +47,6 @@ describe('isOwnerOf', () => {
         {
           type: RELATION_MEMBER_OF,
           targetRef: 'group:default/group',
-          target: { kind: 'group', namespace: 'default', name: 'group' },
         },
       ],
     } as Entity;
@@ -57,7 +55,6 @@ describe('isOwnerOf', () => {
         {
           type: RELATION_OWNED_BY,
           targetRef: 'group:default/group',
-          target: { kind: 'group', namespace: 'default', name: 'group' },
         },
       ],
     } as Entity;
