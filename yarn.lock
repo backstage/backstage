@@ -22048,11 +22048,6 @@ rollup-plugin-esbuild@^4.7.2:
     joycon "^3.0.1"
     jsonc-parser "^3.0.0"
 
-rollup-plugin-peer-deps-external@^2.2.2:
-  version "2.2.4"
-  resolved "https://registry.npmjs.org/rollup-plugin-peer-deps-external/-/rollup-plugin-peer-deps-external-2.2.4.tgz#8a420bbfd6dccc30aeb68c9bf57011f2f109570d"
-  integrity sha512-AWdukIM1+k5JDdAqV/Cxd+nejvno2FVLVeZ74NKggm3Q5s9cbbcOgUPGdbxPi4BXu7xGaZ8HG12F+thImYu/0g==
-
 rollup-plugin-postcss@*, rollup-plugin-postcss@^4.0.0:
   version "4.0.2"
   resolved "https://registry.npmjs.org/rollup-plugin-postcss/-/rollup-plugin-postcss-4.0.2.tgz#15e9462f39475059b368ce0e49c800fa4b1f7050"
