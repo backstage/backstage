@@ -706,7 +706,7 @@ export type GithubMultiOrgConfig = Array<{
   userNamespace: string | undefined;
 }>;
 
-// @alpha
+// @public
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
