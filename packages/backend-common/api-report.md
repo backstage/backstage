@@ -170,9 +170,6 @@ export class Contexts {
   ): Context;
 }
 
-// @public @deprecated
-export const createDatabase: typeof createDatabaseClient;
-
 // @public
 export function createDatabaseClient(
   dbConfig: Config,
@@ -573,9 +570,6 @@ export type ServiceBuilder = {
 
 // @public
 export function setRootLogger(newLogger: winston.Logger): void;
-
-// @public @deprecated
-export const SingleConnectionDatabaseManager: typeof DatabaseManager;
 
 // @public
 export class SingleHostDiscovery implements PluginEndpointDiscovery {
