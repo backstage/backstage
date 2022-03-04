@@ -289,6 +289,11 @@ export type AppOptions = {
  */
 export type BackstageApp = {
   /**
+   * Returns all APIs registered for the app.
+   */
+  getApis(): AnyApiFactory[];
+
+  /**
    * Returns all plugins registered for the app.
    */
   getPlugins(): BackstagePlugin<any, any>[];
