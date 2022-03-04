@@ -70,7 +70,6 @@ export function useAggregatedEntities(
   const outstandingEntities = new Map<string, Promise<Entity | undefined>>();
   const processedEntities = new Set<string>();
   requestedEntities.push(entity);
-  let isLoop = true;
   let currentEntity = entity;
   const kinds = entityFilterKind ?? ['Component', 'API', 'System'];
 
@@ -79,7 +78,7 @@ export function useAggregatedEntities(
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    while (isLoop) {
+    while (requestedEntities.length > 0) {
       const childRelations = getEntityRelations(
         currentEntity,
         RELATION_PARENT_OF,
@@ -106,12 +105,11 @@ export function useAggregatedEntities(
       );
       requestedEntities.shift();
       processedEntities.add(currentEntity.metadata.name);
+      // always set currentEntity to the first element of array requestedEntities
       currentEntity = requestedEntities[0];
-      if (requestedEntities.length === 0) isLoop = false;
     }
 
     const owners = Array.from(processedEntities);
-
     const ownedAggregationEntitiesList = await catalogApi.getEntities({
       filter: [
         {
