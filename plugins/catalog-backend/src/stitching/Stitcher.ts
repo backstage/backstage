@@ -205,7 +205,6 @@ export class Stitcher {
     }
 
     entity.metadata.uid = entityId;
-    entity.metadata.generation = 1;
     if (!entity.metadata.etag) {
       // If the original data source did not have its own etag handling,
       // use the hash as a good-quality etag

@@ -581,7 +581,7 @@ async function runApiExtraction({
 WARNING: Bring a blanket if you're gonna read the code below
 
 There's some weird shit going on here, and it's because we cba
-forking rushstash to modify the api-documenter markdown generation,
+forking rushstack to modify the api-documenter markdown generation,
 which otherwise is the recommended way to do customizations.
 */
 

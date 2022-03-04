@@ -107,7 +107,6 @@ describe('Stitcher', () => {
           name: 'n',
           namespace: 'ns',
           etag: expect.any(String),
-          generation: 1,
           uid: 'my-id',
         },
         spec: {
@@ -183,7 +182,6 @@ describe('Stitcher', () => {
           name: 'n',
           namespace: 'ns',
           etag: expect.any(String),
-          generation: 1,
           uid: 'my-id',
         },
         spec: {
