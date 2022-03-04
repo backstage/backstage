@@ -110,6 +110,7 @@ describe('createRouter', () => {
             {
               id: '123',
               permission: {
+                type: 'basic',
                 name: 'test.permission1',
                 attributes: {},
               },
@@ -117,6 +118,7 @@ describe('createRouter', () => {
             {
               id: '234',
               permission: {
+                type: 'basic',
                 name: 'test.permission2',
                 attributes: {},
               },
@@ -129,6 +131,7 @@ describe('createRouter', () => {
       expect(policy.handle).toHaveBeenCalledWith(
         {
           permission: {
+            type: 'basic',
             name: 'test.permission1',
             attributes: {},
           },
@@ -138,6 +141,7 @@ describe('createRouter', () => {
       expect(policy.handle).toHaveBeenCalledWith(
         {
           permission: {
+            type: 'basic',
             name: 'test.permission2',
             attributes: {},
           },
@@ -163,6 +167,7 @@ describe('createRouter', () => {
             {
               id: '123',
               permission: {
+                type: 'basic',
                 name: 'test.permission',
                 attributes: {},
               },
@@ -174,6 +179,7 @@ describe('createRouter', () => {
       expect(policy.handle).toHaveBeenCalledWith(
         {
           permission: {
+            type: 'basic',
             name: 'test.permission',
             attributes: {},
           },
@@ -201,6 +207,7 @@ describe('createRouter', () => {
               {
                 id: '123',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -258,6 +265,7 @@ describe('createRouter', () => {
               {
                 id: '123',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.1',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -267,6 +275,7 @@ describe('createRouter', () => {
               {
                 id: '234',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.2',
                   resourceType: 'test-resource-2',
                   attributes: {},
@@ -276,6 +285,7 @@ describe('createRouter', () => {
               {
                 id: '345',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.3',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -285,6 +295,7 @@ describe('createRouter', () => {
               {
                 id: '456',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.4',
                   resourceType: 'test-resource-2',
                   attributes: {},
@@ -384,6 +395,7 @@ describe('createRouter', () => {
               {
                 id: '123',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.1',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -393,6 +405,7 @@ describe('createRouter', () => {
               {
                 id: '234',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.2',
                   resourceType: 'test-resource-2',
                   attributes: {},
@@ -402,6 +415,7 @@ describe('createRouter', () => {
               {
                 id: '345',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.3',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -411,6 +425,7 @@ describe('createRouter', () => {
               {
                 id: '456',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.4',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -420,6 +435,7 @@ describe('createRouter', () => {
               {
                 id: '567',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.5',
                   resourceType: 'test-resource-2',
                   attributes: {},
@@ -429,6 +445,7 @@ describe('createRouter', () => {
               {
                 id: '678',
                 permission: {
+                  type: 'basic',
                   name: 'test.permission.6',
                   attributes: {},
                 },
@@ -519,6 +536,7 @@ describe('createRouter', () => {
               {
                 id: '123',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.1',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -528,6 +546,7 @@ describe('createRouter', () => {
               {
                 id: '234',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.2',
                   resourceType: 'test-resource-2',
                   attributes: {},
@@ -537,6 +556,7 @@ describe('createRouter', () => {
               {
                 id: '345',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.3',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -546,6 +566,7 @@ describe('createRouter', () => {
               {
                 id: '456',
                 permission: {
+                  type: 'resource',
                   name: 'test.permission.4',
                   resourceType: 'test-resource-1',
                   attributes: {},
@@ -630,6 +651,7 @@ describe('createRouter', () => {
                   id: '123',
                   resourceRef: 'test/resource',
                   permission: {
+                    type: 'resource',
                     name: 'test.permission',
                     resourceType: 'test-resource-1',
                     attributes: {},
@@ -639,6 +661,7 @@ describe('createRouter', () => {
                   id: '234',
                   resourceRef: 'test/resource',
                   permission: {
+                    type: 'resource',
                     name: 'test.permission',
                     resourceType: 'test-resource-1',
                     attributes: {},
@@ -687,10 +710,37 @@ describe('createRouter', () => {
       undefined,
       '',
       {},
-      [{ permission: { name: 'test.permission', attributes: {} } }],
-      { items: [{ permission: { name: 'test.permission', attributes: {} } }] },
+      [
+        {
+          permission: {
+            type: 'basic',
+            name: 'test.permission',
+            attributes: {},
+          },
+        },
+      ],
+      {
+        items: [
+          {
+            permission: {
+              type: 'basic',
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ],
+      },
       { items: [{ id: '123' }] },
-      { items: [{ id: '123', permission: { name: 'test.permission' } }] },
+      {
+        items: [
+          {
+            id: '123',
+            permission: { name: 'test.permission', attributes: {} },
+          },
+        ],
+      },
+      { items: [{ id: '123', permission: { type: 'basic', attributes: {} } }] },
+      { items: [{ id: '123', permission: { type: 'basic' } }] },
       {
         items: [
           { id: '123', permission: { attributes: { invalid: 'attribute' } } },
@@ -724,6 +774,7 @@ describe('createRouter', () => {
             {
               id: '123',
               permission: {
+                type: 'resource',
                 name: 'test.permission',
                 resourceType: 'test-resource-1',
                 attributes: {},
