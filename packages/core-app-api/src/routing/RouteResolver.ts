@@ -180,14 +180,14 @@ function resolveBasePath(
 
 export class RouteResolver {
   constructor(
-    private readonly routePaths: Map<RouteRef, string>,
-    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
-    private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<
+    public readonly routePaths: Map<RouteRef, string>,
+    public readonly routeParents: Map<RouteRef, RouteRef | undefined>,
+    public readonly routeObjects: BackstageRouteObject[],
+    public readonly routeBindings: Map<
       ExternalRouteRef,
       RouteRef | SubRouteRef
     >,
-    private readonly appBasePath: string, // base path without a trailing slash
+    public readonly appBasePath: string, // base path without a trailing slash
   ) {}
 
   resolve<Params extends AnyParams>(

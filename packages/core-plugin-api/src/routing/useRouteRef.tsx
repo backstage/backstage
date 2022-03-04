@@ -19,6 +19,7 @@ import { matchRoutes, useLocation } from 'react-router-dom';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
   AnyParams,
+  BackstageRouteObject,
   ExternalRouteRef,
   RouteFunc,
   RouteRef,
@@ -36,6 +37,12 @@ export interface RouteResolver {
       | ExternalRouteRef<Params, any>,
     sourceLocation: Parameters<typeof matchRoutes>[1],
   ): RouteFunc<Params> | undefined;
+
+  readonly routePaths: Map<RouteRef, string>;
+  readonly routeParents: Map<RouteRef, RouteRef | undefined>;
+  readonly routeObjects: BackstageRouteObject[];
+  readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  readonly appBasePath: string; // base path without a trailing slash
 }
 
 /**
