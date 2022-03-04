@@ -15,20 +15,11 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import {
-  errorApiRef,
-  useApi,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
-import {
   createVersionedContext,
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import React, { ReactNode, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { catalogApiRef } from '../api';
-import { entityRouteRef } from '../routes';
+import React, { ReactNode } from 'react';
 
 /** @public */
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
@@ -103,35 +94,6 @@ export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
     children={children}
   />
 );
-
-/** @public
- * @deprecated will be deleted shortly due to low external usage, re-implement if needed.
- */
-export const useEntityFromUrl = (): EntityLoadingStatus => {
-  const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
-  const navigate = useNavigate();
-  const errorApi = useApi(errorApiRef);
-  const catalogApi = useApi(catalogApiRef);
-
-  const {
-    value: entity,
-    error,
-    loading,
-    retry: refresh,
-  } = useAsyncRetry(
-    () => catalogApi.getEntityByRef({ kind, namespace, name }),
-    [catalogApi, kind, namespace, name],
-  );
-
-  useEffect(() => {
-    if (!name) {
-      errorApi.post(new Error('No name provided!'));
-      navigate('/');
-    }
-  }, [errorApi, navigate, error, loading, entity, name]);
-
-  return { entity, loading, error, refresh };
-};
 
 /**
  * Grab the current entity from the context, throws if the entity has not yet been loaded

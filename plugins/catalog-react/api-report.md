@@ -512,9 +512,6 @@ export function useEntity<TEntity extends Entity = Entity>(): {
   refresh?: VoidFunction;
 };
 
-// @public @deprecated (undocumented)
-export const useEntityFromUrl: () => EntityLoadingStatus;
-
 // @public @deprecated
 export function useEntityKinds(): {
   error: Error | undefined;
