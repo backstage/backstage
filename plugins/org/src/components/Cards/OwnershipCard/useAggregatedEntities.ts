@@ -91,12 +91,7 @@ export function useAggregatedEntities(
       await Promise.all(
         childRelations.map(childGroup =>
           limiter(async () => {
-            const promise = catalogApi.getEntityByName({
-              kind: 'Group',
-              namespace: 'default',
-              name: childGroup.name,
-            });
-
+            const promise = catalogApi.getEntityByRef(childGroup);
             outstandingEntities.set(childGroup.name, promise);
             try {
               const processedEntity = await promise;
