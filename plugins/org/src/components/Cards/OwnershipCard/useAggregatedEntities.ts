@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_PARENT_OF } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_PARENT_OF,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   catalogApiRef,
   getEntityRelations,
@@ -33,10 +37,12 @@ type EntityTypeProps = {
 };
 
 const getQueryParams = (
-  owners: string[],
+  ownerEntitiesRef: string[],
   selectedEntity: EntityTypeProps,
 ): string => {
   const { kind, type } = selectedEntity;
+  // removing 'group:default/' from the string entity ref 'group:default/team-a'
+  const owners = ownerEntitiesRef.map(owner => owner.split('/')[1]);
   const filters = {
     kind,
     type,
@@ -104,7 +110,13 @@ export function useAggregatedEntities(
         ),
       );
       requestedEntities.shift();
-      processedEntities.add(currentEntity.metadata.name);
+      processedEntities.add(
+        stringifyEntityRef({
+          kind: currentEntity.kind,
+          namespace: currentEntity.metadata.namespace,
+          name: currentEntity.metadata.name,
+        }),
+      );
       // always set currentEntity to the first element of array requestedEntities
       currentEntity = requestedEntities[0];
     }
@@ -114,7 +126,7 @@ export function useAggregatedEntities(
       filter: [
         {
           kind: kinds,
-          'spec.owner': owners,
+          'relations.ownedBy': owners,
         },
       ],
       fields: [
