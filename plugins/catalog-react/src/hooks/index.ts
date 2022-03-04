@@ -25,7 +25,6 @@ export type {
   EntityProviderProps,
   AsyncEntityProviderProps,
 } from './useEntity';
-export { useEntityCompoundName } from './useEntityCompoundName';
 export {
   EntityListContext,
   EntityListProvider,
