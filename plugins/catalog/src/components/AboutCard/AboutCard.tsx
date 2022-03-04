@@ -81,7 +81,7 @@ export interface AboutCardProps {
 }
 
 /**
- * @public
+ * Exported publicly via the EntityAboutCard
  */
 export function AboutCard(props: AboutCardProps) {
   const { variant } = props;
