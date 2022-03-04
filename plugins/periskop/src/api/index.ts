@@ -33,7 +33,37 @@ type PeriskopInstance = {
  *
  * @public
  */
-export class PeriskopApi {
+export interface PeriskopApi {
+  /**
+   * Returns the list of registered Periskop instance names.
+   */
+  getInstanceNames(): string[];
+
+  /**
+   * For the given instance and service, returns the URL pointing to the specific error instance occurrence.
+   * Note: This method might point to an external route.
+   */
+  getErrorInstanceUrl(
+    instanceName: string,
+    serviceName: string,
+    error: AggregatedError,
+  ): string;
+
+  /**
+   * Fetches all errors for the given service from the specified Periskop instance, given its name.
+   */
+  getErrors(
+    instanceName: string,
+    serviceName: string,
+  ): Promise<AggregatedError[] | NotFoundInInstance>;
+}
+
+/**
+ * API implementation to interact with Periskop's backends.
+ *
+ * @public
+ */
+export class PeriskopClient implements PeriskopApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly instances: PeriskopInstance[];
 

@@ -21,7 +21,7 @@ import {
   createPlugin,
   createApiRef,
 } from '@backstage/core-plugin-api';
-import { PeriskopApi } from './api';
+import { PeriskopApi, PeriskopClient } from './api';
 
 /**
  * @public
@@ -40,7 +40,7 @@ export const periskopPlugin = createPlugin({
       api: periskopApiRef,
       deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
       factory: ({ configApi, discoveryApi }) =>
-        new PeriskopApi({ configApi, discoveryApi }),
+        new PeriskopClient({ configApi, discoveryApi }),
     }),
   ],
 });
