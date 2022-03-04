@@ -181,12 +181,10 @@ files like stylesheets or images. For more details on what syntax and file
 formats are supported by the build process, see the [loaders section](#loaders).
 
 When building CommonJS or ESM output, the build commands will always use
-`src/index.ts` as the entrypoint. All dependencies of the package will be marked
-as external, meaning that in general it is only the contents of the `src` folder
-that ends up being compiled and output to `dist`. All import statements of
-external dependencies, even within the same monorepo, will stay intact. The
-externalized dependencies are based on dependency information in `package.json`,
-which means it's important to keep it up to date.
+`src/index.ts` as the entrypoint. All non-relative modules imports are considered
+external, meaning the Rollup build will only compile the source code of the package
+itself. All import statements of external dependencies, even within the same
+monorepo, will stay intact.
 
 The build of the type definitions works quite differently. The entrypoint of the
 type definition build is the relative location of the package within the
