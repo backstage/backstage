@@ -27,7 +27,7 @@ Before you are able to start index stack overflow questions to search, you need 
 
 When you have your `packages/backend/src/plugins/search.ts` file ready to make modifications, add the following code snippet to add the `StackOverflowQuestionsCollatorFactory`. Note that you can modify the `requestParams`.
 
-> Note: if your baseUrl is set to the external stack overflow api `https://api.stackexchange.com/2.2`, you can find optional and required params under the official API documentation under [`Usage of /questions GET`](https://api.stackexchange.com/docs/questions)
+> Note: if your baseUrl is set to the external stack overflow api `https://api.stackexchange.com/2.2`, you can find optional and required parameters under the official API documentation under [`Usage of /questions GET`](https://api.stackexchange.com/docs/questions)
 
 ```ts
 indexBuilder.addCollator({
