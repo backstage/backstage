@@ -100,17 +100,21 @@ describe('FactRetrieverEngine', () => {
 
   function createMockFactRetrieverRegistry(
     cadence?: string,
+    factRetriever?: FactRetriever,
   ): FactRetrieverRegistry {
     const cron = cadence ? cadence : defaultCadence;
+    const retriever: FactRetriever = factRetriever
+      ? factRetriever
+      : testFactRetriever;
     return {
       listRetrievers(): FactRetriever[] {
-        return [testFactRetriever];
+        return [retriever];
       },
       listRegistrations(): FactRetrieverRegistration[] {
-        return [{ factRetriever: testFactRetriever, cadence: cron }];
+        return [{ factRetriever: retriever, cadence: cron }];
       },
       get: (_: string): FactRetrieverRegistration => {
-        return { factRetriever: testFactRetriever, cadence: cron };
+        return { factRetriever: retriever, cadence: cron };
       },
     } as unknown as FactRetrieverRegistry;
   }
@@ -124,6 +128,7 @@ describe('FactRetrieverEngine', () => {
     insert: FactInsertionAssertionCallback,
     schema: FactSchemaAssertionCallback,
     cadence?: string,
+    factRetriever?: FactRetriever,
   ): Promise<FactRetrieverEngine> {
     const knex = await databases.init(databaseId);
     const databaseManager: Partial<DatabaseManager> = {
@@ -142,7 +147,10 @@ describe('FactRetrieverEngine', () => {
           getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
         },
       },
-      factRetrieverRegistry: createMockFactRetrieverRegistry(cadence),
+      factRetrieverRegistry: createMockFactRetrieverRegistry(
+        cadence,
+        factRetriever,
+      ),
       repository: createMockRepository(insert, schema),
       scheduler: scheduler.forPlugin('tech-insights'),
     });
@@ -236,6 +244,26 @@ describe('FactRetrieverEngine', () => {
       }
       // testing with a cron that is valid, but will allow us to manually trigger the job.
       const leapCron = '0 0 29 2 1';
+
+      const copy = JSON.parse(
+        JSON.stringify(testFactRetriever),
+      ) as typeof testFactRetriever;
+      let called = 0;
+      copy.handler = jest.fn(async () => {
+        called++;
+        return [
+          {
+            entity: {
+              namespace: 'a',
+              kind: 'a',
+              name: 'a',
+            },
+            facts: {
+              testnumberfact: 1,
+            },
+          },
+        ];
+      });
       engine = await createEngine(
         databaseId,
         insertCallback,
@@ -252,7 +280,7 @@ describe('FactRetrieverEngine', () => {
         await sleep(6000);
       }
       await waitForExpect(() => {
-        expect(testFactRetriever.handler).toHaveBeenCalledTimes(2);
+        expect(called).toBeGreaterThanOrEqual(2);
       });
       expect(testFactRetriever.handler).toHaveBeenCalledWith(
         expect.objectContaining({
