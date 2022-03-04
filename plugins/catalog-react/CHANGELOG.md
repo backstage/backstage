@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-react
 
+## 0.8.1
+
+### Patch Changes
+
+- Fixed runtime resolution of the `/alpha` entry point.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.1
+
 ## 0.8.0
 
 ### Minor Changes

@@ -45,10 +45,10 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.15.0",
-    "@backstage/plugin-catalog": "^0.9.1",
+    "@backstage/cli": "^0.15.1",
     "@backstage/core-app-api": "^0.6.0",
     "@backstage/dev-utils": "^0.2.24",
+    "@backstage/plugin-catalog": "^0.9.1",
     "@backstage/test-utils": "^0.3.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
