@@ -36,14 +36,15 @@
     "@testing-library/jest-dom": "^5.10.1"
   },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.2-next.0",
+    "@backstage/cli": "^0.15.0",
+    "@backstage/test-utils": "^0.3.0",
+    "@testing-library/react": "^11.2.5",
     "@backstage/core-app-api": "^0.5.2",
     "@backstage/dev-utils": "^0.2.21-next.0",
-    "@backstage/test-utils": "^0.2.4",
-    "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "*",
     "@types/node": "*",

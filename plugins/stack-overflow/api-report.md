@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentRenderer } from '@backstage/plugin-home/src/extensions';
+import { ComponentRenderer } from '@backstage/plugin-home';
 import { ReactNode } from 'react';
 
 // @public
