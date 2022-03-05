@@ -28,9 +28,9 @@ const execFile = promisify(execFileCb);
 // All of these are considered to be main-line release branches
 const MAIN_BRANCHES = ['master', 'origin/master', 'changeset-release/master'];
 
-// This prefix is used for patch branches, followed by the release version WITH a 'v' prefix
+// This prefix is used for patch branches, followed by the release version
 // For example, `patch/v1.2.0`
-const PATCH_BRANCH_PREFIX = 'patch/';
+const PATCH_BRANCH_PREFIX = 'patch/v';
 
 const DEPENDENCY_TYPES = [
   'dependencies',
@@ -38,21 +38,6 @@ const DEPENDENCY_TYPES = [
   'optionalDependencies',
   'peerDependencies',
 ];
-
-/**
- * Returns the most recent release version on the main branch that is not a pre-release.
- */
-async function getPreviousReleaseVersion(repo) {
-  // TODO(Rugvip): Figure out which field to sort by to avoid manual sort after
-  const { stdout: tagsStr } = await execFile(
-    'git',
-    ['tag', '--list', 'v*', '--merged=HEAD'],
-    { shell: true, cwd: repo.root.dir },
-  );
-  const tags = tagsStr.trim().split(/\r\n|\n/);
-  const [latestTag] = semver.rsort(tags).filter(t => !semver.prerelease(t));
-  return latestTag;
-}
 
 /**
  * Finds the tip of the patch branch of a given release version.
@@ -187,10 +172,11 @@ async function applyPatchVersions(repo, patchVersions) {
  * the main branch, and then bumps all packages in the repo accordingly.
  */
 async function updatePackageVersions(repo) {
-  const previousRelease = await getPreviousReleaseVersion(repo);
-  console.log(`Found release version: ${previousRelease}`);
+  const rootPkgPath = path.resolve(repo.root.dir, 'package.json');
+  const { version: currentRelease } = await fs.readJson(rootPkgPath);
+  console.log(`Current release version: ${currentRelease}`);
 
-  const patchRef = await findTipOfPatchBranch(repo, previousRelease);
+  const patchRef = await findTipOfPatchBranch(repo, currentRelease);
   if (patchRef) {
     console.log(`Tip of the patch branch: ${patchRef}`);
 
