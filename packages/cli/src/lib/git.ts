@@ -50,9 +50,16 @@ export async function listChangedFiles(ref: string) {
   if (!ref) {
     throw new Error('ref is required');
   }
-  const [base] = await runGit('merge-base', 'HEAD', ref);
 
-  const tracked = await runGit('diff', '--name-only', base);
+  let diffRef = ref;
+  try {
+    const [base] = await runGit('merge-base', 'HEAD', ref);
+    diffRef = base;
+  } catch {
+    // silently fall back to using the ref directly if merge base is not available
+  }
+
+  const tracked = await runGit('diff', '--name-only', diffRef);
   const untracked = await runGit('ls-files', '--others', '--exclude-standard');
 
   return Array.from(new Set([...tracked, ...untracked]));
