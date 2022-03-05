@@ -500,13 +500,6 @@ export function useEntity<TEntity extends Entity = Entity>(): {
   refresh?: VoidFunction;
 };
 
-// @public @deprecated
-export function useEntityKinds(): {
-  error: Error | undefined;
-  loading: boolean;
-  kinds: string[] | undefined;
-};
-
 // @public
 export function useEntityList<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
