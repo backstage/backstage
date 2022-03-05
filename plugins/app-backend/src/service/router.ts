@@ -19,19 +19,24 @@ import {
   PluginDatabaseManager,
   resolvePackagePath,
 } from '@backstage/backend-common';
+
 import { Config } from '@backstage/config';
+
 import helmet from 'helmet';
 import express from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
+
 import { resolve as resolvePath } from 'path';
 import { Logger } from 'winston';
 import { injectConfig, readConfigs } from '../lib/config';
+
 import {
   StaticAssetsStore,
   findStaticAssets,
   createStaticAssetMiddleware,
 } from '../lib/assets';
+
 import {
   CACHE_CONTROL_MAX_CACHE,
   CACHE_CONTROL_NO_CACHE,
@@ -93,25 +98,27 @@ export async function createRouter(
   const appDistDir = resolvePackagePath(appPackageName, 'dist');
   const staticDir = resolvePath(appDistDir, 'static');
 
+  logger.info('\n\n\ncreateRouter\n\n\n');
+  logger.info(`appDistDir: ${appDistDir}`);
+  logger.info(`staticDir:  ${staticDir}`);
+
   if (!(await fs.pathExists(staticDir))) {
     logger.warn(
       `Can't serve static app content from ${staticDir}, directory doesn't exist`,
     );
-
     return Router();
   }
 
   logger.info(`Serving static app content from ${appDistDir}`);
 
-  if (!options.disableConfigInjection) {
-    const appConfigs = await readConfigs({
-      config,
-      appDistDir,
-      env: process.env,
-    });
-
-    await injectConfig({ appConfigs, logger, staticDir });
-  }
+  // if (!options.disableConfigInjection) {
+  //   const appConfigs = await readConfigs({
+  //     config,
+  //     appDistDir,
+  //     env: process.env,
+  //   });
+  //   await injectConfig({ appConfigs, logger, staticDir });
+  // }
 
   const router = Router();
 
@@ -119,6 +126,19 @@ export async function createRouter(
 
   // Use a separate router for static content so that a fallback can be provided by backend
   const staticRouter = Router();
+
+  const jsExtRegex = new RegExp(/.*.js$/);
+  staticRouter.use((req, res, next) => {
+    logger.info(`********** ${req.url}`);
+    if (jsExtRegex.test(req.url)) {
+      logger.warn('\n\nBROTLI\n\n');
+      req.url = `${req.url}.br`;
+      res.set('Content-Encoding', 'br');
+      res.set('Content-Type', 'application/javascript; charset=UTF-8');
+    }
+    next();
+  });
+
   staticRouter.use(
     express.static(resolvePath(appDistDir, 'static'), {
       setHeaders: res => {
@@ -132,20 +152,16 @@ export async function createRouter(
       logger,
       database: await options.database.getClient(),
     });
-
     const assets = await findStaticAssets(staticDir);
     await store.storeAssets(assets);
     // Remove any assets that are older than 7 days
     await store.trimAssets({ maxAgeSeconds: 60 * 60 * 24 * 7 });
-
     staticRouter.use(createStaticAssetMiddleware(store));
   }
-
   if (staticFallbackHandler) {
     staticRouter.use(staticFallbackHandler);
   }
   staticRouter.use(notFoundHandler());
-
   router.use('/static', staticRouter);
   router.use(
     express.static(appDistDir, {
@@ -169,6 +185,25 @@ export async function createRouter(
       },
     });
   });
-
   return router;
 }
+
+// brotli main.e12f3bb5.js;
+// brotli module-ajv.20289b1d.js;
+// brotli module-date-fns.e0366fbc.js;
+// brotli module-highlight.js.30fc7d88.js;
+// brotli module-hot-loader.a2c4d17f.js;
+// brotli module-js-yaml.ff0e37e2.js;
+// brotli module-lodash.7939463f.js;
+// brotli module-luxon.76c6f3d1.js;
+// brotli module-material-table.2cb037f5.js;
+// brotli module-material-ui.00faba34.js;
+// brotli module-micromark.c1bc93cc.js;
+// brotli module-moment.f660647c.js;
+// brotli module-octokit.9c90bef5.js;
+// brotli module-react-beautiful-dnd.5ab89aaf.js;
+// brotli module-recharts.b6ca6a5e.js;
+// brotli module-roadiehq.3f8fa32f.js;
+// brotli module-yaml.1d6a65d7.js;
+// brotli runtime.e12f3bb5.js;
+// brotli vendor.e12f3bb5.js;
