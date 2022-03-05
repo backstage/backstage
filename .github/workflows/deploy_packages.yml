@@ -102,13 +102,13 @@ jobs:
         run: yarn backstage-cli config:check --lax
 
       - name: lint
-        run: yarn lerna -- run lint
+        run: yarn backstage-cli repo lint
 
       - name: type checking and declarations
         run: yarn tsc:full
 
       - name: build
-        run: yarn build
+        run: yarn backstage-cli repo build --all
 
       - name: verify type dependencies
         run: yarn lint:type-deps
@@ -188,7 +188,11 @@ jobs:
         run: yarn tsc:full
 
       - name: build packages
-        run: yarn lerna -- run --ignore example-app --ignore example-backend build
+        run: yarn backstage-cli repo build
+
+      - name: build embedded techdocs app
+        working-directory: packages/techdocs-cli-embedded-app
+        run: yarn build
 
       # Publishes current version of packages that are not already present in the registry
       - name: publish

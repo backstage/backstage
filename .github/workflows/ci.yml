@@ -119,7 +119,7 @@ jobs:
         run: yarn backstage-cli config:check --lax
 
       - name: lint
-        run: yarn lerna -- run lint --since origin/master
+        run: yarn backstage-cli repo lint --since origin/master
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -139,11 +139,11 @@ jobs:
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run build --since origin/master --include-dependencies
+        run: yarn backstage-cli repo build --all --since origin/master
 
       - name: build all packages
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: yarn lerna -- run build
+        run: yarn backstage-cli repo build --all
 
       - name: verify type dependencies
         run: yarn lint:type-deps
