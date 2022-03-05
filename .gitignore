@@ -64,6 +64,9 @@ typings/
 # Node version directives
 .nvmrc
 
+# Jest cache used in CI
+.jest-cache
+
 # Optional eslint cache
 .eslintcache
 
