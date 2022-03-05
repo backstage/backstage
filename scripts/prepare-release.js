@@ -90,7 +90,7 @@ async function detectPatchVersionsForRef(repo, ref) {
       }
     } catch (error) {
       if (
-        error.stderr?.match(/^fatal: Path .* exists on disk, but not in .*$/m)
+        error.stderr?.match(/^fatal: Path .* exists on disk, but not in .*$/im)
       ) {
         console.log(`Skipping new package ${pkg.packageJson.name}`);
         continue;
