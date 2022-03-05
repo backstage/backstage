@@ -58,7 +58,6 @@ describe('<CatalogGraphCard/>', () => {
     catalog = {
       getEntities: jest.fn(),
       getEntityByRef: jest.fn(async _ => ({ ...entity, relations: [] })),
-      getEntityByName: jest.fn(),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
       getLocationByRef: jest.fn(),

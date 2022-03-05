@@ -316,19 +316,6 @@ export interface CatalogApi {
   ): Promise<Entity | undefined>;
 
   /**
-   * Gets a single entity from the catalog by its ref (kind, namespace, name)
-   * triplet.
-   *
-   * @deprecated Use getEntityRef instead
-   * @param name - A complete entity ref
-   * @param options - Additional options
-   */
-  getEntityByName(
-    name: CompoundEntityRef,
-    options?: CatalogRequestOptions,
-  ): Promise<Entity | undefined>;
-
-  /**
    * Removes a single entity from the catalog by entity UID.
    *
    * @param uid - An entity UID

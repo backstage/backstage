@@ -29,7 +29,6 @@ describe('<DefaultExplorePage />', () => {
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByRef: jest.fn(),
-    getEntityByName: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
     getEntityFacets: jest.fn(),

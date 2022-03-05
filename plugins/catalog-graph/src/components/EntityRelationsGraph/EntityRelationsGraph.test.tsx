@@ -156,7 +156,6 @@ describe('<EntityRelationsGraph/>', () => {
     catalog = {
       getEntities: jest.fn(),
       getEntityByRef: jest.fn(async n => entities[n as string]),
-      getEntityByName: jest.fn(),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
       getLocationByRef: jest.fn(),
