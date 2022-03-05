@@ -7,6 +7,7 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 
 // Warning: (ae-missing-release-tag) "EntityGroupProfileCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -61,6 +62,19 @@ export const GroupProfileCard: ({
 export const MembersListCard: (_props: {
   memberDisplayTitle?: string;
   pageSize?: number;
+}) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "MySquads" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const MySquads: ({
+  singularTitle,
+  pluralTitle,
+  icon,
+}: {
+  singularTitle: string;
+  pluralTitle: string;
+  icon: IconComponent;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "orgPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
