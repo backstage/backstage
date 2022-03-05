@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TaskSchedule } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -25,6 +26,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
 import { merge } from 'lodash';
+import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
   GroupTransformer,
@@ -35,6 +37,54 @@ import {
   readLdapOrg,
   UserTransformer,
 } from '../ldap';
+
+/**
+ * Options for {@link LdapOrgEntityProvider}.
+ *
+ * @public
+ */
+export interface LdapOrgEntityProviderOptions {
+  /**
+   * A unique, stable identifier for this provider.
+   *
+   * @example "production"
+   */
+  id: string;
+
+  /**
+   * The target that this provider should consume.
+   *
+   * Should exactly match the "target" field of one of the "ldap.providers"
+   * configuration entries.
+   *
+   * @example "ldaps://ds-read.example.net"
+   */
+  target: string;
+
+  /**
+   * The logger to use.
+   */
+  logger: Logger;
+
+  /**
+   * The refresh schedule to use.
+   *
+   * If you pass in 'manual', you are responsible for calling the `read`
+   * method manually at some interval. If not, it will be automatically
+   * called regularly with the given schedule using the scheduler.
+   */
+  schedule: 'manual' | TaskSchedule;
+
+  /**
+   * The function that transforms a user entry in LDAP to an entity.
+   */
+  userTransformer?: UserTransformer;
+
+  /**
+   * The function that transforms a group entry in LDAP to an entity.
+   */
+  groupTransformer?: GroupTransformer;
+}
 
 /**
  * Reads user and group entries out of an LDAP service, and provides them as
@@ -49,35 +99,11 @@ import {
  */
 export class LdapOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
+  private scheduleFn?: () => Promise<void>;
 
   static fromConfig(
     configRoot: Config,
-    options: {
-      /**
-       * A unique, stable identifier for this provider.
-       *
-       * @example "production"
-       */
-      id: string;
-      /**
-       * The target that this provider should consume.
-       *
-       * Should exactly match the "target" field of one of the "ldap.providers"
-       * configuration entries.
-       *
-       * @example "ldaps://ds-read.example.net"
-       */
-      target: string;
-      /**
-       * The function that transforms a user entry in LDAP to an entity.
-       */
-      userTransformer?: UserTransformer;
-      /**
-       * The function that transforms a group entry in LDAP to an entity.
-       */
-      groupTransformer?: GroupTransformer;
-      logger: Logger;
-    },
+    options: LdapOrgEntityProviderOptions,
   ): LdapOrgEntityProvider {
     // TODO(freben): Deprecate the old catalog.processors.ldapOrg config
     const config =
@@ -101,13 +127,17 @@ export class LdapOrgEntityProvider implements EntityProvider {
       target: options.target,
     });
 
-    return new LdapOrgEntityProvider({
+    const result = new LdapOrgEntityProvider({
       id: options.id,
       provider,
       userTransformer: options.userTransformer,
       groupTransformer: options.groupTransformer,
       logger,
     });
+
+    result.schedule(options.schedule);
+
+    return result;
   }
 
   constructor(
@@ -128,18 +158,20 @@ export class LdapOrgEntityProvider implements EntityProvider {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
+    await this.scheduleFn?.();
   }
 
   /**
-   * Runs one complete ingestion loop. Call this method regularly at some
-   * appropriate cadence.
+   * Runs one single complete ingestion. This is only necessary if you use
+   * manual scheduling.
    */
-  async read() {
+  async read(options?: { logger?: Logger }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
-    const { markReadComplete } = trackProgress(this.options.logger);
+    const logger = options?.logger ?? this.options.logger;
+    const { markReadComplete } = trackProgress(logger);
 
     // Be lazy and create the client each time; even though it's pretty
     // inefficient, we usually only do this once per entire refresh loop and
@@ -157,7 +189,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       {
         groupTransformer: this.options.groupTransformer,
         userTransformer: this.options.userTransformer,
-        logger: this.options.logger,
+        logger,
       },
     );
 
@@ -172,6 +204,38 @@ export class LdapOrgEntityProvider implements EntityProvider {
     });
 
     markCommitComplete();
+  }
+
+  private schedule(schedule: LdapOrgEntityProviderOptions['schedule']) {
+    if (schedule === 'manual') {
+      return;
+    }
+
+    this.scheduleFn = async () => {
+      const id = this.getScheduledTaskId();
+      await schedule.run({
+        id,
+        fn: async () => {
+          const logger = this.options.logger.child({
+            class: LdapOrgEntityProvider.prototype.constructor.name,
+            taskId: id,
+            taskInstanceId: uuid.v4(),
+          });
+
+          try {
+            await this.read({ logger });
+          } catch (error) {
+            logger.error(error);
+          }
+        },
+      });
+    };
+  }
+
+  // Gets a suitable scheduler task ID for this provider instance
+  private getScheduledTaskId(): string {
+    const rawId = `refresh_${this.getProviderName()}`;
+    return rawId.toLocaleLowerCase('en-US').replace(/[^a-z0-9]/g, '_');
   }
 }
 

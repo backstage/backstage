@@ -31,27 +31,11 @@ export type TaskFunction =
   | (() => void | Promise<void>);
 
 /**
- * Options that apply to the invocation of a given task.
+ * Options that control the scheduling of a task.
  *
  * @public
  */
-export interface TaskDefinition {
-  /**
-   * A unique ID (within the scope of the plugin) for the task.
-   */
-  id: string;
-
-  /**
-   * The actual task function to be invoked regularly.
-   */
-  fn: TaskFunction;
-
-  /**
-   * An abort signal that, when triggered, will stop the recurring execution of
-   * the task.
-   */
-  signal?: AbortSignal;
-
+export interface TaskScheduleDefinition {
   /**
    * The maximum amount of time that a single task invocation can take, before
    * it's considered timed out and gets "released" such that a new invocation
@@ -92,6 +76,43 @@ export interface TaskDefinition {
 }
 
 /**
+ * Options that apply to the invocation of a given task.
+ *
+ * @public
+ */
+export interface TaskInvocationDefinition {
+  /**
+   * A unique ID (within the scope of the plugin) for the task.
+   */
+  id: string;
+
+  /**
+   * The actual task function to be invoked regularly.
+   */
+  fn: TaskFunction;
+
+  /**
+   * An abort signal that, when triggered, will stop the recurring execution of
+   * the task.
+   */
+  signal?: AbortSignal;
+}
+
+/**
+ * A previously prepared task schedule, ready to be invoked.
+ *
+ * @public
+ */
+export interface TaskSchedule {
+  /**
+   * Takes the schedule and executes an actual task using it.
+   *
+   * @param task - The actual runtime properties of the task
+   */
+  run(task: TaskInvocationDefinition): Promise<void>;
+}
+
+/**
  * Deals with the scheduling of distributed tasks, for a given plugin.
  *
  * @public
@@ -99,15 +120,33 @@ export interface TaskDefinition {
 export interface PluginTaskScheduler {
   /**
    * Schedules a task function for coordinated exclusive invocation across
-   * workers.
+   * workers. This convenience method performs both the scheduling and
+   * invocation in one go.
+   *
+   * @remarks
    *
    * If the task was already scheduled since before by us or by another party,
    * its options are just overwritten with the given options, and things
    * continue from there.
    *
-   * @param definition - The task definition
+   * @param task - The task definition
    */
-  scheduleTask(task: TaskDefinition): Promise<void>;
+  scheduleTask(
+    task: TaskScheduleDefinition & TaskInvocationDefinition,
+  ): Promise<void>;
+
+  /**
+   * Creates a task schedule, ready to be invoked at a later time.
+   *
+   * @remarks
+   *
+   * This method is useful for pre-creating a schedule in outer code to be
+   * passed into an inner implementation, such that the outer code controls
+   * scheduling while inner code controls implementation.
+   *
+   * @param schedule - The task schedule
+   */
+  createTaskSchedule(schedule: TaskScheduleDefinition): TaskSchedule;
 }
 
 function isValidOptionalDurationString(d: string | undefined): boolean {

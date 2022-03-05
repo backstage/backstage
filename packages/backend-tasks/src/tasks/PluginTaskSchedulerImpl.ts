@@ -17,7 +17,12 @@
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { TaskWorker } from './TaskWorker';
-import { PluginTaskScheduler, TaskDefinition } from './types';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskSchedule,
+  TaskScheduleDefinition,
+} from './types';
 import { validateId } from './util';
 
 /**
@@ -29,7 +34,9 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     private readonly logger: Logger,
   ) {}
 
-  async scheduleTask(task: TaskDefinition): Promise<void> {
+  async scheduleTask(
+    task: TaskScheduleDefinition & TaskInvocationDefinition,
+  ): Promise<void> {
     validateId(task.id);
 
     const knex = await this.databaseFactory();
@@ -46,5 +53,13 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
         signal: task.signal,
       },
     );
+  }
+
+  createTaskSchedule(schedule: TaskScheduleDefinition): TaskSchedule {
+    return {
+      run: async task => {
+        await this.scheduleTask({ ...task, ...schedule });
+      },
+    };
   }
 }

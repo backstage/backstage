@@ -32,55 +32,29 @@ yarn add @backstage/plugin-catalog-backend-module-ldap
 Update the catalog plugin initialization in your backend to add the provider and
 schedule it:
 
-```ts
-// packages/backend/src/plugins/catalog.ts
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-import { Duration } from 'luxon';
-import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+```diff
+ // packages/backend/src/plugins/catalog.ts
++import { Duration } from 'luxon';
++import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  // The target parameter below needs to match the ldap.providers.target
-  // value specified in your app-config
-  const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
-    id: 'our-ldap-master',
-    target: 'ldaps://ds.example.net',
-    logger: env.logger,
-  });
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
 
-  const builder = await CatalogBuilder.create(env);
-  builder.addEntityProvider(ldapEntityProvider);
-
-  // You can change the refresh interval for the other catalog entries
-  // independently, or just leave the line below out to use the default
-  // refresh interval. Note that this interval does NOT at all affect
-  // the LDAP refresh when using the provider method, which is good!
-  builder.setRefreshIntervalSeconds(100);
-
-  const { processingEngine, router } = await builder.build();
-  await processingEngine.start();
-
-  // Only perform this scheduling after starting the processing engine
-  await env.scheduler.scheduleTask({
-    id: 'refresh_ldap',
-    // frequency sets how often you want to ingest users and groups from
-    // LDAP, in this case every 60 minutes
-    frequency: Duration.fromObject({ minutes: 60 }),
-    timeout: Duration.fromObject({ minutes: 15 }),
-    fn: async () => {
-      try {
-        await ldapEntityProvider.read();
-      } catch (error) {
-        env.logger.error(error);
-      }
-    },
-  });
-
-  return router;
-}
++  // The target parameter below needs to match the ldap.providers.target
++  // value specified in your app-config.
++  builder.addEntityProvider(
++    LdapOrgEntityProvider.fromConfig(env.config, {
++      id: 'our-ldap-master',
++      target: 'ldaps://ds.example.net',
++      logger: env.logger,
++      schedule: env.scheduler.createTaskSchedule({
++        frequency: Duration.fromObject({ minutes: 60 }),
++        timeout: Duration.fromObject({ minutes: 15 }),
++      }),
++    }),
++  );
 ```
 
 After this, you also have to add some configuration in your app-config that

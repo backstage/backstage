@@ -11,23 +11,35 @@ import { Logger } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
-  scheduleTask(task: TaskDefinition): Promise<void>;
-}
-
-// @public
-export interface TaskDefinition {
-  fn: TaskFunction;
-  frequency: Duration;
-  id: string;
-  initialDelay?: Duration;
-  signal?: AbortSignal_2;
-  timeout: Duration;
+  createTaskSchedule(schedule: TaskScheduleDefinition): TaskSchedule;
+  scheduleTask(
+    task: TaskScheduleDefinition & TaskInvocationDefinition,
+  ): Promise<void>;
 }
 
 // @public
 export type TaskFunction =
   | ((abortSignal: AbortSignal_2) => void | Promise<void>)
   | (() => void | Promise<void>);
+
+// @public
+export interface TaskInvocationDefinition {
+  fn: TaskFunction;
+  id: string;
+  signal?: AbortSignal_2;
+}
+
+// @public
+export interface TaskSchedule {
+  run(task: TaskInvocationDefinition): Promise<void>;
+}
+
+// @public
+export interface TaskScheduleDefinition {
+  frequency: Duration;
+  initialDelay?: Duration;
+  timeout: Duration;
+}
 
 // @public
 export class TaskScheduler {
