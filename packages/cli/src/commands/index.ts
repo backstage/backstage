@@ -41,6 +41,10 @@ export function registerRepoCommand(program: CommanderStatic) {
       '--all',
       'Build all packages, including bundled app and backend packages.',
     )
+    .option(
+      '--since <ref>',
+      'Only build packages and their dev dependents that changed since the specified ref',
+    )
     .action(lazy(() => import('./repo/build').then(m => m.command)));
 
   command
