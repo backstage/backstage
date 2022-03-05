@@ -87,6 +87,11 @@ describe('PackageGraph', () => {
       localDependencies: new Map([['b', b]]),
       localDevDependencies: new Map([['c', c]]),
       localOptionalDependencies: new Map(),
+      allLocalDependents: new Map(),
+      publishedLocalDependents: new Map(),
+      localDependents: new Map(),
+      localDevDependents: new Map(),
+      localOptionalDependents: new Map(),
     });
     expect(b).toMatchObject({
       name: 'b',
@@ -96,6 +101,11 @@ describe('PackageGraph', () => {
       localDependencies: new Map(),
       localDevDependencies: new Map([['c', c]]),
       localOptionalDependencies: new Map(),
+      allLocalDependents: new Map([['a', a]]),
+      publishedLocalDependents: new Map([['a', a]]),
+      localDependents: new Map([['a', a]]),
+      localDevDependents: new Map(),
+      localOptionalDependents: new Map(),
     });
     expect(c).toMatchObject({
       name: 'c',
@@ -105,6 +115,17 @@ describe('PackageGraph', () => {
       localDependencies: new Map(),
       localDevDependencies: new Map(),
       localOptionalDependencies: new Map(),
+      allLocalDependents: new Map([
+        ['a', a],
+        ['b', b],
+      ]),
+      publishedLocalDependents: new Map(),
+      localDependents: new Map(),
+      localDevDependents: new Map([
+        ['a', a],
+        ['b', b],
+      ]),
+      localOptionalDependents: new Map(),
     });
   });
 

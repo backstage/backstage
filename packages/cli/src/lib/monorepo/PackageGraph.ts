@@ -47,6 +47,7 @@ export type PackageGraphNode = {
   dir: string;
   /** The package data of the package itself */
   packageJson: ExtendedPackageJSON;
+
   /** All direct local dependencies of the package */
   allLocalDependencies: Map<string, PackageGraphNode>;
   /** All direct local dependencies that will be present in the published package */
@@ -57,6 +58,17 @@ export type PackageGraphNode = {
   localDevDependencies: Map<string, PackageGraphNode>;
   /** Local optionalDependencies */
   localOptionalDependencies: Map<string, PackageGraphNode>;
+
+  /** All direct incoming local dependencies of the package */
+  allLocalDependents: Map<string, PackageGraphNode>;
+  /** All direct incoming local dependencies that will be present in the published package */
+  publishedLocalDependents: Map<string, PackageGraphNode>;
+  /** Incoming local dependencies */
+  localDependents: Map<string, PackageGraphNode>;
+  /** Incoming local devDependencies */
+  localDevDependents: Map<string, PackageGraphNode>;
+  /** Incoming local optionalDependencies */
+  localOptionalDependents: Map<string, PackageGraphNode>;
 };
 
 export class PackageGraph extends Map<string, PackageGraphNode> {
@@ -82,11 +94,18 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         name,
         dir: pkg.dir,
         packageJson: pkg.packageJson as ExtendedPackageJSON,
+
         allLocalDependencies: new Map(),
         publishedLocalDependencies: new Map(),
         localDependencies: new Map(),
         localDevDependencies: new Map(),
         localOptionalDependencies: new Map(),
+
+        allLocalDependents: new Map(),
+        publishedLocalDependents: new Map(),
+        localDependents: new Map(),
+        localDevDependents: new Map(),
+        localOptionalDependents: new Map(),
       });
     }
 
@@ -98,6 +117,10 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
           node.allLocalDependencies.set(depName, depPkg);
           node.publishedLocalDependencies.set(depName, depPkg);
           node.localDependencies.set(depName, depPkg);
+
+          depPkg.allLocalDependents.set(node.name, node);
+          depPkg.publishedLocalDependents.set(node.name, node);
+          depPkg.localDependents.set(node.name, node);
         }
       }
       for (const depName of Object.keys(
@@ -107,6 +130,9 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         if (depPkg) {
           node.allLocalDependencies.set(depName, depPkg);
           node.localDevDependencies.set(depName, depPkg);
+
+          depPkg.allLocalDependents.set(node.name, node);
+          depPkg.localDevDependents.set(node.name, node);
         }
       }
       for (const depName of Object.keys(
@@ -117,6 +143,10 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
           node.allLocalDependencies.set(depName, depPkg);
           node.publishedLocalDependencies.set(depName, depPkg);
           node.localOptionalDependencies.set(depName, depPkg);
+
+          depPkg.allLocalDependents.set(node.name, node);
+          depPkg.publishedLocalDependents.set(node.name, node);
+          depPkg.localOptionalDependents.set(node.name, node);
         }
       }
     }
