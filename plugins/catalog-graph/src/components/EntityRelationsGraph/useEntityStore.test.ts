@@ -30,7 +30,6 @@ describe('useEntityStore', () => {
     catalogApi = {
       getEntities: jest.fn(),
       getEntityByRef: jest.fn(),
-      getEntityByName: jest.fn(),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
       getLocationByRef: jest.fn(),

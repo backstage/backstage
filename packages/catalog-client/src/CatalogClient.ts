@@ -190,7 +190,7 @@ export class CatalogClient implements CatalogApi {
   // longer, to minimize the risk for breakages. Suggested date for removal:
   // August 2022
   /**
-   * {@inheritdoc CatalogApi.getEntityByName}
+   * @deprecated Use getEntityByRef instead
    */
   async getEntityByName(
     compoundName: CompoundEntityRef,

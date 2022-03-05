@@ -91,7 +91,6 @@ describe('<CatalogGraphPage/>', () => {
       getEntityByRef: jest.fn(async (n: any) =>
         n === 'b:d/e' ? entityE : entityC,
       ),
-      getEntityByName: jest.fn(),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
       getLocationByRef: jest.fn(),

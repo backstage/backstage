@@ -94,7 +94,6 @@ describe('CatalogImportClient', () => {
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
     getEntityByRef: jest.fn(),
-    getEntityByName: jest.fn(),
     getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
