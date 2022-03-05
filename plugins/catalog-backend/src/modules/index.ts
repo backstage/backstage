@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export * from './aws';
 export * from './azure';
 export * from './bitbucket';
 export * from './codeowners';
