@@ -443,12 +443,6 @@ export function InspectEntityDialog(props: {
 // @alpha
 export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
-// @public @deprecated
-export function loadCatalogOwnerRefs(
-  catalogApi: CatalogApi,
-  identityOwnerRefs: string[],
-): Promise<string[]>;
-
 // @public (undocumented)
 export const MockEntityListContextProvider: ({
   children,
