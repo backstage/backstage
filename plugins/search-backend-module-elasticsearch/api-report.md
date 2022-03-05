@@ -10,7 +10,7 @@ import { Client } from '@elastic/elasticsearch';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
@@ -104,7 +104,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     elasticSearchClientOptions: ElasticSearchClientOptions,
     aliasPostfix: string,
     indexPrefix: string,
-    logger: Logger_2,
+    logger: Logger,
   );
   // Warning: (ae-forgotten-export) The symbol "ElasticSearchOptions" needs to be exported by the entry point index.d.ts
   //
@@ -153,7 +153,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   indexPrefix: string;
   indexSeparator: string;
   alias: string;
-  logger: Logger_2;
+  logger: Logger;
   elasticSearchClient: Client;
 };
 ```

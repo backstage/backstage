@@ -9,7 +9,7 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { DocumentDecoratorFactory } from '@backstage/plugin-search-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { default as lunr_2 } from 'lunr';
 import { QueryTranslator } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
@@ -69,7 +69,7 @@ export class IndexBuilder {
 // @beta (undocumented)
 export type IndexBuilderOptions = {
   searchEngine: SearchEngine;
-  logger: Logger_2;
+  logger: Logger;
 };
 
 // @beta (undocumented)
@@ -77,13 +77,13 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
 // @beta (undocumented)
 export class LunrSearchEngine implements SearchEngine {
-  constructor({ logger }: { logger: Logger_2 });
+  constructor({ logger }: { logger: Logger });
   // (undocumented)
   protected docStore: Record<string, IndexableDocument>;
   // (undocumented)
   getIndexer(type: string): Promise<LunrSearchEngineIndexer>;
   // (undocumented)
-  protected logger: Logger_2;
+  protected logger: Logger;
   // (undocumented)
   protected lunrIndices: Record<string, lunr_2.Index>;
   // (undocumented)
@@ -122,7 +122,7 @@ export interface RegisterDecoratorParameters {
 
 // @beta (undocumented)
 export class Scheduler {
-  constructor({ logger }: { logger: Logger_2 });
+  constructor({ logger }: { logger: Logger });
   addToSchedule(task: Function, interval: number): void;
   start(): void;
   stop(): void;
