@@ -19,7 +19,7 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { SearchResult } from '@backstage/search-common';
+import { SearchResult } from '@backstage/plugin-search-common';
 import React from 'react';
 import { useSearch } from '../SearchContext';
 

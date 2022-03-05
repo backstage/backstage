@@ -28,7 +28,7 @@ import {
   Preparers,
   Publisher,
   TechdocsGenerator,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
 import { Server } from 'http';
 import { Logger } from 'winston';

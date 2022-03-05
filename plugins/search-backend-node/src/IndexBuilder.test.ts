@@ -18,7 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Readable, Transform } from 'stream';
 import { IndexBuilder } from './IndexBuilder';
 import { LunrSearchEngine, SearchEngine } from './index';

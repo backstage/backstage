@@ -97,7 +97,7 @@ techdocs-cli generate
 Alias: `techdocs-cli build`
 
 The generate command uses the
-[`@backstage/techdocs-common`](https://github.com/backstage/backstage/tree/master/packages/techdocs-common)
+[`@backstage/plugin-techdocs-node`](https://github.com/backstage/backstage/tree/master/plugins/techdocs-node)
 package from Backstage for consistency. A Backstage app can also generate and
 publish TechDocs sites if `techdocs.builder` is set to `'local'` in
 `app-config.yaml`. See

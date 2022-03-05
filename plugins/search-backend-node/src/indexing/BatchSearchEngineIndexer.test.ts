@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { BatchSearchEngineIndexer } from './BatchSearchEngineIndexer';
 import { TestPipeline } from '../test-utils';
 

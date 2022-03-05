@@ -15,7 +15,7 @@
  */
 
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { DatabaseStore } from '../database';
 

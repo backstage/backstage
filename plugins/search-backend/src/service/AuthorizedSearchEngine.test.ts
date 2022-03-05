@@ -24,7 +24,7 @@ import {
   DocumentTypeInfo,
   IndexableDocument,
   SearchEngine,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import {
   encodePageCursor,
   decodePageCursor,

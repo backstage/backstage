@@ -39,8 +39,8 @@ export type {
 } from './search';
 
 /**
- * @deprecated Use directly from @backstage/techdocs-common
+ * @deprecated Use directly from @backstage/plugin-techdocs-node
  */
-export type { TechDocsDocument } from '@backstage/techdocs-common';
+export type { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 
-export * from '@backstage/techdocs-common';
+export * from '@backstage/plugin-techdocs-node';

@@ -4,12 +4,12 @@
 
 ```ts
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
-import { SearchQuery } from '@backstage/search-common';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "ConcretePgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -9,11 +9,11 @@ import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node'
 import { Client } from '@elastic/elasticsearch';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger as Logger_2 } from 'winston';
-import { SearchEngine } from '@backstage/search-common';
-import { SearchQuery } from '@backstage/search-common';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchEngine } from '@backstage/plugin-search-common';
+import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "ElasticSearchClientOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-search-backend-module-elasticsearch" does not have an export "ElasticSearchEngine"

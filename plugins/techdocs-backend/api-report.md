@@ -7,19 +7,19 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { DocumentCollatorFactory } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { GeneratorBuilder } from '@backstage/techdocs-common';
+import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
 import { Knex } from 'knex';
 import { Logger as Logger_2 } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PreparerBuilder } from '@backstage/techdocs-common';
-import { PublisherBase } from '@backstage/techdocs-common';
+import { PreparerBuilder } from '@backstage/plugin-techdocs-node';
+import { PublisherBase } from '@backstage/plugin-techdocs-node';
 import { Readable } from 'stream';
-import { TechDocsDocument } from '@backstage/techdocs-common';
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
@@ -123,5 +123,5 @@ export type TechDocsCollatorOptions = {
 
 export { TechDocsDocument };
 
-export * from '@backstage/techdocs-common';
+export * from '@backstage/plugin-techdocs-node';
 ```

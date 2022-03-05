@@ -24,7 +24,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { AwsS3Publish } from './awsS3';
 
-// NOTE: /packages/techdocs-common/__mocks__ is being used to mock aws-sdk client library
+// NOTE: /plugins/techdocs-node/__mocks__ is being used to mock aws-sdk client library
 
 const rootDir = (global as any).rootDir; // Set by setupTests.ts
 

@@ -26,7 +26,7 @@ import {
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import express, { Response } from 'express';
 import request from 'supertest';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';

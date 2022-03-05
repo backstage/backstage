@@ -12,7 +12,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
-import { DocumentCollatorFactory } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import express from 'express';

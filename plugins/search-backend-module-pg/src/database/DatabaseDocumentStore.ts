@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { resolvePackagePath } from '@backstage/backend-common';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import {
   DatabaseStore,

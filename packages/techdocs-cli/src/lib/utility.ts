@@ -16,7 +16,7 @@
 import {
   RemoteProtocol,
   ParsedLocationAnnotation,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import * as winston from 'winston';
 
 export const convertTechDocsRefToLocationAnnotation = (

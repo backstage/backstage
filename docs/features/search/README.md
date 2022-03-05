@@ -128,7 +128,7 @@ plugins integrated to search.
 | Frontend Plugin | @backstage/plugin-search              |
 | Backend Plugin  | @backstage/plugin-search-backend      |
 | Indexer Plugin  | @backstage/plugin-search-backend-node |
-| Common Code     | @backstage/search-common              |
+| Common Code     | @backstage/plugin-search-common       |
 
 ## Get Involved
 
