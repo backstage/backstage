@@ -71,21 +71,31 @@ async function detectPatchVersionsForRef(repo, ref) {
       path.relative(repo.root.dir, pkg.dir),
       'package.json',
     );
-    const { stdout: pkgJsonStr } = await execFile('git', [
-      'show',
-      `${ref}:${pkgJsonPath}`,
-    ]);
-    if (pkgJsonStr) {
-      const releasePkgJson = JSON.parse(pkgJsonStr);
-      const pkgJson = pkg.packageJson;
-      if (releasePkgJson.name !== pkgJson.name) {
-        throw new Error(
-          `Mismatched package name at ${pkg.dir}, ${releasePkgJson.name} !== ${pkgJson.name}`,
-        );
+    try {
+      const { stdout: pkgJsonStr } = await execFile('git', [
+        'show',
+        `${ref}:${pkgJsonPath}`,
+      ]);
+      if (pkgJsonStr) {
+        const releasePkgJson = JSON.parse(pkgJsonStr);
+        const pkgJson = pkg.packageJson;
+        if (releasePkgJson.name !== pkgJson.name) {
+          throw new Error(
+            `Mismatched package name at ${pkg.dir}, ${releasePkgJson.name} !== ${pkgJson.name}`,
+          );
+        }
+        if (releasePkgJson.version !== pkgJson.version) {
+          patchVersions.set(pkgJson.name, releasePkgJson.version);
+        }
       }
-      if (releasePkgJson.version !== pkgJson.version) {
-        patchVersions.set(pkgJson.name, releasePkgJson.version);
+    } catch (error) {
+      if (
+        error.stderr?.match(/^fatal: Path .* exists on disk, but not in .*$/m)
+      ) {
+        console.log(`Skipping new package ${pkg.packageJson.name}`);
+        continue;
       }
+      throw error;
     }
   }
 
