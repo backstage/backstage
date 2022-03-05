@@ -97,20 +97,6 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
-// @public (undocumented)
-export class AwsS3DiscoveryProcessor implements CatalogProcessor {
-  constructor(reader: UrlReader);
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    optional: boolean,
-    emit: CatalogProcessorEmit,
-    parser: CatalogProcessorParser,
-  ): Promise<boolean>;
-}
-
 // @public
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {

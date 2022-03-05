@@ -16,16 +16,22 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { isError } from '@backstage/errors';
-import limiterFactory from 'p-limit';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorParser,
   LocationSpec,
   processingResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-backend';
+import limiterFactory from 'p-limit';
 
-/** @public */
+/**
+ * A processor for automatic discovery of entities from S3 buckets. Handles the
+ * `s3-discovery` location type, and target bucket URLs e.g. on the form
+ * `https://testbucket.s3.us-east-2.amazonaws.com`.
+ *
+ * @public
+ */
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
 

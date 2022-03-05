@@ -20,11 +20,12 @@ import { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';
 import {
   CatalogProcessorEntityResult,
   CatalogProcessorResult,
-} from '../../api';
-import { defaultEntityDataParser } from '../util/parse';
+  processingResult,
+} from '@backstage/plugin-catalog-backend';
 import AWSMock from 'aws-sdk-mock';
 import aws from 'aws-sdk';
 import path from 'path';
+import YAML from 'yaml';
 
 AWSMock.setSDKInstance(aws);
 const object: aws.S3.Types.Object = {
@@ -62,7 +63,17 @@ describe('readLocation', () => {
 
   it('should load from url', async () => {
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
-      processor.readLocation(spec, false, emit, defaultEntityDataParser),
+      processor.readLocation(
+        spec,
+        false,
+        emit,
+        async function* r({ data, location }) {
+          yield processingResult.entity(
+            location,
+            YAML.parse(data.toString('utf8')) as any,
+          );
+        },
+      ),
     )) as CatalogProcessorEntityResult;
     expect(generated.type).toBe('entity');
     expect(generated.location).toEqual({

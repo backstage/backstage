@@ -33,7 +33,7 @@ the below to `packages/backend/src/plugins/catalog.ts`:
 ```ts
 /* packages/backend/src/plugins/catalog.ts */
 
-import { AwsS3DiscoveryProcessor } from '@backstage/plugin-catalog-backend';
+import { AwsS3DiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-aws';
 
 const builder = await CatalogBuilder.create(env);
 /** ... other processors ... */
