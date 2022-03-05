@@ -6,7 +6,6 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsync';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
@@ -26,7 +25,6 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
-import { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export const AsyncEntityProvider: ({
@@ -535,9 +533,6 @@ export function useEntityTypeFilter(): {
   selectedTypes: string[];
   setSelectedTypes: (types: string[]) => void;
 };
-
-// @public @deprecated
-export function useOwnUser(): AsyncState<UserEntity | undefined>;
 
 // @public (undocumented)
 export function useRelatedEntities(
