@@ -19,13 +19,13 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { Logger } from 'winston';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-backend';
+import { Logger } from 'winston';
 import { codeSearch } from './lib';
 
 /**

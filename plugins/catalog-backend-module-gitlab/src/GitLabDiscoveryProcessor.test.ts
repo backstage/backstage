@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
-import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
-import { setupServer } from 'msw/node';
+import { ConfigReader } from '@backstage/config';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
 import { GitLabProject } from './lib';
-import { LocationSpec } from '../../api';
 
 const server = setupServer();
 

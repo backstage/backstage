@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { codeSearch, CodeSearchResponse } from './azure';
 
 describe('azure', () => {

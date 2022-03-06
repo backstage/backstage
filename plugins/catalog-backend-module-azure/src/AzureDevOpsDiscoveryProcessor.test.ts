@@ -16,12 +16,12 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { codeSearch } from './lib';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import {
   AzureDevOpsDiscoveryProcessor,
   parseUrl,
 } from './AzureDevOpsDiscoveryProcessor';
-import { LocationSpec } from '../../api';
+import { codeSearch } from './lib';
 
 jest.mock('./lib');
 const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
