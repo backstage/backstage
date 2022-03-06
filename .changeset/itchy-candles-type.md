@@ -28,5 +28,3 @@ To use MySquads you'll need to add it to your `Root.tsx` like this:
     </ Sidebar>
 </SidebarPage>
 ```
-
-// app/src/components/home/HomePage.tsx
