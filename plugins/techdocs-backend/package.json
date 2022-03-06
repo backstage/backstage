@@ -55,9 +55,9 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "^0.1.20",
     "@backstage/cli": "^0.15.0",
     "@backstage/plugin-search-backend-node": "0.5.0",
-    "@backstage/test-utils": "^0.3.0",
     "@types/dockerode": "^3.3.0",
     "msw": "^0.35.0",
     "supertest": "^6.1.3"

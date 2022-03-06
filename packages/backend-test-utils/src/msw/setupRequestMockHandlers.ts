@@ -15,11 +15,16 @@
  */
 
 /**
- * Test helpers library for Backstage backends
- *
- * @packageDocumentation
+ * Sets up handlers for request mocking
+ * @public
+ * @param worker - service worker
  */
-
-export * from './database';
-export * from './msw';
-export * from './util';
+export function setupRequestMockHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}) {
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => worker.close());
+  afterEach(() => worker.resetHandlers());
+}

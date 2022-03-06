@@ -50,8 +50,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "^0.1.20",
     "@backstage/cli": "^0.15.0",
-    "@backstage/test-utils": "^0.3.0",
     "@types/supertest": "^2.0.8",
     "msw": "^0.36.3",
     "supertest": "^6.1.3"
