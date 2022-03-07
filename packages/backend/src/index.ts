@@ -57,6 +57,7 @@ import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
+import cloudCarbonFootprint from './plugins/cloudCarbonFootprint';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
@@ -133,6 +134,9 @@ async function main() {
     createEnv('tech-insights'),
   );
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
+  const cloudCarbonFootprintEnv = useHotMemoize(module, () =>
+    createEnv('cloud-carbon-footprint'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -152,6 +156,10 @@ async function main() {
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
+  apiRouter.use(
+    '/cloud-carbon-footprint',
+    await cloudCarbonFootprint(cloudCarbonFootprintEnv),
+  );
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
