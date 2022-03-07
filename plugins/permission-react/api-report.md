@@ -12,6 +12,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ReactElement } from 'react';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Route } from 'react-router';
 
 // @public (undocumented)
@@ -44,17 +45,25 @@ export const permissionApiRef: ApiRef<PermissionApi>;
 // @public
 export const PermissionedRoute: (
   props: ComponentProps<typeof Route> & {
-    permission: Permission;
-    resourceRef?: string;
     errorComponent?: ReactElement | null;
-  },
+  } & (
+      | {
+          permission: Exclude<Permission, ResourcePermission>;
+          resourceRef?: never;
+        }
+      | {
+          permission: ResourcePermission;
+          resourceRef: string | undefined;
+        }
+    ),
 ) => JSX.Element;
 
 // @public
-export const usePermission: (
-  permission: Permission,
-  resourceRef?: string | undefined,
-) => AsyncPermissionResult;
+export function usePermission(
+  ...[permission, resourceRef]:
+    | [ResourcePermission, string | undefined]
+    | [Exclude<Permission, ResourcePermission>]
+): AsyncPermissionResult;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -17,8 +17,11 @@
 import { useApi } from '@backstage/core-plugin-api';
 import { permissionApiRef } from '../apis';
 import {
+  AuthorizeQuery,
   AuthorizeResult,
+  isResourcePermission,
   Permission,
+  ResourcePermission,
 } from '@backstage/plugin-permission-common';
 import useSWR from 'swr';
 
@@ -30,25 +33,40 @@ export type AsyncPermissionResult = {
 };
 
 /**
- * React hook utility for authorization. Given a
- * {@link @backstage/plugin-permission-common#Permission} and an optional
- * resourceRef, it will return whether or not access is allowed (for the given
- * resource, if resourceRef is provided). See
+ * React hook utility for authorization. Given either a non-resource
+ * {@link @backstage/plugin-permission-common#Permission} or a
+ * {@link @backstage/plugin-permission-common#ResourcePermission} and an
+ * optional resourceRef, it will return whether or not access is allowed (for
+ * the given resource, if resourceRef is provided). See
  * {@link @backstage/plugin-permission-common/PermissionClient#authorize} for
  * more details.
+ *
+ * The resourceRef parameter is optional to allow calling this hook with an
+ * entity that might be loading asynchronously, but when resourceRef is not
+ * supplied, the value of `allowed` will always be false.
  *
  * Note: This hook uses stale-while-revalidate to help avoid flicker in UI
  * elements that would be conditionally rendered based on the `allowed` result
  * of this hook.
  * @public
  */
-export const usePermission = (
-  permission: Permission,
-  resourceRef?: string,
-): AsyncPermissionResult => {
+export function usePermission(
+  ...[permission, resourceRef]:
+    | [ResourcePermission, string | undefined]
+    | [Exclude<Permission, ResourcePermission>]
+): AsyncPermissionResult {
   const permissionApi = useApi(permissionApiRef);
   const { data, error } = useSWR({ permission, resourceRef }, async args => {
-    const { result } = await permissionApi.authorize(args);
+    // We could make the resourceRef parameter required to avoid this check, but
+    // it would make using this hook difficult in situations where the entity
+    // must be asynchronously loaded, so instead we short-circuit to a deny when
+    // no resourceRef is supplied, on the assumption that the resourceRef is
+    // still loading outside the hook.
+    if (isResourcePermission(args.permission) && !args.resourceRef) {
+      return AuthorizeResult.DENY;
+    }
+
+    const { result } = await permissionApi.authorize(args as AuthorizeQuery);
     return result;
   });
 
@@ -59,4 +77,4 @@ export const usePermission = (
     return { loading: true, allowed: false };
   }
   return { loading: false, allowed: data === AuthorizeResult.ALLOW };
-};
+}
