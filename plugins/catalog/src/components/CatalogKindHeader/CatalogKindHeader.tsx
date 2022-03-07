@@ -74,7 +74,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   } = useEntityList();
 
   const queryParamKind = useMemo(
-    () => [kindParameter].flat()[0],
+    () => [kindParameter].flat()[0]?.toLocaleLowerCase('en-US'),
     [kindParameter],
   );
   const [selectedKind, setSelectedKind] = useState(
