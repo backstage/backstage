@@ -211,6 +211,8 @@ Patrik
 Peloton
 performant
 Performant
+periskop
+Periskop
 plantuml
 Platformize
 Podman
