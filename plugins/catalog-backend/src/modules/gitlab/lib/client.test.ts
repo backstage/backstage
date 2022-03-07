@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { getVoidLogger } from '@backstage/backend-common';
 import { rest } from 'msw';

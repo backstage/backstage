@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';

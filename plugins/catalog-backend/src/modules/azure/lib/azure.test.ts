@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { codeSearch, CodeSearchResponse } from './azure';
 

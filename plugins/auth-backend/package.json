@@ -76,8 +76,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "^0.1.20",
     "@backstage/cli": "^0.15.0",
-    "@backstage/test-utils": "^0.3.0",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express-session": "^1.17.2",

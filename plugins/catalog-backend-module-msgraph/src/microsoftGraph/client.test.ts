@@ -15,7 +15,7 @@
  */
 
 import * as msal from '@azure/msal-node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';

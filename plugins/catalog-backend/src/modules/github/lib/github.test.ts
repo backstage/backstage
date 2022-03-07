@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { graphql } from '@octokit/graphql';
 import { graphql as graphqlMsw } from 'msw';
 import { setupServer } from 'msw/node';

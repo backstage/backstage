@@ -15,7 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import express from 'express';
 import { Session } from 'express-session';
 import { JWK, JWT } from 'jose';

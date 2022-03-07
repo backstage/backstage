@@ -73,7 +73,6 @@
     "@backstage/cli": "^0.15.0",
     "@backstage/plugin-permission-common": "^0.5.2",
     "@backstage/plugin-search-backend-node": "0.5.0",
-    "@backstage/test-utils": "^0.3.0",
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",
     "@types/lodash": "^4.14.151",

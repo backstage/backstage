@@ -47,8 +47,8 @@
   },
   "devDependencies": {
     "@backstage/backend-common": "^0.12.0",
+    "@backstage/backend-test-utils": "^0.1.20",
     "@backstage/cli": "^0.15.0",
-    "@backstage/test-utils": "^0.3.0",
     "@types/lodash": "^4.14.151",
     "msw": "^0.35.0"
   },
