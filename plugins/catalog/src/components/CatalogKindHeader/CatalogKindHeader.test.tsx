@@ -139,30 +139,34 @@ describe('<CatalogKindHeader />', () => {
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = await renderWithEffects(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { kind: ['Component'] },
-        }}
-      >
-        <CatalogKindHeader />
-      </MockEntityListContextProvider>,
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: ['components'] },
+          }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('Components'),
+      kind: new EntityKindFilter('components'),
     });
     rendered.rerender(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { kind: ['Template'] },
-        }}
-      >
-        <CatalogKindHeader />
-      </MockEntityListContextProvider>,
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: ['templates'] },
+          }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
-      kind: new EntityKindFilter('Template'),
+      kind: new EntityKindFilter('templates'),
     });
   });
 });
