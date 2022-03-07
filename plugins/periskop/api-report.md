@@ -24,6 +24,9 @@ export interface AggregatedError {
 }
 
 // @public (undocumented)
+export const EntityPeriskopErrorsCard: () => JSX.Element;
+
+// @public (undocumented)
 interface Error_2 {
   // (undocumented)
   cause?: Error_2 | null;
@@ -75,7 +78,30 @@ export interface NotFoundInInstance {
 export const PERISKOP_NAME_ANNOTATION = 'periskop.io/service-name';
 
 // @public
-export class PeriskopApi {
+export interface PeriskopApi {
+  getErrorInstanceUrl(
+    instanceName: string,
+    serviceName: string,
+    error: AggregatedError,
+  ): string;
+  getErrors(
+    instanceName: string,
+    serviceName: string,
+  ): Promise<AggregatedError[] | NotFoundInInstance>;
+  getInstanceNames(): string[];
+}
+
+// @public (undocumented)
+export type PeriskopApiOptions = {
+  discoveryApi: DiscoveryApi;
+  configApi: ConfigApi;
+};
+
+// @public (undocumented)
+export const periskopApiRef: ApiRef<PeriskopApi>;
+
+// @public
+export class PeriskopClient implements PeriskopApi {
   constructor(options: PeriskopApiOptions);
   // (undocumented)
   getErrorInstanceUrl(
@@ -91,18 +117,6 @@ export class PeriskopApi {
   // (undocumented)
   getInstanceNames(): string[];
 }
-
-// @public (undocumented)
-export type PeriskopApiOptions = {
-  discoveryApi: DiscoveryApi;
-  configApi: ConfigApi;
-};
-
-// @public (undocumented)
-export const periskopApiRef: ApiRef<PeriskopApi>;
-
-// @public (undocumented)
-export const EntityPeriskopErrorsCard: () => JSX.Element;
 
 // @public (undocumented)
 export const periskopPlugin: BackstagePlugin<{}, {}>;
