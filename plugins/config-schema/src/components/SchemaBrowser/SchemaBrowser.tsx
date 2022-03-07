@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createStyles, fade, withStyles } from '@material-ui/core';
+import { createStyles, alpha, withStyles } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { TreeItem, TreeItemProps, TreeView } from '@material-ui/lab';
@@ -30,7 +30,7 @@ const StyledTreeItem = withStyles(theme =>
     group: {
       marginLeft: 7,
       paddingLeft: theme.spacing(1),
-      borderLeft: `1px solid ${fade(theme.palette.text.primary, 0.15)}`,
+      borderLeft: `1px solid ${alpha(theme.palette.text.primary, 0.15)}`,
     },
   }),
 )((props: TreeItemProps) => <TreeItem {...props} />);

@@ -51,6 +51,32 @@ export const Default = () => (
   </div>
 );
 
+export const ZoomDisabled = () => (
+  <div style={containerStyle}>
+    <DependencyGraph
+      nodes={exampleNodes}
+      edges={exampleEdges}
+      style={graphStyle}
+      paddingX={50}
+      paddingY={50}
+      zoom="disabled"
+    />
+  </div>
+);
+
+export const ZoomEnableOnClick = () => (
+  <div style={containerStyle}>
+    <DependencyGraph
+      nodes={exampleNodes}
+      edges={exampleEdges}
+      style={graphStyle}
+      paddingX={50}
+      paddingY={50}
+      zoom="enable-on-click"
+    />
+  </div>
+);
+
 export const BottomToTop = () => (
   <div style={containerStyle}>
     <DependencyGraph

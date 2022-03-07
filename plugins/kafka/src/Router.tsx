@@ -18,7 +18,6 @@ import { Entity } from '@backstage/catalog-model';
 import React from 'react';
 import { Route, Routes } from 'react-router';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { rootCatalogKafkaRouteRef } from './plugin';
 import { KAFKA_CONSUMER_GROUP_ANNOTATION } from './constants';
 import { KafkaTopicsForConsumer } from './components/ConsumerGroupOffsets/ConsumerGroupOffsets';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
@@ -26,10 +25,7 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[KAFKA_CONSUMER_GROUP_ANNOTATION]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
+type Props = {};
 
 export const Router = (_props: Props) => {
   const { entity } = useEntity();
@@ -44,10 +40,7 @@ export const Router = (_props: Props) => {
 
   return (
     <Routes>
-      <Route
-        path={`${rootCatalogKafkaRouteRef.path}`}
-        element={<KafkaTopicsForConsumer />}
-      />
+      <Route path="/" element={<KafkaTopicsForConsumer />} />
     </Routes>
   );
 };

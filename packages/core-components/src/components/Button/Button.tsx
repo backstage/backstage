@@ -14,19 +14,38 @@
  * limitations under the License.
  */
 
-import {
-  Button as MaterialButton,
+import MaterialButton, {
   ButtonProps as MaterialButtonProps,
-} from '@material-ui/core';
+} from '@material-ui/core/Button';
 import React from 'react';
 import { Link, LinkProps } from '../Link';
 
-type Props = MaterialButtonProps & Omit<LinkProps, 'variant' | 'color'>;
+/**
+ * Properties for {@link Button}
+ *
+ * @public
+ * @remarks
+ *
+ * See {@link https://v4.mui.com/api/button/#props | Material-UI Button Props} for all properties
+ */
+export type ButtonProps = MaterialButtonProps &
+  Omit<LinkProps, 'variant' | 'color'>;
 
 /**
- * Thin wrapper on top of material-ui's Button component
+ * This wrapper is here to reset the color of the Link and make typescript happy.
+ */
+const LinkWrapper = React.forwardRef<any, LinkProps>((props, ref) => (
+  <Link ref={ref} {...props} color="initial" />
+));
+
+/**
+ * Thin wrapper on top of material-ui's {@link https://v4.mui.com/components/buttons/ | Button} component
+ *
+ * @public
+ * @remarks
+ *
  * Makes the Button to utilise react-router
  */
-export const Button = React.forwardRef<any, Props>((props, ref) => (
-  <MaterialButton ref={ref} component={Link} {...props} />
-));
+export const Button = React.forwardRef<any, ButtonProps>((props, ref) => (
+  <MaterialButton ref={ref} component={LinkWrapper} {...props} />
+)) as (props: ButtonProps) => JSX.Element;

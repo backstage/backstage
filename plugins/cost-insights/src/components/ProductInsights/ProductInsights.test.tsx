@@ -15,13 +15,12 @@
  */
 
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { ProductInsights } from './ProductInsights';
-import { ProductInsightsOptions } from '../../api';
+import { costInsightsApiRef, ProductInsightsOptions } from '../../api';
 import {
   mockDefaultLoadingState,
   MockConfigProvider,
-  MockCostInsightsApiProvider,
   MockCurrencyProvider,
   MockFilterProvider,
   MockBillingDateProvider,
@@ -139,7 +138,7 @@ const costInsightsApi = {
 
 function renderInContext(children: JSX.Element) {
   return renderInTestApp(
-    <MockCostInsightsApiProvider costInsightsApi={costInsightsApi}>
+    <TestApiProvider apis={[[costInsightsApiRef, costInsightsApi]]}>
       <MockConfigProvider>
         <MockFilterProvider>
           <MockCurrencyProvider>
@@ -151,7 +150,7 @@ function renderInContext(children: JSX.Element) {
           </MockCurrencyProvider>
         </MockFilterProvider>
       </MockConfigProvider>
-    </MockCostInsightsApiProvider>,
+    </TestApiProvider>,
   );
 }
 
@@ -170,7 +169,8 @@ describe('<ProductInsights />', () => {
   }
 
   it('should render each product panel', async () => {
-    const noComputeEngineCostsRgx = /There are no Compute Engine costs within this time frame for your team's projects./;
+    const noComputeEngineCostsRgx =
+      /There are no Compute Engine costs within this time frame for your team's projects./;
     const { getByText } = await renderInContext(
       <ProductInsights
         onLoaded={jest.fn()}

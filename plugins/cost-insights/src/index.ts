@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps you keep track of your cloud spend
+ *
+ * @packageDocumentation
+ */
+
 export {
   costInsightsPlugin,
   costInsightsPlugin as plugin,

@@ -19,7 +19,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Button, DialogActions, DialogContent } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
-import { MarkdownContent } from '@backstage/core-components';
+import { Link, MarkdownContent } from '@backstage/core-components';
+import { isValidUrl } from '../../utils/components';
 
 export type Props = {
   open: boolean;
@@ -32,13 +33,6 @@ export type Props = {
 const RadarDescription = (props: Props): JSX.Element => {
   const { open, onClose, title, description, url } = props;
 
-  const handleClick = () => {
-    onClose();
-    if (url) {
-      window.location.href = url;
-    }
-  };
-
   return (
     <Dialog data-testid="radar-description" open={open} onClose={onClose}>
       <DialogTitle data-testid="radar-description-dialog-title">
@@ -47,13 +41,14 @@ const RadarDescription = (props: Props): JSX.Element => {
       <DialogContent dividers>
         <MarkdownContent content={description} />
       </DialogContent>
-      {url && (
+      {isValidUrl(url) && (
         <DialogActions>
           <Button
-            onClick={handleClick}
+            component={Link}
+            to={url}
+            onClick={onClose}
             color="primary"
             startIcon={<LinkIcon />}
-            href={url}
           >
             LEARN MORE
           </Button>

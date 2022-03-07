@@ -61,8 +61,8 @@ export const getMatchingHpa = (
 ): V1HorizontalPodAutoscaler | undefined => {
   return hpas.find(hpa => {
     return (
-      (hpa.spec?.scaleTargetRef?.kind ?? '').toLowerCase() ===
-        ownerKind.toLowerCase() &&
+      (hpa.spec?.scaleTargetRef?.kind ?? '').toLocaleLowerCase('en-US') ===
+        ownerKind.toLocaleLowerCase('en-US') &&
       (hpa.spec?.scaleTargetRef?.name ?? '') ===
         (ownerName ?? 'unknown-deployment')
     );

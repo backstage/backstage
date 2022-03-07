@@ -17,13 +17,17 @@ import { todoApiRef, TodoClient } from './api';
 import {
   createApiFactory,
   createPlugin,
-  createComponentExtension,
+  createRoutableExtension,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { rootRouteRef } from './routes';
 
-// import { rootRouteRef } from './routes';
-
+/**
+ * The Todo plugin instance.
+ *
+ * @public
+ */
 export const todoPlugin = createPlugin({
   id: 'todo',
   apis: [
@@ -39,16 +43,19 @@ export const todoPlugin = createPlugin({
     }),
   ],
   routes: {
-    // root: rootRouteRef,
+    entityContent: rootRouteRef,
   },
 });
 
+/**
+ * An extension for displaying the list of todos on an entity page.
+ *
+ * @public
+ */
 export const EntityTodoContent = todoPlugin.provide(
-  createComponentExtension({
-    component: {
-      lazy: () => import('./components/TodoList').then(m => m.TodoList),
-    },
-    // TODO(Rugvip): Switch back to routable extension once apps are migrated
-    // mountPoint: rootRouteRef,
+  createRoutableExtension({
+    name: 'EntityTodoContent',
+    component: () => import('./components/TodoList').then(m => m.TodoList),
+    mountPoint: rootRouteRef,
   }),
 );

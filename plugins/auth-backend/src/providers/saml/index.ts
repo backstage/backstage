@@ -15,4 +15,4 @@
  */
 
 export { createSamlProvider } from './provider';
-export type { SamlProviderOptions } from './provider';
+export type { SamlProviderOptions, SamlAuthResult } from './provider';

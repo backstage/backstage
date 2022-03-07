@@ -145,12 +145,6 @@ Provides utilities for developing plugins in isolation.
 
 Stability: `0`. This package is largely broken and needs updates.
 
-### `docgen` [GitHub](https://github.com/backstage/backstage/tree/master/packages/docgen/)
-
-Internal CLI utility for generating API Documentation.
-
-Stability: `N/A`
-
 ### `e2e-test` [GitHub](https://github.com/backstage/backstage/tree/master/packages/e2e-test/)
 
 Internal CLI utility for running e2e tests.
@@ -168,7 +162,7 @@ it's necessary it can be used, but there will be breaking changes.
 
 Stability: `0`
 
-### `storybook` [GitHub](https://github.com/backstage/backstage/tree/master/packages/storybook/)
+### `storybook` [GitHub](https://github.com/backstage/backstage/tree/master/storybook/)
 
 Internal storybook build for publishing stories to
 https://backstage.io/storybook
@@ -180,15 +174,6 @@ Stability: `N/A`
 Utilities for writing tests for Backstage plugins and apps.
 
 Stability: `2`
-
-### `test-utils-core` [GitHub](https://github.com/backstage/backstage/tree/master/packages/test-utils-core/)
-
-Internal testing utilities that are separated out for usage in
-@backstage/core-app-api and @backstage/core-plugin-api. All exports are
-re-exported by @backstage/test-utils. This package should not be depended on
-directly.
-
-Stability: See @backstage/test-utils
 
 ### `theme` [GitHub](https://github.com/backstage/backstage/tree/master/packages/theme/)
 
@@ -285,7 +270,7 @@ Integrates GraphiQL as a tool to browse GraphQL API endpoints inside Backstage.
 
 Stability: `1`
 
-### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql/)
+### `graphql` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/graphql-backend/)
 
 A backend plugin that provides
 
@@ -311,14 +296,6 @@ A backend plugin used to set up proxying to other endpoints based on static
 configuration.
 
 Stability: `1`
-
-### `register-component` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/register-component/)
-
-A frontend plugin that allows the user to register entity locations in the
-catalog.
-
-Stability: `0`. This plugin is likely to be replaced by a generic entity import
-plugin instead.
 
 ### `scaffolder` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder/)
 

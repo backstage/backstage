@@ -36,7 +36,7 @@ yarn start
 Substitute `x` for actual values, or leave them as dummy values just to try out
 the backend without using the auth or sentry features.
 
-The backend starts up on port 7000 per default.
+The backend starts up on port 7007 per default.
 
 ## Populating The Catalog
 

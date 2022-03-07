@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JenkinsInfo } from './jenkinsInfoProvider';
+
+import type { JenkinsInfo } from './jenkinsInfoProvider';
 import jenkins from 'jenkins';
-import {
+import type {
   BackstageBuild,
   BackstageProject,
   JenkinsBuild,
   JenkinsProject,
   ScmDetails,
 } from '../types';
+import {
+  AuthorizeResult,
+  PermissionAuthorizer,
+} from '@backstage/plugin-permission-common';
+import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
+import { NotAllowedError } from '@backstage/errors';
 
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
@@ -56,6 +63,8 @@ export class JenkinsApiImpl {
   private static readonly jobsTreeSpec = `jobs[
                    ${JenkinsApiImpl.jobTreeSpec}
                  ]{0,50}`;
+
+  constructor(private readonly permissionApi?: PermissionAuthorizer) {}
 
   /**
    * Get a list of projects for the given JenkinsInfo.
@@ -127,8 +136,25 @@ export class JenkinsApiImpl {
    * Trigger a build of a project
    * @see ../../../jenkins/src/api/JenkinsApi.ts#retry
    */
-  async buildProject(jenkinsInfo: JenkinsInfo, jobFullName: string) {
+  async buildProject(
+    jenkinsInfo: JenkinsInfo,
+    jobFullName: string,
+    resourceRef?: string,
+    options?: { token?: string },
+  ) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
+
+    if (this.permissionApi) {
+      const response = await this.permissionApi.authorize(
+        [{ permission: jenkinsExecutePermission, resourceRef }],
+        { token: options?.token },
+      );
+      // permission api returns always at least one item, we need to check only one result since we do not expect any additional results
+      const { result } = response[0];
+      if (result === AuthorizeResult.DENY) {
+        throw new NotAllowedError();
+      }
+    }
 
     // looks like the current SDK only supports triggering a new build
     // can't see any support for replay (re-running the specific build with the same SCM info)
@@ -146,13 +172,17 @@ export class JenkinsApiImpl {
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
       promisify: true,
+      crumbIssuer: jenkinsInfo.crumbIssuer,
     }) as any;
   }
 
   private augmentProject(project: JenkinsProject): BackstageProject {
     let status: string;
+
     if (project.inQueue) {
       status = 'queued';
+    } else if (!project.lastBuild) {
+      status = 'build not found';
     } else if (project.lastBuild.building) {
       status = 'running';
     } else if (!project.lastBuild.result) {
@@ -165,7 +195,9 @@ export class JenkinsApiImpl {
 
     return {
       ...project,
-      lastBuild: this.augmentBuild(project.lastBuild, jobScmInfo),
+      lastBuild: project.lastBuild
+        ? this.augmentBuild(project.lastBuild, jobScmInfo)
+        : null,
       status,
       // actions: undefined,
     };
@@ -255,9 +287,7 @@ export class JenkinsApiImpl {
     return scmInfo;
   }
 
-  private getTestReport(
-    build: JenkinsBuild,
-  ): {
+  private getTestReport(build: JenkinsBuild): {
     total: number;
     passed: number;
     skipped: number;

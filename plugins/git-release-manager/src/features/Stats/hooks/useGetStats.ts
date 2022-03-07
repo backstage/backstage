@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 
 import { useProjectContext } from '../../../contexts/ProjectContext';

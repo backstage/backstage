@@ -15,17 +15,9 @@
  */
 import React, { ComponentType } from 'react';
 import { Link } from './Link';
-import {
-  MemoryRouter,
-  Route,
-  useLocation,
-  NavLink as RouterNavLink,
-} from 'react-router-dom';
+import { Route, useLocation, NavLink as RouterNavLink } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
-// We don't want to export RoutingProvider from core-app-api, but it's way easier to
-// use here. This hack only works in storybook stories.
-// eslint-disable-next-line monorepo/no-internal-import
-import { RoutingProvider } from '@backstage/core-app-api/src/routing/RoutingProvider';
+import { wrapInTestApp } from '@backstage/test-utils';
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',
@@ -40,23 +32,16 @@ export default {
   title: 'Navigation/Link',
   component: Link,
   decorators: [
-    (Story: ComponentType<{}>) => (
-      <MemoryRouter>
-        <RoutingProvider
-          routeBindings={new Map()}
-          routeObjects={[]}
-          routeParents={new Map()}
-          routePaths={new Map([[routeRef, '/hello']])}
-        >
+    (Story: ComponentType<{}>) =>
+      wrapInTestApp(
+        <div>
           <div>
-            <div>
-              <Location />
-            </div>
-            <Story />
+            <Location />
           </div>
-        </RoutingProvider>
-      </MemoryRouter>
-    ),
+          <Story />
+        </div>,
+        { mountedRoutes: { '/hello': routeRef } },
+      ),
   ],
 };
 

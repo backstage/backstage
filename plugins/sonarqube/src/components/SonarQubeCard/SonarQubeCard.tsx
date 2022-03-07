@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,7 +22,7 @@ import LockOpen from '@material-ui/icons/LockOpen';
 import Security from '@material-ui/icons/Security';
 import SentimentVeryDissatisfied from '@material-ui/icons/SentimentVeryDissatisfied';
 import React, { useMemo } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { sonarQubeApiRef } from '../../api';
 import {
   SONARQUBE_PROJECT_KEY_ANNOTATION,
@@ -90,7 +89,6 @@ export const SonarQubeCard = ({
   variant = 'gridItem',
   duplicationRatings = defaultDuplicationRatings,
 }: {
-  entity?: Entity;
   variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => {
@@ -183,12 +181,12 @@ export const SonarQubeCard = ({
             item
             container
             direction="column"
-            justify="space-between"
+            justifyContent="space-between"
             alignItems="center"
             style={{ height: '100%' }}
             spacing={0}
           >
-            <Grid item container justify="space-around">
+            <Grid item container justifyContent="space-around">
               <RatingCard
                 titleIcon={<BugReport />}
                 title="Bugs"

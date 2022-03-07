@@ -17,7 +17,6 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { waitFor } from '@testing-library/react';
 
 import {
-  mockApiClient,
   mockCalverProject,
   mockDefaultBranch,
   mockNextGitInfoCalver,
@@ -25,6 +24,7 @@ import {
   mockUser,
 } from '../../../test-helpers/test-helpers';
 import { useCreateReleaseCandidate } from './useCreateReleaseCandidate';
+import { mockApiClient } from '../../../test-helpers/mock-api-client';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),

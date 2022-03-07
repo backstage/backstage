@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export { Button } from './Button';
+export type { ButtonProps } from './Button';

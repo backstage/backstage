@@ -22,7 +22,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
   id: 'plugin.cloudbuild.service',
-  description: 'Used by the Cloudbuild plugin to make requests',
 });
 
 export type CloudbuildApi = {

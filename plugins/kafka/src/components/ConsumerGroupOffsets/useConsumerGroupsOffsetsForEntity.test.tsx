@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderHook } from '@testing-library/react-hooks';
 import { when } from 'jest-when';
 import React, { PropsWithChildren } from 'react';
@@ -26,8 +26,8 @@ import {
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';
 import * as data from './__fixtures__/consumer-group-offsets.json';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const consumerGroupOffsets = data as ConsumerGroupOffsetsResponse;
 
@@ -59,16 +59,14 @@ describe('useConsumerGroupOffsets', () => {
 
   const wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
-      <ApiProvider
-        apis={ApiRegistry.with(errorApiRef, mockErrorApi).with(
-          kafkaApiRef,
-          mockKafkaApi,
-        )}
+      <TestApiProvider
+        apis={[
+          [errorApiRef, mockErrorApi],
+          [kafkaApiRef, mockKafkaApi],
+        ]}
       >
-        <EntityContext.Provider value={{ entity: entity, loading: false }}>
-          {children}
-        </EntityContext.Provider>
-      </ApiProvider>
+        <EntityProvider entity={entity}>{children}</EntityProvider>
+      </TestApiProvider>
     );
   };
 

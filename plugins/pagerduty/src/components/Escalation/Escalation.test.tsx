@@ -16,15 +16,15 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { EscalationPolicy } from './EscalationPolicy';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import { User } from '../types';
 import { pagerDutyApiRef } from '../../api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const mockPagerDutyApi = {
-  getOnCallByPolicyId: () => [],
+  getOnCallByPolicyId: jest.fn(),
 };
-const apis = ApiRegistry.from([[pagerDutyApiRef, mockPagerDutyApi]]);
+const apis = TestApiRegistry.from([pagerDutyApiRef, mockPagerDutyApi]);
 
 describe('Escalation', () => {
   it('Handles an empty response', async () => {

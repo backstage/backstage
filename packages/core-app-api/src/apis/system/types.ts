@@ -16,6 +16,9 @@
 
 import { ApiFactory, ApiRef } from '@backstage/core-plugin-api';
 
+/**
+ * @public
+ */
 export type ApiFactoryHolder = {
   get<T>(
     api: ApiRef<T>,

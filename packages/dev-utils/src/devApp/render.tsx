@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
+import {
+  AlertDisplay,
+  OAuthRequestDialog,
+  Sidebar,
+  SidebarDivider,
+  SidebarItem,
+  SidebarPage,
+  SidebarSpace,
+  SidebarSpacer,
+} from '@backstage/core-components';
+import {
+  AnyApiFactory,
+  ApiFactory,
+  AppTheme,
+  attachComponentData,
+  BackstagePlugin,
+  configApiRef,
+  createApiFactory,
+  createRouteRef,
+  IconComponent,
+  RouteRef,
+} from '@backstage/core-plugin-api';
 import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
@@ -24,30 +48,7 @@ import React, { ComponentType, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { hot } from 'react-hot-loader';
 import { Route } from 'react-router';
-
-import {
-  AlertDisplay,
-  OAuthRequestDialog,
-  Sidebar,
-  SidebarItem,
-  SidebarPage,
-  SidebarSpacer,
-} from '@backstage/core-components';
-
-import {
-  AnyApiFactory,
-  ApiFactory,
-  AppTheme,
-  attachComponentData,
-  configApiRef,
-  createApiFactory,
-  createPlugin,
-  createRouteRef,
-  IconComponent,
-  RouteRef,
-} from '@backstage/core-plugin-api';
-
-import { createApp, FlatRoutes } from '@backstage/core-app-api';
+import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 
 const GatheringRoute: (props: {
   path: string;
@@ -57,7 +58,8 @@ const GatheringRoute: (props: {
 
 attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
 
-type RegisterPageOptions = {
+/** @public */
+export type DevAppPageOptions = {
   path?: string;
   element: JSX.Element;
   children?: JSX.Element;
@@ -65,14 +67,13 @@ type RegisterPageOptions = {
   icon?: IconComponent;
 };
 
-// TODO(rugvip): export proper plugin type from core that isn't the plugin class
-type BackstagePlugin = ReturnType<typeof createPlugin>;
-
 /**
  * DevApp builder that is similar to the App builder API, but creates an App
  * with the purpose of developing one or more plugins inside it.
+ *
+ * @public
  */
-class DevAppBuilder {
+export class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
   private readonly apis = new Array<AnyApiFactory>();
   private readonly rootChildren = new Array<ReactNode>();
@@ -96,7 +97,7 @@ class DevAppBuilder {
   registerApi<
     Api,
     Impl extends Api,
-    Deps extends { [name in string]: unknown }
+    Deps extends { [name in string]: unknown },
   >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder {
     this.apis.push(factory);
     return this;
@@ -118,7 +119,7 @@ class DevAppBuilder {
    * If no path is provided one will be generated.
    * If no title is provided, no sidebar item will be created.
    */
-  addPage(opts: RegisterPageOptions): DevAppBuilder {
+  addPage(opts: DevAppPageOptions): DevAppBuilder {
     const path = opts.path ?? `/page-${this.routes.length + 1}`;
 
     if (!this.defaultPage || path === '/') {
@@ -158,7 +159,7 @@ class DevAppBuilder {
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
-    const dummyRouteRef = createRouteRef({ title: 'Page of another plugin' });
+    const dummyRouteRef = createRouteRef({ id: 'dummy' });
     const DummyPage = () => <Box p={3}>Page belonging to another plugin.</Box>;
     attachComponentData(DummyPage, 'core.mountPoint', dummyRouteRef);
 
@@ -202,6 +203,9 @@ class DevAppBuilder {
               <Sidebar>
                 <SidebarSpacer />
                 {this.sidebarItems}
+                <SidebarSpace />
+                <SidebarDivider />
+                <SidebarThemeSwitcher />
               </Sidebar>
               <FlatRoutes>
                 {this.routes}
@@ -227,7 +231,11 @@ class DevAppBuilder {
 
     const DevApp = hot(hotModule)(this.build());
 
-    if (window.location.pathname === '/' && this.defaultPage) {
+    if (
+      window.location.pathname === '/' &&
+      this.defaultPage &&
+      this.defaultPage !== '/'
+    ) {
       window.location.pathname = this.defaultPage;
     }
 
@@ -240,6 +248,8 @@ class DevAppBuilder {
 
 /**
  * Creates a dev app for rendering one or more plugins and exposing the touch points of the plugin.
+ *
+ * @public
  */
 export function createDevApp() {
   return new DevAppBuilder();

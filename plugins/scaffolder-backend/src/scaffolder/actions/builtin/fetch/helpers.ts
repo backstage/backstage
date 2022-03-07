@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath, isAbsolute } from 'path';
-import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { JsonValue } from '@backstage/config';
+import fs from 'fs-extra';
+import path from 'path';
 
+/**
+ * A helper function that reads the contents of a directory from the given URL.
+ * Can be used in your own actions, and also used behind fetch:template and fetch:plain
+ *
+ * @public
+ */
 export async function fetchContents({
   reader,
   integrations,
@@ -31,15 +36,9 @@ export async function fetchContents({
   reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
-  fetchUrl?: JsonValue;
+  fetchUrl?: string;
   outputPath: string;
 }) {
-  if (typeof fetchUrl !== 'string') {
-    throw new InputError(
-      `Invalid url parameter, expected string, got ${typeof fetchUrl}`,
-    );
-  }
-
   let fetchUrlIsAbsolute = false;
   try {
     // eslint-disable-next-line no-new
@@ -52,12 +51,7 @@ export async function fetchContents({
   // We handle both file locations and url ones
   if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
     const basePath = baseUrl.slice('file://'.length);
-    if (isAbsolute(fetchUrl)) {
-      throw new InputError(
-        `Fetch URL may not be absolute for file locations, ${fetchUrl}`,
-      );
-    }
-    const srcDir = resolvePath(basePath, '..', fetchUrl);
+    const srcDir = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
     await fs.copy(srcDir, outputPath);
   } else {
     let readUrl;

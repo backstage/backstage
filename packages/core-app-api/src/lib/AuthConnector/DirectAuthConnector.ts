@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthProvider, DiscoveryApi } from '@backstage/core-plugin-api';
+import { AuthProviderInfo, DiscoveryApi } from '@backstage/core-plugin-api';
 import { showLoginPopup } from '../loginPopup';
 
 type Options = {
   discoveryApi: DiscoveryApi;
   environment?: string;
-  provider: AuthProvider & { id: string };
+  provider: AuthProviderInfo;
 };
 export class DirectAuthConnector<DirectAuthResponse> {
   private readonly discoveryApi: DiscoveryApi;
   private readonly environment: string | undefined;
-  private readonly provider: AuthProvider & { id: string };
+  private readonly provider: AuthProviderInfo;
 
   constructor(options: Options) {
     const { discoveryApi, environment, provider } = options;

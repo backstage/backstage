@@ -29,6 +29,7 @@ export default async (cmd: Command) => {
     entry: 'src/index',
     checksEnabled: cmd.check,
     inspectEnabled: cmd.inspect,
+    inspectBrkEnabled: cmd.inspectBrk,
   });
 
   await waitForExit();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import fs from 'fs-extra';
 
 jest.mock('fs-extra');
@@ -22,7 +23,7 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 import { PassThrough } from 'stream';
 import os from 'os';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ORIGIN_LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { createCatalogWriteAction } from './write';
 import { resolve as resolvePath } from 'path';
 import * as yaml from 'yaml';
@@ -50,7 +51,7 @@ describe('catalog:write', () => {
         name: 'n',
         namespace: 'ns',
         annotations: {
-          [ORIGIN_LOCATION_ANNOTATION]: 'url:https://example.com',
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com',
         },
       },
       spec: {},
@@ -66,6 +67,35 @@ describe('catalog:write', () => {
     expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
     expect(fsMock.writeFile).toHaveBeenCalledWith(
       resolvePath(mockContext.workspacePath, 'catalog-info.yaml'),
+      yaml.stringify(entity),
+    );
+  });
+
+  it('should support a custom filename', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'n',
+        namespace: 'ns',
+        annotations: {
+          [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com',
+        },
+      },
+      spec: {},
+    };
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        filePath: 'some-dir/entity-info.yaml',
+        entity,
+      },
+    });
+
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile).toHaveBeenCalledWith(
+      resolvePath(mockContext.workspacePath, 'some-dir/entity-info.yaml'),
       yaml.stringify(entity),
     );
   });

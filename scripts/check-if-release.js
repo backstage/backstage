@@ -96,7 +96,9 @@ async function main() {
 
   const newVersions = packageVersions.filter(
     ({ oldVersion, newVersion }) =>
-      oldVersion !== newVersion && newVersion !== '<none>',
+      oldVersion !== newVersion &&
+      oldVersion !== '<none>' &&
+      newVersion !== '<none>',
   );
 
   if (newVersions.length === 0) {

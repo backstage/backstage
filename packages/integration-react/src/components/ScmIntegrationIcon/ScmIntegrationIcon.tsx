@@ -17,7 +17,25 @@ import CodeIcon from '@material-ui/icons/Code';
 import React from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 
-export const ScmIntegrationIcon = ({ type }: { type?: string }) => {
+/**
+ * Props for {@link ScmIntegrationIcon}.
+ *
+ * @public
+ */
+export type ScmIntegrationIconProps = {
+  /**
+   * The integration type, e.g. "github".
+   */
+  type?: string;
+};
+
+/**
+ * An icon that represents a certain SCM integration.
+ *
+ * @public
+ */
+export const ScmIntegrationIcon = (props: ScmIntegrationIconProps) => {
+  const { type } = props;
   const app = useApp();
   const DefaultIcon = CodeIcon;
   const Icon = type ? app.getSystemIcon(type) ?? DefaultIcon : DefaultIcon;

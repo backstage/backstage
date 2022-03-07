@@ -23,13 +23,13 @@ const {
 async function getDependencyReleaseLine(changesets, dependenciesUpdated) {
   if (dependenciesUpdated.length === 0) return '';
 
-  const updatedDepenenciesList = dependenciesUpdated.map(
+  const updatedDependenciesList = dependenciesUpdated.map(
     dependency => `  - ${dependency.name}@${dependency.newVersion}`,
   );
 
   // Return one `Updated dependencies` bullet instead of repeating for each changeset; this
   // sacrifices the commit shas for brevity.
-  return ['- Updated dependencies', ...updatedDepenenciesList].join('\n');
+  return ['- Updated dependencies', ...updatedDependenciesList].join('\n');
 }
 
 module.exports = {

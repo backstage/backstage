@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
+import { Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
+import { SecretsContextProvider } from './secrets/SecretsContext';
 
 import {
   FieldExtensionOptions,
@@ -29,10 +32,49 @@ import {
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
 
-export const Router = () => {
-  const outlet = useOutlet();
+export type RouterProps = {
+  /** @deprecated use components.TemplateCardComponent instead */
+  TemplateCardComponent?:
+    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | undefined;
+  /** @deprecated use component.TaskPageComponent instead */
+  TaskPageComponent?: ComponentType<{}>;
 
-  const foundExtensions = useElementFilter(outlet, elements =>
+  components?: {
+    TemplateCardComponent?:
+      | ComponentType<{ template: TemplateEntityV1beta2 }>
+      | undefined;
+    TaskPageComponent?: ComponentType<{}>;
+  };
+  groups?: Array<{
+    title?: string;
+    titleComponent?: React.ReactNode;
+    filter: (entity: Entity) => boolean;
+  }>;
+};
+
+export const Router = (props: RouterProps) => {
+  const {
+    TemplateCardComponent: legacyTemplateCardComponent,
+    TaskPageComponent: legacyTaskPageComponent,
+    groups,
+    components = {},
+  } = props;
+
+  if (legacyTemplateCardComponent || legacyTaskPageComponent) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "DEPRECATION: 'TemplateCardComponent' and 'TaskPageComponent' are deprecated when calling the 'ScaffolderPage'. Use 'components' prop to pass these component overrides instead.",
+    );
+  }
+
+  const { TemplateCardComponent, TaskPageComponent } = components;
+
+  const outlet = useOutlet();
+  const TaskPageElement =
+    TaskPageComponent ?? legacyTaskPageComponent ?? TaskPage;
+
+  const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
@@ -42,18 +84,38 @@ export const Router = () => {
       }),
   );
 
-  const fieldExtensions = foundExtensions.length
-    ? foundExtensions
-    : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
+  const fieldExtensions = [
+    ...customFieldExtensions,
+    ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
+      ({ name }) =>
+        !customFieldExtensions.some(
+          customFieldExtension => customFieldExtension.name === name,
+        ),
+    ),
+  ];
 
   return (
     <Routes>
-      <Route path="/" element={<ScaffolderPage />} />
+      <Route
+        path="/"
+        element={
+          <ScaffolderPage
+            groups={groups}
+            TemplateCardComponent={
+              TemplateCardComponent ?? legacyTemplateCardComponent
+            }
+          />
+        }
+      />
       <Route
         path="/templates/:templateName"
-        element={<TemplatePage customFieldExtensions={fieldExtensions} />}
+        element={
+          <SecretsContextProvider>
+            <TemplatePage customFieldExtensions={fieldExtensions} />
+          </SecretsContextProvider>
+        }
       />
-      <Route path="/tasks/:taskId" element={<TaskPage />} />
+      <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
     </Routes>
   );

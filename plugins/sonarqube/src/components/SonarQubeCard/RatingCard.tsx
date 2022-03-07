@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Grid, Typography, Link } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
+import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { ReactNode } from 'react';
 
@@ -62,7 +63,7 @@ export const RatingCard = ({
   const classes = useStyles();
 
   return (
-    <Link href={link} color="inherit" underline="none">
+    <Link to={link} color="inherit" underline="none">
       <Grid item className={classes.root}>
         <Grid item className={classes.upper}>
           <Grid item className={classes.left}>

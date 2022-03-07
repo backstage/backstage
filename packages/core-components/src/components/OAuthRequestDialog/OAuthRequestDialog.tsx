@@ -14,34 +14,43 @@
  * limitations under the License.
  */
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  List,
-  makeStyles,
-  Theme,
-  Button,
-} from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import List from '@material-ui/core/List';
+import Button from '@material-ui/core/Button';
 import React, { useMemo, useState } from 'react';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 import LoginRequestListItem from './LoginRequestListItem';
 import { useApi, oauthRequestApiRef } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles<Theme>(theme => ({
-  dialog: {
-    paddingTop: theme.spacing(1),
-  },
-  title: {
-    minWidth: 0,
-  },
-  contentList: {
-    padding: 0,
-  },
-}));
+export type OAuthRequestDialogClassKey =
+  | 'dialog'
+  | 'title'
+  | 'contentList'
+  | 'actionButtons';
 
-export const OAuthRequestDialog = () => {
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    dialog: {
+      paddingTop: theme.spacing(1),
+    },
+    title: {
+      minWidth: 0,
+    },
+    contentList: {
+      padding: 0,
+    },
+    actionButtons: {
+      padding: theme.spacing(2, 0),
+    },
+  }),
+  { name: 'OAuthRequestDialog' },
+);
+
+export function OAuthRequestDialog(_props: {}) {
   const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);
@@ -65,7 +74,7 @@ export const OAuthRequestDialog = () => {
         Login Required
       </DialogTitle>
 
-      <DialogContent classes={{ root: classes.contentList }}>
+      <DialogContent dividers classes={{ root: classes.contentList }}>
         <List>
           {requests.map(request => (
             <LoginRequestListItem
@@ -78,9 +87,9 @@ export const OAuthRequestDialog = () => {
         </List>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions classes={{ root: classes.actionButtons }}>
         <Button onClick={handleRejectAll}>Reject All</Button>
       </DialogActions>
     </Dialog>
   );
-};
+}

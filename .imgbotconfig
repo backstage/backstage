@@ -1,5 +1,3 @@
 {
-  "ignoredFiles": [
-    "docs/assets/**/*.svg"
-  ]
+  "ignoredFiles": ["docs/assets/**/*.svg"]
 }

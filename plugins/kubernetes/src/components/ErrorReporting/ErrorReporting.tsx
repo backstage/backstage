@@ -90,7 +90,7 @@ export const ErrorEmptyState = () => {
   return (
     <Grid
       container
-      justify="space-around"
+      justifyContent="space-around"
       direction="row"
       alignItems="center"
       spacing={2}

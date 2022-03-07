@@ -44,11 +44,11 @@ cd plugins/carmen-backend
 yarn start
 ```
 
-This will think for a bit, and then say `Listening on :7000`. In a different
+This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
 
 ```sh
-curl localhost:7000/carmen/health
+curl localhost:7007/carmen/health
 ```
 
 This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to kill it
@@ -107,7 +107,7 @@ root), you should be able to fetch data from it.
 
 ```sh
 # Note the extra /api here
-curl localhost:7000/api/carmen/health
+curl localhost:7007/api/carmen/health
 ```
 
 This should return `{"status":"ok"}` like before. Success!

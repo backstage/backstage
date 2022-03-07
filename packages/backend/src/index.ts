@@ -35,10 +35,14 @@ import {
   useHotMemoize,
   WebSocketConnectionManager,
   websockets,
+  ServerTokenManager,
 } from '@backstage/backend-common';
+import { TaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
+import { metricsInit, metricsHandler } from './metrics';
 import auth from './plugins/auth';
+import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
 import codeCoverage from './plugins/codecoverage';
 import kubernetes from './plugins/kubernetes';
@@ -48,13 +52,16 @@ import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
+import techInsights from './plugins/techInsights';
 import todo from './plugins/todo';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
 import badges from './plugins/badges';
 import jenkins from './plugins/jenkins';
 import notifications from './plugins/notifications';
+import permission from './plugins/permission';
 import { PluginEnvironment } from './types';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -64,13 +71,22 @@ function makeCreateEnv(config: Config) {
 
   root.info(`Created UrlReader ${reader}`);
 
+  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
   const databaseManager = DatabaseManager.fromConfig(config);
   const cacheManager = CacheManager.fromConfig(config);
+  const taskScheduler = TaskScheduler.fromConfig(config);
+
+  root.info(`Created UrlReader ${reader}`);
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
     const cache = cacheManager.forPlugin(plugin);
+    const scheduler = taskScheduler.forPlugin(plugin);
     return {
       logger,
       cache,
@@ -79,11 +95,15 @@ function makeCreateEnv(config: Config) {
       reader,
       discovery,
       websocketConnectionManager,
+      tokenManager,
+      permissions,
+      scheduler,
     };
   };
 }
 
 async function main() {
+  metricsInit();
   const logger = getRootLogger();
 
   logger.info(
@@ -95,6 +115,7 @@ async function main() {
     argv: process.argv,
     logger,
   });
+
   const createEnv = makeCreateEnv(config);
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
@@ -104,6 +125,7 @@ async function main() {
   );
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
+  const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
@@ -115,6 +137,10 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
   const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
+  const techInsightsEnv = useHotMemoize(module, () =>
+    createEnv('tech-insights'),
+  );
+  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
   const notificationsEnv = useHotMemoize(module, () =>
     createEnv('notifications'),
   );
@@ -124,7 +150,9 @@ async function main() {
   apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
   apiRouter.use('/auth', await auth(authEnv));
+  apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/todo', await todo(todoEnv));
@@ -134,12 +162,14 @@ async function main() {
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
+  apiRouter.use('/permission', await permission(permissionEnv));
   apiRouter.use('/notifications', await notifications(notificationsEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
     .loadConfig(config)
     .addRouter('', await healthcheck(healthcheckEnv))
+    .addRouter('', metricsHandler())
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 

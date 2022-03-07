@@ -1,5 +1,258 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-kubernetes-common@0.2.6
+
+## 0.4.10
+
+### Patch Changes
+
+- 64acf65c03: Allow missing kubernetes config in development env
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/plugin-kubernetes-common@0.2.5
+
+## 0.4.9
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/plugin-kubernetes-common@0.2.4
+
+## 0.4.8
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- fb09a59a3f: Fixed a potential issue in AWS token encoding, where they might not always be properly converted to URL-safe base64.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/plugin-kubernetes-common@0.2.3
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
+## 0.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+
+## 0.4.5
+
+### Patch Changes
+
+- 8fc0d122e8: If serviceAccountToken not provided, use default config file from cluster
+- Updated dependencies
+  - @backstage/backend-common@0.10.5
+
+## 0.4.4
+
+### Patch Changes
+
+- edbd626d0a: add a new auth provider to support use GOOGLE_APPLICATION_CREDENTIALS
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/plugin-kubernetes-common@0.2.2
+
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/plugin-kubernetes-common@0.2.2-next.0
+
+## 0.4.3
+
+### Patch Changes
+
+- a67ec8527f: Exclude the AWS session token from credential validation, because it's not necessary in this context.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/backend-common@0.10.3
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
+## 0.4.2
+
+### Patch Changes
+
+- 7ac0bd2c66: implement dashboard link formatter for GKE
+- Updated dependencies
+  - @backstage/backend-common@0.10.2
+  - @backstage/plugin-kubernetes-common@0.2.1
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
+## 0.4.0
+
+### Minor Changes
+
+- c010632f88: Add pod metrics lookup and display in pod table.
+
+  ## Backwards incompatible changes
+
+  If your Kubernetes distribution does not have the [metrics server](https://github.com/kubernetes-sigs/metrics-server) installed,
+  you will need to set the `skipMetricsLookup` config flag to `false`.
+
+  See the [configuration docs](https://backstage.io/docs/features/kubernetes/configuration) for more details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.2.0
+  - @backstage/backend-common@0.9.13
+
+## 0.3.20
+
+### Patch Changes
+
+- 65ddccb5e8: Added apiVersionOverrides config to allow for specifying api versions to use for kubernetes objects
+- f6087fc8f8: Query CronJobs from Kubernetes with apiGroup BatchV1beta1
+- Updated dependencies
+  - @backstage/backend-common@0.9.12
+  - @backstage/plugin-kubernetes-common@0.1.7
+
+## 0.3.19
+
+### Patch Changes
+
+- 37dc844728: Include CronJobs and Jobs as default objects returned by the kubernetes backend and add/update relevant types.
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/plugin-kubernetes-common@0.1.6
+  - @backstage/backend-common@0.9.11
+
+## 0.3.18
+
+### Patch Changes
+
+- b61c50a12f: Fix Kubernetes plugin custom objects lookup regression
+- c57b075d18: add caData support for kubernetes client config
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.3.17
+
+### Patch Changes
+
+- 89bcf90b66: Refactor kubernetes fetcher to reduce boilerplate code
+- a982e166c5: Enable customization of services used by the kubernetes backend plugin
+
+  The createRouter function has been deprecated in favor of a KubernetesBuilder object.
+  Here's how you should upgrade your projects when configuring the Kubernetes backend plugin.
+  in your `packages/backend/src/plugins/kubernetes.ts` file for instance:
+
+  ```typescript
+  import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin({
+    logger,
+    config,
+  }: PluginEnvironment) {
+    const { router } = await KubernetesBuilder.createBuilder({
+      logger,
+      config,
+    }).build();
+    return router;
+  }
+  ```
+
+## 0.3.16
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kubernetes-common@0.1.4
+
+## 0.3.15
+
+### Patch Changes
+
+- 22fc579fe: Fixes bug reading ExternalId from k8s backend config
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
+## 0.3.14
+
+### Patch Changes
+
+- bbcd92afa: Adds ability to send an ExternalId with the assume role request to AWS
+- Updated dependencies
+  - @backstage/backend-common@0.8.9
+
+## 0.3.13
+
+### Patch Changes
+
+- a0a8d3571: Add configuration option to the kubernetes object types. Config option is under `kubernetes.objectTypes`. Defaults to ['pods', 'services', 'configmaps', 'deployments', 'replicasets', 'horizontalpodautoscalers', 'ingresses']
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+
+## 0.3.12
+
+### Patch Changes
+
+- 7f24f4088: chore(deps): bump `@kubernetes/client-node` from 0.14.3 to 0.15.0
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.1.3
+
 ## 0.3.11
 
 ### Patch Changes

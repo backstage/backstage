@@ -20,7 +20,7 @@ import {
   RELATION_PROVIDES_API,
   RELATION_PART_OF,
   stringifyEntityRef,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   parseEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -32,7 +32,7 @@ import {
 import { Box, makeStyles, Typography, useTheme } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { BackstageTheme } from '@backstage/theme';
 
 import {
@@ -46,28 +46,39 @@ import {
 
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  domainNode: {
-    fill: theme.palette.primary.main,
-    stroke: theme.palette.border,
-  },
-  systemNode: {
-    fill: 'coral',
-    stroke: theme.palette.border,
-  },
-  componentNode: {
-    fill: 'yellowgreen',
-    stroke: theme.palette.border,
-  },
-  apiNode: {
-    fill: theme.palette.gold,
-    stroke: theme.palette.border,
-  },
-  resourceNode: {
-    fill: 'grey',
-    stroke: theme.palette.border,
-  },
-}));
+/** @public */
+export type SystemDiagramCardClassKey =
+  | 'domainNode'
+  | 'systemNode'
+  | 'componentNode'
+  | 'apiNode'
+  | 'resourceNode';
+
+const useStyles = makeStyles(
+  (theme: BackstageTheme) => ({
+    domainNode: {
+      fill: theme.palette.primary.main,
+      stroke: theme.palette.border,
+    },
+    systemNode: {
+      fill: 'coral',
+      stroke: theme.palette.border,
+    },
+    componentNode: {
+      fill: 'yellowgreen',
+      stroke: theme.palette.border,
+    },
+    apiNode: {
+      fill: theme.palette.gold,
+      stroke: theme.palette.border,
+    },
+    resourceNode: {
+      fill: 'grey',
+      stroke: theme.palette.border,
+    },
+  }),
+  { name: 'PluginCatalogSystemDiagramCard' },
+);
 
 // Simplifies the diagram output by hiding the default namespace and kind
 function readableEntityName(
@@ -81,7 +92,7 @@ function readableEntityName(
 ): string {
   return stringifyEntityRef(ref)
     .toLocaleLowerCase('en-US')
-    .replace(`:${ENTITY_DEFAULT_NAMESPACE}/`, ':')
+    .replace(`:${DEFAULT_NAMESPACE}/`, ':')
     .split(':')[1];
 }
 
@@ -158,14 +169,18 @@ export function SystemDiagramCard() {
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
 
   const catalogApi = useApi(catalogApiRef);
-  const { loading, error, value: catalogResponse } = useAsync(() => {
+  const {
+    loading,
+    error,
+    value: catalogResponse,
+  } = useAsync(() => {
     return catalogApi.getEntities({
       filter: {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
         'spec.system': [
           currentSystemName,
           `${
-            entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+            entity.metadata.namespace || DEFAULT_NAMESPACE
           }/${currentSystemName}`,
         ],
       },

@@ -1,0 +1,44 @@
+{
+  "name": "@backstage/types",
+  "description": "Common TypeScript types used within Backstage",
+  "version": "0.1.3",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "common-library"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/types"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@backstage/cli": "^0.15.0",
+    "@types/zen-observable": "^0.8.0",
+    "zen-observable": "^0.8.15"
+  },
+  "files": [
+    "dist"
+  ]
+}

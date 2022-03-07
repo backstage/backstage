@@ -15,7 +15,7 @@
  */
 
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import fetch from 'cross-fetch';
+import fetch, { Response } from 'node-fetch';
 import {
   ReaderFactory,
   ReadTreeResponse,
@@ -24,9 +24,12 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
+import path from 'path';
 
 /**
- * A UrlReader that does a plain fetch of the URL.
+ * A {@link UrlReader} that does a plain fetch of the URL.
+ *
+ * @public
  */
 export class FetchUrlReader implements UrlReader {
   /**
@@ -37,18 +40,30 @@ export class FetchUrlReader implements UrlReader {
    * `host`:
    *   Either full hostnames to match, or subdomain wildcard matchers with a leading `*`.
    *   For example `example.com` and `*.example.com` are valid values, `prod.*.example.com` is not.
+   *
+   * `paths`:
+   *   An optional list of paths which are allowed. If the list is omitted all paths are allowed.
    */
   static factory: ReaderFactory = ({ config }) => {
     const predicates =
       config
         .getOptionalConfigArray('backend.reading.allow')
         ?.map(allowConfig => {
+          const paths = allowConfig.getOptionalStringArray('paths');
+          const checkPath = paths
+            ? (url: URL) => {
+                const targetPath = path.posix.normalize(url.pathname);
+                return paths.some(allowedPath =>
+                  targetPath.startsWith(allowedPath),
+                );
+              }
+            : (_url: URL) => true;
           const host = allowConfig.getString('host');
           if (host.startsWith('*.')) {
             const suffix = host.slice(1);
-            return (url: URL) => url.host.endsWith(suffix);
+            return (url: URL) => url.host.endsWith(suffix) && checkPath(url);
           }
-          return (url: URL) => url.host === host;
+          return (url: URL) => url.host === host && checkPath(url);
         }) ?? [];
 
     const reader = new FetchUrlReader();
@@ -71,6 +86,13 @@ export class FetchUrlReader implements UrlReader {
         headers: {
           ...(options?.etag && { 'If-None-Match': options.etag }),
         },
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can
+        // be removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        signal: options?.signal as any,
       });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
@@ -82,7 +104,7 @@ export class FetchUrlReader implements UrlReader {
 
     if (response.ok) {
       return {
-        buffer: async () => Buffer.from(await response.text()),
+        buffer: async () => Buffer.from(await response.arrayBuffer()),
         etag: response.headers.get('ETag') ?? undefined,
       };
     }

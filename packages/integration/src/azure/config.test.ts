@@ -30,8 +30,19 @@ describe('readAzureIntegrationConfig', () => {
   async function buildFrontendConfig(
     data: Partial<AzureIntegrationConfig>,
   ): Promise<Config> {
+    const fullSchema = await loadConfigSchema({
+      dependencies: ['@backstage/integration'],
+    });
+    const serializedSchema = fullSchema.serialize() as {
+      schemas: { value: { properties?: { integrations?: object } } }[];
+    };
     const schema = await loadConfigSchema({
-      dependencies: [require('../../package.json').name],
+      serialized: {
+        ...serializedSchema, // only include schemas that apply to integrations
+        schemas: serializedSchema.schemas.filter(
+          s => s.value?.properties?.integrations,
+        ),
+      },
     });
     const processed = schema.process(
       [{ data: { integrations: { azure: [data] } }, context: 'app' }],

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { xcmetricsPlugin } from './plugin';
+import { XcmetricsPage, xcmetricsPlugin } from './plugin';
 
 describe('xcmetrics', () => {
   it('should export plugin', () => {
     expect(xcmetricsPlugin).toBeDefined();
+    expect(XcmetricsPage).toBeDefined();
   });
 });

@@ -26,10 +26,10 @@ describe('UrlPatternDiscovery', () => {
 
   it('should use a plain pattern', async () => {
     const discoveryApi = UrlPatternDiscovery.compile(
-      'http://localhost:7000/{{ pluginId }}',
+      'http://localhost:7007/{{ pluginId }}',
     );
     await expect(discoveryApi.getBaseUrl('my-plugin')).resolves.toBe(
-      'http://localhost:7000/my-plugin',
+      'http://localhost:7007/my-plugin',
     );
   });
 
@@ -45,25 +45,25 @@ describe('UrlPatternDiscovery', () => {
   it('should validate that the pattern is a valid URL', () => {
     expect(() => {
       UrlPatternDiscovery.compile('example.com');
-    }).toThrow('Invalid discovery URL pattern, Invalid URL: example.com');
+    }).toThrow("Invalid discovery URL pattern, URL 'example.com' is invalid");
 
     expect(() => {
       UrlPatternDiscovery.compile('http://');
-    }).toThrow('Invalid discovery URL pattern, Invalid URL: http://');
+    }).toThrow("Invalid discovery URL pattern, URL 'http://' is invalid");
 
     expect(() => {
       UrlPatternDiscovery.compile('abc123');
-    }).toThrow('Invalid discovery URL pattern, Invalid URL: abc123');
+    }).toThrow("Invalid discovery URL pattern, URL 'abc123' is invalid");
 
     expect(() => {
       UrlPatternDiscovery.compile('http://example.com:{{pluginId}}');
     }).toThrow(
-      'Invalid discovery URL pattern, Invalid URL: http://example.com:pluginId',
+      "Invalid discovery URL pattern, URL 'http://example.com:pluginId' is invalid",
     );
 
     expect(() => {
       UrlPatternDiscovery.compile('/{{pluginId}}');
-    }).toThrow('Invalid discovery URL pattern, Invalid URL: /pluginId');
+    }).toThrow("Invalid discovery URL pattern, URL '/pluginId' is invalid");
 
     expect(() => {
       UrlPatternDiscovery.compile('http://localhost/{{pluginId}}?forbidden');

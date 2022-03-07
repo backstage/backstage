@@ -22,10 +22,16 @@ import {
   OptionalParams,
 } from './types';
 
+/**
+ * @internal
+ */
 export class ExternalRouteRefImpl<
   Params extends AnyParams,
-  Optional extends boolean
-> implements ExternalRouteRef<Params, Optional> {
+  Optional extends boolean,
+> implements ExternalRouteRef<Params, Optional>
+{
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'external';
   readonly [routeRefType] = 'external';
 
   constructor(
@@ -39,10 +45,20 @@ export class ExternalRouteRefImpl<
   }
 }
 
+/**
+ * Creates a route descriptor, to be later bound to a concrete route by the app. Used to implement cross-plugin route references.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#routing-system}.
+ *
+ * @param options - Description of the route reference to be created.
+ * @public
+ */
 export function createExternalRouteRef<
   Params extends { [param in ParamKey]: string },
   Optional extends boolean = false,
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(options: {
   /**
    * An identifier for this route, used to identify it in error messages

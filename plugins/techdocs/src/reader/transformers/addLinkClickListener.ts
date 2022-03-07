@@ -32,7 +32,7 @@ export const addLinkClickListener = ({
         const href = target.getAttribute('href');
 
         if (!href) return;
-        if (href.startsWith(baseUrl)) {
+        if (href.startsWith(baseUrl) && !elem.hasAttribute('download')) {
           e.preventDefault();
           onClick(e, href);
         }

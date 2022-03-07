@@ -13,28 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { FieldProps } from '@rjsf/core';
-import React from 'react';
-import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core-plugin-api';
+import React, { useCallback, useEffect } from 'react';
+import useAsync from 'react-use/lib/useAsync';
+import { FieldExtensionComponentProps } from '../../../extensions';
 
-export const EntityPicker = ({
-  onChange,
-  schema: { title = 'Entity', description = 'An entity from the catalog' },
-  required,
-  uiSchema,
-  rawErrors,
-  formData,
-}: FieldProps<string>) => {
-  const allowedKinds = uiSchema['ui:options']?.allowedKinds as string[];
-  const defaultKind = uiSchema['ui:options']?.defaultKind as string | undefined;
+export interface EntityPickerUiOptions {
+  allowedKinds?: string[];
+  defaultKind?: string;
+  allowArbitraryValues?: boolean;
+}
+
+/**
+ * Entity Picker
+ */
+export const EntityPicker = (
+  props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,
+) => {
+  const {
+    onChange,
+    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    required,
+    uiSchema,
+    rawErrors,
+    formData,
+    idSchema,
+  } = props;
+  const allowedKinds = uiSchema['ui:options']?.allowedKinds;
+  const defaultKind = uiSchema['ui:options']?.defaultKind;
+
   const catalogApi = useApi(catalogApiRef);
 
   const { value: entities, loading } = useAsync(() =>
@@ -44,12 +58,21 @@ export const EntityPicker = ({
   );
 
   const entityRefs = entities?.items.map(e =>
-    formatEntityRefTitle(e, { defaultKind }),
+    humanizeEntityRef(e, { defaultKind }),
   );
 
-  const onSelect = (_: any, value: string | null) => {
-    onChange(value || '');
-  };
+  const onSelect = useCallback(
+    (_: any, value: string | null) => {
+      onChange(value || '');
+    },
+    [onChange],
+  );
+
+  useEffect(() => {
+    if (entityRefs?.length === 1) {
+      onChange(entityRefs[0]);
+    }
+  }, [entityRefs, onChange]);
 
   return (
     <FormControl
@@ -58,12 +81,14 @@ export const EntityPicker = ({
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
+        disabled={entityRefs?.length === 1}
+        id={idSchema?.$id}
         value={(formData as string) || ''}
         loading={loading}
         onChange={onSelect}
         options={entityRefs || []}
         autoSelect
-        freeSolo
+        freeSolo={uiSchema['ui:options']?.allowArbitraryValues ?? true}
         renderInput={params => (
           <TextField
             {...params}

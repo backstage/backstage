@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export { MicrosoftGraphClient } from './client';
+export type { GroupMember, ODataQuery } from './client';
 export { readMicrosoftGraphConfig } from './config';
 export type { MicrosoftGraphProviderConfig } from './config';
 export {

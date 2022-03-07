@@ -4,10 +4,13 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
-import { ExtensionsV1beta1Ingress } from '@kubernetes/client-node';
+import type { JsonObject } from '@backstage/types';
 import { V1ConfigMap } from '@kubernetes/client-node';
+import { V1CronJob } from '@kubernetes/client-node';
 import { V1Deployment } from '@kubernetes/client-node';
 import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { V1Ingress } from '@kubernetes/client-node';
+import { V1Job } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
@@ -17,16 +20,64 @@ import { V1Service } from '@kubernetes/client-node';
 // @public (undocumented)
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
 
+// Warning: (ae-missing-release-tag) "ClientContainerStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ClientContainerStatus {
+  // (undocumented)
+  container: string;
+  // (undocumented)
+  cpuUsage: ClientCurrentResourceUsage;
+  // (undocumented)
+  memoryUsage: ClientCurrentResourceUsage;
+}
+
+// Warning: (ae-missing-release-tag) "ClientCurrentResourceUsage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ClientCurrentResourceUsage {
+  // (undocumented)
+  currentUsage: number | string;
+  // (undocumented)
+  limitTotal: number | string;
+  // (undocumented)
+  requestTotal: number | string;
+}
+
+// Warning: (ae-missing-release-tag) "ClientPodStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ClientPodStatus {
+  // (undocumented)
+  containers: ClientContainerStatus[];
+  // (undocumented)
+  cpu: ClientCurrentResourceUsage;
+  // (undocumented)
+  memory: ClientCurrentResourceUsage;
+  // (undocumented)
+  pod: V1Pod;
+}
+
+// Warning: (ae-missing-release-tag) "ClusterAttributes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ClusterAttributes {
+  dashboardApp?: string;
+  dashboardParameters?: JsonObject;
+  dashboardUrl?: string;
+  name: string;
+}
+
 // Warning: (ae-missing-release-tag) "ClusterObjects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface ClusterObjects {
   // (undocumented)
-  cluster: {
-    name: string;
-  };
+  cluster: ClusterAttributes;
   // (undocumented)
   errors: KubernetesFetchError[];
+  // (undocumented)
+  podMetrics: ClientPodStatus[];
   // (undocumented)
   resources: FetchResponse[];
 }
@@ -39,6 +90,16 @@ export interface ConfigMapFetchResponse {
   resources: Array<V1ConfigMap>;
   // (undocumented)
   type: 'configmaps';
+}
+
+// Warning: (ae-missing-release-tag) "CronJobsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CronJobsFetchResponse {
+  // (undocumented)
+  resources: Array<V1CronJob>;
+  // (undocumented)
+  type: 'cronjobs';
 }
 
 // Warning: (ae-missing-release-tag) "CustomResourceFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -71,6 +132,8 @@ export type FetchResponse =
   | DeploymentFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
+  | JobsFetchResponse
+  | CronJobsFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse;
 
@@ -89,9 +152,19 @@ export interface HorizontalPodAutoscalersFetchResponse {
 // @public (undocumented)
 export interface IngressesFetchResponse {
   // (undocumented)
-  resources: Array<ExtensionsV1beta1Ingress>;
+  resources: Array<V1Ingress>;
   // (undocumented)
   type: 'ingresses';
+}
+
+// Warning: (ae-missing-release-tag) "JobsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface JobsFetchResponse {
+  // (undocumented)
+  resources: Array<V1Job>;
+  // (undocumented)
+  type: 'jobs';
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesErrorTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -164,6 +237,4 @@ export interface ServiceFetchResponse {
   // (undocumented)
   type: 'services';
 }
-
-// (No @packageDocumentation comment for this package)
 ```

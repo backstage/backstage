@@ -64,6 +64,10 @@ export interface TechRadarPageProps {
 }
 ```
 
+### Radar properties
+
+When defining the radar entries you can see the available properties on the file [api](./src/api.ts)
+
 ## Frequently Asked Questions
 
 ### Who created the Tech Radar?
@@ -81,7 +85,7 @@ import {
   TechRadarLoaderResponse,
 } from '@backstage/plugin-tech-radar';
 
-class MyOwnClient implements TechRadarApi {
+export class MyOwnClient implements TechRadarApi {
   async load(id: string | undefined): Promise<TechRadarLoaderResponse> {
     // if needed id prop can be used to fetch the correct data
 

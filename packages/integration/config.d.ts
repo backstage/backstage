@@ -163,5 +163,43 @@ export interface Config {
        */
       privateKey?: string;
     };
+
+    /** Integration configuration for AWS S3 Service */
+    awsS3?: Array<{
+      /**
+       * AWS Endpoint.
+       * The endpoint URI to send requests to. The default endpoint is built from the configured region.
+       * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+       *
+       * Supports non-AWS providers, e.g. for LocalStack, endpoint may look like http://localhost:4566
+       * @visibility frontend
+       */
+      endpoint?: string;
+
+      /**
+       * Whether to use path style URLs when communicating with S3.
+       * Defaults to false.
+       * This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used.
+       * @visibility frontend
+       */
+      s3ForcePathStyle?: boolean;
+
+      /**
+       * Account access key used to authenticate requests.
+       * @visibility backend
+       */
+      accessKeyId?: string;
+      /**
+       * Account secret key used to authenticate requests.
+       * @visibility secret
+       */
+      secretAccessKey?: string;
+
+      /**
+       * ARN of the role to be assumed
+       * @visibility backend
+       */
+      roleArn?: string;
+    }>;
   };
 }

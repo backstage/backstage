@@ -22,14 +22,13 @@ import {
 } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 
-const MockUnlabeledDataflowAlertMultipleProjects = createMockUnlabeledDataflowData(
-  data => ({
+const MockUnlabeledDataflowAlertMultipleProjects =
+  createMockUnlabeledDataflowData(data => ({
     ...data,
     projects: [...Array(10)].map(() =>
       createMockUnlabeledDataflowAlertProject(),
     ),
-  }),
-);
+  }));
 
 const MockUnlabeledDataflowAlertSingleProject = createMockUnlabeledDataflowData(
   data => ({

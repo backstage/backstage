@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin that renders technical documentation for your components
+ *
+ * @packageDocumentation
+ */
+
+export * from './types';
 export * from './api';
-export { techdocsApiRef, techdocsStorageApiRef } from './api';
-export type { TechDocsApi, TechDocsStorageApi } from './api';
-export { TechDocsClient, TechDocsStorageClient } from './client';
-export type { PanelType } from './home/components/TechDocsCustomHome';
-export * from './components/DocsResultListItem';
+export * from './client';
+export * from './reader';
+export * from './search';
+export * from './home';
 export {
-  DocsCardGrid,
-  DocsTable,
   EntityTechdocsContent,
   TechDocsCustomHome,
+  TechDocsIndexPage,
   TechdocsPage,
+  TechDocsReaderPage,
   techdocsPlugin as plugin,
   techdocsPlugin,
-  TechDocsReaderPage,
 } from './plugin';
-export * from './reader';
-export { EmbeddedDocsRouter, Router } from './Router';
+export * from './Router';

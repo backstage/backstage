@@ -16,7 +16,9 @@
 
 import React from 'react';
 import { WarningPanel } from './WarningPanel';
-import { Button, Link, Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { Link } from '../Link';
 
 export default {
   title: 'Feedback/Warning Panel',
@@ -30,7 +32,7 @@ export const Default = () => (
       <>
         This example entity is missing an annotation. If this is unexpected,
         please make sure you have set up everything correctly by following{' '}
-        <Link href="http://example.com">this guide</Link>.
+        <Link to="http://example.com">this guide</Link>.
       </>
     }
   />

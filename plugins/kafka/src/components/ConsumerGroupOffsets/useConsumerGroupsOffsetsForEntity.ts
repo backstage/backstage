@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { kafkaApiRef } from '../../api/types';
 import { useConsumerGroupsForEntity } from './useConsumerGroupsForEntity';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';

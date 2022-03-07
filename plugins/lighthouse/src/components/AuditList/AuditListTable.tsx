@@ -15,17 +15,22 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Website, lighthouseApiRef } from '../../api';
-import { useInterval } from 'react-use';
+import useInterval from 'react-use/lib/useInterval';
 import {
   formatTime,
   CATEGORIES,
   CATEGORY_LABELS,
   buildSparklinesDataForItem,
 } from '../../utils';
-import { Link, generatePath } from 'react-router-dom';
+import { generatePath } from 'react-router-dom';
 import AuditStatusIcon from '../AuditStatusIcon';
 
-import { Table, TableColumn, TrendLine } from '@backstage/core-components';
+import {
+  Link,
+  Table,
+  TableColumn,
+  TrendLine,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 const columns: TableColumn[] = [
@@ -69,9 +74,8 @@ export const AuditListTable = ({ items }: { items: Website[] }) => {
       const auditStatus = response.lastAudit.status;
       if (auditStatus === 'COMPLETED' || auditStatus === 'FAILED') {
         const newWebsiteData = websiteState.slice(0);
-        newWebsiteData[
-          newWebsiteData.findIndex(w => w.url === response.url)
-        ] = response;
+        newWebsiteData[newWebsiteData.findIndex(w => w.url === response.url)] =
+          response;
         setWebsiteState(newWebsiteData);
       }
     });

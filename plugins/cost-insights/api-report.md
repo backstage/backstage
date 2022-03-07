@@ -100,7 +100,7 @@ export enum AlertDismissReason {
 // @public (undocumented)
 export type AlertForm<
   A extends Alert = any,
-  Data = any
+  Data = any,
 > = ForwardRefExoticComponent<
   AlertFormProps<A, Data> & RefAttributes<HTMLFormElement>
 >;
@@ -817,18 +817,4 @@ export interface UnlabeledDataflowData {
   // (undocumented)
   unlabeledCost: number;
 }
-
-// Warnings were encountered during analysis:
-//
-// src/api/CostInsightsApi.d.ts:34:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:42:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:56:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:57:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:73:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:74:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:83:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:84:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/api/CostInsightsApi.d.ts:100:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-
-// (No @packageDocumentation comment for this package)
 ```

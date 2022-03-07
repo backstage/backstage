@@ -13,67 +13,73 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/config';
+import { JsonObject, Observable } from '@backstage/types';
+import ObservableImpl from 'zen-observable';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 import {
-  CompletedTaskState,
-  Task,
+  TaskCompletionState,
+  TaskContext,
   TaskSecrets,
-  TaskSpec,
   TaskStore,
   TaskBroker,
-  DispatchResult,
-  DbTaskEventRow,
-  DbTaskRow,
+  SerializedTaskEvent,
+  SerializedTask,
 } from './types';
+import { TaskBrokerDispatchOptions } from '.';
 
-export class TaskAgent implements Task {
+/**
+ * TaskManager
+ *
+ * @public
+ */
+export class TaskManager implements TaskContext {
   private isDone = false;
 
   private heartbeatTimeoutId?: ReturnType<typeof setInterval>;
 
-  static create(state: TaskState, storage: TaskStore, logger: Logger) {
-    const agent = new TaskAgent(state, storage, logger);
+  static create(task: CurrentClaimedTask, storage: TaskStore, logger: Logger) {
+    const agent = new TaskManager(task, storage, logger);
     agent.startTimeout();
     return agent;
   }
 
   // Runs heartbeat internally
   private constructor(
-    private readonly state: TaskState,
+    private readonly task: CurrentClaimedTask,
     private readonly storage: TaskStore,
     private readonly logger: Logger,
   ) {}
 
   get spec() {
-    return this.state.spec;
+    return this.task.spec;
   }
 
   get secrets() {
-    return this.state.secrets;
+    return this.task.secrets;
   }
 
   async getWorkspaceName() {
-    return this.state.taskId;
+    return this.task.taskId;
   }
 
   get done() {
     return this.isDone;
   }
 
-  async emitLog(message: string, metadata?: JsonObject): Promise<void> {
+  async emitLog(message: string, logMetadata?: JsonObject): Promise<void> {
     await this.storage.emitLogEvent({
-      taskId: this.state.taskId,
-      body: { message, ...metadata },
+      taskId: this.task.taskId,
+      body: { message, ...logMetadata },
     });
   }
 
   async complete(
-    result: CompletedTaskState,
+    result: TaskCompletionState,
     metadata?: JsonObject,
   ): Promise<void> {
     await this.storage.completeTask({
-      taskId: this.state.taskId,
+      taskId: this.task.taskId,
       status: result === 'failed' ? 'failed' : 'completed',
       eventBody: {
         message: `Run completed with status: ${result}`,
@@ -89,13 +95,13 @@ export class TaskAgent implements Task {
   private startTimeout() {
     this.heartbeatTimeoutId = setTimeout(async () => {
       try {
-        await this.storage.heartbeatTask(this.state.taskId);
+        await this.storage.heartbeatTask(this.task.taskId);
         this.startTimeout();
       } catch (error) {
         this.isDone = true;
 
         this.logger.error(
-          `Heartbeat for task ${this.state.taskId} failed`,
+          `Heartbeat for task ${this.task.taskId} failed`,
           error,
         );
       }
@@ -103,11 +109,24 @@ export class TaskAgent implements Task {
   }
 }
 
-interface TaskState {
+/**
+ * Stores the state of the current claimed task passed to the TaskContext
+ *
+ * @public
+ */
+export interface CurrentClaimedTask {
   spec: TaskSpec;
   taskId: string;
   secrets?: TaskSecrets;
 }
+
+/**
+ * TaskState
+ *
+ * @public
+ * @deprecated use CurrentClaimedTask instead
+ */
+export type TaskState = CurrentClaimedTask;
 
 function defer() {
   let resolve = () => {};
@@ -124,11 +143,11 @@ export class StorageTaskBroker implements TaskBroker {
   ) {}
   private deferredDispatch = defer();
 
-  async claim(): Promise<Task> {
+  async claim(): Promise<TaskContext> {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
-        return TaskAgent.create(
+        return TaskManager.create(
           {
             taskId: pendingTask.id,
             spec: pendingTask.spec,
@@ -144,60 +163,50 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   async dispatch(
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<DispatchResult> {
-    const taskRow = await this.storage.createTask(spec, secrets);
+    options: TaskBrokerDispatchOptions,
+  ): Promise<{ taskId: string }> {
+    const taskRow = await this.storage.createTask(options);
     this.signalDispatch();
     return {
       taskId: taskRow.taskId,
     };
   }
 
-  async get(taskId: string): Promise<DbTaskRow> {
+  async get(taskId: string): Promise<SerializedTask> {
     return this.storage.getTask(taskId);
   }
 
-  observe(
-    options: {
-      taskId: string;
-      after: number | undefined;
-    },
-    callback: (
-      error: Error | undefined,
-      result: { events: DbTaskEventRow[] },
-    ) => void,
-  ): () => void {
-    const { taskId } = options;
+  event$(options: {
+    taskId: string;
+    after?: number;
+  }): Observable<{ events: SerializedTaskEvent[] }> {
+    return new ObservableImpl(observer => {
+      const { taskId } = options;
 
-    let cancelled = false;
-    const unsubscribe = () => {
-      cancelled = true;
-    };
-
-    (async () => {
       let after = options.after;
-      while (!cancelled) {
-        const result = await this.storage.listEvents({ taskId, after: after });
-        const { events } = result;
-        if (events.length) {
-          after = events[events.length - 1].id;
-          try {
-            callback(undefined, result);
-          } catch (error) {
-            callback(error, { events: [] });
+      let cancelled = false;
+
+      (async () => {
+        while (!cancelled) {
+          const result = await this.storage.listEvents({ taskId, after });
+          const { events } = result;
+          if (events.length) {
+            after = events[events.length - 1].id;
+            observer.next(result);
           }
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
+      })();
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    })();
-
-    return unsubscribe;
+      return () => {
+        cancelled = true;
+      };
+    });
   }
 
-  async vacuumTasks(timeoutS: { timeoutS: number }): Promise<void> {
-    const { tasks } = await this.storage.listStaleTasks(timeoutS);
+  async vacuumTasks(options: { timeoutS: number }): Promise<void> {
+    const { tasks } = await this.storage.listStaleTasks(options);
     await Promise.all(
       tasks.map(async task => {
         try {

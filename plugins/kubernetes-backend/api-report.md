@@ -5,10 +5,13 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
-import { FetchResponse } from '@backstage/plugin-kubernetes-common';
-import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
+import type { JsonObject } from '@backstage/types';
+import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
+import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Logger as Logger_2 } from 'winston';
+import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { PodStatus } from '@kubernetes/client-node/dist/top';
 
 // Warning: (ae-missing-release-tag) "AWSClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -16,6 +19,8 @@ import { Logger as Logger_2 } from 'winston';
 export interface AWSClusterDetails extends ClusterDetails {
   // (undocumented)
   assumeRole?: string;
+  // (undocumented)
+  externalId?: string;
 }
 
 // Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -25,9 +30,14 @@ export interface ClusterDetails {
   // (undocumented)
   authProvider: string;
   // (undocumented)
+  caData?: string | undefined;
+  dashboardApp?: string;
+  dashboardParameters?: JsonObject;
+  dashboardUrl?: string;
   name: string;
   // (undocumented)
   serviceAccountToken?: string | undefined;
+  skipMetricsLookup?: boolean;
   // (undocumented)
   skipTLSVerify?: boolean;
   // (undocumented)
@@ -36,20 +46,21 @@ export interface ClusterDetails {
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // Warning: (ae-missing-release-tag) "CustomResource" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export interface CustomResource {
+export interface CustomResource extends ObjectToFetch {
   // (undocumented)
-  apiVersion: string;
-  // (undocumented)
-  group: string;
-  // (undocumented)
-  plural: string;
+  objectType: 'customresources';
 }
+
+// Warning: (ae-missing-release-tag) "DEFAULT_OBJECTS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const DEFAULT_OBJECTS: ObjectToFetch[];
 
 // Warning: (ae-missing-release-tag) "FetchResponseWrapper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -66,12 +77,90 @@ export interface FetchResponseWrapper {
 // @public (undocumented)
 export interface GKEClusterDetails extends ClusterDetails {}
 
+// Warning: (ae-missing-release-tag) "KubernetesBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class KubernetesBuilder {
+  constructor(env: KubernetesEnvironment);
+  // (undocumented)
+  build(): KubernetesBuilderReturn;
+  // (undocumented)
+  protected buildClusterSupplier(): KubernetesClustersSupplier;
+  // (undocumented)
+  protected buildCustomResources(): CustomResource[];
+  // (undocumented)
+  protected buildFetcher(): KubernetesFetcher;
+  // (undocumented)
+  protected buildHttpServiceLocator(
+    _clusterDetails: ClusterDetails[],
+  ): KubernetesServiceLocator;
+  // (undocumented)
+  protected buildMultiTenantServiceLocator(
+    clusterDetails: ClusterDetails[],
+  ): KubernetesServiceLocator;
+  // (undocumented)
+  protected buildObjectsProvider(
+    options: KubernetesObjectsProviderOptions,
+  ): KubernetesObjectsProvider;
+  // (undocumented)
+  protected buildRouter(
+    objectsProvider: KubernetesObjectsProvider,
+    clusterDetails: ClusterDetails[],
+  ): express.Router;
+  // (undocumented)
+  protected buildServiceLocator(
+    method: ServiceLocatorMethod,
+    clusterDetails: ClusterDetails[],
+  ): KubernetesServiceLocator;
+  // (undocumented)
+  static createBuilder(env: KubernetesEnvironment): KubernetesBuilder;
+  // (undocumented)
+  protected readonly env: KubernetesEnvironment;
+  // (undocumented)
+  protected fetchClusterDetails(
+    clusterSupplier: KubernetesClustersSupplier,
+  ): Promise<ClusterDetails[]>;
+  // (undocumented)
+  protected getObjectTypesToFetch(): ObjectToFetch[] | undefined;
+  // (undocumented)
+  protected getServiceLocatorMethod(): ServiceLocatorMethod;
+  // (undocumented)
+  setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
+  // (undocumented)
+  setFetcher(fetcher?: KubernetesFetcher): this;
+  // (undocumented)
+  setObjectsProvider(objectsProvider?: KubernetesObjectsProvider): this;
+  // (undocumented)
+  setServiceLocator(serviceLocator?: KubernetesServiceLocator): this;
+}
+
+// @public
+export type KubernetesBuilderReturn = Promise<{
+  router: express.Router;
+  clusterDetails: ClusterDetails[];
+  clusterSupplier: KubernetesClustersSupplier;
+  customResources: CustomResource[];
+  fetcher: KubernetesFetcher;
+  objectsProvider: KubernetesObjectsProvider;
+  serviceLocator: KubernetesServiceLocator;
+}>;
+
 // Warning: (ae-missing-release-tag) "KubernetesClustersSupplier" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface KubernetesClustersSupplier {
   // (undocumented)
   getClusters(): Promise<ClusterDetails[]>;
+}
+
+// Warning: (ae-missing-release-tag) "KubernetesEnvironment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesEnvironment {
+  // (undocumented)
+  config: Config;
+  // (undocumented)
+  logger: Logger_2;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesFetcher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -82,6 +171,37 @@ export interface KubernetesFetcher {
   fetchObjectsForService(
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper>;
+  // (undocumented)
+  fetchPodMetricsByNamespace(
+    clusterDetails: ClusterDetails,
+    namespace: string,
+  ): Promise<PodStatus[]>;
+}
+
+// Warning: (ae-missing-release-tag) "KubernetesObjectsProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesObjectsProvider {
+  // (undocumented)
+  getKubernetesObjectsByEntity(
+    request: ObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
+}
+
+// Warning: (ae-missing-release-tag) "KubernetesObjectsProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesObjectsProviderOptions {
+  // (undocumented)
+  customResources: CustomResource[];
+  // (undocumented)
+  fetcher: KubernetesFetcher;
+  // (undocumented)
+  logger: Logger_2;
+  // (undocumented)
+  objectTypesToFetch?: ObjectToFetch[];
+  // (undocumented)
+  serviceLocator: KubernetesServiceLocator;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesObjectTypes" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -94,6 +214,8 @@ export type KubernetesObjectTypes =
   | 'deployments'
   | 'replicasets'
   | 'horizontalpodautoscalers'
+  | 'jobs'
+  | 'cronjobs'
   | 'ingresses'
   | 'customresources';
 
@@ -104,16 +226,6 @@ export interface KubernetesServiceLocator {
   // (undocumented)
   getClustersByServiceId(serviceId: string): Promise<ClusterDetails[]>;
 }
-
-// Warning: (ae-forgotten-export) The symbol "KubernetesFanOutHandler" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "makeRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const makeRouter: (
-  logger: Logger_2,
-  kubernetesFanOutHandler: KubernetesFanOutHandler,
-  clusterDetails: ClusterDetails[],
-) => express.Router;
 
 // Warning: (ae-missing-release-tag) "ObjectFetchParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -130,9 +242,28 @@ export interface ObjectFetchParams {
   // (undocumented)
   labelSelector: string;
   // (undocumented)
-  objectTypesToFetch: Set<KubernetesObjectTypes>;
+  objectTypesToFetch: Set<ObjectToFetch>;
   // (undocumented)
   serviceId: string;
+}
+
+// Warning: (ae-missing-release-tag) "ObjectsByEntityRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ObjectsByEntityRequest = KubernetesRequestBody;
+
+// Warning: (ae-missing-release-tag) "ObjectToFetch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ObjectToFetch {
+  // (undocumented)
+  apiVersion: string;
+  // (undocumented)
+  group: string;
+  // (undocumented)
+  objectType: KubernetesObjectTypes;
+  // (undocumented)
+  plural: string;
 }
 
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -156,6 +287,4 @@ export interface ServiceAccountClusterDetails extends ClusterDetails {}
 //
 // @public (undocumented)
 export type ServiceLocatorMethod = 'multiTenant' | 'http';
-
-// (No @packageDocumentation comment for this package)
 ```

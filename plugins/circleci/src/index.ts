@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards Circle CI
+ *
+ * @packageDocumentation
+ */
+
 export {
   circleCIPlugin,
   circleCIPlugin as plugin,

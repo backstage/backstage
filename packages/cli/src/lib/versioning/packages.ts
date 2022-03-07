@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import minimatch from 'minimatch';
+import { getPackages } from '@manypkg/get-packages';
 import { runPlain } from '../../lib/run';
 import { NotFoundError } from '../errors';
-
-const PREFIX = '@backstage';
 
 const DEP_TYPES = [
   'dependencies',
   'devDependencies',
   'peerDependencies',
   'optionalDependencies',
-];
+] as const;
 
 // Package data as returned by `yarn info`
-type YarnInfoInspectData = {
+export type YarnInfoInspectData = {
   name: string;
-  'dist-tags': { latest: string };
+  'dist-tags': Record<string, string>;
   versions: string[];
   time: { [version: string]: string };
 };
@@ -66,25 +65,27 @@ export async function fetchPackageInfo(
 /** Map all dependencies in the repo as dependency => dependents */
 export async function mapDependencies(
   targetDir: string,
+  pattern: string,
 ): Promise<Map<string, PkgVersionInfo[]>> {
-  const { Project } = require('@lerna/project');
-  const project = new Project(targetDir);
-  const packages = await project.getPackages();
+  const { packages, root } = await getPackages(targetDir);
+
+  // Include root package.json too
+  packages.push(root);
 
   const dependencyMap = new Map<string, PkgVersionInfo[]>();
   for (const pkg of packages) {
     const deps = DEP_TYPES.flatMap(
-      t => Object.entries(pkg.get(t) ?? {}) as [string, string][],
+      t => Object.entries(pkg.packageJson[t] ?? {}) as [string, string][],
     );
 
     for (const [name, range] of deps) {
-      if (name.startsWith(PREFIX)) {
+      if (minimatch(name, pattern)) {
         dependencyMap.set(
           name,
           (dependencyMap.get(name) ?? []).concat({
             range,
-            name: pkg.name,
-            location: pkg.location,
+            name: pkg.packageJson.name,
+            location: pkg.dir,
           }),
         );
       }

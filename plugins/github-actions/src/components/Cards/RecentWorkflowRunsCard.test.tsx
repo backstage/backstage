@@ -24,16 +24,13 @@ import { useWorkflowRuns } from '../useWorkflowRuns';
 import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
 import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
+import { ConfigReader } from '@backstage/core-app-api';
 import {
   errorApiRef,
   configApiRef,
   ConfigApi,
 } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),
@@ -78,20 +75,20 @@ describe('<RecentWorkflowRunsCard />', () => {
     jest.resetAllMocks();
   });
 
-  const renderSubject = (props: RecentWorkflowRunsCardProps = { entity }) =>
+  const renderSubject = (props: RecentWorkflowRunsCardProps = {}) =>
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <ApiProvider
-            apis={ApiRegistry.with(errorApiRef, mockErrorApi).with(
-              configApiRef,
-              configApi,
-            )}
+          <TestApiProvider
+            apis={[
+              [errorApiRef, mockErrorApi],
+              [configApiRef, configApi],
+            ]}
           >
-            <EntityProvider entity={props.entity!}>
+            <EntityProvider entity={entity}>
               <RecentWorkflowRunsCard {...props} />
             </EntityProvider>
-          </ApiProvider>
+          </TestApiProvider>
         </MemoryRouter>
       </ThemeProvider>,
     );
@@ -116,7 +113,7 @@ describe('<RecentWorkflowRunsCard />', () => {
 
   it('requests only the required number of workflow runs', async () => {
     const limit = 3;
-    renderSubject({ entity, limit });
+    renderSubject({ limit });
     expect(useWorkflowRuns).toHaveBeenCalledWith(
       expect.objectContaining({ initialPageSize: limit }),
     );
@@ -131,7 +128,7 @@ describe('<RecentWorkflowRunsCard />', () => {
 
   it('filters workflows by branch if one is specified', async () => {
     const branch = 'master';
-    renderSubject({ entity, branch });
+    renderSubject({ branch });
     expect(useWorkflowRuns).toHaveBeenCalledWith(
       expect.objectContaining({ branch }),
     );

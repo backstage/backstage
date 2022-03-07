@@ -1,0 +1,9 @@
+---
+title: Catalog Graph
+author: SDA SE
+authorUrl: https://sda.se/
+category: Discovery
+description: Extend the Backstage Software Catalog with a graph that shows all entities and their relationships providing an easier way to discover the ecosystem.
+documentation: https://github.com/backstage/backstage/blob/master/plugins/catalog-graph/README.md
+iconUrl: img/catalog-graph.svg
+npmPackageName: '@backstage/plugin-catalog-graph'

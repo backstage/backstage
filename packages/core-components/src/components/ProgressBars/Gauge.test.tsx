@@ -56,16 +56,26 @@ describe('<Gauge />', () => {
   };
 
   it('colors the progress correctly', () => {
-    expect(getProgressColor(palette, 'Not a Number' as any)).toBe('#ddd');
-    expect(getProgressColor(palette, 10)).toBe(error);
-    expect(getProgressColor(palette, 50)).toBe(warning);
-    expect(getProgressColor(palette, 90)).toBe(ok);
+    expect(getProgressColor({ palette, value: 'Not a Number' as any })).toBe(
+      '#ddd',
+    );
+    expect(getProgressColor({ palette, value: 10 })).toBe(error);
+    expect(getProgressColor({ palette, value: 50 })).toBe(warning);
+    expect(getProgressColor({ palette, value: 90 })).toBe(ok);
   });
 
   it('colors the inverse progress correctly', () => {
-    expect(getProgressColor(palette, 'Not a Number' as any)).toBe('#ddd');
-    expect(getProgressColor(palette, 10, true)).toBe(ok);
-    expect(getProgressColor(palette, 50, true)).toBe(warning);
-    expect(getProgressColor(palette, 90, true)).toBe(error);
+    expect(
+      getProgressColor({
+        palette,
+        value: 'Not a Number' as any,
+        inverse: true,
+      }),
+    ).toBe('#ddd');
+    expect(getProgressColor({ palette, value: 10, inverse: true })).toBe(ok);
+    expect(getProgressColor({ palette, value: 50, inverse: true })).toBe(
+      warning,
+    );
+    expect(getProgressColor({ palette, value: 90, inverse: true })).toBe(error);
   });
 });

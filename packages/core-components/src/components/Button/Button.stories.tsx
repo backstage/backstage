@@ -15,22 +15,16 @@
  */
 import React, { ComponentType } from 'react';
 import { Button } from './Button';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  Divider,
-  Link,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Button as MaterialButton,
-} from '@material-ui/core';
-// We don't want to export RoutingProvider from core-app-api, but it's way easier to
-// use here. This hack only works in storybook stories.
-// TODO: Export a nicer to user routing provider, perhaps from test-utils
-// eslint-disable-next-line monorepo/no-internal-import
-import { RoutingProvider } from '@backstage/core-app-api/src/routing/RoutingProvider';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import MaterialButton from '@material-ui/core/Button';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { Link } from '../Link';
 
 const routeRef = createRouteRef({
   id: 'storybook.test-route',
@@ -45,36 +39,29 @@ export default {
   title: 'Inputs/Button',
   component: Button,
   decorators: [
-    (Story: ComponentType<{}>) => (
-      <>
-        <Typography>
-          A collection of buttons that should be used in the Backstage
-          interface. These leverage the properties inherited from{' '}
-          <Link href="https://material-ui.com/components/buttons/">
-            Material-UI Button
-          </Link>
-          , but include an opinionated set that align to the Backstage design.
-        </Typography>
+    (Story: ComponentType<{}>) =>
+      wrapInTestApp(
+        <>
+          <Typography>
+            A collection of buttons that should be used in the Backstage
+            interface. These leverage the properties inherited from{' '}
+            <Link to="https://material-ui.com/components/buttons/">
+              Material-UI Button
+            </Link>
+            , but include an opinionated set that align to the Backstage design.
+          </Typography>
 
-        <Divider />
+          <Divider />
 
-        <MemoryRouter>
-          <RoutingProvider
-            routeBindings={new Map()}
-            routeObjects={[]}
-            routeParents={new Map()}
-            routePaths={new Map([[routeRef, '/hello']])}
-          >
+          <div>
             <div>
-              <div>
-                <Location />
-              </div>
-              <Story />
+              <Location />
             </div>
-          </RoutingProvider>
-        </MemoryRouter>
-      </>
-    ),
+            <Story />
+          </div>
+        </>,
+        { mountedRoutes: { '/hello': routeRef } },
+      ),
   ],
 };
 

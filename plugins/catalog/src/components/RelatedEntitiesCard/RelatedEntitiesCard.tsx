@@ -30,27 +30,44 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 
-type Props<T extends Entity> = {
+/** @public */
+export type RelatedEntitiesCardProps<T extends Entity> = {
   variant?: 'gridItem';
   title: string;
   columns: TableColumn<T>[];
-  entityKind: string;
+  entityKind?: string;
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
   asRenderableEntities: (entities: Entity[]) => T[];
 };
 
-export function RelatedEntitiesCard<T extends Entity>({
-  variant = 'gridItem',
-  title,
-  columns,
-  entityKind,
-  relationType,
-  emptyMessage,
-  emptyHelpLink,
-  asRenderableEntities,
-}: Props<T>) {
+/**
+ * A low level card component that can be used as a building block for more
+ * specific cards.
+ *
+ * @remarks
+ *
+ * You probably want to make a dedicated component for your needs, which renders
+ * this card as its implementation with some of the props set to the appropriate
+ * values.
+ *
+ * @public
+ */
+export function RelatedEntitiesCard<T extends Entity>(
+  props: RelatedEntitiesCardProps<T>,
+) {
+  const {
+    variant = 'gridItem',
+    title,
+    columns,
+    entityKind,
+    relationType,
+    emptyMessage,
+    emptyHelpLink,
+    asRenderableEntities,
+  } = props;
+
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: relationType,

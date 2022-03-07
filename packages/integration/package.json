@@ -1,6 +1,7 @@
 {
   "name": "@backstage/integration",
-  "version": "0.5.8",
+  "description": "Helpers for managing integrations towards external systems",
+  "version": "0.8.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -10,6 +11,9 @@
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "common-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -21,28 +25,29 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.5",
-    "cross-fetch": "^3.0.6",
-    "git-url-parse": "~11.4.4",
+    "@backstage/config": "^0.1.15",
+    "cross-fetch": "^3.1.5",
+    "git-url-parse": "^11.6.0",
     "@octokit/rest": "^18.5.3",
     "@octokit/auth-app": "^3.4.0",
-    "luxon": "^1.25.0"
+    "luxon": "^2.0.2",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.3",
-    "@backstage/config-loader": "^0.6.3",
-    "@backstage/test-utils": "^0.1.13",
+    "@backstage/cli": "^0.15.0",
+    "@backstage/config-loader": "^0.9.6",
+    "@backstage/test-utils": "^0.3.0",
     "@types/jest": "^26.0.7",
-    "@types/luxon": "^1.25.0",
-    "msw": "^0.29.0"
+    "@types/luxon": "^2.0.4",
+    "msw": "^0.35.0"
   },
   "files": [
     "dist",

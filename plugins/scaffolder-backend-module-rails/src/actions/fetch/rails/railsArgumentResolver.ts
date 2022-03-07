@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { sep as separatorPath } from 'path';
 
 enum Webpacker {
@@ -51,6 +52,8 @@ export type RailsRunOptions = {
   railsVersion?: RailsVersion;
   skipBundle?: boolean;
   skipWebpackInstall?: boolean;
+  skipTest?: boolean;
+  force?: boolean;
 };
 
 export const railsArgumentResolver = (
@@ -74,6 +77,14 @@ export const railsArgumentResolver = (
 
   if (options?.skipWebpackInstall) {
     argumentsToRun.push('--skip-webpack-install');
+  }
+
+  if (options?.skipTest) {
+    argumentsToRun.push('--skip-test');
+  }
+
+  if (options?.force) {
+    argumentsToRun.push('--force');
   }
 
   if (

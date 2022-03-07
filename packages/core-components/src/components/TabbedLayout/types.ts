@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 import * as React from 'react';
 
 export type SubRoute = {

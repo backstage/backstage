@@ -40,7 +40,7 @@ export class CostInsightsClient implements CostInsightsApi { ... }
 
 ```ts
 // packages/app/src/api.ts
-import { createApiFactory } from '@backstage/core';
+import { createApiFactory } from '@backstage/core-plugin-api';
 import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
 import { CostInsightsClient } from './path/to/file';
 
@@ -79,21 +79,27 @@ To expose the plugin to your users, you can integrate the `cost-insights` route 
  export const AppSidebar = () => (
    <Sidebar>
      <SidebarLogo />
-     <SidebarSearch />
+     <SidebarGroup icon={<SearchIcon />} to="/search">
+       <SidebarSearch />
+     </SidebarGroup>
      <SidebarDivider />
      {/* Global nav, not org-specific */}
-     <SidebarItem icon={HomeIcon} to="./" text="Home" />
-     <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-     <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
-     <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-     <SidebarDivider />
-     <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-+    <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+     <SidebarGroup label="Menu" icon={<MenuIcon />}>
+       <SidebarItem icon={HomeIcon} to="./" text="Home" />
+       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+       <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
+       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+       <SidebarDivider />
+       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+  +    <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+     </SidebarGroup>
      {/* End global nav */}
      <SidebarDivider />
      <SidebarSpace />
      <SidebarDivider />
-     <SidebarSettings />
+     <SidebarGroup icon={<UserSettingsSignInAvatar />} to="/settings">
+       <SidebarSettings />
+     </SidebarGroup>
    </Sidebar>
  );
 ```
@@ -146,6 +152,36 @@ costInsights:
       name: Metric B
     metricC:
       name: Metric C
+```
+
+### Currencies (Optional)
+
+In the `Cost Overview` panel, users can choose from a dropdown of currencies to see costs in, such as Engineers or USD. Currencies must be defined as keys on the `currencies` field. A user-friendly label and unit are **required**. If not set, the `defaultCurrencies` in `currenc.ts` will be used.
+
+A currency without `kind` is reserved to calculate cost for `engineers`. There should only be one currency without `kind`.
+
+```yaml
+## ./app-config.yaml
+costInsights:
+  engineerCost: 200000
+  products:
+    productA:
+      name: Some Cloud Product
+      icon: storage
+    productB:
+      name: Some Other Cloud Product
+      icon: data
+  currencies:
+    metricA:
+      currencyA:
+        label: Currency A
+        unit: Unit A
+      currencyB:
+        label: Currency B
+        kind: CURRENCY_B
+        unit: Unit B
+        prefix: B
+        rate: 3.5
 ```
 
 ## Alerts

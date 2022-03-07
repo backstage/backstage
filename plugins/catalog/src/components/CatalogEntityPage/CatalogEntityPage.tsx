@@ -16,12 +16,14 @@
 
 import React from 'react';
 import { Outlet } from 'react-router';
-import { EntityLoaderProvider } from '../EntityLoaderProvider';
+import { AsyncEntityProvider } from '@backstage/plugin-catalog-react';
+import { useEntityFromUrl } from './useEntityFromUrl';
 
-export const CatalogEntityPage = () => {
+/** @public */
+export function CatalogEntityPage() {
   return (
-    <EntityLoaderProvider>
+    <AsyncEntityProvider {...useEntityFromUrl()}>
       <Outlet />
-    </EntityLoaderProvider>
+    </AsyncEntityProvider>
   );
-};
+}

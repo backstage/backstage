@@ -15,7 +15,6 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { costInsightsApiRef, CostInsightsApi } from '../api';
 import { LoadingContext, LoadingContextProps } from '../hooks/useLoading';
 import { GroupsContext, GroupsContextProps } from '../hooks/useGroups';
 import { FilterContext, FilterContextProps } from '../hooks/useFilters';
@@ -28,16 +27,12 @@ import {
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
 import { Group, Duration } from '../types';
 
-// TODO(Rugvip): Could be good to have a clear place to put test utils that is linted accordingly
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
-import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
-
 type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
-export type MockFilterProviderProps = PartialPropsWithChildren<FilterContextProps>;
+export type MockFilterProviderProps =
+  PartialPropsWithChildren<FilterContextProps>;
 
 export const MockFilterProvider = ({
   children,
@@ -61,7 +56,8 @@ export const MockFilterProvider = ({
   );
 };
 
-export type MockLoadingProviderProps = PartialPropsWithChildren<LoadingContextProps>;
+export type MockLoadingProviderProps =
+  PartialPropsWithChildren<LoadingContextProps>;
 
 export const MockLoadingProvider = ({
   children,
@@ -79,7 +75,8 @@ export const MockLoadingProvider = ({
   );
 };
 
-export type MockConfigProviderProps = PartialPropsWithChildren<ConfigContextProps>;
+export type MockConfigProviderProps =
+  PartialPropsWithChildren<ConfigContextProps>;
 
 export const MockConfigProvider = ({
   children,
@@ -99,7 +96,8 @@ export const MockConfigProvider = ({
   );
 };
 
-export type MockCurrencyProviderProps = PartialPropsWithChildren<CurrencyContextProps>;
+export type MockCurrencyProviderProps =
+  PartialPropsWithChildren<CurrencyContextProps>;
 
 export const MockCurrencyProvider = ({
   children,
@@ -120,7 +118,8 @@ export const MockCurrencyProvider = ({
   );
 };
 
-export type MockBillingDateProviderProps = PartialPropsWithChildren<BillingDateContextProps>;
+export type MockBillingDateProviderProps =
+  PartialPropsWithChildren<BillingDateContextProps>;
 
 export const MockBillingDateProvider = ({
   children,
@@ -150,7 +149,8 @@ export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   );
 };
 
-export type MockGroupsProviderProps = PartialPropsWithChildren<GroupsContextProps>;
+export type MockGroupsProviderProps =
+  PartialPropsWithChildren<GroupsContextProps>;
 
 export const MockGroupsProvider = ({
   children,
@@ -164,45 +164,4 @@ export const MockGroupsProvider = ({
       {children}
     </GroupsContext.Provider>
   );
-};
-
-export type MockCostInsightsApiProviderProps = PartialPropsWithChildren<{
-  identityApi: Partial<IdentityApi>;
-  costInsightsApi: Partial<CostInsightsApi>;
-}>;
-
-export const MockCostInsightsApiProvider = ({
-  children,
-  ...context
-}: MockCostInsightsApiProviderProps) => {
-  const defaultIdentityApi: IdentityApi = {
-    getProfile: jest.fn(),
-    getIdToken: jest.fn(),
-    getUserId: jest.fn(),
-    signOut: jest.fn(),
-  };
-
-  const defaultCostInsightsApi: CostInsightsApi = {
-    getAlerts: jest.fn(),
-    getDailyMetricData: jest.fn(),
-    getGroupDailyCost: jest.fn(),
-    getGroupProjects: jest.fn(),
-    getLastCompleteBillingDate: jest.fn(),
-    getProductInsights: jest.fn(),
-    getProjectDailyCost: jest.fn(),
-    getUserGroups: jest.fn(),
-  };
-
-  // TODO: defaultConfigApiRef: ConfigApiRef
-
-  const defaultContext = ApiRegistry.from([
-    [identityApiRef, { ...defaultIdentityApi, ...context.identityApi }],
-    [
-      costInsightsApiRef,
-      { ...defaultCostInsightsApi, ...context.costInsightsApi },
-    ],
-    // [configApiRef, { ...defaultConfigApiRef, ...context.configApiRef }]
-  ]);
-
-  return <ApiProvider apis={defaultContext}>{children}</ApiProvider>;
 };

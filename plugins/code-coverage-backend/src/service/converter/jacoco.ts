@@ -34,8 +34,8 @@ export class Jacoco implements Converter {
   /**
    * Converts jacoco into shared json coverage format
    *
-   * @param xml jacoco xml object
-   * @param scmFiles list of files that are committed to SCM
+   * @param xml - jacoco xml object
+   * @param scmFiles - list of files that are committed to SCM
    */
   convert(xml: JacocoXML, scmFiles: Array<string>): Array<FileEntry> {
     const jscov: Array<FileEntry> = [];
@@ -83,7 +83,7 @@ export class Jacoco implements Converter {
   private extractLines(sourcefile: JacocoSourceFile): ParsedLine[] {
     const parsed: ParsedLine[] = [];
 
-    sourcefile.line.forEach(l => {
+    sourcefile.line?.forEach(l => {
       parsed.push({
         number: parseInt(l.$.nr, 10),
         missed_instructions: parseInt(l.$.mi, 10),

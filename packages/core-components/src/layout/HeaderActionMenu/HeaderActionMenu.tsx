@@ -15,15 +15,14 @@
  */
 
 import React, { Fragment, ReactElement, ComponentType } from 'react';
-import {
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Popover,
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText, {
   ListItemTextProps,
-} from '@material-ui/core';
+} from '@material-ui/core/ListItemText';
+import Popover from '@material-ui/core/Popover';
 import { VerticalMenuIcon } from './VerticalMenuIcon';
 
 type ActionItemProps = {
@@ -66,7 +65,8 @@ export type HeaderActionMenuProps = {
   actionItems: ActionItemProps[];
 };
 
-export const HeaderActionMenu = ({ actionItems }: HeaderActionMenuProps) => {
+export function HeaderActionMenu(props: HeaderActionMenuProps) {
+  const { actionItems } = props;
   const [open, setOpen] = React.useState(false);
   const anchorElRef = React.useRef(null);
 
@@ -103,4 +103,4 @@ export const HeaderActionMenu = ({ actionItems }: HeaderActionMenuProps) => {
       </Popover>
     </Fragment>
   );
-};
+}

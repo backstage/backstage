@@ -17,10 +17,13 @@
 import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
-import { relative as relativePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'path';
 import { paths } from '../paths';
-import { makeConfigs } from './config';
-import { BuildOptions } from './types';
+import { makeRollupConfigs } from './config';
+import { BuildOptions, Output } from './types';
+import { buildTypeDefinitions } from './buildTypeDefinitions';
+import { getRoleInfo } from '../role';
+import { runParallelWorkers } from '../parallel';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -71,7 +74,7 @@ export function formatErrorMessage(error: any) {
   return msg;
 }
 
-async function build(config: RollupOptions) {
+async function rollupBuild(config: RollupOptions) {
   try {
     const bundle = await rollup(config);
     if (config.output) {
@@ -103,7 +106,63 @@ export const buildPackage = async (options: BuildOptions) => {
     /* Errors ignored, this is just a warning */
   }
 
-  const configs = await makeConfigs(options);
+  const rollupConfigs = await makeRollupConfigs(options);
+
   await fs.remove(paths.resolveTarget('dist'));
-  await Promise.all(configs.map(build));
+
+  const buildTasks = rollupConfigs.map(rollupBuild);
+
+  if (options.outputs.has(Output.types) && options.useApiExtractor) {
+    buildTasks.push(buildTypeDefinitions());
+  }
+
+  await Promise.all(buildTasks);
 };
+
+export const buildPackages = async (options: BuildOptions[]) => {
+  if (options.some(opt => !opt.targetDir)) {
+    throw new Error('targetDir must be set for all build options');
+  }
+  const rollupConfigs = await Promise.all(options.map(makeRollupConfigs));
+
+  await Promise.all(
+    options.map(({ targetDir }) => fs.remove(resolvePath(targetDir!, 'dist'))),
+  );
+
+  const buildTasks = rollupConfigs.flat().map(opts => () => rollupBuild(opts));
+
+  const typeDefinitionTargetDirs = options
+    .filter(
+      ({ outputs, useApiExtractor }) =>
+        outputs.has(Output.types) && useApiExtractor,
+    )
+    .map(_ => _.targetDir!);
+
+  if (typeDefinitionTargetDirs.length > 0) {
+    // Make sure this one is started first
+    buildTasks.unshift(() => buildTypeDefinitions(typeDefinitionTargetDirs));
+  }
+
+  await runParallelWorkers({
+    items: buildTasks,
+    worker: async task => task(),
+  });
+};
+
+export function getOutputsForRole(role: string): Set<Output> {
+  const outputs = new Set<Output>();
+
+  for (const output of getRoleInfo(role).output) {
+    if (output === 'cjs') {
+      outputs.add(Output.cjs);
+    }
+    if (output === 'esm') {
+      outputs.add(Output.esm);
+    }
+    if (output === 'types') {
+      outputs.add(Output.types);
+    }
+  }
+
+  return outputs;
+}

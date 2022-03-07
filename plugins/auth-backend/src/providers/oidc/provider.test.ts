@@ -15,7 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import express from 'express';
 import { Session } from 'express-session';
 import { JWK, JWT } from 'jose';
@@ -24,7 +24,8 @@ import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { OAuthAdapter } from '../../lib/oauth';
 import { AuthProviderFactoryOptions } from '../types';
-import { createOidcProvider, OidcAuthProvider } from './provider';
+import { createOidcProvider, OidcAuthProvider, Options } from './provider';
+import { getVoidLogger } from '@backstage/backend-common';
 
 const issuerMetadata = {
   issuer: 'https://oidc.test',
@@ -42,7 +43,23 @@ const issuerMetadata = {
   request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
 };
 
-const clientMetadata = {
+const catalogIdentityClient = {
+  findUser: jest.fn(),
+};
+const tokenIssuer = {
+  issueToken: jest.fn(),
+  listPublicKeys: jest.fn(),
+};
+
+const clientMetadata: Options = {
+  authHandler: async input => ({
+    profile: {
+      displayName: input.userinfo.email,
+    },
+  }),
+  catalogIdentityClient: catalogIdentityClient as unknown as any,
+  logger: getVoidLogger(),
+  tokenIssuer: tokenIssuer as unknown as any,
   callbackUrl: 'https://oidc.test/callback',
   clientId: 'testclientid',
   clientSecret: 'testclientsecret',
@@ -52,7 +69,7 @@ const clientMetadata = {
 
 describe('OidcAuthProvider', () => {
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -70,7 +87,7 @@ describe('OidcAuthProvider', () => {
       rest.get('https://oidc.test/.well-known/openid-configuration', handler),
     );
     const provider = new OidcAuthProvider(clientMetadata);
-    const { strategy } = ((await (provider as any).implementation) as any) as {
+    const { strategy } = (await (provider as any).implementation) as any as {
       strategy: {
         _client: ClientMetadata;
         _issuer: IssuerMetadata;
@@ -138,7 +155,7 @@ describe('OidcAuthProvider', () => {
     const req = {
       method: 'GET',
       url: 'https://oidc.test/?code=test2',
-      session: ({ 'oidc:oidc.test': 'test' } as any) as Session,
+      session: { 'oidc:oidc.test': 'test' } as any as Session,
     } as express.Request;
     await provider.handler(req);
     expect(requestSequence).toEqual([0, 1, 2].map(i => requests[i].url));
@@ -160,7 +177,7 @@ describe('OidcAuthProvider', () => {
         ...clientMetadata,
         metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
       },
-    });
+    } as any);
     const options = {
       globalConfig: {
         appUrl: 'https://oidc.test',

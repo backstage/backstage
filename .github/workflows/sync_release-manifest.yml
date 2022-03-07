@@ -1,0 +1,69 @@
+name: Sync Release Manifest
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version number, without any 'v' prefix
+        required: true
+
+jobs:
+  create-new-version:
+    runs-on: ubuntu-latest
+    steps:
+      # Setup node & install deps before checkout, keeping install quick
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - name: Install dependencies
+        # Just the deps for the assemble manifest script
+        run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: backstage
+          # 'v' prefix is added here for the tag, we keep it out of the manifest logic
+          ref: v${{ github.event.inputs.version }}
+
+      # Checkout backstage/versions into /backstage/versions, which is where store the output
+      - name: Checkout versions
+        uses: actions/checkout@v2
+        with:
+          repository: backstage/versions
+          path: backstage/versions
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'Github versions workflow'
+
+      - name: Create release
+        # This grabs the scripts from master in order to support backfills
+        run: |
+          cd backstage
+          mkdir -p scripts
+          wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
+          node scripts/assemble-manifest.js ${{ github.event.inputs.version }}
+          cd versions
+          git add .
+          git commit -am "${{ github.event.inputs.version }}"
+          git push
+
+      - name: Dispatch update-helper update
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while
+          script: |
+            console.log('Dispatching upgrade helper sync');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'backstage',
+              repo: 'upgrade-helper-diff',
+              workflow_id: 'release.yml',
+              ref: 'master',
+              inputs: {
+                version: require('./backstage/packages/create-app/package.json').version,
+                releaseVersion: require('./backstage/package.json').version
+              },
+            });

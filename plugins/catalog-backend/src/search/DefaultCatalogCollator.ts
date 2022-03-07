@@ -14,34 +14,70 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
-import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
-import fetch from 'cross-fetch';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
+import {
+  Entity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import {
+  CatalogApi,
+  CatalogClient,
+  GetEntitiesRequest,
+} from '@backstage/catalog-client';
+import {
+  catalogEntityReadPermission,
+  CatalogEntityDocument,
+} from '@backstage/plugin-catalog-common';
 
-export interface CatalogEntityDocument extends IndexableDocument {
-  componentType: string;
-  namespace: string;
-  kind: string;
-  lifecycle: string;
-  owner: string;
-}
-
-export class DefaultCatalogCollator implements DocumentCollator {
+/**
+ * @public
+ * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
+ * use `DefaultCatalogCollatorFactory` instead.
+ */
+export class DefaultCatalogCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
+  protected filter?: GetEntitiesRequest['filter'];
+  protected readonly catalogClient: CatalogApi;
   public readonly type: string = 'software-catalog';
+  public readonly visibilityPermission = catalogEntityReadPermission;
+  protected tokenManager: TokenManager;
 
-  constructor({
-    discovery,
-    locationTemplate,
-  }: {
+  static fromConfig(
+    _config: Config,
+    options: {
+      discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
+      filter?: GetEntitiesRequest['filter'];
+    },
+  ) {
+    return new DefaultCatalogCollator({
+      ...options,
+    });
+  }
+
+  constructor(options: {
     discovery: PluginEndpointDiscovery;
+    tokenManager: TokenManager;
     locationTemplate?: string;
+    filter?: GetEntitiesRequest['filter'];
+    catalogClient?: CatalogApi;
   }) {
+    const { discovery, locationTemplate, filter, catalogClient, tokenManager } =
+      options;
+
     this.discovery = discovery;
     this.locationTemplate =
       locationTemplate || '/catalog/:namespace/:kind/:name';
+    this.filter = filter;
+    this.catalogClient =
+      catalogClient || new CatalogClient({ discoveryApi: discovery });
+    this.tokenManager = tokenManager;
   }
 
   protected applyArgsToFormat(
@@ -55,27 +91,51 @@ export class DefaultCatalogCollator implements DocumentCollator {
     return formatted.toLowerCase();
   }
 
+  private isUserEntity(entity: Entity): entity is UserEntity {
+    return entity.kind.toLocaleUpperCase('en-US') === 'USER';
+  }
+
+  private getDocumentText(entity: Entity): string {
+    let documentText = entity.metadata.description || '';
+    if (this.isUserEntity(entity)) {
+      if (entity.spec?.profile?.displayName && documentText) {
+        // combine displayName and description
+        const displayName = entity.spec?.profile?.displayName;
+        documentText = displayName.concat(' : ', documentText);
+      } else {
+        documentText = entity.spec?.profile?.displayName || documentText;
+      }
+    }
+    return documentText;
+  }
+
   async execute() {
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const res = await fetch(`${baseUrl}/entities`);
-    const entities: Entity[] = await res.json();
-    return entities.map(
-      (entity: Entity): CatalogEntityDocument => {
-        return {
-          title: entity.metadata.name,
-          location: this.applyArgsToFormat(this.locationTemplate, {
-            namespace: entity.metadata.namespace || 'default',
-            kind: entity.kind,
-            name: entity.metadata.name,
-          }),
-          text: entity.metadata.description || '',
-          componentType: entity.spec?.type?.toString() || 'other',
+    const { token } = await this.tokenManager.getToken();
+    const response = await this.catalogClient.getEntities(
+      {
+        filter: this.filter,
+      },
+      { token },
+    );
+    return response.items.map((entity: Entity): CatalogEntityDocument => {
+      return {
+        title: entity.metadata.title ?? entity.metadata.name,
+        location: this.applyArgsToFormat(this.locationTemplate, {
           namespace: entity.metadata.namespace || 'default',
           kind: entity.kind,
-          lifecycle: (entity.spec?.lifecycle as string) || '',
-          owner: (entity.spec?.owner as string) || '',
-        };
-      },
-    );
+          name: entity.metadata.name,
+        }),
+        text: this.getDocumentText(entity),
+        componentType: entity.spec?.type?.toString() || 'other',
+        type: entity.spec?.type?.toString() || 'other',
+        namespace: entity.metadata.namespace || 'default',
+        kind: entity.kind,
+        lifecycle: (entity.spec?.lifecycle as string) || '',
+        owner: (entity.spec?.owner as string) || '',
+        authorization: {
+          resourceRef: stringifyEntityRef(entity),
+        },
+      };
+    });
   }
 }

@@ -15,9 +15,8 @@
  */
 
 import React, { useMemo, useEffect, useState, PropsWithChildren } from 'react';
-import { ThemeProvider, CssBaseline } from '@material-ui/core';
 import { useApi, appThemeApiRef, AppTheme } from '@backstage/core-plugin-api';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 
 // This tries to find the most accurate match, but also falls back to less
 // accurate results in order to avoid errors.
@@ -89,9 +88,5 @@ export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
     throw new Error('App has no themes');
   }
 
-  return (
-    <ThemeProvider theme={appTheme.theme}>
-      <CssBaseline>{children}</CssBaseline>
-    </ThemeProvider>
-  );
+  return <appTheme.Provider children={children} />;
 }

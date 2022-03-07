@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-import OneLoginIcon from '@material-ui/icons/AcUnit';
 import {
   oneloginAuthApiRef,
   OAuthRequestApi,
-  AuthProvider,
+  AuthProviderInfo,
   DiscoveryApi,
 } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 
-type CreateOptions = {
+/**
+ * OneLogin auth provider create options.
+ * @public
+ */
+export type OneLoginAuthCreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
-
   environment?: string;
-  provider?: AuthProvider & { id: string };
+  provider?: AuthProviderInfo;
 };
 
 const DEFAULT_PROVIDER = {
   id: 'onelogin',
   title: 'onelogin',
-  icon: OneLoginIcon,
+  icon: () => null,
 };
 
 const OIDC_SCOPES: Set<String> = new Set([
@@ -49,13 +51,22 @@ const OIDC_SCOPES: Set<String> = new Set([
 
 const SCOPE_PREFIX: string = 'onelogin.';
 
-class OneLoginAuth {
-  static create({
-    discoveryApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-  }: CreateOptions): typeof oneloginAuthApiRef.T {
+/**
+ * Implements a OneLogin OAuth flow.
+ *
+ * @public
+ */
+export default class OneLoginAuth {
+  static create(
+    options: OneLoginAuthCreateOptions,
+  ): typeof oneloginAuthApiRef.T {
+    const {
+      discoveryApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      oauthRequestApi,
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
@@ -78,5 +89,3 @@ class OneLoginAuth {
     });
   }
 }
-
-export default OneLoginAuth;

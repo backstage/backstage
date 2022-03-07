@@ -13,34 +13,76 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useHotCleanup } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  useHotCleanup,
+} from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
+import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
+import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
 import {
   IndexBuilder,
   LunrSearchEngine,
+  SearchEngine,
 } from '@backstage/plugin-search-backend-node';
+import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+import { Logger } from 'winston';
 import { PluginEnvironment } from '../types';
-import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
-import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+
+async function createSearchEngine({
+  logger,
+  database,
+  config,
+}: {
+  logger: Logger;
+  database: PluginDatabaseManager;
+  config: Config;
+}): Promise<SearchEngine> {
+  if (config.has('search.elasticsearch')) {
+    return await ElasticSearchSearchEngine.fromConfig({
+      logger,
+      config,
+    });
+  }
+
+  if (await PgSearchEngine.supported(database)) {
+    return await PgSearchEngine.from({ database });
+  }
+
+  return new LunrSearchEngine({ logger });
+}
 
 export default async function createPlugin({
   logger,
+  permissions,
   discovery,
+  config,
+  database,
+  tokenManager,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
-  const searchEngine = new LunrSearchEngine({ logger });
+  const searchEngine = await createSearchEngine({ config, logger, database });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   // Collators are responsible for gathering documents known to plugins. This
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator({ discovery }),
+    factory: DefaultCatalogCollatorFactory.fromConfig(config, {
+      discovery,
+      tokenManager,
+    }),
   });
 
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultTechDocsCollator({ discovery, logger }),
+    factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
+      discovery,
+      logger,
+      tokenManager,
+    }),
   });
 
   // The scheduler controls when documents are gathered from collators and sent
@@ -54,6 +96,9 @@ export default async function createPlugin({
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
+    types: indexBuilder.getDocumentTypes(),
+    permissions,
+    config,
     logger,
   });
 }

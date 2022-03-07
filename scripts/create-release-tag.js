@@ -17,61 +17,84 @@
  */
 
 const { Octokit } = require('@octokit/rest');
+const path = require('path');
+const fs = require('fs-extra');
 
 const baseOptions = {
   owner: 'backstage',
   repo: 'backstage',
 };
 
-async function main() {
-  const { GITHUB_SHA, GITHUB_TOKEN } = process.env;
-  if (!GITHUB_SHA) {
-    throw new Error('GITHUB_SHA is not set');
-  }
-  if (!GITHUB_TOKEN) {
-    throw new Error('GITHUB_TOKEN is not set');
-  }
+async function getCurrentReleaseTag() {
+  const rootPath = path.resolve(__dirname, '../package.json');
+  return fs.readJson(rootPath).then(_ => _.version);
+}
 
-  const octokit = new Octokit({ auth: GITHUB_TOKEN });
-
-  const date = new Date();
-  const yyyy = date.getUTCFullYear();
-  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const dd = String(date.getUTCDate()).padStart(2, '0');
-  const baseTagName = `release-${yyyy}-${mm}-${dd}`;
-
-  console.log('Requesting existing tags');
-
-  const existingTags = await octokit.repos.listTags({
-    ...baseOptions,
-    per_page: 100,
-  });
-  const existingTagNames = existingTags.data.map(obj => obj.name);
-
-  let tagName = baseTagName;
-  let index = 0;
-  while (existingTagNames.includes(tagName)) {
-    index += 1;
-    tagName = `${baseTagName}.${index}`;
-  }
-
-  console.log(`Creating release tag ${tagName}`);
-
+async function createGitTag(octokit, commitSha, tagName) {
   const annotatedTag = await octokit.git.createTag({
     ...baseOptions,
     tag: tagName,
     message: tagName,
-    object: GITHUB_SHA,
+    object: commitSha,
     type: 'commit',
   });
 
-  await octokit.git.createRef({
-    ...baseOptions,
-    ref: `refs/tags/${tagName}`,
-    sha: annotatedTag.data.sha,
+  try {
+    await octokit.git.createRef({
+      ...baseOptions,
+      ref: `refs/tags/${tagName}`,
+      sha: annotatedTag.data.sha,
+    });
+  } catch (ex) {
+    if (
+      ex.status === 422 &&
+      ex.response.data.message === 'Reference already exists'
+    ) {
+      throw new Error(`Tag ${tagName} already exists in repository`);
+    }
+    console.error(`Tag creation for ${tagName} failed`);
+    throw ex;
+  }
+}
+
+async function dispatchReleaseWorkflows(octokit, releaseVersion) {
+  console.log('Dispatching release manifest sync');
+  await octokit.actions.createWorkflowDispatch({
+    owner: 'backstage',
+    repo: 'backstage',
+    workflow_id: 'sync_release-manifest.yml',
+    ref: 'master',
+    inputs: {
+      version: releaseVersion,
+    },
   });
+}
+
+async function main() {
+  const shouldDispatch = process.argv.includes('--dispatch-workflows');
+
+  if (!process.env.GITHUB_SHA) {
+    throw new Error('GITHUB_SHA is not set');
+  }
+  if (!process.env.GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN is not set');
+  }
+
+  const commitSha = process.env.GITHUB_SHA;
+  const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+  const releaseVersion = await getCurrentReleaseTag();
+  const tagName = `v${releaseVersion}`;
+
+  console.log(`Creating release tag ${tagName} at ${commitSha}`);
+  await createGitTag(octokit, commitSha, tagName);
 
   console.log(`::set-output name=tag_name::${tagName}`);
+
+  if (shouldDispatch) {
+    console.log(`Dispatching release workflows for ${tagName}`);
+    await dispatchReleaseWorkflows(octokit, releaseVersion);
+  }
 }
 
 main().catch(error => {

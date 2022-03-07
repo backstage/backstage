@@ -393,3 +393,137 @@ of interest to you, you might consider contacting the maintainers on Discord or
 my making a GitHub issue describing your use case.
 [This issue](https://github.com/backstage/backstage/issues/2292) also contains
 more context.
+
+## Referencing different environments with the model
+
+Example intent:
+
+> "I have multiple versions of my API deployed in different environments so I
+> want to have `mytool-dev` and `mytool-prod` as different entities."
+
+While it's possible to have different versions of the same thing represented as
+separate entities, it's something we generally recommend against. We believe
+that a developer should be able to just find for example one `Component`
+representing a service, and to be able to see the different code versions that
+are deployed throughout your stack within its view. This reasoning works
+similarly for other kinds as well, such as `API`.
+
+That being said - sometimes the differences between versions are so large, that
+they represent what is for all intents and purposes an entirely new entity as
+seen from the consumer's point of view. This can happen for example for
+different _significant_ major versions of an API, and in particular if the two
+major versions coexist in the ecosystem for some time. In those cases, it can be
+motivated to have one `my-api-v2` and one `my-api-v3` named entity. This matches
+the end user's expectations when searching for the API, and matches the desire
+to maybe have separate documentation for the two and similar. But use this
+sparingly - only do it if the extra modelling burden is outweighed by any
+potential better clarity for users.
+
+When writing your custom plugins, we encourage designing them such that they can
+show all the different variations through environments etc under one canonical
+reference to your software in the catalog. For example for a continuous
+deployment plugin, a user is likely to be greatly helped by being able to see
+the entity's versions deployed in all different environments next to each other
+in one view. That is also where they might be offered the ability to promote
+from one environment to the other, do rollbacks, see their relative performance
+metrics, and similar. This coherency and collection of tooling in one place is
+where something like Backstage can offer the most value and effectiveness of
+use. Splitting your entities apart into small islands makes this harder.
+
+## Implementing custom model extensions
+
+This section walks you through the steps involved extending the catalog model
+with a new Entity type.
+
+### Creating a custom entity definition
+
+The first step of introducing a custom entity is to define what shape and schema
+it has. We do this both using a TypeScript type, along with a JSONSchema schema.
+
+Most of the time you will want to have at least the TypeScript type of your
+extension available in both frontend and backend code, which means you likely
+want to have an isomorphic package that houses these types. Within the Backstage
+main repo the package naming pattern of `<plugin>-common` is used for isomorphic
+packages, and you may choose to adopt this pattern as well.
+
+There's at this point no existing templates for generating isomorphic plugins
+using the `@backstage/cli`. Perhaps the simplest wat to get started right now is
+to copy the contents of one of the existing packages in the main repository,
+such as `plugins/scaffolder-common`, and rename the folder and file contents to
+the desired name. This example uses _foobar_ as the plugin name so the plugin
+will be named _foobar-common_.
+
+Once you have a common package in place you can start adding your own entity
+definitions. For the exact details on how to do that we defer to getting
+inspired by the existing
+[scaffolder-common](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-common/src/index.ts)
+package. But in short you will need to declare a TypeScript type and a
+JSONSchema for the new entity kind.
+
+### Building a custom processor for the entity
+
+The next step is to create a custom processor for your new entity kind. This
+will be used within the catalog to make sure that it's able to ingest and
+validate entities of our new kind. Just like with the definition package, you
+can find inspiration in for example the existing
+[ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend/src/processor/ScaffolderEntitiesProcessor.ts).
+We also provide a high-level example of what a catalog process for a custom
+entity might look like:
+
+```ts
+import { entityKindSchemaValidator } from '@backstage/catalog-model';
+
+export class FoobarEntitiesProcessor implements CatalogProcessor {
+  // You often end up wanting to support multiple versions of your kind as you
+  // iterate on the definition, so we keep each version inside this array.
+  private readonly validators = [
+    // This is where we use the JSONSchema that we export from our isomorphic package
+    entityKindSchemaValidator(foobarEntityV1alpha1Schema),
+  ];
+
+  // validateEntityKind is responsible for signaling to the catalog processing engine
+  // that this entity is valid and should therefore be submitted for further processing.
+  async validateEntityKind(entity: Entity): Promise<boolean> {
+    for (const validator of this.validators) {
+      if (validator(entity)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  async postProcessEntity(
+    entity: Entity,
+    _location: LocationSpec,
+    emit: CatalogProcessorEmit,
+  ): Promise<Entity> {
+    if (
+      entity.apiVersion === 'example.com/v1alpha1' &&
+      entity.kind === 'Foobar'
+    ) {
+      const foobarEntity = entity as FoobarEntityV1alpha1;
+
+      // Here we can modify the entity or emit results related to the entity
+      // Typically you will want to emit any relations associated with the entity here
+      emit(results.relation({ ... }))
+    }
+
+    return entity;
+  }
+}
+```
+
+Once the processor is created it can be wired up to the catalog via the
+`CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
+
+```diff
++ import { FoobarEntitiesProcessor implements CatalogProcessor {
+ } from '@internal/plugin-foobar-backend';
+
+ // ...
+
+     const builder = await CatalogBuilder.create(env);
++    builder.addProcessor(new FoobarEntitiesProcessor());
+     const { processingEngine, router } = await builder.build();
+```

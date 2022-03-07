@@ -31,12 +31,8 @@ import { useReleaseStatsContext } from '../../contexts/ReleaseStatsContext';
 
 export function InDepth() {
   const { releaseStats } = useReleaseStatsContext();
-  const {
-    averageReleaseTime,
-    progress,
-    releaseCommitPairs,
-    run,
-  } = useGetReleaseTimes();
+  const { averageReleaseTime, progress, releaseCommitPairs, run } =
+    useGetReleaseTimes();
 
   const skipped =
     Object.keys(releaseStats.releases).length - releaseCommitPairs.length;

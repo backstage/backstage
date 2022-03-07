@@ -16,7 +16,7 @@
 import React from 'react';
 import { GetIncidentsOpts, ilertApiRef, TableState } from '../api';
 import { AuthenticationError } from '@backstage/errors';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import {
   ACCEPTED,
   PENDING,

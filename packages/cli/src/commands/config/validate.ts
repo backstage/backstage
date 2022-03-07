@@ -22,5 +22,7 @@ export default async (cmd: Command) => {
     args: cmd.config,
     fromPackage: cmd.package,
     mockEnv: cmd.lax,
+    fullVisibility: !cmd.frontend,
+    withDeprecatedKeys: cmd.deprecated,
   });
 };

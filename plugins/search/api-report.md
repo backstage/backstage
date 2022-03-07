@@ -8,22 +8,31 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { IndexableDocument } from '@backstage/search-common';
-import { JsonObject } from '@backstage/config';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { IndexableDocument } from '@backstage/plugin-search-common';
+import { InputBaseProps } from '@material-ui/core';
+import { JsonObject } from '@backstage/types';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { SearchQuery } from '@backstage/search-common';
-import { SearchResult as SearchResult_2 } from '@backstage/search-common';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "DefaultResultListItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const DefaultResultListItem: ({
   result,
+  icon,
+  secondaryAction,
+  lineClamp,
 }: {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
   result: IndexableDocument;
+  lineClamp?: number | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "FiltersProps" needs to be exported by the entry point index.d.ts
@@ -55,33 +64,79 @@ export type FiltersState = {
   checked: Array<string>;
 };
 
+// Warning: (ae-missing-release-tag) "HomePageSearchBar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HomePageSearchBar: ({
+  ...props
+}: Partial<Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>>) => JSX.Element;
+
+// @public
+export type HomePageSearchBarProps = Partial<
+  Omit<SearchBarBaseProps, 'onChange' | 'onSubmit'>
+>;
+
 // Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SearchApi" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "SearchApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SearchApi {
+  // (undocumented)
+  query(query: SearchQuery): Promise<SearchResultSet>;
+}
+
 // Warning: (ae-missing-release-tag) "searchApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SearchBar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const SearchBar: ({ className, debounceTime }: Props) => JSX.Element;
+export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
+  filterSelectedOptions?: boolean;
+  limitTags?: number;
+  multiple?: boolean;
+};
+
+// @public
+export const SearchBar: ({ onChange, ...props }: SearchBarProps) => JSX.Element;
+
+// @public
+export const SearchBarBase: ({
+  onChange,
+  onKeyDown,
+  onSubmit,
+  debounceTime,
+  clearButton,
+  fullWidth,
+  value: defaultValue,
+  inputProps: defaultInputProps,
+  endAdornment: defaultEndAdornment,
+  ...props
+}: SearchBarBaseProps) => JSX.Element;
+
+// @public
+export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
+  debounceTime?: number;
+  clearButton?: boolean;
+  onClear?: () => void;
+  onSubmit?: () => void;
+  onChange: (value: string) => void;
+};
 
 // Warning: (ae-missing-release-tag) "SearchBarNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
 export const SearchBarNext: ({
-  className,
-  debounceTime,
-}: {
-  className?: string | undefined;
-  debounceTime?: number | undefined;
-}) => JSX.Element;
+  onChange,
+  ...props
+}: Partial<SearchBarBaseProps>) => JSX.Element;
+
+// @public
+export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 // Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -90,26 +145,82 @@ export const SearchContextProvider: ({
   initialState,
   children,
 }: React_2.PropsWithChildren<{
-  initialState?: SettableSearchContext | undefined;
+  initialState?: SearchContextState | undefined;
 }>) => JSX.Element;
+
+// @public
+export type SearchContextState = {
+  term: string;
+  types: string[];
+  filters: JsonObject;
+  pageCursor?: string;
+};
 
 // Warning: (ae-missing-release-tag) "SearchFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const SearchFilter: {
-  ({ component: Element, ...props }: Props_2): JSX.Element;
-  Checkbox(props: Omit<Props_2, 'component'> & Component): JSX.Element;
-  Select(props: Omit<Props_2, 'component'> & Component): JSX.Element;
+  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  Checkbox(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Select(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
+};
+
+// @public (undocumented)
+export type SearchFilterComponentProps = {
+  className?: string;
+  name: string;
+  label?: string;
+  values?: string[] | ((partial: string) => Promise<string[]>);
+  defaultValue?: string[] | string | null;
+  valuesDebounceMs?: number;
 };
 
 // Warning: (ae-missing-release-tag) "SearchFilterNext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
 export const SearchFilterNext: {
-  ({ component: Element, ...props }: Props_2): JSX.Element;
-  Checkbox(props: Omit<Props_2, 'component'> & Component): JSX.Element;
-  Select(props: Omit<Props_2, 'component'> & Component): JSX.Element;
+  ({ component: Element, ...props }: SearchFilterWrapperProps): JSX.Element;
+  Checkbox(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Select(
+    props: Omit<SearchFilterWrapperProps, 'component'> &
+      SearchFilterComponentProps,
+  ): JSX.Element;
+  Autocomplete(props: SearchAutocompleteFilterProps): JSX.Element;
 };
+
+// @public (undocumented)
+export type SearchFilterWrapperProps = SearchFilterComponentProps & {
+  component: (props: SearchFilterComponentProps) => ReactElement;
+  debug?: boolean;
+};
+
+// Warning: (ae-missing-release-tag) "SearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SearchModal: ({
+  open,
+  hidden,
+  toggleModal,
+}: SearchModalProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SearchModalProps {
+  hidden?: boolean;
+  open?: boolean;
+  toggleModal: () => void;
+}
 
 // Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -143,21 +254,73 @@ export const SearchResult: ({
   children: (results: { results: SearchResult_2[] }) => JSX.Element;
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "SearchTypeProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "SearchResultPager" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SearchResultPager: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "SearchType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SearchType: ({
-  values,
-  className,
-  name,
-  defaultValue,
-}: SearchTypeProps) => JSX.Element;
+export const SearchType: {
+  (props: SearchTypeProps): JSX.Element;
+  Accordion(props: SearchTypeAccordionProps): JSX.Element;
+  Tabs(props: SearchTypeTabsProps): JSX.Element;
+};
+
+// @public (undocumented)
+export type SearchTypeAccordionProps = {
+  name: string;
+  types: Array<{
+    value: string;
+    name: string;
+    icon: JSX.Element;
+  }>;
+  defaultValue?: string;
+};
+
+// @public (undocumented)
+export type SearchTypeProps = {
+  className?: string;
+  name: string;
+  values?: string[];
+  defaultValue?: string[] | string | null;
+};
+
+// @public (undocumented)
+export type SearchTypeTabsProps = {
+  types: Array<{
+    value: string;
+    name: string;
+  }>;
+  defaultValue?: string;
+};
 
 // Warning: (ae-missing-release-tag) "SidebarSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SidebarSearch: () => JSX.Element;
+export const SidebarSearch: (props: SidebarSearchProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarSearchModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SidebarSearchModal: (
+  props: SidebarSearchModalProps,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SidebarSearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSearchModalProps = {
+  icon?: IconComponent;
+};
+
+// Warning: (ae-missing-release-tag) "SidebarSearchProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type SidebarSearchProps = {
+  icon?: IconComponent;
+};
 
 // Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -165,11 +328,13 @@ export const SidebarSearch: () => JSX.Element;
 // @public (undocumented)
 export const useSearch: () => SearchContextValue;
 
-// Warnings were encountered during analysis:
-//
-// src/components/SearchContext/SearchContext.d.ts:18:5 - (ae-forgotten-export) The symbol "SettableSearchContext" needs to be exported by the entry point index.d.ts
-// src/components/SearchFilter/SearchFilter.d.ts:13:5 - (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// src/components/SearchFilter/SearchFilter.d.ts:14:5 - (ae-forgotten-export) The symbol "Component" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
+// @public
+export function useSearchModal(initialState?: boolean): {
+  state: {
+    hidden: boolean;
+    open: boolean;
+  };
+  toggleModal: () => void;
+  setOpen: (open: boolean) => void;
+};
 ```

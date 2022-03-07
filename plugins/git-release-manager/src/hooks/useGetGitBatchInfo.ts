@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from 'react';
-import { useAsyncFn } from 'react-use';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 
 import { GitReleaseApi } from '../api/GitReleaseClient';
 import { Project } from '../contexts/ProjectContext';

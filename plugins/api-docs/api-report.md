@@ -9,18 +9,17 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
+import { TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ApiDefinitionCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ApiDefinitionCard: (_: Props) => JSX.Element;
+export const ApiDefinitionCard: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ApiDefinitionWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -46,22 +45,23 @@ const apiDocsPlugin: BackstagePlugin<
     root: RouteRef<undefined>;
   },
   {
-    createComponent: ExternalRouteRef<undefined, true>;
+    registerApi: ExternalRouteRef<undefined, true>;
   }
 >;
 export { apiDocsPlugin };
 export { apiDocsPlugin as plugin };
 
+// @public
+export const ApiExplorerIndexPage: (
+  props: DefaultApiExplorerPageProps,
+) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "ApiExplorerPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ApiExplorerPage: ({
-  initiallySelectedFilter,
-  columns,
-}: {
-  initiallySelectedFilter?: UserListFilterKind | undefined;
-  columns?: TableColumn<CatalogTableRow>[] | undefined;
-}) => JSX.Element;
+export const ApiExplorerPage: (
+  props: DefaultApiExplorerPageProps,
+) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ApiTypeTitle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -72,23 +72,45 @@ export const ApiTypeTitle: ({
   apiEntity: ApiEntity;
 }) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "AsyncApiDefinitionWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const AsyncApiDefinitionWidget: ({ definition }: Props_5) => JSX.Element;
+export const AsyncApiDefinitionWidget: (
+  props: AsyncApiDefinitionWidgetProps,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "AsyncApiDefinitionWidgetProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AsyncApiDefinitionWidgetProps = {
+  definition: string;
+};
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ConsumedApisCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ConsumedApisCard: ({ variant }: Props_2) => JSX.Element;
+export const ConsumedApisCard: ({ variant }: Props) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ConsumingComponentsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ConsumingComponentsCard: ({ variant }: Props_6) => JSX.Element;
+export const ConsumingComponentsCard: ({ variant }: Props_4) => JSX.Element;
+
+// @public
+export const DefaultApiExplorerPage: ({
+  initiallySelectedFilter,
+  columns,
+  actions,
+}: DefaultApiExplorerPageProps) => JSX.Element;
+
+// @public
+export type DefaultApiExplorerPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+};
 
 // Warning: (ae-missing-release-tag) "defaultDefinitionWidgets" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -98,9 +120,7 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[];
 // Warning: (ae-missing-release-tag) "EntityApiDefinitionCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityApiDefinitionCard: (_: {
-  apiEntity?: ApiEntity | undefined;
-}) => JSX.Element;
+export const EntityApiDefinitionCard: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityConsumedApisCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -108,7 +128,6 @@ export const EntityApiDefinitionCard: (_: {
 export const EntityConsumedApisCard: ({
   variant,
 }: {
-  entity?: Entity | undefined;
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
 
@@ -118,7 +137,6 @@ export const EntityConsumedApisCard: ({
 export const EntityConsumingComponentsCard: ({
   variant,
 }: {
-  entity?: Entity | undefined;
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
 
@@ -137,7 +155,6 @@ export const EntityHasApisCard: ({
 export const EntityProvidedApisCard: ({
   variant,
 }: {
-  entity?: Entity | undefined;
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
 
@@ -147,42 +164,67 @@ export const EntityProvidedApisCard: ({
 export const EntityProvidingComponentsCard: ({
   variant,
 }: {
-  entity?: Entity | undefined;
   variant?: 'gridItem' | undefined;
 }) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "GraphQlDefinitionWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const GraphQlDefinitionWidget: (
+  props: GraphQlDefinitionWidgetProps,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "GraphQlDefinitionWidgetProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GraphQlDefinitionWidgetProps = {
+  definition: string;
+};
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "HasApisCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const HasApisCard: ({ variant }: Props_3) => JSX.Element;
+export const HasApisCard: ({ variant }: Props_2) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "OpenApiDefinitionWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const OpenApiDefinitionWidget: ({ definition }: Props_8) => JSX.Element;
+export const OpenApiDefinitionWidget: (
+  props: OpenApiDefinitionWidgetProps,
+) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "OpenApiDefinitionWidgetProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type OpenApiDefinitionWidgetProps = {
+  definition: string;
+};
+
 // Warning: (ae-missing-release-tag) "PlainApiDefinitionWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const PlainApiDefinitionWidget: ({
-  definition,
-  language,
-}: Props_9) => JSX.Element;
+export const PlainApiDefinitionWidget: (
+  props: PlainApiDefinitionWidgetProps,
+) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "PlainApiDefinitionWidgetProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type PlainApiDefinitionWidgetProps = {
+  definition: any;
+  language: string;
+};
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ProvidedApisCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ProvidedApisCard: ({ variant }: Props_4) => JSX.Element;
+export const ProvidedApisCard: ({ variant }: Props_3) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ProvidingComponentsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const ProvidingComponentsCard: ({ variant }: Props_7) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
+export const ProvidingComponentsCard: ({ variant }: Props_5) => JSX.Element;
 ```

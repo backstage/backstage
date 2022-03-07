@@ -15,20 +15,14 @@
  */
 
 import React from 'react';
-import { Typography, Button } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import { InfoCard } from '../InfoCard/InfoCard';
 import { GridItem } from './styles';
 import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
+import { GuestUserIdentity } from './GuestUserIdentity';
 
-const result = {
-  userId: 'guest',
-  profile: {
-    email: 'guest@example.com',
-    displayName: 'Guest',
-  },
-};
-
-const Component: ProviderComponent = ({ onResult }) => (
+const Component: ProviderComponent = ({ onSignInSuccess }) => (
   <GridItem>
     <InfoCard
       title="Guest"
@@ -37,7 +31,7 @@ const Component: ProviderComponent = ({ onResult }) => (
         <Button
           color="primary"
           variant="outlined"
-          onClick={() => onResult(result)}
+          onClick={() => onSignInSuccess(new GuestUserIdentity())}
         >
           Enter
         </Button>
@@ -55,7 +49,7 @@ const Component: ProviderComponent = ({ onResult }) => (
 );
 
 const loader: ProviderLoader = async () => {
-  return result;
+  return new GuestUserIdentity();
 };
 
 export const guestProvider: SignInProvider = { Component, loader };

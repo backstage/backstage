@@ -18,20 +18,20 @@ import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 // @ts-expect-error
 import KeyvMemcache from 'keyv-memcache';
+// @ts-expect-error
+import KeyvRedis from '@keyv/redis';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
 import { DefaultCacheClient, CacheClient } from './CacheClient';
 import { NoStore } from './NoStore';
-import {
-  CacheManagerOptions,
-  OptionalOnError,
-  PluginCacheManager,
-} from './types';
+import { CacheManagerOptions, PluginCacheManager } from './types';
 
 /**
  * Implements a Cache Manager which will automatically create new cache clients
  * for plugins when requested. All requested cache clients are created with the
  * connection details provided.
+ *
+ * @public
  */
 export class CacheManager {
   /**
@@ -39,21 +39,29 @@ export class CacheManager {
    * that return Keyv instances appropriate to the store.
    */
   private readonly storeFactories = {
+    redis: this.getRedisClient,
     memcache: this.getMemcacheClient,
     memory: this.getMemoryClient,
     none: this.getNoneClient,
   };
 
+  /**
+   * Shared memory store for the in-memory cache client. Sharing the same Map
+   * instance ensures get/set/delete operations hit the same store, regardless
+   * of where/when a client is instantiated.
+   */
+  private readonly memoryStore = new Map();
+
   private readonly logger: Logger;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
-  private readonly errorHandler: OptionalOnError;
+  private readonly errorHandler: CacheManagerOptions['onError'];
 
   /**
-   * Creates a new CacheManager instance by reading from the `backend` config
-   * section, specifically the `.cache` key.
+   * Creates a new {@link CacheManager} instance by reading from the `backend`
+   * config section, specifically the `.cache` key.
    *
-   * @param config The loaded application configuration.
+   * @param config - The loaded application configuration.
    */
   static fromConfig(
     config: Config,
@@ -74,7 +82,7 @@ export class CacheManager {
     store: string,
     connectionString: string,
     logger: Logger,
-    errorHandler: OptionalOnError,
+    errorHandler: CacheManagerOptions['onError'],
   ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
       throw new Error(`Unknown cache store: ${store}`);
@@ -88,7 +96,8 @@ export class CacheManager {
   /**
    * Generates a PluginCacheManager for consumption by plugins.
    *
-   * @param pluginId The plugin that the cache manager should be created for. Plugin names should be unique.
+   * @param pluginId - The plugin that the cache manager should be created for.
+   *        Plugin names should be unique.
    */
   forPlugin(pluginId: string): PluginCacheManager {
     return {
@@ -117,6 +126,17 @@ export class CacheManager {
     return this.storeFactories[this.store].call(this, pluginId, ttl);
   }
 
+  private getRedisClient(
+    pluginId: string,
+    defaultTtl: number | undefined,
+  ): Keyv {
+    return new Keyv({
+      namespace: pluginId,
+      ttl: defaultTtl,
+      store: new KeyvRedis(this.connection),
+    });
+  }
+
   private getMemcacheClient(
     pluginId: string,
     defaultTtl: number | undefined,
@@ -135,6 +155,7 @@ export class CacheManager {
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
+      store: this.memoryStore,
     });
   }
 

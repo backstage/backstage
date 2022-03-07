@@ -17,11 +17,11 @@
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  LOCATION_ANNOTATION,
-  SOURCE_LOCATION_ANNOTATION,
-  serializeEntityRef,
+  ANNOTATION_LOCATION,
+  ANNOTATION_SOURCE_LOCATION,
   Entity,
-  parseLocationReference,
+  parseLocationRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { TodoReader } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
@@ -29,7 +29,8 @@ import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
 const DEFAULT_DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_MAX_PAGE_SIZE = 50;
 
-type Options = {
+/** @public */
+export type TodoReaderServiceOptions = {
   todoReader: TodoReader;
   catalogClient: CatalogApi;
   maxPageSize?: number;
@@ -43,13 +44,14 @@ function wildcardRegex(str: string): RegExp {
   return new RegExp(`^${pattern}$`, 'i');
 }
 
+/** @public */
 export class TodoReaderService implements TodoService {
   private readonly todoReader: TodoReader;
   private readonly catalogClient: CatalogApi;
   private readonly maxPageSize: number;
   private readonly defaultPageSize: number;
 
-  constructor(options: Options) {
+  constructor(options: TodoReaderServiceOptions) {
     this.todoReader = options.todoReader;
     this.catalogClient = options.catalogClient;
     this.maxPageSize = options.maxPageSize ?? DEFAULT_MAX_PAGE_SIZE;
@@ -64,12 +66,12 @@ export class TodoReaderService implements TodoService {
       throw new InputError('Entity filter is required to list TODOs');
     }
     const token = options?.token;
-    const entity = await this.catalogClient.getEntityByName(req.entity, {
+    const entity = await this.catalogClient.getEntityByRef(req.entity, {
       token,
     });
     if (!entity) {
       throw new NotFoundError(
-        `Entity not found, ${serializeEntityRef(req.entity)}`,
+        `Entity not found, ${stringifyEntityRef(req.entity)}`,
       );
     }
 
@@ -126,12 +128,12 @@ export class TodoReaderService implements TodoService {
 
   private getEntitySourceUrl(entity: Entity) {
     const sourceLocation =
-      entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
+      entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
     if (sourceLocation) {
-      const parsed = parseLocationReference(sourceLocation);
+      const parsed = parseLocationRef(sourceLocation);
       if (parsed.type !== 'url') {
         throw new InputError(
-          `Invalid entity source location type for ${serializeEntityRef(
+          `Invalid entity source location type for ${stringifyEntityRef(
             entity,
           )}, got '${parsed.type}'`,
         );
@@ -139,12 +141,12 @@ export class TodoReaderService implements TodoService {
       return parsed.target;
     }
 
-    const location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    const location = entity.metadata.annotations?.[ANNOTATION_LOCATION];
     if (location) {
-      const parsed = parseLocationReference(location);
+      const parsed = parseLocationRef(location);
       if (parsed.type !== 'url') {
         throw new InputError(
-          `Invalid entity location type for ${serializeEntityRef(
+          `Invalid entity location type for ${stringifyEntityRef(
             entity,
           )}, got '${parsed.type}'`,
         );
@@ -152,7 +154,7 @@ export class TodoReaderService implements TodoService {
       return parsed.target;
     }
     throw new InputError(
-      `No entity location annotation found for ${serializeEntityRef(entity)}`,
+      `No entity location annotation found for ${stringifyEntityRef(entity)}`,
     );
   }
 }

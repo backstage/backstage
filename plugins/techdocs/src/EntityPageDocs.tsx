@@ -17,14 +17,18 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Reader } from './reader';
+import { toLowerMaybe } from './helpers';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
+  const config = useApi(configApiRef);
   return (
     <Reader
-      entityId={{
-        kind: entity.kind,
-        namespace: entity.metadata.namespace ?? 'default',
-        name: entity.metadata.name,
+      withSearch={false}
+      entityRef={{
+        namespace: toLowerMaybe(entity.metadata.namespace ?? 'default', config),
+        kind: toLowerMaybe(entity.kind, config),
+        name: toLowerMaybe(entity.metadata.name, config),
       }}
     />
   );

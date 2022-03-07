@@ -29,12 +29,32 @@ describe('compileConfigSchemas', () => {
       },
     ]);
     expect(validate([{ data: { a: 1 }, context: 'test' }])).toEqual({
-      errors: ['Config should be string { type=string } at /a'],
-      visibilityByPath: new Map(),
+      errors: [
+        {
+          keyword: 'type',
+          dataPath: '/a',
+          schemaPath: '#/properties/a/type',
+          message: 'should be string',
+          params: { type: 'string' },
+        },
+      ],
+      visibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
     });
     expect(validate([{ data: { b: 'b' }, context: 'test' }])).toEqual({
-      errors: ['Config should be number { type=number } at /b'],
-      visibilityByPath: new Map(),
+      errors: [
+        {
+          keyword: 'type',
+          dataPath: '/b',
+          schemaPath: '#/properties/b/type',
+          message: 'should be number',
+          params: { type: 'number' },
+        },
+      ],
+      visibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
+      deprecationByDataPath: new Map(),
     });
   });
 
@@ -78,7 +98,7 @@ describe('compileConfigSchemas', () => {
         { data: { a: 'a', b: 'b', c: 'c', d: ['d'] }, context: 'test' },
       ]),
     ).toEqual({
-      visibilityByPath: new Map(
+      visibilityByDataPath: new Map(
         Object.entries({
           '/a': 'frontend',
           '/b': 'secret',
@@ -86,6 +106,15 @@ describe('compileConfigSchemas', () => {
           '/d/0': 'frontend',
         }),
       ),
+      visibilityBySchemaPath: new Map(
+        Object.entries({
+          '/properties/a': 'frontend',
+          '/properties/b': 'secret',
+          '/properties/d': 'secret',
+          '/properties/d/items': 'frontend',
+        }),
+      ),
+      deprecationByDataPath: new Map(),
     });
   });
 
@@ -110,5 +139,35 @@ describe('compileConfigSchemas', () => {
     ).toThrow(
       "Config schema visibility is both 'frontend' and 'secret' for properties/a/visibility",
     );
+  });
+
+  it('should discover deprecations', () => {
+    const validate = compileConfigSchemas([
+      {
+        path: 'a1',
+        value: {
+          type: 'object',
+          properties: {
+            a: { type: 'string', deprecated: 'deprecation reason for a' },
+            b: { type: 'string', deprecated: 'deprecation reason for b' },
+            c: { type: 'string' },
+          },
+        },
+      },
+    ]);
+    expect(
+      validate([
+        { data: { a: 'a', b: 'b', c: 'c', d: ['d'] }, context: 'test' },
+      ]),
+    ).toEqual({
+      deprecationByDataPath: new Map(
+        Object.entries({
+          '/a': 'deprecation reason for a',
+          '/b': 'deprecation reason for b',
+        }),
+      ),
+      visibilityByDataPath: new Map(),
+      visibilityBySchemaPath: new Map(),
+    });
   });
 });

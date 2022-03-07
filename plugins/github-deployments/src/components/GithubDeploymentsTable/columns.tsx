@@ -27,8 +27,8 @@ import {
   Link,
 } from '@backstage/core-components';
 
-export const GithubStateIndicator = ({ state }: { state: string }) => {
-  switch (state) {
+export const GithubStateIndicator = (props: { state: string }) => {
+  switch (props.state) {
     case 'PENDING':
       return <StatusPending />;
     case 'IN_PROGRESS':

@@ -13,7 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './stages';
-export * from './helpers';
-export * from './default-branch';
-export * from './git-auth';
+
+export * from '@backstage/plugin-techdocs-node';

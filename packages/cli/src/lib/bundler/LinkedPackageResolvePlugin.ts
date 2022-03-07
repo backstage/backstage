@@ -15,17 +15,17 @@
  */
 
 import { resolve as resolvePath } from 'path';
-import { ResolvePlugin } from 'webpack';
+import { WebpackPluginInstance } from 'webpack';
 import { isChildPath } from '@backstage/cli-common';
-import { LernaPackage } from './types';
+import { Package } from '@manypkg/get-packages';
 
 // Enables proper resolution of packages when linking in external packages.
 // Without this the packages would depend on dependencies in the node_modules
 // of the external packages themselves, leading to module duplication
-export class LinkedPackageResolvePlugin implements ResolvePlugin {
+export class LinkedPackageResolvePlugin implements WebpackPluginInstance {
   constructor(
     private readonly targetModules: string,
-    private readonly packages: LernaPackage[],
+    private readonly packages: Package[],
   ) {}
 
   apply(resolver: any) {
@@ -41,7 +41,7 @@ export class LinkedPackageResolvePlugin implements ResolvePlugin {
         callback: () => void,
       ) => {
         const pkg = this.packages.find(
-          pkge => data.path && isChildPath(pkge.location, data.path),
+          pkge => data.path && isChildPath(pkge.dir, data.path),
         );
         if (!pkg) {
           callback();
@@ -51,14 +51,14 @@ export class LinkedPackageResolvePlugin implements ResolvePlugin {
         // pkg here is an external package. We rewrite the context of any imports to resolve
         // from the location of the package within the node_modules of the target root rather
         // than the real location of the external package.
-        const modulesLocation = resolvePath(this.targetModules, pkg.name);
+        const modulesLocation = resolvePath(
+          this.targetModules,
+          pkg.packageJson.name,
+        );
         const newContext = data.context?.issuer
           ? {
               ...data.context,
-              issuer: data.context.issuer.replace(
-                pkg.location,
-                modulesLocation,
-              ),
+              issuer: data.context.issuer.replace(pkg.dir, modulesLocation),
             }
           : data.context;
 
@@ -70,7 +70,7 @@ export class LinkedPackageResolvePlugin implements ResolvePlugin {
           {
             ...data,
             context: newContext,
-            path: data.path && data.path.replace(pkg.location, modulesLocation),
+            path: data.path && data.path.replace(pkg.dir, modulesLocation),
           },
           `resolve ${data.request} in ${modulesLocation}`,
           context,

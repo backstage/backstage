@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import GoogleIcon from '@material-ui/icons/AcUnit';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
@@ -22,23 +21,30 @@ import { OAuthApiCreateOptions } from '../types';
 const DEFAULT_PROVIDER = {
   id: 'google',
   title: 'Google',
-  icon: GoogleIcon,
+  icon: () => null,
 };
 
 const SCOPE_PREFIX = 'https://www.googleapis.com/auth/';
 
-class GoogleAuth {
-  static create({
-    discoveryApi,
-    oauthRequestApi,
-    environment = 'development',
-    provider = DEFAULT_PROVIDER,
-    defaultScopes = [
-      'openid',
-      `${SCOPE_PREFIX}userinfo.email`,
-      `${SCOPE_PREFIX}userinfo.profile`,
-    ],
-  }: OAuthApiCreateOptions): typeof googleAuthApiRef.T {
+/**
+ * Implements the OAuth flow to Google products.
+ *
+ * @public
+ */
+export default class GoogleAuth {
+  static create(options: OAuthApiCreateOptions): typeof googleAuthApiRef.T {
+    const {
+      discoveryApi,
+      oauthRequestApi,
+      environment = 'development',
+      provider = DEFAULT_PROVIDER,
+      defaultScopes = [
+        'openid',
+        `${SCOPE_PREFIX}userinfo.email`,
+        `${SCOPE_PREFIX}userinfo.profile`,
+      ],
+    } = options;
+
     return OAuth2.create({
       discoveryApi,
       oauthRequestApi,
@@ -65,4 +71,3 @@ class GoogleAuth {
     });
   }
 }
-export default GoogleAuth;

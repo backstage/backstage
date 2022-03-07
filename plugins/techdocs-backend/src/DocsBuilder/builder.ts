@@ -15,11 +15,11 @@
  */
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotModifiedError } from '@backstage/errors';
+import { assertError, isError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   GeneratorBase,
@@ -29,13 +29,14 @@ import {
   PreparerBuilder,
   PublisherBase,
   UrlPreparer,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import { Writable } from 'stream';
 import { Logger } from 'winston';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
+import { TechDocsCache } from '../cache';
 
 type DocsBuilderArguments = {
   preparers: PreparerBuilder;
@@ -46,6 +47,7 @@ type DocsBuilderArguments = {
   config: Config;
   scmIntegrations: ScmIntegrationRegistry;
   logStream?: Writable;
+  cache?: TechDocsCache;
 };
 
 export class DocsBuilder {
@@ -57,6 +59,7 @@ export class DocsBuilder {
   private config: Config;
   private scmIntegrations: ScmIntegrationRegistry;
   private logStream: Writable | undefined;
+  private cache?: TechDocsCache;
 
   constructor({
     preparers,
@@ -67,6 +70,7 @@ export class DocsBuilder {
     config,
     scmIntegrations,
     logStream,
+    cache,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
@@ -76,6 +80,7 @@ export class DocsBuilder {
     this.config = config;
     this.scmIntegrations = scmIntegrations;
     this.logStream = logStream;
+    this.cache = cache;
   }
 
   /**
@@ -106,8 +111,7 @@ export class DocsBuilder {
       try {
         storedEtag = (
           await this.publisher.fetchTechDocsMetadata({
-            namespace:
-              this.entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE,
+            namespace: this.entity.metadata.namespace ?? DEFAULT_NAMESPACE,
             kind: this.entity.kind,
             name: this.entity.metadata.name,
           })
@@ -131,7 +135,7 @@ export class DocsBuilder {
       preparedDir = preparerResponse.preparedDir;
       newEtag = preparerResponse.etag;
     } catch (err) {
-      if (err instanceof NotModifiedError) {
+      if (isError(err) && err.name === 'NotModifiedError') {
         // No need to prepare anymore since cache is valid.
         // Set last check happened to now
         new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
@@ -142,7 +146,7 @@ export class DocsBuilder {
         );
         return false;
       }
-      throw new Error(err.message);
+      throw err;
     }
 
     this.logger.info(
@@ -195,6 +199,7 @@ export class DocsBuilder {
         // Not a blocker hence no need to await this.
         fs.remove(preparedDir);
       } catch (error) {
+        assertError(error);
         this.logger.debug(`Error removing prepared directory ${error.message}`);
       }
     }
@@ -209,10 +214,18 @@ export class DocsBuilder {
       )}`,
     );
 
-    await this.publisher.publish({
+    const published = await this.publisher.publish({
       entity: this.entity,
       directory: outputDir,
     });
+
+    // Invalidate the cache for any published objects.
+    if (this.cache && published && published?.objects?.length) {
+      this.logger.debug(
+        `Invalidating ${published.objects.length} cache objects`,
+      );
+      await this.cache.invalidateMultiple(published.objects);
+    }
 
     try {
       // Not a blocker hence no need to await this.
@@ -221,6 +234,7 @@ export class DocsBuilder {
         `Removing generated directory ${outputDir} since the site has been published`,
       );
     } catch (error) {
+      assertError(error);
       this.logger.debug(`Error removing generated directory ${error.message}`);
     }
 

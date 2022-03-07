@@ -21,20 +21,19 @@ describe('apis', () => {
     term: '',
     filters: {},
     types: [],
-    pageCursor: '',
   };
 
   const baseUrl = 'https://base-url.com/';
   const getBaseUrl = jest.fn().mockResolvedValue(baseUrl);
 
   const token = 'AUTHTOKEN';
-  const withToken = jest.fn().mockResolvedValue(token);
-  const withoutToken = jest.fn().mockResolvedValue(undefined);
-  const createIdentityApiMock = (getIdToken: any) => ({
-    getIdToken,
-    getUserId: jest.fn(),
-    getProfile: jest.fn(),
+  const withToken = jest.fn().mockResolvedValue({ token });
+  const withoutToken = jest.fn().mockResolvedValue({ token: undefined });
+  const createIdentityApiMock = (getCredentials: any) => ({
     signOut: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials,
   });
 
   const client = new SearchClient({
@@ -53,7 +52,7 @@ describe('apis', () => {
   it('Fetch is called with expected URL (including stringified Q params)', async () => {
     await client.query(query);
     expect(getBaseUrl).toHaveBeenLastCalledWith('search/query');
-    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=&pageCursor=`, {
+    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=`, {
       headers: {},
     });
   });
@@ -65,7 +64,7 @@ describe('apis', () => {
     });
     await authedClient.query(query);
     expect(getBaseUrl).toHaveBeenLastCalledWith('search/query');
-    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=&pageCursor=`, {
+    expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   });

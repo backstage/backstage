@@ -58,7 +58,7 @@ describe('SchemaValidEntityPolicy', () => {
   //
 
   it('rejects wrong root type', async () => {
-    await expect(policy.enforce((7 as unknown) as Entity)).rejects.toThrow(
+    await expect(policy.enforce(7 as unknown as Entity)).rejects.toThrow(
       /object/,
     );
   });

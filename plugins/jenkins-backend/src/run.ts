@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import { getRootLogger } from '@backstage/backend-common';
 import yn from 'yn';
 import { startStandaloneServer } from './service/standaloneServer';
 
-const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7000;
+const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
 const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
 

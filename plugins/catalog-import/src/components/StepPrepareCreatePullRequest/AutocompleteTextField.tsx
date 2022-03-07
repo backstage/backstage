@@ -18,21 +18,20 @@ import { CircularProgress, TextField } from '@material-ui/core';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import { Autocomplete } from '@material-ui/lab';
 import React from 'react';
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  UseControllerOptions,
-} from 'react-hook-form';
+import { Controller, FieldErrors } from 'react-hook-form';
 
-type Props<TFieldValue extends string> = {
+/**
+ * Props for {@link AutocompleteTextField}.
+ *
+ * @public
+ */
+export interface AutocompleteTextFieldProps<TFieldValue extends string> {
   name: TFieldValue;
   options: string[];
   required?: boolean;
 
-  control?: Control<Record<string, any>>;
-  errors?: FieldErrors<Record<TFieldValue, string>>;
-  rules?: UseControllerOptions<Record<TFieldValue, any>>['rules'];
+  errors?: FieldErrors;
+  rules?: React.ComponentProps<typeof Controller>['rules'];
 
   loading?: boolean;
   loadingText?: string;
@@ -41,36 +40,43 @@ type Props<TFieldValue extends string> = {
   errorHelperText?: string;
 
   textFieldProps?: Omit<TextFieldProps, 'required' | 'fullWidth'>;
-};
+}
 
-export const AutocompleteTextField = <TFieldValue extends string>({
-  name,
-  options,
-  required,
-  control,
-  errors,
-  rules,
-  loading = false,
-  loadingText,
-  helperText,
-  errorHelperText,
-  textFieldProps = {},
-}: Props<TFieldValue>) => {
+/**
+ * An autocompletion text field for the catalog import flows.
+ *
+ * @public
+ */
+export const AutocompleteTextField = <TFieldValue extends string>(
+  props: AutocompleteTextFieldProps<TFieldValue>,
+) => {
+  const {
+    name,
+    options,
+    required,
+    errors,
+    rules,
+    loading = false,
+    loadingText,
+    helperText,
+    errorHelperText,
+    textFieldProps = {},
+  } = props;
+
   return (
     <Controller
       name={name}
-      control={control}
       rules={rules}
-      render={({ value, onChange, onBlur }) => (
+      render={({ field: { onChange } }) => (
         <Autocomplete
           loading={loading}
           loadingText={loadingText}
           options={options || []}
-          onChange={(_: any, v: string | null) => onChange(v || '')}
-          onBlur={onBlur}
-          value={value}
           autoSelect
           freeSolo
+          onChange={(_event: React.ChangeEvent<{}>, value: string | null) =>
+            onChange(value)
+          }
           renderInput={params => (
             <TextField
               {...params}

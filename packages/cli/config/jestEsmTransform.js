@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-const babel = require('@babel/core');
-
-// We build .esm.js files with plugin:build, so to be able to load these in tests they need to be transformed
-// TODO: jest is working on module support, it's possible that we can remove this in the future
-module.exports = {
-  process(src) {
-    const result = babel.transform(src, {
-      babelrc: false,
-      compact: false,
-      plugins: [
-        // This transforms the regular ESM syntax, import and export statements
-        require.resolve('@babel/plugin-transform-modules-commonjs'),
-        // This transforms dynamic `import()`, which is not supported yet in the Node.js VM API
-        require.resolve('babel-plugin-dynamic-import-node'),
-      ],
-    });
-
-    return result.code;
-  },
-};
+throw new Error(
+  'The ./jestEsmTransform.js transform has been removed, switch to using ./jestSucraseTransform.js instead',
+);

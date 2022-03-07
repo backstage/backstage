@@ -1,5 +1,205 @@
 # @backstage/plugin-graphiql
 
+## 0.2.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.2.31
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/theme@0.2.15
+
+## 0.2.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+
+## 0.2.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+
+## 0.2.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+
+## 0.2.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+
+## 0.2.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+
+## 0.2.26
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
+## 0.2.24
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+
+## 0.2.23
+
+### Patch Changes
+
+- dde1681f33: chore(dependencies): bump `graphiql` package to latest
+
+## 0.2.22
+
+### Patch Changes
+
+- cd398cd4ab: Letting GraphiQL use headers
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.2.20
+
+### Patch Changes
+
+- c8215e1fe6: Add experimental `experimentalInstallationRecipe` to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.2.19
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.2.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+
+## 0.2.16
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.2.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
+## 0.2.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+
+## 0.2.13
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
 ## 0.2.12
 
 ### Patch Changes

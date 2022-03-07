@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { resolvePackagePath } from '@backstage/backend-common';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
-  DbTaskEventRow,
-  DbTaskRow,
-  Status,
+  SerializedTaskEvent,
+  SerializedTask,
+  TaskStatus,
   TaskEventType,
-  TaskSecrets,
-  TaskSpec,
   TaskStore,
   TaskStoreEmitOptions,
-  TaskStoreGetEventsOptions,
+  TaskStoreListEventsOptions,
+  TaskStoreCreateTaskOptions,
+  TaskStoreCreateTaskResult,
 } from './types';
 import { DateTime } from 'luxon';
 
@@ -40,10 +40,10 @@ const migrationsDir = resolvePackagePath(
 export type RawDbTaskRow = {
   id: string;
   spec: string;
-  status: Status;
+  status: TaskStatus;
   last_heartbeat_at?: string;
   created_at: string;
-  secrets?: string;
+  secrets?: string | null;
 };
 
 export type RawDbTaskEventRow = {
@@ -54,17 +54,37 @@ export type RawDbTaskEventRow = {
   created_at: string;
 };
 
+/**
+ * DatabaseTaskStore
+ *
+ * @public
+ */
+export type DatabaseTaskStoreOptions = {
+  database: Knex;
+};
+
+/**
+ * DatabaseTaskStore
+ *
+ * @public
+ */
 export class DatabaseTaskStore implements TaskStore {
-  static async create(knex: Knex): Promise<DatabaseTaskStore> {
-    await knex.migrate.latest({
+  private readonly db: Knex;
+
+  static async create(
+    options: DatabaseTaskStoreOptions,
+  ): Promise<DatabaseTaskStore> {
+    await options.database.migrate.latest({
       directory: migrationsDir,
     });
-    return new DatabaseTaskStore(knex);
+    return new DatabaseTaskStore(options);
   }
 
-  constructor(private readonly db: Knex) {}
+  private constructor(options: DatabaseTaskStoreOptions) {
+    this.db = options.database;
+  }
 
-  async getTask(taskId: string): Promise<DbTaskRow> {
+  async getTask(taskId: string): Promise<SerializedTask> {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
       .select();
@@ -88,20 +108,19 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async createTask(
-    spec: TaskSpec,
-    secrets?: TaskSecrets,
-  ): Promise<{ taskId: string }> {
+    options: TaskStoreCreateTaskOptions,
+  ): Promise<TaskStoreCreateTaskResult> {
     const taskId = uuid();
     await this.db<RawDbTaskRow>('tasks').insert({
       id: taskId,
-      spec: JSON.stringify(spec),
-      secrets: secrets ? JSON.stringify(secrets) : undefined,
+      spec: JSON.stringify(options.spec),
+      secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
       status: 'open',
     });
     return { taskId };
   }
 
-  async claimTask(): Promise<DbTaskRow | undefined> {
+  async claimTask(): Promise<SerializedTask | undefined> {
     return this.db.transaction(async tx => {
       const [task] = await tx<RawDbTaskRow>('tasks')
         .where({
@@ -119,6 +138,8 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
+          // remove the secrets when moving moving to processing state.
+          secrets: null,
         });
 
       if (updateCount < 1) {
@@ -153,11 +174,7 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  async listStaleTasks({
-    timeoutS,
-  }: {
-    timeoutS: number;
-  }): Promise<{
+  async listStaleTasks({ timeoutS }: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }> {
     const rawRows = await this.db<RawDbTaskRow>('tasks')
@@ -184,7 +201,7 @@ export class DatabaseTaskStore implements TaskStore {
     eventBody,
   }: {
     taskId: string;
-    status: Status;
+    status: TaskStatus;
     eventBody: JsonObject;
   }): Promise<void> {
     let oldStatus: string;
@@ -219,8 +236,8 @@ export class DatabaseTaskStore implements TaskStore {
         })
         .update({
           status,
-          secrets: null as any,
         });
+
       if (updateCount !== 1) {
         throw new ConflictError(
           `Failed to update status to '${status}' for taskId ${taskId}`,
@@ -235,19 +252,22 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void> {
-    const serliazedBody = JSON.stringify(body);
+  async emitLogEvent(
+    options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
+  ): Promise<void> {
+    const { taskId, body } = options;
+    const serializedBody = JSON.stringify(body);
     await this.db<RawDbTaskEventRow>('task_events').insert({
       task_id: taskId,
       event_type: 'log',
-      body: serliazedBody,
+      body: serializedBody,
     });
   }
 
   async listEvents({
     taskId,
     after,
-  }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }> {
+  }: TaskStoreListEventsOptions): Promise<{ events: SerializedTaskEvent[] }> {
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,

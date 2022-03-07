@@ -30,13 +30,26 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     return new ConfigClusterLocator(
       config.getConfigArray('clusters').map(c => {
         const authProvider = c.getString('authProvider');
-        const clusterDetails = {
+        const clusterDetails: ClusterDetails = {
           name: c.getString('name'),
           url: c.getString('url'),
           serviceAccountToken: c.getOptionalString('serviceAccountToken'),
           skipTLSVerify: c.getOptionalBoolean('skipTLSVerify') ?? false,
+          skipMetricsLookup: c.getOptionalBoolean('skipMetricsLookup') ?? false,
+          caData: c.getOptionalString('caData'),
           authProvider: authProvider,
         };
+        const dashboardUrl = c.getOptionalString('dashboardUrl');
+        if (dashboardUrl) {
+          clusterDetails.dashboardUrl = dashboardUrl;
+        }
+        const dashboardApp = c.getOptionalString('dashboardApp');
+        if (dashboardApp) {
+          clusterDetails.dashboardApp = dashboardApp;
+        }
+        if (c.has('dashboardParameters')) {
+          clusterDetails.dashboardParameters = c.get('dashboardParameters');
+        }
 
         switch (authProvider) {
           case 'google': {
@@ -44,9 +57,14 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
           }
           case 'aws': {
             const assumeRole = c.getOptionalString('assumeRole');
-            return { assumeRole, ...clusterDetails };
+            const externalId = c.getOptionalString('externalId');
+
+            return { assumeRole, externalId, ...clusterDetails };
           }
           case 'serviceAccount': {
+            return clusterDetails;
+          }
+          case 'googleServiceAccount': {
             return clusterDetails;
           }
           default: {

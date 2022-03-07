@@ -33,7 +33,6 @@ export type { BuildWithSteps, BuildStepAction, BuildSummary };
 
 export const circleCIApiRef = createApiRef<CircleCIApi>({
   id: 'plugin.circleci.service',
-  description: 'Used by the CircleCI plugin to make requests',
 });
 
 const DEFAULT_PROXY_PATH = '/circleci/api';

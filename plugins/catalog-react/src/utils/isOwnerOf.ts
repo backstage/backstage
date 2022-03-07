@@ -16,33 +16,36 @@
 
 import {
   Entity,
-  EntityName,
-  getEntityName,
+  getCompoundEntityRef,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { getEntityRelations } from './getEntityRelations';
 
 /**
- * Get the related entity references.
+ * Returns true if the `owner` argument is a direct owner on the `entity` argument.
+ *
+ * @alpha
+ * @remarks
+ *
+ * Note that this ownership is not the same as using the claims in the auth-resolver, it only will take into account ownership as expressed by direct entity relations.
+ * It doesn't know anything about the additional groups that a user might belong to which the claims contain.
  */
-export function isOwnerOf(owner: Entity, owned: Entity) {
-  const possibleOwners: EntityName[] = [
-    ...getEntityRelations(owner, RELATION_MEMBER_OF, { kind: 'group' }),
-    ...(owner ? [getEntityName(owner)] : []),
-  ];
+export function isOwnerOf(owner: Entity, entity: Entity) {
+  const possibleOwners = new Set(
+    [
+      ...getEntityRelations(owner, RELATION_MEMBER_OF, { kind: 'group' }),
+      ...(owner ? [getCompoundEntityRef(owner)] : []),
+    ].map(stringifyEntityRef),
+  );
 
-  const owners = getEntityRelations(owned, RELATION_OWNED_BY);
+  const owners = getEntityRelations(entity, RELATION_OWNED_BY).map(
+    stringifyEntityRef,
+  );
 
   for (const ownerItem of owners) {
-    if (
-      possibleOwners.find(
-        o =>
-          ownerItem.kind.toLowerCase() === o.kind.toLowerCase() &&
-          ownerItem.namespace.toLowerCase() === o.namespace.toLowerCase() &&
-          ownerItem.name.toLowerCase() === o.name.toLowerCase(),
-      ) !== undefined
-    ) {
+    if (possibleOwners.has(ownerItem)) {
       return true;
     }
   }

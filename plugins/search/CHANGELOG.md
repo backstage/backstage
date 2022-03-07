@@ -1,5 +1,431 @@
 # @backstage/plugin-search
 
+## 0.7.2
+
+### Patch Changes
+
+- 64b430f80d: chore(deps): bump `react-text-truncate` from 0.17.0 to 0.18.0
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/search-common@0.3.0
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.7.0
+
+### Minor Changes
+
+- f986369b2a: **BREAKING**: `useSearch` doesn't return anymore `open` and `toggleModal`.
+  The two properties have been moved to the `useSearchModal` hook.
+
+  ```
+  import { SearchModal, useSearchModal } from '@backstage/plugin-search';
+
+  const Foo = () => {
+    const { state, setOpen, toggleModal } = useSearchModal();
+
+    return (
+      <SearchModal {...state} toggleModal={toggleModal} />
+    );
+  };
+  ```
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/theme@0.2.15
+  - @backstage/types@0.1.2
+
+## 0.6.2
+
+### Patch Changes
+
+- faf49ba82f: Modify modal search to clamp result length to 5 rows.
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- faf49ba82f: Modify modal search to clamp result length to 5 rows.
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 2f0d3d3278: Forwarding classes to HomePageSearchBar instead of using className prop. For custom styles of the HomePageSearchBar, use classes prop instead:
+
+  ```diff
+  <HomePageSearchBar
+  -  className={searchBar}
+  +  classes={{ root: classes.searchBar }}
+    placeholder="Search"
+  />
+  ```
+
+- 1dbe63ec39: The way labels are controlled on both the `<SearchFilter.Checkbox />` and
+  `<SearchFilter.Select />` components has changed. Previously, the string passed
+  on the `name` prop (which controls the field being filtered on) was also
+  rendered as the field label. Now, if you want a label rendered, it must be
+  passed on the new `label` prop. If no `label` is provided, no label will be
+  rendered.
+
+### Patch Changes
+
+- 4aca2a5307: Introduces a `<SearchFilter.Autocomplete />` variant, which can be used as either a single- or multi-select autocomplete filter.
+
+  This variant, as well as `<SearchFilter.Select />`, now also supports loading allowed values asynchronously by passing a function that resolves the list of values to the `values` prop. (An optional `valuesDebounceMs` prop may also be provided to control the debounce time).
+
+  Check the [search plugin storybook](https://backstage.io/storybook/?path=/story/plugins-search-searchfilter) to see how to leverage these new additions.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/search-common@0.2.2
+
+## 0.5.6
+
+### Patch Changes
+
+- 1523926507: Removes the focus from the sidebar and focus the main content after select one search result or navigate to the search result list
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-model@0.9.9
+
+## 0.5.4
+
+### Patch Changes
+
+- e05b9115aa: Fix missing search context issue with `HomePageSearchBar`
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- 54ef743aa4: Introduce a `<SearchType.Tabs />` variant to display tabs for selecting search result types.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+
+## 0.5.3
+
+### Patch Changes
+
+- 6d8e3a9651: Internal cleanup of the exports structure
+- 8b532a6c02: Introduces a `<SearchType.Accordion />` variant, which operates on the same part of a search query as the existing `<SearchType />`, but in a more opinionated way (as a single-select control surface suitable for faceted search UIs).
+
+  Check the [search plugin storybook](https://backstage.io/storybook/?path=/story/plugins-search-searchtype--accordion) to see how it can be used.
+
+- af4980fb5d: Captures the search term entered in the SearchBarBase as a `search` event.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.9
+
+## 0.5.2
+
+### Patch Changes
+
+- 3d98955c8a: Add Optional Props to Override Icon for SidebarSearch and SidebarSearchModal Component
+- 49a696d720: Standardizes the component used as a search box in the search modal and in the composable home page.
+
+  After these changes, all search boxes exported by the search plugin are based on the `<SearchBarBase />` component, and this one is based on the `<InputBase />` component of the Material UI. This means that when you use SearchBarBase or one of its derived components (like `SearchBar` and `HomePageSearchBar`) you can pass all properties accepted by InputBase that have not been replaced by the props type of those components.
+
+  For example:
+
+  ```jsx
+  <SearchInputBase color="secondary" debouceTime={500} />
+  ```
+
+  The `color` property is inherited from `InputBaseProps` type and `debouceTime` defined by `SearchBarBaseProps`.
+
+- 7a4bd2ceac: Prefer using `Link` from `@backstage/core-components` rather than material-UI.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
+## 0.5.1
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- 382e3a94b3: Export SearchApi interface from plugin
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.5.0
+
+### Minor Changes
+
+- c5b6045f36: Search Modal now relies on the Search Context to access state and state setter. If you use the SidebarSearchModal as described in the [getting started documentation](https://backstage.io/docs/features/search/getting-started#using-the-search-modal), make sure to update your code with the SearchContextProvider.
+
+  ```diff
+  export const Root = ({ children }: PropsWithChildren<{}>) => (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearchModal />
+  +     <SearchContextProvider>
+  +       <SidebarSearchModal />
+  +     </SearchContextProvider>
+        <SidebarDivider />
+      ...
+  ```
+
+### Patch Changes
+
+- f06ecd09a7: Add optional icon and secondaryAction properties for DefaultResultListItem component
+- c5941d5c30: Add a new optional clearButton property to the SearchBar component. The default value for this new property is true.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.4.18
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- 704b267e1c: Smaller UX improvements to search components such as optional autoFocus prop to SearchBar components, decreased debounce value and closing modal on link click of SearchModal, terminology updates of SearchResultPager.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.4.17
+
+### Patch Changes
+
+- 5dcea2586c: Added `SearchModal` component.
+
+  Now you can import `SearchModal` in your apps:
+
+  ```js
+  import { SearchModal } from '@backstage/plugin-search';
+  ```
+
+  You can also use the `SidebarSearchModal` component to integrate it into the sidebar of your sample apps:
+
+  ```js
+  import { SidebarSearchModal } from '@backstage/plugin-search';
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.4.16
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/errors@0.1.4
+  - @backstage/core-components@0.7.2
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.4.15
+
+### Patch Changes
+
+- 56bd537256: SearchBar component to accept optional placeholder prop
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.4.14
+
+### Patch Changes
+
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+
+## 0.4.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.4.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+
+## 0.4.11
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.10
+
+### Patch Changes
+
+- 7f00902d9: Add Home Page Search Bar Component, to be included in composable Home Page.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.4.9
+
+### Patch Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/search-common@0.2.0
+  - @backstage/catalog-model@0.9.1
+
+## 0.4.8
+
+### Patch Changes
+
+- 16ec8381a: Fix search page to respond to searches made from sidebar search
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.4
+  - @backstage/core-components@0.3.3
+  - @backstage/config@0.1.8
+
+## 0.4.7
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.4.6
+
+### Patch Changes
+
+- b917365cf: Change `<SearchType>` design to follow Figma and be similar to existing multi
+  selects in Backstage.
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/search-common@0.1.3
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.4.5
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
 ## 0.4.4
 
 ### Patch Changes

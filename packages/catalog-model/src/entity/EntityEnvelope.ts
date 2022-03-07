@@ -18,6 +18,7 @@
  * The envelope skeleton parts of an entity - whatever is necessary to be able
  * to give it a ref and pass to further validation / policy checking.
  *
+ * @public
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
 export type EntityEnvelope = {

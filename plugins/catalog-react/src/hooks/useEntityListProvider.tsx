@@ -22,10 +22,13 @@ import React, {
   PropsWithChildren,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useAsyncFn, useDebounce, useMountedState } from 'react-use';
+import { useLocation } from 'react-router';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useDebounce from 'react-use/lib/useDebounce';
+import useMountedState from 'react-use/lib/useMountedState';
 import { catalogApiRef } from '../api';
 import {
   EntityKindFilter,
@@ -40,6 +43,7 @@ import { EntityFilter } from '../types';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
@@ -50,8 +54,9 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
 };
 
+/** @public */
 export type EntityListContextProps<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 > = {
   /**
    * The currently registered filters, adhering to the shape of DefaultEntityFilters or an extension
@@ -88,6 +93,10 @@ export type EntityListContextProps<
   error?: Error;
 };
 
+/**
+ * Creates new context for entity listing and filtering.
+ * @public
+ */
 export const EntityListContext = createContext<
   EntityListContextProps<any> | undefined
 >(undefined);
@@ -96,26 +105,43 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
   entities: Entity[];
   backendEntities: Entity[];
-  queryParameters: Record<string, string | string[]>;
 };
 
+/**
+ * Provides entities and filters for a catalog listing.
+ * @public
+ */
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   children,
 }: PropsWithChildren<{}>) => {
   const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const allQueryParams = qs.parse(searchParams.toString());
   const [requestedFilters, setRequestedFilters] = useState<EntityFilters>(
     {} as EntityFilters,
   );
-  const [outputState, setOutputState] = useState<OutputState<EntityFilters>>({
-    appliedFilters: {} as EntityFilters,
-    entities: [],
-    backendEntities: [],
-    queryParameters:
-      (allQueryParams.filters as Record<string, string | string[]>) ?? {},
-  });
+
+  // We use react-router's useLocation hook so updates from external sources trigger an update to
+  // the queryParameters in outputState. Updates from this hook use replaceState below and won't
+  // trigger a useLocation change; this would instead come from an external source, such as a manual
+  // update of the URL or two catalog sidebar links with different catalog filters.
+  const location = useLocation();
+  const queryParameters = useMemo(
+    () =>
+      (qs.parse(location.search, {
+        ignoreQueryPrefix: true,
+      }).filters ?? {}) as Record<string, string | string[]>,
+    [location],
+  );
+
+  const [outputState, setOutputState] = useState<OutputState<EntityFilters>>(
+    () => {
+      return {
+        appliedFilters: {} as EntityFilters,
+        entities: [],
+        backendEntities: [],
+      };
+    },
+  );
 
   // The main async filter worker. Note that while it has a lot of dependencies
   // in terms of its implementation, the triggering only happens (debounced)
@@ -154,27 +180,33 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
           appliedFilters: requestedFilters,
           backendEntities: response.items,
           entities: response.items.filter(entityFilter),
-          queryParameters: queryParams,
         });
       } else {
         setOutputState({
           appliedFilters: requestedFilters,
           backendEntities: outputState.backendEntities,
           entities: outputState.backendEntities.filter(entityFilter),
-          queryParameters: queryParams,
         });
       }
 
       if (isMounted()) {
-        setSearchParams(
-          qs.stringify({ ...allQueryParams, filters: queryParams }),
-          {
-            replace: true,
-          },
+        const oldParams = qs.parse(location.search, {
+          ignoreQueryPrefix: true,
+        });
+        const newParams = qs.stringify(
+          { ...oldParams, filters: queryParams },
+          { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
+        const newUrl = `${window.location.pathname}${newParams}`;
+        // We use direct history manipulation since useSearchParams and
+        // useNavigate in react-router-dom cause unnecessary extra rerenders.
+        // Also make sure to replace the state rather than pushing, since we
+        // don't want there to be back/forward slots for every single filter
+        // change.
+        window.history?.replaceState(null, document.title, newUrl);
       }
     },
-    [catalogApi, requestedFilters, outputState],
+    [catalogApi, queryParameters, requestedFilters, outputState],
     { loading: true },
   );
 
@@ -197,30 +229,35 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     [],
   );
 
+  const value = useMemo(
+    () => ({
+      filters: outputState.appliedFilters,
+      entities: outputState.entities,
+      backendEntities: outputState.backendEntities,
+      updateFilters,
+      queryParameters,
+      loading,
+      error,
+    }),
+    [outputState, updateFilters, queryParameters, loading, error],
+  );
+
   return (
-    <EntityListContext.Provider
-      value={{
-        filters: outputState.appliedFilters,
-        entities: outputState.entities,
-        backendEntities: outputState.backendEntities,
-        updateFilters,
-        queryParameters: outputState.queryParameters,
-        loading,
-        error,
-      }}
-    >
+    <EntityListContext.Provider value={value}>
       {children}
     </EntityListContext.Provider>
   );
 };
 
-export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+/**
+ * Hook for interacting with the entity list context provided by the {@link EntityListProvider}.
+ * @public
+ */
+export function useEntityList<
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)
-    throw new Error(
-      'useEntityListProvider must be used within EntityListProvider',
-    );
+    throw new Error('useEntityList must be used within EntityListProvider');
   return context;
 }

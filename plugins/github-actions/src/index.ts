@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards GitHub Actions
+ *
+ * @packageDocumentation
+ */
+
 export {
   githubActionsPlugin,
   githubActionsPlugin as plugin,
@@ -29,4 +35,4 @@ export {
   isGithubActionsAvailable as isPluginApplicableToEntity,
 } from './components/Router';
 export * from './components/Cards';
-export { GITHUB_ACTIONS_ANNOTATION } from './components/useProjectName';
+export { GITHUB_ACTIONS_ANNOTATION } from './components/getProjectNameFromEntity';

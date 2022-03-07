@@ -35,7 +35,6 @@ export interface FindingSummary {
 
 export const sonarQubeApiRef = createApiRef<SonarQubeApi>({
   id: 'plugin.sonarqube.service',
-  description: 'Used by the SonarQube plugin to make requests',
 });
 
 export type SonarQubeApi = {

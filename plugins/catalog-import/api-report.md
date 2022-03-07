@@ -8,34 +8,32 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import { Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { FieldErrors } from 'react-hook-form';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { OAuthApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SubmitHandler } from 'react-hook-form';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import { UnpackNestedValue } from 'react-hook-form';
-import { UseControllerOptions } from 'react-hook-form';
-import { UseFormMethods } from 'react-hook-form';
-import { UseFormOptions } from 'react-hook-form';
+import { UseFormProps } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 
-// Warning: (ae-missing-release-tag) "AnalyzeResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type AnalyzeResult =
   | {
       type: 'locations';
       locations: Array<{
         target: string;
-        entities: EntityName[];
+        exists?: boolean;
+        entities: CompoundEntityRef[];
       }>;
     }
   | {
@@ -45,30 +43,44 @@ export type AnalyzeResult =
       generatedEntities: PartialEntity[];
     };
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "AutocompleteTextField" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const AutocompleteTextField: <TFieldValue extends string>({
-  name,
-  options,
-  required,
-  control,
-  errors,
-  rules,
-  loading,
-  loadingText,
-  helperText,
-  errorHelperText,
-  textFieldProps,
-}: Props_4<TFieldValue>) => JSX.Element;
+// @public
+export const AutocompleteTextField: <TFieldValue extends string>(
+  props: AutocompleteTextFieldProps<TFieldValue>,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "CatalogImportApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export interface AutocompleteTextFieldProps<TFieldValue extends string> {
+  // (undocumented)
+  errorHelperText?: string;
+  // (undocumented)
+  errors?: FieldErrors;
+  // (undocumented)
+  helperText?: React_2.ReactNode;
+  // (undocumented)
+  loading?: boolean;
+  // (undocumented)
+  loadingText?: string;
+  // (undocumented)
+  name: TFieldValue;
+  // (undocumented)
+  options: string[];
+  // (undocumented)
+  required?: boolean;
+  // (undocumented)
+  rules?: React_2.ComponentProps<typeof Controller>['rules'];
+  // (undocumented)
+  textFieldProps?: Omit<TextFieldProps, 'required' | 'fullWidth'>;
+}
+
+// @public
 export interface CatalogImportApi {
   // (undocumented)
   analyzeUrl(url: string): Promise<AnalyzeResult>;
+  // (undocumented)
+  preparePullRequest?(): Promise<{
+    title: string;
+    body: string;
+  }>;
   // (undocumented)
   submitPullRequest(options: {
     repositoryUrl: string;
@@ -81,31 +93,28 @@ export interface CatalogImportApi {
   }>;
 }
 
-// Warning: (ae-missing-release-tag) "catalogImportApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const catalogImportApiRef: ApiRef<CatalogImportApi>;
 
-// Warning: (ae-missing-release-tag) "CatalogImportClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class CatalogImportClient implements CatalogImportApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    githubAuthApi: OAuthApi;
+    scmAuthApi: ScmAuthApi;
     identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
+    configApi: ConfigApi;
   });
   // (undocumented)
   analyzeUrl(url: string): Promise<AnalyzeResult>;
   // (undocumented)
-  submitPullRequest({
-    repositoryUrl,
-    fileContent,
-    title,
-    body,
-  }: {
+  preparePullRequest(): Promise<{
+    title: string;
+    body: string;
+  }>;
+  // (undocumented)
+  submitPullRequest(options: {
     repositoryUrl: string;
     fileContent: string;
     title: string;
@@ -116,15 +125,10 @@ export class CatalogImportClient implements CatalogImportApi {
   }>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "StepperProviderOpts" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "CatalogImportPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CatalogImportPage: (opts: StepperProviderOpts) => JSX.Element;
+// @public
+export const CatalogImportPage: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "catalogImportPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 const catalogImportPlugin: BackstagePlugin<
   {
     importPage: RouteRef<undefined>;
@@ -134,11 +138,7 @@ const catalogImportPlugin: BackstagePlugin<
 export { catalogImportPlugin };
 export { catalogImportPlugin as plugin };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-forgotten-export) The symbol "ImportFlows" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "StepperProvider" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "defaultGenerateStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
 export function defaultGenerateStepper(
@@ -146,99 +146,221 @@ export function defaultGenerateStepper(
   defaults: StepperProvider,
 ): StepperProvider;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityListComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const EntityListComponent: ({
-  locations,
-  collapsed,
-  locationListItemIcon,
-  onItemClick,
-  firstListItem,
-  withLinks,
-}: Props_2) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "ImportStepper" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const ImportStepper: ({
-  initialUrl,
-  generateStepper,
-  variant,
-  opts,
-}: Props) => JSX.Element;
-
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PreparePullRequestForm" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export const PreparePullRequestForm: <
-  TFieldValues extends Record<string, any>
->({
-  defaultValues,
-  onSubmit,
-  render,
-}: Props_5<TFieldValues>) => JSX.Element;
+export const DefaultImportPage: () => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PreviewCatalogInfoComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const PreviewCatalogInfoComponent: ({
-  repositoryUrl,
-  entities,
-  classes,
-}: Props_6) => JSX.Element;
-
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PreviewPullRequestComponent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const PreviewPullRequestComponent: ({
-  title,
-  description,
-  classes,
-}: Props_7) => JSX.Element;
-
-// Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const Router: (opts: StepperProviderOpts) => JSX.Element;
-
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "StepInitAnalyzeUrl" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export const StepInitAnalyzeUrl: ({
-  onAnalysis,
-  analysisUrl,
-  disablePullRequest,
-}: Props_3) => JSX.Element;
+export const EntityListComponent: (
+  props: EntityListComponentProps,
+) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "StepPrepareCreatePullRequest" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// @public
+export interface EntityListComponentProps {
+  // (undocumented)
+  collapsed?: boolean;
+  // (undocumented)
+  firstListItem?: React_2.ReactElement;
+  // (undocumented)
+  locationListItemIcon: (target: string) => React_2.ReactElement;
+  // (undocumented)
+  locations: Array<{
+    target: string;
+    entities: (Entity | CompoundEntityRef)[];
+  }>;
+  // (undocumented)
+  onItemClick?: (target: string) => void;
+  // (undocumented)
+  withLinks?: boolean;
+}
+
+// @public
+export type ImportFlows =
+  | 'unknown'
+  | 'single-location'
+  | 'multiple-locations'
+  | 'no-location';
+
+// @public
+export const ImportInfoCard: (props: ImportInfoCardProps) => JSX.Element;
+
+// @public
+export interface ImportInfoCardProps {
+  // (undocumented)
+  exampleLocationUrl?: string;
+  // (undocumented)
+  exampleRepositoryUrl?: string;
+}
+
+// Warning: (ae-forgotten-export) The symbol "State" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ImportState" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const StepPrepareCreatePullRequest: ({
-  analyzeResult,
-  onPrepare,
-  onGoBack,
-  renderFormFields,
-  defaultTitle,
-  defaultBody,
-}: Props_8) => JSX.Element;
+export type ImportState = State & {
+  activeFlow: ImportFlows;
+  activeStepNumber: number;
+  analysisUrl?: string;
+  onGoBack?: () => void;
+  onReset: () => void;
+};
+
+// @public
+export const ImportStepper: (props: ImportStepperProps) => JSX.Element;
+
+// @public
+export interface ImportStepperProps {
+  // (undocumented)
+  generateStepper?: (
+    flow: ImportFlows,
+    defaults: StepperProvider,
+  ) => StepperProvider;
+  // (undocumented)
+  initialUrl?: string;
+  // (undocumented)
+  variant?: InfoCardVariants;
+}
+
+// @public
+export const PreparePullRequestForm: <TFieldValues extends Record<string, any>>(
+  props: PreparePullRequestFormProps<TFieldValues>,
+) => JSX.Element;
+
+// @public
+export type PreparePullRequestFormProps<
+  TFieldValues extends Record<string, any>,
+> = Pick<UseFormProps<TFieldValues>, 'defaultValues'> & {
+  onSubmit: SubmitHandler<TFieldValues>;
+  render: (
+    props: Pick<
+      UseFormReturn<TFieldValues>,
+      'formState' | 'register' | 'control' | 'setValue'
+    > & {
+      values: UnpackNestedValue<TFieldValues>;
+    },
+  ) => React_2.ReactNode;
+};
+
+// @public
+export type PrepareResult =
+  | {
+      type: 'locations';
+      locations: Array<{
+        exists?: boolean;
+        target: string;
+        entities: CompoundEntityRef[];
+      }>;
+    }
+  | {
+      type: 'repository';
+      url: string;
+      integrationType: string;
+      pullRequest: {
+        url: string;
+      };
+      locations: Array<{
+        target: string;
+        entities: CompoundEntityRef[];
+      }>;
+    };
+
+// @public
+export const PreviewCatalogInfoComponent: (
+  props: PreviewCatalogInfoComponentProps,
+) => JSX.Element;
+
+// @public
+export interface PreviewCatalogInfoComponentProps {
+  // (undocumented)
+  classes?: {
+    card?: string;
+    cardContent?: string;
+  };
+  // (undocumented)
+  entities: Entity[];
+  // (undocumented)
+  repositoryUrl: string;
+}
+
+// @public
+export const PreviewPullRequestComponent: (
+  props: PreviewPullRequestComponentProps,
+) => JSX.Element;
+
+// @public
+export interface PreviewPullRequestComponentProps {
+  // (undocumented)
+  classes?: {
+    card?: string;
+    cardContent?: string;
+  };
+  // (undocumented)
+  description: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public
+export const StepInitAnalyzeUrl: (
+  props: StepInitAnalyzeUrlProps,
+) => JSX.Element;
+
+// @public
+export interface StepInitAnalyzeUrlProps {
+  // (undocumented)
+  analysisUrl?: string;
+  // (undocumented)
+  disablePullRequest?: boolean;
+  // (undocumented)
+  exampleLocationUrl?: string;
+  // (undocumented)
+  onAnalysis: (
+    flow: ImportFlows,
+    url: string,
+    result: AnalyzeResult,
+    opts?: {
+      prepareResult?: PrepareResult;
+    },
+  ) => void;
+}
+
+// @public
+export const StepPrepareCreatePullRequest: (
+  props: StepPrepareCreatePullRequestProps,
+) => JSX.Element;
+
+// @public
+export interface StepPrepareCreatePullRequestProps {
+  // (undocumented)
+  analyzeResult: Extract<
+    AnalyzeResult,
+    {
+      type: 'repository';
+    }
+  >;
+  // (undocumented)
+  onGoBack?: () => void;
+  // (undocumented)
+  onPrepare: (
+    result: PrepareResult,
+    opts?: {
+      notRepeatable?: boolean;
+    },
+  ) => void;
+  // Warning: (ae-forgotten-export) The symbol "FormData" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  renderFormFields: (
+    props: Pick<
+      UseFormReturn<FormData_2>,
+      'register' | 'setValue' | 'formState'
+    > & {
+      values: UnpackNestedValue<FormData_2>;
+      groups: string[];
+      groupsLoading: boolean;
+    },
+  ) => React_2.ReactNode;
+}
 
 // Warnings were encountered during analysis:
 //
-// src/api/CatalogImportApi.d.ts:14:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
+// src/api/CatalogImportApi.d.ts:25:5 - (ae-forgotten-export) The symbol "PartialEntity" needs to be exported by the entry point index.d.ts
 ```

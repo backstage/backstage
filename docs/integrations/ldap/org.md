@@ -14,9 +14,11 @@ entities that mirror your org setup.
 
 ## Installation
 
-1. The processor is not installed by default, therefore you have to add a
-   dependency to `@backstage/plugin-catalog-backend-module-ldap` to your backend
-   package.
+This guide will use the Entity Provider method. If you for some reason prefer
+the Processor method (not recommended), it is described separately below.
+
+The provider is not installed by default, therefore you have to add a dependency
+to `@backstage/plugin-catalog-backend-module-ldap` to your backend package.
 
 ```bash
 # From your Backstage root directory
@@ -24,17 +26,65 @@ cd packages/backend
 yarn add @backstage/plugin-catalog-backend-module-ldap
 ```
 
-2. The `LdapOrgReaderProcessor` is not registered by default, so you have to
-   register it in the catalog plugin:
+> Note: When configuring to use a Provider instead of a Processor you do not
+> need to add a _location_ pointing to your LDAP server
 
-```typescript
+Update the catalog plugin initialization in your backend to add the provider and
+schedule it:
+
+```ts
 // packages/backend/src/plugins/catalog.ts
-builder.addProcessor(
-  LdapOrgReaderProcessor.fromConfig(config, {
-    logger,
-  }),
-);
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+import { Duration } from 'luxon';
+import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  // The target parameter below needs to match the ldap.providers.target
+  // value specified in your app-config
+  const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
+    id: 'our-ldap-master',
+    target: 'ldaps://ds.example.net',
+    logger: env.logger,
+  });
+
+  const builder = await CatalogBuilder.create(env);
+  builder.addEntityProvider(ldapEntityProvider);
+
+  // You can change the refresh interval for the other catalog entries
+  // independently, or just leave the line below out to use the default
+  // refresh interval. Note that this interval does NOT at all affect
+  // the LDAP refresh when using the provider method, which is good!
+  builder.setRefreshIntervalSeconds(100);
+
+  const { processingEngine, router } = await builder.build();
+  await processingEngine.start();
+
+  // Only perform this scheduling after starting the processing engine
+  await env.scheduler.scheduleTask({
+    id: 'refresh_ldap',
+    // frequency sets how often you want to ingest users and groups from
+    // LDAP, in this case every 60 minutes
+    frequency: Duration.fromObject({ minutes: 60 }),
+    timeout: Duration.fromObject({ minutes: 15 }),
+    fn: async () => {
+      try {
+        await ldapEntityProvider.read();
+      } catch (error) {
+        env.logger.error(error);
+      }
+    },
+  });
+
+  return router;
+}
 ```
+
+After this, you also have to add some configuration in your app-config that
+describes what you want to import for that target.
 
 ## Configuration
 
@@ -42,45 +92,33 @@ The following configuration is a small example of how a setup could look for
 importing groups and users from a corporate LDAP server.
 
 ```yaml
-catalog:
-  locations:
-    - type: ldap-org
-      target: ldaps://ds.example.net
-  processors:
-    ldapOrg:
-      providers:
-        - target: ldaps://ds.example.net
-          bind:
-            dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-            secret: ${LDAP_SECRET}
-          users:
-            dn: ou=people,ou=example,dc=example,dc=net
-            options:
-              filter: (uid=*)
-            map:
-              description: l
-            set:
-              metadata.customField: 'hello'
-          groups:
-            dn: ou=access,ou=groups,ou=example,dc=example,dc=net
-            options:
-              filter: (&(objectClass=some-group-class)(!(groupType=email)))
-            map:
-              description: l
-            set:
-              metadata.customField: 'hello'
+ldap:
+  providers:
+    - target: ldaps://ds.example.net
+      bind:
+        dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
+        secret: ${LDAP_SECRET}
+      users:
+        dn: ou=people,ou=example,dc=example,dc=net
+        options:
+          filter: (uid=*)
+        map:
+          description: l
+        set:
+          metadata.customField: 'hello'
+      groups:
+        dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+        options:
+          filter: (&(objectClass=some-group-class)(!(groupType=email)))
+        map:
+          description: l
+        set:
+          metadata.customField: 'hello'
 ```
 
-Locations point out the specific org(s) you want to import. The `type` of these
-locations must be `ldap-org`, and the `target` must point to the exact URL
-(starting with `ldap://` or `ldaps://`) of the targeted LDAP server. You can
-have several such location entries if you want, but typically you will have just
-one.
-
-The processor itself is configured in the other block, under
-`catalog.processors.ldapOrg`. There may be many providers, each targeting a
-specific `target` which is supposed to be on the same form as the location
-`target`.
+There may be many providers, each targeting a specific `target` which is
+supposed to match the `target` of a dedicated provider instance - i.e., you will
+add one entity provider class instance per target to ingest from.
 
 These config blocks have a lot of options in them, so we will describe each
 "root" key within the block separately.
@@ -163,7 +201,7 @@ below, with their default values, but they are all optional.
 
 If you leave out an optional mapping, it will still be copied using that default
 value. For example, even if you do not put in the field `displayName` in your
-config, the processor will still copy the attribute `cn` into the entity field
+config, the provider will still copy the attribute `cn` into the entity field
 `spec.profile.displayName`.
 
 ```yaml
@@ -245,7 +283,7 @@ shown below, with their default values, but they are all optional.
 
 If you leave out an optional mapping, it will still be copied using that default
 value. For example, even if you do not put in the field `displayName` in your
-config, the processor will still copy the attribute `cn` into the entity field
+config, the provider will still copy the attribute `cn` into the entity field
 `spec.profile.displayName`. If the target field is optional, such as the display
 name, the importer will accept missing attributes and just leave the target
 field unset. If the target field is mandatory, such as the name of the entity,
@@ -283,34 +321,74 @@ map:
   members: member
 ```
 
-## Customize the Processor
+## Customize the Provider
 
-In case you want to customize the ingested entities, the
-`LdapOrgReaderProcessor` allows to pass transformers for users and groups.
+In case you want to customize the ingested entities, the provider allows to pass
+transformers for users and groups. Here we will show an example of overriding
+the group transformer.
 
 1. Create a transformer:
 
-```ts
-export async function myGroupTransformer(
-  vendor: LdapVendor,
-  config: GroupConfig,
-  group: SearchEntry,
-): Promise<GroupEntity | undefined> {
-  // Transformations may change namespace, change entity naming pattern, fill
-  // profile with more or other details...
+   ```ts
+   export async function myGroupTransformer(
+     vendor: LdapVendor,
+     config: GroupConfig,
+     group: SearchEntry,
+   ): Promise<GroupEntity | undefined> {
+     // Transformations may change namespace, change entity naming pattern, fill
+     // profile with more or other details...
 
-  // Create the group entity on your own, or wrap the default transformer
-  return await defaultGroupTransformer(vendor, config, group);
-}
-```
+     // Create the group entity on your own, or wrap the default transformer
+     return await defaultGroupTransformer(vendor, config, group);
+   }
+   ```
 
-2. Configure the processor with the transformer:
+2. Configure the provider with the transformer:
 
-```ts
+   ```ts
+   const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
+     id: 'our-ldap-master',
+     target: 'ldaps://ds.example.net',
+     logger: env.logger,
+     groupTransformer: myGroupTransformer,
+   });
+   ```
+
+## Using a Processor instead of a Provider
+
+An alternative to using the Provider for ingesting LDAP entries is to use a
+Processor. This is the old way that's based on registering locations with the
+proper type and target, triggering the processor to run.
+
+The drawback of this method is that it will leave orphaned Group/User entities
+whenever they are deleted on your LDAP server, and you cannot control the
+frequency with which they are refreshed, separately from other processors.
+
+### Processor Installation
+
+The `LdapOrgReaderProcessor` is not registered by default, so you have to
+register it in the catalog plugin:
+
+```typescript
+// packages/backend/src/plugins/catalog.ts
 builder.addProcessor(
-  LdapOrgReaderProcessor.fromConfig(config, {
-    logger,
-    groupTransformer: myGroupTransformer,
+  LdapOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
   }),
 );
+```
+
+### Driving LDAP Org Processor Ingestion with Locations
+
+Locations point out the specific org(s) you want to import. The `type` of these
+locations must be `ldap-org`, and the `target` must point to the exact URL
+(starting with `ldap://` or `ldaps://`) of the targeted LDAP server. You can
+have several such location entries if you want, but typically you will have just
+one.
+
+```yaml
+catalog:
+  locations:
+    - type: ldap-org
+      target: ldaps://ds.example.net
 ```

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import ILertIcon from './assets/ilert.icon.svg';
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const iLertRouteRef = createRouteRef({
-  icon: ILertIcon,
-  path: '/ilert',
-  title: 'iLert',
+  id: 'ilert',
 });

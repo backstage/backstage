@@ -16,28 +16,29 @@
 import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
-  ScmIntegrationRegistry,
+  ScmIntegrations,
 } from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
-import { parseRepoUrl } from '../publish/util';
+import { Octokit } from 'octokit';
 import { createTemplateAction } from '../../createTemplateAction';
+import { parseRepoUrl } from '../publish/util';
+import { getOctokitOptions } from './helpers';
 
+/**
+ * Creates a new action that dispatches a GitHub Action workflow for a given branch or tag.
+ * @public
+ */
 export function createGithubActionsDispatchAction(options: {
-  integrations: ScmIntegrationRegistry;
+  integrations: ScmIntegrations;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
-  const { integrations } = options;
-
-  const credentialsProviders = new Map(
-    integrations.github.list().map(integration => {
-      const provider = GithubCredentialsProvider.create(integration.config);
-      return [integration.config.host, provider];
-    }),
-  );
+  const { integrations, githubCredentialsProvider } = options;
 
   return createTemplateAction<{
     repoUrl: string;
     workflowId: string;
     branchOrTagName: string;
+    workflowInputs?: { [key: string]: string };
+    token?: string;
   }>({
     id: 'github:actions:dispatch',
     description:
@@ -63,50 +64,54 @@ export function createGithubActionsDispatchAction(options: {
               'The git branch or tag name used to dispatch the workflow',
             type: 'string',
           },
+          workflowInputs: {
+            title: 'Workflow Inputs',
+            description:
+              'Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10. ',
+            type: 'object',
+          },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The GITHUB_TOKEN to use for authorization to GitHub',
+          },
         },
       },
     },
     async handler(ctx) {
-      const { repoUrl, workflowId, branchOrTagName } = ctx.input;
-
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const {
+        repoUrl,
+        workflowId,
+        branchOrTagName,
+        workflowInputs,
+        token: providedToken,
+      } = ctx.input;
 
       ctx.logger.info(
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
-      const credentialsProvider = credentialsProviders.get(host);
-      const integrationConfig = integrations.github.byHost(host);
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
-      if (!credentialsProvider || !integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      const { token } = await credentialsProvider.getCredentials({
-        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-          repo,
-        )}`,
-      });
-
-      if (!token) {
-        throw new InputError(
-          `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
-        );
-      }
-
-      const client = new Octokit({
-        auth: token,
-        baseUrl: integrationConfig.config.apiBaseUrl,
-        previews: ['nebula-preview'],
-      });
+      const client = new Octokit(
+        await getOctokitOptions({
+          integrations,
+          repoUrl,
+          credentialsProvider: githubCredentialsProvider,
+          token: providedToken,
+        }),
+      );
 
       await client.rest.actions.createWorkflowDispatch({
         owner,
         repo,
         workflow_id: workflowId,
         ref: branchOrTagName,
+        inputs: workflowInputs,
       });
 
       ctx.logger.info(`Workflow ${workflowId} dispatched successfully`);

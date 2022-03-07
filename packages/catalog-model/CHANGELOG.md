@@ -1,5 +1,249 @@
 # @backstage/catalog-model
 
+## 0.12.1
+
+### Patch Changes
+
+- Fixed runtime resolution of the `/alpha` entry point.
+
+## 0.12.0
+
+### Minor Changes
+
+- ac7b1161a6: **BREAKING**: The following changes are all breaking changes.
+
+  Removed `EDIT_URL_ANNOTATION` and `VIEW_URL_ANNOTATION`, `LOCATION_ANNOTATION`, `ORIGIN_LOCATION_ANNOTATION`, `LOCATION_ANNOTATION`, `SOURCE_LOCATION_ANNOTATION`. All of these constants have been prefixed with ANNOTATION to be easier to find meaning `SOURCE_LOCATION_ANNOTATION` is available as `ANNOTATION_SOURCE_LOCATION`.
+
+  Removed `parseLocationReference`, replaced by `parseLocationRef`.
+
+  Removed `stringifyLocationReference`, replaced by `stringifyLocationRef`.
+
+  Removed `Location` type which has been moved to `catalog-client`.
+
+  Removed `ENTITY_DEFAULT_NAMESPACE`, replaced by `DEFAULT_NAMESPACE`.
+
+  Removed `compareEntityToRef` compare using `stringifyEntityRef` instead.
+
+  Removed `JSONSchema` type which should be imported from `json-schema` package instead.
+
+  Removed utility methods: `entityHasChanges`, `generateEntityEtag`, `generateEntityUid`, `generateUpdatedEntity`.
+
+  Removed `ENTITY_META_GENERATED_FIELDS` and `EntityRefContext`.
+
+### Patch Changes
+
+- debfcd9515: Move `@types/json-schema` to be a dev dependency
+- 36aa63022b: **DEPRECATION**: Deprecated the `EntityName` type, and added the better-named `CompoundEntityRef` to replace it.
+
+  **DEPRECATION**: Deprecated the `getEntityName` function, and added the better-named `getCompoundEntityRef` to replace it.
+
+  Please switch over to using the new symbols, as the old ones may be removed in a future release.
+
+## 0.11.0
+
+### Minor Changes
+
+- 919cf2f836: **BREAKING**: Added `EntityRelation.targetRef` (a string form entity ref), and
+  deprecated `EntityRelation.target` (a kind + namespace + name object). This
+  aligns the type with our goal of using string form entity refs more coherently.
+  There will be a period of time when both fields need to be present, which may in
+  particular affect your tests which now have to list both the string form and the
+  object form side by side.
+
+  ```diff
+   const mockEntity: Entity = {
+     kind: 'Component',
+     relations: [
+       {
+         type: RELATION_MEMBER_OF,
+  +      targetRef: 'component:default/foo',
+         target: { kind: 'component', namespace: 'default', name: 'foo' }
+       }
+     ]
+  ```
+
+  The `target` field will be entirely removed from this type in a future release.
+
+- 7010349c9a: **BREAKING**: Removed `EntityRelationSpec` as it is only used during the catalog during the catalog processing.
+- 68f0871b76: **BREAKING**: Simplified the `parseEntityRef` function to _always_ either return
+  a complete `EntityName`, complete with both kind, namespace and name, or throw
+  an error if it for some reason did not have enough information to form that
+  result. This makes its usage and its type declaration vastly simpler.
+
+### Patch Changes
+
+- ed09ad8093: Deprecated the `LocationSpec` export, which should now be imported from `@backstage/plugin-catalog-backend` instead.
+- b5c02d10a6: Remove all usage of the deprecated `ENTITY_DEFAULT_NAMESPACE`
+- 67a7c02d26: **DEPRECATED**: The `EntityRef` type and `parseEntityName` function are now
+  deprecated, and will soon be removed. This is part of a larger movement toward
+  fixing the poorly named `EntityName` type which should instead have been named
+  `EntityRef`. Please remove any usage of these as soon as possible.
+- da44c47f43: Deprecated the `entity.metadata.generation` as the field has never been fully functioning.
+
+## 0.10.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+
+## 0.10.0
+
+### Minor Changes
+
+- e483dd6c72: **BREAKING**: Remove deprecated validation methods `analyzeLocationSchema`, `locationSchema` and `locationSpecSchema`.
+  This functionality was primarily used internally by the `catalog-backend`.
+- edbc03814a: **BREAKING**: Remove deprecated `serializeEntityRef` which is replaced by `stringifyEntityRef`.
+- e72d371296: **BREAKING**: Removed `TemplateEntityV1beta2` from the model and moved it to
+  `@backstage/plugin-scaffolder-common` where `TemplateEntityV1beta3` already
+  lived. It has also been marked as deprecated in the process - please consider
+  [migrating to `v1beta3` templates](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3).
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Deprecated `parseLocationReference` and `stringifyLocationReference`,
+  introducing `parseLocationRef` and `stringifyLocationRef` in their place.
+- 244d24ebc4: Deprecates the `Location` type export from this package. Imports of the `Location` type should now be done from the `@backstage/catalog-client` package instead.
+- 7aeb491394: Deprecated `ENTITY_DEFAULT_NAMESPACE` constant in favour of `DEFAULT_NAMESPACE`.
+- 0d03e42a89: Deprecated `compareEntityToRef` due to low usage and provided value.
+- e8c6f9d282: Deprecated the `EntityRefContext` type which had limited use.
+- 7f21538c9e: Deprecated `JSONSchema` export type.
+- 20f3244102: Deprecates the following exports which all have very limited and internal use. `ENTITY_META_GENERATED_FIELDS`, `entityHasChanges`, `generateEntityEtag`, `generateEntityUid`, `generateUpdatedEntity`, `ENTITY_META_GENERATED_FIELDS`.
+- 27eccab216: Deprecates `EDIT_URL_ANNOTATION`, `LOCATION_ANNOTATION`, `ORIGIN_LOCATION_ANNOTATION`, `SOURCE_LOCATION_ANNOTATION`, `VIEW_URL_ANNOTATION`
+  and replaces these constants all prefixed with ANNOTATION\_ `ANNOTATION_EDIT_URL`, `ANNOTATION_LOCATION`, `ANNOTATION_ORIGIN_LOCATION`, `ANNOTATION_SOURCE_LOCATION`, `ANNOTATION_VIEW_URL`
+- Updated dependencies
+  - @backstage/errors@0.2.1
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.9.10
+
+### Patch Changes
+
+- 8b5a7763d5: Added `alpha` release stage type declarations, accessible via `@backstage/catalog-model/alpha`.
+
+  **BREAKING**: The experimental entity `status` field was removed from the base `Entity` type and is now only available on the `AlphaEntity` type from the alpha release stage, along with all accompanying types that were previously marked as `UNSTABLE_`.
+
+  For example, the following import:
+
+  ```ts
+  import { UNSTABLE_EntityStatusItem } from '@backstage/catalog-model';
+  ```
+
+  Becomes this:
+
+  ```ts
+  import { EntityStatusItem } from '@backstage/catalog-model/alpha';
+  ```
+
+  Note that exports that are only available from the alpha release stage are considered unstable and do not adhere to the semantic versioning of the package.
+
+- Updated dependencies
+  - @backstage/config@0.1.13
+
+## 0.9.10-next.0
+
+### Patch Changes
+
+- 8b5a7763d5: Added `alpha` release stage type declarations, accessible via `@backstage/catalog-model/alpha`.
+
+  **BREAKING**: The experimental entity `status` field was removed from the base `Entity` type and is now only available on the `AlphaEntity` type from the alpha release stage, along with all accompanying types that were previously marked as `UNSTABLE_`.
+
+  For example, the following import:
+
+  ```ts
+  import { UNSTABLE_EntityStatusItem } from '@backstage/catalog-model';
+  ```
+
+  Becomes this:
+
+  ```ts
+  import { EntityStatusItem } from '@backstage/catalog-model/alpha';
+  ```
+
+  Note that exports that are only available from the alpha release stage are considered unstable and do not adhere to the semantic versioning of the package.
+
+- Updated dependencies
+  - @backstage/config@0.1.13-next.0
+
+## 0.9.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/errors@0.2.0
+
+## 0.9.8
+
+### Patch Changes
+
+- ad7338bb48: Added an optional `presence` field to Location spec, which describes whether the target of a location is required to exist or not. It defaults to `'required'`, which is the current behaviour of the catalog.
+
+## 0.9.7
+
+### Patch Changes
+
+- 8809b6c0dd: Update the json-schema dependency version.
+
+## 0.9.6
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+
+## 0.9.5
+
+### Patch Changes
+
+- ab2df3be33: Improved documentation for exported symbols.
+- Updated dependencies
+  - @backstage/errors@0.1.3
+
+## 0.9.4
+
+### Patch Changes
+
+- 957e4b3351: Updated dependencies
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+
+## 0.9.3
+
+### Patch Changes
+
+- d42566c5c9: Loosen constraints on what's a valid catalog entity tag name (include + and #)
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.9.2
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
+## 0.9.1
+
+### Patch Changes
+
+- 13dc3735c: Add an optional `metadata.title` field to all entity kinds.
+
+  This used to be available on only the `Template` kind, and we have decided that the metadata block should be the same for all kinds. A title can be useful especially in large and complex catalogs where users have a tough time navigating or discerning among the entities.
+
+  It also carries some risk. You do not want to end up giving a title that collides with an actual name, which at best leads to confusion and at worst could be a liability. We do not perform any collision detection in the catalog. If you want to disallow this facility you may want to add a small processor that makes sure it's not set.
+
+  At the time of writing this message, only the scaffolder actually makes use of this field for display purposes.
+
 ## 0.9.0
 
 ### Minor Changes

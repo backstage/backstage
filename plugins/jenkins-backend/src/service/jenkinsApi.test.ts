@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { JenkinsApiImpl } from './jenkinsApi';
 import jenkins from 'jenkins';
 import { JenkinsInfo } from './jenkinsInfoProvider';
 import { JenkinsBuild, JenkinsProject } from '../types';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 jest.mock('jenkins');
 const mockedJenkinsClient = {
@@ -39,8 +42,16 @@ const jenkinsInfo: JenkinsInfo = {
   jobFullName: 'example-jobName',
 };
 
+const fakePermissionApi = {
+  authorize: jest.fn().mockResolvedValue([
+    {
+      result: AuthorizeResult.ALLOW,
+    },
+  ]),
+};
+
 describe('JenkinsApi', () => {
-  const jenkinsApi = new JenkinsApiImpl();
+  const jenkinsApi = new JenkinsApiImpl(fakePermissionApi);
 
   describe('getProjects', () => {
     const project: JenkinsProject = {
@@ -92,8 +103,7 @@ describe('JenkinsApi', () => {
             result: 'success',
             displayName: '#7',
             fullDisplayName: 'Example jobName » Example Build #7',
-            url:
-              'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
+            url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild',
             number: 7,
             status: 'success',
             source: {},
@@ -280,10 +290,18 @@ describe('JenkinsApi', () => {
           result: 'success',
           displayName: '#7',
           fullDisplayName: 'Example jobName » Example Build #7',
-          url:
-            'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/',
+          url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/',
           number: 7,
         },
+      };
+
+      const projectWithoutBuild: JenkinsProject = {
+        actions: [],
+        displayName: 'Example Build',
+        fullDisplayName: 'Example jobName » Example Build',
+        fullName: 'example-jobName/exampleBuild',
+        inQueue: false,
+        lastBuild: null,
       };
 
       it('augments project', async () => {
@@ -296,6 +314,16 @@ describe('JenkinsApi', () => {
         expect(result).toHaveLength(1);
         expect(result[0].status).toEqual('success');
       });
+      it('augments project without build', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValueOnce({
+          jobs: [projectWithoutBuild],
+        });
+
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].status).toEqual('build not found');
+      });
       it('augments  build', async () => {
         mockedJenkinsClient.job.get.mockResolvedValueOnce({
           jobs: [projectWithScmActions],
@@ -306,7 +334,7 @@ describe('JenkinsApi', () => {
         expect(result).toHaveLength(1);
         // TODO: I am really just asserting the previous behaviour wth no understanding here.
         // In my 2 Jenkins instances, 1 returns a lot of different and confusing BuildData sections and 1 returns none ☹️
-        expect(result[0].lastBuild.source).toEqual({
+        expect(result[0].lastBuild!.source).toEqual({
           branchName: 'master',
           commit: {
             hash: '14d31bde',
@@ -324,7 +352,7 @@ describe('JenkinsApi', () => {
         const result = await jenkinsApi.getProjects(jenkinsInfo);
 
         expect(result).toHaveLength(1);
-        expect(result[0].lastBuild.tests).toEqual({
+        expect(result[0].lastBuild!.tests).toEqual({
           total: 635,
           passed: 632,
           skipped: 1,
@@ -391,6 +419,47 @@ describe('JenkinsApi', () => {
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
       promisify: true,
+    });
+    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+  });
+
+  it('buildProject should fail if it does not have required permissions', async () => {
+    fakePermissionApi.authorize.mockResolvedValueOnce([
+      {
+        result: AuthorizeResult.DENY,
+      },
+    ]);
+
+    await expect(() =>
+      jenkinsApi.buildProject(jenkinsInfo, jobFullName),
+    ).rejects.toThrow(NotAllowedError);
+  });
+
+  it('buildProject should succeed if it have required permissions', async () => {
+    fakePermissionApi.authorize.mockResolvedValueOnce([
+      {
+        result: AuthorizeResult.ALLOW,
+      },
+    ]);
+
+    await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
+    expect(mockedJenkins).toHaveBeenCalledWith({
+      baseUrl: jenkinsInfo.baseUrl,
+      headers: jenkinsInfo.headers,
+      promisify: true,
+    });
+    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+  });
+
+  it('buildProject with crumbIssuer option', async () => {
+    const info: JenkinsInfo = { ...jenkinsInfo, crumbIssuer: true };
+    await jenkinsApi.buildProject(info, jobFullName);
+
+    expect(mockedJenkins).toHaveBeenCalledWith({
+      baseUrl: jenkinsInfo.baseUrl,
+      headers: jenkinsInfo.headers,
+      promisify: true,
+      crumbIssuer: true,
     });
     expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
   });

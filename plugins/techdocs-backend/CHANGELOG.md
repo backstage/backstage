@@ -1,5 +1,494 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.14.1
+
+### Patch Changes
+
+- 6537a601c7: Added a new interface that allows for customization of when to build techdocs
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 022507c860: A `DefaultTechDocsCollatorFactory`, which works with the new stream-based
+  search indexing subsystem, is now available. The `DefaultTechDocsCollator` will
+  continue to be available for those unable to upgrade to the stream-based
+  `@backstage/search-backend-node` (and related packages), however it is now
+  marked as deprecated and will be removed in a future version.
+
+  To upgrade this plugin and the search indexing subsystem in one go, check
+  [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  for necessary changes to your search backend plugin configuration.
+
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-catalog-common@0.2.0
+  - @backstage/integration@0.8.0
+  - @backstage/search-common@0.3.0
+  - @backstage/techdocs-common@0.11.11
+
+## 0.14.0
+
+### Minor Changes
+
+- a925ba8385: BREAKING: constructor based initialization of DefaultTechDocsCollator now deprecated. Use static fromConfig method instead.
+
+  ```diff
+  indexBuilder.addCollator({
+    defaultRefreshIntervalSeconds: 600,
+  -   collator: new DefaultTechDocsCollator({
+  +   collator: DefaultTechDocsCollator.fromConfig(config, {
+      discovery,
+      logger,
+      tokenManager,
+    }),
+  });
+  ```
+
+  Note: in an upcoming release, TechDocs backend's /sync/:namespace/:kind/:name endpoint will only respond to text/event-stream-based requests. Update any custom code at your organization accordingly.
+
+### Patch Changes
+
+- 91eb01b5cf: Optimize DefaultTechDocsCollator get entities.
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/techdocs-common@0.11.10
+  - @backstage/integration@0.7.5
+
+## 0.13.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/search-common@0.2.4
+  - @backstage/techdocs-common@0.11.9
+  - @backstage/plugin-catalog-common@0.1.4
+
+## 0.13.4
+
+### Patch Changes
+
+- 453145abba: Do not use cross-fetch in the backend
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 811c710a21: Fix bug where tech docs collator stores search indices with wrong entity ref casing. Make the collator to conform legacyPathCasing configuration option.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/techdocs-common@0.11.8
+  - @backstage/plugin-catalog-common@0.1.3
+
+## 0.13.3
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/techdocs-common@0.11.7
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/techdocs-common@0.11.7-next.0
+
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@0.1.2
+  - @backstage/backend-common@0.10.6
+  - @backstage/techdocs-common@0.11.6
+
+## 0.13.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@0.1.2-next.0
+  - @backstage/backend-common@0.10.6-next.0
+  - @backstage/techdocs-common@0.11.6-next.0
+
+## 0.13.1
+
+### Patch Changes
+
+- 4682340457: Add support for permissions to the DefaultTechDocsCollator.
+- Updated dependencies
+  - @backstage/search-common@0.2.2
+  - @backstage/techdocs-common@0.11.5
+  - @backstage/backend-common@0.10.5
+
+## 0.13.0
+
+### Minor Changes
+
+- ca2ee182c3: **BREAKING**: The `cache` option is now required by `createRouter`.
+
+  Added catalog-based authorization to TechDocs backend. When permissions are enabled for Backstage (via the `permission.enabled` config) the current user must have read access to the doc's corresponding catalog entity. The backend will return a 404 if the current user doesn't have access or if the entity doesn't exist. Entities are cached to for a short time to optimize the `/static/docs` request path, which can be called many times when loading a single TechDocs page.
+
+  Note: If you publish your TechDocs documentation to storage in a custom way under paths that do not conform to the default `:namespace/:kind/:name` pattern, then TechDocs will not work with permissions enabled. We want understand these use cases better and provide a solution in the future, so reach out to us on Discord in the [#docs-like-code](https://discord.com/channels/687207715902193673/714754240933003266) channel if you would like to help out.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.7.2
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/techdocs-common@0.11.4
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
+## 0.12.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/techdocs-common@0.11.4-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+  - @backstage/integration@0.7.2-next.0
+
+## 0.12.3
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/techdocs-common@0.11.3
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+
+## 0.12.2
+
+### Patch Changes
+
+- da676a49ab: Add support for API auth in DefaultTechDocsCollator
+- Updated dependencies
+  - @backstage/techdocs-common@0.11.2
+  - @backstage/backend-common@0.10.1
+  - @backstage/integration@0.7.0
+
+## 0.12.1
+
+### Patch Changes
+
+- 8c25c3ea5b: Fixed a bug preventing cache from being enabled in TechDocs "recommended" deployment mode.
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/catalog-client@0.5.3
+  - @backstage/techdocs-common@0.11.1
+
+## 0.12.0
+
+### Minor Changes
+
+- 1bada775a9: Added the ability for the TechDocs Backend to (optionally) leverage a cache
+  store to improve performance when reading files from a cloud storage provider.
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/techdocs-common@0.11.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 905dd952ac: **BREAKING** `DefaultTechDocsCollator` has a new required option `tokenManager`. See the create-app changelog for how to create a `tokenManager` and add it to the `PluginEnvironment`. It can then be passed to the collator in `createPlugin`:
+
+  ```diff
+  // packages/backend/src/plugins/search.ts
+
+  ...
+  export default async function createPlugin({
+    ...
+  + tokenManager,
+  }: PluginEnvironment) {
+    ...
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+      collator: DefaultTechDocsCollator.fromConfig(config, {
+        discovery,
+        logger,
+  +     tokenManager,
+      }),
+    });
+
+    ...
+  }
+  ```
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/backend-common@0.9.12
+
+## 0.10.9
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/backend-common@0.9.11
+  - @backstage/techdocs-common@0.10.8
+
+## 0.10.8
+
+### Patch Changes
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 9e64a7ac1e: Allow amazon web services s3 buckets to pass an server side encryption configuration so they can publish to encrypted buckets
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/techdocs-common@0.10.7
+
+## 0.10.7
+
+### Patch Changes
+
+- b45607a2ec: Make techdocs s3 publisher credentials config schema optional.
+
+## 0.10.6
+
+### Patch Changes
+
+- 106a5dc3ad: Restore original casing for `kind`, `namespace` and `name` in `DefaultTechDocsCollator`.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/search-common@0.2.1
+  - @backstage/techdocs-common@0.10.5
+
+## 0.10.5
+
+### Patch Changes
+
+- 177401b571: Display entity title (if defined) in titles of TechDocs search results
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/techdocs-common@0.10.4
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.10.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+  - @backstage/techdocs-common@0.10.3
+
+## 0.10.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.10.2
+
+### Patch Changes
+
+- 1d346ba903: Modify TechDocsCollator to be aware of new TechDocs URL pattern. Modify tech docs in context search to use correct casing when creating initial filter.
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+  - @backstage/techdocs-common@0.10.1
+
+## 0.10.1
+
+### Patch Changes
+
+- 30ed662a3: Adding in-context search to TechDocs Reader component. Using existing search-backend to query for indexed search results scoped into a specific entity's techdocs. Needs TechDocsCollator enabled on the backend to work.
+
+  Adding extra information to indexed tech docs documents for search.
+
+- a42a142c2: Errors encountered while attempting to load TechDocs search indices at
+  collation-time are now logged at `DEBUG` instead of `WARN` level.
+- Updated dependencies
+  - @backstage/techdocs-common@0.10.0
+  - @backstage/integration@0.6.3
+  - @backstage/search-common@0.2.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.10.0
+
+### Minor Changes
+
+- 58452cdb7: OpenStack Swift Client changed with Trendyol's OpenStack Swift SDK.
+
+  ## Migration from old OpenStack Swift Configuration
+
+  Let's assume we have the old OpenStack Swift configuration here.
+
+  ```yaml
+  techdocs:
+    publisher:
+      type: 'openStackSwift'
+      openStackSwift:
+        containerName: 'name-of-techdocs-storage-bucket'
+        credentials:
+          username: ${OPENSTACK_SWIFT_STORAGE_USERNAME}
+          password: ${OPENSTACK_SWIFT_STORAGE_PASSWORD}
+        authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+        keystoneAuthVersion: ${OPENSTACK_SWIFT_STORAGE_AUTH_VERSION}
+        domainId: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_ID}
+        domainName: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME}
+        region: ${OPENSTACK_SWIFT_STORAGE_REGION}
+  ```
+
+  ##### Step 1: Change the credential keys
+
+  Since the new SDK uses _Application Credentials_ to authenticate OpenStack, we
+  need to change the keys `credentials.username` to `credentials.id`,
+  `credentials.password` to `credentials.secret` and use Application Credential ID
+  and secret here. For more detail about credentials look
+  [here](https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential).
+
+  ##### Step 2: Remove the unused keys
+
+  Since the new SDK doesn't use the old way authentication, we don't need the keys
+  `openStackSwift.keystoneAuthVersion`, `openStackSwift.domainId`,
+  `openStackSwift.domainName` and `openStackSwift.region`. So you can remove them.
+
+  ##### Step 3: Add Swift URL
+
+  The new SDK needs the OpenStack Swift connection URL for connecting the Swift.
+  So you need to add a new key called `openStackSwift.swiftUrl` and give the
+  OpenStack Swift url here. Example url should look like that:
+  `https://example.com:6780/swift/v1`
+
+  ##### That's it!
+
+  Your new configuration should look like that!
+
+  ```yaml
+  techdocs:
+    publisher:
+      type: 'openStackSwift'
+      openStackSwift:
+        containerName: 'name-of-techdocs-storage-bucket'
+        credentials:
+          id: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_ID}
+          secret: ${OPENSTACK_SWIFT_STORAGE_APPLICATION_CREDENTIALS_SECRET}
+        authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+        swiftUrl: ${OPENSTACK_SWIFT_STORAGE_SWIFT_URL}
+  ```
+
+- c772d9a84: TechDocs sites can now be accessed using paths containing entity triplets of
+  any case (e.g. `/docs/namespace/KIND/name` or `/docs/namespace/kind/name`).
+
+  If you do not use an external storage provider for serving TechDocs, this is a
+  transparent change and no action is required from you.
+
+  If you _do_ use an external storage provider for serving TechDocs (one of\* GCS,
+  AWS S3, or Azure Blob Storage), you must run a migration command against your
+  storage provider before updating.
+
+  [A migration guide is available here](https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-alpha-to-beta).
+
+  - (\*) We're seeking help from the community to bring OpenStack Swift support
+    [to feature parity](https://github.com/backstage/backstage/issues/6763) with the above.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+  - @backstage/techdocs-common@0.9.0
+
+## 0.9.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/techdocs-common@0.8.1
+
+## 0.9.1
+
+### Patch Changes
+
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+  - @backstage/techdocs-common@0.8.0
+  - @backstage/search-common@0.1.3
+
 ## 0.9.0
 
 ### Minor Changes

@@ -40,24 +40,32 @@ export const Patch = ({
   releaseBranch,
   onSuccess,
 }: PatchProps) => {
+  const ctaMessage = `Patch Release ${
+    latestRelease?.prerelease ? 'Candidate' : 'Version'
+  }`;
+
   return (
     <InfoCardPlus>
       <Box marginBottom={2}>
-        <Typography variant="h4">
-          Patch Release {latestRelease?.prerelease ? 'Candidate' : 'Version'}
-        </Typography>
+        <Typography variant="h4">{ctaMessage}</Typography>
       </Box>
 
       <BodyWrapper
         latestRelease={latestRelease}
         releaseBranch={releaseBranch}
         onSuccess={onSuccess}
+        ctaMessage={ctaMessage}
       />
     </InfoCardPlus>
   );
 };
 
-function BodyWrapper({ latestRelease, releaseBranch, onSuccess }: PatchProps) {
+function BodyWrapper({
+  latestRelease,
+  releaseBranch,
+  onSuccess,
+  ctaMessage,
+}: PatchProps & { ctaMessage: string }) {
   const { project } = useProjectContext();
 
   if (latestRelease === null) {
@@ -93,6 +101,7 @@ function BodyWrapper({ latestRelease, releaseBranch, onSuccess }: PatchProps) {
       releaseBranch={releaseBranch}
       onSuccess={onSuccess}
       tagParts={bumpedTag.tagParts}
+      ctaMessage={ctaMessage}
     />
   );
 }

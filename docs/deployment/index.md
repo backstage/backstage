@@ -1,7 +1,7 @@
 ---
 id: index
 title: Deploying Backstage
-sidebar_title: Overview
+sidebar_label: Overview
 description: Packaging Backstage and deploying to production
 ---
 
@@ -32,7 +32,7 @@ requires the first two steps.
 An example of deploying Backstage with a [Helm chart](helm.md), a common pattern
 in AWS, is also available. There is also a contrib guide to deploying Backstage
 with
-[AWS Fargate and Aurora PostgreSQL](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-fargate-deployment.md)
+[AWS Fargate and Aurora PostgreSQL](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-fargate-deployment.md).
 
 Please consider contributing other deployment guides if you get Backstage set up
 on common infrastructure, it would be a great benefit to the community.

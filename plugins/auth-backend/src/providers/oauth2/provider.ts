@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as OAuth2Strategy } from 'passport-oauth2';
 import {
-  OAuthAdapter,
-  OAuthProviderOptions,
-  OAuthHandlers,
-  OAuthResponse,
-  OAuthEnvironmentHandler,
-  OAuthStartRequest,
   encodeState,
+  OAuthAdapter,
+  OAuthEnvironmentHandler,
+  OAuthHandlers,
+  OAuthProviderOptions,
   OAuthRefreshRequest,
+  OAuthResponse,
   OAuthResult,
+  OAuthStartRequest,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -36,22 +40,47 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { RedirectInfo, AuthProviderFactory } from '../types';
+import {
+  AuthHandler,
+  AuthProviderFactory,
+  RedirectInfo,
+  SignInResolver,
+} from '../types';
+import { CatalogIdentityClient } from '../../lib/catalog';
+import { TokenIssuer } from '../../identity';
+import { Logger } from 'winston';
 
 type PrivateInfo = {
   refreshToken: string;
 };
 
 export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
+  signInResolver?: SignInResolver<OAuthResult>;
+  authHandler: AuthHandler<OAuthResult>;
+  tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
   authorizationUrl: string;
   tokenUrl: string;
   scope?: string;
+  logger: Logger;
+  includeBasicAuth?: boolean;
 };
 
 export class OAuth2AuthProvider implements OAuthHandlers {
   private readonly _strategy: OAuth2Strategy;
+  private readonly signInResolver?: SignInResolver<OAuthResult>;
+  private readonly authHandler: AuthHandler<OAuthResult>;
+  private readonly tokenIssuer: TokenIssuer;
+  private readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly logger: Logger;
 
   constructor(options: OAuth2AuthProviderOptions) {
+    this.signInResolver = options.signInResolver;
+    this.authHandler = options.authHandler;
+    this.tokenIssuer = options.tokenIssuer;
+    this.catalogIdentityClient = options.catalogIdentityClient;
+    this.logger = options.logger;
+
     this._strategy = new OAuth2Strategy(
       {
         clientID: options.clientId,
@@ -61,6 +90,14 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         tokenURL: options.tokenUrl,
         passReqToCallback: false as true,
         scope: options.scope,
+        customHeaders: options.includeBasicAuth
+          ? {
+              Authorization: `Basic ${this.encodeClientCredentials(
+                options.clientId,
+                options.clientSecret,
+              )}`,
+            }
+          : undefined,
       },
       (
         accessToken: any,
@@ -94,103 +131,180 @@ export class OAuth2AuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
     >(req, this._strategy);
 
-    const profile = makeProfileInfo(result.fullProfile, result.params.id_token);
-
     return {
-      response: await this.populateIdentity({
-        profile,
-        providerInfo: {
-          idToken: result.params.id_token,
-          accessToken: result.accessToken,
-          scope: result.params.scope,
-          expiresInSeconds: result.params.expires_in,
-        },
-      }),
+      response: await this.handleResult(result),
       refreshToken: privateInfo.refreshToken,
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
+  async refresh(req: OAuthRefreshRequest) {
     const refreshTokenResponse = await executeRefreshTokenStrategy(
       this._strategy,
       req.refreshToken,
       req.scope,
     );
-    const {
-      accessToken,
-      params,
-      refreshToken: updatedRefreshToken,
-    } = refreshTokenResponse;
+    const { accessToken, params, refreshToken } = refreshTokenResponse;
 
-    const rawProfile = await executeFetchUserProfileStrategy(
+    const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
-    const profile = makeProfileInfo(rawProfile, params.id_token);
 
-    return this.populateIdentity({
-      providerInfo: {
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
         accessToken,
-        refreshToken: updatedRefreshToken,
-        idToken: params.id_token,
-        expiresInSeconds: params.expires_in,
-        scope: params.scope,
-      },
-      profile,
-    });
+      }),
+      refreshToken,
+    };
   }
 
-  // Use this function to grab the user profile info from the token
-  // Then populate the profile with it
-  private async populateIdentity(
-    response: OAuthResponse,
-  ): Promise<OAuthResponse> {
-    const { profile } = response;
+  private async handleResult(result: OAuthResult) {
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
-    if (!profile.email) {
-      throw new Error('Profile does not contain an email');
+    const response: OAuthResponse = {
+      providerInfo: {
+        idToken: result.params.id_token,
+        accessToken: result.accessToken,
+        scope: result.params.scope,
+        expiresInSeconds: result.params.expires_in,
+      },
+      profile,
+    };
+
+    if (this.signInResolver) {
+      response.backstageIdentity = await this.signInResolver(
+        {
+          result,
+          profile,
+        },
+        context,
+      );
     }
-    const id = profile.email.split('@')[0];
 
-    return { ...response, backstageIdentity: { id } };
+    return response;
+  }
+
+  encodeClientCredentials(clientID: string, clientSecret: string): string {
+    return Buffer.from(`${clientID}:${clientSecret}`).toString('base64');
   }
 }
 
-export type OAuth2ProviderOptions = {};
+export const oAuth2DefaultSignInResolver: SignInResolver<OAuthResult> = async (
+  info,
+  ctx,
+) => {
+  const { profile } = info;
+
+  if (!profile.email) {
+    throw new Error('Profile contained no email');
+  }
+
+  const userId = profile.email.split('@')[0];
+
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: userId,
+  });
+
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: entityRef,
+      ent: [entityRef],
+    },
+  });
+
+  return { id: userId, token };
+};
+
+export type OAuth2ProviderOptions = {
+  authHandler?: AuthHandler<OAuthResult>;
+
+  signIn?: {
+    resolver?: SignInResolver<OAuthResult>;
+  };
+};
 
 export const createOAuth2Provider = (
-  _options?: OAuth2ProviderOptions,
+  options?: OAuth2ProviderOptions,
 ): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+  return ({
+    providerId,
+    globalConfig,
+    config,
+    tokenIssuer,
+    tokenManager,
+    catalogApi,
+    logger,
+  }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
       const authorizationUrl = envConfig.getString('authorizationUrl');
       const tokenUrl = envConfig.getString('tokenUrl');
       const scope = envConfig.getOptionalString('scope');
+      const includeBasicAuth = envConfig.getOptionalBoolean('includeBasicAuth');
+      const disableRefresh =
+        envConfig.getOptionalBoolean('disableRefresh') ?? false;
+
+      const catalogIdentityClient = new CatalogIdentityClient({
+        catalogApi,
+        tokenManager,
+      });
+
+      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+        ? options.authHandler
+        : async ({ fullProfile, params }) => ({
+            profile: makeProfileInfo(fullProfile, params.id_token),
+          });
+
+      const signInResolverFn =
+        options?.signIn?.resolver ?? oAuth2DefaultSignInResolver;
+
+      const signInResolver: SignInResolver<OAuthResult> = info =>
+        signInResolverFn(info, {
+          catalogIdentityClient,
+          tokenIssuer,
+          logger,
+        });
 
       const provider = new OAuth2AuthProvider({
         clientId,
         clientSecret,
+        tokenIssuer,
+        catalogIdentityClient,
         callbackUrl,
+        signInResolver,
+        authHandler,
         authorizationUrl,
         tokenUrl,
         scope,
+        logger,
+        includeBasicAuth,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
+        disableRefresh,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

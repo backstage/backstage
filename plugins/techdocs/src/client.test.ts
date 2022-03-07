@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
-import EventSource from 'eventsource';
+import { EventSourcePolyfill } from 'event-source-polyfill';
+import { MockConfigApi, MockFetchApi } from '@backstage/test-utils';
 import { TechDocsStorageClient } from './client';
 
-const MockedEventSource: jest.MockedClass<
-  typeof EventSource
-> = EventSource as any;
+const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
+  typeof EventSourcePolyfill
+>;
 
-jest.mock('eventsource');
+jest.mock('event-source-polyfill');
 
 const mockEntity = {
   kind: 'Component',
@@ -35,35 +35,48 @@ const mockEntity = {
 
 describe('TechDocsStorageClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
-  const configApi = {
-    getOptionalString: () => 'http://backstage:9191/api/techdocs',
-  } as Partial<Config>;
+  const configApi = new MockConfigApi({
+    techdocs: { requestUrl: 'http://backstage:9191/api/techdocs' },
+  });
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   const identityApi: jest.Mocked<IdentityApi> = {
-    getIdToken: jest.fn(),
-    getProfile: jest.fn(),
-    getUserId: jest.fn(),
-    signOut: jest.fn(),
-  };
+    getCredentials: jest.fn(),
+  } as unknown as jest.Mocked<IdentityApi>;
+  const fetchApi = new MockFetchApi({ injectIdentityAuth: { identityApi } });
 
   beforeEach(() => {
     jest.resetAllMocks();
+    identityApi.getCredentials.mockResolvedValue({ token: undefined });
   });
 
   it('should return correct base url based on defined storage', async () => {
-    // @ts-ignore Partial<Config> not assignable to Config.
-    const storageApi = new TechDocsStorageClient({ configApi, discoveryApi });
+    const storageApi = new TechDocsStorageClient({
+      configApi,
+      discoveryApi,
+      identityApi,
+      fetchApi,
+    });
 
     await expect(
       storageApi.getBaseUrl('test.js', mockEntity, ''),
     ).resolves.toEqual(
       `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
+
+    await expect(
+      storageApi.getBaseUrl('../test.js', mockEntity, 'some-docs-path'),
+    ).resolves.toEqual(
+      `${mockBaseUrl}/static/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
+    );
   });
 
   it('should return base url with correct entity structure', async () => {
-    // @ts-ignore Partial<Config> not assignable to Config.
-    const storageApi = new TechDocsStorageClient({ configApi, discoveryApi });
+    const storageApi = new TechDocsStorageClient({
+      configApi,
+      discoveryApi,
+      identityApi,
+      fetchApi,
+    });
 
     await expect(
       storageApi.getBaseUrl('test/', mockEntity, ''),
@@ -75,25 +88,24 @@ describe('TechDocsStorageClient', () => {
   describe('syncEntityDocs', () => {
     it('should create eventsource without headers', async () => {
       const storageApi = new TechDocsStorageClient({
-        // @ts-ignore Partial<Config> not assignable to Config.
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(
-        MockedEventSource,
-      ).toBeCalledWith(
+      expect(MockedEventSource).toBeCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: {} },
       );
@@ -101,27 +113,24 @@ describe('TechDocsStorageClient', () => {
 
     it('should create eventsource with headers', async () => {
       const storageApi = new TechDocsStorageClient({
-        // @ts-ignore Partial<Config> not assignable to Config.
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
       );
 
-      identityApi.getIdToken.mockResolvedValue('token');
-
+      identityApi.getCredentials.mockResolvedValue({ token: 'token' });
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(
-        MockedEventSource,
-      ).toBeCalledWith(
+      expect(MockedEventSource).toBeCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
         { withCredentials: true, headers: { Authorization: 'Bearer token' } },
       );
@@ -129,20 +138,21 @@ describe('TechDocsStorageClient', () => {
 
     it('should resolve to cached', async () => {
       const storageApi = new TechDocsStorageClient({
-        // @ts-ignore Partial<Config> not assignable to Config.
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'cached',
       );
@@ -150,20 +160,21 @@ describe('TechDocsStorageClient', () => {
 
     it('should resolve to updated', async () => {
       const storageApi = new TechDocsStorageClient({
-        // @ts-ignore Partial<Config> not assignable to Config.
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": true}' } as any);
           }
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
         'updated',
       );
@@ -171,24 +182,25 @@ describe('TechDocsStorageClient', () => {
 
     it('should log values', async () => {
       const storageApi = new TechDocsStorageClient({
-        // @ts-ignore Partial<Config> not assignable to Config.
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       MockedEventSource.prototype.addEventListener.mockImplementation(
         (type, fn) => {
-          if (type === 'log') {
+          if (type === 'log' && typeof fn === 'function') {
             fn({ data: '"A log message"' } as any);
           }
 
-          if (type === 'finish') {
+          if (type === 'finish' && typeof fn === 'function') {
             fn({ data: '{"updated": false}' } as any);
           }
         },
       );
 
+      identityApi.getCredentials.mockResolvedValue({});
       const logHandler = jest.fn();
       await expect(
         storageApi.syncEntityDocs(mockEntity, logHandler),
@@ -200,13 +212,14 @@ describe('TechDocsStorageClient', () => {
 
     it('should throw NotFoundError', async () => {
       const storageApi = new TechDocsStorageClient({
-        // @ts-ignore Partial<Config> not assignable to Config.
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       // we await later after we emitted the error
+      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop
@@ -215,7 +228,7 @@ describe('TechDocsStorageClient', () => {
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;
 
-      instance.onerror({
+      instance.onerror?.({
         status: 404,
         message: 'Some not found warning',
       } as any);
@@ -226,13 +239,14 @@ describe('TechDocsStorageClient', () => {
 
     it('should throw generic errors', async () => {
       const storageApi = new TechDocsStorageClient({
-        // @ts-ignore Partial<Config> not assignable to Config.
         configApi,
         discoveryApi,
         identityApi,
+        fetchApi,
       });
 
       // we await later after we emitted the error
+      identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop
@@ -241,7 +255,7 @@ describe('TechDocsStorageClient', () => {
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;
 
-      instance.onerror({
+      instance.onerror?.({
         type: 'error',
         data: 'Some other error',
       } as any);

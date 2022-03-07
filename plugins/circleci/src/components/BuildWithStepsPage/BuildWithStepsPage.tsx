@@ -35,7 +35,7 @@ import {
   Link,
 } from '@backstage/core-components';
 
-const IconLink = (IconButton as any) as typeof MaterialLink;
+const IconLink = IconButton as any as typeof MaterialLink;
 
 const BuildName = ({ build }: { build?: BuildWithSteps }) => (
   <Box display="flex" alignItems="center">

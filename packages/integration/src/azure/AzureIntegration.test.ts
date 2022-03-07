@@ -51,8 +51,7 @@ describe('AzureIntegration', () => {
       expect(
         integration.resolveUrl({
           url: '../a.yaml',
-          base:
-            'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+          base: 'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
         }),
       ).toBe(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
@@ -61,28 +60,47 @@ describe('AzureIntegration', () => {
       expect(
         integration.resolveUrl({
           url: '/a.yaml',
-          base:
-            'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+          base: 'https://internal.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
           lineNumber: 14,
         }),
       ).toBe(
-        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml&line=14&lineEnd=15&lineStartColumn=1&lineEndColumn=1',
+        'https://internal.com/organization/project/_git/repository?path=%2Fa.yaml&line=14&lineEnd=15&lineStartColumn=1&lineEndColumn=1',
       );
 
       expect(
         integration.resolveUrl({
           url: './a.yaml',
-          base: 'https://dev.azure.com/organization/project/_git/repository',
+          base: 'https://dev.azure.com/organization/_git/project',
+        }),
+      ).toBe('https://dev.azure.com/organization/_git/project?path=%2Fa.yaml');
+
+      expect(
+        integration.resolveUrl({
+          url: 'https://dev.azure.com/organization/_git/project?path=%2Fa.yaml',
+          base: 'https://dev.azure.com/organization/_git/project',
+        }),
+      ).toBe('https://dev.azure.com/organization/_git/project?path=%2Fa.yaml');
+
+      expect(
+        integration.resolveUrl({
+          url: 'https://dev.azure.com/other-organization/_git/other-project?path=%2Fa.yaml',
+          base: 'https://dev.azure.com/organization/_git/project',
         }),
       ).toBe(
-        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
+        'https://dev.azure.com/other-organization/_git/other-project?path=%2Fa.yaml',
       );
 
       expect(
         integration.resolveUrl({
+          url: './a.yaml',
+          base: 'http://not-azure.com/organization/_git/project',
+        }),
+      ).toBe('http://not-azure.com/organization/_git/project?path=%2Fa.yaml');
+
+      expect(
+        integration.resolveUrl({
           url: 'https://absolute.com/path',
-          base:
-            'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+          base: 'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
         }),
       ).toBe('https://absolute.com/path');
     });

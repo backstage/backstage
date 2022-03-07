@@ -1,5 +1,145 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+
+## 0.1.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+
+## 0.1.23
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+
+## 0.1.22
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 1433045c08: Removed unused `helmet` dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/config@0.1.14
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
+## 0.1.20
+
+### Patch Changes
+
+- 91faf87aaf: chore(deps): bump `camelcase-keys` from 6.2.2 to 7.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- 91faf87aaf: chore(deps): bump `camelcase-keys` from 6.2.2 to 7.0.1
+
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+
+## 0.1.18
+
+### Patch Changes
+
+- 152bd9ba2b: Moved `@backstage/test-utils` to `devDependencies`.
+- c5e175cde9: Replace the usage of `axios` with `node-fetch` in the Rollbar API
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+
+## 0.1.17
+
+### Patch Changes
+
+- 58d07a070c: Bump `axios`
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
+## 0.1.16
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.11
+
+## 0.1.15
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
 ## 0.1.13
 
 ### Patch Changes

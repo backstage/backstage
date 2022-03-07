@@ -18,14 +18,15 @@ import React from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 
 import {
-  mockApiClient,
   mockBumpedTag,
   mockCalverProject,
   mockReleaseBranch,
   mockReleaseCandidateCalver,
   mockReleaseVersionCalver,
   mockTagParts,
+  mockCtaMessage,
 } from '../../test-helpers/test-helpers';
+import { mockApiClient } from '../../test-helpers/mock-api-client';
 import { PatchBody } from './PatchBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
@@ -60,6 +61,7 @@ describe('PatchBody', () => {
         latestRelease={mockReleaseCandidateCalver}
         releaseBranch={mockReleaseBranch}
         tagParts={mockTagParts}
+        ctaMessage={mockCtaMessage}
       />,
     );
 
@@ -77,6 +79,7 @@ describe('PatchBody', () => {
         releaseBranch={mockReleaseBranch}
         bumpedTag={mockBumpedTag}
         tagParts={mockTagParts}
+        ctaMessage={mockCtaMessage}
       />,
     );
 

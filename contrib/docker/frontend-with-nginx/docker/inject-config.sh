@@ -23,7 +23,7 @@ function inject_config() {
 
   # escape ' and " twice, for both sed and json
   local config_escaped_1
-  config_escaped_1="$(echo "$config" | jq -cM . | sed -e 's/[\\"\x27]/\\&/g')" # \x27 = '
+  config_escaped_1="$(echo "$config" | jq -cM . | sed -e 's/[\\"'\'']/\\&/g')"
   # escape / and & for sed
   local config_escaped_2
   config_escaped_2="$(echo "$config_escaped_1" | sed -e 's/[\/&]/\\&/g')"

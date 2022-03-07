@@ -1,13 +1,16 @@
 {
   "name": "@backstage/config-loader",
   "description": "Config loading functionality used by Backstage backend, and CLI",
-  "version": "0.6.5",
+  "version": "0.9.6",
   "private": false,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "node-library"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -22,32 +25,39 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.1",
-    "@backstage/config": "^0.1.5",
+    "@backstage/cli-common": "^0.1.8",
+    "@backstage/config": "^0.1.15",
+    "@backstage/errors": "^0.2.2",
+    "@backstage/types": "^0.1.3",
     "@types/json-schema": "^7.0.6",
     "ajv": "^7.0.3",
+    "chokidar": "^3.5.2",
     "fs-extra": "9.1.0",
-    "json-schema": "^0.3.0",
+    "json-schema": "^0.4.0",
     "json-schema-merge-allof": "^0.8.1",
-    "typescript-json-schema": "^0.50.1",
+    "json-schema-traverse": "^1.0.0",
+    "node-fetch": "^2.6.7",
+    "typescript-json-schema": "^0.52.0",
     "yaml": "^1.9.2",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^14.14.32",
-    "@types/yup": "^0.29.8",
-    "mock-fs": "^4.13.0"
+    "@types/yup": "^0.29.13",
+    "mock-fs": "^5.1.0",
+    "msw": "^0.35.0"
   },
   "files": [
     "dist"

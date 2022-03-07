@@ -26,7 +26,7 @@ backend:
     repository: martinaif/backstage-k8s-demo-backend
     tag: 20210423T1550
     pullPolicy: IfNotPresent
-  containerPort: 7000
+  containerPort: 7007
   serviceType: ClusterIP
   postgresCertMountEnabled: true
   resources:
@@ -96,7 +96,7 @@ appConfig:
   backend:
     baseUrl: https://demo.example.com
     listen:
-      port: 7000
+      port: 7007
     cors:
       origin: https://demo.example.com
     database:

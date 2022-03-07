@@ -19,6 +19,7 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
+  makeStyles,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -27,26 +28,46 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTagFilter } from '../../filters';
+
+/** @public */
+export type CatalogReactEntityTagPickerClassKey = 'input';
+
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityTagPicker',
+  },
+);
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/** @public */
 export const EntityTagPicker = () => {
-  const {
-    updateFilters,
-    backendEntities,
-    filters,
-    queryParameters,
-  } = useEntityListProvider();
+  const classes = useStyles();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityList();
 
-  const queryParamTags = [queryParameters.tags]
-    .flat()
-    .filter(Boolean) as string[];
+  const queryParamTags = useMemo(
+    () => [queryParameters.tags].flat().filter(Boolean) as string[],
+    [queryParameters],
+  );
+
   const [selectedTags, setSelectedTags] = useState(
     queryParamTags.length ? queryParamTags : filters.tags?.values ?? [],
   );
+
+  // Set selected tags on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamTags.length) {
+      setSelectedTags(queryParamTags);
+    }
+  }, [queryParamTags]);
 
   useEffect(() => {
     updateFilters({
@@ -71,7 +92,7 @@ export const EntityTagPicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Tags</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         multiple
         aria-label="Tags"
         options={availableTags}
@@ -91,7 +112,9 @@ export const EntityTagPicker = () => {
         )}
         size="small"
         popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
+        renderInput={params => (
+          <TextField {...params} className={classes.input} variant="outlined" />
+        )}
       />
     </Box>
   );

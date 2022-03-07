@@ -17,7 +17,7 @@
 const octokit = {
   repos: {
     get: () => Promise.resolve({ data: { default_branch: 'main' } }),
-    createOrUpdateFileContents: jest.fn().mockImplementation(async () => {}),
+    createOrUpdateFileContents: jest.fn(async () => {}),
   },
   search: {
     code: jest.fn(),
@@ -26,10 +26,10 @@ const octokit = {
     getRef: async () => ({
       data: { object: { sha: 'any' } },
     }),
-    createRef: jest.fn().mockImplementation(async () => {}),
+    createRef: jest.fn(async () => {}),
   },
   pulls: {
-    create: jest.fn().mockImplementation(async () => ({
+    create: jest.fn(async () => ({
       data: {
         html_url: 'http://pull/request/0',
       },
@@ -46,40 +46,33 @@ jest.doMock('@octokit/rest', () => {
   return { Octokit };
 });
 
+import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
+import { ScmAuthApi } from '@backstage/integration-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogImportClient } from './CatalogImportClient';
 
-import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
-import { OAuthApi } from '@backstage/core-plugin-api';
-
 describe('CatalogImportClient', () => {
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/catalog';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const githubAuthApi: jest.Mocked<OAuthApi> = {
-    getAccessToken: jest.fn(),
+  const scmAuthApi: jest.Mocked<ScmAuthApi> = {
+    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
   const identityApi = {
-    getUserId: () => {
-      return 'user';
-    },
-    getProfile: () => {
-      return {};
-    },
-    getIdToken: () => {
-      return Promise.resolve('token');
-    },
     signOut: () => {
       return Promise.resolve();
     },
+    getProfileInfo: jest.fn(),
+    getBackstageIdentity: jest.fn(),
+    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
@@ -100,11 +93,13 @@ describe('CatalogImportClient', () => {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getEntityByRef: jest.fn(),
+    getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
 
   let catalogImportClient: CatalogImportClient;
@@ -112,11 +107,21 @@ describe('CatalogImportClient', () => {
   beforeEach(() => {
     catalogImportClient = new CatalogImportClient({
       discoveryApi,
-      githubAuthApi,
+      scmAuthApi,
       scmIntegrationsApi,
       identityApi,
       catalogApi,
+      configApi: new ConfigReader({
+        app: {
+          baseUrl: 'https://demo.backstage.io/',
+        },
+      }),
     });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('analyzeUrl', () => {
@@ -167,6 +172,103 @@ describe('CatalogImportClient', () => {
       });
     });
 
+    it('should add yaml location, if url includes query parameter named path=', async () => {
+      catalogApi.addLocation.mockResolvedValueOnce({
+        location: {
+          id: 'id-0',
+          type: 'url',
+          target:
+            'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity-1',
+              namespace: 'my-namespace-1',
+            },
+          },
+        ],
+      });
+
+      await expect(
+        catalogImportClient.analyzeUrl(
+          'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        ),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Component',
+                name: 'my-entity-1',
+                namespace: 'my-namespace-1',
+              },
+            ],
+            target:
+              'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+          },
+        ],
+        type: 'locations',
+      });
+
+      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
+        type: 'url',
+        target:
+          'https://dev.azure.com/any-org/any-project/_git/any-repository?path=%2Fcatalog-info.yaml',
+        dryRun: true,
+      });
+    });
+
+    it('should add yaml location, if url includes query parameters', async () => {
+      catalogApi.addLocation.mockResolvedValueOnce({
+        location: {
+          id: 'id-0',
+          type: 'url',
+          target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity',
+              namespace: 'my-namespace',
+            },
+          },
+        ],
+      });
+
+      await expect(
+        catalogImportClient.analyzeUrl(
+          'http://example.com/folder/catalog-info.yaml?branch=test',
+        ),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Component',
+                name: 'my-entity',
+                namespace: 'my-namespace',
+              },
+            ],
+            target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+          },
+        ],
+        type: 'locations',
+      });
+
+      expect(catalogApi.addLocation).toBeCalledTimes(1);
+      expect(catalogApi.addLocation.mock.calls[0][0]).toEqual({
+        type: 'url',
+        target: 'http://example.com/folder/catalog-info.yaml?branch=test',
+        dryRun: true,
+      });
+    });
+
     it('should reject for integrations that are not github ones', async () => {
       await expect(
         catalogImportClient.analyzeUrl(
@@ -192,7 +294,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find locations from github', async () => {
-      ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: {
           total_count: 2,
           items: [
@@ -248,7 +350,7 @@ describe('CatalogImportClient', () => {
     });
 
     it('should find repository from github', async () => {
-      ((new Octokit().search.code as any) as jest.Mock).mockResolvedValueOnce({
+      (new Octokit().search.code as any as jest.Mock).mockResolvedValueOnce({
         data: { total_count: 0, items: [] },
       });
 
@@ -294,6 +396,84 @@ describe('CatalogImportClient', () => {
         ],
       });
     });
+
+    it('should find location with custom catalog filename', async () => {
+      const repositoryUrl = 'https://github.com/acme-corp/our-awesome-api';
+      const entityFilename = 'anvil.yaml';
+
+      catalogImportClient = new CatalogImportClient({
+        discoveryApi,
+        scmAuthApi,
+        scmIntegrationsApi,
+        identityApi,
+        catalogApi,
+        configApi: new ConfigReader({
+          catalog: {
+            import: {
+              entityFilename,
+            },
+          },
+        }),
+      });
+
+      (new Octokit().search.code as any as jest.Mock).mockImplementationOnce(
+        async params => ({
+          data: {
+            total_count: 1,
+            items: [{ path: params.q.split('+filename:').slice(-1)[0] }],
+          },
+        }),
+      );
+
+      catalogApi.addLocation.mockImplementation(async ({ type, target }) => ({
+        location: {
+          id: 'id-0',
+          type: type ?? 'url',
+          target,
+        },
+        entities: [
+          {
+            apiVersion: '1',
+            kind: 'Location',
+            metadata: {
+              name: 'my-entity',
+              namespace: 'my-namespace',
+            },
+          },
+          {
+            apiVersion: '1',
+            kind: 'Component',
+            metadata: {
+              name: 'my-entity',
+              namespace: 'my-namespace',
+            },
+          },
+        ],
+      }));
+
+      await expect(
+        catalogImportClient.analyzeUrl(repositoryUrl),
+      ).resolves.toEqual({
+        locations: [
+          {
+            entities: [
+              {
+                kind: 'Location',
+                namespace: 'my-namespace',
+                name: 'my-entity',
+              },
+              {
+                kind: 'Component',
+                namespace: 'my-namespace',
+                name: 'my-entity',
+              },
+            ],
+            target: `${repositoryUrl}/blob/main/${entityFilename}`,
+          },
+        ],
+        type: 'locations',
+      });
+    });
   });
 
   describe('submitPullRequest', () => {
@@ -312,7 +492,7 @@ describe('CatalogImportClient', () => {
       });
 
       expect(
-        ((new Octokit().git.createRef as any) as jest.Mock).mock.calls[0][0],
+        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -320,7 +500,7 @@ describe('CatalogImportClient', () => {
         sha: 'any',
       });
       expect(
-        ((new Octokit().repos.createOrUpdateFileContents as any) as jest.Mock)
+        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
           .mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
@@ -331,7 +511,7 @@ describe('CatalogImportClient', () => {
         branch: 'backstage-integration',
       });
       expect(
-        ((new Octokit().pulls.create as any) as jest.Mock).mock.calls[0][0],
+        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
@@ -339,6 +519,105 @@ describe('CatalogImportClient', () => {
         head: 'backstage-integration',
         body: 'A body',
         base: 'main',
+      });
+    });
+
+    it('should create GitHub pull request with custom filename and branch name', async () => {
+      const entityFilename = 'anvil.yaml';
+      const pullRequestBranchName = 'anvil-integration';
+
+      catalogImportClient = new CatalogImportClient({
+        discoveryApi,
+        scmAuthApi,
+        scmIntegrationsApi,
+        identityApi,
+        catalogApi,
+        configApi: new ConfigReader({
+          catalog: {
+            import: {
+              entityFilename,
+              pullRequestBranchName,
+            },
+          },
+        }),
+      });
+
+      await expect(
+        catalogImportClient.submitPullRequest({
+          repositoryUrl: 'https://github.com/acme-corp/our-awesome-api',
+          fileContent: '',
+          title: `Add ${entityFilename} config file`,
+          body: `Add ${entityFilename} config file`,
+        }),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          link: 'http://pull/request/0',
+          location: `https://github.com/acme-corp/our-awesome-api/blob/main/${entityFilename}`,
+        }),
+      );
+
+      expect(
+        (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
+      ).toEqual(
+        expect.objectContaining({
+          ref: `refs/heads/${pullRequestBranchName}`,
+        }),
+      );
+
+      expect(
+        (new Octokit().repos.createOrUpdateFileContents as any as jest.Mock)
+          .mock.calls[0][0],
+      ).toEqual(
+        expect.objectContaining({
+          path: entityFilename,
+          branch: pullRequestBranchName,
+        }),
+      );
+
+      expect(
+        (new Octokit().pulls.create as any as jest.Mock).mock.calls[0][0],
+      ).toEqual(
+        expect.objectContaining({
+          head: pullRequestBranchName,
+        }),
+      );
+    });
+  });
+
+  describe('preparePullRequest', () => {
+    test('should prepare pull request details', async () => {
+      await expect(catalogImportClient.preparePullRequest()).resolves.toEqual({
+        title: 'Add catalog-info.yaml config file',
+        body: expect.any(String),
+      });
+    });
+
+    test('should prepare pull request details with custom filename', async () => {
+      const entityFilename = 'anvil.yaml';
+      const pullRequestBranchName = 'anvil-integration';
+
+      catalogImportClient = new CatalogImportClient({
+        discoveryApi,
+        scmAuthApi,
+        scmIntegrationsApi,
+        identityApi,
+        catalogApi,
+        configApi: new ConfigReader({
+          catalog: {
+            import: {
+              entityFilename,
+              pullRequestBranchName,
+            },
+          },
+          app: {
+            baseUrl: 'https://demo.backstage.io/',
+          },
+        }),
+      });
+
+      await expect(catalogImportClient.preparePullRequest()).resolves.toEqual({
+        title: `Add ${entityFilename} config file`,
+        body: expect.any(String),
       });
     });
   });

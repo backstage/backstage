@@ -40,6 +40,7 @@ const oneItem = (value: FetchResponse): ObjectsByEntityResponse => {
       {
         cluster: { name: CLUSTER_NAME },
         errors: [],
+        podMetrics: [],
         resources: [value],
       },
     ],
@@ -74,6 +75,7 @@ describe('detectErrors', () => {
         {
           cluster: { name: 'cluster-a' },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               type: 'pods',
@@ -84,6 +86,7 @@ describe('detectErrors', () => {
         {
           cluster: { name: 'cluster-b' },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               type: 'horizontalpodautoscalers',
@@ -94,6 +97,7 @@ describe('detectErrors', () => {
         {
           cluster: { name: 'cluster-c' },
           errors: [],
+          podMetrics: [],
           resources: [
             {
               type: 'deployments',

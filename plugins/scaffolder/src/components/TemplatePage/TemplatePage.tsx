@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject, JsonValue } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
-import React, { useCallback, useState } from 'react';
-import { generatePath, Navigate, useNavigate } from 'react-router';
+import qs from 'qs';
+import React, { useCallback, useContext, useState } from 'react';
+import { Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
 import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
-import { rootRouteRef } from '../../routes';
+import { SecretsContext } from '../secrets/SecretsContext';
+import { rootRouteRef, scaffolderTaskRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 import {
@@ -39,17 +41,13 @@ import {
   useApiHolder,
   useRouteRef,
 } from '@backstage/core-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
-const useTemplateParameterSchema = (templateName: string) => {
+const useTemplateParameterSchema = (templateRef: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const { value, loading, error } = useAsync(
-    () =>
-      scaffolderApi.getTemplateParameterSchema({
-        name: templateName,
-        kind: 'template',
-        namespace: 'default',
-      }),
-    [scaffolderApi, templateName],
+    () => scaffolderApi.getTemplateParameterSchema(templateRef),
+    [scaffolderApi, templateRef],
   );
   return { schema: value, loading, error };
 };
@@ -111,16 +109,28 @@ export const createValidator = (
 export const TemplatePage = ({
   customFieldExtensions = [],
 }: {
-  customFieldExtensions?: FieldExtensionOptions[];
+  customFieldExtensions?: FieldExtensionOptions<any, any>[];
 }) => {
   const apiHolder = useApiHolder();
+  const secretsContext = useContext(SecretsContext);
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
   const navigate = useNavigate();
-  const rootLink = useRouteRef(rootRouteRef);
+  const scaffolderTaskRoute = useRouteRef(scaffolderTaskRouteRef);
+  const rootRoute = useRouteRef(rootRouteRef);
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
-  const [formState, setFormState] = useState({});
+  const [formState, setFormState] = useState<Record<string, any>>(() => {
+    const query = qs.parse(window.location.search, {
+      ignoreQueryPrefix: true,
+    });
+
+    try {
+      return JSON.parse(query.formData as string);
+    } catch (e) {
+      return query.formData ?? {};
+    }
+  });
   const handleFormReset = () => setFormState({});
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
@@ -128,22 +138,37 @@ export const TemplatePage = ({
   );
 
   const handleCreate = async () => {
-    try {
-      const id = await scaffolderApi.scaffold(templateName, formState);
+    const { taskId } = await scaffolderApi.scaffold({
+      templateRef: stringifyEntityRef({
+        name: templateName,
+        kind: 'template',
+        namespace: 'default',
+      }),
+      values: formState,
+      secrets: secretsContext?.secrets,
+    });
 
-      navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
-    } catch (e) {
-      errorApi.post(e);
-    }
+    const formParams = qs.stringify(
+      { formData: formState },
+      { addQueryPrefix: true },
+    );
+    const newUrl = `${window.location.pathname}${formParams}`;
+    // We use direct history manipulation since useSearchParams and
+    // useNavigate in react-router-dom cause unnecessary extra rerenders.
+    // Also make sure to replace the state rather than pushing to avoid
+    // extra back/forward slots.
+    window.history?.replaceState(null, document.title, newUrl);
+
+    navigate(scaffolderTaskRoute({ taskId }));
   };
 
   if (error) {
     errorApi.post(new Error(`Failed to load template, ${error}`));
-    return <Navigate to={rootLink()} />;
+    return <Navigate to={rootRoute()} />;
   }
   if (!loading && !schema) {
     errorApi.post(new Error('Template was not found.'));
-    return <Navigate to={rootLink()} />;
+    return <Navigate to={rootRoute()} />;
   }
 
   const customFieldComponents = Object.fromEntries(

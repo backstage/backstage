@@ -18,8 +18,9 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
+  BackstagePlugin,
 } from '@backstage/core-plugin-api';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 type RouteRefType = Exclude<
   keyof RouteRef,
@@ -53,6 +54,7 @@ export interface BackstageRouteObject {
   element: React.ReactNode;
   path: string;
   routeRefs: Set<RouteRef>;
+  plugin?: BackstagePlugin;
 }
 
 export function isRouteRef<Params extends AnyParams>(
@@ -75,7 +77,7 @@ export function isSubRouteRef<Params extends AnyParams>(
 
 export function isExternalRouteRef<
   Params extends AnyParams,
-  Optional extends boolean
+  Optional extends boolean,
 >(
   routeRef:
     | RouteRef<Params>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { FindingSummary, FossaApi, FossaClient } from './index';
@@ -24,23 +24,14 @@ import { UrlPatternDiscovery } from '@backstage/core-app-api';
 
 const server = setupServer();
 
-const identityApi: IdentityApi = {
-  getUserId() {
-    return 'jane-fonda';
+const identityApi = {
+  async getCredentials() {
+    return { token: 'fake-id-token' };
   },
-  getProfile() {
-    return { email: 'jane-fonda@spotify.com' };
-  },
-  async getIdToken() {
-    return Promise.resolve('fake-id-token');
-  },
-  async signOut() {
-    return Promise.resolve();
-  },
-};
+} as IdentityApi;
 
 describe('FossaClient', () => {
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   const mockBaseUrl = 'http://backstage:9191/api/proxy';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);

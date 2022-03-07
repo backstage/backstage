@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  PluginCacheManager,
+} from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
@@ -23,20 +26,27 @@ import {
   getLocationForEntity,
   PreparerBuilder,
   PublisherBase,
-} from '@backstage/techdocs-common';
-import fetch from 'cross-fetch';
+} from '@backstage/plugin-techdocs-node';
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
+import { createCacheMiddleware, TechDocsCache } from '../cache';
+import { CachedEntityLoader } from './CachedEntityLoader';
+import {
+  DefaultDocsBuildStrategy,
+  DocsBuildStrategy,
+} from './DocsBuildStrategy';
 
 /**
- * All of the required dependencies for running TechDocs in the "out-of-the-box"
+ * Required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
+ *
+ * @public
  */
-type OutOfTheBoxDeploymentOptions = {
+export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
@@ -44,29 +54,39 @@ type OutOfTheBoxDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
+  cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
  * Required dependencies for running TechDocs in the "recommended" deployment
  * configuration (prepare/generate handled externally in CI/CD).
+ *
+ * @public
  */
-type RecommendedDeploymentOptions = {
+export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
   logger: Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
+  cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
  * One of the two deployment configurations must be provided.
+ *
+ * @public
  */
-type RouterOptions =
+export type RouterOptions =
   | RecommendedDeploymentOptions
   | OutOfTheBoxDeploymentOptions;
 
 /**
  * Typeguard to help createRouter() understand when we are in a "recommended"
  * deployment vs. when we are in an out-of-the-box deployment configuration.
+ *
+ * * @public
  */
 function isOutOfTheBoxOption(
   opt: RouterOptions,
@@ -74,23 +94,57 @@ function isOutOfTheBoxOption(
   return (opt as OutOfTheBoxDeploymentOptions).preparers !== undefined;
 }
 
+/**
+ * Creates a techdocs router.
+ *
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const docsBuildStrategy =
+    options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
+
+  // Entities are cached to optimize the /static/docs request path, which can be called many times
+  // when loading a single techdocs page.
+  const entityLoader = new CachedEntityLoader({
+    catalog: catalogClient,
+    cache: options.cache.getClient(),
+  });
+
+  // Set up a cache client if configured.
+  let cache: TechDocsCache | undefined;
+  const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
+  if (defaultTtl) {
+    const cacheClient = options.cache.getClient({ defaultTtl });
+    cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
+  }
+
   const scmIntegrations = ScmIntegrations.fromConfig(config);
   const docsSynchronizer = new DocsSynchronizer({
     publisher,
     logger,
     config,
     scmIntegrations,
+    cache,
   });
 
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const token = getBearerToken(req.headers.authorization);
+
+    // Verify that the related entity exists and the current user has permission to view it.
+    const entity = await entityLoader.load(entityName, token);
+
+    if (!entity) {
+      throw new NotFoundError(
+        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+      );
+    }
 
     try {
       const techdocsMetadata = await publisher.fetchTechDocsMetadata(
@@ -112,23 +166,19 @@ export async function createRouter(
   });
 
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
-    const catalogUrl = await discovery.getBaseUrl('catalog');
-
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
+    const token = getBearerToken(req.headers.authorization);
+
+    const entity = await entityLoader.load(entityName, token);
+
+    if (!entity) {
+      throw new NotFoundError(
+        `Unable to get metadata for '${stringifyEntityRef(entityName)}'`,
+      );
+    }
 
     try {
-      const token = getBearerToken(req.headers.authorization);
-      // TODO: Consider using the catalog client here
-      const entity = (await (
-        await fetch(
-          `${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`,
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          },
-        )
-      ).json()) as Entity;
-
       const locationMetadata = getLocationForEntity(entity, scmIntegrations);
       res.json({ ...entity, locationMetadata });
     } catch (err) {
@@ -152,10 +202,7 @@ export async function createRouter(
     const { kind, namespace, name } = req.params;
     const token = getBearerToken(req.headers.authorization);
 
-    const entity = await catalogClient.getEntityByName(
-      { kind, namespace, name },
-      { token },
-    );
+    const entity = await entityLoader.load({ kind, namespace, name }, token);
 
     if (!entity?.metadata?.uid) {
       throw new NotFoundError('Entity metadata UID missing');
@@ -171,10 +218,24 @@ export async function createRouter(
       responseHandler = createEventStream(res);
     }
 
-    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
-    // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
-    // of the repository) is responsible for building and publishing documentation to the storage provider
-    if (config.getString('techdocs.builder') !== 'local') {
+    // By default, techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to
+    // 'local'. If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
+    // of the repository) is responsible for building and publishing documentation to the storage provider.
+    // Altering the implementation of the injected docsBuildStrategy allows for more complex behaviours, based on
+    // either config or the properties of the entity (e.g. annotations, labels, spec fields etc.).
+    const shouldBuild = await docsBuildStrategy.shouldBuild({ entity });
+    if (!shouldBuild) {
+      // However, if caching is enabled, take the opportunity to check and
+      // invalidate stale cache entries.
+      if (cache) {
+        await docsSynchronizer.doCacheSync({
+          responseHandler,
+          discovery,
+          token,
+          entity,
+        });
+        return;
+      }
       responseHandler.finish({ updated: false });
       return;
     }
@@ -194,10 +255,37 @@ export async function createRouter(
 
     responseHandler.error(
       new Error(
-        "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'preparer' was provided to the router initialization.",
+        "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but no 'preparer' was provided to the router initialization.",
       ),
     );
   });
+
+  // Ensures that the related entity exists and the current user has permission to view it.
+  if (config.getOptionalBoolean('permission.enabled')) {
+    router.use(
+      '/static/docs/:namespace/:kind/:name',
+      async (req, _res, next) => {
+        const { kind, namespace, name } = req.params;
+        const entityName = { kind, namespace, name };
+        const token = getBearerToken(req.headers.authorization);
+
+        const entity = await entityLoader.load(entityName, token);
+
+        if (!entity) {
+          throw new NotFoundError(
+            `Entity not found for ${stringifyEntityRef(entityName)}`,
+          );
+        }
+
+        next();
+      },
+    );
+  }
+
+  // If a cache manager was provided, attach the cache middleware.
+  if (cache) {
+    router.use(createCacheMiddleware({ logger, cache }));
+  }
 
   // Route middleware which serves files from the storage set in the publisher.
   router.use('/static/docs', publisher.docsRouter());
@@ -212,7 +300,7 @@ function getBearerToken(header?: string): string | undefined {
 /**
  * Create an event-stream response that emits the events 'log', 'error', and 'finish'.
  *
- * @param res the response to write the event-stream to
+ * @param res - the response to write the event-stream to
  * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
  *          will close the event-stream.
  */
@@ -259,11 +347,7 @@ export function createEventStream(
 }
 
 /**
- * Create a HTTP response. This is used for the legacy non-event-stream implementation of the sync endpoint.
- *
- * @param res the response to write the event-stream to
- * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
- *          will close the event-stream.
+ * @deprecated use event-stream implementation of the sync endpoint
  */
 export function createHttpResponse(
   res: Response<any, any>,

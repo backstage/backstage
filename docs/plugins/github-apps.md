@@ -36,7 +36,7 @@ that we provide. This gives us a way to automate some of the work required to
 create a GitHub app.
 
 You can read more about the
-[`backstage-cli create-github-app` method](../cli/commands.md#create-github-app).
+[`backstage-cli create-github-app` method](../local-dev/cli-commands.md#create-github-app).
 
 Once you've gone through the CLI command, it should produce a YAML file in the
 root of the project which you can then use as an `include` in your
@@ -60,7 +60,7 @@ The YAML file must include the following information. Please note that the
 indentation for the `privateKey` is required.
 
 ```yaml
-appId: 1
+appId: app id
 clientId: client id
 clientSecret: client secret
 webhookSecret: webhook secret
@@ -89,11 +89,41 @@ integrations:
         - $include: example-backstage-app-credentials.yaml
 ```
 
-### Permissions for pull requests
+### Limiting the GitHub App installations
 
-These are the minimum permissions required for creating a pull request with
-Backstage software templates:
+If you want to limit the GitHub app installations visible to backstage you may
+optionally include the `allowedInstallationOwners` option.
 
-- Read and Write permissions for `Contents`.
-- Read and write permissions for `Pull Requests` and `Issues`.
-- Read permissions on `Metadata`.
+```yaml
+appId: app id
+allowedInstallationOwners: ['GlobexCorp']
+clientId: client id
+clientSecret: client secret
+webhookSecret: webhook secret
+privateKey: |
+  -----BEGIN RSA PRIVATE KEY-----
+  ...Key content...
+  -----END RSA PRIVATE KEY-----
+```
+
+This will result in backstage preventing the use of any installation that is not
+within the allow list.
+
+### App permissions
+
+When creating a GitHub App, you must select permissions to define the level of
+access for the app. The permissions required vary depending on your use of the
+integration:
+
+- Reading software components:
+  - `Contents`: `Read-only`
+- Reading organization data:
+  - `Members`: `Read-only`
+- Publishing software templates:
+
+  - `Administration`: `Read & write` (for creating repositories)
+  - `Contents`: `Read & write`
+  - `Metadata`: `Read-only`
+  - `Pull requests`: `Read & write`
+  - `Issues`: `Read & write`
+  - `Workflows`: `Read & write` (if templates include GitHub workflows)

@@ -6,9 +6,15 @@ organization:
   name: My Company
 
 backend:
-  baseUrl: http://localhost:7000
+  # Used for enabling authentication, secret is shared by all backend plugins
+  # See https://backstage.io/docs/tutorials/backend-to-backend-auth for
+  # information on the format
+  # auth:
+  #   keys:
+  #     - secret: ${BACKEND_SECRET}
+  baseUrl: http://localhost:7007
   listen:
-    port: 7000
+    port: 7007
   csp:
     connect-src: ["'self'", 'http:', 'https:']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
@@ -32,9 +38,11 @@ backend:
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
       # https://node-postgres.com/features/ssl
-      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-        #ca: # if you have a CA file and want to verify it you can uncomment this section
-        #  $file: <file-path>/ca/server.crt
+      # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
+      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+      # ssl:
+      #   ca: # if you have a CA file and want to verify it you can uncomment this section
+      #     $file: <file-path>/ca/server.crt
   {{/if}}
   cache:
     store: memory
@@ -60,8 +68,8 @@ proxy:
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
   builder: 'local' # Alternatives - 'external'
-  generators:
-    techdocs: 'docker' # Alternatives - 'local'
+  generator:
+    runIn: 'docker' # Alternatives - 'local'
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
@@ -70,11 +78,12 @@ auth:
   providers: {}
 
 scaffolder:
-  github:
-    token: ${GITHUB_TOKEN}
-    visibility: public # or 'internal' or 'private'
+  # see https://backstage.io/docs/features/software-templates/configuration for software template options
 
 catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
   rules:
     - allow: [Component, System, API, Group, User, Resource, Location]
   locations:
@@ -100,11 +109,11 @@ catalog:
 
     # Backstage example templates
     - type: url
-      target: https://github.com/backstage/software-templates/blob/master/scaffolder-templates/react-ssr-template/template.yaml
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
     - type: url
-      target: https://github.com/backstage/software-templates/blob/master/scaffolder-templates/springboot-grpc-template/template.yaml
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/springboot-grpc-template/template.yaml
       rules:
         - allow: [Template]
     - type: url
@@ -112,6 +121,6 @@ catalog:
       rules:
         - allow: [Template]
     - type: url
-      target: https://github.com/backstage/software-templates/blob/master/scaffolder-templates/docs-template/template.yaml
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/docs-template/template.yaml
       rules:
         - allow: [Template]

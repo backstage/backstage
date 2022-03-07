@@ -187,6 +187,7 @@ export class RouteResolver {
       ExternalRouteRef,
       RouteRef | SubRouteRef
     >,
+    private readonly appBasePath: string, // base path without a trailing slash
   ) {}
 
   resolve<Params extends AnyParams>(
@@ -206,20 +207,47 @@ export class RouteResolver {
       return undefined;
     }
 
+    // The location that we get passed in uses the full path, so start by trimming off
+    // the app base path prefix in case we're running the app on a sub-path.
+    let relativeSourceLocation: Parameters<typeof matchRoutes>[1];
+    if (typeof sourceLocation === 'string') {
+      relativeSourceLocation = this.trimPath(sourceLocation);
+    } else if (sourceLocation.pathname) {
+      relativeSourceLocation = {
+        ...sourceLocation,
+        pathname: this.trimPath(sourceLocation.pathname),
+      };
+    } else {
+      relativeSourceLocation = sourceLocation;
+    }
+
     // Next we figure out the base path, which is the combination of the common parent path
     // between our current location and our target location, as well as the additional path
     // that is the difference between the parent path and the base of our target location.
-    const basePath = resolveBasePath(
-      targetRef,
-      sourceLocation,
-      this.routePaths,
-      this.routeParents,
-      this.routeObjects,
-    );
+    const basePath =
+      this.appBasePath +
+      resolveBasePath(
+        targetRef,
+        relativeSourceLocation,
+        this.routePaths,
+        this.routeParents,
+        this.routeObjects,
+      );
 
     const routeFunc: RouteFunc<Params> = (...[params]) => {
       return basePath + generatePath(targetPath, params);
     };
     return routeFunc;
+  }
+
+  private trimPath(targetPath: string) {
+    if (!targetPath) {
+      return targetPath;
+    }
+
+    if (targetPath.startsWith(this.appBasePath)) {
+      return targetPath.slice(this.appBasePath.length);
+    }
+    return targetPath;
   }
 }

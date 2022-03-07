@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { GitHubIntegration, replaceUrlType } from './GitHubIntegration';
+import { GitHubIntegration, replaceGitHubUrlType } from './GitHubIntegration';
 
 describe('GitHubIntegration', () => {
   it('has a working factory', () => {
@@ -56,8 +56,7 @@ describe('GitHubIntegration', () => {
     expect(
       integration.resolveUrl({
         url: '../a.yaml',
-        base:
-          'https://github.com/backstage/backstage/blob/master/test/README.md',
+        base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
         lineNumber: 17,
       }),
     ).toBe('https://github.com/backstage/backstage/tree/master/a.yaml#L17');
@@ -65,8 +64,7 @@ describe('GitHubIntegration', () => {
     expect(
       integration.resolveUrl({
         url: './',
-        base:
-          'https://github.com/backstage/backstage/blob/master/test/README.md',
+        base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
       }),
     ).toBe('https://github.com/backstage/backstage/tree/master/test/');
   });
@@ -82,25 +80,28 @@ describe('GitHubIntegration', () => {
   });
 });
 
-describe('replaceUrlType', () => {
+describe('replaceGitHubUrlType', () => {
   it('should replace with expected type', () => {
     expect(
-      replaceUrlType(
+      replaceGitHubUrlType(
         'https://github.com/backstage/backstage/blob/master/README.md',
         'edit',
       ),
     ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
     expect(
-      replaceUrlType(
+      replaceGitHubUrlType(
         'https://github.com/webmodules/blob/blob/master/test',
         'tree',
       ),
     ).toBe('https://github.com/webmodules/blob/tree/master/test');
     expect(
-      replaceUrlType('https://github.com/blob/blob/blob/master/test', 'tree'),
+      replaceGitHubUrlType(
+        'https://github.com/blob/blob/blob/master/test',
+        'tree',
+      ),
     ).toBe('https://github.com/blob/blob/tree/master/test');
     expect(
-      replaceUrlType(
+      replaceGitHubUrlType(
         'https://github.com/backstage/backstage/edit/tree/README.md',
         'blob',
       ),

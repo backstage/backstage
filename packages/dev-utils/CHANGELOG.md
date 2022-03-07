@@ -1,5 +1,318 @@
 # @backstage/dev-utils
 
+## 0.2.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-app-api@0.6.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/test-utils@0.3.0
+  - @backstage/app-defaults@0.2.0
+  - @backstage/integration-react@0.1.24
+
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/app-defaults@0.1.9
+  - @backstage/core-app-api@0.5.4
+  - @backstage/integration-react@0.1.23
+  - @backstage/test-utils@0.2.6
+
+## 0.2.22
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-app-api@0.5.3
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/integration-react@0.1.22
+  - @backstage/test-utils@0.2.5
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/app-defaults@0.1.8
+  - @backstage/catalog-model@0.10.0
+  - @backstage/theme@0.2.15
+
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+  - @backstage/app-defaults@0.1.7
+  - @backstage/integration-react@0.1.21
+
+## 0.2.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+  - @backstage/app-defaults@0.1.7-next.0
+  - @backstage/integration-react@0.1.21-next.0
+
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+  - @backstage/integration-react@0.1.20
+  - @backstage/core-app-api@0.5.2
+  - @backstage/app-defaults@0.1.6
+  - @backstage/test-utils@0.2.4
+
+## 0.2.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.1
+  - @backstage/plugin-catalog-react@0.6.13-next.1
+  - @backstage/core-app-api@0.5.2-next.0
+  - @backstage/app-defaults@0.1.6-next.1
+  - @backstage/test-utils@0.2.4-next.0
+
+## 0.2.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/app-defaults@0.1.6-next.0
+  - @backstage/integration-react@0.1.20-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
+## 0.2.19
+
+### Patch Changes
+
+- 10086f5873: Bumped `react-hot-loader` from `^4.12.21` to `^4.13.0`.
+- Updated dependencies
+  - @backstage/core-components@0.8.6
+  - @backstage/core-app-api@0.5.1
+
+## 0.2.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/test-utils@0.2.3
+  - @backstage/core-app-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+  - @backstage/app-defaults@0.1.5
+  - @backstage/integration-react@0.1.19
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/app-defaults@0.1.5-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/test-utils@0.2.3-next.0
+
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/test-utils@0.2.2
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/core-app-api@0.4.0
+  - @backstage/app-defaults@0.1.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/integration-react@0.1.18
+
+## 0.2.16
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-app-api@0.3.1
+  - @backstage/core-components@0.8.3
+
+## 0.2.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/app-defaults@0.1.3
+  - @backstage/core-app-api@0.3.0
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+  - @backstage/test-utils@0.2.0
+  - @backstage/integration-react@0.1.16
+
+## 0.2.14
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/core-app-api@0.2.0
+  - @backstage/app-defaults@0.1.2
+  - @backstage/integration-react@0.1.15
+  - @backstage/test-utils@0.1.24
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.2.13
+
+### Patch Changes
+
+- 58a4e67ded: Add theme switcher to sidebar of dev app.
+- 014cbf8cb9: Migrated to using `@backstage/app-defaults`.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+  - @backstage/test-utils@0.1.22
+  - @backstage/app-defaults@0.1.1
+  - @backstage/integration-react@0.1.14
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-app-api@0.1.17
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+  - @backstage/test-utils@0.1.19
+  - @backstage/integration-react@0.1.12
+
+## 0.2.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.15
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/integration-react@0.1.11
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/core-app-api@0.1.14
+  - @backstage/integration-react@0.1.10
+
+## 0.2.9
+
+### Patch Changes
+
+- d1da88a19: Properly export all used types.
+- Updated dependencies
+  - @backstage/core-components@0.4.1
+  - @backstage/catalog-model@0.9.2
+  - @backstage/core-app-api@0.1.12
+  - @backstage/core-plugin-api@0.1.7
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+  - @backstage/core-app-api@0.1.11
+  - @backstage/integration-react@0.1.8
+
+## 0.2.7
+
+### Patch Changes
+
+- be2cd4740: Fixed busy refresh loop that happened when registering a page at `/`.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.9
+  - @backstage/plugin-catalog-react@0.4.3
+  - @backstage/core-components@0.3.2
+  - @backstage/theme@0.2.10
+
+## 0.2.6
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/test-utils@0.1.17
+  - @backstage/plugin-catalog-react@0.4.2
+  - @backstage/integration-react@0.1.7
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/core-app-api@0.1.7
+  - @backstage/integration-react@0.1.6
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.2.4
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-app-api@0.1.6
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/integration-react@0.1.5
+  - @backstage/test-utils@0.1.16
+  - @backstage/theme@0.2.9
+
 ## 0.2.3
 
 ### Patch Changes

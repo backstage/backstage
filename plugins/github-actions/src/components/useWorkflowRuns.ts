@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { githubActionsApiRef } from '../api/GithubActionsApi';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
@@ -57,9 +57,12 @@ export function useWorkflowRuns({
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
 
-  const { loading, value: runs, retry, error } = useAsyncRetry<
-    WorkflowRun[]
-  >(async () => {
+  const {
+    loading,
+    value: runs,
+    retry,
+    error,
+  } = useAsyncRetry<WorkflowRun[]>(async () => {
     // GitHub API pagination count starts from 1
     const workflowRunsData = await api.listWorkflowRuns({
       hostname,

@@ -14,26 +14,50 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { IndexableDocument } from '@backstage/search-common';
-import { ListItem, ListItemText, Divider } from '@material-ui/core';
+import React, { ReactNode } from 'react';
+import { IndexableDocument } from '@backstage/plugin-search-common';
+import {
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Box,
+  Divider,
+} from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import TextTruncate from 'react-text-truncate';
 
 type Props = {
+  icon?: ReactNode;
+  secondaryAction?: ReactNode;
   result: IndexableDocument;
+  lineClamp?: number;
 };
 
-export const DefaultResultListItem = ({ result }: Props) => {
+export const DefaultResultListItem = ({
+  result,
+  icon,
+  secondaryAction,
+  lineClamp = 5,
+}: Props) => {
   return (
     <Link to={result.location}>
-      <ListItem alignItems="flex-start">
+      <ListItem alignItems="center">
+        {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
           primaryTypographyProps={{ variant: 'h6' }}
           primary={result.title}
-          secondary={result.text}
+          secondary={
+            <TextTruncate
+              line={lineClamp}
+              truncateText="…"
+              text={result.text}
+              element="span"
+            />
+          }
         />
+        {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}
       </ListItem>
-      <Divider component="li" />
+      <Divider />
     </Link>
   );
 };

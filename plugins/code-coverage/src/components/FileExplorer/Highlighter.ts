@@ -20,8 +20,8 @@ import highlight from 'highlight.js';
  * Given a file extension, repo name, and array of code lines, return a Promise resolving
  * to an array of formatted lines with html/css formatting.
  *
- * @param fileExtension The extension of the source file
- * @param lines The source code lines
+ * @param fileExtension - The extension of the source file
+ * @param lines - The source code lines
  *
  * @returns Promise of formatted lines
  *

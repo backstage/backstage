@@ -18,11 +18,13 @@ import { extname } from 'path';
 import { parse } from 'leasot';
 import { TodoParser } from './types';
 
+/** @public */
 export type TodoParserOptions = {
   /** Custom tags to support in addition to TODO and FIXME */
   additionalTags?: string[];
 };
 
+/** @public */
 export function createTodoParser(options: TodoParserOptions = {}): TodoParser {
   return ({ content, path }) => {
     try {

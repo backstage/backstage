@@ -18,11 +18,16 @@ export {
   readGitHubIntegrationConfig,
   readGitHubIntegrationConfigs,
 } from './config';
-export type { GitHubIntegrationConfig } from './config';
+export type { GithubAppConfig, GitHubIntegrationConfig } from './config';
 export { getGitHubFileFetchUrl, getGitHubRequestOptions } from './core';
+export { DefaultGithubCredentialsProvider } from './DefaultGithubCredentialsProvider';
 export {
   GithubAppCredentialsMux,
+  SingleInstanceGithubCredentialsProvider,
+} from './SingleInstanceGithubCredentialsProvider';
+export type {
+  GithubCredentials,
   GithubCredentialsProvider,
-} from './GithubCredentialsProvider';
-export type { GithubCredentialType } from './GithubCredentialsProvider';
-export { GitHubIntegration } from './GitHubIntegration';
+  GithubCredentialType,
+} from './types';
+export { GitHubIntegration, replaceGitHubUrlType } from './GitHubIntegration';

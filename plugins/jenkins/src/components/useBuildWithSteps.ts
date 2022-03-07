@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 import { useCallback } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { getEntityName } from '@backstage/catalog-model';
+import { getCompoundEntityRef } from '@backstage/catalog-model';
 
 const INTERVAL_AMOUNT = 1500;
 
 /**
  * Hook to expose a specific build.
- * @param jobFullName the full name of the project (job with builds, not a folder). e.g. "department-A/team-1/project-foo/master"
- * @param buildNumber the number of the build. e.g. "13"
+ * @param jobFullName - the full name of the project (job with builds, not a folder). e.g. "department-A/team-1/project-foo/master"
+ * @param buildNumber - the number of the build. e.g. "13"
  */
 export function useBuildWithSteps({
   jobFullName,
@@ -41,7 +41,7 @@ export function useBuildWithSteps({
 
   const getBuildWithSteps = useCallback(async () => {
     try {
-      const entityName = await getEntityName(entity);
+      const entityName = await getCompoundEntityRef(entity);
       return api.getBuild({ entity: entityName, jobFullName, buildNumber });
     } catch (e) {
       errorApi.post(e);
@@ -49,9 +49,10 @@ export function useBuildWithSteps({
     }
   }, [buildNumber, jobFullName, entity, api, errorApi]);
 
-  const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
-    getBuildWithSteps,
-  ]);
+  const { loading, value, retry } = useAsyncRetry(
+    () => getBuildWithSteps(),
+    [getBuildWithSteps],
+  );
 
   const { startPolling, stopPolling } = useAsyncPolling(
     getBuildWithSteps,

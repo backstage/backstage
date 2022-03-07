@@ -133,3 +133,9 @@ site
 
 # Sensitive credentials
 *-credentials.yaml
+
+# e2e tests
+cypress/cypress/*
+
+# Possible leftover from build:api-reports
+tsconfig.tmp.json

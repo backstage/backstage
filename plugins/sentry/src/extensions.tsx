@@ -24,6 +24,7 @@ import {
 
 export const EntitySentryContent = sentryPlugin.provide(
   createRoutableExtension({
+    name: 'EntitySentryContent',
     mountPoint: rootRouteRef,
     component: () =>
       import('./components/SentryIssuesWidget').then(
@@ -40,6 +41,7 @@ export const EntitySentryContent = sentryPlugin.provide(
 
 export const EntitySentryCard = sentryPlugin.provide(
   createComponentExtension({
+    name: 'EntitySentryCard',
     component: {
       lazy: () =>
         import('./components/SentryIssuesWidget').then(

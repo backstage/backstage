@@ -31,7 +31,7 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   card: {
-    width: 400,
+    maxWidth: 400,
   },
   header: {
     marginBottom: theme.spacing(1),
@@ -86,7 +86,7 @@ export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
     <Popover
       open={open}
       anchorEl={anchorEl}
-      onExit={handleClose}
+      TransitionProps={{ onExit: handleClose }}
       onClose={onClose}
       anchorOrigin={{
         vertical: 'top',

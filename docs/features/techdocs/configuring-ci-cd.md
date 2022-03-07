@@ -10,7 +10,7 @@ TechDocs reads the static generated documentation files from a cloud storage
 bucket (GCS, AWS S3, etc.). The documentation site is generated on the CI/CD
 workflow associated with the repository containing the documentation files. This
 document explains the steps needed to generate docs on CI and publish to a cloud
-storage using [`techdocs-cli`](https://github.com/backstage/techdocs-cli).
+storage using [`techdocs-cli`](./cli.md).
 
 The steps here target all kinds of CI providers (GitHub Actions, CircleCI,
 Jenkins, etc.). Specific tools for individual providers will also be made
@@ -40,9 +40,8 @@ techdocs-cli publish --publisher-type awsS3 --storage-name <bucket/container> --
 
 That's it!
 
-Take a look at
-[`techdocs-cli` README](https://github.com/backstage/techdocs-cli) for the
-complete command reference, details, and options.
+Take a look at [`techdocs-cli`](./cli.md) for the complete command reference,
+details, and options.
 
 ## Steps
 
@@ -74,7 +73,7 @@ Install [`npx`](https://www.npmjs.com/package/npx) to use it for running
 `techdocs-cli`. Or you can install using `npm install -g @techdocs/cli`.
 
 We are going to use the
-[`techdocs-cli generate`](https://github.com/backstage/techdocs-cli#generate-techdocs-site-from-a-documentation-project)
+[`techdocs-cli generate`](./cli.md#generate-techdocs-site-from-a-documentation-project)
 command in this step.
 
 ```sh
@@ -93,8 +92,7 @@ necessary authentication environment variables.
 - [AWS authentication](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html)
 
 And then run the
-[`techdocs-cli publish`](https://github.com/backstage/techdocs-cli#publish-generated-techdocs-sites)
-command.
+[`techdocs-cli publish`](./cli.md#publish-generated-techdocs-sites) command.
 
 ```sh
 npx @techdocs/cli publish --publisher-type <awsS3|googleGcs> --storage-name <bucket/container> --entity <namespace/kind/name> --directory ./site
@@ -175,10 +173,7 @@ jobs:
         run: techdocs-cli generate --no-docker --verbose
 
       - name: Publish docs site
-        run:
-          techdocs-cli publish --publisher-type awsS3 --storage-name
-          $TECHDOCS_S3_BUCKET_NAME --entity
-          $ENTITY_NAMESPACE/$ENTITY_KIND/$ENTITY_NAME
+        run: techdocs-cli publish --publisher-type awsS3 --storage-name $TECHDOCS_S3_BUCKET_NAME --entity $ENTITY_NAMESPACE/$ENTITY_KIND/$ENTITY_NAME
 ```
 
 When the new repository is scaffolded or new documentation updates are

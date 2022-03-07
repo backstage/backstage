@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { UserEntity } from '@backstage/catalog-model';
-import { TokenIssuer } from '../../identity';
+import {
+  CompoundEntityRef,
+  parseEntityRef,
+  RELATION_MEMBER_OF,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { TokenManager } from '@backstage/backend-common';
 
 type UserQuery = {
   annotations: Record<string, string>;
+};
+
+type MemberClaimQuery = {
+  entityRefs: string[];
+  logger?: Logger;
 };
 
 /**
@@ -28,11 +40,11 @@ type UserQuery = {
  */
 export class CatalogIdentityClient {
   private readonly catalogApi: CatalogApi;
-  private readonly tokenIssuer: TokenIssuer;
+  private readonly tokenManager: TokenManager;
 
-  constructor(options: { catalogApi: CatalogApi; tokenIssuer: TokenIssuer }) {
+  constructor(options: { catalogApi: CatalogApi; tokenManager: TokenManager }) {
     this.catalogApi = options.catalogApi;
-    this.tokenIssuer = options.tokenIssuer;
+    this.tokenManager = options.tokenManager;
   }
 
   /**
@@ -48,10 +60,7 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    // TODO(Rugvip): cache the token
-    const token = await this.tokenIssuer.issueToken({
-      claims: { sub: 'backstage.io/auth-backend' },
-    });
+    const { token } = await this.tokenManager.getToken();
     const { items } = await this.catalogApi.getEntities({ filter }, { token });
 
     if (items.length !== 1) {
@@ -63,5 +72,62 @@ export class CatalogIdentityClient {
     }
 
     return items[0] as UserEntity;
+  }
+
+  /**
+   * Resolve additional entity claims from the catalog, using the passed-in entity names. Designed
+   * to be used within a `signInResolver` where additional entity claims might be provided, but
+   * group membership and transient group membership lean on imported catalog relations.
+   *
+   * Returns a superset of the entity names that can be passed directly to `issueToken` as `ent`.
+   */
+  async resolveCatalogMembership(query: MemberClaimQuery): Promise<string[]> {
+    const { entityRefs, logger } = query;
+    const resolvedEntityRefs = entityRefs
+      .map((ref: string) => {
+        try {
+          const parsedRef = parseEntityRef(ref.toLocaleLowerCase('en-US'), {
+            defaultKind: 'user',
+            defaultNamespace: 'default',
+          });
+          return parsedRef;
+        } catch {
+          logger?.warn(`Failed to parse entityRef from ${ref}, ignoring`);
+          return null;
+        }
+      })
+      .filter((ref): ref is CompoundEntityRef => ref !== null);
+
+    const filter = resolvedEntityRefs.map(ref => ({
+      kind: ref.kind,
+      'metadata.namespace': ref.namespace,
+      'metadata.name': ref.name,
+    }));
+    const { token } = await this.tokenManager.getToken();
+    const entities = await this.catalogApi
+      .getEntities({ filter }, { token })
+      .then(r => r.items);
+
+    if (entityRefs.length !== entities.length) {
+      const foundEntityNames = entities.map(stringifyEntityRef);
+      const missingEntityNames = resolvedEntityRefs
+        .map(stringifyEntityRef)
+        .filter(s => !foundEntityNames.includes(s));
+      logger?.debug(`Entities not found for refs ${missingEntityNames.join()}`);
+    }
+
+    const memberOf = entities.flatMap(
+      e =>
+        e!.relations
+          ?.filter(r => r.type === RELATION_MEMBER_OF)
+          .map(r => r.targetRef) ?? [],
+    );
+
+    const newEntityRefs = [
+      ...new Set(resolvedEntityRefs.map(stringifyEntityRef).concat(memberOf)),
+    ];
+
+    logger?.debug(`Found catalog membership: ${newEntityRefs.join()}`);
+    return newEntityRefs;
   }
 }

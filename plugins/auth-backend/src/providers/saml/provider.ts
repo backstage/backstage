@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
@@ -26,30 +30,53 @@ import {
   executeRedirectStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { AuthProviderRouteHandlers, AuthProviderFactory } from '../types';
+import {
+  AuthProviderRouteHandlers,
+  AuthProviderFactory,
+  AuthHandler,
+  SignInResolver,
+  AuthResponse,
+} from '../types';
 import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity/types';
+import { isError } from '@backstage/errors';
+import { CatalogIdentityClient } from '../../lib/catalog';
+import { Logger } from 'winston';
+import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 
-type SamlInfo = {
+/** @public */
+export type SamlAuthResult = {
   fullProfile: any;
 };
 
 type Options = SamlConfig & {
+  signInResolver?: SignInResolver<SamlAuthResult>;
+  authHandler: AuthHandler<SamlAuthResult>;
   tokenIssuer: TokenIssuer;
+  catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger;
   appUrl: string;
 };
 
 export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly strategy: SamlStrategy;
+  private readonly signInResolver?: SignInResolver<SamlAuthResult>;
+  private readonly authHandler: AuthHandler<SamlAuthResult>;
   private readonly tokenIssuer: TokenIssuer;
+  private readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly logger: Logger;
   private readonly appUrl: string;
 
   constructor(options: Options) {
     this.appUrl = options.appUrl;
+    this.signInResolver = options.signInResolver;
+    this.authHandler = options.authHandler;
     this.tokenIssuer = options.tokenIssuer;
+    this.catalogIdentityClient = options.catalogIdentityClient;
+    this.logger = options.logger;
     this.strategy = new SamlStrategy({ ...options }, ((
       fullProfile: SamlProfile,
-      done: PassportDoneCallback<SamlInfo>,
+      done: PassportDoneCallback<SamlAuthResult>,
     ) => {
       // TODO: There's plenty more validation and profile handling to do here,
       //       this provider is currently only intended to validate the provider pattern
@@ -70,78 +97,160 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     res: express.Response,
   ): Promise<void> {
     try {
-      const { result } = await executeFrameHandlerStrategy<SamlInfo>(
+      const context = {
+        logger: this.logger,
+        catalogIdentityClient: this.catalogIdentityClient,
+        tokenIssuer: this.tokenIssuer,
+      };
+
+      const { result } = await executeFrameHandlerStrategy<SamlAuthResult>(
         req,
         this.strategy,
       );
 
-      const id = result.fullProfile.nameID;
+      const { profile } = await this.authHandler(result, context);
 
-      const idToken = await this.tokenIssuer.issueToken({
-        claims: { sub: id },
-      });
+      const response: AuthResponse<{}> = {
+        profile,
+        providerInfo: {},
+      };
+
+      if (this.signInResolver) {
+        const signInResponse = await this.signInResolver(
+          {
+            result,
+            profile,
+          },
+          context,
+        );
+
+        response.backstageIdentity =
+          prepareBackstageIdentityResponse(signInResponse);
+      }
 
       return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
-        response: {
-          profile: {
-            email: result.fullProfile.email,
-            displayName: result.fullProfile.displayName,
-          },
-          providerInfo: {},
-          backstageIdentity: { id, idToken },
-        },
+        response,
       });
     } catch (error) {
+      const { name, message } = isError(error)
+        ? error
+        : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
       return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
-        error: {
-          name: error.name,
-          message: error.message,
-        },
+        error: { name, message },
       });
     }
   }
 
   async logout(_req: express.Request, res: express.Response): Promise<void> {
-    res.send('noop');
-  }
-
-  identifyEnv(): string | undefined {
-    return undefined;
+    res.end();
   }
 }
 
+const samlDefaultSignInResolver: SignInResolver<SamlAuthResult> = async (
+  info,
+  ctx,
+) => {
+  const id = info.result.fullProfile.nameID;
+
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: id,
+  });
+
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: entityRef,
+      ent: [entityRef],
+    },
+  });
+
+  return { id, token };
+};
+
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
-export type SamlProviderOptions = {};
+/** @public */
+export type SamlProviderOptions = {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<SamlAuthResult>;
 
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver?: SignInResolver<SamlAuthResult>;
+  };
+};
+
+/** @public */
 export const createSamlProvider = (
-  _options?: SamlProviderOptions,
+  options?: SamlProviderOptions,
 ): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, tokenIssuer }) => {
-    const opts = {
+  return ({
+    providerId,
+    globalConfig,
+    config,
+    tokenIssuer,
+    tokenManager,
+    catalogApi,
+    logger,
+  }) => {
+    const catalogIdentityClient = new CatalogIdentityClient({
+      catalogApi,
+      tokenManager,
+    });
+
+    const authHandler: AuthHandler<SamlAuthResult> = options?.authHandler
+      ? options.authHandler
+      : async ({ fullProfile }) => ({
+          profile: {
+            email: fullProfile.email,
+            displayName: fullProfile.displayName,
+          },
+        });
+
+    const signInResolverFn =
+      options?.signIn?.resolver ?? samlDefaultSignInResolver;
+
+    const signInResolver: SignInResolver<SamlAuthResult> = info =>
+      signInResolverFn(info, {
+        catalogIdentityClient,
+        tokenIssuer,
+        logger,
+      });
+
+    return new SamlAuthProvider({
       callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
       entryPoint: config.getString('entryPoint'),
       logoutUrl: config.getOptionalString('logoutUrl'),
+      audience: config.getOptionalString('audience'),
       issuer: config.getString('issuer'),
-      cert: config.getOptionalString('cert'),
-      privateCert: config.getOptionalString('privateKey'),
+      cert: config.getString('cert'),
+      privateKey: config.getOptionalString('privateKey'),
+      authnContext: config.getOptionalStringArray('authnContext'),
+      identifierFormat: config.getOptionalString('identifierFormat'),
       decryptionPvk: config.getOptionalString('decryptionPvk'),
       signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
         | SignatureAlgorithm
         | undefined,
       digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+      acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
 
       tokenIssuer,
       appUrl: globalConfig.appUrl,
-    };
-
-    // passport-saml will return an error if the `cert` key is set, and the value is empty.
-    // Since we read from config (such as environment variables) an empty string should be equal to being unset.
-    if (!opts.cert) {
-      delete opts.cert;
-    }
-    return new SamlAuthProvider(opts);
+      authHandler,
+      signInResolver,
+      logger,
+      catalogIdentityClient,
+    });
   };
 };

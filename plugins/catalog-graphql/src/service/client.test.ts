@@ -16,11 +16,11 @@
 import { CatalogClient } from './client';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 
 describe('Catalog GraphQL Module', () => {
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
 
   const baseUrl = 'http://localhost:1234';
 
@@ -28,7 +28,7 @@ describe('Catalog GraphQL Module', () => {
     const expectedResponse = [{ id: 'something' }];
 
     worker.use(
-      rest.get(`${baseUrl}/catalog/entities`, (_, res, ctx) =>
+      rest.get(`${baseUrl}/api/catalog/entities`, (_, res, ctx) =>
         res(ctx.status(200), ctx.json(expectedResponse)),
       ),
     );
@@ -44,7 +44,7 @@ describe('Catalog GraphQL Module', () => {
     const expectedResponse = 'something broke';
 
     worker.use(
-      rest.get(`${baseUrl}/catalog/entities`, (_, res, ctx) =>
+      rest.get(`${baseUrl}/api/catalog/entities`, (_, res, ctx) =>
         res(ctx.status(500), ctx.text(expectedResponse)),
       ),
     );

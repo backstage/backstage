@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import {
   Box,
@@ -58,6 +58,7 @@ interface PatchBodyProps {
   releaseBranch: GetBranchResult['branch'];
   onSuccess?: ComponentConfig<PatchOnSuccessArgs>['onSuccess'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
+  ctaMessage: string;
 }
 
 export const PatchBody = ({
@@ -66,6 +67,7 @@ export const PatchBody = ({
   releaseBranch,
   onSuccess,
   tagParts,
+  ctaMessage,
 }: PatchBodyProps) => {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
@@ -106,7 +108,7 @@ export const PatchBody = ({
       <ResponseStepDialog
         progress={progress}
         responseSteps={responseSteps}
-        title="Patch Release Candidate"
+        title={ctaMessage}
       />
     );
   }
@@ -143,6 +145,15 @@ export const PatchBody = ({
 
         <Box marginBottom={2}>
           <Typography>
+            Patches the release branch, creates a new tag and updates the Git
+            release. A dry run on a temporary branch will run prior to patching
+            the release branch to ensure there's no merge conflicts. Manual
+            patching is recommended should the dry run fail.
+          </Typography>
+        </Box>
+
+        <Box marginBottom={2}>
+          <Typography>
             <Differ
               icon="tag"
               current={latestRelease.tagName}
@@ -164,15 +175,16 @@ export const PatchBody = ({
         {gitDataResponse.value.recentCommitsOnDefaultBranch.map(
           (commit, index) => {
             // FIXME: Performance improvement opportunity: Convert to object lookup
-            const commitExistsOnReleaseBranch = !!gitDataResponse.value?.recentCommitsOnReleaseBranch.find(
-              releaseBranchCommit =>
-                releaseBranchCommit.sha === commit.sha ||
-                // The selected patch commit's sha is included in the commit message,
-                // which means it's part of a previous patch
-                releaseBranchCommit.commit.message.includes(
-                  getPatchCommitSuffix({ commitSha: commit.sha }),
-                ),
-            );
+            const commitExistsOnReleaseBranch =
+              !!gitDataResponse.value?.recentCommitsOnReleaseBranch.find(
+                releaseBranchCommit =>
+                  releaseBranchCommit.sha === commit.sha ||
+                  // The selected patch commit's sha is included in the commit message,
+                  // which means it's part of a previous patch
+                  releaseBranchCommit.commit.message.includes(
+                    getPatchCommitSuffix({ commitSha: commit.sha }),
+                  ),
+              );
             const hasNoParent = !commit.firstParentSha;
 
             return (
@@ -300,6 +312,7 @@ export const PatchBody = ({
             gitDataResponse.value?.recentCommitsOnDefaultBranch[
               checkedCommitIndex
             ];
+
           if (!selectedPatchCommit) {
             throw new GitReleaseManagerError(
               'Could not find selected patch commit',
@@ -309,7 +322,7 @@ export const PatchBody = ({
           run(selectedPatchCommit);
         }}
       >
-        Patch Release Candidate
+        {ctaMessage}
       </Button>
     </Box>
   );

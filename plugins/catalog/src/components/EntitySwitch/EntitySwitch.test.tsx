@@ -15,23 +15,20 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
-import {
-  LocalStorageFeatureFlags,
-  ApiProvider,
-  ApiRegistry,
-} from '@backstage/core-app-api';
+import { LocalStorageFeatureFlags } from '@backstage/core-app-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-  <ApiProvider apis={ApiRegistry.with(featureFlagsApiRef, mockFeatureFlagsApi)}>
+  <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
-  </ApiProvider>
+  </TestApiProvider>
 );
 
 describe('EntitySwitch', () => {
@@ -46,15 +43,9 @@ describe('EntitySwitch', () => {
 
     const rendered = render(
       <Wrapper>
-        <EntityContext.Provider
-          value={{
-            entity: { kind: 'component' } as Entity,
-            loading: false,
-            error: undefined,
-          }}
-        >
+        <EntityProvider entity={{ kind: 'component' } as Entity}>
           {content}
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -64,15 +55,9 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityContext.Provider
-          value={{
-            entity: { kind: 'template' } as Entity,
-            loading: false,
-            error: undefined,
-          }}
-        >
+        <EntityProvider entity={{ kind: 'template' } as Entity}>
           {content}
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -82,15 +67,9 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityContext.Provider
-          value={{
-            entity: { kind: 'derp' } as Entity,
-            loading: false,
-            error: undefined,
-          }}
-        >
+        <EntityProvider entity={{ kind: 'derp' } as Entity}>
           {content}
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -100,20 +79,16 @@ describe('EntitySwitch', () => {
   });
 
   it('should switch child when filters switch', () => {
-    const entityContextValue = {
-      entity: { kind: 'component' } as Entity,
-      loading: false,
-      error: undefined,
-    };
+    const entity = { kind: 'component' } as Entity;
 
     const rendered = render(
       <Wrapper>
-        <EntityContext.Provider value={entityContextValue}>
+        <EntityProvider entity={entity}>
           <EntitySwitch>
             <EntitySwitch.Case if={isKind('component')} children="A" />
             <EntitySwitch.Case children="B" />
           </EntitySwitch>
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
@@ -122,16 +97,75 @@ describe('EntitySwitch', () => {
 
     rendered.rerender(
       <Wrapper>
-        <EntityContext.Provider value={entityContextValue}>
+        <EntityProvider entity={entity}>
           <EntitySwitch>
             <EntitySwitch.Case if={isKind('template')} children="A" />
             <EntitySwitch.Case children="B" />
           </EntitySwitch>
-        </EntityContext.Provider>
+        </EntityProvider>
       </Wrapper>,
     );
 
     expect(rendered.queryByText('A')).not.toBeInTheDocument();
     expect(rendered.queryByText('B')).toBeInTheDocument();
+  });
+
+  it('should switch with async condition that is true', async () => {
+    const entity = { kind: 'component' } as Entity;
+
+    const shouldRender = () => Promise.resolve(true);
+    const rendered = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={shouldRender} children="A" />
+            <EntitySwitch.Case children="B" />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(rendered.findByText('A')).resolves.toBeInTheDocument();
+    expect(rendered.queryByText('B')).not.toBeInTheDocument();
+  });
+
+  it('should switch with sync condition that is false', async () => {
+    const entity = { kind: 'component' } as Entity;
+
+    const shouldRender = () => Promise.resolve(false);
+    const rendered = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={shouldRender} children="A" />
+            <EntitySwitch.Case if={() => true} children="B" />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(rendered.findByText('B')).resolves.toBeInTheDocument();
+    expect(rendered.queryByText('A')).not.toBeInTheDocument();
+  });
+
+  it('should switch with sync condition that throws', async () => {
+    const entity = { kind: 'component' } as Entity;
+
+    const shouldRender = () => Promise.reject();
+    const rendered = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={shouldRender} children="A" />
+            <EntitySwitch.Case if={() => false} children="B" />
+            <EntitySwitch.Case children="C" />
+          </EntitySwitch>
+        </EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(rendered.findByText('C')).resolves.toBeInTheDocument();
+    expect(rendered.queryByText('A')).not.toBeInTheDocument();
+    expect(rendered.queryByText('B')).not.toBeInTheDocument();
   });
 });

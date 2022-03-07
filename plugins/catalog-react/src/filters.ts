@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  UserEntity,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
-import { getEntityRelations, isOwnerOf } from './utils';
-import { formatEntityRefTitle } from './components/EntityRefLink';
+import { getEntityRelations } from './utils';
 
+/**
+ * Filter entities based on Kind.
+ * @public
+ */
 export class EntityKindFilter implements EntityFilter {
   constructor(readonly value: string) {}
 
@@ -35,6 +35,10 @@ export class EntityKindFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities based on type
+ * @public
+ */
 export class EntityTypeFilter implements EntityFilter {
   constructor(readonly value: string | string[]) {}
 
@@ -52,6 +56,10 @@ export class EntityTypeFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities based on tag.
+ * @public
+ */
 export class EntityTagFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
@@ -64,6 +72,10 @@ export class EntityTagFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities where the text matches spec, title or tags.
+ * @public
+ */
 export class EntityTextFilter implements EntityFilter {
   constructor(readonly value: string) {}
 
@@ -85,13 +97,17 @@ export class EntityTextFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filter matching entities that are owned by group.
+ * @public
+ */
 export class EntityOwnerFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
   filterEntity(entity: Entity): boolean {
     return this.values.some(v =>
       getEntityRelations(entity, RELATION_OWNED_BY).some(
-        o => formatEntityRefTitle(o, { defaultKind: 'group' }) === v,
+        o => humanizeEntityRef(o, { defaultKind: 'group' }) === v,
       ),
     );
   }
@@ -101,6 +117,10 @@ export class EntityOwnerFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities on lifecycle.
+ * @public
+ */
 export class EntityLifecycleFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 
@@ -113,17 +133,21 @@ export class EntityLifecycleFilter implements EntityFilter {
   }
 }
 
+/**
+ * Filters entities based on whatever the user has starred or owns them.
+ * @public
+ */
 export class UserListFilter implements EntityFilter {
   constructor(
     readonly value: UserListFilterKind,
-    readonly user: UserEntity | undefined,
+    readonly isOwnedEntity: (entity: Entity) => boolean,
     readonly isStarredEntity: (entity: Entity) => boolean,
   ) {}
 
   filterEntity(entity: Entity): boolean {
     switch (this.value) {
       case 'owned':
-        return this.user !== undefined && isOwnerOf(this.user, entity);
+        return this.isOwnedEntity(entity);
       case 'starred':
         return this.isStarredEntity(entity);
       default:

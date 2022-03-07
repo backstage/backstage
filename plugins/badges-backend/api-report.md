@@ -139,6 +139,4 @@ export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

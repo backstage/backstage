@@ -15,7 +15,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useObservable } from 'react-use';
+import useObservable from 'react-use/lib/useObservable';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { ShortcutItem } from './ShortcutItem';
 import { AddShortcut } from './AddShortcut';
@@ -26,9 +26,18 @@ import {
   SidebarItem,
   SidebarScrollWrapper,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { IconComponent, useApi } from '@backstage/core-plugin-api';
 
-export const Shortcuts = () => {
+/**
+ * ShortcutsProps
+ * Props for the {@link Shortcuts} component.
+ * @public
+ */
+export interface ShortcutsProps {
+  icon?: IconComponent;
+}
+
+export const Shortcuts = (props: ShortcutsProps) => {
   const shortcutApi = useApi(shortcutsApiRef);
   const shortcuts = useObservable(
     useMemo(() => shortcutApi.shortcut$(), [shortcutApi]),
@@ -47,7 +56,7 @@ export const Shortcuts = () => {
   return (
     <SidebarScrollWrapper>
       <SidebarItem
-        icon={PlayListAddIcon}
+        icon={props.icon ?? PlayListAddIcon}
         text="Add Shortcuts"
         onClick={handleClick}
       />

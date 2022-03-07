@@ -14,38 +14,44 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, memo, useMemo } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { useParams } from 'react-router';
-import { useTaskEventStream } from '../hooks/useEventStream';
-import LazyLog from 'react-lazylog/build/LazyLog';
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
+  Content,
+  ErrorPage,
+  Header,
+  Lifecycle,
+  Page,
+  LogViewer,
+  Progress,
+} from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { BackstageTheme } from '@backstage/theme';
+import {
+  Button,
   CircularProgress,
   Paper,
   StepButton,
   StepIconProps,
 } from '@material-ui/core';
-import { Status, TaskOutput } from '../../types';
-import { DateTime, Interval } from 'luxon';
-import { useInterval } from 'react-use';
-import Check from '@material-ui/icons/Check';
+import Grid from '@material-ui/core/Grid';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Stepper from '@material-ui/core/Stepper';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import Cancel from '@material-ui/icons/Cancel';
+import Check from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import classNames from 'classnames';
-import { BackstageTheme } from '@backstage/theme';
+import { DateTime, Interval } from 'luxon';
+import qs from 'qs';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import useInterval from 'react-use/lib/useInterval';
+import { rootRouteRef, selectedTemplateRouteRef } from '../../routes';
+import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
+import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
-import {
-  Page,
-  Header,
-  Lifecycle,
-  Content,
-  ErrorPage,
-} from '@backstage/core-components';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -56,8 +62,8 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
     },
     button: {
-      marginTop: theme.spacing(1),
-      marginRight: theme.spacing(1),
+      marginBottom: theme.spacing(2),
+      marginLeft: theme.spacing(2),
     },
     actionsContainer: {
       marginBottom: theme.spacing(2),
@@ -80,7 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type TaskStep = {
   id: string;
   name: string;
-  status: Status;
+  status: ScaffolderTaskStatus;
   startedAt?: string;
   endedAt?: string;
 };
@@ -211,18 +217,30 @@ export const TaskStatusStepper = memo(
   },
 );
 
-const TaskLogger = memo(({ log }: { log: string }) => {
-  return (
-    <div style={{ height: '80vh' }}>
-      <LazyLog text={log} extraLines={1} follow selectableLines enableSearch />
-    </div>
-  );
-});
+const hasLinks = ({ links = [] }: ScaffolderTaskOutput): boolean =>
+  links.length > 0;
 
-const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
-  !!(entityRef || remoteUrl || links.length > 0);
+/**
+ * TaskPageProps for constructing a TaskPage
+ * @param loadingText - Optional loading text shown before a task begins executing.
+ *
+ * @public
+ */
+export type TaskPageProps = {
+  loadingText?: string;
+};
 
-export const TaskPage = () => {
+/**
+ * TaskPage for showing the status of the taskId provided as a param
+ * @param loadingText - Optional loading text shown before a task begins executing.
+ *
+ * @public
+ */
+export const TaskPage = ({ loadingText }: TaskPageProps) => {
+  const classes = useStyles();
+  const navigate = useNavigate();
+  const rootPath = useRouteRef(rootRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const [userSelectedStepId, setUserSelectedStepId] = useState<
     string | undefined
   >(undefined);
@@ -257,7 +275,7 @@ export const TaskPage = () => {
 
   const logAsString = useMemo(() => {
     if (!currentStepId) {
-      return 'Loading...';
+      return loadingText ? loadingText : 'Loading...';
     }
     const log = taskStream.stepLogs[currentStepId];
 
@@ -265,7 +283,7 @@ export const TaskPage = () => {
       return 'Waiting for logs...';
     }
     return log.join('\n');
-  }, [taskStream.stepLogs, currentStepId]);
+  }, [taskStream.stepLogs, currentStepId, loadingText]);
 
   const taskNotFound =
     taskStream.completed === true &&
@@ -273,6 +291,28 @@ export const TaskPage = () => {
     !taskStream.task;
 
   const { output } = taskStream;
+
+  const handleStartOver = () => {
+    if (!taskStream.task || !taskStream.task?.spec.templateInfo?.entityRef) {
+      navigate(rootPath());
+      return;
+    }
+
+    const formData =
+      taskStream.task!.spec.apiVersion === 'backstage.io/v1beta2'
+        ? taskStream.task!.spec.values
+        : taskStream.task!.spec.parameters;
+
+    const { name } = parseEntityRef(
+      taskStream.task!.spec.templateInfo?.entityRef,
+    );
+
+    navigate(
+      `${templateRoute({ templateName: name })}?${qs.stringify({
+        formData: JSON.stringify(formData),
+      })}`,
+    );
+  };
 
   return (
     <Page themeId="home">
@@ -305,10 +345,23 @@ export const TaskPage = () => {
                   {output && hasLinks(output) && (
                     <TaskPageLinks output={output} />
                   )}
+                  <Button
+                    className={classes.button}
+                    onClick={handleStartOver}
+                    disabled={!completed}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Start Over
+                  </Button>
                 </Paper>
               </Grid>
               <Grid item xs={9}>
-                <TaskLogger log={logAsString} />
+                {!currentStepId && <Progress />}
+
+                <div style={{ height: '80vh' }}>
+                  <LogViewer text={logAsString} />
+                </div>
               </Grid>
             </Grid>
           </div>

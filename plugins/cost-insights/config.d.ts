@@ -48,5 +48,39 @@ interface Config {
         default?: boolean;
       };
     };
+
+    currencies?: {
+      [id: string]: {
+        /**
+         * @visibility frontend
+         */
+        label: string;
+
+        /**
+         * @visibility frontend
+         */
+        unit: string;
+
+        /**
+         * @visibility frontend
+         */
+        kind?: string;
+
+        /**
+         * @visibility frontend
+         */
+        prefix?: string;
+
+        /**
+         * @visibility frontend
+         */
+        rate?: number;
+
+        /**
+         * @visibility frontend
+         */
+        default?: boolean;
+      };
+    };
   };
 }

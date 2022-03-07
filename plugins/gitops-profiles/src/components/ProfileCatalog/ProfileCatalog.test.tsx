@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
@@ -23,7 +23,6 @@ import ProfileCatalog from './ProfileCatalog';
 
 import {
   ApiProvider,
-  ApiRegistry,
   GithubAuth,
   OAuthRequestManager,
   UrlPatternDiscovery,
@@ -34,7 +33,7 @@ import { githubAuthApiRef } from '@backstage/core-plugin-api';
 describe('ProfileCatalog', () => {
   it('should render', async () => {
     const oauthRequestApi = new OAuthRequestManager();
-    const apis = ApiRegistry.from([
+    const apis = TestApiRegistry.from(
       [gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')],
       [
         githubAuthApiRef,
@@ -45,7 +44,7 @@ describe('ProfileCatalog', () => {
           oauthRequestApi,
         }),
       ],
-    ]);
+    );
 
     const { getByText } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>

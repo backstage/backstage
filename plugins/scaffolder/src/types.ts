@@ -13,44 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
+import { JSONSchema7 } from 'json-schema';
 
-export type Status = 'open' | 'processing' | 'failed' | 'completed' | 'skipped';
+export type ScaffolderTaskStatus =
+  | 'open'
+  | 'processing'
+  | 'failed'
+  | 'completed'
+  | 'skipped';
+
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
-export type Job = {
-  id: string;
-  metadata: {
-    entity: any;
-    values: any;
-    remoteUrl?: string;
-    catalogInfoUrl?: string;
-  };
-  status: JobStatus;
-  stages: Stage[];
-  error?: Error;
-};
-
-export type Stage = {
-  name: string;
-  log: string[];
-  status: JobStatus;
-  startedAt: string;
-  endedAt?: string;
-};
-
-export type ScaffolderStep = {
-  id: string;
-  name: string;
-  action: string;
-  parameters?: { [name: string]: JsonValue };
-};
 
 export type ScaffolderTask = {
   id: string;
-  spec: {
-    steps: ScaffolderStep[];
-  };
+  spec: TaskSpec;
   status: 'failed' | 'completed' | 'processing' | 'open' | 'cancelled';
   lastHeartbeatAt: string;
   createdAt: string;
@@ -60,24 +38,98 @@ export type ListActionsResponse = Array<{
   id: string;
   description?: string;
   schema?: {
-    input?: JSONSchema;
-    output?: JSONSchema;
+    input?: JSONSchema7;
+    output?: JSONSchema7;
   };
 }>;
 
-type OutputLink = {
+/** @public */
+export type ScaffolderOutputLink = {
   title?: string;
   icon?: string;
   url?: string;
   entityRef?: string;
 };
 
-export type TaskOutput = {
-  /** @deprecated use the `links` property to link out to relevant resources */
-  entityRef?: string;
-  /** @deprecated use the `links` property to link out to relevant resources */
-  remoteUrl?: string;
-  links?: OutputLink[];
+/** @public */
+export type ScaffolderTaskOutput = {
+  links?: ScaffolderOutputLink[];
 } & {
   [key: string]: unknown;
 };
+
+export type TemplateParameterSchema = {
+  title: string;
+  steps: Array<{
+    title: string;
+    schema: JsonObject;
+  }>;
+};
+
+export type LogEvent = {
+  type: 'log' | 'completion';
+  body: {
+    message: string;
+    stepId?: string;
+    status?: ScaffolderTaskStatus;
+  };
+  createdAt: string;
+  id: string;
+  taskId: string;
+};
+
+export interface ScaffolderScaffoldOptions {
+  templateRef: string;
+  values: Record<string, JsonValue>;
+  secrets?: Record<string, string>;
+}
+
+export interface ScaffolderScaffoldResponse {
+  taskId: string;
+}
+
+export interface ScaffolderGetIntegrationsListOptions {
+  allowedHosts: string[];
+}
+
+export interface ScaffolderGetIntegrationsListResponse {
+  integrations: { type: string; title: string; host: string }[];
+}
+
+export interface ScaffolderStreamLogsOptions {
+  taskId: string;
+  after?: number;
+}
+/**
+ * An API to interact with the scaffolder backend.
+ *
+ * @public
+ */
+export interface ScaffolderApi {
+  getTemplateParameterSchema(
+    templateRef: string,
+  ): Promise<TemplateParameterSchema>;
+
+  /**
+   * Executes the scaffolding of a component, given a template and its
+   * parameter values.
+   *
+   * @param options - The {@link ScaffolderScaffoldOptions} the scaffolding.
+   */
+  scaffold(
+    options: ScaffolderScaffoldOptions,
+  ): Promise<ScaffolderScaffoldResponse>;
+
+  getTask(taskId: string): Promise<ScaffolderTask>;
+
+  getIntegrationsList(
+    options: ScaffolderGetIntegrationsListOptions,
+  ): Promise<ScaffolderGetIntegrationsListResponse>;
+
+  /**
+   * Returns a list of all installed actions.
+   */
+  listActions(): Promise<ListActionsResponse>;
+
+  streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
+}

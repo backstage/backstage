@@ -20,19 +20,25 @@ import { LdapVendor } from './vendors';
 /**
  * Builds a string form of an LDAP Error structure.
  *
- * @param error The error
+ * @param error - The error
  */
 export function errorString(error: LDAPError) {
   return `${error.code} ${error.name}: ${error.message}`;
 }
 
 /**
- * Maps a single-valued attribute to a consumer
+ * Maps a single-valued attribute to a consumer.
  *
- * @param entry The LDAP source entry
- * @param vendor The LDAP vendor
- * @param attributeName The source attribute to map. If the attribute is undefined the mapping will be silently ignored.
- * @param setter The function to be called with the decoded attribute from the source entry
+ * This helper can be useful when implementing a user or group transformer.
+ *
+ * @param entry - The LDAP source entry
+ * @param vendor - The LDAP vendor
+ * @param attributeName - The source attribute to map. If the attribute is
+ *        undefined the mapping will be silently ignored.
+ * @param setter - The function to be called with the decoded attribute from the
+ *        source entry
+ *
+ * @public
  */
 export function mapStringAttr(
   entry: SearchEntry,

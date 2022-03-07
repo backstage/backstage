@@ -15,7 +15,10 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import {
+  createTheme as createMuiTheme,
+  ThemeProvider,
+} from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import {
   costInsightsDarkTheme,

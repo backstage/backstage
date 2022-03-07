@@ -22,6 +22,6 @@ spec:
           image: spotify/backstage-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 7000
+            - containerPort: 7007
               name: backend
               protocol: TCP

@@ -16,14 +16,14 @@
 
 import {
   OAuthRequestApi,
-  AuthRequesterOptions,
+  OAuthRequesterOptions,
 } from '@backstage/core-plugin-api';
 import { OAuthRequestManager } from './OAuthRequestManager';
 
 export default class MockOAuthApi implements OAuthRequestApi {
   private readonly real = new OAuthRequestManager();
 
-  createAuthRequester<T>(options: AuthRequesterOptions<T>) {
+  createAuthRequester<T>(options: OAuthRequesterOptions<T>) {
     return this.real.createAuthRequester(options);
   }
 

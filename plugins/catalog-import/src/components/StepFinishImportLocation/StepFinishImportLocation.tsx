@@ -21,15 +21,22 @@ import { BackButton } from '../Buttons';
 import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';
 import { Link } from '@backstage/core-components';
+import partition from 'lodash/partition';
 
 type Props = {
   prepareResult: PrepareResult;
   onReset: () => void;
 };
 
-export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => (
-  <>
-    {prepareResult.type === 'repository' && (
+export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
+  const continueButton = (
+    <Grid container spacing={0}>
+      <BackButton onClick={onReset}>Register another</BackButton>
+    </Grid>
+  );
+
+  if (prepareResult.type === 'repository') {
+    return (
       <>
         <Typography paragraph>
           The following Pull Request has been opened:{' '}
@@ -45,21 +52,46 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => (
         <Typography paragraph>
           Your entities will be imported as soon as the Pull Request is merged.
         </Typography>
+
+        {continueButton}
       </>
-    )}
+    );
+  }
 
-    <Typography>
-      The following entities have been added to the catalog:
-    </Typography>
+  const [existingLocations, newLocations] = partition(
+    prepareResult.locations,
+    l => l.exists,
+  );
 
-    <EntityListComponent
-      locations={prepareResult.locations}
-      locationListItemIcon={() => <LocationOnIcon />}
-      withLinks
-    />
+  return (
+    <>
+      {newLocations.length > 0 && (
+        <>
+          <Typography>
+            The following entities have been added to the catalog:
+          </Typography>
 
-    <Grid container spacing={0}>
-      <BackButton onClick={onReset}>Register another</BackButton>
-    </Grid>
-  </>
-);
+          <EntityListComponent
+            locations={newLocations}
+            locationListItemIcon={() => <LocationOnIcon />}
+            withLinks
+          />
+        </>
+      )}
+      {existingLocations.length > 0 && (
+        <>
+          <Typography>
+            A refresh was triggered for the following locations:
+          </Typography>
+
+          <EntityListComponent
+            locations={existingLocations}
+            locationListItemIcon={() => <LocationOnIcon />}
+            withLinks
+          />
+        </>
+      )}
+      {continueButton}
+    </>
+  );
+};

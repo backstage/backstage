@@ -55,7 +55,6 @@ export type NewRelicApplications = {
 
 export const newRelicApiRef = createApiRef<NewRelicApi>({
   id: 'plugin.newrelic.service',
-  description: 'Used by the NewRelic plugin to make requests',
 });
 
 const DEFAULT_PROXY_PATH_BASE = '/newrelic';

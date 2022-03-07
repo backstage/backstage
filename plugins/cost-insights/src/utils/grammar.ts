@@ -26,7 +26,7 @@ export const indefiniteArticleOf = (
   articles: [string, string],
   word: string,
 ) => {
-  const firstChar = word.charAt(0).toLowerCase();
+  const firstChar = word.charAt(0).toLocaleLowerCase('en-US');
   return firstChar in vowels
     ? `${articles[1]} ${word}`
     : `${articles[0]} ${word}`;

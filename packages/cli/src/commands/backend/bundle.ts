@@ -21,7 +21,7 @@ import tar, { CreateOptions } from 'tar';
 import { Command } from 'commander';
 import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
-import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+import { getEnvironmentParallelism } from '../../lib/parallel';
 import { buildPackage, Output } from '../../lib/builder';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
@@ -40,7 +40,7 @@ export default async (cmd: Command) => {
       targetDir: tmpDir,
       buildDependencies: Boolean(cmd.buildDependencies),
       buildExcludes: [pkg.name],
-      parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
+      parallelism: getEnvironmentParallelism(),
       skeleton: SKELETON_FILE,
     });
 

@@ -15,11 +15,12 @@
  */
 
 import { ComponentType } from 'react';
-import { SvgIconProps } from '@material-ui/core';
 
 /**
  * IconComponent is the common icon type used throughout Backstage when
  * working with and rendering generic icons, including the app system icons.
+ *
+ * @remarks
  *
  * The type is based on SvgIcon from MUI, but both do not what the plugin-api
  * package to have a dependency on MUI, nor do we want the props to be as broad
@@ -28,14 +29,9 @@ import { SvgIconProps } from '@material-ui/core';
  * If you have the need to forward additional props from SvgIconProps, you can
  * open an issue or submit a PR to the main Backstage repo. When doing so please
  * also describe your use-case and reasoning of the addition.
+ *
+ * @public
  */
 export type IconComponent = ComponentType<{
   fontSize?: 'default' | 'small' | 'large';
 }>;
-
-/**
- * This exists for backwards compatibility with the old core package.
- * It's used in some parts of this package in order to smooth out the
- * migration, but it is not exported.
- */
-export type OldIconComponent = ComponentType<SvgIconProps>;

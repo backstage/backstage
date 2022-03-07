@@ -11,13 +11,13 @@ would be good to also have some files in there that can be templated in.
 A simple `template.yaml` definition might look something like this:
 
 ```yaml
-apiVersion: backstage.io/v1beta2
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 # some metadata about the template itself
 metadata:
-  name: v1beta2-demo
+  name: v1beta3-demo
   title: Test Action template
-  description: scaffolder v1beta2 template demo
+  description: scaffolder v1beta3 template demo
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -55,7 +55,7 @@ spec:
       input:
         url: ./template
         values:
-          name: '{{ parameters.name }}'
+          name: ${{ parameters.name }}
 
     - id: fetch-docs
       name: Fetch Docs
@@ -69,14 +69,14 @@ spec:
       action: publish:github
       input:
         allowedHosts: ['github.com']
-        description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
 
     - id: register
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 ```
 

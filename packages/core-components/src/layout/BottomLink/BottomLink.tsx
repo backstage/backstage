@@ -14,34 +14,50 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Divider, Typography, makeStyles } from '@material-ui/core';
-import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { BackstageTheme } from '@backstage/theme';
 import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import ArrowIcon from '@material-ui/icons/ArrowForward';
+import React from 'react';
 import { Link } from '../../components/Link';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    maxWidth: 'fit-content',
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
-  boxTitle: {
-    margin: 0,
-    color: theme.palette.textSubtle,
-  },
-  arrow: {
-    color: theme.palette.textSubtle,
-  },
-}));
+/** @public */
+export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      maxWidth: 'fit-content',
+      padding: theme.spacing(2, 2, 2, 2.5),
+    },
+    boxTitle: {
+      margin: 0,
+      color: theme.palette.textSubtle,
+    },
+    arrow: {
+      color: theme.palette.textSubtle,
+    },
+  }),
+  { name: 'BackstageBottomLink' },
+);
+
+/** @public */
 export type BottomLinkProps = {
   link: string;
   title: string;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
+/**
+ * Footer with link used in  {@link InfoCard } and {@link TabbedCard}
+ *
+ * @public
+ *
+ */
+export function BottomLink(props: BottomLinkProps) {
+  const { link, title, onClick } = props;
   const classes = useStyles();
 
   return (
@@ -49,14 +65,14 @@ export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
       <Divider />
       <Link to={link} onClick={onClick} underline="none">
         <Box display="flex" alignItems="center" className={classes.root}>
-          <Typography>
-            <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
-              {title}
-            </Box>
-          </Typography>
+          <Box className={classes.boxTitle} fontWeight="fontWeightBold" m={1}>
+            <Typography>
+              <strong>{title}</strong>
+            </Typography>
+          </Box>
           <ArrowIcon className={classes.arrow} />
         </Box>
       </Link>
     </div>
   );
-};
+}

@@ -1,5 +1,1891 @@
 # @backstage/create-app
 
+## 0.4.22
+
+### Patch Changes
+
+- ee3d6c6f10: Update the template to reflect the renaming of `DocsResultListItem` to `TechDocsSearchResultListItem` from `@backstage/plugin-techdocs`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/components/search/SearchPage.tsx`:
+
+  ```diff
+  -import { DocsResultListItem } from '@backstage/plugin-techdocs';
+  +import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
+  ```
+
+  ```diff
+     case 'techdocs':
+       return (
+  -      <DocsResultListItem
+  +      <TechDocsSearchResultListItem
+           key={document.location}
+           result={document}
+         />
+  ```
+
+  The `TechDocsIndexPage` now uses `DefaultTechDocsHome` as fall back if no children is provided as `LegacyTechDocsHome` is marked as deprecated. If you do not use a custom techdocs homepage, you can therefore update your app to the following:
+
+  ```diff
+  -  <Route path="/docs" element={<TechDocsIndexPage />}>
+  -    <DefaultTechDocsHome />
+  -  </Route>
+  +  <Route path="/docs" element={<TechDocsIndexPage />} />
+  ```
+
+- 617a132871: Update import location of catalogEntityCreatePermission.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+  +import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+  ```
+
+- 022507c860: The Backstage Search Platform's indexing process has been rewritten as a stream
+  pipeline in order to improve efficiency and performance on large document sets.
+
+  To take advantage of this, upgrade to the latest version of
+  `@backstage/plugin-search-backend-node`, as well as any backend plugins whose
+  collators you are using. Then, make the following changes to your
+  `/packages/backend/src/plugins/search.ts` file:
+
+  ```diff
+  -import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+  -import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+  +import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
+  +import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+
+  // ...
+
+    const indexBuilder = new IndexBuilder({ logger, searchEngine });
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+  -    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
+  +    factory: DefaultCatalogCollatorFactory.fromConfig(config, { discovery }),
+    });
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+  -    collator: DefaultTechDocsCollator.fromConfig(config, {
+  +    factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
+        discovery,
+        logger,
+      }),
+    });
+  ```
+
+  If you've written custom collators, decorators, or search engines in your
+  Backstage backend instance, you will need to re-implement them as readable,
+  transform, and writable streams respectively (including factory classes for
+  instantiating them). [A how-to guide for refactoring](https://backstage.io/docs/features/search/how-to-guides#rewriting-alpha-style-collators-for-beta)
+  existing implementations is available.
+
+## 0.4.21
+
+### Patch Changes
+
+- a686702dbe: Update the template to reflect the renaming of `CatalogResultListItem` to `CatalogSearchResultListItem` from `@backstage/plugin-catalog`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/components/search/SearchPage.tsx`:
+
+  ```diff
+  -import { CatalogResultListItem } from '@backstage/plugin-catalog';
+  +import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
+  ```
+
+  ```diff
+     case 'software-catalog':
+       return (
+  -      <CatalogResultListItem
+  +      <CatalogSearchResultListItem
+           key={document.location}
+           result={document}
+         />
+  ```
+
+- f39c1e6036: To reflect the updated `knex` and `@vscode/sqlite3` dependencies introduced with [v0.4.19](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#0419), we update our example `Dockerfile`, adding `@vscode/sqlite3` build dependencies to the image. Further on, we updated it to the `node:16-bullseye-slim` base image.
+
+  To apply this update to an existing app, make the following change to `packages/backend/Dockerfile`:
+
+  ```diff
+  -FROM node:14-buster-slim
+  +FROM node:16-bullseye-slim
+  ```
+
+  and, _only if you are using sqlite3 in your app_:
+
+  ```diff
+  RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+  +
+  +# install sqlite3 dependencies
+  +RUN apt-get update && \
+  +   apt-get install -y libsqlite3-dev python3 cmake g++ && \
+  +   rm -rf /var/lib/apt/lists/* && \
+  +   yarn config set python /usr/bin/python3
+
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+  ```
+
+  If you are using a multi-stage Docker build for your app, please refer to the [updated examples](https://github.com/backstage/backstage/blob/master/docs/deployment/docker.md#multi-stage-build) in the documentation.
+
+## 0.4.20
+
+### Patch Changes
+
+- e725bb812f: Remove SearchContextProvider from `<Root />`
+
+  The `SidebarSearchModal` exported from `plugin-search` internally renders `SearchContextProvider`, so it can be removed from `Root.tsx`:
+
+  ```diff
+  -import {
+  -  SidebarSearchModal,
+  -  SearchContextProvider,
+  -} from '@backstage/plugin-search';
+  +import { SidebarSearchModal } from '@backstage/plugin-search';
+
+  ... omitted ...
+
+         <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+  -        <SearchContextProvider>
+  -          <SidebarSearchModal />
+  -        </SearchContextProvider>
+  +        <SidebarSearchModal />
+         </SidebarGroup>
+  ```
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/cli-common@0.1.7
+
+## 0.4.19
+
+### Patch Changes
+
+- 22f4ecb0e6: Switched the `file:` dependency for a `link:` dependency in the `backend` package. This makes sure that the `app` package is linked in rather than copied.
+
+  To apply this update to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "file:../app",
+  +    "app": "link:../app",
+       "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
+  ```
+
+- 1dd5a02e91: **BREAKING:** Updated `knex` to major version 1, which also implies changing out
+  the underlying `sqlite` implementation.
+
+  The old `sqlite3` NPM library has been abandoned by its maintainers, which has
+  led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
+  release line they have instead switched over to the [`@vscode/sqlite3`
+  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  actively maintained by Microsoft.
+
+  This means that as you update to this version of Backstage, there are two
+  breaking changes that you will have to address in your own repository:
+
+  ## Bumping `knex` itself
+
+  All `package.json` files of your repo that used to depend on a 0.x version of
+  `knex`, should now be updated to depend on the 1.x release line. This applies in
+  particular to `packages/backend`, but may also occur in backend plugins or
+  libraries.
+
+  ```diff
+  -    "knex": "^0.95.1",
+  +    "knex": "^1.0.2",
+  ```
+
+  Almost all existing database code will continue to function without modification
+  after this bump. The only significant difference that we discovered in the main
+  repo, is that the `alter()` function had a slightly different signature in
+  migration files. It now accepts an object with `alterType` and `alterNullable`
+  fields that clarify a previous grey area such that the intent of the alteration
+  is made explicit. This is caught by `tsc` and your editor if you are using the
+  `@ts-check` and `@param` syntax in your migration files
+  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  which we strongly recommend.
+
+  See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more
+  information about the `alter` syntax.
+
+  Also see the [`knex` changelog](https://knexjs.org/#changelog) for information
+  about breaking changes in the 1.x line; if you are using `RETURNING` you may
+  want to make some additional modifications in your code.
+
+  ## Switching out `sqlite3`
+
+  All `package.json` files of your repo that used to depend on `sqlite3`, should
+  now be updated to depend on `@vscode/sqlite3`. This applies in particular to
+  `packages/backend`, but may also occur in backend plugins or libraries.
+
+  ```diff
+  -    "sqlite3": "^5.0.1",
+  +    "@vscode/sqlite3": "^5.0.7",
+  ```
+
+  These should be functionally equivalent, except that the new library will have
+  addressed some long standing problems with old transitive dependencies etc.
+
+## 0.4.19-next.0
+
+### Patch Changes
+
+- 22f4ecb0e6: Switched the `file:` dependency for a `link:` dependency in the `backend` package. This makes sure that the `app` package is linked in rather than copied.
+
+  To apply this update to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "file:../app",
+  +    "app": "link:../app",
+       "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
+  ```
+
+- 1dd5a02e91: **BREAKING:** Updated `knex` to major version 1, which also implies changing out
+  the underlying `sqlite` implementation.
+
+  The old `sqlite3` NPM library has been abandoned by its maintainers, which has
+  led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
+  release line they have instead switched over to the [`@vscode/sqlite3`
+  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  actively maintained by Microsoft.
+
+  This means that as you update to this version of Backstage, there are two
+  breaking changes that you will have to address in your own repository:
+
+  ## Bumping `knex` itself
+
+  All `package.json` files of your repo that used to depend on a 0.x version of
+  `knex`, should now be updated to depend on the 1.x release line. This applies in
+  particular to `packages/backend`, but may also occur in backend plugins or
+  libraries.
+
+  ```diff
+  -    "knex": "^0.95.1",
+  +    "knex": "^1.0.2",
+  ```
+
+  Almost all existing database code will continue to function without modification
+  after this bump. The only significant difference that we discovered in the main
+  repo, is that the `alter()` function had a slightly different signature in
+  migration files. It now accepts an object with `alterType` and `alterNullable`
+  fields that clarify a previous grey area such that the intent of the alteration
+  is made explicit. This is caught by `tsc` and your editor if you are using the
+  `@ts-check` and `@param` syntax in your migration files
+  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  which we strongly recommend.
+
+  See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more
+  information about the `alter` syntax.
+
+  Also see the [`knex` changelog](https://knexjs.org/#changelog) for information
+  about breaking changes in the 1.x line; if you are using `RETURNING` you may
+  want to make some additional modifications in your code.
+
+  ## Switching out `sqlite3`
+
+  All `package.json` files of your repo that used to depend on `sqlite3`, should
+  now be updated to depend on `@vscode/sqlite3`. This applies in particular to
+  `packages/backend`, but may also occur in backend plugins or libraries.
+
+  ```diff
+  -    "sqlite3": "^5.0.1",
+  +    "@vscode/sqlite3": "^5.0.7",
+  ```
+
+  These should be functionally equivalent, except that the new library will have
+  addressed some long standing problems with old transitive dependencies etc.
+
+## 0.4.18
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- f27f5197e2: Apply the fix from `0.4.16`, which is part of the `v0.65.1` release of Backstage.
+- 2687029a67: Update backend-to-backend auth link in configuration file comment
+- 24ef62048c: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+- ba59832aed: Permission the `catalog-import` route
+
+  The following changes are **required** if you intend to add permissions to your existing app.
+
+  Use the `PermissionedRoute` for `CatalogImportPage` instead of the normal `Route`:
+
+  ```diff
+  // packages/app/src/App.tsx
+  ...
+  + import { PermissionedRoute } from '@backstage/plugin-permission-react';
+  + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+
+  ...
+
+  - <Route path="/catalog-import" element={<CatalogImportPage />} />
+  + <PermissionedRoute
+  +   path="/catalog-import"
+  +   permission={catalogEntityCreatePermission}
+  +   element={<CatalogImportPage />}
+  + />
+  ```
+
+- cef64b1561: Added `tokenManager` as a required property for the auth-backend `createRouter` function. This dependency is used to issue server tokens that are used by the `CatalogIdentityClient` when looking up users and their group membership during authentication.
+
+  These changes are **required** to `packages/backend/src/plugins/auth.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    database,
+    config,
+    discovery,
+  + tokenManager,
+  }: PluginEnvironment): Promise<Router> {
+    return await createRouter({
+      logger,
+      config,
+      database,
+      discovery,
+  +   tokenManager,
+    });
+  }
+  ```
+
+- e39d88bd84: Switched the `app` dependency in the backend to use a file target rather than version.
+
+  To apply this change to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "0.0.0",
+  +    "app": "file:../app",
+  ```
+
+## 0.4.18-next.1
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- ba59832aed: Permission the `catalog-import` route
+
+  The following changes are **required** if you intend to add permissions to your existing app.
+
+  Use the `PermissionedRoute` for `CatalogImportPage` instead of the normal `Route`:
+
+  ```diff
+  // packages/app/src/App.tsx
+  ...
+  + import { PermissionedRoute } from '@backstage/plugin-permission-react';
+  + import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+
+  ...
+
+  - <Route path="/catalog-import" element={<CatalogImportPage />} />
+  + <PermissionedRoute
+  +   path="/catalog-import"
+  +   permission={catalogEntityCreatePermission}
+  +   element={<CatalogImportPage />}
+  + />
+  ```
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- f27f5197e2: Apply the fix from `0.4.16`, which is part of the `v0.65.1` release of Backstage.
+- 2687029a67: Update backend-to-backend auth link in configuration file comment
+- 24ef62048c: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+- cef64b1561: Added `tokenManager` as a required property for the auth-backend `createRouter` function. This dependency is used to issue server tokens that are used by the `CatalogIdentityClient` when looking up users and their group membership during authentication.
+
+  These changes are **required** to `packages/backend/src/plugins/auth.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    database,
+    config,
+    discovery,
+  + tokenManager,
+  }: PluginEnvironment): Promise<Router> {
+    return await createRouter({
+      logger,
+      config,
+      database,
+      discovery,
+  +   tokenManager,
+    });
+  }
+  ```
+
+- e39d88bd84: Switched the `app` dependency in the backend to use a file target rather than version.
+
+  To apply this change to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "0.0.0",
+  +    "app": "file:../app",
+  ```
+
+## 0.4.16
+
+### Patch Changes
+
+- c945cd9f7e: Adds missing `/catalog-graph` route to `<CatalogGraphPage/>`.
+
+  To fix this problem for a recently created app please update your `app/src/App.tsx`
+
+  ```diff
+  + import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+
+   ... omitted ...
+
+    </Route>
+      <Route path="/settings" element={<UserSettingsPage />} />
+  +   <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    </FlatRoutes>
+  ```
+
+## 0.4.15
+
+### Patch Changes
+
+- 01b27d547c: Added three additional required properties to the search-backend `createRouter` function to support filtering search results based on permissions. To make this change to an existing app, add the required parameters to the `createRouter` call in `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+  +  permissions,
+    discovery,
+    config,
+    tokenManager,
+  }: PluginEnvironment) {
+    /* ... */
+
+    return await createRouter({
+      engine: indexBuilder.getSearchEngine(),
+  +    types: indexBuilder.getDocumentTypes(),
+  +    permissions,
+  +    config,
+      logger,
+    });
+  }
+  ```
+
+The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager` as a parameter.
+
+```diff
+-   collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
++   collator: DefaultCatalogCollator.fromConfig(config, { discovery, tokenManager }),
+```
+
+- a0d446c8ec: Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
+
+  To make this change to an existing app:
+
+  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json` or `cd packages/app && yarn add @backstage/plugin-catalog-graph`.
+
+  Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
+
+  ```diff
+  + import {
+  +  Direction,
+  +  EntityCatalogGraphCard,
+  + } from '@backstage/plugin-catalog-graph';
+  + import {
+  +  RELATION_API_CONSUMED_BY,
+  +  RELATION_API_PROVIDED_BY,
+  +  RELATION_CONSUMES_API,
+  +  RELATION_DEPENDENCY_OF,
+  +  RELATION_DEPENDS_ON,
+  +  RELATION_HAS_PART,
+  +  RELATION_PART_OF,
+  +  RELATION_PROVIDES_API,
+  + } from '@backstage/catalog-model';
+  ```
+
+  ```diff
+      <EntityLayout.Route path="/diagram" title="Diagram">
+  -      <EntitySystemDiagramCard />
+  +      <EntityCatalogGraphCard
+  +        variant="gridItem"
+  +        direction={Direction.TOP_BOTTOM}
+  +        title="System Diagram"
+  +        height={700}
+  +        relations={[
+  +          RELATION_PART_OF,
+  +          RELATION_HAS_PART,
+  +          RELATION_API_CONSUMED_BY,
+  +          RELATION_API_PROVIDED_BY,
+  +          RELATION_CONSUMES_API,
+  +          RELATION_PROVIDES_API,
+  +          RELATION_DEPENDENCY_OF,
+  +          RELATION_DEPENDS_ON,
+  +        ]}
+  +        unidirectional={false}
+  +      />
+      </EntityLayout.Route>
+  ```
+
+  ```diff
+  const cicdContent = (
+      <Grid item md={6}>
+        <EntityAboutCard variant="gridItem" />
+      </Grid>
+  +    <Grid item md={6} xs={12}>
+  +      <EntityCatalogGraphCard variant="gridItem" height={400} />
+  +    </Grid>
+  ```
+
+  Add the above component in `overviewContent`, `apiPage` , `systemPage` and domainPage` as well.
+
+- 4aca2a5307: An example instance of a `<SearchFilter.Select />` with asynchronously loaded values was added to the composed `SearchPage.tsx`, allowing searches bound to the `techdocs` type to be filtered by entity name.
+
+  This is an entirely optional change; if you wish to adopt it, you can make the following (or similar) changes to your search page layout:
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -2,6 +2,10 @@ import React from 'react';
+   import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
+
+   import { CatalogResultListItem } from '@backstage/plugin-catalog';
+  +import {
+  +  catalogApiRef,
+  +  CATALOG_FILTER_EXISTS,
+  +} from '@backstage/plugin-catalog-react';
+   import { DocsResultListItem } from '@backstage/plugin-techdocs';
+
+   import {
+  @@ -10,6 +14,7 @@ import {
+     SearchResult,
+     SearchType,
+     DefaultResultListItem,
+  +  useSearch,
+   } from '@backstage/plugin-search';
+   import {
+     CatalogIcon,
+  @@ -18,6 +23,7 @@ import {
+     Header,
+     Page,
+   } from '@backstage/core-components';
+  +import { useApi } from '@backstage/core-plugin-api';
+
+   const useStyles = makeStyles((theme: Theme) => ({
+     bar: {
+  @@ -36,6 +42,8 @@ const useStyles = makeStyles((theme: Theme) => ({
+
+   const SearchPage = () => {
+     const classes = useStyles();
+  +  const { types } = useSearch();
+  +  const catalogApi = useApi(catalogApiRef);
+
+     return (
+       <Page themeId="home">
+  @@ -65,6 +73,27 @@ const SearchPage = () => {
+                 ]}
+               />
+               <Paper className={classes.filters}>
+  +              {types.includes('techdocs') && (
+  +                <SearchFilter.Select
+  +                  className={classes.filter}
+  +                  label="Entity"
+  +                  name="name"
+  +                  values={async () => {
+  +                    // Return a list of entities which are documented.
+  +                    const { items } = await catalogApi.getEntities({
+  +                      fields: ['metadata.name'],
+  +                      filter: {
+  +                        'metadata.annotations.backstage.io/techdocs-ref':
+  +                          CATALOG_FILTER_EXISTS,
+  +                      },
+  +                    });
+  +
+  +                    const names = items.map(entity => entity.metadata.name);
+  +                    names.sort();
+  +                    return names;
+  +                  }}
+  +                />
+  +              )}
+                 <SearchFilter.Select
+                   className={classes.filter}
+                   name="kind"
+  ```
+
+- 1dbe63ec39: A `label` prop was added to `<SearchFilter.* />` components in order to allow
+  user-friendly label strings (as well as the option to omit a label). In order
+  to maintain labels on your existing filters, add a `label` prop to them in your
+  `SearchPage.tsx`.
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -96,11 +96,13 @@ const SearchPage = () => {
+                 )}
+                 <SearchFilter.Select
+                   className={classes.filter}
+  +                label="Kind"
+                   name="kind"
+                   values={['Component', 'Template']}
+                 />
+                 <SearchFilter.Checkbox
+                   className={classes.filter}
+  +                label="Lifecycle"
+                   name="lifecycle"
+                   values={['experimental', 'production']}
+                 />
+  ```
+
+## 0.4.14
+
+### Patch Changes
+
+- d4941024bc: Rebind external route for catalog import plugin from `scaffolderPlugin.routes.root` to `catalogImportPlugin.routes.importPage`.
+
+  To make this change to an existing app, make the following change to `packages/app/src/App.tsx`
+
+  ```diff
+  const App = createApp({
+    ...
+    bindRoutes({ bind }) {
+      ...
+      bind(apiDocsPlugin.externalRoutes, {
+  -     createComponent: scaffolderPlugin.routes.root,
+  +     registerApi: catalogImportPlugin.routes.importPage,
+      });
+      ...
+    },
+  });
+  ```
+
+- b5402d6d72: Migrated the app template to React 17.
+
+  To apply this change to an existing app, make sure you have updated to the latest version of `@backstage/cli`, and make the following change to `packages/app/package.json`:
+
+  ```diff
+       "history": "^5.0.0",
+  -    "react": "^16.13.1",
+  -    "react-dom": "^16.13.1",
+  +    "react": "^17.0.2",
+  +    "react-dom": "^17.0.2",
+       "react-router": "6.0.0-beta.0",
+  ```
+
+  Since we have recently moved over all `react` and `react-dom` dependencies to `peerDependencies` of all packages, and included React 17 in the version range, this should be all you need to do. If you end up with duplicate React installations, first make sure that all of your plugins are up-to-date, including ones for example from `@roadiehq`. If that doesn't work, you may need to fall back to adding [Yarn resolutions](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) in the `package.json` of your project root:
+
+  ```diff
+  +  "resolutions": {
+  +    "react": "^17.0.2",
+  +    "react-dom": "^17.0.2"
+  +  },
+  ```
+
+- 5e8d278f8e: Added an external route binding from the `org` plugin to the catalog index page.
+
+  This change is needed because `@backstage/plugin-org` now has a required external route that needs to be bound for the app to start.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+   import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+  +import { orgPlugin } from '@backstage/plugin-org';
+   import { SearchPage } from '@backstage/plugin-search';
+  ```
+
+  And further down within the `createApp` call:
+
+  ```diff
+       bind(scaffolderPlugin.externalRoutes, {
+         registerComponent: catalogImportPlugin.routes.importPage,
+       });
+  +    bind(orgPlugin.externalRoutes, {
+  +      catalogIndex: catalogPlugin.routes.catalogIndex,
+  +    });
+     },
+  ```
+
+- fb08e2f285: Updated the configuration of the `app-backend` plugin to enable the static asset store by passing on `database` from the plugin environment to `createRouter`.
+
+  To apply this change to an existing app, make the following change to `packages/backend/src/plugins/app.ts`:
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+  +  database,
+   }: PluginEnvironment): Promise<Router> {
+     return await createRouter({
+       logger,
+       config,
+  +    database,
+       appPackageName: 'app',
+     });
+   }
+  ```
+
+- 7ba416be78: You can now add `SidebarGroup`s to the current `Sidebar`. This will not affect how the current sidebar is displayed, but allows a customization on how the `MobileSidebar` on smaller screens will look like. A `SidebarGroup` will be displayed with the given icon in the `MobileSidebar`.
+
+  A `SidebarGroup` can either link to an existing page (e.g. `/search` or `/settings`) or wrap components, which will be displayed in a full-screen overlay menu (e.g. `Menu`).
+
+  ```diff
+  <Sidebar>
+      <SidebarLogo />
+  +   <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+  +   </SidebarGroup>
+      <SidebarDivider />
+  +   <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+              <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          </SidebarScrollWrapper>
+  +   </SidebarGroup>
+      <SidebarSpace />
+      <SidebarDivider />
+  +   <SidebarGroup
+  +       label="Settings"
+  +       icon={<UserSettingsSignInAvatar />}
+  +       to="/settings"
+  +   >
+          <SidebarSettings />
+  +   </SidebarGroup>
+  </Sidebar>
+  ```
+
+  Additionally, you can order the groups differently in the `MobileSidebar` than in the usual `Sidebar` simply by giving a group a priority. The groups will be displayed in descending order from left to right.
+
+  ```diff
+  <SidebarGroup
+      label="Settings"
+      icon={<UserSettingsSignInAvatar />}
+      to="/settings"
+  +   priority={1}
+  >
+      <SidebarSettings />
+  </SidebarGroup>
+  ```
+
+  If you decide against adding `SidebarGroup`s to your `Sidebar` the `MobileSidebar` will contain one default menu item, which will open a full-screen overlay menu displaying all the content of the current `Sidebar`.
+
+  More information on the `SidebarGroup` & the `MobileSidebar` component can be found in the changeset for the `core-components`.
+
+- 08fa6a604a: The app template has been updated to add an explicit dependency on `typescript` in the root `package.json`. This is because it was removed as a dependency of `@backstage/cli` in order to decouple the TypeScript versioning in Backstage projects.
+
+  To apply this change in an existing app, add a `typescript` dependency to your `package.json` in the project root:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+  Yet another issue you might run into when upgrading TypeScript is incompatibilities in the types from `react-use`. The error you would run into looks something like this:
+
+  ```plain
+  node_modules/react-use/lib/usePermission.d.ts:1:54 - error TS2304: Cannot find name 'DevicePermissionDescriptor'.
+
+  1 declare type PermissionDesc = PermissionDescriptor | DevicePermissionDescriptor | MidiPermissionDescriptor | PushPermissionDescriptor;
+  ```
+
+  If you encounter this error, the simplest fix is to replace full imports of `react-use` with more specific ones. For example, the following:
+
+  ```ts
+  import { useAsync } from 'react-use';
+  ```
+
+  Would be converted into this:
+
+  ```ts
+  import useAsync from 'react-use/lib/useAsync';
+  ```
+
+## 0.4.13
+
+### Patch Changes
+
+- fb08e2f285: Updated the configuration of the `app-backend` plugin to enable the static asset store by passing on `database` from the plugin environment to `createRouter`.
+
+  To apply this change to an existing app, make the following change to `packages/backend/src/plugins/app.ts`:
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+  +  database,
+   }: PluginEnvironment): Promise<Router> {
+     return await createRouter({
+       logger,
+       config,
+  +    database,
+       appPackageName: 'app',
+     });
+   }
+  ```
+
+- 7ba416be78: You can now add `SidebarGroup`s to the current `Sidebar`. This will not affect how the current sidebar is displayed, but allows a customization on how the `MobileSidebar` on smaller screens will look like. A `SidebarGroup` will be displayed with the given icon in the `MobileSidebar`.
+
+  A `SidebarGroup` can either link to an existing page (e.g. `/search` or `/settings`) or wrap components, which will be displayed in a full-screen overlay menu (e.g. `Menu`).
+
+  ```diff
+  <Sidebar>
+      <SidebarLogo />
+  +   <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+  +   </SidebarGroup>
+      <SidebarDivider />
+  +   <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+              <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          </SidebarScrollWrapper>
+  +   </SidebarGroup>
+      <SidebarSpace />
+      <SidebarDivider />
+  +   <SidebarGroup
+  +       label="Settings"
+  +       icon={<UserSettingsSignInAvatar />}
+  +       to="/settings"
+  +   >
+          <SidebarSettings />
+  +   </SidebarGroup>
+  </Sidebar>
+  ```
+
+  Additionally, you can order the groups differently in the `MobileSidebar` than in the usual `Sidebar` simply by giving a group a priority. The groups will be displayed in descending order from left to right.
+
+  ```diff
+  <SidebarGroup
+      label="Settings"
+      icon={<UserSettingsSignInAvatar />}
+      to="/settings"
+  +   priority={1}
+  >
+      <SidebarSettings />
+  </SidebarGroup>
+  ```
+
+  If you decide against adding `SidebarGroup`s to your `Sidebar` the `MobileSidebar` will contain one default menu item, which will open a full-screen overlay menu displaying all the content of the current `Sidebar`.
+
+  More information on the `SidebarGroup` & the `MobileSidebar` component can be found in the changeset for the `core-components`.
+
+- 08fa6a604a: The app template has been updated to add an explicit dependency on `typescript` in the root `package.json`. This is because it was removed as a dependency of `@backstage/cli` in order to decouple the TypeScript versioning in Backstage projects.
+
+  To apply this change in an existing app, add a `typescript` dependency to your `package.json` in the project root:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-tech-radar@0.5.3-next.0
+  - @backstage/plugin-auth-backend@0.7.0-next.0
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/plugin-api-docs@0.6.23-next.0
+  - @backstage/plugin-catalog-backend@0.21.0-next.0
+  - @backstage/plugin-permission-common@0.4.0-next.0
+  - @backstage/cli@0.12.0-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/plugin-user-settings@0.3.17-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-app-backend@0.3.22-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+  - @backstage/plugin-catalog-import@0.7.10-next.0
+  - @backstage/plugin-scaffolder@0.11.19-next.0
+  - @backstage/plugin-search@0.5.6-next.0
+  - @backstage/plugin-techdocs@0.12.15-next.0
+  - @backstage/plugin-permission-node@0.4.0-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/integration-react@0.1.19-next.0
+  - @backstage/plugin-explore@0.3.26-next.0
+  - @backstage/plugin-github-actions@0.4.32-next.0
+  - @backstage/plugin-lighthouse@0.2.35-next.0
+  - @backstage/plugin-scaffolder-backend@0.15.21-next.0
+  - @backstage/backend-tasks@0.1.4-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+  - @backstage/test-utils@0.2.3-next.0
+  - @backstage/plugin-proxy-backend@0.2.16-next.0
+  - @backstage/plugin-rollbar-backend@0.1.19-next.0
+  - @backstage/plugin-search-backend@0.3.1-next.0
+  - @backstage/plugin-techdocs-backend@0.12.4-next.0
+
+## 0.4.12
+
+### Patch Changes
+
+- 5333451def: Cleaned up API exports
+- cd529c4094: Add permissions to create-app's PluginEnvironment
+
+  `CatalogEnvironment` now has a `permissions` field, which means that a permission client must now be provided as part of `PluginEnvironment`. To apply these changes to an existing app, add the following to the `makeCreateEnv` function in `packages/backend/src/index.ts`:
+
+  ```diff
+    // packages/backend/src/index.ts
+
+  + import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+
+    function makeCreateEnv(config: Config) {
+      ...
+  +   const permissions = ServerPermissionClient.fromConfig(config, {
+  +     discovery,
+  +     tokenManager,
+  +   });
+
+      root.info(`Created UrlReader ${reader}`);
+
+      return (plugin: string): PluginEnvironment => {
+        ...
+        return {
+          logger,
+          cache,
+          database,
+          config,
+          reader,
+          discovery,
+          tokenManager,
+          scheduler,
+  +       permissions,
+        };
+      }
+    }
+  ```
+
+  And add a permissions field to the `PluginEnvironment` type in `packages/backend/src/types.ts`:
+
+  ```diff
+    // packages/backend/src/types.ts
+
+  + import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+
+    export type PluginEnvironment = {
+      ...
+  +   permissions: PermissionAuthorizer;
+    };
+  ```
+
+  [`@backstage/plugin-permission-common`](https://www.npmjs.com/package/@backstage/plugin-permission-common) and [`@backstage/plugin-permission-node`](https://www.npmjs.com/package/@backstage/plugin-permission-node) will need to be installed as dependencies:
+
+  ```diff
+    // packages/backend/package.json
+
+  +   "@backstage/plugin-permission-common": "...",
+  +   "@backstage/plugin-permission-node": "...",
+  ```
+
+## 0.4.11
+
+## 0.4.10
+
+### Patch Changes
+
+- 79b342bd36: removed inline and internal CSS from index.html
+
+  To make this change to an existing app, apply the following changes to the `packages/app/public/index.html` file:
+
+  Remove internal style
+
+  ```diff
+  - <style>
+  -  #root {
+  -    min-height: 100%;
+  -  }
+  - </style>
+  ```
+
+  Remove inline style from the body tag
+
+  ```diff
+  - <body style="margin: 0">
+  + <body>
+  ```
+
+- d33b65dc52: Removed unused templating asset.
+- 613ad12960: Add a comment to the default backend about the fallback 404 handler.
+- 20af5a701f: The `<SearchType />` filter in the composed `SearchPage.tsx` was replaced with the `<SearchType.Accordion />` variant.
+
+  This is an entirely optional change; if you wish to display a control surface for search `types` as a single-select accordion (as opposed to the current multi-select of checkboxes), you can make the following (or similar) changes to your search page layout:
+
+  ```diff
+  --- a/packages/app/src/components/search/SearchPage.tsx
+  +++ b/packages/app/src/components/search/SearchPage.tsx
+  @@ -11,7 +11,7 @@ import {
+     SearchType,
+     DefaultResultListItem,
+   } from '@backstage/plugin-search';
+  -import { Content, Header, Page } from '@backstage/core-components';
+  +import { CatalogIcon, Content, DocsIcon, Header, Page } from '@backstage/core-components';
+
+   const useStyles = makeStyles((theme: Theme) => ({
+     bar: {
+  @@ -19,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
+     },
+     filters: {
+       padding: theme.spacing(2),
+  +    marginTop: theme.spacing(2),
+     },
+     filter: {
+       '& + &': {
+  @@ -41,12 +42,23 @@ const SearchPage = () => {
+               </Paper>
+             </Grid>
+             <Grid item xs={3}>
+  +            <SearchType.Accordion
+  +              name="Result Type"
+  +              defaultValue="software-catalog"
+  +              types={[
+  +                {
+  +                  value: 'software-catalog',
+  +                  name: 'Software Catalog',
+  +                  icon: <CatalogIcon />,
+  +                },
+  +                {
+  +                  value: 'techdocs',
+  +                  name: 'Documentation',
+  +                  icon: <DocsIcon />,
+  +                },
+  +              ]}
+  +            />
+               <Paper className={classes.filters}>
+  -              <SearchType
+  -                values={['techdocs', 'software-catalog']}
+  -                name="type"
+  -                defaultValue="software-catalog"
+  -              />
+                 <SearchFilter.Select
+                   className={classes.filter}
+                   name="kind"
+  ```
+
+- 0dcd1dd64f: Add a `scheduler` to the plugin environment, which can schedule collaborative tasks across backends. To apply the same change in your backend, follow the steps below.
+
+  First install the package:
+
+  ```shell
+  # From the Backstage repository root
+  cd packages/backend
+  yarn add @backstage/backend-tasks
+  ```
+
+  Add the scheduler to your plugin environment type:
+
+  ```diff
+   // In packages/backend/src/types.ts
+  +import { PluginTaskScheduler } from '@backstage/backend-tasks';
+
+   export type PluginEnvironment = {
+  +  scheduler: PluginTaskScheduler;
+  ```
+
+  And finally make sure to add such an instance to each plugin's environment:
+
+  ```diff
+   // In packages/backend/src/index.ts
+  +import { TaskScheduler } from '@backstage/backend-tasks';
+
+   function makeCreateEnv(config: Config) {
+     // ...
+  +  const taskScheduler = TaskScheduler.fromConfig(config);
+
+     return (plugin: string): PluginEnvironment => {
+       // ...
+  +    const scheduler = taskScheduler.forPlugin(plugin);
+       return {
+  +      scheduler,
+         // ...
+  ```
+
+## 0.4.9
+
+### Patch Changes
+
+- 49a696d720: debounceTime prop is removed from the SearchBar component in the SearchPage as the default is set to 200. The prop is safe to remove and makes it easier to stay up to date with any changes in the future.
+- 5fdc8df0e8: The `index.html` template of the app has been updated to use the new `config` global provided by the Backstage CLI.
+
+  To apply this change to an existing app, make the following changes to `packages/app/public/index.html`:
+
+  ```diff
+  -    <title><%= app.title %></title>
+  +    <title><%= config.getString('app.title') %></title>
+  ```
+
+  ```diff
+  -    <% if (app.googleAnalyticsTrackingId && typeof app.googleAnalyticsTrackingId === 'string') { %>
+  +    <% if (config.has('app.googleAnalyticsTrackingId')) { %>
+       <script
+         async
+  -      src="https://www.googletagmanager.com/gtag/js?id=<%= app.googleAnalyticsTrackingId %>"
+  +      src="https://www.googletagmanager.com/gtag/js?id=<%= config.getString('app.googleAnalyticsTrackingId') %>"
+       ></script>
+  ```
+
+  ```diff
+  -      gtag('config', '<%= app.googleAnalyticsTrackingId %>');
+  +      gtag(
+  +        'config',
+  +        '<%= config.getString("app.googleAnalyticsTrackingId") %>',
+  +      );
+  ```
+
+## 0.4.8
+
+### Patch Changes
+
+- 25dfc2d483: Updated the root `package.json` to include files with `.cjs` and `.mjs` extensions in the `"lint-staged"` configuration.
+
+  To make this change to an existing app, apply the following changes to the `package.json` file:
+
+  ```diff
+   "lint-staged": {
+  -    "*.{js,jsx,ts,tsx}": [
+  +    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+  ```
+
+## 0.4.7
+
+### Patch Changes
+
+- 9603827bb5: Addressed some peer dependency warnings
+- 1bada775a9: TechDocs Backend may now (optionally) leverage a cache store to improve
+  performance when reading content from a cloud storage provider.
+
+  To apply this change to an existing app, pass the cache manager from the plugin
+  environment to the `createRouter` function in your backend:
+
+  ```diff
+  // packages/backend/src/plugins/techdocs.ts
+
+  export default async function createPlugin({
+    logger,
+    config,
+    discovery,
+    reader,
+  +  cache,
+  }: PluginEnvironment): Promise<Router> {
+
+    // ...
+
+    return await createRouter({
+      preparers,
+      generators,
+      publisher,
+      logger,
+      config,
+      discovery,
+  +    cache,
+    });
+  ```
+
+  If your `PluginEnvironment` does not include a cache manager, be sure you've
+  applied [the cache management change][cm-change] to your backend as well.
+
+  [Additional configuration][td-rec-arch] is required if you wish to enable
+  caching in TechDocs.
+
+  [cm-change]: https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#patch-changes-6
+  [td-rec-arch]: https://backstage.io/docs/features/techdocs/architecture#recommended-deployment
+
+- 4862fbc64f: Bump @spotify/prettier-config
+- 36bb4fb2e9: Removed the `scaffolder.github.visibility` configuration that is no longer used from the default app template.
+
+## 0.4.6
+
+### Patch Changes
+
+- 24d2ce03f3: Search Modal now relies on the Search Context to access state and state setter. If you use the SidebarSearchModal as described in the [getting started documentation](https://backstage.io/docs/features/search/getting-started#using-the-search-modal), make sure to update your code with the SearchContextProvider.
+
+  ```diff
+  export const Root = ({ children }: PropsWithChildren<{}>) => (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearchModal />
+  +     <SearchContextProvider>
+  +       <SidebarSearchModal />
+  +     </SearchContextProvider>
+        <SidebarDivider />
+      ...
+  ```
+
+- 905dd952ac: Incorporate usage of the tokenManager into the backend created using `create-app`.
+
+  In existing backends, update the `PluginEnvironment` to include a `tokenManager`:
+
+  ```diff
+  // packages/backend/src/types.ts
+
+  ...
+  import {
+    ...
+  + TokenManager,
+  } from '@backstage/backend-common';
+
+  export type PluginEnvironment = {
+    ...
+  + tokenManager: TokenManager;
+  };
+  ```
+
+  Then, create a `ServerTokenManager`. This can either be a `noop` that requires no secret and validates all requests by default, or one that uses a secret from your `app-config.yaml` to generate and validate tokens.
+
+  ```diff
+  // packages/backend/src/index.ts
+
+  ...
+  import {
+    ...
+  + ServerTokenManager,
+  } from '@backstage/backend-common';
+  ...
+
+  function makeCreateEnv(config: Config) {
+    ...
+    // CHOOSE ONE
+    // TokenManager not requiring a secret
+  + const tokenManager = ServerTokenManager.noop();
+    // OR TokenManager requiring a secret
+  + const tokenManager = ServerTokenManager.fromConfig(config);
+
+    ...
+    return (plugin: string): PluginEnvironment => {
+      ...
+  -   return { logger, cache, database, config, reader, discovery };
+  +   return { logger, cache, database, config, reader, discovery, tokenManager };
+    };
+  }
+  ```
+
+## 0.4.5
+
+### Patch Changes
+
+- dcaeaac174: Cleaned out the `peerDependencies` in the published version of the package, making it much quicker to run `npx @backstage/create-app` as it no longer needs to install a long list of unnecessary.
+- a5a5d7e1f1: DefaultTechDocsCollator is now included in the search backend, and the Search Page updated with the SearchType component that includes the techdocs type
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- 42ebbc18c0: Bump gitbeaker to the latest version
+
+## 0.4.4
+
+### Patch Changes
+
+- 4ebc9fd277: Create backstage.json file
+
+  `@backstage/create-app` will create a new `backstage.json` file. At this point, the file will contain a `version` property, representing the version of `@backstage/create-app` used for creating the application. If the backstage's application has been bootstrapped using an older version of `@backstage/create-app`, the `backstage.json` file can be created and kept in sync, together with all the changes of the latest version of backstage, by running the following script:
+
+  ```bash
+  yarn backstage-cli versions:bump
+  ```
+
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 014cbf8cb9: Migrated the app template use the new `@backstage/app-defaults` for the `createApp` import, since the `createApp` exported by `@backstage/app-core-api` will be removed in the future.
+
+  To migrate an existing application, add the latest version of `@backstage/app-defaults` as a dependency in `packages/app/package.json`, and make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { createApp, FlatRoutes } from '@backstage/core-app-api';
+  +import { createApp } from '@backstage/app-defaults';
+  +import { FlatRoutes } from '@backstage/core-app-api';
+  ```
+
+- 2163e83fa2: Refactor and add regression tests for create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.6
+
+## 0.4.3
+
+### Patch Changes
+
+- 5dcea2586c: Integrated `SidebarSearchModal` component into default-app to use the `SearchModal`.
+
+  The `SidebarSearchModal` component can also be used in other generated apps:
+
+  ```diff
+  import {
+  -  SidebarSearch,
+  +  SidebarSearchModal
+  } from '@backstage/plugin-search';
+  ...
+   <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+  -     <SidebarSearch />
+  +     <SidebarSearchModal />
+        <SidebarDivider />
+  ...
+  ```
+
+  If you only want to use the `SearchModal` you can import it from `'@backstage/plugin-search'`:
+
+  ```js
+  import { SearchModal } from '@backstage/plugin-search';
+  ```
+
+- 5725f87e4c: Updated the app template to no longer include the `--no-private` flag for the `create-plugin` command.
+
+  To apply this change to an existing application, remove the `--no-private` flag from the `create-plugin` command in the root `package.json`:
+
+  ```diff
+     "prettier:check": "prettier --check .",
+  -  "create-plugin": "backstage-cli create-plugin --scope internal --no-private",
+  +  "create-plugin": "backstage-cli create-plugin --scope internal",
+     "remove-plugin": "backstage-cli remove-plugin"
+  ```
+
+- 1921f70aa7: Removed the version pinning of the packages `graphql-language-service-interface` and `graphql-language-service-parser`. This should no longer be necessary.
+
+  You can apply the same change in your repository by ensuring that the following does _NOT_ appear in your root `package.json`.
+
+  ```json
+  "resolutions": {
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
+    },
+  ```
+
+## 0.4.2
+
+## 0.4.1
+
+### Patch Changes
+
+- 4f1c30c176: Support optional path argument when generating a project using `create-app`
+- Updated dependencies
+  - @backstage/cli-common@0.1.5
+
+## 0.4.0
+
+### Minor Changes
+
+- 5914668655: Removed `@backstage/plugin-welcome`, no new updates to the packages will be
+  published in the future.
+
+  The welcome plugin was used by early alpha versions of Backstage, but today only
+  contained a simple page with welcome instructions. It was superseded by
+  `@backstage/plugin-home` which can be used to build a homepage customized to the
+  needs of your organization.
+
+  If it's still used in your app, remove the dependency from your `package.json`
+  as well as left over code.
+
+### Patch Changes
+
+- b486adb8c6: Removed the included `jest` configuration from the root `package.json` as the `transformModules` option no longer exists.
+
+  To apply this change to an existing app, make the follow change to the root `package.json`:
+
+  ```diff
+  -  "jest": {
+  -    "transformModules": [
+  -      "@asyncapi/react-component"
+  -    ]
+  -  }
+  ```
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+
+## 0.3.45
+
+### Patch Changes
+
+- eaca0f53fb: The scaffolder plugin has just released the beta 3 version of software templates, which replaces the handlebars templating syntax. As part of this change, the template entity schema is no longer included in the core catalog-model as with previous versions. The decoupling of the template entities version will allow us to more easily make updates in the future.
+
+  In order to use the new beta 3 templates, the following changes are **required** for any existing installation, inside `packages/backend/src/plugins/catalog.ts`:
+
+  ```diff
+  +import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+
+  ...
+
+     const builder = await CatalogBuilder.create(env);
+  +  builder.addProcessor(new ScaffolderEntitiesProcessor());
+     const { processingEngine, router } = await builder.build();
+  ```
+
+  If you're interested in learning more about creating custom kinds, please check out the [extending the model](https://backstage.io/docs/features/software-catalog/extending-the-model) documentation.
+
+## 0.3.44
+
+### Patch Changes
+
+- e254368371: Switched the default `test` script in the package root to use `backstage-cli test` rather than `lerna run test`. This is thanks to the `@backstage/cli` now supporting running the test command from the project root.
+
+  To apply this change to an existing project, apply the following change to your root `package.json`:
+
+  ```diff
+  -    "test": "lerna run test --since origin/master -- --coverage",
+  +    "test": "backstage-cli test",
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.4
+
+## 0.3.43
+
+### Patch Changes
+
+- 9325075eea: Added the default `ScmAuth` implementation to the app.
+
+  To apply this change to an existing app, head to `packages/app/apis.ts`, import `ScmAuth` from `@backstage/integration-react`, and add a `ScmAuth.createDefaultApiFactory()` to your list of APIs:
+
+  ```diff
+   import {
+     ScmIntegrationsApi,
+     scmIntegrationsApiRef,
+  +   ScmAuth,
+   } from '@backstage/integration-react';
+
+   export const apis: AnyApiFactory[] = [
+  ...
+  +  ScmAuth.createDefaultApiFactory(),
+  ...
+   ];
+  ```
+
+  If you have integrations towards SCM providers other than the default ones (github.com, gitlab.com, etc.), you will want to create a custom `ScmAuth` factory instead, for example like this:
+
+  ```ts
+  createApiFactory({
+    api: scmAuthApiRef,
+    deps: {
+      gheAuthApi: gheAuthApiRef,
+      githubAuthApi: githubAuthApiRef,
+    },
+    factory: ({ githubAuthApi, gheAuthApi }) =>
+      ScmAuth.merge(
+        ScmAuth.forGithub(githubAuthApi),
+        ScmAuth.forGithub(gheAuthApi, {
+          host: 'ghe.example.com',
+        }),
+      ),
+  });
+  ```
+
+## 0.3.42
+
+### Patch Changes
+
+- 89fd81a1ab: This change adds an API endpoint for requesting a catalog refresh at `/refresh`, which is activated if a `RefreshService` is passed to `createRouter`.
+  The creation of the router has been abstracted behind the `CatalogBuilder` to simplify usage and future changes. The following **changes are required** to your `catalog.ts` for the refresh endpoint to function.
+
+  ```diff
+  -  import {
+  -    CatalogBuilder,
+  -    createRouter,
+  -  } from '@backstage/plugin-catalog-backend';
+  +  import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+
+    export default async function createPlugin(
+      env: PluginEnvironment,
+    ): Promise<Router> {
+      const builder = await CatalogBuilder.create(env);
+  -    const {
+  -      entitiesCatalog,
+  -      locationAnalyzer,
+  -      processingEngine,
+  -      locationService,
+  -    } = await builder.build();
+  +   const { processingEngine, router } = await builder.build();
+      await processingEngine.start();
+
+  -   return await createRouter({
+  -     entitiesCatalog,
+  -     locationAnalyzer,
+  -     locationService,
+  -     logger: env.logger,
+  -     config: env.config,
+  -   });
+  +   return router;
+    }
+  ```
+
+- d0a47c8605: Switched required engine from Node.js 12 or 14, to 14 or 16.
+
+  To apply these changes to an existing app, switch out the following in the root `package.json`:
+
+  ```diff
+     "engines": {
+  -    "node": "12 || 14"
+  +    "node": "14 || 16"
+     },
+  ```
+
+  Also get rid of the entire `engines` object in `packages/backend/package.json`, as it is redundant:
+
+  ```diff
+  -  "engines": {
+  -    "node": "12 || 14"
+  -  },
+  ```
+
+- df95665e4b: Bumped the default `@spotify/prettier-config` dependency to `^11.0.0`.
+
+  This is an optional upgrade, but you may be interested in doing the same, to get the most modern lint rules out there.
+
+## 0.3.41
+
+## 0.3.40
+
+### Patch Changes
+
+- a5013957e: Updated the search configuration class to use the static `fromConfig`-based constructor for the `DefaultCatalogCollator`.
+
+  To apply this change to an existing app, replace the following line in `search.ts`:
+
+  ```diff
+  -collator: new DefaultCatalogCollator({ discovery })
+  +collator: DefaultCatalogCollator.fromConfig(config, { discovery })
+  ```
+
+  The `config` parameter was not needed before, so make sure you also add that in the signature of `createPlugin`
+  in `search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    discovery,
+  +  config,
+  }: PluginEnvironment) {
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+
+## 0.3.39
+
+### Patch Changes
+
+- 25924638b: Minor tweaks to the create-app template to match earlier documented changes
+
+## 0.3.38
+
+### Patch Changes
+
+- 787bc0826: Wire up TechDocs, which now relies on the composability API for routing.
+
+  First, ensure you've mounted `<TechDocsReaderPage />`. If you already updated
+  to use the composable `<TechDocsIndexPage />` (see below), no action is
+  necessary. Otherwise, update your `App.tsx` so that `<TechDocsReaderPage />` is
+  mounted:
+
+  ```diff
+       <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+  Next, ensure links from the Catalog Entity Page to its TechDocs site are bound:
+
+  ```diff
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+  +     viewTechDoc: techdocsPlugin.routes.docRoot,
+      });
+  ```
+
+- d02768171: Updated the default create-app `EntityPage` to include orphan and processing error alerts for all entity types. Previously these were only shown for entities with the `Component` kind. This also adds the `EntityLinkCard` for API entities.
+
+  As an example, you might add this to your `packages/app/src/components/catalog/EntityPage.tsx`:
+
+  ```tsx
+  const entityWarningContent = (
+    <>
+      <EntitySwitch>
+        <EntitySwitch.Case if={isOrphan}>
+          <Grid item xs={12}>
+            <EntityOrphanWarning />
+          </Grid>
+        </EntitySwitch.Case>
+      </EntitySwitch>
+      <EntitySwitch>
+        <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+          <Grid item xs={12}>
+            <EntityProcessingErrorsPanel />
+          </Grid>
+        </EntitySwitch.Case>
+      </EntitySwitch>
+    </>
+  );
+  ```
+
+  and then add that at the top of your various content pages:
+
+  ```diff
+   const overviewContent = (
+     <Grid container spacing={3} alignItems="stretch">
+  +    {entityWarningContent}
+       <Grid item md={6}>
+         <EntityAboutCard variant="gridItem" />
+       </Grid>
+  ```
+
+  or in actual page wrappers:
+
+  ```diff
+   const apiPage = (
+     <EntityLayout>
+       <EntityLayout.Route path="/" title="Overview">
+         <Grid container spacing={3}>
+  +        {entityWarningContent}
+           <Grid item md={6}>
+             <EntityAboutCard />
+           </Grid>
+  ```
+
+  Note that there may be many such `*Page` pages in that file, and you probably want that warning at the top of them all.
+
+  You can also add the links card to your API page if you do not already have it:
+
+  ```diff
+  const apiPage = (
+    <EntityLayout>
+      <EntityLayout.Route path="/" title="Overview">
+        <Grid container spacing={3}>
+  +       {entityWarningContent}
+           <Grid item md={6}>
+             <EntityAboutCard />
+           </Grid>
+  +        <Grid item md={4} xs={12}>
+  +          <EntityLinksCard />
+  +        </Grid>
+  ```
+
+## 0.3.37
+
+## 0.3.36
+
+## 0.3.35
+
+### Patch Changes
+
+- 362ea5a72: Updated the index page redirect to work with apps served on a different base path than `/`.
+
+  To apply this change to an existing app, remove the `/` prefix from the target route in the `Navigate` element in `packages/app/src/App.tsx`:
+
+  ```diff
+  -<Navigate key="/" to="/catalog" />
+  +<Navigate key="/" to="catalog" />
+  ```
+
+- 80582cbec: Use new composable `TechDocsIndexPage` and `DefaultTechDocsHome`
+
+  Make the following changes to your `App.tsx` to migrate existing apps:
+
+  ```diff
+  -    <Route path="/docs" element={<TechdocsPage />} />
+  +    <Route path="/docs" element={<TechDocsIndexPage />}>
+  +      <DefaultTechDocsHome />
+  +    </Route>
+  +    <Route
+  +      path="/docs/:namespace/:kind/:name/*"
+  +      element={<TechDocsReaderPage />}
+  +    />
+  ```
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+- 56c773909: Add a complete prettier setup to the created project. Prettier used to only be added as a dependency to create apps, but there wasn't a complete setup included that makes it easy to run prettier. That has now changed, and the new `prettier:check` command can be used to check the formatting of the files in your created project.
+
+  To apply this change to an existing app, a couple of changes need to be made.
+
+  Create a `.prettierignore` file at the root of your repository with the following contents:
+
+  ```
+  dist
+  dist-types
+  coverage
+  .vscode
+  ```
+
+  Next update the root `package.json` by bumping the prettier version and adding the new `prettier:check` command:
+
+  ```diff
+     "scripts": {
+       ...
+  +    "prettier:check": "prettier --check .",
+       ...
+     },
+     ...
+     "dependencies": {
+       ...
+  -    "prettier": "^1.19.1"
+  +    "prettier": "^2.3.2"
+     }
+  ```
+
+  Finally run `yarn prettier --write .` on your project to update the existing formatting.
+
+- 9f8f8dd6b: Removed the `/` prefix in the catalog `SidebarItem` element, as it is no longer needed.
+
+  To apply this change to an existing app, remove the `/` prefix from the catalog and any other sidebar items in `packages/app/src/components/Root/Root.ts`:
+
+  ```diff
+  -<SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
+  +<SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+  ```
+
+- 56c773909: Switched `@types/react-dom` dependency to of the app package to request `*` rather than a specific version.
+
+  To apply this change to an existing app, change the following in `packages/app/package.json`:
+
+  ```diff
+  -    "@types/react-dom": "^16.9.8",
+  +    "@types/react-dom": "*",
+  ```
+
+## 0.3.34
+
+### Patch Changes
+
+- c189c5da5: fix typo in the comments of EntityPage component
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- 98dda80b4: Update `techdocs.generators` with the latest `techdocs.generator` config in `app-config.yaml`. See
+  https://backstage.io/docs/features/techdocs/configuration for reference and relevant PR
+  https://github.com/backstage/backstage/pull/6071/files for the changes.
+
+## 0.3.33
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- d50c9e7c0: Update the `software-templates` to point to `main` branch instead of `master`
+- 224e54484: Added an `EntityProcessingErrorsPanel` component to show any errors that occurred when refreshing an entity from its source location.
+
+  If upgrading, this should be added to your `EntityPage` in your Backstage application:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  const overviewContent = (
+  ...
+            <EntityOrphanWarning />
+          </Grid>
+         </EntitySwitch.Case>
+      </EntitySwitch>
+  +   <EntitySwitch>
+  +     <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+  +       <Grid item xs={12}>
+  +         <EntityProcessingErrorsPanel />
+  +       </Grid>
+  +     </EntitySwitch.Case>
+  +   </EntitySwitch>
+
+  ```
+
+  Additionally, `WarningPanel` now changes color based on the provided severity.
+
 ## 0.3.32
 
 ### Patch Changes
@@ -463,7 +2349,7 @@
   -<Route path="/search" element={<SearchPage />} />
   +<Route path="/search" element={<SearchPage />}>
   +  {searchPage}
-  +</Route>;
+  +</Route>
   ```
 
 - Updated dependencies [9cd3c533c]

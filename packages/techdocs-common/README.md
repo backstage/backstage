@@ -1,15 +1,19 @@
 # @backstage/techdocs-common
 
-Common functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli
+**WARNING**: This package is moving to `@backstage/plugin-techdocs-node`.
+Please update any dependencies you may have, as this package will no longer be
+published or updated in the near future.
+
+Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli
 
 This package is used by `techdocs-backend` to serve docs from different types of publishers (Google GCS, Local, etc.).
 It is also used to build docs and publish them to storage, by both `techdocs-backend` and `techdocs-cli`.
 
 ## Usage
 
-Create a preparer instance from the [preparers available](/packages/techdocs-common/src/stages/prepare) at which takes an Entity instance.
-Run the [docs generator](/packages/techdocs-common/src/stages/generate) on the prepared directory.
-Publish the generated directory files to a [storage](/packages/techdocs-common/src/stages/publish) of your choice.
+Create a preparer instance from the [preparers available](/plugins/techdocs-node/src/stages/prepare) at which takes an Entity instance.
+Run the [docs generator](/plugins/techdocs-node/src/stages/generate) on the prepared directory.
+Publish the generated directory files to a [storage](/plugins/techdocs-node/src/stages/publish) of your choice.
 
 Example:
 
@@ -39,7 +43,7 @@ Currently the build process is split up in these three stages.
 - Generators
 - Publishers
 
-Preparers read your entity data and creates a working directory with your documentation source code. For example if you have set your `backstage.io/techdocs-ref` to `github:https://github.com/backstage/backstage.git` it will clone that repository to a temp folder and pass that on to the generator.
+Preparers read your entity data and creates a working directory with your documentation source code. For example if you have set your `backstage.io/techdocs-ref` to `url:https://github.com/backstage/backstage.git` it will clone that repository to a temp folder and pass that on to the generator.
 
 Generators takes the prepared source and runs the `techdocs-container` on it. It then passes on the output folder of that build to the publisher.
 

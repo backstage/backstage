@@ -45,7 +45,7 @@ function addRootElement(rootElem: Element): void {
  * const target = usePortal(id, [id]);
  * return createPortal(children, target);
  *
- * @param id The id of the target container, e.g 'modal' or 'spotlight'
+ * @param id - The id of the target container, e.g 'modal' or 'spotlight'
  * @returns The DOM node to use as the Portal target.
  */
 export function usePortal(id: string): HTMLElement {

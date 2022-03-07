@@ -28,10 +28,9 @@ type CostInsightsTabsLoadingProps = {
   dispatchReset: (loadingActions: string[]) => void;
 };
 
-export const mapFiltersToProps: MapFiltersToProps<CostInsightsTabsFilterProps> = ({
-  pageFilters,
-  setPageFilters,
-}) => ({
+export const mapFiltersToProps: MapFiltersToProps<
+  CostInsightsTabsFilterProps
+> = ({ pageFilters, setPageFilters }) => ({
   ...pageFilters,
   setGroup: (group: Group) =>
     setPageFilters({
@@ -41,10 +40,9 @@ export const mapFiltersToProps: MapFiltersToProps<CostInsightsTabsFilterProps> =
     }),
 });
 
-export const mapLoadingToProps: MapLoadingToProps<CostInsightsTabsLoadingProps> = ({
-  actions,
-  dispatch,
-}) => ({
+export const mapLoadingToProps: MapLoadingToProps<
+  CostInsightsTabsLoadingProps
+> = ({ actions, dispatch }) => ({
   loadingActions: actions,
   dispatchReset: (loadingActions: string[]) =>
     dispatch(getResetStateWithoutInitial(loadingActions)),

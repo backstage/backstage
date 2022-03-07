@@ -22,6 +22,13 @@ yarn backstage-cli versions:bump
 The reason for bumping all `@backstage` packages at once is to maintain the
 dependencies that they have between each other.
 
+If you are using other plugins you can pass in the `--pattern` option to update
+more than just the `@backstage/*` dependencies.
+
+```bash
+yarn backstage-cli versions:bump --pattern '@{backstage,roadiehq}/*'
+```
+
 ## Following create-app template changes
 
 The `@backstage/create-app` command creates the initial structure of your
@@ -34,7 +41,10 @@ For this reason, any changes made to the template are documented along with
 upgrade instructions in the
 [changelog](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md)
 of the `@backstage/create-app` package. We recommend peeking at this changelog
-for any applicable updates when upgrading packages.
+-for any applicable updates when upgrading packages. As an alternative, the
+[Backstage Upgrade Helper](https://backstage.github.io/upgrade-helper/) provides
+a consolidated view of all the changes between two versions of Backstage. You
+can find the current version of your Backstage installation in `backstage.json`.
 
 ## More information on dependency mismatches
 

@@ -16,12 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
-import userEvent from '@testing-library/user-event';
+import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -47,20 +46,21 @@ describe('<EntityPicker />', () => {
     getEntityByName: jest.fn(),
     getEntities: jest.fn(async () => ({ items: entities })),
     addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(catalogApiRef, catalogApi);
     entities = [
       makeEntity('Group', 'default', 'team-a'),
       makeEntity('Group', 'default', 'squad-b'),
     ];
 
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 
@@ -69,14 +69,14 @@ describe('<EntityPicker />', () => {
   describe('without allowedKinds', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': {} };
-      props = ({
+      props = {
         onChange,
         schema,
         required,
         uiSchema,
         rawErrors,
         formData,
-      } as unknown) as FieldProps<any>;
+      } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
@@ -92,15 +92,16 @@ describe('<EntityPicker />', () => {
     });
 
     it('updates even if there is not an exact match', async () => {
-      const { getByLabelText } = await renderInTestApp(
+      const { getByRole } = await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} />
         </Wrapper>,
       );
-      const input = getByLabelText('Entity');
 
-      userEvent.type(input, 'squ');
-      input.blur();
+      const input = getByRole('textbox');
+
+      fireEvent.change(input, { target: { value: 'squ' } });
+      fireEvent.blur(input);
 
       expect(onChange).toHaveBeenCalledWith('squ');
     });
@@ -109,14 +110,14 @@ describe('<EntityPicker />', () => {
   describe('with allowedKinds', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': { allowedKinds: ['User'] } };
-      props = ({
+      props = {
         onChange,
         schema,
         required,
         uiSchema,
         rawErrors,
         formData,
-      } as unknown) as FieldProps<any>;
+      } as unknown as FieldProps<any>;
 
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });

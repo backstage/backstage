@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+export { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
+export type { TechDocsCollatorFactoryOptions } from './DefaultTechDocsCollatorFactory';
+
+/**
+ * todo(backstage/techdocs-core): stop exporting these in a future release.
+ */
 export { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
-export type { TechDocsDocument } from './DefaultTechDocsCollator';
+export type { TechDocsCollatorOptions } from './DefaultTechDocsCollator';

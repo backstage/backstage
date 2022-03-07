@@ -44,15 +44,18 @@ function mockCatalogClient(entity?: Entity): jest.Mocked<CatalogApi> {
   const mock = {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
+    getEntityByRef: jest.fn(),
     getEntityByName: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
+    refreshEntity: jest.fn(),
+    getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
   if (entity) {
-    mock.getEntityByName.mockReturnValue(entity);
+    mock.getEntityByRef.mockReturnValue(entity);
   }
   return mock;
 }
@@ -91,7 +94,7 @@ describe('TodoReaderService', () => {
       offset: 0,
       limit: 10,
     });
-    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName, {
+    expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(entityName, {
       token: undefined,
     });
   });
@@ -299,10 +302,10 @@ describe('TodoReaderService', () => {
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
         name: 'NotFoundError',
-        message: 'Entity not found, Component:default/my-component',
+        message: 'Entity not found, component:default/my-component',
       }),
     );
-    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName, {
+    expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(entityName, {
       token: undefined,
     });
   });
@@ -319,7 +322,7 @@ describe('TodoReaderService', () => {
       expect.objectContaining({
         name: 'InputError',
         message:
-          'No entity location annotation found for Component:my-component',
+          'No entity location annotation found for component:default/my-component',
       }),
     );
   });
@@ -340,7 +343,7 @@ describe('TodoReaderService', () => {
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
         name: 'InputError',
-        message: `Invalid entity location type for Component:my-component, got 'file'`,
+        message: `Invalid entity location type for component:default/my-component, got 'file'`,
       }),
     );
   });
@@ -361,7 +364,7 @@ describe('TodoReaderService', () => {
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
         name: 'InputError',
-        message: `Invalid entity source location type for Component:my-component, got 'file'`,
+        message: `Invalid entity source location type for component:default/my-component, got 'file'`,
       }),
     );
   });

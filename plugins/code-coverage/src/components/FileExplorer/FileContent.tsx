@@ -18,7 +18,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { makeStyles, Paper } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { CodeRow } from './CodeRow';

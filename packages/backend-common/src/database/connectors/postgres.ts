@@ -17,15 +17,17 @@
 import knexFactory, { Knex } from 'knex';
 
 import { Config } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
+import defaultSchemaOverride from './defaultSchemaOverride';
 
 /**
  * Creates a knex postgres database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function createPgDatabaseClient(
   dbConfig: Config,
@@ -39,8 +41,8 @@ export function createPgDatabaseClient(
 /**
  * Builds a knex postgres database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function buildPgDatabaseConfig(
   dbConfig: Config,
@@ -59,8 +61,8 @@ export function buildPgDatabaseConfig(
 /**
  * Gets the postgres connection config
  *
- * @param dbConfig The database config
- * @param parseConnectionString Flag to explicitly control connection string parsing
+ * @param dbConfig - The database config
+ * @param parseConnectionString - Flag to explicitly control connection string parsing
  */
 export function getPgConnectionConfig(
   dbConfig: Config,
@@ -83,7 +85,7 @@ export function getPgConnectionConfig(
 /**
  * Parses a connection string using pg-connection-string
  *
- * @param connectionString The postgres connection string
+ * @param connectionString - The postgres connection string
  */
 export function parsePgConnectionString(connectionString: string) {
   const parse = requirePgConnectionString();
@@ -94,16 +96,15 @@ function requirePgConnectionString() {
   try {
     return require('pg-connection-string').parse;
   } catch (e) {
-    const message = `Postgres: Install 'pg-connection-string'`;
-    throw new Error(`${message}\n${e.message}`);
+    throw new ForwardedError("Postgres: Install 'pg-connection-string'", e);
   }
 }
 
 /**
  * Creates the missing Postgres database if it does not exist
  *
- * @param dbConfig The database config
- * @param databases The name of the databases to create
+ * @param dbConfig - The database config
+ * @param databases - The name of the databases to create
  */
 export async function ensurePgDatabaseExists(
   dbConfig: Config,
@@ -136,6 +137,29 @@ export async function ensurePgDatabaseExists(
 }
 
 /**
+ * Creates the missing Postgres schema if it does not exist
+ *
+ * @param dbConfig - The database config
+ * @param schemas - The name of the schemas to create
+ */
+export async function ensurePgSchemaExists(
+  dbConfig: Config,
+  ...schemas: Array<string>
+): Promise<void> {
+  const admin = createPgDatabaseClient(dbConfig);
+
+  try {
+    const ensureSchema = async (database: string) => {
+      await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
+    };
+
+    await Promise.all(schemas.map(ensureSchema));
+  } finally {
+    await admin.destroy();
+  }
+}
+
+/**
  * PostgreSQL database connector.
  *
  * Exposes database connector functionality via an immutable object.
@@ -143,6 +167,8 @@ export async function ensurePgDatabaseExists(
 export const pgConnector: DatabaseConnector = Object.freeze({
   createClient: createPgDatabaseClient,
   ensureDatabaseExists: ensurePgDatabaseExists,
+  ensureSchemaExists: ensurePgSchemaExists,
   createNameOverride: defaultNameOverride,
+  createSchemaOverride: defaultSchemaOverride,
   parseConnectionString: parsePgConnectionString,
 });

@@ -1,6 +1,7 @@
 ---
 id: adrs-adr010
-title: ADR010: Use the Luxon Date Library
+title: 'ADR010: Use the Luxon Date Library'
+# prettier-ignore
 description: Architecture Decision Record (ADR) for Luxon Date Library
 ---
 

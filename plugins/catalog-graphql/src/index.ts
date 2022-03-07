@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * An experimental Backstage catalog GraphQL module
+ *
+ * @packageDocumentation
+ */
+
 export * from './graphql/module';

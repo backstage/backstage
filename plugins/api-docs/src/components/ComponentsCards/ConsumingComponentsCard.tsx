@@ -16,7 +16,6 @@
 
 import {
   ComponentEntity,
-  Entity,
   RELATION_API_CONSUMED_BY,
 } from '@backstage/catalog-model';
 import { Typography } from '@material-ui/core';
@@ -35,8 +34,6 @@ import {
 } from '@backstage/core-components';
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: 'gridItem';
 };
 

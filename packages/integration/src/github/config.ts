@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
 
 const GITHUB_HOST = 'github.com';
@@ -23,6 +24,8 @@ const GITHUB_RAW_BASE_URL = 'https://raw.githubusercontent.com';
 
 /**
  * The configuration parameters for a single GitHub integration.
+ *
+ * @public
  */
 export type GitHubIntegrationConfig = {
   /**
@@ -69,7 +72,12 @@ export type GitHubIntegrationConfig = {
 
 /**
  * The configuration parameters for authenticating a GitHub Application.
- * A Github Apps configuration can be generated using the `backstage-cli create-github-app` command.
+ *
+ * @remarks
+ *
+ * A GitHub Apps configuration can be generated using the `backstage-cli create-github-app` command.
+ *
+ * @public
  */
 export type GithubAppConfig = {
   /**
@@ -93,12 +101,21 @@ export type GithubAppConfig = {
    * Client secrets can be generated at https://github.com/organizations/$org/settings/apps/$AppName
    */
   clientSecret: string;
+  /**
+   * List of installation owners allowed to be used by this GitHub app. The GitHub UI does not provide a way to list the installations.
+   * However you can list the installations with the GitHub API. You can find the list of installations here:
+   * https://api.github.com/app/installations
+   * The relevant documentation for this is here.
+   * https://docs.github.com/en/rest/reference/apps#list-installations-for-the-authenticated-app--code-samples
+   */
+  allowedInstallationOwners?: string[];
 };
 
 /**
  * Reads a single GitHub integration config.
  *
- * @param config The config object of a single integration
+ * @param config - The config object of a single integration
+ * @public
  */
 export function readGitHubIntegrationConfig(
   config: Config,
@@ -113,6 +130,9 @@ export function readGitHubIntegrationConfig(
     clientSecret: c.getString('clientSecret'),
     webhookSecret: c.getString('webhookSecret'),
     privateKey: c.getString('privateKey'),
+    allowedInstallationOwners: c.getOptionalStringArray(
+      'allowedInstallationOwners',
+    ),
   }));
 
   if (!isValidHost(host)) {
@@ -122,13 +142,13 @@ export function readGitHubIntegrationConfig(
   }
 
   if (apiBaseUrl) {
-    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+    apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === GITHUB_HOST) {
     apiBaseUrl = GITHUB_API_BASE_URL;
   }
 
   if (rawBaseUrl) {
-    rawBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+    rawBaseUrl = trimEnd(rawBaseUrl, '/');
   } else if (host === GITHUB_HOST) {
     rawBaseUrl = GITHUB_RAW_BASE_URL;
   }
@@ -140,7 +160,8 @@ export function readGitHubIntegrationConfig(
  * Reads a set of GitHub integration configs, and inserts some defaults for
  * public GitHub if not specified.
  *
- * @param configs All of the integration config objects
+ * @param configs - All of the integration config objects
+ * @public
  */
 export function readGitHubIntegrationConfigs(
   configs: Config[],

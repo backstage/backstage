@@ -1,0 +1,50 @@
+# When the target of the PR changes, open, re-open or sync, then re-add the label.
+
+name: Automate review labels
+on:
+  pull_request_target:
+    types:
+      - opened
+      - closed
+      - synchronize
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v5
+        id: fix-labels
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # THIS SCRIPT SHOULD BE INLINED AND NOT IN REPO
+          # DUE TO THE TOKEN PERMISSIONS THAT ARE GIVEN
+          # TO THE WORKFLOW. THIS SCRIPT WILL AND SHOULD
+          # RUN FROM THE BASE REPO ALL TIMES.
+          script: |
+            if (['opened', 'synchronize'].includes('${{ github.event.action }}')) {
+              // if it's the author, always add awaiting-review label
+              const isAuthor = context.payload.pull_request.user.login === context.actor
+              if (isAuthor) {
+                await github.rest.issues.addLabels({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  labels: ['awaiting-review']
+                });
+              }
+            }
+
+            if ('${{ github.event.action}}' === 'closed') {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: 'awaiting-review'
+              }).catch((e) => {
+                console.log(e)
+              });
+            }

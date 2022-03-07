@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin to display {@link https://www.sonarqube.org | SonarQube}
+ * code quality and security results.
+ *
+ * @packageDocumentation
+ */
+
 export * from './components';
 export {
   sonarQubePlugin,

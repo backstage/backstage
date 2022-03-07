@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { EntityLayout } from '@backstage/plugin-catalog';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { cicdContent } from './EntityPage';
+import {
+  EntityProvider,
+  starredEntitiesApiRef,
+  MockStarredEntitiesApi,
+} from '@backstage/plugin-catalog-react';
 import { githubActionsApiRef } from '@backstage/plugin-github-actions';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import {
+  MockPermissionApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import React from 'react';
+import { cicdContent } from './EntityPage';
 
 describe('EntityPage Test', () => {
   const entity = {
@@ -41,19 +49,19 @@ describe('EntityPage Test', () => {
 
   const mockedApi = {
     listWorkflowRuns: jest.fn().mockResolvedValue([]),
-    getWorkflow: jest.fn(),
-    getWorkflowRun: jest.fn(),
-    reRunWorkflow: jest.fn(),
-    listJobsForWorkflowRun: jest.fn(),
-    downloadJobLogsForWorkflowRun: jest.fn(),
-  } as jest.Mocked<typeof githubActionsApiRef.T>;
-
-  const apis = ApiRegistry.with(githubActionsApiRef, mockedApi);
+  };
+  const mockPermissionApi = new MockPermissionApi();
 
   describe('cicdContent', () => {
     it('Should render GitHub Actions View', async () => {
       const rendered = await renderInTestApp(
-        <ApiProvider apis={apis}>
+        <TestApiProvider
+          apis={[
+            [githubActionsApiRef, mockedApi],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+            [permissionApiRef, mockPermissionApi],
+          ]}
+        >
           <EntityProvider entity={entity}>
             <EntityLayout>
               <EntityLayout.Route path="/ci-cd" title="CI-CD">
@@ -61,7 +69,7 @@ describe('EntityPage Test', () => {
               </EntityLayout.Route>
             </EntityLayout>
           </EntityProvider>
-        </ApiProvider>,
+        </TestApiProvider>,
       );
 
       expect(rendered.getByText('ExampleComponent')).toBeInTheDocument();

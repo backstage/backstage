@@ -18,7 +18,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { BuildSummary, GitType } from 'circleci-api';
 import { getOr } from 'lodash/fp';
 import { useCallback, useEffect, useState } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { circleCIApiRef } from '../api';
 import type { CITableBuildInfo } from '../components/BuildsPage/lib/CITable';
 import { CIRCLECI_ANNOTATION } from '../constants';
@@ -26,21 +26,23 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (!status) return '';
-  return ({
-    retried: 'Retried',
-    canceled: 'Canceled',
-    infrastructure_fail: 'Infra fail',
-    timedout: 'Timedout',
-    not_run: 'Not run',
-    running: 'Running',
-    failed: 'Failed',
-    queued: 'Queued',
-    scheduled: 'Scheduled',
-    not_running: 'Not running',
-    no_tests: 'No tests',
-    fixed: 'Fixed',
-    success: 'Success',
-  } as Record<string, string>)[status];
+  return (
+    {
+      retried: 'Retried',
+      canceled: 'Canceled',
+      infrastructure_fail: 'Infra fail',
+      timedout: 'Timedout',
+      not_run: 'Not run',
+      running: 'Running',
+      failed: 'Failed',
+      queued: 'Queued',
+      scheduled: 'Scheduled',
+      not_running: 'Not running',
+      no_tests: 'No tests',
+      fixed: 'Fixed',
+      success: 'Success',
+    } as Record<string, string>
+  )[status];
 };
 
 const mapWorkflowDetails = (buildData: BuildSummary) => {
@@ -160,7 +162,7 @@ export function useBuilds() {
         vcs: {
           owner: owner,
           repo: repo,
-          type: GitType.GITHUB,
+          type: mapVcsType(vcs),
         },
       });
     } catch (e) {

@@ -18,6 +18,7 @@ import {
   EscalationPolicyInfo,
   Incident,
   OnCall,
+  RoutingKey,
   Team,
   User,
 } from '../components/types';
@@ -66,6 +67,11 @@ export interface SplunkOnCallApi {
   getTeams(): Promise<Team[]>;
 
   /**
+   * Get a list of routing keys for your organization.
+   */
+  getRoutingKeys(): Promise<RoutingKey[]>;
+
+  /**
    * Get a list of escalation policies for your organization.
    */
   getEscalationPolicies(): Promise<EscalationPolicyInfo[]>;
@@ -77,6 +83,11 @@ export type EscalationPolicyResponse = {
 
 export type ListUserResponse = {
   users: User[];
+  _selfUrl?: string;
+};
+
+export type ListRoutingKeyResponse = {
+  routingKeys: RoutingKey[];
   _selfUrl?: string;
 };
 

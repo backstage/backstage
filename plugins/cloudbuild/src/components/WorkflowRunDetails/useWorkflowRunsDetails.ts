@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useParams } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { cloudbuildApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 

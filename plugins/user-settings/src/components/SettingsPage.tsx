@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import {
+  Header,
+  Page,
+  SidebarPinStateContext,
+  TabbedLayout,
+} from '@backstage/core-components';
+import React, { useContext } from 'react';
 import { UserSettingsAuthProviders } from './AuthProviders';
 import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
-import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 type Props = {
   providerSettings?: JSX.Element;
 };
 
 export const SettingsPage = ({ providerSettings }: Props) => {
+  const { isMobile } = useContext(SidebarPinStateContext);
+
   return (
     <Page themeId="home">
-      <Header title="Settings" />
-
+      {!isMobile && <Header title="Settings" />}
       <TabbedLayout>
         <TabbedLayout.Route path="general" title="General">
           <UserSettingsGeneral />

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @public */
 export type TodoItem = {
   /** The contents of the TODO comment */
   text: string;
@@ -34,6 +35,7 @@ export type TodoItem = {
   repoFilePath?: string;
 };
 
+/** @public */
 export type ReadTodosOptions = {
   /**
    * Base URLs defining the root at which to search for TODOs
@@ -41,6 +43,7 @@ export type ReadTodosOptions = {
   url: string;
 };
 
+/** @public */
 export type ReadTodosResult = {
   /**
    * TODO items found at the given locations
@@ -48,6 +51,7 @@ export type ReadTodosResult = {
   items: TodoItem[];
 };
 
+/** @public */
 export interface TodoReader {
   /**
    * Searches for TODO items in code at a given location
@@ -55,16 +59,19 @@ export interface TodoReader {
   readTodos(options: ReadTodosOptions): Promise<ReadTodosResult>;
 }
 
-type TodoParserContext = {
+/** @public */
+export type TodoParserContext = {
   content: string;
   path: string;
 };
 
-type TodoParserResult = {
+/** @public */
+export type TodoParserResult = {
   text: string;
   tag: string;
   author?: string;
   lineNumber: number;
 };
 
+/** @public */
 export type TodoParser = (ctx: TodoParserContext) => TodoParserResult[];

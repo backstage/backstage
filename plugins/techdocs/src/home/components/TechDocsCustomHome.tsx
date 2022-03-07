@@ -15,40 +15,48 @@
  */
 
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/styles';
 import {
+  CATALOG_FILTER_EXISTS,
   catalogApiRef,
   CatalogApi,
-  isOwnerOf,
-  useOwnUser,
+  useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
-import { DocsTable } from './DocsTable';
-import { DocsCardGrid } from './DocsCardGrid';
+import { DocsTable } from './Tables';
+import { DocsCardGrid } from './Grids';
+import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 import {
   CodeSnippet,
   Content,
-  Header,
   HeaderTabs,
-  Page,
   Progress,
   WarningPanel,
   SupportButton,
   ContentHeader,
 } from '@backstage/core-components';
-
-import { ConfigApi, configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 
 const panels = {
   DocsTable: DocsTable,
   DocsCardGrid: DocsCardGrid,
 };
 
+/**
+ * Available panel types
+ *
+ * @public
+ */
 export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
+/**
+ * Type representing a TechDocsCustomHome panel.
+ *
+ * @public
+ */
 export interface PanelConfig {
   title: string;
   description: string;
@@ -57,11 +65,21 @@ export interface PanelConfig {
   filterPredicate: ((entity: Entity) => boolean) | string;
 }
 
+/**
+ * Type representing a TechDocsCustomHome tab.
+ *
+ * @public
+ */
 export interface TabConfig {
   label: string;
   panels: PanelConfig[];
 }
 
+/**
+ * Type representing a list of TechDocsCustomHome tabs.
+ *
+ * @public
+ */
 export type TabsConfig = TabConfig[];
 
 const CustomPanel = ({
@@ -80,16 +98,16 @@ const CustomPanel = ({
     },
   });
   const classes = useStyles();
-  const { value: user } = useOwnUser();
+  const { loading: loadingOwnership, isOwnedEntity } = useEntityOwnership();
 
   const Panel = panels[config.panelType];
 
   const shownEntities = entities.filter(entity => {
     if (config.filterPredicate === 'ownedByUser') {
-      if (!user) {
+      if (loadingOwnership) {
         return false;
       }
-      return isOwnerOf(user, entity);
+      return isOwnedEntity(entity);
     }
 
     return (
@@ -108,23 +126,35 @@ const CustomPanel = ({
         ) : null}
       </ContentHeader>
       <div className={classes.panelContainer}>
-        <Panel entities={shownEntities} />
+        <Panel data-testid="techdocs-custom-panel" entities={shownEntities} />
       </div>
     </>
   );
 };
 
-export const TechDocsCustomHome = ({
-  tabsConfig,
-}: {
+/**
+ * Props for {@link TechDocsCustomHome}
+ *
+ * @public
+ */
+export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
-}) => {
+};
+
+export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
+  const { tabsConfig } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
-  const configApi: ConfigApi = useApi(configApiRef);
 
-  const { value: entities, loading, error } = useAsync(async () => {
+  const {
+    value: entities,
+    loading,
+    error,
+  } = useAsync(async () => {
     const response = await catalogApi.getEntities({
+      filter: {
+        'metadata.annotations.backstage.io/techdocs-ref': CATALOG_FILTER_EXISTS,
+      },
       fields: [
         'apiVersion',
         'kind',
@@ -139,27 +169,21 @@ export const TechDocsCustomHome = ({
     });
   });
 
-  const generatedSubtitle = `Documentation available in ${
-    configApi.getOptionalString('organization.name') ?? 'Backstage'
-  }`;
-
   const currentTabConfig = tabsConfig[selectedTab];
 
   if (loading) {
     return (
-      <Page themeId="documentation">
-        <Header title="Documentation" subtitle={generatedSubtitle} />
+      <TechDocsPageWrapper>
         <Content>
           <Progress />
         </Content>
-      </Page>
+      </TechDocsPageWrapper>
     );
   }
 
   if (error) {
     return (
-      <Page themeId="documentation">
-        <Header title="Documentation" subtitle={generatedSubtitle} />
+      <TechDocsPageWrapper>
         <Content>
           <WarningPanel
             severity="error"
@@ -168,13 +192,12 @@ export const TechDocsCustomHome = ({
             <CodeSnippet language="text" text={error.toString()} />
           </WarningPanel>
         </Content>
-      </Page>
+      </TechDocsPageWrapper>
     );
   }
 
   return (
-    <Page themeId="documentation">
-      <Header title="Documentation" subtitle={generatedSubtitle} />
+    <TechDocsPageWrapper>
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={index => setSelectedTab(index)}
@@ -183,7 +206,7 @@ export const TechDocsCustomHome = ({
           label,
         }))}
       />
-      <Content>
+      <Content data-testid="techdocs-content">
         {currentTabConfig.panels.map((config, index) => (
           <CustomPanel
             key={index}
@@ -193,6 +216,6 @@ export const TechDocsCustomHome = ({
           />
         ))}
       </Content>
-    </Page>
+    </TechDocsPageWrapper>
   );
 };

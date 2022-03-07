@@ -19,8 +19,10 @@ import merge from 'lodash/merge';
 import { GroupMember, MicrosoftGraphClient } from './client';
 import {
   readMicrosoftGraphGroups,
+  readMicrosoftGraphOrg,
   readMicrosoftGraphOrganization,
   readMicrosoftGraphUsers,
+  readMicrosoftGraphUsersInGroups,
   resolveRelations,
 } from './read';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -59,6 +61,7 @@ function group(data: Partial<GroupEntity>): GroupEntity {
 describe('read microsoft graph', () => {
   const client: jest.Mocked<MicrosoftGraphClient> = {
     getUsers: jest.fn(),
+    getUserProfile: jest.fn(),
     getGroups: jest.fn(),
     getGroupMembers: jest.fn(),
     getUserPhotoWithSizeLimit: jest.fn(),
@@ -110,6 +113,195 @@ describe('read microsoft graph', () => {
       expect(client.getUsers).toBeCalledTimes(1);
       expect(client.getUsers).toBeCalledWith({
         filter: 'accountEnabled eq true',
+      });
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+    });
+
+    it('should read users with userExpand and custom transformer', async () => {
+      async function* getExampleUsers() {
+        yield {
+          id: 'userid',
+          displayName: 'User Name',
+          mail: 'user.name@example.com',
+        };
+      }
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphUsers(client, {
+        userExpand: 'manager',
+        userFilter: 'accountEnabled eq true',
+        transformer: async () => ({
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'x' },
+          spec: { memberOf: [] },
+        }),
+        logger: getVoidLogger(),
+      });
+
+      expect(users).toEqual([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'x' },
+          spec: { memberOf: [] },
+        },
+      ]);
+
+      expect(client.getUsers).toBeCalledTimes(1);
+      expect(client.getUsers).toBeCalledWith({
+        expand: 'manager',
+        filter: 'accountEnabled eq true',
+      });
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+    });
+  });
+
+  describe('readMicrosoftGraphUsersInGroups', () => {
+    it('should read users from Groups', async () => {
+      async function* getExampleGroups() {
+        yield {
+          id: 'groupid',
+          displayName: 'Group Name',
+          description: 'Group Description',
+          mail: 'group@example.com',
+        };
+      }
+
+      async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
+        yield {
+          '@odata.type': '#microsoft.graph.group',
+          id: 'childgroupid',
+        };
+        yield {
+          '@odata.type': '#microsoft.graph.user',
+          id: 'userid',
+        };
+      }
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+
+      client.getUserProfile.mockResolvedValue({
+        id: 'userid',
+        displayName: 'User Name',
+        mail: 'user.name@example.com',
+      });
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphUsersInGroups(client, {
+        userGroupMemberFilter: 'securityEnabled eq true',
+        logger: getVoidLogger(),
+      });
+
+      expect(users).toEqual([
+        user({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/user-id': 'userid',
+            },
+            name: 'user.name_example.com',
+          },
+          spec: {
+            profile: {
+              displayName: 'User Name',
+              email: 'user.name@example.com',
+              picture: 'data:image/jpeg;base64,...',
+            },
+            memberOf: [],
+          },
+        }),
+      ]);
+
+      expect(client.getGroups).toBeCalledTimes(1);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq true',
+      });
+      expect(client.getGroupMembers).toBeCalledTimes(1);
+      expect(client.getGroupMembers).toBeCalledWith('groupid');
+
+      expect(client.getUserProfile).toBeCalledTimes(1);
+      expect(client.getUserProfile).toBeCalledWith('userid', {
+        expand: undefined,
+      });
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
+    });
+
+    it('should read users with userExpand, groupExpand and custom transformer', async () => {
+      async function* getExampleGroups() {
+        yield {
+          id: 'groupid',
+          displayName: 'Group Name',
+          description: 'Group Description',
+          mail: 'group@example.com',
+        };
+      }
+
+      async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
+        yield {
+          '@odata.type': '#microsoft.graph.group',
+          id: 'childgroupid',
+        };
+        yield {
+          '@odata.type': '#microsoft.graph.user',
+          id: 'userid',
+        };
+      }
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+
+      client.getUserProfile.mockResolvedValue({
+        id: 'userid',
+        displayName: 'User Name',
+        mail: 'user.name@example.com',
+      });
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphUsersInGroups(client, {
+        userExpand: 'manager',
+        userGroupMemberFilter: 'securityEnabled eq true',
+        groupExpand: 'member',
+        transformer: async () => ({
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'x' },
+          spec: { memberOf: [] },
+        }),
+        logger: getVoidLogger(),
+      });
+
+      expect(users).toEqual([
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'x' },
+          spec: { memberOf: [] },
+        },
+      ]);
+
+      expect(client.getGroups).toBeCalledTimes(1);
+      expect(client.getGroups).toBeCalledWith({
+        expand: 'member',
+        filter: 'securityEnabled eq true',
+      });
+      expect(client.getGroupMembers).toBeCalledTimes(1);
+      expect(client.getGroupMembers).toBeCalledWith('groupid');
+
+      expect(client.getUserProfile).toBeCalledTimes(1);
+      expect(client.getUserProfile).toBeCalledWith('userid', {
+        expand: 'manager',
       });
       expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
       expect(client.getUserPhotoWithSizeLimit).toBeCalledWith('userid', 120);
@@ -202,14 +394,10 @@ describe('read microsoft graph', () => {
         'data:image/jpeg;base64,...',
       );
 
-      const {
-        groups,
-        groupMember,
-        groupMemberOf,
-        rootGroup,
-      } = await readMicrosoftGraphGroups(client, 'tenantid', {
-        groupFilter: 'securityEnabled eq false',
-      });
+      const { groups, groupMember, groupMemberOf, rootGroup } =
+        await readMicrosoftGraphGroups(client, 'tenantid', {
+          groupFilter: 'securityEnabled eq false',
+        });
 
       const expectedRootGroup = group({
         metadata: {
@@ -265,6 +453,186 @@ describe('read microsoft graph', () => {
       // doesn't allows this yet
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
       // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
+    });
+
+    it('should read groups with groupExpand', async () => {
+      async function* getExampleGroups() {
+        yield {
+          id: 'groupid',
+          displayName: 'Group Name',
+          description: 'Group Description',
+          mail: 'group@example.com',
+        };
+      }
+
+      async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
+        yield {
+          '@odata.type': '#microsoft.graph.group',
+          id: 'childgroupid',
+        };
+        yield {
+          '@odata.type': '#microsoft.graph.user',
+          id: 'userid',
+        };
+      }
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { groups, groupMember, groupMemberOf, rootGroup } =
+        await readMicrosoftGraphGroups(client, 'tenantid', {
+          groupExpand: 'member',
+          groupFilter: 'securityEnabled eq false',
+        });
+
+      const expectedRootGroup = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/tenant-id': 'tenantid',
+          },
+          name: 'organization_name',
+          description: 'Organization Name',
+        },
+        spec: {
+          type: 'root',
+          profile: {
+            displayName: 'Organization Name',
+          },
+          children: [],
+        },
+      });
+      expect(groups).toEqual([
+        expectedRootGroup,
+        group({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/group-id': 'groupid',
+            },
+            name: 'group_name',
+            description: 'Group Description',
+          },
+          spec: {
+            type: 'team',
+            profile: {
+              displayName: 'Group Name',
+              email: 'group@example.com',
+              // TODO: Loading groups photos doesn't work right now as Microsoft
+              // Graph doesn't allows this yet
+              /* picture: 'data:image/jpeg;base64,...',*/
+            },
+            children: [],
+          },
+        }),
+      ]);
+      expect(rootGroup).toEqual(expectedRootGroup);
+      expect(groupMember.get('groupid')).toEqual(new Set(['childgroupid']));
+      expect(groupMemberOf.get('userid')).toEqual(new Set(['groupid']));
+      expect(groupMember.get('organization_name')).toEqual(new Set());
+
+      expect(client.getGroups).toBeCalledTimes(1);
+      expect(client.getGroups).toBeCalledWith({
+        expand: 'member',
+        filter: 'securityEnabled eq false',
+      });
+      expect(client.getGroupMembers).toBeCalledTimes(1);
+      expect(client.getGroupMembers).toBeCalledWith('groupid');
+      // TODO: Loading groups photos doesn't work right now as Microsoft Graph
+      // doesn't allows this yet
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledTimes(1);
+      // expect(client.getGroupPhotoWithSizeLimit).toBeCalledWith('groupid', 120);
+    });
+
+    it('should read security groups', async () => {
+      async function* getExampleGroups() {
+        yield {
+          id: 'groupid',
+          displayName: 'Group Name',
+          description: 'Group Description',
+          mail: 'group@example.com',
+          mailNickname: 'df546d53-4f5f-4462-b371-d4a855787047',
+          mailEnabled: false,
+          securityEnabled: true,
+        };
+      }
+
+      async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
+        yield {
+          '@odata.type': '#microsoft.graph.group',
+          id: 'childgroupid',
+        };
+        yield {
+          '@odata.type': '#microsoft.graph.user',
+          id: 'userid',
+        };
+      }
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { groups, rootGroup } = await readMicrosoftGraphGroups(
+        client,
+        'tenantid',
+        {
+          groupFilter: 'securityEnabled eq true',
+        },
+      );
+
+      const expectedRootGroup = group({
+        metadata: {
+          annotations: {
+            'graph.microsoft.com/tenant-id': 'tenantid',
+          },
+          name: 'organization_name',
+          description: 'Organization Name',
+        },
+        spec: {
+          type: 'root',
+          profile: {
+            displayName: 'Organization Name',
+          },
+          children: [],
+        },
+      });
+      expect(groups).toEqual([
+        expectedRootGroup,
+        group({
+          metadata: {
+            annotations: {
+              'graph.microsoft.com/group-id': 'groupid',
+            },
+            name: 'group_name',
+            description: 'Group Description',
+          },
+          spec: {
+            type: 'team',
+            profile: {
+              displayName: 'Group Name',
+              email: 'group@example.com',
+            },
+            children: [],
+          },
+        }),
+      ]);
+      expect(rootGroup).toEqual(expectedRootGroup);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq true',
+      });
+      expect(client.getGroupMembers).toBeCalledTimes(1);
+      expect(client.getGroupMembers).toBeCalledWith('groupid');
     });
   });
 
@@ -357,6 +725,147 @@ describe('read microsoft graph', () => {
       expect(user2.spec.memberOf).toEqual(
         expect.arrayContaining(['group:default/c']),
       );
+    });
+  });
+
+  describe('readMicrosoftGraphOrg', () => {
+    async function* getExampleUsers() {
+      yield {
+        id: 'userid',
+        displayName: 'User Name',
+        mail: 'user.name@example.com',
+      };
+    }
+
+    async function getExampleUserProfile(userId: string) {
+      return {
+        id: userId,
+        displayName: 'User Name',
+        mail: 'user.name@example.com',
+      };
+    }
+
+    async function* getExampleGroups() {
+      yield {
+        id: 'groupid',
+        displayName: 'Group Name',
+        description: 'Group Description',
+        mail: 'group@example.com',
+      };
+    }
+
+    async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
+      yield {
+        '@odata.type': '#microsoft.graph.group',
+        id: 'childgroupid',
+      };
+      yield {
+        '@odata.type': '#microsoft.graph.user',
+        id: 'userid',
+      };
+    }
+
+    it('should read all users if no filter provided', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        groupFilter: 'securityEnabled eq false',
+      });
+
+      expect(client.getUsers).toBeCalledTimes(1);
+      expect(client.getUsers).toBeCalledWith({
+        filter: undefined,
+      });
+      expect(client.getGroups).toBeCalledTimes(1);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq false',
+      });
+    });
+
+    it('should read users using userExpand and userFilter', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        userExpand: 'manager',
+        userFilter: 'accountEnabled eq true',
+        groupFilter: 'securityEnabled eq false',
+      });
+
+      expect(client.getUsers).toBeCalledTimes(1);
+      expect(client.getUsers).toBeCalledWith({
+        expand: 'manager',
+        filter: 'accountEnabled eq true',
+      });
+      expect(client.getGroups).toBeCalledTimes(1);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq false',
+      });
+    });
+
+    it('should read users using userExpand and userGroupMemberFilter', async () => {
+      client.getOrganization.mockResolvedValue({
+        id: 'tenantid',
+        displayName: 'Organization Name',
+      });
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserProfile.mockImplementation(getExampleUserProfile);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        userGroupMemberFilter: 'name eq backstage-group',
+        groupFilter: 'securityEnabled eq false',
+      });
+
+      expect(client.getUsers).toBeCalledTimes(0);
+      expect(client.getGroups).toBeCalledTimes(2);
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'name eq backstage-group',
+      });
+      expect(client.getGroups).toBeCalledWith({
+        filter: 'securityEnabled eq false',
+      });
+      expect(client.getUserProfile).toBeCalledTimes(1);
+      expect(client.getUserPhotoWithSizeLimit).toBeCalledTimes(1);
     });
   });
 });

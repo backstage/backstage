@@ -1,5 +1,226 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.25
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+
+## 0.1.24
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- be9e010da0: Add support to exclude certain folders in `todo` plugin.
+
+  You can add function by configuring your own exclusion logic, for example:
+
+  ```ts
+  import {
+    TodoScmReader,
+    createTodoParser,
+  } from '@backstage/plugin-todo-backend';
+
+  // ...
+
+  const todoReader = TodoScmReader.fromConfig(config, {
+    logger,
+    reader,
+    filePathFilter: (filePath: string): boolean => {
+        ...
+        YOUR LOGIC HERE
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/integration@0.7.5
+
+## 0.1.23
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+
+## 0.1.22
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- edbc03814a: Replace usage of `serializeEntityRef` with `stringifyEntityRef`
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.7.2
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+  - @backstage/integration@0.7.2-next.0
+
+## 0.1.18
+
+### Patch Changes
+
+- 2260702efd: Properly exported all referenced types
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/integration@0.7.0
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/catalog-client@0.5.3
+
+## 0.1.15
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+
+## 0.1.14
+
+### Patch Changes
+
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/backend-common@0.9.12
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.1.10
+
+### Patch Changes
+
+- 0b34dc7a3: Ignore images and files that are larger than 200KB.
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+  - @backstage/config@0.1.7
+  - @backstage/integration@0.6.1
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+
 ## 0.1.8
 
 ### Patch Changes

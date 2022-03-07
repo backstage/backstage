@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { useApp } from '@backstage/core-plugin-api';
 import {
   EntityRefLink,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import {
   Collapse,
@@ -29,15 +30,8 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ApartmentIcon from '@material-ui/icons/Apartment';
-import CategoryIcon from '@material-ui/icons/Category';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import GroupIcon from '@material-ui/icons/Group';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import MemoryIcon from '@material-ui/icons/Memory';
-import PersonIcon from '@material-ui/icons/Person';
 import WorkIcon from '@material-ui/icons/Work';
 import React, { useState } from 'react';
 
@@ -47,57 +41,45 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function sortEntities(entities: Array<EntityName | Entity>) {
+function sortEntities(entities: Array<CompoundEntityRef | Entity>) {
   return entities.sort((a, b) =>
-    formatEntityRefTitle(a).localeCompare(formatEntityRefTitle(b)),
+    humanizeEntityRef(a).localeCompare(humanizeEntityRef(b)),
   );
 }
 
-function getEntityIcon(entity: { kind: string }): React.ReactElement {
-  switch (entity.kind.toLocaleLowerCase('en-US')) {
-    case 'api':
-      return <ExtensionIcon />;
-
-    case 'component':
-      return <MemoryIcon />;
-
-    case 'domain':
-      return <ApartmentIcon />;
-
-    case 'group':
-      return <GroupIcon />;
-
-    case 'location':
-      return <LocationOnIcon />;
-
-    case 'system':
-      return <CategoryIcon />;
-
-    case 'user':
-      return <PersonIcon />;
-
-    default:
-      return <WorkIcon />;
-  }
-}
-
-type Props = {
-  locations: Array<{ target: string; entities: (Entity | EntityName)[] }>;
+/**
+ * Props for {@link EntityListComponent}.
+ *
+ * @public
+ */
+export interface EntityListComponentProps {
+  locations: Array<{
+    target: string;
+    entities: (Entity | CompoundEntityRef)[];
+  }>;
   locationListItemIcon: (target: string) => React.ReactElement;
   collapsed?: boolean;
   firstListItem?: React.ReactElement;
   onItemClick?: (target: string) => void;
   withLinks?: boolean;
-};
+}
 
-export const EntityListComponent = ({
-  locations,
-  collapsed = false,
-  locationListItemIcon,
-  onItemClick,
-  firstListItem,
-  withLinks = false,
-}: Props) => {
+/**
+ * Shows a result list of entities.
+ *
+ * @public
+ */
+export const EntityListComponent = (props: EntityListComponentProps) => {
+  const {
+    locations,
+    collapsed = false,
+    locationListItemIcon,
+    onItemClick,
+    firstListItem,
+    withLinks = false,
+  } = props;
+
+  const app = useApp();
   const classes = useStyles();
 
   const [expandedUrls, setExpandedUrls] = useState<string[]>([]);
@@ -144,22 +126,30 @@ export const EntityListComponent = ({
             unmountOnExit
           >
             <List component="div" disablePadding dense>
-              {sortEntities(r.entities).map(entity => (
-                <ListItem
-                  key={formatEntityRefTitle(entity)}
-                  className={classes.nested}
-                  {...(withLinks
-                    ? {
-                        component: EntityRefLink,
-                        entityRef: entity,
-                        button: withLinks as any,
-                      }
-                    : {})}
-                >
-                  <ListItemIcon>{getEntityIcon(entity)}</ListItemIcon>
-                  <ListItemText primary={formatEntityRefTitle(entity)} />
-                </ListItem>
-              ))}
+              {sortEntities(r.entities).map(entity => {
+                const Icon =
+                  app.getSystemIcon(
+                    `kind:${entity.kind.toLocaleLowerCase('en-US')}`,
+                  ) ?? WorkIcon;
+                return (
+                  <ListItem
+                    key={humanizeEntityRef(entity)}
+                    className={classes.nested}
+                    {...(withLinks
+                      ? {
+                          component: EntityRefLink,
+                          entityRef: entity,
+                          button: withLinks as any,
+                        }
+                      : {})}
+                  >
+                    <ListItemIcon>
+                      <Icon />
+                    </ListItemIcon>
+                    <ListItemText primary={humanizeEntityRef(entity)} />
+                  </ListItem>
+                );
+              })}
             </List>
           </Collapse>
         </React.Fragment>

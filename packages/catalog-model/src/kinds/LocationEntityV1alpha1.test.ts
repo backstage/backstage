@@ -102,4 +102,23 @@ describe('LocationV1alpha1Validator', () => {
     (entity as any).spec.targets = 7;
     await expect(validator.check(entity)).rejects.toThrow(/targets/);
   });
+
+  it('accepts good presence', async () => {
+    (entity as any).spec.presence = 'required';
+    await expect(validator.check(entity)).resolves.toBe(true);
+    (entity as any).spec.presence = 'optional';
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty presence', async () => {
+    (entity as any).spec.presence = '';
+    await expect(validator.check(entity)).rejects.toThrow(/presence/);
+  });
+
+  it('rejects wrong presence', async () => {
+    (entity as any).spec.presence = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/presence/);
+    (entity as any).spec.presence = 'nope';
+    await expect(validator.check(entity)).rejects.toThrow(/presence/);
+  });
 });

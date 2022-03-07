@@ -19,26 +19,36 @@ import { Card, CardContent, CardHeader } from '@material-ui/core';
 import React from 'react';
 import YAML from 'yaml';
 import { CodeSnippet } from '@backstage/core-components';
+import { trimEnd } from 'lodash';
+import { useCatalogFilename } from '../../hooks';
 
-type Props = {
+/**
+ * Props for {@link PreviewCatalogInfoComponent}.
+ *
+ * @public
+ */
+export interface PreviewCatalogInfoComponentProps {
   repositoryUrl: string;
   entities: Entity[];
   classes?: { card?: string; cardContent?: string };
-};
+}
 
-export const PreviewCatalogInfoComponent = ({
-  repositoryUrl,
-  entities,
-  classes,
-}: Props) => {
+/**
+ * Previews information about an entity to create.
+ *
+ * @public
+ */
+export const PreviewCatalogInfoComponent = (
+  props: PreviewCatalogInfoComponentProps,
+) => {
+  const { repositoryUrl, entities, classes } = props;
+  const catalogFilename = useCatalogFilename();
+
   return (
     <Card variant="outlined" className={classes?.card}>
       <CardHeader
         title={
-          <code>{`${repositoryUrl.replace(
-            /[\/]*$/,
-            '',
-          )}/catalog-info.yaml`}</code>
+          <code>{`${trimEnd(repositoryUrl, '/')}/${catalogFilename}`}</code>
         }
       />
 

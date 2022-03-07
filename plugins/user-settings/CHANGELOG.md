@@ -1,5 +1,240 @@
 # @backstage/plugin-user-settings
 
+## 0.4.0
+
+### Minor Changes
+
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.3.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.3.20
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 12dd25c2a1: Updated example code for registering feature flags in the `EmptyFlags` component
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/theme@0.2.15
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+
+## 0.3.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+
+## 0.3.17
+
+### Patch Changes
+
+- 7ba416be78: **@backstage/plugin-user-settings:** Hide Header on mobile screens to improve the UI & give more space to the content. Furthermore, the "Pin Sidebar" setting is removed on mobile screens, as the mobile sidebar is always pinned to the bottom.
+
+  **Other plugins:** Smaller style adjustments across plugins to improve the UI on mobile devices.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- 7ba416be78: **@backstage/plugin-user-settings:** Hide Header on mobile screens to improve the UI & give more space to the content. Furthermore, the "Pin Sidebar" setting is removed on mobile screens, as the mobile sidebar is always pinned to the bottom.
+
+  **Other plugins:** Smaller style adjustments across plugins to improve the UI on mobile devices.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+
+## 0.3.15
+
+### Patch Changes
+
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/core-components@0.8.3
+
+## 0.3.14
+
+### Patch Changes
+
+- 2a374057f5: Fix undefined identity bug in UserSettingsProfileCard caused by using deprecated methods of the IdentityApi
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/core-components@0.8.2
+
+## 0.3.13
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+
+## 0.3.12
+
+### Patch Changes
+
+- 9a1c8e92eb: The theme switcher now renders the title of themes instead of their variant
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.3.11
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- 274a4fc633: Add Props Icon for Sidebar Item SidebarSearchField and Settings
+- Updated dependencies
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.3.10
+
+### Patch Changes
+
+- 63602a1753: Align grid height
+- 202f322927: Atlassian auth provider
+
+  - AtlassianAuth added to core-app-api
+  - Atlassian provider added to plugin-auth-backend
+  - Updated user-settings with Atlassian connection
+
+- Updated dependencies
+  - @backstage/core-components@0.7.1
+  - @backstage/core-plugin-api@0.1.11
+
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.3.8
+
+### Patch Changes
+
+- 4c3eea7788: Bitbucket Cloud authentication - based on the existing GitHub authentication + changes around BB apis and updated scope.
+
+  - BitbucketAuth added to core-app-api.
+  - Bitbucket provider added to plugin-auth-backend.
+  - Cosmetic entry for Bitbucket connection in user-settings Authentication Providers tab.
+
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+
+## 0.3.7
+
+### Patch Changes
+
+- 79ebee7a6b: Add "data-testid" for e2e tests and fix techdocs entity not found error.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+
+## 0.3.6
+
+### Patch Changes
+
+- 038b9763d1: Add search to FeatureFlags
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 6082b9178c: Fix import for `createPlugin` in example snippet
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.4.0
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+
+## 0.3.2
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
 ## 0.3.1
 
 ### Patch Changes

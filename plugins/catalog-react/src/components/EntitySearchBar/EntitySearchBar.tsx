@@ -25,21 +25,34 @@ import {
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
 import React, { useState } from 'react';
-import { useDebounce } from 'react-use';
-import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import useDebounce from 'react-use/lib/useDebounce';
+import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
 
-const useStyles = makeStyles(_theme => ({
-  searchToolbar: {
-    paddingLeft: 0,
-    paddingRight: 0,
+/** @public */
+export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
+
+const useStyles = makeStyles(
+  _theme => ({
+    searchToolbar: {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+    input: {},
+  }),
+  {
+    name: 'CatalogReactEntitySearchBar',
   },
-}));
+);
 
+/**
+ * Renders search bar for filtering the entity list.
+ * @public
+ */
 export const EntitySearchBar = () => {
-  const styles = useStyles();
+  const classes = useStyles();
 
-  const { filters, updateFilters } = useEntityListProvider();
+  const { filters, updateFilters } = useEntityList();
   const [search, setSearch] = useState(filters.text?.value ?? '');
 
   useDebounce(
@@ -53,10 +66,11 @@ export const EntitySearchBar = () => {
   );
 
   return (
-    <Toolbar className={styles.searchToolbar}>
+    <Toolbar className={classes.searchToolbar}>
       <FormControl>
         <Input
           id="input-with-icon-adornment"
+          className={classes.input}
           placeholder="Search"
           autoComplete="off"
           onChange={event => setSearch(event.target.value)}

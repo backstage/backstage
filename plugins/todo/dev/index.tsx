@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { Entity, ANNOTATION_LOCATION } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import OnlineIcon from '@material-ui/icons/Cloud';
@@ -22,8 +22,8 @@ import OfflineIcon from '@material-ui/icons/Storage';
 import React from 'react';
 import { EntityTodoContent, todoApiRef, todoPlugin } from '../src';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const entity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -31,7 +31,7 @@ const entity: Entity = {
   metadata: {
     name: 'backstage',
     annotations: {
-      [LOCATION_ANNOTATION]:
+      [ANNOTATION_LOCATION]:
         'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
     },
   },
@@ -60,7 +60,7 @@ createDevApp()
   .registerPlugin(todoPlugin)
   .addPage({
     element: (
-      <ApiProvider apis={ApiRegistry.with(todoApiRef, mockedApi)}>
+      <TestApiProvider apis={[[todoApiRef, mockedApi]]}>
         <EntityProvider entity={entity}>
           <Page themeId="service">
             <Header title="Mocked TODO Data">
@@ -71,7 +71,7 @@ createDevApp()
             </Content>
           </Page>
         </EntityProvider>
-      </ApiProvider>
+      </TestApiProvider>
     ),
     title: 'Entity Todo Content',
     icon: OfflineIcon,

@@ -11,7 +11,7 @@ TBD
 ### Generic Requirements
 
 1. Provide OAuth credentials:
-   1. [Create an OAuth App](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/) with the callback URL set to `http://localhost:7000/api/auth/github`.
+   1. [Create an OAuth App](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/) in the GitHub organization with the callback URL set to `http://localhost:7007/api/auth/github`.
    2. Take the Client ID and Client Secret from the newly created app's settings page and put them into `AUTH_GITHUB_CLIENT_ID` and `AUTH_GITHUB_CLIENT_SECRET` environment variables.
 2. Annotate your component with a correct GitHub Actions repository and owner:
 
@@ -75,3 +75,5 @@ const serviceEntityPage = (
 ## Limitations
 
 - There is a limit of 100 apps for one OAuth client/token pair
+- The OAuth application must be at the GitHub organization level in order to display the workflows. If you do
+  not see any workflows, confirm the OAuth application was created in the organization and not a specific user account.

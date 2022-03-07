@@ -14,58 +14,92 @@
  * limitations under the License.
  */
 
-import { makeStyles, useTheme } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
+import { BackstagePalette, BackstageTheme } from '@backstage/theme';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
-import React from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    position: 'relative',
-    lineHeight: 0,
-  },
-  overlay: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -60%)',
-    fontSize: 45,
-    fontWeight: 'bold',
-    color: theme.palette.textContrast,
-  },
-  circle: {
-    width: '80%',
-    transform: 'translate(10%, 0)',
-  },
-  colorUnknown: {},
-}));
+/** @public */
+export type GaugeClassKey =
+  | 'root'
+  | 'overlay'
+  | 'description'
+  | 'circle'
+  | 'colorUnknown';
 
-type Props = {
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    root: {
+      position: 'relative',
+      lineHeight: 0,
+    },
+    overlay: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -60%)',
+      fontSize: 45,
+      fontWeight: 'bold',
+      color: theme.palette.textContrast,
+    },
+    description: {
+      fontSize: '100%',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      position: 'absolute',
+      wordBreak: 'break-all',
+      display: 'inline-block',
+    },
+    circle: {
+      width: '80%',
+      transform: 'translate(10%, 0)',
+    },
+    colorUnknown: {},
+  }),
+  { name: 'BackstageGauge' },
+);
+
+/** @public */
+export type GaugeProps = {
   value: number;
   fractional?: boolean;
   inverse?: boolean;
   unit?: string;
   max?: number;
+  description?: ReactNode;
+  getColor?: GaugePropsGetColor;
 };
 
-const defaultProps = {
+/** @public */
+export type GaugePropsGetColorOptions = {
+  palette: BackstagePalette;
+  value: number;
+  inverse?: boolean;
+  max?: number;
+};
+
+/** @public */
+export type GaugePropsGetColor = (args: GaugePropsGetColorOptions) => string;
+
+const defaultGaugeProps = {
   fractional: true,
   inverse: false,
   unit: '%',
   max: 100,
 };
 
-export function getProgressColor(
-  palette: BackstageTheme['palette'],
-  value: number,
-  inverse?: boolean,
-  max?: number,
-) {
+export const getProgressColor: GaugePropsGetColor = ({
+  palette,
+  value,
+  inverse,
+  max,
+}) => {
   if (isNaN(value)) {
     return '#ddd';
   }
 
-  const actualMax = max ? max : defaultProps.max;
+  const actualMax = max ? max : defaultGaugeProps.max;
   const actualValue = inverse ? actualMax - value : value;
 
   if (actualValue < actualMax / 3) {
@@ -75,32 +109,65 @@ export function getProgressColor(
   }
 
   return palette.status.ok;
-}
+};
 
-export const Gauge = (props: Props) => {
+/**
+ * Circular Progress Bar
+ *
+ * @public
+ *
+ */
+
+export function Gauge(props: GaugeProps) {
+  const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
+  const { getColor = getProgressColor } = props;
   const classes = useStyles(props);
-  const theme = useTheme<BackstageTheme>();
-  const { value, fractional, inverse, unit, max } = {
-    ...defaultProps,
+  const { palette } = useTheme<BackstageTheme>();
+  const { value, fractional, inverse, unit, max, description } = {
+    ...defaultGaugeProps,
     ...props,
   };
 
   const asPercentage = fractional ? Math.round(value * max) : value;
   const asActual = max !== 100 ? Math.round(value) : asPercentage;
 
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const node = hoverRef;
+    const handleMouseOver = () => setIsHovering(true);
+    const handleMouseOut = () => setIsHovering(false);
+    if (node && description) {
+      node.addEventListener('mouseenter', handleMouseOver);
+      node.addEventListener('mouseleave', handleMouseOut);
+
+      return () => {
+        node.removeEventListener('mouseenter', handleMouseOver);
+        node.removeEventListener('mouseleave', handleMouseOut);
+      };
+    }
+    return () => {
+      setIsHovering(false);
+    };
+  }, [description, hoverRef]);
+
   return (
-    <div className={classes.root}>
+    <div ref={setHoverRef} className={classes.root}>
       <Circle
         strokeLinecap="butt"
         percent={asPercentage}
         strokeWidth={12}
         trailWidth={12}
-        strokeColor={getProgressColor(theme.palette, asActual, inverse, max)}
+        strokeColor={getColor({ palette, value: asActual, inverse, max })}
         className={classes.circle}
       />
-      <div className={classes.overlay}>
-        {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
-      </div>
+      {description && isHovering ? (
+        <div className={classes.description}>{description}</div>
+      ) : (
+        <div className={classes.overlay}>
+          {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
+        </div>
+      )}
     </div>
   );
-};
+}

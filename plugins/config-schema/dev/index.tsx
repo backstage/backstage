@@ -31,7 +31,7 @@ createDevApp()
     factory: () => ({
       schema$: () =>
         new Observable<ConfigSchemaResult>(sub =>
-          sub.next({ schema: (exampleSchema as unknown) as Schema }),
+          sub.next({ schema: exampleSchema as unknown as Schema }),
         ),
     }),
   })

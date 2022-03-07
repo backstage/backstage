@@ -18,14 +18,20 @@ import {
   IndexableDocument,
   SearchQuery,
   SearchResultSet,
-} from '@backstage/search-common';
+  QueryTranslator,
+  SearchEngine,
+} from '@backstage/plugin-search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
-import { QueryTranslator, SearchEngine } from '../types';
+import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
+/**
+ * @beta
+ */
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
   documentTypes?: string[];
+  pageSize: number;
 };
 
 type LunrResultEnvelope = {
@@ -33,8 +39,14 @@ type LunrResultEnvelope = {
   type: string;
 };
 
-type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
+/**
+ * @beta
+ */
+export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
+/**
+ * @beta
+ */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
@@ -50,6 +62,8 @@ export class LunrSearchEngine implements SearchEngine {
     filters,
     types,
   }: SearchQuery): ConcreteLunrQuery => {
+    const pageSize = 25;
+
     return {
       lunrQueryBuilder: q => {
         const termToken = lunr.tokenizer(term);
@@ -76,11 +90,17 @@ export class LunrSearchEngine implements SearchEngine {
         });
 
         if (filters) {
-          Object.entries(filters).forEach(([field, value]) => {
+          Object.entries(filters).forEach(([field, fieldValue]) => {
             if (!q.allFields.includes(field)) {
               // Throw for unknown field, as this will be a non match
               throw new Error(`unrecognised field ${field}`);
             }
+            // Arrays are poorly supported, but we can make it better for single-item arrays,
+            // which should be a common case
+            const value =
+              Array.isArray(fieldValue) && fieldValue.length === 1
+                ? fieldValue[0]
+                : fieldValue;
 
             // Require that the given field has the given value
             if (['string', 'number', 'boolean'].includes(typeof value)) {
@@ -106,6 +126,7 @@ export class LunrSearchEngine implements SearchEngine {
         }
       },
       documentTypes: types,
+      pageSize,
     };
   };
 
@@ -113,34 +134,21 @@ export class LunrSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    const lunrBuilder = new lunr.Builder();
+  async getIndexer(type: string) {
+    const indexer = new LunrSearchEngineIndexer();
 
-    lunrBuilder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
-    lunrBuilder.searchPipeline.add(lunr.stemmer);
-
-    // Make this lunr index aware of all relevant fields.
-    Object.keys(documents[0]).forEach(field => {
-      lunrBuilder.field(field);
+    indexer.on('close', () => {
+      // Once the stream is closed, build the index and store the documents in
+      // memory for later retrieval.
+      this.lunrIndices[type] = indexer.buildIndex();
+      this.docStore = { ...this.docStore, ...indexer.getDocumentStore() };
     });
 
-    // Set "location" field as reference field
-    lunrBuilder.ref('location');
-
-    documents.forEach((document: IndexableDocument) => {
-      // Add document to Lunar index
-      lunrBuilder.add(document);
-      // Store documents in memory to be able to look up document using the ref during query time
-      // This is not how you should implement your SearchEngine implementation! Do not copy!
-      this.docStore[document.location] = document;
-    });
-
-    // "Rotate" the index by simply overwriting any existing index of the same name.
-    this.lunrIndices[type] = lunrBuilder.build();
+    return indexer;
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
-    const { lunrQueryBuilder, documentTypes } = this.translator(
+    const { lunrQueryBuilder, documentTypes, pageSize } = this.translator(
       query,
     ) as ConcreteLunrQuery;
 
@@ -176,13 +184,41 @@ export class LunrSearchEngine implements SearchEngine {
       return doc2.result.score - doc1.result.score;
     });
 
+    // Perform paging
+    const { page } = decodePageCursor(query.pageCursor);
+    const offset = page * pageSize;
+    const hasPreviousPage = page > 0;
+    const hasNextPage = results.length > offset + pageSize;
+    const nextPageCursor = hasNextPage
+      ? encodePageCursor({ page: page + 1 })
+      : undefined;
+    const previousPageCursor = hasPreviousPage
+      ? encodePageCursor({ page: page - 1 })
+      : undefined;
+
     // Translate results into SearchResultSet
     const realResultSet: SearchResultSet = {
-      results: results.map(d => {
+      results: results.slice(offset, offset + pageSize).map(d => {
         return { type: d.type, document: this.docStore[d.result.ref] };
       }),
+      nextPageCursor,
+      previousPageCursor,
     };
 
     return realResultSet;
   }
+}
+
+export function decodePageCursor(pageCursor?: string): { page: number } {
+  if (!pageCursor) {
+    return { page: 0 };
+  }
+
+  return {
+    page: Number(Buffer.from(pageCursor, 'base64').toString('utf-8')),
+  };
+}
+
+export function encodePageCursor({ page }: { page: number }): string {
+  return Buffer.from(`${page}`, 'utf-8').toString('base64');
 }

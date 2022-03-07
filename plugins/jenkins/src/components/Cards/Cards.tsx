@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LinearProgress, Link, makeStyles, Theme } from '@material-ui/core';
+import { LinearProgress, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime, Duration } from 'luxon';
 import React from 'react';
@@ -22,6 +22,7 @@ import { ErrorType, useBuilds } from '../useBuilds';
 import {
   InfoCard,
   InfoCardVariants,
+  Link,
   StructuredMetadataTable,
   WarningPanel,
 } from '@backstage/core-components';
@@ -66,7 +67,7 @@ const WidgetContent = ({
         'latest run': displayDate,
         duration: displayDuration,
         link: (
-          <Link href={latestRun.lastBuild.url} target="_blank">
+          <Link to={latestRun.lastBuild.url}>
             See more on Jenkins{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>

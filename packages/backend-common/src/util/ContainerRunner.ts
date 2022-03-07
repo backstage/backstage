@@ -16,6 +16,11 @@
 
 import { Writable } from 'stream';
 
+/**
+ * Options passed to the {@link ContainerRunner.runContainer} method.
+ *
+ * @public
+ */
 export type RunContainerOptions = {
   imageName: string;
   command?: string | string[];
@@ -27,6 +32,14 @@ export type RunContainerOptions = {
   pullImage?: boolean;
 };
 
+/**
+ * Handles the running of containers, on behalf of others.
+ *
+ * @public
+ */
 export interface ContainerRunner {
+  /**
+   * Runs a container image to completion.
+   */
   runContainer(opts: RunContainerOptions): Promise<void>;
 }

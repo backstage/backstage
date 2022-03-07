@@ -23,6 +23,13 @@ export default async function createPlugin({
   database,
   config,
   discovery,
+  tokenManager,
 }: PluginEnvironment): Promise<Router> {
-  return await createRouter({ logger, config, database, discovery });
+  return await createRouter({
+    logger,
+    config,
+    database,
+    discovery,
+    tokenManager,
+  });
 }

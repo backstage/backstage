@@ -42,6 +42,7 @@ export const xcmetricsPlugin = createPlugin({
 
 export const XcmetricsPage = xcmetricsPlugin.provide(
   createRoutableExtension({
+    name: 'XcmetricsPage',
     component: () =>
       import('./components/XcmetricsLayout').then(m => m.XcmetricsLayout),
     mountPoint: rootRouteRef,

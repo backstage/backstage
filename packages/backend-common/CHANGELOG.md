@@ -1,5 +1,478 @@
 # @backstage/backend-common
 
+## 0.12.1
+
+### Patch Changes
+
+- Fixed runtime resolution of the `/alpha` entry point.
+
+## 0.12.0
+
+### Minor Changes
+
+- 9a0510144f: **BREAKING**: The connection string for `redis` cache store now requires a protocol prefix.
+
+  ```diff
+  backend:
+    cache:
+      store: redis
+  -   connection: user:pass@cache.example.com:6379
+  +   connection: redis://user:pass@cache.example.com:6379
+  ```
+
+### Patch Changes
+
+- 0df6077ab5: DockerContainerRunner.runContainer now automatically removes the container when its execution terminates
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+- b838717e92: Export FetchUrlReader to facilitate more flexible configuration of the backend.
+- Updated dependencies
+  - @backstage/integration@0.8.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 7d12e4cf32: feat(backend-common): add Redis backed cache store
+
+### Patch Changes
+
+- b2f8bb99d3: Make backend.auth.keys optional in config schema. Previously backend.auth was optional but keys was not, which meant that if another plugin introduced additional properties under backend.auth, it would implicitly make backend.auth.keys mandatory.
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- Updated dependencies
+  - @backstage/config-loader@0.9.6
+  - @backstage/integration@0.7.5
+
+## 0.10.9
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/cli-common@0.1.8
+  - @backstage/config@0.1.15
+  - @backstage/config-loader@0.9.5
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/types@0.1.3
+
+## 0.10.8
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- b590e9b58d: Updated `isDatabaseConflictError` to handle modern sqlite conflict errors
+- Updated dependencies
+  - @backstage/config-loader@0.9.4
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.10.7
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 599f3dfa83: chore(deps-dev): bump `@types/concat-stream` from 1.6.1 to 2.0.0
+- c3868458d8: Removed unnecessary `get-port` dependency
+- 04398e946e: Bump `selfsigned` to 2.0.0
+
+## 0.10.7-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 599f3dfa83: chore(deps-dev): bump `@types/concat-stream` from 1.6.1 to 2.0.0
+- c3868458d8: Removed unnecessary `get-port` dependency
+
+## 0.10.6
+
+### Patch Changes
+
+- 50d039577a: Added a `Context` type for the backend, that can propagate an abort signal, a
+  deadline, and contextual values through the call stack. The main entrypoint is
+  the `Contexts` utility class that provides a root context creator and commonly
+  used decorators.
+
+  These are marked as `@alpha` for now, and are therefore only accessible via
+  `@backstage/backend-common/alpha`.
+
+## 0.10.6-next.0
+
+### Patch Changes
+
+- 50d039577a: Added a `Context` type for the backend, that can propagate an abort signal, a
+  deadline, and contextual values through the call stack. The main entrypoint is
+  the `Contexts` utility class that provides a root context creator and commonly
+  used decorators.
+
+  These are marked as `@alpha` for now, and are therefore only accessible via
+  `@backstage/backend-common/alpha`.
+
+## 0.10.5
+
+### Patch Changes
+
+- de9d7eba63: Fixed configuration schema incorrectly declaring `backend.listen.address` to exist, rather than `backend.listen.host`, which is the correct key.
+
+## 0.10.4
+
+### Patch Changes
+
+- f685e1398f: Loading of app configurations now reference the `@deprecated` construct from
+  JSDoc to determine if a property in-use has been deprecated. Users are notified
+  of deprecated keys in the format:
+
+  ```txt
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+  When the `withDeprecatedKeys` option is set to `true` in the `process` method
+  of `loadConfigSchema`, the user will be notified that deprecated keys have been
+  identified in their app configuration.
+
+  The `backend-common` and `plugin-app-backend` packages have been updated to set
+  `withDeprecatedKeys` to true so that users are notified of deprecated settings
+  by default.
+
+- Updated dependencies
+  - @backstage/integration@0.7.2
+  - @backstage/config@0.1.13
+  - @backstage/config-loader@0.9.3
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- f685e1398f: Loading of app configurations now reference the `@deprecated` construct from
+  JSDoc to determine if a property in-use has been deprecated. Users are notified
+  of deprecated keys in the format:
+
+  ```txt
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+  When the `withDeprecatedKeys` option is set to `true` in the `process` method
+  of `loadConfigSchema`, the user will be notified that deprecated keys have been
+  identified in their app configuration.
+
+  The `backend-common` and `plugin-app-backend` packages have been updated to set
+  `withDeprecatedKeys` to true so that users are notified of deprecated settings
+  by default.
+
+- Updated dependencies
+  - @backstage/config@0.1.13-next.0
+  - @backstage/config-loader@0.9.3-next.0
+  - @backstage/integration@0.7.2-next.0
+
+## 0.10.3
+
+### Patch Changes
+
+- 5b406daabe: build(deps-dev): bump `http-errors` from 1.8.0 to 2.0.0
+- 5333451def: Cleaned up API exports
+- db5310e25e: bump `logform` to use fixed version of `color` dependency
+- 7946418729: Switched to using `@manypkg/get-packages` to list monorepo packages, which provides better support for different kind of monorepo setups.
+- 3b4d8caff6: The GithubUrlReader is switched to use the DefaultGithubCredentialsProvider
+- f77bd5c8ff: Clean up API reports
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/errors@0.2.0
+  - @backstage/config-loader@0.9.2
+
+## 0.10.2
+
+### Patch Changes
+
+- 21ae56168e: Updated the Git class with the following:
+
+  - Added `depth` and `noCheckout` options to Git clone, using these you can create a bare clone that includes just the git history
+  - New `log` function which you can use to view the commit history of a git repo
+
+- eacc582473: Reverted the default CSP configuration to include `'unsafe-eval'` again, which was mistakenly removed in the previous version.
+
+## 0.10.1
+
+### Patch Changes
+
+- 94cdf5d1bd: In-memory cache clients instantiated from the same cache manager now share the same memory space.
+- 916b2f1f3e: Use the default CSP policy provided by `helmet` directly rather than a copy.
+- 7d4b4e937c: Uptake changes to the GitHub Credentials Provider interface.
+- 995e4c7d9d: Added support for non-"amazonaws.com" hosts (for example when testing with LocalStack) in AwsS3UrlReader.
+- Updated dependencies
+  - @backstage/integration@0.7.0
+  - @backstage/config-loader@0.9.1
+
+## 0.10.0
+
+### Minor Changes
+
+- 2f8a9b665f: Auto-generate secrets for backend-to-backend auth in local development environments.
+
+  When NODE_ENV is 'development', the ServerTokenManager will now generate a secret for backend-to-backend auth to make it simpler to work locally on Backstage instances that use backend-to-backend auth. For production deployments, a secret must still be manually configured as described in [the backend-to-backend auth tutorial](https://backstage.io/docs/tutorials/backend-to-backend-auth).
+
+  After the change, the static `fromConfig` method on the `ServerTokenManager` requires a logger.
+
+  ```diff
+  -  const tokenManager = ServerTokenManager.fromConfig(config);
+  +  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
+  ```
+
+### Patch Changes
+
+- 776180b740: Fixed bug in backend-common to allow passing of remote option in order to enable passing remote url in --config option. The remote option should be passed along with reloadIntervalSeconds from packages/backend/src/index.ts (Updated the file as well)
+
+  These changes are needed in `packages/backend/src/index.ts` if remote URLs are desired to be passed in --config option and read and watch remote files for config.
+
+  ```diff
+  @@ -86,7 +86,11 @@ async function main() {
+     const config = await loadBackendConfig({
+       argv: process.argv,
+       logger,
+  +    remote: {
+  +      reloadIntervalSeconds: 60 * 10 // Check remote config changes every 10 minutes. Change to your desired interval in seconds
+  +    }
+     });
+  +
+     const createEnv = makeCreateEnv(config);
+
+     const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
+  ```
+
+- 2462b9e275: Ensure temporary directories are cleaned up if an error is thrown in the `filter` callback of the `UrlReader.readTree` options.
+- 2f6d8ec3b6: Updated the `ReadTreeResponse` documentation to clarify that the caller of `dir()` is responsible for removing the directory after use.
+- Updated dependencies
+  - @backstage/config-loader@0.9.0
+
+## 0.9.14
+
+### Patch Changes
+
+- fe24bc9a32: Each plugin now saves to a separate sqlite database file when `connection.filename` is provided in the sqlite config.
+  Any existing sqlite database files will be ignored.
+
+## 0.9.13
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- 5a008576c4: Add possibility to use custom error handler
+- 98a9c35f0c: Add options argument to support additional database migrations configuration
+- 6298de32dd: Add knexConfig config section
+
+## 0.9.12
+
+### Patch Changes
+
+- 905dd952ac: Create a `TokenManager` interface and `ServerTokenManager` implementation to generate and validate server tokens for authenticated backend-to-backend API requests.
+- 6b500622d5: Move to using node-fetch internally instead of cross-fetch
+- 54989b671d: Fixed a potential crash in the log redaction code
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/config-loader@0.8.1
+
+## 0.9.11
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/errors@0.1.5
+
+## 0.9.10
+
+### Patch Changes
+
+- d7c1e0e34a: Added the `isDatabaseConflictError` function.
+- e21e3c6102: Bumping minimum requirements for `dockerode` and `testcontainers`
+- 1e99c73c75: Update internal usage of `configLoader.loadConfig` that now returns an object instead of an array of configs.
+- 1daada3a06: Paths can be specified in backend.reading.allow to further restrict allowed targets
+- 7ad9a07b27: Adding config prop `pluginDivisionMode` to allow plugins using the `pg` client to create their own management schemas in the db. This allows `pg` client plugins to work in separate schemas in the same db.
+- 01f74aa878: Add `AbortSignal` support to `UrlReader`
+- a8732a1200: Make sure that server builder `start()` propagates errors (such as failing to bind to the required port) properly and doesn't resolve the promise prematurely.
+
+  After this change, the backend logger will be able to actually capture the error as it happens:
+
+  ```
+  2021-11-11T10:54:21.334Z backstage info Initializing http server
+  2021-11-11T10:54:21.335Z backstage error listen EADDRINUSE: address already in use :::7000 code=EADDRINUSE errno=-48 syscall=listen address=:: port=7000
+  ```
+
+- 26b5da1c1a: Do not redact empty or one-character strings. These imply that it's just a test or local dev, and unnecessarily ruin the log output.
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/cli-common@0.1.6
+
+## 0.9.9
+
+### Patch Changes
+
+- 8c4cad0bf2: AWSS3UrlReader now throws a `NotModifiedError` (exported from @backstage/backend-common) when s3 returns a 304 response.
+- 0611f3b3e2: Reading app config from a remote server
+- Updated dependencies
+  - @backstage/config-loader@0.7.2
+
+## 0.9.8
+
+### Patch Changes
+
+- 96cfa561eb: Adjusted some API exports
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 1be8d2abdb: Any set configurations which have been tagged with a visibility 'secret', are now redacted from log lines.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/config-loader@0.7.1
+
+## 0.9.7
+
+### Patch Changes
+
+- be59619212: Add "rate limit exceeded" to error from GithubUrlReader if that is the cause of a read failure
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/config-loader@0.7.0
+  - @backstage/errors@0.1.3
+
+## 0.9.6
+
+### Patch Changes
+
+- 8f969d5a56: Correct error message typo
+- a31afc5b62: Replace slash stripping regexp with trimEnd to remove CodeQL warning
+- d7055285de: Add glob patterns support to config CORS options. It's possible to send patterns like:
+
+  ```yaml
+  backend:
+    cors:
+      origin:
+        - https://*.my-domain.com
+        - http://localhost:700[0-9]
+        - https://sub-domain-+([0-9]).my-domain.com
+  ```
+
+- Updated dependencies
+  - @backstage/config-loader@0.6.10
+  - @backstage/integration@0.6.7
+  - @backstage/cli-common@0.1.4
+
+## 0.9.5
+
+### Patch Changes
+
+- 8bb3c0a578: The `subscribe` method on the `Config` returned by `loadBackendConfig` is now forwarded through `getConfig` and `getOptionalConfig`.
+- 0c8a59e293: Fix an issue where filtering in search doesn't work correctly for Bitbucket.
+- Updated dependencies
+  - @backstage/integration@0.6.6
+  - @backstage/config-loader@0.6.9
+
+## 0.9.4
+
+### Patch Changes
+
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/config@0.1.10
+
+## 0.9.3
+
+### Patch Changes
+
+- fab79adde1: Add AWS S3 Discovery Processor. Add readTree() to AwsS3UrlReader. Add ReadableArrayResponse type that implements ReadTreeResponse to use in AwsS3UrlReader's readTree()
+- f7ad3a8925: Fix Azure `readTree` and `search` handling to properly support paths.
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/integration@0.6.4
+
+## 0.9.2
+
+### Patch Changes
+
+- 9e5ed27ec: Properly export all used types.
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+
+## 0.9.1
+
+### Patch Changes
+
+- 714a2a918: Export type that are needed to implement a new `UrlReader`
+- Updated dependencies
+  - @backstage/integration@0.6.3
+
+## 0.9.0
+
+### Minor Changes
+
+- a365f1faf: The `ZipArchiveResponse` class now accepts an optional `stripFirstDirectory` parameter. Note that its default value is `false`, which leads to a breaking change in behaviour to previous versions of the class. If you use this class explicitly and want to retain the old behaviour, add a `true` parameter value to its constructor.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+
+## 0.8.10
+
+### Patch Changes
+
+- 8543d9890: Add an optional `info` parameter to the `readTree` filter option with a `size` property.
+- 4d909268c: Read responses in `UrlReader#read()` as array buffer instead of as text to allow reading non-text locations such as images.
+- 9b4604b38: Add support for watching configuration by implementing the `subscribe` method in the configuration returned by `loadBackendConfig`.
+- b8cb12009: Add AWS S3 URL Reader
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/config-loader@0.6.7
+  - @backstage/integration@0.6.1
+
+## 0.8.9
+
+### Patch Changes
+
+- f7ce7c565: Use a more informative error message when URL reading isn't allowed due to no reader matching the target URL.
+- ce1958021: Pass on credentials to the integrations package, so that it can properly pick the API route when using GitHub apps based auth
+- Updated dependencies
+  - @backstage/integration@0.6.0
+
+## 0.8.8
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+  - @backstage/config-loader@0.6.6
+
 ## 0.8.7
 
 ### Patch Changes

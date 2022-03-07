@@ -18,20 +18,21 @@ import { SerializedError } from '@backstage/errors';
 
 /**
  * The current status of the entity, as claimed by various sources.
+ *
  * @alpha
  */
-export type UNSTABLE_EntityStatus = {
+export type EntityStatus = {
   /**
    * Specific status item on a well known format.
    */
-  items?: UNSTABLE_EntityStatusItem[];
+  items?: EntityStatusItem[];
 };
 
 /**
  * A specific status item on a well known format.
  * @alpha
  */
-export type UNSTABLE_EntityStatusItem = {
+export type EntityStatusItem = {
   /**
    * The type of status as a unique key per source.
    */
@@ -42,7 +43,7 @@ export type UNSTABLE_EntityStatusItem = {
    * entry may apply to a different, newer version of the data than what is
    * being returned in the catalog response.
    */
-  level: UNSTABLE_EntityStatusLevel;
+  level: EntityStatusLevel;
   /**
    * A brief message describing the status, intended for human consumption.
    */
@@ -57,7 +58,7 @@ export type UNSTABLE_EntityStatusItem = {
  * Each entity status item has a level, describing its severity.
  * @alpha
  */
-export type UNSTABLE_EntityStatusLevel =
+export type EntityStatusLevel =
   | 'info' // Only informative data
   | 'warning' // Warnings were found
   | 'error'; // Errors were found

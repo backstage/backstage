@@ -80,18 +80,14 @@ export const CreateReleaseCandidate = ({
     );
   }, [semverBumpLevel, setReleaseCandidateGitInfo, latestRelease, project]);
 
-  const {
-    progress,
-    responseSteps,
-    run,
-    runInvoked,
-  } = useCreateReleaseCandidate({
-    defaultBranch,
-    latestRelease,
-    releaseCandidateGitInfo,
-    project,
-    onSuccess,
-  });
+  const { progress, responseSteps, run, runInvoked } =
+    useCreateReleaseCandidate({
+      defaultBranch,
+      latestRelease,
+      releaseCandidateGitInfo,
+      project,
+      onSuccess,
+    });
   if (responseSteps.length > 0) {
     return (
       <ResponseStepDialog

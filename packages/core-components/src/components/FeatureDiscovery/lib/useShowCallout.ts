@@ -38,9 +38,10 @@ function useCalloutStates(): {
   return { states, setState };
 }
 
-function useCalloutHasBeenSeen(
-  featureId: string,
-): { seen: boolean | undefined; markSeen: () => void } {
+function useCalloutHasBeenSeen(featureId: string): {
+  seen: boolean | undefined;
+  markSeen: () => void;
+} {
   const { states, setState } = useCalloutStates();
 
   const markSeen = useCallback(() => {
@@ -50,9 +51,10 @@ function useCalloutHasBeenSeen(
   return { seen: states[featureId] === true, markSeen };
 }
 
-export function useShowCallout(
-  featureId: string,
-): { show: boolean; hide: () => void } {
+export function useShowCallout(featureId: string): {
+  show: boolean;
+  hide: () => void;
+} {
   const { seen, markSeen } = useCalloutHasBeenSeen(featureId);
   return { show: seen === false, hide: markSeen };
 }

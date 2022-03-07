@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Link } from '@material-ui/core';
 import { ClusterStatus } from '../../api';
 import { transformStatus } from '../ProfileCatalog/ProfileCatalog';
-import { Table, TableColumn } from '@backstage/core-components';
+import { Link, Table, TableColumn } from '@backstage/core-components';
 
 const columns: TableColumn[] = [
   {
@@ -25,7 +24,7 @@ const columns: TableColumn[] = [
     field: 'name',
     highlight: true,
     render: (componentData: any) => (
-      <Link href={`/gitops-cluster/${componentData.name}`}>
+      <Link to={`/gitops-cluster/${encodeURIComponent(componentData.name)}`}>
         {componentData.name}
       </Link>
     ),

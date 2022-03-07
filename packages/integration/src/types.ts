@@ -18,6 +18,8 @@ import { Config } from '@backstage/config';
 
 /**
  * Encapsulates a single SCM integration.
+ *
+ * @public
  */
 export interface ScmIntegration {
   /**
@@ -42,14 +44,19 @@ export interface ScmIntegration {
    * within the file tree of a certain repo, an absolute path of `/b.yaml` does
    * not resolve to `https://hostname/b.yaml` but rather to
    * `<repo root url>/b.yaml` inside the file tree of that same repo.
-   *
-   * @param options.url The (absolute or relative) URL or path to resolve
-   * @param options.base The base URL onto which this resolution happens
-   * @param options.lineNumber The line number in the target file to link to, starting with 1. Only applicable when linking to files.
    */
   resolveUrl(options: {
+    /**
+     * The (absolute or relative) URL or path to resolve
+     */
     url: string;
+    /**
+     * The base URL onto which this resolution happens
+     */
     base: string;
+    /**
+     * The line number in the target file to link to, starting with 1. Only applicable when linking to files.
+     */
     lineNumber?: number;
   }): string;
 
@@ -62,13 +69,15 @@ export interface ScmIntegration {
    * If this is not possible, the integration can fall back to a URL to view
    * the file in the web interface.
    *
-   * @param url The absolute URL to the file that should be edited.
+   * @param url - The absolute URL to the file that should be edited.
    */
   resolveEditUrl(url: string): string;
 }
 
 /**
  * Encapsulates several integrations, that are all of the same type.
+ *
+ * @public
  */
 export interface ScmIntegrationsGroup<T extends ScmIntegration> {
   /**
@@ -79,18 +88,23 @@ export interface ScmIntegrationsGroup<T extends ScmIntegration> {
   /**
    * Fetches an integration of this type by URL.
    *
-   * @param url A URL that matches a registered integration of this type
+   * @param url - A URL that matches a registered integration of this type
    */
   byUrl(url: string | URL): T | undefined;
 
   /**
    * Fetches an integration of this type by host name.
    *
-   * @param url A host name that matches a registered integration of this type
+   * @param host - A host name that matches a registered integration of this type
    */
   byHost(host: string): T | undefined;
 }
 
+/**
+ * A factory function that creates an integration group based on configuration.
+ *
+ * @public
+ */
 export type ScmIntegrationsFactory<T extends ScmIntegration> = (options: {
   config: Config;
 }) => ScmIntegrationsGroup<T>;

@@ -15,15 +15,23 @@
  */
 
 import {
-  DocumentCollator,
-  DocumentDecorator,
-  IndexableDocument,
-  SearchQuery,
-  SearchResultSet,
-} from '@backstage/search-common';
+  DocumentCollatorFactory,
+  DocumentDecoratorFactory,
+  SearchEngine,
+} from '@backstage/plugin-search-common';
+import { Logger } from 'winston';
+
+/**
+ * @beta
+ */
+export type IndexBuilderOptions = {
+  searchEngine: SearchEngine;
+  logger: Logger;
+};
 
 /**
  * Parameters required to register a collator.
+ * @beta
  */
 export interface RegisterCollatorParameters {
   /**
@@ -32,45 +40,18 @@ export interface RegisterCollatorParameters {
   defaultRefreshIntervalSeconds: number;
 
   /**
-   * The collator class responsible for returning all documents of the given type.
+   * The class responsible for returning the document collator of the given type.
    */
-  collator: DocumentCollator;
+  factory: DocumentCollatorFactory;
 }
 
 /**
  * Parameters required to register a decorator
+ * @beta
  */
 export interface RegisterDecoratorParameters {
   /**
-   * The decorator class responsible for appending or modifying documents of the given type(s).
+   * The class responsible for returning the decorator which appends, modifies, or filters documents.
    */
-  decorator: DocumentDecorator;
-}
-
-/**
- * A type of function responsible for translating an abstract search query into
- * a concrete query relevant to a particular search engine.
- */
-export type QueryTranslator = (query: SearchQuery) => unknown;
-
-/**
- * Interface that must be implemented by specific search engines, responsible
- * for performing indexing and querying and translating abstract queries into
- * concrete, search engine-specific queries.
- */
-export interface SearchEngine {
-  /**
-   * Override the default translator provided by the SearchEngine.
-   */
-  setTranslator(translator: QueryTranslator): void;
-
-  /**
-   * Add the given documents to the SearchEngine index of the given type.
-   */
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
-
-  /**
-   * Perform a search query against the SearchEngine.
-   */
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  factory: DocumentDecoratorFactory;
 }

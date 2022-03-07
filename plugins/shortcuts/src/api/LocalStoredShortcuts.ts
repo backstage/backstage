@@ -82,11 +82,9 @@ export class LocalStoredShortcuts implements ShortcutApi {
   };
 
   private get() {
-    return (
-      (this.storageApi.get('items') as Shortcut[])?.sort((a, b) =>
-        a.title >= b.title ? 1 : -1,
-      ) ?? []
-    );
+    return Array.from(
+      this.storageApi.snapshot<Shortcut[]>('items').value ?? [],
+    ).sort((a, b) => (a.title >= b.title ? 1 : -1));
   }
 
   private notify() {

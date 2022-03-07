@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 export type EnvFunc = (name: string) => Promise<string | undefined>;
 

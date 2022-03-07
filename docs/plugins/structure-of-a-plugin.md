@@ -73,6 +73,7 @@ export const examplePlugin = createPlugin({
 
 export const ExamplePage = examplePlugin.provide(
   createRoutableExtension({
+    name: 'ExamplePage',
     component: () =>
       import('./components/ExampleComponent').then(m => m.ExampleComponent),
     mountPoint: rootRouteRef,
@@ -82,8 +83,8 @@ export const ExamplePage = examplePlugin.provide(
 
 This is where the plugin is created and where it creates and exports extensions
 that can be imported and used the app. See reference docs for
-[createPlugin](../reference/createPlugin.md) or introduction to the new
-[Composability System](./composability.md).
+[createPlugin](../reference/core-plugin-api.createplugin.md) or introduction to
+the new [Composability System](./composability.md).
 
 ## Components
 

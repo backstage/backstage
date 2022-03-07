@@ -14,40 +14,71 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/**
+ * Utility API reference for the {@link TechDocsStorageApi}.
+ *
+ * @public
+ */
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
-  description: 'Used to make requests towards the techdocs storage',
 });
 
+/**
+ * Utility API reference for the {@link TechDocsApi}.
+ *
+ * @public
+ */
 export const techdocsApiRef = createApiRef<TechDocsApi>({
   id: 'plugin.techdocs.service',
-  description: 'Used to make requests towards techdocs API',
 });
 
+/**
+ * The outcome of a docs sync operation.
+ *
+ * @public
+ */
 export type SyncResult = 'cached' | 'updated';
 
+/**
+ * API which talks to TechDocs storage to fetch files to render.
+ *
+ * @public
+ */
 export interface TechDocsStorageApi {
+  /**
+   * Set to techdocs.requestUrl as the URL for techdocs-backend API.
+   */
   getApiOrigin(): Promise<string>;
   getStorageUrl(): Promise<string>;
   getBuilder(): Promise<string>;
-  getEntityDocs(entityId: EntityName, path: string): Promise<string>;
+  getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
   syncEntityDocs(
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
   getBaseUrl(
     oldBaseUrl: string,
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     path: string,
   ): Promise<string>;
 }
 
+/**
+ * API to talk to techdocs-backend.
+ *
+ * @public
+ */
 export interface TechDocsApi {
+  /**
+   * Set to techdocs.requestUrl as the URL for techdocs-backend API.
+   */
   getApiOrigin(): Promise<string>;
-  getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata>;
-  getEntityMetadata(entityId: EntityName): Promise<TechDocsEntityMetadata>;
+  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
+  getEntityMetadata(
+    entityId: CompoundEntityRef,
+  ): Promise<TechDocsEntityMetadata>;
 }

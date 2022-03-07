@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that integrates towards Rollbar
+ *
+ * @packageDocumentation
+ */
+
 export * from './api';
 export { EntityPageRollbar } from './components/EntityPageRollbar/EntityPageRollbar';
 export {

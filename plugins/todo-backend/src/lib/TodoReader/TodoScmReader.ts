@@ -27,12 +27,27 @@ import {
 } from './types';
 import { Config } from '@backstage/config';
 import { createTodoParser } from './createTodoParser';
+import path from 'path';
 
-type Options = {
+const excludedExtensions = [
+  '.png',
+  '.svg',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.raw',
+  '.lock',
+  '.ico',
+];
+const MAX_FILE_SIZE = 200000;
+
+/** @public */
+export type TodoScmReaderOptions = {
   logger: Logger;
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;
+  filePathFilter?: (filePath: string) => boolean;
 };
 
 type CacheItem = {
@@ -40,50 +55,79 @@ type CacheItem = {
   result: ReadTodosResult;
 };
 
+/** @public */
 export class TodoScmReader implements TodoReader {
   private readonly logger: Logger;
   private readonly reader: UrlReader;
   private readonly parser: TodoParser;
   private readonly integrations: ScmIntegrations;
+  private readonly filePathFilter: (filePath: string) => boolean;
 
   private readonly cache = new Map<string, CacheItem>();
+  private readonly inFlightReads = new Map<string, Promise<CacheItem>>();
 
-  static fromConfig(config: Config, options: Omit<Options, 'integrations'>) {
+  static fromConfig(
+    config: Config,
+    options: Omit<TodoScmReaderOptions, 'integrations'>,
+  ) {
     return new TodoScmReader({
       ...options,
       integrations: ScmIntegrations.fromConfig(config),
     });
   }
 
-  constructor(options: Options) {
+  constructor(options: TodoScmReaderOptions) {
     this.logger = options.logger;
     this.reader = options.reader;
     this.parser = options.parser ?? createTodoParser();
     this.integrations = options.integrations;
+    this.filePathFilter = options.filePathFilter ?? (() => true);
   }
 
-  async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
+  async readTodos(options: ReadTodosOptions): Promise<ReadTodosResult> {
+    const { url } = options;
+    const inFlightRead = this.inFlightReads.get(url);
+    if (inFlightRead) {
+      return inFlightRead.then(read => read.result);
+    }
+
     const cacheItem = this.cache.get(url);
-    try {
-      const newCacheItem = await this.doReadTodos({ url }, cacheItem?.etag);
-      this.cache.set(url, newCacheItem);
-      return newCacheItem.result;
-    } catch (error) {
+    const newRead = this.doReadTodos({ url }, cacheItem?.etag).catch(error => {
       if (cacheItem && error.name === 'NotModifiedError') {
-        return cacheItem.result;
+        return cacheItem;
       }
       throw error;
+    });
+
+    this.inFlightReads.set(url, newRead);
+    try {
+      const newCacheItem = await newRead;
+      this.cache.set(url, newCacheItem);
+      return newCacheItem.result;
+    } finally {
+      this.inFlightReads.delete(url);
     }
   }
 
   private async doReadTodos(
-    { url }: ReadTodosOptions,
+    options: ReadTodosOptions,
     etag?: string,
   ): Promise<CacheItem> {
+    const { url } = options;
+    const filePathFilter = this.filePathFilter;
     const tree = await this.reader.readTree(url, {
       etag,
-      filter(path) {
-        return !path.startsWith('.') && !path.includes('/.');
+      filter(filePath, info) {
+        const extname = path.extname(filePath);
+        if (info && info.size > MAX_FILE_SIZE) {
+          return false;
+        }
+        return (
+          !filePath.startsWith('.') &&
+          !filePath.includes('/.') &&
+          !excludedExtensions.includes(extname) &&
+          filePathFilter(filePath)
+        );
       },
     });
 

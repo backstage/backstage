@@ -38,11 +38,7 @@ function createStatusColumn(): TableColumn<GithubDeployment>;
 // Warning: (ae-missing-release-tag) "EntityGithubDeploymentsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityGithubDeploymentsCard: ({
-  last,
-  lastStatuses,
-  columns,
-}: {
+export const EntityGithubDeploymentsCard: (props: {
   last?: number | undefined;
   lastStatuses?: number | undefined;
   columns?: TableColumn<GithubDeployment>[] | undefined;
@@ -58,12 +54,9 @@ export const githubDeploymentsPlugin: BackstagePlugin<{}, {}>;
 // Warning: (ae-missing-release-tag) "GithubDeploymentsTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function GithubDeploymentsTable({
-  deployments,
-  isLoading,
-  reload,
-  columns,
-}: GithubDeploymentsTableProps): JSX.Element;
+export function GithubDeploymentsTable(
+  props: GithubDeploymentsTableProps,
+): JSX.Element;
 
 // @public (undocumented)
 export namespace GithubDeploymentsTable {
@@ -78,12 +71,10 @@ export namespace GithubDeploymentsTable {
 // Warning: (ae-missing-release-tag) "GithubStateIndicator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const GithubStateIndicator: ({ state }: { state: string }) => JSX.Element;
+const GithubStateIndicator: (props: { state: string }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isGithubDeploymentsAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const isGithubDeploymentsAvailable: (entity: Entity) => boolean;
-
-// (No @packageDocumentation comment for this package)
 ```

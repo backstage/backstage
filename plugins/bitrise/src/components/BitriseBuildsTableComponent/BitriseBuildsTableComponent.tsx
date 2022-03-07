@@ -219,10 +219,10 @@ export const BitriseBuildsTable = ({
           }}
           totalCount={builds.value?.paging?.total_item_count || 0}
           page={page}
-          onChangePage={pageIndex => {
+          onPageChange={pageIndex => {
             handleChangePage(pageIndex, builds.value?.paging?.next);
           }}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
           columns={columns}
           data={builds.value?.data || []}
           onSearchChange={(searchTerm: string) =>

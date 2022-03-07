@@ -19,7 +19,8 @@ import { GKEClusterDetails } from '../types/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 
 export class GoogleKubernetesAuthTranslator
-  implements KubernetesAuthTranslator {
+  implements KubernetesAuthTranslator
+{
   async decorateClusterDetailsWithAuth(
     clusterDetails: GKEClusterDetails,
     requestBody: KubernetesRequestBody,

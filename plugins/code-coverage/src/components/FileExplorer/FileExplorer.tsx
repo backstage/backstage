@@ -26,11 +26,10 @@ import {
 import DescriptionIcon from '@material-ui/icons/Description';
 import { Alert } from '@material-ui/lab';
 import React, { Fragment, useEffect, useState } from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';
-
 import {
   Progress,
   ResponseErrorPanel,
@@ -51,33 +50,46 @@ type CoverageTableRow = {
   tableData?: { id: number };
 };
 
-const buildFileStructure = (row: CoverageTableRow) => {
-  const dataGroupedByPath: FileStructureObject = row.files.reduce(
-    (acc: FileStructureObject, cur: CoverageTableRow) => {
-      let path = cur.filename;
-      if (row.path) {
-        path = path?.split(`${row.path}/`)[1];
-      }
-      const pathArray = path?.split('/');
-
-      if (!pathArray) {
-        return acc;
-      }
+export const groupByPath = (files: CoverageTableRow[]) => {
+  const acc: FileStructureObject = {};
+  files.forEach(file => {
+    const filename = file.filename;
+    if (!file.filename) return;
+    const pathArray = filename?.split('/').filter(el => el !== '');
+    if (pathArray) {
       if (!acc.hasOwnProperty(pathArray[0])) {
         acc[pathArray[0]] = [];
       }
-      acc[pathArray[0]].push(cur);
-      return acc;
-    },
-    {},
-  );
+      acc[pathArray[0]].push(file);
+    }
+  });
+  return acc;
+};
 
+const removeVisitedPathGroup = (
+  files: CoverageTableRow[],
+  pathGroup: string,
+) => {
+  return files.map(file => {
+    return {
+      ...file,
+      filename: file.filename
+        ? file.filename.substring(
+            file.filename?.indexOf(pathGroup) + pathGroup.length + 1,
+          )
+        : file.filename,
+    };
+  });
+};
+
+export const buildFileStructure = (row: CoverageTableRow) => {
+  const dataGroupedByPath: FileStructureObject = groupByPath(row.files);
   row.files = Object.keys(dataGroupedByPath).map(pathGroup => {
     return buildFileStructure({
       path: pathGroup,
       files: dataGroupedByPath.hasOwnProperty('files')
-        ? dataGroupedByPath.files
-        : dataGroupedByPath[pathGroup],
+        ? removeVisitedPathGroup(dataGroupedByPath.files, pathGroup)
+        : removeVisitedPathGroup(dataGroupedByPath[pathGroup], pathGroup),
       coverage:
         dataGroupedByPath[pathGroup].reduce(
           (acc: number, cur: CoverageTableRow) => acc + cur.coverage,
@@ -117,6 +129,17 @@ const formatInitialData = (value: any) => {
       };
     }),
   });
+};
+
+export const getObjectsAtPath = (
+  curData: CoverageTableRow | undefined,
+  path: string[],
+): CoverageTableRow[] | undefined => {
+  let data = curData?.files;
+  for (const fragment of path) {
+    data = data?.find(d => d.path === fragment)?.files;
+  }
+  return data;
 };
 
 export const FileExplorer = () => {
@@ -163,14 +186,10 @@ export const FileExplorer = () => {
     }
   };
 
-  const moveUpIntoPath = (path: string) => {
-    const pathArray = path.split('/').filter(p => p.length);
-    let data = curData?.files;
-    pathArray.forEach(p => {
-      data = data?.find(d => d.path === p)?.files;
-    });
-    setCurPath(path);
-    setTableData(data);
+  const moveUpIntoPath = (idx: number) => {
+    const path = curPath.split('/').slice(0, idx + 1);
+    setCurPath(path.join('/'));
+    setTableData(getObjectsAtPath(curData, path.slice(1)));
   };
 
   const columns: TableColumn<CoverageTableRow>[] = [
@@ -220,7 +239,7 @@ export const FileExplorer = () => {
       title: 'Coverage',
       type: 'numeric',
       field: 'coverage',
-      render: (row: CoverageTableRow) => `${row.coverage}%`,
+      render: (row: CoverageTableRow) => `${row.coverage.toFixed(2)}%`,
     },
     {
       title: 'Missing lines',
@@ -258,8 +277,8 @@ export const FileExplorer = () => {
                   color: `${idx !== lastPathElementIndex && 'lightblue'}`,
                   cursor: `${idx !== lastPathElementIndex && 'pointer'}`,
                 }}
-                onKeyDown={() => moveUpIntoPath(pathElement)}
-                onClick={() => moveUpIntoPath(pathElement)}
+                onKeyDown={() => moveUpIntoPath(idx)}
+                onClick={() => moveUpIntoPath(idx)}
               >
                 {pathElement || 'root'}
               </div>

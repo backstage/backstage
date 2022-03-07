@@ -29,8 +29,8 @@ const IP_HOSTNAME_REGEX = /:|^\d+\.\d+\.\d+\.\d+$/;
 /**
  * Creates a Http server instance based on an Express application.
  *
- * @param app The Express application object
- * @param logger Optional Winston logger object
+ * @param app - The Express application object
+ * @param logger - Optional Winston logger object
  * @returns A Http server instance
  *
  */
@@ -46,9 +46,9 @@ export function createHttpServer(
 /**
  * Creates a Https server instance based on an Express application.
  *
- * @param app The Express application object
- * @param httpsSettings HttpsSettings for self-signed certificate generation
- * @param logger Optional Winston logger object
+ * @param app - The Express application object
+ * @param httpsSettings - HttpsSettings for self-signed certificate generation
+ * @param logger - Optional Winston logger object
  * @returns A Https server instance
  *
  */

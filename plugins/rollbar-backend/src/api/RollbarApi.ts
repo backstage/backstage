@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import axios from 'axios';
 import { Logger } from 'winston';
 import camelcaseKeys from 'camelcase-keys';
 import { buildQuery } from '../util';
@@ -25,6 +24,7 @@ import {
   RollbarProjectAccessToken,
   RollbarTopActiveItem,
 } from './types';
+import fetch from 'node-fetch';
 
 const baseUrl = 'https://api.rollbar.com/api/1';
 
@@ -110,11 +110,12 @@ export class RollbarApi {
       this.logger.info(`Calling Rollbar REST API, ${fullUrl}`);
     }
 
-    return axios
-      .get(fullUrl, getRequestHeaders(accessToken || this.accessToken || ''))
-      .then(response =>
-        camelcaseKeys<T>(response?.data?.result, { deep: true }),
-      );
+    return fetch(
+      fullUrl,
+      getRequestHeaders(accessToken || this.accessToken || ''),
+    )
+      .then(response => response.json())
+      .then(json => camelcaseKeys<T>(json?.result, { deep: true }));
   }
 
   private async getForProject<T>(

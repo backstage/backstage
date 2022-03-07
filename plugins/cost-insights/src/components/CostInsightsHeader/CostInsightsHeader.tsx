@@ -16,16 +16,15 @@
 
 import React from 'react';
 import { Typography } from '@material-ui/core';
+import useAsync from 'react-use/lib/useAsync';
 import { useCostInsightsStyles } from '../../utils/styles';
 import { Group } from '../../types';
-import {
-  identityApiRef,
-  ProfileInfo,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
-function name(profile: ProfileInfo | undefined): string {
-  return profile?.displayName || 'Mysterious Stranger';
+function useDisplayName(): string {
+  const identityApi = useApi(identityApiRef);
+  const state = useAsync(() => identityApi.getProfileInfo(), [identityApi]);
+  return state.loading ? '' : state.value?.displayName || 'Mysterious Stranger';
 }
 
 type CostInsightsHeaderProps = {
@@ -39,7 +38,7 @@ const CostInsightsHeaderNoData = ({
   owner,
   groups,
 }: CostInsightsHeaderProps) => {
-  const profile = useApi(identityApiRef).getProfile();
+  const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
   const hasMultipleGroups = groups.length > 1;
 
@@ -52,8 +51,8 @@ const CostInsightsHeaderNoData = ({
         Well this is awkward
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {name(profile)}!</b> <b>{owner}</b> doesn't seem to have any
-        cloud costs.
+        <b>Hey, {displayName}!</b> <b>{owner}</b> doesn't seem to have any cloud
+        costs.
       </Typography>
       {hasMultipleGroups && (
         <Typography align="center" gutterBottom>
@@ -68,7 +67,7 @@ const CostInsightsHeaderAlerts = ({
   owner,
   alerts,
 }: CostInsightsHeaderProps) => {
-  const profile = useApi(identityApiRef).getProfile();
+  const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
 
   return (
@@ -80,7 +79,7 @@ const CostInsightsHeaderAlerts = ({
         You have {alerts} thing{alerts > 1 && 's'} to look into
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {name(profile)}!</b> We've identified{' '}
+        <b>Hey, {displayName}!</b> We've identified{' '}
         {alerts > 1 ? 'a few things ' : 'one thing '}
         <b>{owner}</b> should look into next.
       </Typography>
@@ -89,7 +88,7 @@ const CostInsightsHeaderAlerts = ({
 };
 
 const CostInsightsHeaderNoAlerts = ({ owner }: CostInsightsHeaderProps) => {
-  const profile = useApi(identityApiRef).getProfile();
+  const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
 
   return (
@@ -101,7 +100,7 @@ const CostInsightsHeaderNoAlerts = ({ owner }: CostInsightsHeaderProps) => {
         Your team is doing great
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {name(profile)}!</b> <b>{owner}</b> is doing well. No major
+        <b>Hey, {displayName}!</b> <b>{owner}</b> is doing well. No major
         changes this month.
       </Typography>
     </>
@@ -109,7 +108,7 @@ const CostInsightsHeaderNoAlerts = ({ owner }: CostInsightsHeaderProps) => {
 };
 
 export const CostInsightsHeaderNoGroups = () => {
-  const profile = useApi(identityApiRef).getProfile();
+  const displayName = useDisplayName();
   const classes = useCostInsightsStyles();
   return (
     <>
@@ -120,8 +119,7 @@ export const CostInsightsHeaderNoGroups = () => {
         Well this is awkward
       </Typography>
       <Typography className={classes.h6Subtle} align="center" gutterBottom>
-        <b>Hey, {name(profile)}!</b> It doesn't look like you belong to any
-        teams.
+        <b>Hey, {displayName}!</b> It doesn't look like you belong to any teams.
       </Typography>
     </>
   );

@@ -15,7 +15,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useAsync, useAsyncFn } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import {
   CardHook,
   ComponentConfig,
@@ -45,12 +46,8 @@ export function usePromoteRc({
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
   const { project } = useProjectContext();
-  const {
-    responseSteps,
-    addStepToResponseSteps,
-    asyncCatcher,
-    abortIfError,
-  } = useResponseSteps();
+  const { responseSteps, addStepToResponseSteps, asyncCatcher, abortIfError } =
+    useResponseSteps();
 
   /**
    * (1) Fetch most recent release branch commit
@@ -186,7 +183,7 @@ export function usePromoteRc({
           updatedTagUrl: promotedReleaseRes.value.htmlUrl,
         });
       } catch (error) {
-        asyncCatcher(error);
+        asyncCatcher(error as Error);
       }
 
       addStepToResponseSteps({

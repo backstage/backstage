@@ -63,7 +63,7 @@ backend:
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
-    port: 7000
+    port: 7007
   ingress:
     enabled: false
     annotations:

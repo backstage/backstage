@@ -21,41 +21,24 @@ import {
   ParamKeys,
   OptionalParams,
 } from './types';
-import { OldIconComponent } from '../icons/types';
 
-// TODO(Rugvip): Remove this in the next breaking release, it's exported but unused
-export type RouteRefConfig<Params extends AnyParams> = {
-  params?: ParamKeys<Params>;
-  path?: string;
-  icon?: OldIconComponent;
-  title: string;
-};
-
+/**
+ * @internal
+ */
 export class RouteRefImpl<Params extends AnyParams>
-  implements RouteRef<Params> {
+  implements RouteRef<Params>
+{
+  // The marker is used for type checking while the symbol is used at runtime.
+  declare $$routeRefType: 'absolute';
   readonly [routeRefType] = 'absolute';
 
   constructor(
     private readonly id: string,
     readonly params: ParamKeys<Params>,
-    private readonly config: {
-      path?: string;
-      icon?: OldIconComponent;
-      title?: string;
-    },
   ) {}
 
-  get icon() {
-    return this.config.icon;
-  }
-
-  // TODO(Rugvip): Remove this, routes are looked up via the registry instead
-  get path() {
-    return this.config.path ?? '';
-  }
-
   get title() {
-    return this.config.title ?? this.id;
+    return this.id;
   }
 
   toString() {
@@ -63,6 +46,12 @@ export class RouteRefImpl<Params extends AnyParams>
   }
 }
 
+/**
+ * Create a {@link RouteRef} from a route descriptor.
+ *
+ * @param config - Description of the route reference to be created.
+ * @public
+ */
 export function createRouteRef<
   // Params is the type that we care about and the one to be embedded in the route ref.
   // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}
@@ -70,26 +59,15 @@ export function createRouteRef<
   // ParamKey is here to make sure the Params type properly has its keys narrowed down
   // to only the elements of params. Defaulting to never makes sure we end up with
   // Param = {} if the params array is empty.
-  ParamKey extends string = never
+  ParamKey extends string = never,
 >(config: {
   /** The id of the route ref, used to identify it when printed */
-  id?: string;
+  id: string;
   /** A list of parameter names that the path that this route ref is bound to must contain */
   params?: ParamKey[];
-  /** @deprecated Route refs no longer decide their own path */
-  path?: string;
-  /** @deprecated Route refs no longer decide their own icon */
-  icon?: OldIconComponent;
-  /** @deprecated Route refs no longer decide their own title */
-  title?: string;
 }): RouteRef<OptionalParams<Params>> {
-  const id = config.id || config.title;
-  if (!id) {
-    throw new Error('RouteRef must be provided a non-empty id');
-  }
   return new RouteRefImpl(
-    id,
+    config.id,
     (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
-    config,
   );
 }

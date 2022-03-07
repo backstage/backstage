@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Service, Incident, OnCall } from '../components/types';
+import { Service, Incident, ChangeEvent, OnCall } from '../components/types';
 import {
   PagerDutyApi,
   TriggerAlarmRequest,
@@ -23,6 +23,7 @@ import {
   OnCallsResponse,
   ClientApiConfig,
   RequestOptions,
+  ChangeEventsResponse,
 } from './types';
 import {
   createApiRef,
@@ -34,7 +35,6 @@ export class UnauthorizedError extends Error {}
 
 export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
-  description: 'Used to fetch data from PagerDuty API',
 });
 
 export class PagerDutyClient implements PagerDutyApi {
@@ -69,6 +69,17 @@ export class PagerDutyClient implements PagerDutyApi {
     return incidents;
   }
 
+  async getChangeEventsByServiceId(serviceId: string): Promise<ChangeEvent[]> {
+    const params = `limit=5&time_zone=UTC&sort_by=timestamp`;
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/pagerduty/services/${serviceId}/change_events?${params}`;
+
+    const { change_events } = await this.getByUrl<ChangeEventsResponse>(url);
+
+    return change_events;
+  }
+
   async getOnCallByPolicyId(policyId: string): Promise<OnCall[]> {
     const params = `time_zone=UTC&include[]=users&escalation_policy_ids[]=${policyId}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
@@ -79,12 +90,9 @@ export class PagerDutyClient implements PagerDutyApi {
     return oncalls;
   }
 
-  triggerAlarm({
-    integrationKey,
-    source,
-    description,
-    userName,
-  }: TriggerAlarmRequest): Promise<Response> {
+  triggerAlarm(request: TriggerAlarmRequest): Promise<Response> {
+    const { integrationKey, source, description, userName } = request;
+
     const body = JSON.stringify({
       event_action: 'trigger',
       routing_key: integrationKey,
@@ -124,7 +132,6 @@ export class PagerDutyClient implements PagerDutyApi {
       },
     };
     const response = await this.request(url, options);
-
     return response.json();
   }
 

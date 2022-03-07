@@ -17,35 +17,106 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { SearchQuery, SearchResultSet } from '@backstage/search-common';
+import { z } from 'zod';
+import { errorHandler } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
+import { Config } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import {
+  DocumentTypeInfo,
+  SearchResultSet,
+} from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 
-type RouterOptions = {
+const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
+  const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
+    z.union([
+      z.string(),
+      z.number(),
+      z.boolean(),
+      z.null(),
+      z.array(jsonValueSchema),
+      jsonObjectSchema,
+    ]),
+  );
+
+  return z.record(jsonValueSchema);
+});
+
+export type RouterOptions = {
   engine: SearchEngine;
+  types: Record<string, DocumentTypeInfo>;
+  permissions: PermissionAuthorizer;
+  config: Config;
   logger: Logger;
 };
 
-export async function createRouter({
-  engine,
-  logger,
-}: RouterOptions): Promise<express.Router> {
+const allowedLocationProtocols = ['http:', 'https:'];
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { engine: inputEngine, types, permissions, config, logger } = options;
+
+  const requestSchema = z.object({
+    term: z.string().default(''),
+    filters: jsonObjectSchema.optional(),
+    types: z
+      .array(z.string().refine(type => Object.keys(types).includes(type)))
+      .optional(),
+    pageCursor: z.string().optional(),
+  });
+
+  const engine = config.getOptionalBoolean('permission.enabled')
+    ? new AuthorizedSearchEngine(inputEngine, types, permissions, config)
+    : inputEngine;
+
+  const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
+    ...resultSet,
+    results: results.filter(result => {
+      const protocol = new URL(result.document.location, 'https://example.com')
+        .protocol;
+      const isAllowed = allowedLocationProtocols.includes(protocol);
+      if (!isAllowed) {
+        logger.info(
+          `Rejected search result for "${result.document.title}" as location protocol "${protocol}" is unsafe`,
+        );
+      }
+      return isAllowed;
+    }),
+  });
+
   const router = Router();
   router.get(
     '/query',
-    async (
-      req: express.Request<any, unknown, unknown, SearchQuery>,
-      res: express.Response<SearchResultSet>,
-    ) => {
-      const { term, filters = {}, pageCursor = '' } = req.query;
+    async (req: express.Request, res: express.Response<SearchResultSet>) => {
+      const parseResult = requestSchema.safeParse(req.query);
+
+      if (!parseResult.success) {
+        throw new InputError(`Invalid query string: ${parseResult.error}`);
+      }
+
+      const query = parseResult.data;
+
       logger.info(
-        `Search request received: ${term}, ${JSON.stringify(
-          filters,
-        )}, ${pageCursor}`,
+        `Search request received: term="${
+          query.term
+        }", filters=${JSON.stringify(query.filters)}, types=${
+          query.types ? query.types.join(',') : ''
+        }, pageCursor=${query.pageCursor ?? ''}`,
+      );
+
+      const token = getBearerTokenFromAuthorizationHeader(
+        req.header('authorization'),
       );
 
       try {
-        const results = await engine?.query(req.query);
-        res.send(results);
+        const resultSet = await engine?.query(query, { token });
+
+        res.send(filterResultSet(resultSet));
       } catch (err) {
         throw new Error(
           `There was a problem performing the search query. ${err}`,
@@ -53,6 +124,8 @@ export async function createRouter({
       }
     },
   );
+
+  router.use(errorHandler());
 
   return router;
 }

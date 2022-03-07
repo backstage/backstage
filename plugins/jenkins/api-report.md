@@ -7,10 +7,9 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import type { CompoundEntityRef } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
-import { EntityRef } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -18,9 +17,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // Warning: (ae-missing-release-tag) "EntityJenkinsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityJenkinsContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityJenkinsContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityLatestJenkinsRunCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -43,33 +40,28 @@ export { isJenkinsAvailable as isPluginApplicableToEntity };
 // Warning: (ae-missing-release-tag) "JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const JENKINS_ANNOTATION = 'jenkins.io/github-folder';
+export const JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
 
 // Warning: (ae-missing-release-tag) "JenkinsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface JenkinsApi {
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   // Warning: (ae-forgotten-export) The symbol "Build" needs to be exported by the entry point index.d.ts
   getBuild(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-  // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
   // Warning: (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
   getProjects(options: {
-    entity: EntityRef;
+    entity: CompoundEntityRef;
     filter: {
       branch?: string;
     };
   }): Promise<Project[]>;
   // (undocumented)
   retry(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<void>;
@@ -89,32 +81,21 @@ export class JenkinsClient implements JenkinsApi {
     identityApi: IdentityApi;
   });
   // (undocumented)
-  getBuild({
-    entity,
-    jobFullName,
-    buildNumber,
-  }: {
-    entity: EntityName;
+  getBuild(options: {
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
   // (undocumented)
-  getProjects({
-    entity,
-    filter,
-  }: {
-    entity: EntityName;
+  getProjects(options: {
+    entity: CompoundEntityRef;
     filter: {
       branch?: string;
     };
   }): Promise<Project[]>;
   // (undocumented)
-  retry({
-    entity,
-    jobFullName,
-    buildNumber,
-  }: {
-    entity: EntityName;
+  retry(options: {
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<void>;
@@ -143,11 +124,14 @@ export const LatestRunCard: ({
   variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "LEGACY_JENKINS_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const LEGACY_JENKINS_ANNOTATION = 'jenkins.io/github-folder';
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

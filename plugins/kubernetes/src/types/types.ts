@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JsonObject } from '@backstage/types';
 import {
   V1Deployment,
   V1Pod,
@@ -21,7 +22,9 @@ import {
   V1HorizontalPodAutoscaler,
   V1Service,
   V1ConfigMap,
-  ExtensionsV1beta1Ingress,
+  V1Ingress,
+  V1Job,
+  V1CronJob,
 } from '@kubernetes/client-node';
 
 export interface DeploymentResources {
@@ -34,6 +37,19 @@ export interface DeploymentResources {
 export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
-  ingresses: ExtensionsV1beta1Ingress[];
+  ingresses: V1Ingress[];
+  jobs: V1Job[];
+  cronJobs: V1CronJob[];
   customResources: any[];
 }
+
+export interface ClusterLinksFormatterOptions {
+  dashboardUrl?: URL;
+  dashboardParameters?: JsonObject;
+  object: any;
+  kind: string;
+}
+
+export type ClusterLinksFormatter = (
+  options: ClusterLinksFormatterOptions,
+) => URL;

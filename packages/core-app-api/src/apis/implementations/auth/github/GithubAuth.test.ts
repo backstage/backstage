@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
+import { UrlPatternDiscovery } from '../../DiscoveryApi';
+import MockOAuthApi from '../../OAuthRequestApi/MockOAuthApi';
 import GithubAuth from './GithubAuth';
 
-describe('GithubAuth', () => {
-  it('should get access token', async () => {
-    const getSession = jest
-      .fn()
-      .mockResolvedValue({ providerInfo: { accessToken: 'access-token' } });
-    const githubAuth = new GithubAuth({ getSession } as any);
+const getSession = jest.fn();
 
-    expect(await githubAuth.getAccessToken()).toBe('access-token');
-    expect(getSession).toBeCalledTimes(1);
+jest.mock('../../../../lib/AuthSessionManager', () => ({
+  ...(jest.requireActual('../../../../lib/AuthSessionManager') as any),
+  RefreshingAuthSessionManager: class {
+    getSession = getSession;
+  },
+}));
+
+describe('GithubAuth', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should forward access token request to session manager', async () => {
+    const githubAuth = GithubAuth.create({
+      oauthRequestApi: new MockOAuthApi(),
+      discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
+    });
+
+    githubAuth.getAccessToken('repo');
+    expect(getSession).toHaveBeenCalledWith({
+      scopes: new Set(['repo']),
+    });
   });
 });

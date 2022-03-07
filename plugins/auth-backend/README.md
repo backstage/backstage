@@ -34,7 +34,7 @@ Follow this link, [Create new OAuth App](https://github.com/settings/application
 1. Set Application Name to `backstage-dev` or something along those lines.
 1. You can set the Homepage URL to whatever you want to.
 1. The Authorization Callback URL should match the redirect URI set in Backstage.
-   1. Set this to `http://localhost:7000/api/auth/github` for local development.
+   1. Set this to `http://localhost:7007/api/auth/github` for local development.
    1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/github` for non-local deployments.
 
 ```bash
@@ -58,7 +58,7 @@ Follow this link, [Add new application](https://gitlab.com/-/profile/application
 
 1. Set Application Name to `backstage-dev` or something along those lines.
 1. The Authorization Callback URL should match the redirect URI set in Backstage.
-   1. Set this to `http://localhost:7000/api/auth/gitlab/handler/frame` for local development.
+   1. Set this to `http://localhost:7007/api/auth/gitlab/handler/frame` for local development.
    1. Set this to `http://{APP_FQDN}:{APP_BACKEND_PORT}/api/auth/gitlab/handler/frame` for non-local deployments.
    1. Select the following scopes from the list:
       - [x] `read_user` Grants read-only access to the authenticated user's profile through the /user API endpoint, which includes username, public email, and full name. Also grants access to read-only API endpoints under /users.
@@ -91,9 +91,9 @@ export AUTH_GITLAB_CLIENT_SECRET=x
 
 Add a new Okta application using the following URI conventions:
 
-Login redirect URI's: `http://localhost:7000/api/auth/okta/handler/frame`
-Logout redirect URI's: `http://localhost:7000/api/auth/okta/logout`
-Initiate login URI's: `http://localhost:7000/api/auth/okta/start`
+Login redirect URI's: `http://localhost:7007/api/auth/okta/handler/frame`
+Logout redirect URI's: `http://localhost:7007/api/auth/okta/logout`
+Initiate login URI's: `http://localhost:7007/api/auth/okta/start`
 
 Then configure the following environment variables to be used in the `app-config.yaml` file:
 
@@ -122,7 +122,7 @@ Click [here](https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMe
 - Give the app a name. e.g. `backstage-dev`
 - Select `Accounts in this organizational directory only` under supported account types.
 - Enter the callback URL for your backstage backend instance:
-  - For local development, this is likely `http://localhost:7000/api/auth/microsoft/handler/frame`
+  - For local development, this is likely `http://localhost:7007/api/auth/microsoft/handler/frame`
   - For non-local deployments, this will be `https://{APP_FQDN}:{APP_BACKEND_PORT}/auth/microsoft/handler/frame`
 - Click `Register`.
 

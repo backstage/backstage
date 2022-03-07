@@ -18,33 +18,44 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import {
-  rootRouteRef,
-  rootDocsRouteRef,
-  rootCatalogDocsRouteRef,
-} from './routes';
-import { TechDocsHome } from './home/components/TechDocsHome';
-import { TechDocsPage } from './reader/components/TechDocsPage';
+import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
+import { TechDocsReaderPage } from './reader/components/TechDocsReaderPage';
 import { EntityPageDocs } from './EntityPageDocs';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
+/**
+ * Helper that takes in entity and returns true/false if TechDocs is available for the entity
+ *
+ * @public
+ */
+export const isTechDocsAvailable = (entity: Entity) =>
+  Boolean(entity?.metadata?.annotations?.[TECHDOCS_ANNOTATION]);
+
+/**
+ * Responsible for registering routes for TechDocs, TechDocs Homepage and separate TechDocs page
+ *
+ * @public
+ */
 export const Router = () => {
   return (
     <Routes>
-      <Route path={`/${rootRouteRef.path}`} element={<TechDocsHome />} />
-      <Route path={`/${rootDocsRouteRef.path}`} element={<TechDocsPage />} />
+      <Route path="/" element={<TechDocsIndexPage />} />
+      <Route
+        path="/:namespace/:kind/:name/*"
+        element={<TechDocsReaderPage />}
+      />
     </Routes>
   );
 };
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const EmbeddedDocsRouter = (_props: Props) => {
+/**
+ * Responsible for registering route to view docs on Entity page
+ *
+ * @public
+ */
+export const EmbeddedDocsRouter = () => {
   const { entity } = useEntity();
 
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
@@ -55,10 +66,7 @@ export const EmbeddedDocsRouter = (_props: Props) => {
 
   return (
     <Routes>
-      <Route
-        path={`/${rootCatalogDocsRouteRef.path}`}
-        element={<EntityPageDocs entity={entity} />}
-      />
+      <Route path="/*" element={<EntityPageDocs entity={entity} />} />
     </Routes>
   );
 };

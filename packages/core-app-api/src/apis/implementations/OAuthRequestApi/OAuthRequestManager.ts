@@ -16,11 +16,11 @@
 
 import {
   OAuthRequestApi,
-  PendingAuthRequest,
-  AuthRequester,
-  AuthRequesterOptions,
-  Observable,
+  PendingOAuthRequest,
+  OAuthRequester,
+  OAuthRequesterOptions,
 } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
 import { BehaviorSubject } from '../../../lib/subjects';
 
@@ -30,13 +30,15 @@ import { BehaviorSubject } from '../../../lib/subjects';
  * The purpose of this class and the API is to read a stream of incoming requests
  * of OAuth access tokens from different providers with varying scope, and funnel
  * them all together into a single request for each OAuth provider.
+ *
+ * @public
  */
 export class OAuthRequestManager implements OAuthRequestApi {
-  private readonly subject = new BehaviorSubject<PendingAuthRequest[]>([]);
-  private currentRequests: PendingAuthRequest[] = [];
+  private readonly subject = new BehaviorSubject<PendingOAuthRequest[]>([]);
+  private currentRequests: PendingOAuthRequest[] = [];
   private handlerCount = 0;
 
-  createAuthRequester<T>(options: AuthRequesterOptions<T>): AuthRequester<T> {
+  createAuthRequester<T>(options: OAuthRequesterOptions<T>): OAuthRequester<T> {
     const handler = new OAuthPendingRequests<T>();
 
     const index = this.handlerCount;
@@ -65,8 +67,8 @@ export class OAuthRequestManager implements OAuthRequestApi {
   // Converts the pending request and popup options into a popup request that we can forward to subscribers.
   private makeAuthRequest(
     request: PendingRequest<any>,
-    options: AuthRequesterOptions<any>,
-  ): PendingAuthRequest | undefined {
+    options: OAuthRequesterOptions<any>,
+  ): PendingOAuthRequest | undefined {
     const { scopes } = request;
     if (!scopes) {
       return undefined;
@@ -86,7 +88,7 @@ export class OAuthRequestManager implements OAuthRequestApi {
     };
   }
 
-  authRequest$(): Observable<PendingAuthRequest[]> {
+  authRequest$(): Observable<PendingOAuthRequest[]> {
     return this.subject;
   }
 }

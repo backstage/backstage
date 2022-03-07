@@ -14,34 +14,54 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useMemo, useState } from 'react';
-import BadgeIcon from '@material-ui/icons/CallToAction';
+import {
+  RELATION_API_CONSUMED_BY,
+  RELATION_API_PROVIDED_BY,
+  RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
+  RELATION_HAS_PART,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
+import { EmptyState } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
+  EntityConsumedApisCard,
   EntityConsumingComponentsCard,
   EntityHasApisCard,
-  EntityProvidingComponentsCard,
   EntityProvidedApisCard,
-  EntityConsumedApisCard,
+  EntityProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
+import {
+  EntityAzurePipelinesContent,
+  EntityAzurePullRequestsContent,
+  isAzureDevOpsAvailable,
+  isAzurePipelinesAvailable,
+} from '@backstage/plugin-azure-devops';
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
   EntityDependsOnComponentsCard,
   EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
+  EntityHasResourcesCard,
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
-  EntitySystemDiagramCard,
+  EntityOrphanWarning,
+  EntityProcessingErrorsPanel,
   EntitySwitch,
+  hasCatalogProcessingErrors,
   isComponentType,
   isKind,
-  EntityHasResourcesCard,
-  EntityOrphanWarning,
   isOrphan,
 } from '@backstage/plugin-catalog';
+import {
+  Direction,
+  EntityCatalogGraphCard,
+} from '@backstage/plugin-catalog-graph';
 import {
   EntityCircleCIContent,
   isCircleCIAvailable,
@@ -50,6 +70,7 @@ import {
   EntityCloudbuildContent,
   isCloudbuildAvailable,
 } from '@backstage/plugin-cloudbuild';
+import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 import {
   EntityGithubActionsContent,
   EntityRecentGithubActionsRunsCard,
@@ -85,10 +106,8 @@ import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
-import {
-  EntityBuildkiteContent,
-  isBuildkiteAvailable,
-} from '@roadiehq/backstage-plugin-buildkite';
+import BadgeIcon from '@material-ui/icons/CallToAction';
+
 import {
   EntityGithubInsightsContent,
   EntityGithubInsightsLanguagesCard,
@@ -106,8 +125,20 @@ import {
   EntityTravisCIOverviewCard,
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
-import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
-import { EmptyState } from '@backstage/core-components';
+import {
+  EntityBuildkiteContent,
+  isBuildkiteAvailable,
+} from '@roadiehq/backstage-plugin-buildkite';
+import {
+  isNewRelicDashboardAvailable,
+  EntityNewRelicDashboardContent,
+  EntityNewRelicDashboardCard,
+} from '@backstage/plugin-newrelic-dashboard';
+import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
+
+import React, { ReactNode, useMemo, useState } from 'react';
+
+const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -164,8 +195,16 @@ export const cicdContent = (
       <EntityTravisCIContent />
     </EntitySwitch.Case>
 
+    <EntitySwitch.Case if={isGoCdAvailable}>
+      <EntityGoCdContent />
+    </EntitySwitch.Case>
+
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <EntityGithubActionsContent />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={isAzurePipelinesAvailable}>
+      <EntityAzurePipelinesContent defaultLimit={25} />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>
@@ -209,6 +248,26 @@ const cicdCard = (
   </EntitySwitch>
 );
 
+const entityWarningContent = (
+  <>
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+        <Grid item xs={12}>
+          <EntityProcessingErrorsPanel />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </>
+);
+
 const errorsContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isRollbarAvailable}>
@@ -221,24 +280,41 @@ const errorsContent = (
   </EntitySwitch>
 );
 
+const pullRequestsContent = (
+  <EntitySwitch>
+    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+      <EntityAzurePullRequestsContent defaultLimit={25} />
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case>
+      <EntityGithubPullRequestsContent />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+);
+
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
-    <EntitySwitch>
-      <EntitySwitch.Case if={isOrphan}>
-        <Grid item xs={12}>
-          <EntityOrphanWarning />
-        </Grid>
-      </EntitySwitch.Case>
-    </EntitySwitch>
-
-    <Grid item md={8} xs={12}>
+    {entityWarningContent}
+    <Grid item md={6} xs={12}>
       <EntityAboutCard variant="gridItem" />
+    </Grid>
+
+    <Grid item md={6} xs={12}>
+      <EntityCatalogGraphCard variant="gridItem" height={400} />
     </Grid>
 
     <EntitySwitch>
       <EntitySwitch.Case if={isPagerDutyAvailable}>
         <Grid item md={6}>
           <EntityPagerDutyCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isNewRelicDashboardAvailable}>
+        <Grid item md={6} xs={12}>
+          <EntityNewRelicDashboardCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
@@ -323,12 +399,20 @@ const serviceEntityPage = (
       <EntityTechdocsContent />
     </EntityLayout.Route>
 
+    <EntityLayout.Route
+      if={isNewRelicDashboardAvailable}
+      path="/newrelic-dashboard"
+      title="New Relic Dashboard"
+    >
+      <EntityNewRelicDashboardContent />
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      <EntityGithubPullRequestsContent />
+      {pullRequestsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">
@@ -381,13 +465,20 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/docs" title="Docs">
       <EntityTechdocsContent />
     </EntityLayout.Route>
+    <EntityLayout.Route
+      if={isNewRelicDashboardAvailable}
+      path="/newrelic-dashboard"
+      title="New Relic Dashboard"
+    >
+      <EntityNewRelicDashboardContent />
+    </EntityLayout.Route>
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-      <EntityGithubPullRequestsContent />
+      {pullRequestsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">
@@ -438,8 +529,12 @@ const apiPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        {entityWarningContent}
+        <Grid item md={6} xs={12}>
           <EntityAboutCard />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
         </Grid>
         <Grid item xs={12}>
           <Grid container>
@@ -468,11 +563,15 @@ const userPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item xs={12} md={6}>
           <EntityUserProfileCard variant="gridItem" />
         </Grid>
         <Grid item xs={12} md={6}>
-          <EntityOwnershipCard variant="gridItem" />
+          <EntityOwnershipCard
+            variant="gridItem"
+            entityFilterKind={customEntityFilterKind}
+          />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -483,11 +582,15 @@ const groupPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
+        {entityWarningContent}
         <Grid item xs={12} md={6}>
           <EntityGroupProfileCard variant="gridItem" />
         </Grid>
         <Grid item xs={12} md={6}>
-          <EntityOwnershipCard variant="gridItem" />
+          <EntityOwnershipCard
+            variant="gridItem"
+            entityFilterKind={customEntityFilterKind}
+          />
         </Grid>
         <Grid item xs={12}>
           <EntityMembersListCard />
@@ -501,8 +604,12 @@ const systemPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
         </Grid>
         <Grid item md={6}>
           <EntityHasComponentsCard variant="gridItem" />
@@ -516,7 +623,23 @@ const systemPage = (
       </Grid>
     </EntityLayout.Route>
     <EntityLayout.Route path="/diagram" title="Diagram">
-      <EntitySystemDiagramCard />
+      <EntityCatalogGraphCard
+        variant="gridItem"
+        direction={Direction.TOP_BOTTOM}
+        title="System Diagram"
+        height={700}
+        relations={[
+          RELATION_PART_OF,
+          RELATION_HAS_PART,
+          RELATION_API_CONSUMED_BY,
+          RELATION_API_PROVIDED_BY,
+          RELATION_CONSUMES_API,
+          RELATION_PROVIDES_API,
+          RELATION_DEPENDENCY_OF,
+          RELATION_DEPENDS_ON,
+        ]}
+        unidirectional={false}
+      />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -525,8 +648,12 @@ const domainPage = (
   <EntityLayoutWrapper>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3} alignItems="stretch">
+        {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
         </Grid>
         <Grid item md={6}>
           <EntityHasSystemsCard variant="gridItem" />

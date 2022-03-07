@@ -36,6 +36,7 @@ export const circleCIPlugin = createPlugin({
 
 export const EntityCircleCIContent = circleCIPlugin.provide(
   createRoutableExtension({
+    name: 'EntityCircleCIContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: circleCIRouteRef,
   }),

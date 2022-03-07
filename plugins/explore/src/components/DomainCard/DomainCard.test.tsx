@@ -15,9 +15,9 @@
  */
 
 import { DomainEntity } from '@backstage/catalog-model';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { catalogEntityRouteRef } from '../../routes';
 import { DomainCard } from './DomainCard';
 
 describe('<DomainCard />', () => {
@@ -38,7 +38,7 @@ describe('<DomainCard />', () => {
       <DomainCard entity={entity} />,
       {
         mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
       },
     );

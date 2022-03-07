@@ -19,20 +19,17 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
 import React, { useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { assertError } from '@backstage/errors';
 
-type Props = {
+interface DeleteEntityDialogProps {
   open: boolean;
   onClose: () => any;
   onConfirm: () => any;
   entity: Entity;
-};
+}
 
-export const DeleteEntityDialog = ({
-  open,
-  onClose,
-  onConfirm,
-  entity,
-}: Props) => {
+export function DeleteEntityDialog(props: DeleteEntityDialogProps) {
+  const { open, onClose, onConfirm, entity } = props;
   const [busy, setBusy] = useState(false);
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
@@ -44,6 +41,7 @@ export const DeleteEntityDialog = ({
       await catalogApi.removeEntityByUid(uid!);
       onConfirm();
     } catch (err) {
+      assertError(err);
       alertApi.post({ message: err.message });
     } finally {
       setBusy(false);
@@ -70,4 +68,4 @@ export const DeleteEntityDialog = ({
       </DialogActions>
     </Dialog>
   );
-};
+}

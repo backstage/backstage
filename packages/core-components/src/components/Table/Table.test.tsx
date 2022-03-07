@@ -18,17 +18,18 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { Table } from './Table';
 
+const column1 = {
+  title: 'Column 1',
+  field: 'col1',
+};
+
+const column2 = {
+  title: 'Column 2',
+  field: 'col2',
+};
+
 const minProps = {
-  columns: [
-    {
-      title: 'Column 1',
-      field: 'col1',
-    },
-    {
-      title: 'Column 2',
-      field: 'col2',
-    },
-  ],
+  columns: [column1, column2],
   data: [
     {
       col1: 'first value, first row',
@@ -45,6 +46,100 @@ describe('<Table />', () => {
   it('renders without exploding', async () => {
     const rendered = await renderInTestApp(<Table {...minProps} />);
     expect(rendered.getByText('second value, second row')).toBeInTheDocument();
+  });
+
+  describe('with style rows', () => {
+    describe('with CSS Properties object', () => {
+      const styledColumn2 = {
+        ...column2,
+        cellStyle: {
+          color: 'blue',
+        },
+      };
+
+      it('renders non-highlighted correctly', async () => {
+        const columns = [column1, styledColumn2];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+        expect(rendered.getByText('second value, first row')).toHaveStyle({
+          color: 'blue',
+        });
+      });
+
+      it('renders highlighted column correctly', async () => {
+        const columns = [
+          column1,
+          {
+            ...styledColumn2,
+            highlight: true,
+          },
+        ];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+        expect(rendered.getByText('second value, first row')).toHaveStyle({
+          color: 'blue',
+          'font-weight': 700,
+        });
+      });
+    });
+
+    describe('with CSS Properties function', () => {
+      const styledColumn2 = {
+        ...column2,
+        cellStyle: (
+          _data: any,
+          rowData: any & { tableData: { id: number } },
+        ) => {
+          return rowData.tableData.id % 2 === 0
+            ? {
+                color: 'green',
+              }
+            : {
+                color: 'red',
+              };
+        },
+      };
+
+      it('renders non-highlighted columns correctly', async () => {
+        const columns = [column1, styledColumn2];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+        expect(rendered.getByText('second value, first row')).toHaveStyle({
+          color: 'green',
+        });
+        expect(rendered.getByText('second value, second row')).toHaveStyle({
+          color: 'red',
+        });
+      });
+
+      it('renders highlighted columns correctly', async () => {
+        const columns = [
+          column1,
+          {
+            ...styledColumn2,
+            highlight: true,
+          },
+        ];
+
+        const rendered = await renderInTestApp(
+          <Table data={minProps.data} columns={columns} />,
+        );
+        expect(rendered.getByText('second value, first row')).toHaveStyle({
+          color: 'green',
+          'font-weight': 700,
+        });
+        expect(rendered.getByText('second value, second row')).toHaveStyle({
+          color: 'red',
+          'font-weight': 700,
+        });
+      });
+    });
   });
 
   it('renders with subtitle', async () => {

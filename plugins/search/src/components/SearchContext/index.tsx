@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export { SearchContextProvider, useSearch } from './SearchContext';
+export {
+  SearchContextProvider,
+  SearchContext,
+  useSearch,
+} from './SearchContext';
+
+export type { SearchContextState } from './SearchContext';

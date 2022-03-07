@@ -61,28 +61,28 @@ describe('fs:delete', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: undefined },
+        input: { files: undefined } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: {} },
+        input: { files: {} } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: '' },
+        input: { files: '' } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { files: null },
+        input: { files: null } as any,
       }),
     ).rejects.toThrow(/files must be an Array/);
   });

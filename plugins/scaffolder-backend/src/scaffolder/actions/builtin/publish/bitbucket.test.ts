@@ -19,7 +19,7 @@ jest.mock('../helpers');
 import { createPublishBitbucketAction } from './bitbucket';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -50,8 +50,8 @@ describe('publish:bitbucket', () => {
   const action = createPublishBitbucketAction({ integrations, config });
   const mockContext = {
     input: {
-      repoUrl: 'bitbucket.org?repo=repo&owner=owner',
-      repoVisibility: 'private',
+      repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
+      repoVisibility: 'private' as const,
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -60,7 +60,7 @@ describe('publish:bitbucket', () => {
     createTemporaryDirectory: jest.fn(),
   };
   const server = setupServer();
-  msw.setupDefaultHandlers(server);
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -70,14 +70,21 @@ describe('publish:bitbucket', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'bitbucket.com?repo=bob' },
+        input: { repoUrl: 'bitbucket.org?project=project&repo=repo' },
       }),
-    ).rejects.toThrow(/missing owner/);
+    ).rejects.toThrow(/missing workspace/);
 
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'bitbucket.com?owner=owner' },
+        input: { repoUrl: 'bitbucket.org?workspace=workspace&repo=repo' },
+      }),
+    ).rejects.toThrow(/missing project/);
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: { repoUrl: 'bitbucket.org?workspace=workspace&project=project' },
       }),
     ).rejects.toThrow(/missing repo/);
   });
@@ -86,7 +93,9 @@ describe('publish:bitbucket', () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'missing.com?repo=bob&owner=owner' },
+        input: {
+          repoUrl: 'missing.com?workspace=workspace&project=project&repo=repo',
+        },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
   });
@@ -96,7 +105,8 @@ describe('publish:bitbucket', () => {
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'notoken.bitbucket.com?repo=bob&owner=owner',
+          repoUrl:
+            'notoken.bitbucket.com?workspace=workspace&project=project&repo=repo',
         },
       }),
     ).rejects.toThrow(/Authorization has not been provided for Bitbucket/);
@@ -106,22 +116,26 @@ describe('publish:bitbucket', () => {
     expect.assertions(2);
     server.use(
       rest.post(
-        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer tokenlols');
-          expect(req.body).toEqual({ is_private: true, scm: 'git' });
+          expect(req.body).toEqual({
+            is_private: true,
+            scm: 'git',
+            project: { key: 'project' },
+          });
           return res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
             ctx.json({
               links: {
                 html: {
-                  href: 'https://bitbucket.org/owner/repo',
+                  href: 'https://bitbucket.org/workspace/repo',
                 },
                 clone: [
                   {
                     name: 'https',
-                    href: 'https://bitbucket.org/owner/repo',
+                    href: 'https://bitbucket.org/workspace/repo',
                   },
                 ],
               },
@@ -131,14 +145,20 @@ describe('publish:bitbucket', () => {
       ),
     );
 
-    await action.handler(mockContext);
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
+      },
+    });
   });
 
   it('should call the correct APIs when the host is hosted bitbucket', async () => {
     expect.assertions(2);
     server.use(
       rest.post(
-        'https://hosted.bitbucket.com/rest/api/1.0/projects/owner/repos',
+        'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
           expect(req.body).toEqual({ public: false, name: 'repo' });
@@ -149,8 +169,7 @@ describe('publish:bitbucket', () => {
               links: {
                 self: [
                   {
-                    href:
-                      'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                    href: 'https://bitbucket.mycompany.com/projects/project/repos/repo',
                   },
                 ],
                 clone: [
@@ -170,7 +189,46 @@ describe('publish:bitbucket', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        repoUrl: 'hosted.bitbucket.com?owner=owner&repo=repo',
+        repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
+      },
+    });
+  });
+
+  it('should work if the token is provided through ctx.input', async () => {
+    expect.assertions(2);
+    server.use(
+      rest.post(
+        'https://notoken.bitbucket.com/rest/api/1.0/projects/project/repos',
+        (req, res, ctx) => {
+          expect(req.headers.get('Authorization')).toBe('Bearer lols');
+          expect(req.body).toEqual({ public: false, name: 'repo' });
+          return res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                self: [
+                  {
+                    href: 'https://bitbucket.mycompany.com/projects/project/repos/repo',
+                  },
+                ],
+                clone: [
+                  {
+                    name: 'http',
+                    href: 'https://bitbucket.mycompany.com/scm/project/repo',
+                  },
+                ],
+              },
+            }),
+          );
+        },
+      ),
+    );
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'notoken.bitbucket.com?project=project&repo=repo',
+        token: 'lols',
       },
     });
   });
@@ -196,7 +254,7 @@ describe('publish:bitbucket', () => {
       expect.assertions(1);
       server.use(
         rest.post(
-          'https://hosted.bitbucket.com/rest/api/1.0/projects/owner/repos',
+          'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
           (_, res, ctx) => {
             return res(
               ctx.status(201),
@@ -206,7 +264,7 @@ describe('publish:bitbucket', () => {
           },
         ),
         rest.put(
-          'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/owner/repos/repo/enabled',
+          'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
           (req, res, ctx) => {
             expect(req.headers.get('Authorization')).toBe('Bearer thing');
             return res(ctx.status(204));
@@ -218,7 +276,7 @@ describe('publish:bitbucket', () => {
         ...mockContext,
         input: {
           ...mockContext.input,
-          repoUrl: 'hosted.bitbucket.com?owner=owner&repo=repo',
+          repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
           enableLFS: true,
         },
       });
@@ -227,7 +285,7 @@ describe('publish:bitbucket', () => {
     it('should report an error if enabling LFS fails', async () => {
       server.use(
         rest.post(
-          'https://hosted.bitbucket.com/rest/api/1.0/projects/owner/repos',
+          'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
           (_, res, ctx) => {
             return res(
               ctx.status(201),
@@ -237,7 +295,7 @@ describe('publish:bitbucket', () => {
           },
         ),
         rest.put(
-          'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/owner/repos/repo/enabled',
+          'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
           (_, res, ctx) => {
             return res(ctx.status(500));
           },
@@ -249,7 +307,7 @@ describe('publish:bitbucket', () => {
           ...mockContext,
           input: {
             ...mockContext.input,
-            repoUrl: 'hosted.bitbucket.com?owner=owner&repo=repo',
+            repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
             enableLFS: true,
           },
         }),
@@ -260,7 +318,7 @@ describe('publish:bitbucket', () => {
   it('should call initAndPush with the correct values', async () => {
     server.use(
       rest.post(
-        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
             ctx.status(200),
@@ -268,12 +326,12 @@ describe('publish:bitbucket', () => {
             ctx.json({
               links: {
                 html: {
-                  href: 'https://bitbucket.org/owner/repo',
+                  href: 'https://bitbucket.org/workspace/repo',
                 },
                 clone: [
                   {
                     name: 'https',
-                    href: 'https://bitbucket.org/owner/cloneurl',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
                   },
                 ],
               },
@@ -286,7 +344,7 @@ describe('publish:bitbucket', () => {
 
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
-      remoteUrl: 'https://bitbucket.org/owner/cloneurl',
+      remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       defaultBranch: 'master',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
@@ -297,7 +355,7 @@ describe('publish:bitbucket', () => {
   it('should call initAndPush with the correct default branch', async () => {
     server.use(
       rest.post(
-        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
             ctx.status(200),
@@ -305,12 +363,12 @@ describe('publish:bitbucket', () => {
             ctx.json({
               links: {
                 html: {
-                  href: 'https://bitbucket.org/owner/repo',
+                  href: 'https://bitbucket.org/workspace/repo',
                 },
                 clone: [
                   {
                     name: 'https',
-                    href: 'https://bitbucket.org/owner/cloneurl',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
                   },
                 ],
               },
@@ -329,7 +387,7 @@ describe('publish:bitbucket', () => {
 
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
-      remoteUrl: 'https://bitbucket.org/owner/cloneurl',
+      remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       defaultBranch: 'main',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
@@ -363,9 +421,8 @@ describe('publish:bitbucket', () => {
       },
     });
 
-    const customAuthorIntegrations = ScmIntegrations.fromConfig(
-      customAuthorConfig,
-    );
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
     const customAuthorAction = createPublishBitbucketAction({
       integrations: customAuthorIntegrations,
       config: customAuthorConfig,
@@ -373,7 +430,7 @@ describe('publish:bitbucket', () => {
 
     server.use(
       rest.post(
-        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
             ctx.status(200),
@@ -381,12 +438,12 @@ describe('publish:bitbucket', () => {
             ctx.json({
               links: {
                 html: {
-                  href: 'https://bitbucket.org/owner/repo',
+                  href: 'https://bitbucket.org/workspace/repo',
                 },
                 clone: [
                   {
                     name: 'https',
-                    href: 'https://bitbucket.org/owner/cloneurl',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
                   },
                 ],
               },
@@ -399,7 +456,7 @@ describe('publish:bitbucket', () => {
 
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
-      remoteUrl: 'https://bitbucket.org/owner/cloneurl',
+      remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       defaultBranch: 'master',
@@ -407,10 +464,39 @@ describe('publish:bitbucket', () => {
     });
   });
 
-  it('should call outputs with the correct urls', async () => {
+  it('should call initAndPush with the configured defaultCommitMessage', async () => {
+    const customAuthorConfig = new ConfigReader({
+      integrations: {
+        bitbucket: [
+          {
+            host: 'bitbucket.org',
+            token: 'tokenlols',
+          },
+          {
+            host: 'hosted.bitbucket.com',
+            token: 'thing',
+            apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
+          },
+          {
+            host: 'notoken.bitbucket.com',
+          },
+        ],
+      },
+      scaffolder: {
+        defaultCommitMessage: 'Test commit message',
+      },
+    });
+
+    const customAuthorIntegrations =
+      ScmIntegrations.fromConfig(customAuthorConfig);
+    const customAuthorAction = createPublishBitbucketAction({
+      integrations: customAuthorIntegrations,
+      config: customAuthorConfig,
+    });
+
     server.use(
       rest.post(
-        'https://api.bitbucket.org/2.0/repositories/owner/repo',
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
         (_, res, ctx) =>
           res(
             ctx.status(200),
@@ -418,12 +504,50 @@ describe('publish:bitbucket', () => {
             ctx.json({
               links: {
                 html: {
-                  href: 'https://bitbucket.org/owner/repo',
+                  href: 'https://bitbucket.org/workspace/repo',
                 },
                 clone: [
                   {
                     name: 'https',
-                    href: 'https://bitbucket.org/owner/cloneurl',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await customAuthorAction.handler(mockContext);
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      commitMessage: 'Test commit message',
+      gitAuthorInfo: { email: undefined, name: undefined },
+    });
+  });
+
+  it('should call outputs with the correct urls', async () => {
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/workspace/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
                   },
                 ],
               },
@@ -436,11 +560,54 @@ describe('publish:bitbucket', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'remoteUrl',
-      'https://bitbucket.org/owner/cloneurl',
+      'https://bitbucket.org/workspace/cloneurl',
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://bitbucket.org/owner/repo/src/master',
+      'https://bitbucket.org/workspace/repo/src/master',
+    );
+  });
+
+  it('should call outputs with the correct urls with correct default branch', async () => {
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/workspace/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        defaultBranch: 'main',
+      },
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://bitbucket.org/workspace/cloneurl',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'https://bitbucket.org/workspace/repo/src/main',
     );
   });
 });

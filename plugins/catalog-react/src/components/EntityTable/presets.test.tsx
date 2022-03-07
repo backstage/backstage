@@ -23,6 +23,7 @@ import {
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
+import { entityRouteRef } from '../../routes';
 import { EntityTable } from './EntityTable';
 import { componentEntityColumns, systemEntityColumns } from './presets';
 
@@ -43,17 +44,19 @@ describe('systemEntityColumns', () => {
         relations: [
           {
             type: RELATION_PART_OF,
+            targetRef: 'domain:my-namespace/my-domain',
             target: {
-              kind: 'Domain',
+              kind: 'domain',
               name: 'my-domain',
               namespace: 'my-namespace',
             },
           },
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'group:default/test',
             target: {
-              kind: 'Group',
-              name: 'Test',
+              kind: 'group',
+              name: 'test',
               namespace: 'default',
             },
           },
@@ -68,12 +71,17 @@ describe('systemEntityColumns', () => {
         emptyContent={<div>EMPTY</div>}
         columns={systemEntityColumns}
       />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
       expect(getByText('my-namespace/my-system')).toBeInTheDocument();
       expect(getByText('my-namespace/my-domain')).toBeInTheDocument();
-      expect(getByText('Test')).toBeInTheDocument();
+      expect(getByText('test')).toBeInTheDocument();
       expect(getByText(/Some/)).toBeInTheDocument();
     });
   });
@@ -98,17 +106,19 @@ describe('componentEntityColumns', () => {
         relations: [
           {
             type: RELATION_PART_OF,
+            targetRef: 'system:my-namespace/my-system',
             target: {
-              kind: 'System',
+              kind: 'system',
               name: 'my-system',
               namespace: 'my-namespace',
             },
           },
           {
             type: RELATION_OWNED_BY,
+            targetRef: 'group:default/test',
             target: {
-              kind: 'Group',
-              name: 'Test',
+              kind: 'group',
+              name: 'test',
               namespace: 'default',
             },
           },
@@ -123,12 +133,17 @@ describe('componentEntityColumns', () => {
         emptyContent={<div>EMPTY</div>}
         columns={componentEntityColumns}
       />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
       expect(getByText('my-namespace/my-component')).toBeInTheDocument();
       expect(getByText('my-namespace/my-system')).toBeInTheDocument();
-      expect(getByText('Test')).toBeInTheDocument();
+      expect(getByText('test')).toBeInTheDocument();
       expect(getByText('production')).toBeInTheDocument();
       expect(getByText('service')).toBeInTheDocument();
       expect(getByText(/Some/)).toBeInTheDocument();

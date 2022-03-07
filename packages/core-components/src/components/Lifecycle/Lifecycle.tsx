@@ -16,29 +16,34 @@
 
 import React from 'react';
 import CSS from 'csstype';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 type Props = CSS.Properties & {
   shorthand?: boolean;
   alpha?: boolean;
 };
 
-const useStyles = makeStyles({
-  alpha: {
-    color: '#ffffff',
-    fontFamily: 'serif',
-    fontWeight: 'normal',
-    fontStyle: 'italic',
-  },
-  beta: {
-    color: '#4d65cc',
-    fontFamily: 'serif',
-    fontWeight: 'normal',
-    fontStyle: 'italic',
-  },
-});
+export type LifecycleClassKey = 'alpha' | 'beta';
 
-export const Lifecycle = (props: Props) => {
+const useStyles = makeStyles(
+  {
+    alpha: {
+      color: '#ffffff',
+      fontFamily: 'serif',
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
+    beta: {
+      color: '#4d65cc',
+      fontFamily: 'serif',
+      fontWeight: 'normal',
+      fontStyle: 'italic',
+    },
+  },
+  { name: 'BackstageLifecycle' },
+);
+
+export function Lifecycle(props: Props) {
   const classes = useStyles(props);
   const { shorthand, alpha } = props;
   return shorthand ? (
@@ -53,4 +58,4 @@ export const Lifecycle = (props: Props) => {
       {alpha ? 'Alpha' : 'Beta'}
     </span>
   );
-};
+}

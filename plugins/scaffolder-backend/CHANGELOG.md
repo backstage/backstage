@@ -1,5 +1,560 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.17.3
+
+### Patch Changes
+
+- 5c7f2343ea: Applied fix from version 0.17.2 of this package, which is part of the v0.69.2 release of Backstage.
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+- d6deb5e440: Set timeout for scaffolder octokit client
+- 83a83381b0: Use the new `processingResult` export from the catalog backend
+- 7372f29473: Cleanup API report
+- c7f6424a26: Applied fix from `v0.17.1` of this package which is part of the `v0.69.1` release of Backstage.
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- 8119a9e011: Fix the support for custom defaultBranch values for Bitbucket Cloud at the `publish:bitbucket` scaffolder action.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/plugin-catalog-backend@0.23.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.3
+  - @backstage/plugin-scaffolder-common@0.2.3
+
+## 0.17.2
+
+### Patch Changes
+
+- bug: `repoUrl` does not have a protocol in `publish:github:pull-request`
+
+## 0.17.1
+
+### Patch Changes
+
+- bug: fixing `repoUrl` resolution for `publish:github:pull-request` action
+
+## 0.17.0
+
+### Minor Changes
+
+- 91c6faeb7b: - **BREAKING** - the `/v2/tasks` endpoint now takes `templateRef` instead of `templateName` in the POST body. This should be a valid stringified `entityRef`.
+- 7f193ff019: - **BREAKING** - `DatabaseTaskStore()` constructor is now removed. Please use the `DatabaseTaskStore.create()` method instead.
+
+  - **BREAKING** - `TaskStore.createTask()` method now only takes one argument of type `TaskStoreCreateTaskOptions` which encapsulates the `spec` and `secrets`
+
+  ```diff
+  - TaskStore.createTask(spec, secrets)
+  + TaskStore.createTask({ spec, secrets})
+  ```
+
+  - **BREAKING** - `TaskBroker.dispatch()` method now only takes one argument of type `TaskBrokerDispatchOptions` which encapsulates the `spec` and `secrets`
+
+  ```diff
+  - TaskBroker.dispatch(spec, secrets)
+  + TaskBroker.dispatch({ spec, secrets})
+  ```
+
+- 9d9b2bab47: - **BREAKING** - Removed the re-export of types `TaskSpec` `TaskSpecV1Beta2` and `TaskSpecV1Beta3` these should now be import from `@backstage/plugin-scaffolder-common` directly.
+  - **BREAKING** - Removed the `observe` method from the `TaskBroker` interface, this has now been replaced with an `Observable` implementation under `event# @backstage/plugin-scaffolder-backend.
+
+### Patch Changes
+
+- 9d9b2bab47: - **DEPRECATED** - Deprecated the `runCommand` export in favour of `executeShellCommand`. Please migrate to using the new method.
+  - Added a type parameter to `TaskStoreEmitOptions` to type the `body` property
+- 65a7939c6c: - **DEPRECATED** - `TaskState` has been deprecated in favour of `CurrentClaimedTask`
+  - Narrowed the types from `JSONValue` to `JSONObject` as the usage is and should always be `JSONObject` for `complete` and `emitLog` `metadata` in `TaskContext`
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- ed09ad8093: Updated usage of the `LocationSpec` type from `@backstage/catalog-model`, which is deprecated.
+- 6981ac4ad2: - **DEPRECATED** - The `containerRunner` option passed to `createBuiltinActions` has now been deprecated.
+
+  - **DEPRECATED** - The `createFetchCookiecutterAction` export has also been deprecated and will soon disappear from this plugin.
+
+  The `fetch:cookiecutter` action will soon be removed from the default list of actions that are provided out of the box from the scaffolder plugin. It will still be supported, and maintained by the community, so you can install the package (`@backstage/plugin-scaffolder-backend-module-cookiecutter`) and pass it in as a custom action. Or you can migrate your templates to use [`fetch:template`](https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetchcookiecutter-to-fetchtemplate) with the `cookiecutterCompat` option.
+
+- b1744f1153: - **DEPRECATED** - `OctokitProvider` has been deprecated and will be removed in upcoming versions
+  This helper doesn't make sense to be export from the `plugin-scaffolder-backend` and possibly will be moved into the `integrations` package at a later date.
+  All implementations have been moved over to a private implementation called `getOctokitOptions` which is then passed to the `Octokit` constructor. If you're using this API you should consider duplicating the logic that lives in `getOctokitOptions` and move away from the deprecated export.
+- 0f37cdef19: Migrated over from the deprecated `spec.metadata` to `spec.templateInfo` for the `name` and the `baseUrl` of the template.
+- 7f193ff019: - **DEPRECATED** - `Status` has been deprecated in favour of `TaskStatus`
+  - **DEPRECATED** - `CompletedTaskState` has been deprecated in favour of `TaskCompletionState`
+  - **DEPRECATED** - `DispatchResult` has been deprecated in favour of `TaskBrokerDispatchResult`
+- df61ca71dd: Implemented required `getProcessorName` method for catalog processor.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-catalog-backend@0.22.0
+  - @backstage/plugin-scaffolder-common@0.2.2
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.2
+  - @backstage/integration@0.7.5
+
+## 0.16.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/types@0.1.3
+  - @backstage/plugin-catalog-backend@0.21.5
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.1
+  - @backstage/plugin-scaffolder-common@0.2.1
+
+## 0.16.0
+
+### Minor Changes
+
+- 661594bf43: **BREAKING**: Updated `TemplateAction` and related types to have its type parameter extend `JsonObject` instead of `InputBase`. The `createTemplateAction` has also been updated to pass through the `TInput` type parameter to the return type, meaning the `TemplateAction` retains its type. This can lead to breakages during type checking especially within tests.
+- 8db2b671c6: **BREAKING**: `ctx.token` is now `ctx.secrets.backstageToken` in Actions. Please update any of your Actions that might call out to Backstage API's with this token.
+- 5a1594330e: **BREAKING** - Removed the `CatalogEntityClient` export. This is no longer provider by this package,
+  but you can implement one pretty simply yourself using the `CatalogApi` and applying filters to fetch templates.
+- 7d3471db94: Remove the previously deprecated `scaffolder.provider` config for all providers.
+  This config is no longer used anywhere, and adopters should use [`integrations` config](https://backstage.io/docs/integrations) instead.
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- 3e59f90b51: Fix error handling of the `runCommand` helper to return `Error`
+  instance.
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- e72d371296: Use `TemplateEntityV1beta2` from `@backstage/plugin-scaffolder-common` instead
+  of `@backstage/catalog-model`.
+- 1433045c08: Removed unused `helmet` dependency.
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@0.2.0
+  - @backstage/plugin-catalog-backend@0.21.4
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.0
+
+## 0.15.24
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 2bd5f24043: fix for the `gitlab:publish` action to use the `oauthToken` key when creating a
+  `Gitlab` client. This only happens if `ctx.input.token` is provided else the key `token` will be used.
+- 898a56578c: Bump `vm2` to version 3.9.6
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-catalog-backend@0.21.3
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.11
+
+## 0.15.24-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 2bd5f24043: fix for the `gitlab:publish` action to use the `oauthToken` key when creating a
+  `Gitlab` client. This only happens if `ctx.input.token` is provided else the key `token` will be used.
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/plugin-catalog-backend@0.21.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.11-next.0
+
+## 0.15.23
+
+### Patch Changes
+
+- 2e0dbb0e50: Migrate from deprecated package @octokit/rest to octokit
+- c95df1631e: Added support for templating secrets into actions input, and also added an extra `token` input argument to all publishers to provide a token that would override the `integrations.config`.
+  You can find more information over at [Writing Templates](https://backstage.io/docs/features/software-templates/writing-templates#using-the-users-oauth-token)
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.2
+  - @backstage/backend-common@0.10.6
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.10
+
+## 0.15.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+  - @backstage/plugin-catalog-backend@0.21.2-next.1
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.10-next.1
+
+## 0.15.23-next.0
+
+### Patch Changes
+
+- 2e0dbb0e50: Migrate from deprecated package @octokit/rest to octokit
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.10-next.0
+
+## 0.15.22
+
+### Patch Changes
+
+- b09dd8f43b: chore(deps): bump `@gitbeaker/node` from 34.6.0 to 35.1.0
+- ac2f1eeec0: This change is for adding the option of inputs on the `github:actions:dispatch` Backstage Action. This will allow users to pass data from Backstage to the GitHub Action.
+- 0d5e846a78: Expose a new option to provide additional template filters via `@backstage/scaffolder-backend`'s `createRouter()` function.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.1
+  - @backstage/backend-common@0.10.5
+
+## 0.15.21
+
+### Patch Changes
+
+- b05d303226: Added the ability to support supplying secrets when creating tasks in the `scaffolder-backend`.
+
+  **deprecation**: Deprecated `ctx.token` from actions in the `scaffolder-backend`. Please move to using `ctx.secrets.backstageToken` instead.
+
+  **deprecation**: Deprecated `task.token` in `TaskSpec` in the `scaffolder-backend`. Please move to using `task.secrets.backstageToken` instead.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.0
+  - @backstage/integration@0.7.2
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/catalog-client@0.5.5
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.9
+  - @backstage/plugin-scaffolder-common@0.1.3
+
+## 0.15.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.0-next.0
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/catalog-client@0.5.5-next.0
+  - @backstage/integration@0.7.2-next.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.9-next.0
+  - @backstage/plugin-scaffolder-common@0.1.3-next.0
+
+## 0.15.20
+
+### Patch Changes
+
+- 9fbd3b90ae: fix: Register plugin to prioritise Component kind for entityRef
+- 451ef0aa07: Fix token pass-through for software templates using beta 3 version
+- 5333451def: Cleaned up API exports
+- 3b4d8caff6: Allow a GitHubCredentialsProvider to be passed to the GitHub scaffolder tasks actions.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/integration@0.7.1
+  - @backstage/backend-common@0.10.3
+  - @backstage/plugin-catalog-backend@0.20.0
+  - @backstage/errors@0.2.0
+  - @backstage/catalog-client@0.5.4
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.8
+
+## 0.15.19
+
+### Patch Changes
+
+- 7d4b4e937c: Uptake changes to the GitHub Credentials Provider interface.
+- d078377f67: Support navigating back to pre-filled templates to update inputs of scaffolder tasks for resubmission
+- 5f8ceba1b1: Support custom file name for `catalog:write` action
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/plugin-catalog-backend@0.19.4
+  - @backstage/plugin-scaffolder-common@0.1.2
+  - @backstage/integration@0.7.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.7
+
+## 0.15.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/catalog-client@0.5.3
+  - @backstage/plugin-catalog-backend@0.19.3
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.6
+
+## 0.15.17
+
+### Patch Changes
+
+- eec0750d8d: Makes cookiecutter a default, but optional action based on if a containerRunner argument is passed in to createRouter or createBuiltinActions
+- ed52f74ab3: Adding changes to create GitLab Merge Request using custom action
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.19.2
+  - @backstage/backend-common@0.9.14
+  - @backstage/catalog-model@0.9.8
+
+## 0.15.16
+
+### Patch Changes
+
+- 2a3fb13718: Bump esbuild to ^0.14.1
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+  - @backstage/plugin-catalog-backend@0.19.1
+
+## 0.15.15
+
+### Patch Changes
+
+- 0398ea25d3: Removed unused scaffolder visibility configuration; this has been moved to publish actions. Deprecated scaffolder provider configuration keys; these should use the integrations configuration instead.
+- b055a6addc: Align on usage of `cross-fetch` vs `node-fetch` in frontend vs backend packages, and remove some unnecessary imports of either one of them
+- c6b44d80ad: Add options to spawn in runCommand helper
+- Updated dependencies
+  - @backstage/integration@0.6.10
+  - @backstage/plugin-catalog-backend@0.19.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.5
+  - @backstage/backend-common@0.9.12
+
+## 0.15.14
+
+### Patch Changes
+
+- a096e4c4d7: Switched to executing scaffolder templating in a secure context for any template based on nunjucks, as it is [not secure by default](https://mozilla.github.io/nunjucks/api.html#user-defined-templates-warning).
+- f9352ab606: Removed all usages of `path.resolve` in order to ensure that template paths are resolved in a safe way.
+- e634a47ce5: Fix bug where there was error log lines written when failing to `JSON.parse` things that were not `JSON` values.
+- 42ebbc18c0: Bump gitbeaker to the latest version
+- Updated dependencies
+  - @backstage/errors@0.1.5
+  - @backstage/plugin-catalog-backend@0.18.0
+  - @backstage/backend-common@0.9.11
+
+## 0.15.13
+
+### Patch Changes
+
+- 26eb174ce8: Skip empty file names when scaffolding with nunjucks
+- ecdcbd08ee: Expose template metadata to custom action handler in Scaffolder.
+- Updated dependencies
+  - @backstage/catalog-client@0.5.2
+  - @backstage/catalog-model@0.9.7
+  - @backstage/backend-common@0.9.10
+  - @backstage/plugin-catalog-backend@0.17.4
+
+## 0.15.12
+
+### Patch Changes
+
+- 9990df8a1f: Expose some classes and interfaces public so TaskWorkers can run externally from the scaffolder API.
+- b45a34fb15: Adds a new endpoint for consuming logs from the Scaffolder that uses long polling instead of Server Sent Events.
+
+  This is useful if Backstage is accessed from an environment that doesn't support SSE correctly, which happens in combination with certain enterprise HTTP Proxy servers.
+
+  It is intended to switch the endpoint globally for the whole instance.
+  If you want to use it, you can provide a reconfigured API to the `scaffolderApiRef`:
+
+  ```tsx
+  // packages/app/src/apis.ts
+
+  // ...
+  import {
+    scaffolderApiRef,
+    ScaffolderClient,
+  } from '@backstage/plugin-scaffolder';
+
+  export const apis: AnyApiFactory[] = [
+    // ...
+
+    createApiFactory({
+      api: scaffolderApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          identityApi,
+          scmIntegrationsApi,
+          // use long polling instead of an eventsource
+          useLongPollingLogs: true,
+        }),
+    }),
+  ];
+  ```
+
+- a794c341ca: Fix a bug where only file mode 775 is considered an executable
+- Updated dependencies
+  - @backstage/backend-common@0.9.9
+  - @backstage/catalog-client@0.5.1
+  - @backstage/plugin-catalog-backend@0.17.3
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.4
+
+## 0.15.11
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- 41c49884d2: Start using the new `@backstage/types` package. Initially, this means using the `Observable` and `Json*` types from there. The types also remain in their old places but deprecated, and will be removed in a future release.
+- e55a5dea09: Fixed bug where the mode of an executable file was ignored
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.2
+  - @backstage/config@0.1.11
+  - @backstage/errors@0.1.4
+  - @backstage/integration@0.6.9
+  - @backstage/backend-common@0.9.8
+  - @backstage/catalog-model@0.9.6
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.3
+  - @backstage/plugin-scaffolder-common@0.1.1
+
+## 0.15.10
+
+### Patch Changes
+
+- b149e94290: Allow `catalog:register` action to register optional locations
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.17.1
+  - @backstage/backend-common@0.9.7
+  - @backstage/errors@0.1.3
+  - @backstage/catalog-model@0.9.5
+
+## 0.15.9
+
+### Patch Changes
+
+- 0f99f1170e: Make sure `sourcePath` of `publish:github:pull-request` can only be used to
+  retrieve files from the workspace.
+
+## 0.15.8
+
+### Patch Changes
+
+- 42c618abf6: Use `resolveSafeChildPath` in the `fetchContents` function to forbid reading files outside the base directory when a template is registered from a `file:` location.
+- 18083d1821: Introduce the new `scaffolder.backstage.io/v1beta3` template kind with nunjucks support 🥋
+- Updated dependencies
+  - @backstage/integration@0.6.8
+  - @backstage/plugin-catalog-backend@0.17.0
+
+## 0.15.7
+
+### Patch Changes
+
+- ca3086a7ad: Fixed a bug where the `catalog:register` action would not return any entity when running towards recent versions of the catalog.
+- Updated dependencies
+  - @backstage/catalog-model@0.9.4
+  - @backstage/backend-common@0.9.6
+  - @backstage/catalog-client@0.5.0
+  - @backstage/integration@0.6.7
+
+## 0.15.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@0.6.5
+  - @backstage/catalog-client@0.4.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/backend-common@0.9.4
+  - @backstage/config@0.1.10
+
+## 0.15.5
+
+### Patch Changes
+
+- 618143c3c7: Action needed: If you are using the templates located at https://github.com/backstage/backstage/tree/master/ in your Backstage app directly using the URL via the `app-config.yaml`, you should copy over the templates inside your org and import from there. The templates have now been moved to https://github.com/backstage/software-templates. See https://github.com/backstage/backstage/issues/6415 for explanation.
+- cfade02127: Change hardcoded branch `master` to \$defaultBranch in GitLab provider
+- 96fef17a18: Upgrade git-parse-url to v11.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.9.3
+  - @backstage/integration@0.6.4
+
+## 0.15.4
+
+### Patch Changes
+
+- 04aad2dab: Fix issue #7021 scaffolder action fetch:template preserves templates file permissions
+- 21ccd4997: GitHub Webhook action in Scaffolder Backend has been improved to validate event names against Octokit Webhook event names list.
+- Updated dependencies
+  - @backstage/catalog-client@0.3.19
+  - @backstage/catalog-model@0.9.2
+  - @backstage/errors@0.1.2
+  - @backstage/config@0.1.9
+  - @backstage/backend-common@0.9.2
+
+## 0.15.3
+
+### Patch Changes
+
+- 3f9dd1759: GitHub create repository webhook action: `github:webhook` for Backstage plugin Scaffolder has been added.
+- 774b08a5c: GitHubWebhook Action can be created with a default webhook secret. This allows getting secret from environment variable as an alternative to get it from context.
+- 536f4d844: Updated dependencies
+- 0b92a1e74: refactor: extract common Octokit related code and use it in actions: `publish:github`, `github:actions:dispatch`, `github:webhook`.
+- Updated dependencies
+  - @backstage/integration@0.6.3
+  - @backstage/catalog-model@0.9.1
+  - @backstage/backend-common@0.9.1
+
+## 0.15.2
+
+### Patch Changes
+
+- b438caf63: Add partial templating to `fetch:template` action.
+
+  If an `templateFileExtension` input is given, only files with that extension get their content processed. If `templateFileExtension` is `true`, the `.njk` extension is used. The `templateFileExtension` input is incompatible with both `cookiecutterCompat` and `copyWithoutRender`.
+
+  All other files get copied.
+
+  All output paths are subject to applying templating logic.
+
+- 1ce9b9571: Use more efficient approach to staging files in git during scaffolder actions
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/integration@0.6.2
+  - @backstage/config@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.2
+
+## 0.15.1
+
+### Patch Changes
+
+- d622cfad1: GitHub branch protection option 'Require review from Code Owners' can be enabled by adding `requireCodeOwnersReview: true` in context input.
+
+## 0.15.0
+
+### Minor Changes
+
+- e30646aeb: Add Bitbucket workspace and project fields to RepoUrlPicker to support Bitbucket cloud and server
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/integration@0.6.0
+  - @backstage/backend-common@0.8.9
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.1.1
+
+## 0.14.2
+
+### Patch Changes
+
+- 6cf48c609: Add the `scaffolder.defaultCommitMessage`, which defaults to `Initial commit`, so it can be customized.
+- 48ea3d25b: The recommended value for a `backstage.io/techdocs-ref` annotation is now
+  `dir:.`, indicating "documentation source files are located in the same
+  directory relative to the catalog entity." Note that `url:<location>` values
+  are still supported.
+- Updated dependencies
+  - @backstage/backend-common@0.8.8
+  - @backstage/config@0.1.6
+  - @backstage/integration@0.5.9
+
 ## 0.14.1
 
 ### Patch Changes

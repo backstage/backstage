@@ -16,15 +16,15 @@
 import React, { useEffect } from 'react';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
-import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
+import { Theme, makeStyles, LinearProgress } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { CLOUDBUILD_ANNOTATION } from '../useProjectName';
 
 import {
   InfoCard,
+  Link,
   StructuredMetadataTable,
   WarningPanel,
 } from '@backstage/core-components';
@@ -62,7 +62,7 @@ const WidgetContent = ({
         ),
         message: lastRun.message,
         url: (
-          <Link href={lastRun.googleUrl} target="_blank">
+          <Link to={lastRun.googleUrl ?? ''}>
             See more on Google{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>
@@ -75,8 +75,6 @@ const WidgetContent = ({
 export const LatestWorkflowRunCard = ({
   branch = 'master',
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   branch: string;
 }) => {
   const { entity } = useEntity();
@@ -108,8 +106,6 @@ export const LatestWorkflowRunCard = ({
 export const LatestWorkflowsForBranchCard = ({
   branch = 'master',
 }: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   branch: string;
 }) => {
   const { entity } = useEntity();

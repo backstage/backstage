@@ -5,8 +5,8 @@ sidebar_label: Auth0
 description: Adding Auth0 as an authentication provider in Backstage
 ---
 
-The Backstage `core-api` package comes with an Auth0 authentication provider
-that can authenticate users using OAuth.
+The Backstage `core-plugin-api` package comes with an Auth0 authentication
+provider that can authenticate users using OAuth.
 
 ## Create an Auth0 Application
 
@@ -17,7 +17,7 @@ that can authenticate users using OAuth.
    - Application type: Single Page Web Application
 4. Click on the Settings tab
 5. Add under `Application URIs` > `Allowed Callback URLs`:
-   `http://localhost:7000/api/auth/auth0/handler/frame`
+   `http://localhost:7007/api/auth/auth0/handler/frame`
 6. Click `Save Changes`
 
 ## Configuration

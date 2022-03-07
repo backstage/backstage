@@ -1,5 +1,622 @@
 # @backstage/cli
 
+## 0.15.1
+
+### Patch Changes
+
+- Fixed an issue where the release stage entry point of packages were not resolved correctly.
+
+## 0.15.0
+
+### Minor Changes
+
+- 8c3f30cb28: **BREAKING**: Removed the deprecated `app.<key>` template variables from the `index.html` templating. These should be replaced by using `config.getString("app.<key>")` instead.
+
+### Patch Changes
+
+- 46a19c599f: The CLI now bundles both version 16 and 17 of the patched `@hot-loader/react-dom` dependency, and selects the appropriate one based on what version of `react-dom` is installed within the app.
+
+## 0.14.1
+
+### Patch Changes
+
+- 5cc7f48400: Fixed a bug in the built-in Jest configuration that prevented it from identifying packages that had migrated to using the new package scripts to run tests.
+- 49ae6c9573: chore(deps-dev): bump `@types/rollup-plugin-postcss` from 2.0.1 to 3.1.4
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- d2e9d2a34f: chore(deps): bump `@hot-loader/react-dom` from 16.13.0 to 17.0.2
+- c2f3a548cf: Fix building of backends with `repo build --all`, where it would previously only work if the build was executed within the backend package.
+- 3d7ed5377a: Ignore setupTests and the file inside ./dev folder recursively. Eslint
+  can not resolve relative paths as we defined in the rule import/no-extraneous-dependencies, and it does not apply this rule.
+
+  A downside to use a recursive definition would be to checking all `dev` folders, which might not be wanted. Ensure you don't use
+  the `dev` folder out of scope (must be used for dev. env. only)
+
+- Updated dependencies
+  - @backstage/config-loader@0.9.6
+
+## 0.14.0
+
+### Minor Changes
+
+- 1fc0cd3896: Bumped Webpack and Rollup `svgr` dependencies and updated the AST template for `.icon.svg` modules. This means that SVG icon imports are now using SVGO v2.
+
+### Patch Changes
+
+- 0b74c72987: Added a new experimental and hidden `backstage-cli repo lint` command that can be used to lint all packages in the project, similar to `lerna run lint`.
+- 532dae9c4c: The `versions:bump --release next` command is updated to compare the `main` and `next` release manifests and prefer the latest.
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 22862486de: The `versions:bump` command now filters out `npm_` environment configuration when running `yarn install`. This has the effect of allowing it to consider local configuration files within the repository, which is the behavior that one would expect.
+- 22862486de: The `versions:bump` command now also considers the root `package.json` when searching for updates. It has also received updates to its output, including a link the [Backstage upgrade helper](https://backstage.github.io/upgrade-helper) and silenced `yarn install` output.
+- 7410e12268: Several changes were made to the new experimental package roles system. Unless you have been experimenting with using this new system, these changes have no affect on your project.
+
+  Renamed the `backstage-cli migrate package-role` command to `backstage-cli migrate package-roles`.
+
+  Updated the package role definitions by renaming `app` to `frontend`, `plugin-frontend` to `frontend-plugin`, `plugin-frontend-module` to `frontend-plugin-module`, `plugin-backend` to `backend-plugin`, and `plugin-backend-module` to `backend-plugin-module`
+
+  The `backstage-cli migrate package-scripts` received several tweaks to make it more accurate. It now tries to maintain existing script arguments, like `--config` parameters for `build` and `start` scripts.
+
+  The `script` command category has been renamed to `package`.
+
+  The `backstage-cli package build` command set an incorrect target directory for `app` and `backend` packages, which has been fixed.
+
+  The `backend:bundle` and `repo build` command for the `backend` role was previously ignoring building of bundled packages that had migrated to use package roles and the standard build script, this has now been fixed.
+
+- c6bbafb516: Updated the default [sucrase](https://github.com/alangpierce/sucrase)-based Jest transform to include source maps if the environment variable `ENABLE_SOURCE_MAPS` is non-empty. This can be used to better support editor test debugging integrations.
+- 7410e12268: The `test` command now automatically adds `--passWithNoTests` to the Jest invocation. To revert this behavior, pass `--passWithNoTests=false` or `--no-passWithNoTests`.
+- Updated dependencies
+  - @backstage/config-loader@0.9.4
+  - @backstage/errors@0.2.1
+  - @backstage/release-manifests@0.0.2
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.13.2
+
+### Patch Changes
+
+- bbbaa8ed61: The `plugin:diff` command no longer validates the existence of any of the files within `dev/` or `src/`.
+- eaf67f0578: Introduced initial support for an experimental `backstage.role` field in package.json, as well as experimental and hidden `migrate` and `script` sub-commands. We do not recommend usage of any of these additions yet.
+- aeb5c69abb: Introduces a new `--release` parameter to the `backstage-cli versions:bump` command.
+  The release can be either a specific version, for example `0.99.1`, or the latest `main` or `next` release.
+  The default behavior is to bump to the latest `main` release.
+- d59b90852a: The experimental types build enabled by `--experimental-type-build` now runs in a separate worker thread.
+- 50a19ff8dd: The file path printed by the default lint formatter is now relative to the repository root, rather than the individual package.
+- 63181dee79: Tweaked frontend bundling configuration to avoid leaking declarations into global scope.
+- fae2aee878: Removed the `import/no-duplicates` lint rule from the frontend and backend ESLint configurations. This rule is quite expensive to execute and only provides a purely cosmetic benefit, so we opted to remove it from the set of default rules. If you would like to keep this rule you can add it back in your local ESLint configuration:
+
+  ```js
+    'import/no-duplicates': 'warn'
+  ```
+
+- b906f98119: Rather than calling `yarn pack`, the `build-workspace` and `backend-bundle` commands now move files directly whenever possible. This cuts out several `yarn` invocations and speeds the packing process up by several orders of magnitude.
+- d0c71e2aa4: Switched the `lint` command to invoke ESLint directly through its Node.js API rather than spawning a new process.
+- d59b90852a: Introduced an experimental and hidden `repo` sub-command, that contains commands that operate on an entire monorepo rather than individual packages.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.1
+
+## 0.13.2-next.0
+
+### Patch Changes
+
+- bbbaa8ed61: The `plugin:diff` command no longer validates the existence of any of the files within `dev/` or `src/`.
+- eaf67f0578: Introduced initial support for an experimental `backstage.role` field in package.json, as well as experimental and hidden `migrate` and `script` sub-commands. We do not recommend usage of any of these additions yet.
+- d59b90852a: The experimental types build enabled by `--experimental-type-build` now runs in a separate worker thread.
+- 50a19ff8dd: The file path printed by the default lint formatter is now relative to the repository root, rather than the individual package.
+- 63181dee79: Tweaked frontend bundling configuration to avoid leaking declarations into global scope.
+- fae2aee878: Removed the `import/no-duplicates` lint rule from the frontend and backend ESLint configurations. This rule is quite expensive to execute and only provides a purely cosmetic benefit, so we opted to remove it from the set of default rules. If you would like to keep this rule you can add it back in your local ESLint configuration:
+
+  ```js
+    'import/no-duplicates': 'warn'
+  ```
+
+- b906f98119: Rather than calling `yarn pack`, the `build-workspace` and `backend-bundle` commands now move files directly whenever possible. This cuts out several `yarn` invocations and speeds the packing process up by several orders of magnitude.
+- d0c71e2aa4: Switched the `lint` command to invoke ESLint directly through its Node.js API rather than spawning a new process.
+- d59b90852a: Introduced an experimental and hidden `repo` sub-command, that contains commands that operate on an entire monorepo rather than individual packages.
+
+## 0.13.1
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+- 80f510caee: Log warning if unable to parse yarn.lock
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- 5bd0ce9e62: chore(deps): bump `inquirer` from 7.3.3 to 8.2.0
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- 80f510caee: Log warning if unable to parse yarn.lock
+
+## 0.13.0
+
+### Minor Changes
+
+- 1ddf6d9d5a: Removes the previously deprecated `remove-plugin` command alongside the `--lax` option to `app:build`.
+
+### Patch Changes
+
+- c372a5032f: chore(deps): bump `jest-transform-yaml` from 0.1.1 to 1.0.0
+- 1b4ab0d44c: Updated the dependency warning that is baked into `app:serve` to only warn about packages that are not allowed to have duplicates.
+- dc46efa2cc: Switched the `WebpackDevServer` configuration to use client-side detection of the WebSocket protocol.
+- 10086f5873: Upgraded `webpack`, `webpack-dev-server`,`fork-ts-checker-webpack-plugin`, `react-dev-utils`, and `react-hot-loader`. Since `ForkTsCheckerWebpackPlugin` no longer runs ESLint, we now include the `ESLintPlugin` from `eslint-webpack-plugin` if the `--check` flag is passed.
+
+## 0.12.0
+
+### Minor Changes
+
+- 08fa6a604a: Removed the `typescript` dependency from the Backstage CLI in order to decouple the TypeScript version in Backstage projects. To keep using a specific TypeScript version, be sure to add an explicit dependency in your root `package.json`:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+  Yet another issue you might run into when upgrading TypeScript is incompatibilities in the types from `react-use`. The error you would run into looks something like this:
+
+  ```plain
+  node_modules/react-use/lib/usePermission.d.ts:1:54 - error TS2304: Cannot find name 'DevicePermissionDescriptor'.
+
+  1 declare type PermissionDesc = PermissionDescriptor | DevicePermissionDescriptor | MidiPermissionDescriptor | PushPermissionDescriptor;
+  ```
+
+  If you encounter this error, the simplest fix is to replace full imports of `react-use` with more specific ones. For example, the following:
+
+  ```ts
+  import { useAsync } from 'react-use';
+  ```
+
+  Would be converted into this:
+
+  ```ts
+  import useAsync from 'react-use/lib/useAsync';
+  ```
+
+### Patch Changes
+
+- 6e34e2cfbf: Introduce `--deprecated` option to `config:check` to log all deprecated app configuration properties
+
+  ```sh
+  $ yarn backstage-cli config:check --lax --deprecated
+  config:check --lax --deprecated
+  Loaded config from app-config.yaml
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+- f2fe4d240b: Switched to only apply `@hot-loader/react-dom` [Webpack aliasing](https://github.com/hot-loader/react-dom/tree/master/source#webpack) when using React 16.
+- 2a42d573d2: Introduced a new `--experimental-type-build` option to the various package build commands. This option switches the type definition build to be executed using API Extractor rather than a `rollup` plugin. In order for this experimental switch to work, you must also have `@microsoft/api-extractor` installed within your project, as it is an optional peer dependency.
+
+  The biggest difference between the existing mode and the experimental one is that rather than just building a single `dist/index.d.ts` file, API Extractor will output `index.d.ts`, `index.beta.d.ts`, and `index.alpha.d.ts`, all in the `dist` directory. Each of these files will have exports from more unstable release stages stripped, meaning that `index.d.ts` will omit all exports marked with `@alpha` or `@beta`, while `index.beta.d.ts` will omit all exports marked with `@alpha`.
+
+  In addition, the `prepack` command now has support for `alphaTypes` and `betaTypes` fields in the `publishConfig` of `package.json`. These optional fields can be pointed to `dist/types.alpha.d.ts` and `dist/types.beta.d.ts` respectively, which will cause `<name>/alpha` and `<name>/beta` entry points to be generated for the package. See the [`@backstage/catalog-model`](https://github.com/backstage/backstage/blob/master/packages/catalog-model/package.json) package for an example of how this can be used in practice.
+
+- Updated dependencies
+  - @backstage/config@0.1.13
+  - @backstage/config-loader@0.9.3
+
+## 0.12.0-next.0
+
+### Minor Changes
+
+- 08fa6a604a: Removed the `typescript` dependency from the Backstage CLI in order to decouple the TypeScript version in Backstage projects. To keep using a specific TypeScript version, be sure to add an explicit dependency in your root `package.json`:
+
+  ```json
+    "dependencies": {
+      ...
+      "typescript": "~4.5.4",
+    }
+  ```
+
+  We recommend using a `~` version range since TypeScript releases do not adhere to semver.
+
+  It may be the case that you end up with errors if you upgrade the TypeScript version. This is because there was a change to TypeScript not long ago that defaulted the type of errors caught in `catch` blocks to `unknown`. You can work around this by adding `"useUnknownInCatchVariables": false` to the `"compilerOptions"` in your `tsconfig.json`:
+
+  ```json
+    "compilerOptions": {
+      ...
+      "useUnknownInCatchVariables": false
+    }
+  ```
+
+  Another option is to use the utilities from `@backstage/errors` to assert the type of errors caught in `catch` blocks:
+
+  ```ts
+  import { assertError, isError } from '@backstage/errors';
+
+  try {
+    ...
+  } catch (error) {
+    assertError(error);
+    ...
+    // OR
+    if (isError(error)) {
+      ...
+    }
+  }
+  ```
+
+### Patch Changes
+
+- 6e34e2cfbf: Introduce `--deprecated` option to `config:check` to log all deprecated app configuration properties
+
+  ```sh
+  $ yarn backstage-cli config:check --lax --deprecated
+  config:check --lax --deprecated
+  Loaded config from app-config.yaml
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+- 2a42d573d2: Introduced a new `--experimental-type-build` option to the various package build commands. This option switches the type definition build to be executed using API Extractor rather than a `rollup` plugin. In order for this experimental switch to work, you must also have `@microsoft/api-extractor` installed within your project, as it is an optional peer dependency.
+
+  The biggest difference between the existing mode and the experimental one is that rather than just building a single `dist/index.d.ts` file, API Extractor will output `index.d.ts`, `index.beta.d.ts`, and `index.alpha.d.ts`, all in the `dist` directory. Each of these files will have exports from more unstable release stages stripped, meaning that `index.d.ts` will omit all exports marked with `@alpha` or `@beta`, while `index.beta.d.ts` will omit all exports marked with `@alpha`.
+
+  In addition, the `prepack` command now has support for `alphaTypes` and `betaTypes` fields in the `publishConfig` of `package.json`. These optional fields can be pointed to `dist/types.alpha.d.ts` and `dist/types.beta.d.ts` respectively, which will cause `<name>/alpha` and `<name>/beta` entry points to be generated for the package. See the [`@backstage/catalog-model`](https://github.com/backstage/backstage/blob/master/packages/catalog-model/package.json) package for an example of how this can be used in practice.
+
+- Updated dependencies
+  - @backstage/config@0.1.13-next.0
+  - @backstage/config-loader@0.9.3-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 14e980acee: ESLint upgraded to version 8 and all it's plugins updated to newest version.
+
+  If you use any custom plugins for ESLint please check compatibility.
+
+  ```diff
+  -    "@typescript-eslint/eslint-plugin": "^v4.33.0",
+  -    "@typescript-eslint/parser": "^v4.28.3",
+  +    "@typescript-eslint/eslint-plugin": "^5.9.0",
+  +    "@typescript-eslint/parser": "^5.9.0",
+  -    "eslint": "^7.30.0",
+  +    "eslint": "^8.6.0",
+  -    "eslint-plugin-import": "^2.20.2",
+  -    "eslint-plugin-jest": "^24.1.0",
+  -    "eslint-plugin-jsx-a11y": "^6.2.1",
+  +    "eslint-plugin-import": "^2.25.4",
+  +    "eslint-plugin-jest": "^25.3.4",
+  +    "eslint-plugin-jsx-a11y": "^6.5.1",
+  -    "eslint-plugin-react": "^7.12.4",
+  -    "eslint-plugin-react-hooks": "^4.0.0",
+  +    "eslint-plugin-react": "^7.28.0",
+  +    "eslint-plugin-react-hooks": "^4.3.0",
+  ```
+
+  Please consult changelogs from packages if you find any problems.
+
+### Patch Changes
+
+- f302d24d34: Switch Webpack minification to use `esbuild` instead of `terser`.
+- bee7082094: Update `config/eslint.js` to forbid imports of `@material-ui/icons/` as well.
+- 7946418729: Switched to using `@manypkg/get-packages` to list monorepo packages, which provides better support for different kind of monorepo setups.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/errors@0.2.0
+  - @backstage/config-loader@0.9.2
+
+## 0.10.5
+
+### Patch Changes
+
+- 37123b4851: Bump `css-loader` from `5.2.6` to `6.5.1`
+- 9534391ae4: Add --pattern option to override matching glob patterns for backstage versioning
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+
+## 0.10.4
+
+### Patch Changes
+
+- 1d26017090: Fix issue with plugin:serve for Plugins not using Lerna monorepo.
+- 9c3aaf3512: Bump `@typescript-eslint/eslint-plugin` to `4.33.0`
+- 808828e4fa: remove inline CSS from serve_index.html
+- 6e4080d31b: Add option to build command for minifying the generated code
+- Updated dependencies
+  - @backstage/config-loader@0.9.1
+
+## 0.10.3
+
+### Patch Changes
+
+- dfc1110dc4: Added peerPluginDependencies option to experimentalInstallationRecipe for install command to install plugins it depends on.
+- 58b0262dd9: Pruned unused dependencies.
+- 5fdc8df0e8: The frontend configuration is now available as a `config` global during templating of the `index.html` file. This allows for much more flexibility as the values available during templating is not longer hardcoded to a fixed set of values.
+
+  For example, to access the app title, you would now do the following:
+
+  ```html
+  <title><%= config.getString('app.title') %></title>
+  ```
+
+  Along with this change, usage of the existing `app.<key>` values has been deprecated and will be removed in a future release. The general pattern for migrating existing usage is to replace `<%= app.<key> %>` with `<%= config.getString('app.<key>') %>`, although in some cases you may need to use for example `config.has('app.<key>')` or `config.getOptionalString('app.<key>')` instead.
+
+  The [`@backstage/create-app` changelog](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#049) also contains more details how to migrate existing usage.
+
+- Updated dependencies
+  - @backstage/config-loader@0.9.0
+
+## 0.10.2
+
+### Patch Changes
+
+- 25dfc2d483: Add support for `.cjs` and `.mjs` extensions in local and dependency modules.
+
+## 0.10.1
+
+### Patch Changes
+
+- 0ebb05eee2: Add cli option to minify the generated code of a plugin or backend package
+
+  ```
+  backstage-cli plugin:build --minify
+  backstage-cli backend:build --minify
+  ```
+
+- cd450844f6: Updated the frontend plugin template to put React dependencies in `peerDependencies` by default, as well as allowing both React v16 and v17. This change can be applied to existing plugins by running `yarn backstage-cli plugin:diff` within the plugin package directory.
+
+## 0.10.0
+
+### Minor Changes
+
+- ea99ef5198: Remove the `backend:build-image` command from the CLI and added more deprecation warnings to other deprecated fields like `--lax` and `remove-plugin`
+
+### Patch Changes
+
+- e7230ef814: Bump react-dev-utils to v12
+- 416b68675d: build(dependencies): bump `style-loader` from 1.2.1 to 3.3.1
+- Updated dependencies
+  - @backstage/config-loader@0.8.1
+
+## 0.9.1
+
+### Patch Changes
+
+- dde216acf4: Switch the default test coverage provider from the jest default one to `'v8'`, which provides much better coverage information when using the default Backstage test setup. This is considered a bug fix as the current coverage information is often very inaccurate.
+- 719cc87d2f: Disable ES transforms in tests transformed by the `jestSucraseTransform.js`. This is not considered a breaking change since all code is already transpiled this way in the development setup.
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- ee055cf6db: Update the default routes to use id instead of title
+- Updated dependencies
+  - @backstage/errors@0.1.5
+
+## 0.9.0
+
+### Minor Changes
+
+- 25f637f39f: Tweaked style insertion logic to make sure that JSS stylesheets always receive the highest priority.
+
+### Patch Changes
+
+- 677bfc2dd0: Keep backstage.json in sync
+
+  The `versions:bump` script now takes care about updating the `version` property inside `backstage.json` file. The file is created if is not present.
+
+- 8809b6c0dd: Update the json-schema dependency version.
+- fdfd2f8a62: remove double config dep
+- 1e99c73c75: Update internal usage of `configLoader.loadConfig` that now returns an object instead of an array of configs.
+- 6dcfe227a2: Added a scaffolder backend module template for the `create` command.
+- 4ca3542fdd: Fixed a bug where calling `backstage-cli backend:bundle --build-dependencies` with no dependencies to be built would cause all monorepo packages to be built instead.
+- 867ea81d15: bump `@rollup/plugin-commonjs` from 17.1.0 to 21.0.1
+- 16d06f6ac3: Introduces new `backstage-cli create` command to replace `create-plugin` and make space for creating a wider array of things. The create command also adds a new template for creating isomorphic common plugin packages.
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/cli-common@0.1.6
+
+## 0.8.2
+
+### Patch Changes
+
+- dd355bca46: Switched to dynamically determining the packages that are unsafe to repack when executing the CLI within the Backstage main repo.
+- b393c4d4be: Fixed the `config:check` command that was incorrectly only validating frontend configuration. Also added a `--frontend` flag to the command which maintains that behavior.
+- 0611f3b3e2: Reading app config from a remote server
+- ec64d9590c: Make `ExitCodeError` call `super` early to avoid compiler warnings
+- 8af66229e7: Bumped `@spotify/eslint-config-react` from `v10` to `v12`, dropping support for Node.js v12.
+- a197708da9: Bumped `@spotify/eslint-config-typescript` from `v10` to `v12`, dropping support for Node.js v12.
+- Updated dependencies
+  - @backstage/config-loader@0.7.2
+
+## 0.8.1
+
+### Patch Changes
+
+- f1e96dc5b1: Update usage of msw in default plugin template
+- b0dc1fd241: bump `@spotify/eslint-config-base` from 9.0.2 to 12.0.0
+- c5bb1df55d: Bump `msw` to `v0.35.0` to resolve [CVE-2021-32796](https://github.com/advisories/GHSA-5fg8-2547-mr8q).
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/cli-common@0.1.5
+  - @backstage/errors@0.1.4
+  - @backstage/config-loader@0.7.1
+
+## 0.8.0
+
+### Minor Changes
+
+- b486adb8c6: The Jest configuration that's included with the Backstage CLI has received several changes.
+
+  As a part of migrating to more widespread usage of ESM modules, the default configuration now transforms all source files everywhere, including those within `node_modules`. Due to this change the existing `transformModules` option has been removed and will be ignored. There is also a list of known packages that do not require transforms in the CLI, which will evolve over time. If needed there will also be an option to add packages to this list in the future, but it is not included yet to avoid clutter.
+
+  To counteract the slowdown of the additional transforms that have been introduced, the default configuration has also been reworked to enable caching across different packages. Previously each package in a Backstage monorepo would have its own isolated Jest cache, but it is now shared between packages that have a similar enough Jest configuration.
+
+  Another change that will speed up test execution is that the transformer for `.esm.js` files has been switched. It used to be an ESM transformer based on Babel, but it is also done by sucrase now since it is significantly faster.
+
+  The changes above are not strictly breaking as all tests should still work. It may however cause excessive slowdowns in projects that have configured custom transforms in the `jest` field within `package.json` files. In this case it is either best to consider removing the custom transforms, or overriding the `transformIgnorePatterns` to instead use Jest's default `'/node_modules/'` pattern.
+
+  This change also removes the `@backstage/cli/config/jestEsmTransform.js` transform, which can be replaced by using the `@backstage/cli/config/sucraseEsmTransform.js` transform instead.
+
+### Patch Changes
+
+- 36e67d2f24: Internal updates to apply more strict checks to throw errors.
+- Updated dependencies
+  - @backstage/config-loader@0.7.0
+  - @backstage/errors@0.1.3
+
+## 0.7.16
+
+### Patch Changes
+
+- 53bdc66623: add a --from <location> option to the plugin install command
+- 84e24fcdaf: Bump sucrase to version 3.20.2
+- 6583c6ac40: Add semicolon in template to make prettier happy
+- c6f927d819: Bump mini-css-extract-plugin to v2
+- 16f044cb6b: Update default backend ESLint configuration to allow usage of `__dirname` in tests.
+- 1ef9e64901: Add an experimental `install <plugin>` command.
+
+  Given a `pluginId`, the command looks for NPM packages matching `@backstage/plugin-{pluginId}` or `backstage-plugin-{pluginId}` or `{pluginId}`. It looks for the `experimentalInstallationRecipe` in their `package.json` for the steps of installation. Detailed documentation and API Spec to follow (and to be decided as well).
+
+## 0.7.15
+
+### Patch Changes
+
+- ae4680b88d: The `create-plugin` command now passes the extension name via the `name` key
+  in `createRoutableExtension()` calls in newly created plugins.
+- df1242ffe4: Adding `--inspect-brk` as an option when debugging backend for development
+- c7f2a2307d: When creating a backend plugin with `--backend` flag, don't add `-backend` if it's already suffixed
+- 185fec5c0c: The default jest configuration used by the `test` command now supports yarn workspaces. By running `backstage-cli test` in the root of a monorepo, all packages will now automatically be included in the test suite and it will run just like it does within a package. Each package in the monorepo will still use its own local jest configuration, and only packages that have `backstage-cli test` in the `test` script within `package.json` will be included.
+- Updated dependencies
+  - @backstage/config-loader@0.6.10
+  - @backstage/cli-common@0.1.4
+
+## 0.7.14
+
+### Patch Changes
+
+- 3a8704f16b: Only serve static assets if there is a public folder during `app:serve` and `plugin:serve`. This fixes a common bug that would break `plugin:serve` with an `EBUSY` error.
+- 40199b61d6: Configuration schema is now also collected from the root `package.json` if it exists.
+- 2a6c393c06: The `create-plugin` command now prefers dependency versions ranges that are already in the lockfile.
+- 58f91943ab: Improved ´plugin:diff´ check for the `package.json` `"files"` field.
+- 12e074a6e4: Fix duplication checks to stop looking for the old core packages, and to allow some explicitly
+- Updated dependencies
+  - @backstage/config-loader@0.6.9
+
+## 0.7.13
+
+### Patch Changes
+
+- c0c51c9710: Disabled ECMAScript transforms in app and backend builds in order to reduce bundle size and runtime performance. For the rationale and a full list of syntax that is no longer transformed, see https://github.com/alangpierce/sucrase#transforms. This also enables TypeScripts `useDefineForClassFields` flag by default, which in rare occasions could cause build failures. For instructions on how to mitigate issues due to the flag, see the [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier).
+- e9f332a51c: Restrict imports on the form `../../plugins/x/src`
+- febddedcb2: Bump `lodash` to remediate `SNYK-JS-LODASH-590103` security vulnerability
+- 050797c5b3: Switched the Jest YAML transform from `yaml-jest` to `jest-transform-yaml`, which works with newer versions of Node.js.
+- Updated dependencies
+  - @backstage/config@0.1.10
+
+## 0.7.12
+
+### Patch Changes
+
+- d835d112fe: replace the deprecated file-loader for fonts with assets module
+- 15e324ce60: Set the default TZ (Timezone) env for the test command to be UTC so any date related tests are consistent across timezones.
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+
+## 0.7.11
+
+### Patch Changes
+
+- 13895db37: Support importing font files in tests.
+  This fixes remaining issues from [#7019](https://github.com/backstage/backstage/pull/7019).
+- Updated dependencies
+  - @backstage/cli-common@0.1.3
+  - @backstage/config-loader@0.6.8
+  - @backstage/config@0.1.9
+
+## 0.7.10
+
+### Patch Changes
+
+- 5e803edb8: Added support for importing font files. Imports in CSS via `url()` are supported for the final frontend bundle, but not for packages that are built for publishing. Module imports of fonts files from TypeScript are supported everywhere.
+- b5118ff76: Updated dependencies
+
+## 0.7.9
+
+### Patch Changes
+
+- f3bba3d2b: Remove debug logging
+- 8ea1e96b3: Fix file path handling in diff commands on Windows.
+- 2518aab58: Compensate for error formatting mismatch between Webpack 5 and react-dev-utils
+- 1ac2961c3: Reintroduce Node.js shims that were removed in the Webpack 5 migration.
+- 8d07a8b03: Add Buffer to `ProvidePlugin` since this is no longer provided in `webpack@5`
+- fe506a0cf: Remove Webpack deprecation message when running build.
+- 485438a56: Fix `backstage-cli backend:dev` argument passing
+- Updated dependencies
+  - @backstage/config@0.1.7
+  - @backstage/config-loader@0.6.7
+
+## 0.7.8
+
+### Patch Changes
+
+- c4ef9181a: Migrate to using `webpack@5` 🎉
+
+## 0.7.7
+
+### Patch Changes
+
+- 6aa7c3db7: bump node-tar version to the latest
+- e9d3983ee: Keep track of filtered configuration values when running frontend in development mode.
+- Updated dependencies
+  - @backstage/config@0.1.6
+  - @backstage/config-loader@0.6.6
+
+## 0.7.6
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+
 ## 0.7.5
 
 ### Patch Changes

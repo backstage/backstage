@@ -16,24 +16,30 @@
 
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
-const useSubvalueCellStyles = makeStyles<BackstageTheme>(theme => ({
-  value: {
-    marginBottom: '6px',
-  },
-  subvalue: {
-    color: theme.palette.textSubtle,
-    fontWeight: 'normal',
-  },
-}));
+export type SubvalueCellClassKey = 'value' | 'subvalue';
+
+const useSubvalueCellStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    value: {
+      marginBottom: '6px',
+    },
+    subvalue: {
+      color: theme.palette.textSubtle,
+      fontWeight: 'normal',
+    },
+  }),
+  { name: 'BackstageSubvalueCell' },
+);
 
 type SubvalueCellProps = {
   value: React.ReactNode;
   subvalue: React.ReactNode;
 };
 
-export const SubvalueCell = ({ value, subvalue }: SubvalueCellProps) => {
+export function SubvalueCell(props: SubvalueCellProps) {
+  const { value, subvalue } = props;
   const classes = useSubvalueCellStyles();
 
   return (
@@ -42,4 +48,4 @@ export const SubvalueCell = ({ value, subvalue }: SubvalueCellProps) => {
       <div className={classes.subvalue}>{subvalue}</div>
     </>
   );
-};
+}

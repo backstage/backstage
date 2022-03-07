@@ -7,7 +7,8 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { Observable } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { StorageApi } from '@backstage/core-plugin-api';
 
@@ -51,7 +52,7 @@ export interface ShortcutApi {
 // Warning: (ae-missing-release-tag) "Shortcuts" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Shortcuts: () => JSX.Element;
+export const Shortcuts: (props: ShortcutsProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "shortcutsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -63,5 +64,9 @@ export const shortcutsApiRef: ApiRef<ShortcutApi>;
 // @public (undocumented)
 export const shortcutsPlugin: BackstagePlugin<{}, {}>;
 
-// (No @packageDocumentation comment for this package)
+// @public
+export interface ShortcutsProps {
+  // (undocumented)
+  icon?: IconComponent;
+}
 ```

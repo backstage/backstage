@@ -14,38 +14,43 @@
  * limitations under the License.
  */
 
-import { serializeEntityRef } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import { TodoApi, TodoListOptions, TodoListResult } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
-interface Options {
+/**
+ * Options for creating a todo client.
+ *
+ * @public
+ */
+export interface TodoClientOptions {
   discoveryApi: DiscoveryApi;
   identityApi: IdentityApi;
 }
 
+/**
+ * An implementation of the TodoApi that talks to the todo plugin backend.
+ *
+ * @public
+ */
 export class TodoClient implements TodoApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
 
-  constructor(options: Options) {
+  constructor(options: TodoClientOptions) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
   }
 
-  async listTodos({
-    entity,
-    offset,
-    limit,
-    orderBy,
-    filters,
-  }: TodoListOptions): Promise<TodoListResult> {
+  async listTodos(options: TodoListOptions): Promise<TodoListResult> {
+    const { entity, offset, limit, orderBy, filters } = options;
     const baseUrl = await this.discoveryApi.getBaseUrl('todo');
-    const token = await this.identityApi.getIdToken();
+    const { token } = await this.identityApi.getCredentials();
 
     const query = new URLSearchParams();
     if (entity) {
-      query.set('entity', serializeEntityRef(entity) as string);
+      query.set('entity', stringifyEntityRef(entity));
     }
     if (typeof offset === 'number') {
       query.set('offset', String(offset));

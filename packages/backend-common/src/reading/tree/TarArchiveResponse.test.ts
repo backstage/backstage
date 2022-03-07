@@ -147,4 +147,40 @@ describe('TarArchiveResponse', () => {
       fs.pathExists(resolvePath(dir, 'docs/index.md')),
     ).resolves.toBe(false);
   });
+
+  it('should leave temporary directories in place in the case of an error', async () => {
+    const stream = fs.createReadStream('/test-archive.tar.gz');
+
+    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag', () => {
+      throw new Error('NOPE');
+    });
+
+    const tmpDir = await fs.mkdtemp('/tmp/test');
+    // selects the wrong overload by default
+    const mkdtemp = jest.spyOn(fs, 'mkdtemp') as unknown as jest.SpyInstance<
+      Promise<string>,
+      []
+    >;
+    mkdtemp.mockResolvedValue(tmpDir);
+
+    await expect(fs.pathExists(tmpDir)).resolves.toBe(true);
+    await expect(res.dir()).rejects.toThrow('NOPE');
+    await expect(fs.pathExists(tmpDir)).resolves.toBe(false);
+
+    mkdtemp.mockRestore();
+  });
+
+  it('should leave directory in place if provided in the case of an error', async () => {
+    const stream = fs.createReadStream('/test-archive.tar.gz');
+
+    const res = new TarArchiveResponse(stream, '', '/tmp', 'etag', () => {
+      throw new Error('NOPE');
+    });
+
+    const tmpDir = await fs.mkdtemp('/tmp/test');
+
+    await expect(fs.pathExists(tmpDir)).resolves.toBe(true);
+    await expect(res.dir({ targetDir: tmpDir })).rejects.toThrow('NOPE');
+    await expect(fs.pathExists(tmpDir)).resolves.toBe(true);
+  });
 });

@@ -14,34 +14,31 @@
  * limitations under the License.
  */
 import { ApiRef, createApiRef } from '../system';
-import { ProfileInfo } from './auth';
+import { BackstageUserIdentity, ProfileInfo } from './auth';
 
 /**
  * The Identity API used to identify and get information about the signed in user.
+ *
+ * @public
  */
 export type IdentityApi = {
   /**
-   * The ID of the signed in user. This ID is not meant to be presented to the user, but used
-   * as an opaque string to pass on to backends or use in frontend logic.
-   *
-   * TODO: The intention of the user ID is to be able to tie the user to an identity
-   *       that is known by the catalog and/or identity backend. It should for example
-   *       be possible to fetch all owned components using this ID.
-   */
-  getUserId(): string;
-
-  /**
    * The profile of the signed in user.
    */
-  getProfile(): ProfileInfo;
+  getProfileInfo(): Promise<ProfileInfo>;
 
   /**
-   * An OpenID Connect ID Token which proves the identity of the signed in user.
+   * User identity information within Backstage.
+   */
+  getBackstageIdentity(): Promise<BackstageUserIdentity>;
+
+  /**
+   * Provides credentials in the form of a token which proves the identity of the signed in user.
    *
-   * The ID token will be undefined if the signed in user does not have a verified
+   * The token will be undefined if the signed in user does not have a verified
    * identity, such as a demo user or mocked user for e2e tests.
    */
-  getIdToken(): Promise<string | undefined>;
+  getCredentials(): Promise<{ token?: string }>;
 
   /**
    * Sign out the current user
@@ -49,6 +46,11 @@ export type IdentityApi = {
   signOut(): Promise<void>;
 };
 
+/**
+ * The {@link ApiRef} of {@link IdentityApi}.
+ *
+ * @public
+ */
 export const identityApiRef: ApiRef<IdentityApi> = createApiRef({
   id: 'core.identity',
 });

@@ -13,9 +13,10 @@ which during validation is stitched together into a single schema.
 ## Schema Collection and Definition
 
 Schemas are collected from all packages and dependencies in each repo that are a
-part of the Backstage ecosystem, including transitive dependencies. The current
-definition of "part of the ecosystem" is that a package has at least one
-dependency in the `@backstage` namespace, but this is subject to change.
+part of the Backstage ecosystem, including the root package and transitive
+dependencies. The current definition of "part of the ecosystem" is that a
+package has at least one dependency in the `@backstage` namespace or a
+`"configSchema"` field in `package.json`, but this is subject to change.
 
 Each package is searched for a schema at a single point of entry, a top-level
 `"configSchema"` field in `package.json`. The field can either contain an

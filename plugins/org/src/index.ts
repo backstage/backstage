@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * A Backstage plugin that helps you create entity pages for your organization
+ *
+ * @packageDocumentation
+ */
+
 export {
   orgPlugin,
   orgPlugin as plugin,

@@ -15,7 +15,8 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useAsync, useAsyncFn } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { DateTime } from 'luxon';
 import { getReleaseCommitPairs } from '../helpers/getReleaseCommitPairs';
 
@@ -80,19 +81,16 @@ export function useGetReleaseTimes() {
   }, [averageReleaseTime.length, releaseCommitPairs.length]);
 
   async function getAndSetReleaseTime({ pairIndex }: { pairIndex: number }) {
-    const { baseVersion, startCommit, endCommit } = releaseCommitPairs[
-      pairIndex
-    ];
+    const { baseVersion, startCommit, endCommit } =
+      releaseCommitPairs[pairIndex];
 
-    const {
-      startDate: startCommitCreatedAt,
-      endDate: endCommitCreatedAt,
-    } = await getTagDates({
-      pluginApiClient,
-      project,
-      startTag: startCommit,
-      endTag: endCommit,
-    });
+    const { startDate: startCommitCreatedAt, endDate: endCommitCreatedAt } =
+      await getTagDates({
+        pluginApiClient,
+        project,
+        startTag: startCommit,
+        endTag: endCommit,
+      });
 
     const releaseTime: ReleaseTime = {
       version: baseVersion,

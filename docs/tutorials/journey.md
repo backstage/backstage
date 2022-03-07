@@ -48,7 +48,6 @@ that implements the `OAuthApi` type, it's now working in the frontend too.
 ```ts
 const spotifyAuthApiRef = createApiRef<OAuthApi>({
   id: 'core.auth.spotify',
-  description: 'Provides authentication towards Spotify APIs',
 });
 ```
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { cloudbuildApiRef } from '../api/CloudbuildApi';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
@@ -41,9 +41,12 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
 
-  const { loading, value: runs, retry, error } = useAsyncRetry<
-    WorkflowRun[]
-  >(async () => {
+  const {
+    loading,
+    value: runs,
+    retry,
+    error,
+  } = useAsyncRetry<WorkflowRun[]>(async () => {
     return api
       .listWorkflowRuns({
         projectId,

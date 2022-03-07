@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Octokit } from '@octokit/rest';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
@@ -26,31 +24,40 @@ import {
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
+import { assertError, InputError } from '@backstage/errors';
+import { getOctokitOptions } from '../github/helpers';
+import { Octokit } from 'octokit';
 
-type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-type Collaborator = { access: Permission; username: string };
-
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to GitHub.
+ *
+ * @public
+ */
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
-  const { integrations, config } = options;
-
-  const credentialsProviders = new Map(
-    integrations.github.list().map(integration => {
-      const provider = GithubCredentialsProvider.create(integration.config);
-      return [integration.config.host, provider];
-    }),
-  );
+  const { integrations, config, githubCredentialsProvider } = options;
 
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
     access?: string;
     defaultBranch?: string;
+    deleteBranchOnMerge?: boolean;
+    allowRebaseMerge?: boolean;
+    allowSquashMerge?: boolean;
+    allowMergeCommit?: boolean;
     sourcePath?: string;
-    repoVisibility: 'private' | 'internal' | 'public';
-    collaborators: Collaborator[];
+    requireCodeOwnerReviews?: boolean;
+    repoVisibility?: 'private' | 'internal' | 'public';
+    collaborators?: Array<{
+      username: string;
+      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+    }>;
+    token?: string;
     topics?: string[];
   }>({
     id: 'publish:github',
@@ -75,6 +82,12 @@ export function createPublishGithubAction(options: {
             description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
             type: 'string',
           },
+          requireCodeOwnerReviews: {
+            title: 'Require CODEOWNER Reviews?',
+            description:
+              'Require an approved review in PR including files with a designated Code Owner',
+            type: 'boolean',
+          },
           repoVisibility: {
             title: 'Repository Visibility',
             type: 'string',
@@ -85,8 +98,29 @@ export function createPublishGithubAction(options: {
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
+          deleteBranchOnMerge: {
+            title: 'Delete Branch On Merge',
+            type: 'boolean',
+            description: `Delete the branch after merging the PR. The default value is 'false'`,
+          },
+          allowMergeCommit: {
+            title: 'Allow Merge Commits',
+            type: 'boolean',
+            description: `Allow merge commits. The default value is 'true'`,
+          },
+          allowSquashMerge: {
+            title: 'Allow Squash Merges',
+            type: 'boolean',
+            description: `Allow squash merges. The default value is 'true'`,
+          },
+          allowRebaseMerge: {
+            title: 'Allow Rebase Merges',
+            type: 'boolean',
+            description: `Allow rebase merges. The default value is 'true'`,
+          },
           sourcePath: {
-            title:
+            title: 'Source Path',
+            description:
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
@@ -109,6 +143,11 @@ export function createPublishGithubAction(options: {
                 },
               },
             },
+          },
+          token: {
+            title: 'Authentication Token',
+            type: 'string',
+            description: 'The token to use for authorization to GitHub',
           },
           topics: {
             title: 'Topics',
@@ -138,66 +177,64 @@ export function createPublishGithubAction(options: {
         repoUrl,
         description,
         access,
+        requireCodeOwnerReviews = false,
         repoVisibility = 'private',
         defaultBranch = 'master',
+        deleteBranchOnMerge = false,
+        allowMergeCommit = true,
+        allowSquashMerge = true,
+        allowRebaseMerge = true,
         collaborators,
         topics,
+        token: providedToken,
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
 
-      const credentialsProvider = credentialsProviders.get(host);
-      const integrationConfig = integrations.github.byHost(host);
-
-      if (!credentialsProvider || !integrationConfig) {
-        throw new InputError(
-          `No matching integration configuration for host ${host}, please check your integrations config`,
-        );
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
-      // needless to create URL and then parse again the other side.
-      const { token } = await credentialsProvider.getCredentials({
-        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-          repo,
-        )}`,
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
+        repoUrl,
       });
 
-      if (!token) {
-        throw new InputError(
-          `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
-        );
-      }
+      const client = new Octokit(octokitOptions);
 
-      const client = new Octokit({
-        auth: token,
-        baseUrl: integrationConfig.config.apiBaseUrl,
-        previews: ['nebula-preview'],
-      });
-
-      const user = await client.users.getByUsername({
+      const user = await client.rest.users.getByUsername({
         username: owner,
       });
 
       const repoCreationPromise =
         user.data.type === 'Organization'
-          ? client.repos.createInOrg({
+          ? client.rest.repos.createInOrg({
               name: repo,
               org: owner,
               private: repoVisibility === 'private',
               visibility: repoVisibility,
               description: description,
+              delete_branch_on_merge: deleteBranchOnMerge,
+              allow_merge_commit: allowMergeCommit,
+              allow_squash_merge: allowSquashMerge,
+              allow_rebase_merge: allowRebaseMerge,
             })
-          : client.repos.createForAuthenticatedUser({
+          : client.rest.repos.createForAuthenticatedUser({
               name: repo,
               private: repoVisibility === 'private',
               description: description,
+              delete_branch_on_merge: deleteBranchOnMerge,
+              allow_merge_commit: allowMergeCommit,
+              allow_squash_merge: allowSquashMerge,
+              allow_rebase_merge: allowRebaseMerge,
             });
 
       const { data: newRepo } = await repoCreationPromise;
       if (access?.startsWith(`${owner}/`)) {
         const [, team] = access.split('/');
-        await client.teams.addOrUpdateRepoPermissionsInOrg({
+        await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
           org: owner,
           team_slug: team,
           owner,
@@ -206,7 +243,7 @@ export function createPublishGithubAction(options: {
         });
         // No need to add access if it's the person who owns the personal account
       } else if (access && access !== owner) {
-        await client.repos.addCollaborator({
+        await client.rest.repos.addCollaborator({
           owner,
           repo,
           username: access,
@@ -220,7 +257,7 @@ export function createPublishGithubAction(options: {
           username: team_slug,
         } of collaborators) {
           try {
-            await client.teams.addOrUpdateRepoPermissionsInOrg({
+            await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
               org: owner,
               team_slug,
               owner,
@@ -228,6 +265,7 @@ export function createPublishGithubAction(options: {
               permission,
             });
           } catch (e) {
+            assertError(e);
             ctx.logger.warn(
               `Skipping ${permission} access for ${team_slug}, ${e.message}`,
             );
@@ -237,12 +275,13 @@ export function createPublishGithubAction(options: {
 
       if (topics) {
         try {
-          await client.repos.replaceAllTopics({
+          await client.rest.repos.replaceAllTopics({
             owner,
             repo,
             names: topics.map(t => t.toLowerCase()),
           });
         } catch (e) {
+          assertError(e);
           ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
         }
       }
@@ -261,9 +300,12 @@ export function createPublishGithubAction(options: {
         defaultBranch,
         auth: {
           username: 'x-access-token',
-          password: token,
+          password: octokitOptions.auth,
         },
         logger: ctx.logger,
+        commitMessage: config.getOptionalString(
+          'scaffolder.defaultCommitMessage',
+        ),
         gitAuthorInfo,
       });
 
@@ -274,8 +316,10 @@ export function createPublishGithubAction(options: {
           repoName: newRepo.name,
           logger: ctx.logger,
           defaultBranch,
+          requireCodeOwnerReviews,
         });
       } catch (e) {
+        assertError(e);
         ctx.logger.warn(
           `Skipping: default branch protection on '${newRepo.name}', ${e.message}`,
         );

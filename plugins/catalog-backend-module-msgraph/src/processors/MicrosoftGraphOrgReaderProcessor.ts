@@ -14,33 +14,44 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  results,
+  LocationSpec,
+  processingResult,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import {
   GroupTransformer,
   MicrosoftGraphClient,
   MicrosoftGraphProviderConfig,
+  OrganizationTransformer,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
+  UserTransformer,
 } from '../microsoftGraph';
 
 /**
  * Extracts teams and users out of a the Microsoft Graph API.
+ *
+ * @public
  */
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
   private readonly logger: Logger;
+  private readonly userTransformer?: UserTransformer;
   private readonly groupTransformer?: GroupTransformer;
+  private readonly organizationTransformer?: OrganizationTransformer;
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; groupTransformer?: GroupTransformer },
+    options: {
+      logger: Logger;
+      userTransformer?: UserTransformer;
+      groupTransformer?: GroupTransformer;
+      organizationTransformer?: OrganizationTransformer;
+    },
   ) {
     const c = config.getOptionalConfig('catalog.processors.microsoftGraphOrg');
     return new MicrosoftGraphOrgReaderProcessor({
@@ -52,11 +63,18 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
     logger: Logger;
+    userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
   }) {
     this.providers = options.providers;
     this.logger = options.logger;
+    this.userTransformer = options.userTransformer;
     this.groupTransformer = options.groupTransformer;
+    this.organizationTransformer = options.organizationTransformer;
+  }
+  getProcessorName(): string {
+    return 'MicrosoftGraphOrgReaderProcessor';
   }
 
   async readLocation(
@@ -87,9 +105,16 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       client,
       provider.tenantId,
       {
+        userExpand: provider.userExpand,
         userFilter: provider.userFilter,
+        userGroupMemberFilter: provider.userGroupMemberFilter,
+        userGroupMemberSearch: provider.userGroupMemberSearch,
+        groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
+        groupSearch: provider.groupSearch,
+        userTransformer: this.userTransformer,
         groupTransformer: this.groupTransformer,
+        organizationTransformer: this.organizationTransformer,
         logger: this.logger,
       },
     );
@@ -101,10 +126,10 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
 
     // Done!
     for (const group of groups) {
-      emit(results.entity(location, group));
+      emit(processingResult.entity(location, group));
     }
     for (const user of users) {
-      emit(results.entity(location, user));
+      emit(processingResult.entity(location, user));
     }
 
     return true;

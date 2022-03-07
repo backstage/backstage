@@ -16,6 +16,7 @@
 
 import chalk from 'chalk';
 import { diffLines } from 'diff';
+import { sep, posix } from 'path';
 import { FileDiff, PromptFunc, FileHandler, WriteFileFunc } from './types';
 
 function sortObjectKeys(obj: Record<string, unknown>) {
@@ -74,7 +75,9 @@ class PackageJsonHandler {
     await this.syncScripts();
     await this.syncPublishConfig();
     await this.syncDependencies('dependencies');
+    await this.syncDependencies('peerDependencies', true);
     await this.syncDependencies('devDependencies');
+    await this.syncReactDeps();
   }
 
   // Make sure a field inside package.json is in sync. This mutates the targetObj and writes package.json on change.
@@ -84,6 +87,7 @@ class PackageJsonHandler {
     targetObj: any = this.targetPkg,
     prefix?: string,
     sort?: boolean,
+    optional?: boolean,
   ) {
     const fullFieldName = chalk.cyan(
       prefix ? `${prefix}[${fieldName}]` : fieldName,
@@ -106,7 +110,7 @@ class PackageJsonHandler {
         }
         await this.write();
       }
-    } else if (fieldName in obj) {
+    } else if (fieldName in obj && optional !== true) {
       if (
         await this.prompt(
           `package.json is missing field ${fullFieldName}, set to ${coloredNewValue}?`,
@@ -122,11 +126,41 @@ class PackageJsonHandler {
   }
 
   private async syncFiles() {
-    if (typeof this.targetPkg.configSchema === 'string') {
-      const files = [...this.pkg.files, this.targetPkg.configSchema];
-      await this.syncField('files', { files });
+    const { configSchema } = this.targetPkg;
+    const hasSchemaFile = typeof configSchema === 'string';
+
+    if (!this.targetPkg.files) {
+      const expected = hasSchemaFile ? ['dist', configSchema] : ['dist'];
+      if (
+        await this.prompt(
+          `package.json is missing field "files", set to ${JSON.stringify(
+            expected,
+          )}?`,
+        )
+      ) {
+        this.targetPkg.files = expected;
+        await this.write();
+      }
     } else {
-      await this.syncField('files');
+      const missing = [];
+      if (!this.targetPkg.files.includes('dist')) {
+        missing.push('dist');
+      }
+      if (hasSchemaFile && !this.targetPkg.files.includes(configSchema)) {
+        missing.push(configSchema);
+      }
+      if (missing.length) {
+        if (
+          await this.prompt(
+            `package.json is missing ${JSON.stringify(
+              missing,
+            )} in the "files" field, add?`,
+          )
+        ) {
+          this.targetPkg.files.push(...missing);
+          await this.write();
+        }
+      }
     }
   }
 
@@ -136,6 +170,14 @@ class PackageJsonHandler {
       this.targetPkg.scripts || {});
 
     if (!pkgScripts) {
+      return;
+    }
+
+    // Skip diffing package scripts that have been migrated to the new commands
+    const hasNewScript = Object.values(targetScripts).some(script =>
+      String(script).includes('backstage-cli package '),
+    );
+    if (hasNewScript) {
       return;
     }
 
@@ -175,12 +217,12 @@ class PackageJsonHandler {
     }
   }
 
-  private async syncDependencies(fieldName: string) {
+  private async syncDependencies(fieldName: string, required: boolean = false) {
     const pkgDeps = this.pkg[fieldName];
     const targetDeps = (this.targetPkg[fieldName] =
       this.targetPkg[fieldName] || {});
 
-    if (!pkgDeps) {
+    if (!pkgDeps && !required) {
       return;
     }
 
@@ -199,8 +241,24 @@ class PackageJsonHandler {
         continue;
       }
 
-      await this.syncField(key, pkgDeps, targetDeps, fieldName, true);
+      await this.syncField(
+        key,
+        pkgDeps,
+        targetDeps,
+        fieldName,
+        true,
+        !required,
+      );
     }
+  }
+
+  private async syncReactDeps() {
+    const targetDeps = (this.targetPkg.dependencies =
+      this.targetPkg.dependencies || {});
+
+    // Remove these from from deps since they're now in peerDeps
+    await this.syncField('react', {}, targetDeps, 'dependencies');
+    await this.syncField('react-dom', {}, targetDeps, 'dependencies');
   }
 
   private async write() {
@@ -281,7 +339,7 @@ export async function handleAllFiles(
   promptFunc: PromptFunc,
 ) {
   for (const file of files) {
-    const { path } = file;
+    const path = file.path.split(sep).join(posix.sep);
     const fileHandler = fileHandlers.find(handler =>
       handler.patterns.some(pattern =>
         typeof pattern === 'string' ? pattern === path : pattern.test(path),

@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
-import { EntityName } from '../types';
-import { UNSTABLE_EntityStatus } from './EntityStatus';
+import { JsonObject } from '@backstage/types';
+import { CompoundEntityRef } from '../types';
+import { EntityStatus } from './EntityStatus';
 
 /**
  * The parts of the format that's common to all versions/kinds of entity.
  *
- * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
+ * @remarks
+ *
+ * See also:
+ * {@link https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/}
+ * @public
  */
 export type Entity = {
   /**
@@ -49,21 +53,37 @@ export type Entity = {
    * The relations that this entity has with other entities.
    */
   relations?: EntityRelation[];
+};
 
+/**
+ * A version of the {@link Entity} type that contains unstable alpha fields.
+ *
+ * @remarks
+ *
+ * Available via the `@backstage/catalog-model/alpha` import.
+ *
+ * @alpha
+ */
+export interface AlphaEntity extends Entity {
   /**
    * The current status of the entity, as claimed by various sources.
    *
    * The keys are implementation defined and the values can be any JSON object
    * with semantics that match that implementation.
    */
-  status?: UNSTABLE_EntityStatus;
-};
+  status?: EntityStatus;
+}
 
 /**
  * Metadata fields common to all versions/kinds of entity.
  *
- * @see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta
- * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
+ * @remarks
+ *
+ * See also:
+ * {@link https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#objectmeta-v1-meta}
+ * {@link https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/}
+ *
+ * @public
  */
 export type EntityMeta = JsonObject & {
   /**
@@ -96,6 +116,7 @@ export type EntityMeta = JsonObject & {
    * This field can not be set by the user at creation time, and the server
    * will reject an attempt to do so. The field will be populated in read
    * operations.
+   * @deprecated field is not supported.
    */
   generation?: number;
 
@@ -103,7 +124,13 @@ export type EntityMeta = JsonObject & {
    * The name of the entity.
    *
    * Must be unique within the catalog at any given point in time, for any
-   * given namespace + kind pair.
+   * given namespace + kind pair. This value is part of the technical
+   * identifier of the entity, and as such it will appear in URLs, database
+   * tables, entity references, and similar. It is subject to restrictions
+   * regarding what characters are allowed.
+   *
+   * If you want to use a different, more human readable string with fewer
+   * restrictions on it in user interfaces, see the `title` field below.
    */
   name: string;
 
@@ -111,6 +138,23 @@ export type EntityMeta = JsonObject & {
    * The namespace that the entity belongs to.
    */
   namespace?: string;
+
+  /**
+   * A display name of the entity, to be presented in user interfaces instead
+   * of the `name` property above, when available.
+   *
+   * This field is sometimes useful when the `name` is cumbersome or ends up
+   * being perceived as overly technical. The title generally does not have
+   * as stringent format requirements on it, so it may contain special
+   * characters and be more explanatory. Do keep it very short though, and
+   * avoid situations where a title can be confused with the name of another
+   * entity, or where two entities share a title.
+   *
+   * Note that this is only for display purposes, and may be ignored by some
+   * parts of the code. Entity references still always make use of the `name`
+   * property, not the title.
+   */
+  title?: string;
 
   /**
    * A short (typically relatively few words, on one line) description of the
@@ -143,6 +187,8 @@ export type EntityMeta = JsonObject & {
 
 /**
  * A relation of a specific type to another entity in the catalog.
+ *
+ * @public
  */
 export type EntityRelation = {
   /**
@@ -152,32 +198,21 @@ export type EntityRelation = {
 
   /**
    * The target entity of this relation.
+   *
+   * @deprecated use targetRef instead
    */
-  target: EntityName;
-};
-
-/**
- * Holds the relation data for entities.
- */
-export type EntityRelationSpec = {
-  /**
-   * The source entity of this relation.
-   */
-  source: EntityName;
+  target: CompoundEntityRef;
 
   /**
-   * The type of the relation.
+   * The entity ref of the target of this relation.
    */
-  type: string;
-
-  /**
-   * The target entity of this relation.
-   */
-  target: EntityName;
+  targetRef: string;
 };
 
 /**
  * A link to external information that is related to the entity.
+ *
+ * @public
  */
 export type EntityLink = {
   /**

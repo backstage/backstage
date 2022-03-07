@@ -15,8 +15,28 @@
  */
 
 export { Sidebar } from './Bar';
-export { SidebarPage, SidebarPinStateContext } from './Page';
-export type { SidebarPinStateContextType } from './Page';
+export { MobileSidebar } from './MobileSidebar';
+export type { MobileSidebarProps } from './MobileSidebar';
+export { SidebarGroup } from './SidebarGroup';
+export type { SidebarGroupProps } from './SidebarGroup';
+export { SidebarSubmenuItem } from './SidebarSubmenuItem';
+export { SidebarSubmenu } from './SidebarSubmenu';
+export type { SidebarSubmenuProps } from './SidebarSubmenu';
+export type {
+  SidebarSubmenuItemProps,
+  SidebarSubmenuItemDropdownItem,
+} from './SidebarSubmenuItem';
+export type { SidebarClassKey, SidebarProps } from './Bar';
+export {
+  SidebarPage,
+  SidebarPinStateContext as SidebarPinStateContext,
+  useContent,
+} from './Page';
+export type {
+  SidebarPinStateContextType as SidebarPinStateContextType,
+  SidebarPageClassKey,
+  SidebarPageProps,
+} from './Page';
 export {
   SidebarDivider,
   SidebarItem,
@@ -24,8 +44,16 @@ export {
   SidebarSpace,
   SidebarSpacer,
   SidebarScrollWrapper,
+  SidebarExpandButton,
+} from './Items';
+export type {
+  SidebarItemClassKey,
+  SidebarSpaceClassKey,
+  SidebarSpacerClassKey,
+  SidebarDividerClassKey,
 } from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
+export type { SidebarIntroClassKey } from './Intro';
 export {
   SIDEBAR_INTRO_LOCAL_STORAGE,
   SidebarContext,

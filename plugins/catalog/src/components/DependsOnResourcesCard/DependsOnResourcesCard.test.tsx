@@ -19,29 +19,22 @@ import {
   CatalogApi,
   catalogApiRef,
   EntityProvider,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { DependsOnResourcesCard } from './DependsOnResourcesCard';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<DependsOnResourcesCard />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  const getEntities: jest.MockedFunction<CatalogApi['getEntities']> = jest.fn();
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(catalogApiRef, catalogApi);
-
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <ApiProvider apis={apis}>{children}</ApiProvider>
+      <TestApiProvider apis={[[catalogApiRef, { getEntities }]]}>
+        {children}
+      </TestApiProvider>
     );
   });
 
@@ -64,6 +57,11 @@ describe('<DependsOnResourcesCard />', () => {
           <DependsOnResourcesCard />
         </EntityProvider>
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('Depends on resources')).toBeInTheDocument();
@@ -83,15 +81,16 @@ describe('<DependsOnResourcesCard />', () => {
       relations: [
         {
           target: {
-            kind: 'Resource',
+            kind: 'resource',
             namespace: 'my-namespace',
             name: 'target-name',
           },
+          targetRef: 'resource:my-namespace/target-name',
           type: RELATION_DEPENDS_ON,
         },
       ],
     };
-    catalogApi.getEntities.mockResolvedValue({
+    getEntities.mockResolvedValue({
       items: [
         {
           apiVersion: 'v1',
@@ -111,6 +110,11 @@ describe('<DependsOnResourcesCard />', () => {
           <DependsOnResourcesCard />
         </EntityProvider>
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {

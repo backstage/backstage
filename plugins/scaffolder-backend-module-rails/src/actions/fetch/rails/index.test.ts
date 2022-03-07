@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,10 @@ describe('fetch:rails', () => {
         help: 'me',
       },
     },
-    baseUrl: 'somebase',
+    templateInfo: {
+      baseUrl: 'somebase',
+      entityRef: 'template:default/myTemplate',
+    },
     workspacePath: mockTmpDir,
     logger: getVoidLogger(),
     logStream: new PassThrough(),
@@ -100,7 +103,7 @@ describe('fetch:rails', () => {
     expect(fetchContents).toHaveBeenCalledWith({
       reader: mockReader,
       integrations,
-      baseUrl: mockContext.baseUrl,
+      baseUrl: mockContext.templateInfo.baseUrl,
       fetchUrl: mockContext.input.url,
       outputPath: resolvePath(mockContext.workspacePath),
     });

@@ -29,12 +29,20 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
 
 export default async (cmd: Command) => {
   // all args are forwarded to jest
-  const rawArgs = cmd.parent.rawArgs as string[];
+  let parent = cmd;
+  while (parent.parent) {
+    parent = parent.parent;
+  }
+  const rawArgs = parent.rawArgs as string[];
   const args = rawArgs.slice(rawArgs.indexOf('test') + 1);
 
   // Only include our config if caller isn't passing their own config
   if (!includesAnyOf(args, '-c', '--config')) {
     args.push('--config', paths.resolveOwn('config/jest.js'));
+  }
+
+  if (!includesAnyOf(args, '--no-passWithNoTests', '--passWithNoTests=false')) {
+    args.push('--passWithNoTests');
   }
 
   // Run in watch mode unless in CI, coverage mode, or running all tests
@@ -61,6 +69,13 @@ export default async (cmd: Command) => {
   // https://github.com/facebook/jest/blob/cd8828f7bbec6e55b4df5e41e853a5133c4a3ee1/packages/jest-cli/bin/jest.js#L12
   if (!process.env.NODE_ENV) {
     (process.env as any).NODE_ENV = 'test';
+  }
+
+  // This is to have a consistent timezone for when running tests that involve checking
+  // the formatting of date/times.
+  // https://stackoverflow.com/questions/56261381/how-do-i-set-a-timezone-in-my-jest-config
+  if (!process.env.TZ) {
+    process.env.TZ = 'UTC';
   }
 
   // eslint-disable-next-line jest/no-jest-import

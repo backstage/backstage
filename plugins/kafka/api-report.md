@@ -12,9 +12,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 // Warning: (ae-missing-release-tag) "EntityKafkaContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntityKafkaContent: (_props: {
-  entity?: Entity | undefined;
-}) => JSX.Element;
+export const EntityKafkaContent: (_props: {}) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "isPluginApplicableToEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -46,6 +44,4 @@ export { kafkaPlugin as plugin };
 //
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -17,12 +17,14 @@
 import {
   PluginEndpointDiscovery,
   getVoidLogger,
+  TokenManager,
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
-import { msw } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { ConfigReader } from '@backstage/config';
 
 const logger = getVoidLogger();
 
@@ -57,6 +59,7 @@ const expectedEntities: Entity[] = [
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: {
+      title: 'Test Entity with Docs!',
       name: 'test-entity-with-docs',
       description: 'Documented description',
       annotations: {
@@ -69,34 +72,34 @@ const expectedEntities: Entity[] = [
       owner: 'someone',
     },
   },
-  {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'test-entity',
-      description: 'The expected description',
-    },
-    spec: {
-      type: 'some-type',
-      lifecycle: 'experimental',
-    },
-  },
 ];
 
-describe('DefaultTechDocsCollator', () => {
+describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
   let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultTechDocsCollator;
 
   const worker = setupServer();
-  msw.setupDefaultHandlers(worker);
+  setupRequestMockHandlers(worker);
   beforeEach(() => {
     mockDiscoveryApi = {
       getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
       getExternalBaseUrl: jest.fn(),
     };
-    collator = new DefaultTechDocsCollator({
+    mockTokenManager = {
+      getToken: jest.fn().mockResolvedValue({ token: '' }),
+      authenticate: jest.fn(),
+    };
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        legacyUseCaseSensitiveTripletPaths: true,
+      },
+    });
+    collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       logger,
+      legacyPathCasing: true,
     });
 
     worker.use(
@@ -126,17 +129,82 @@ describe('DefaultTechDocsCollator', () => {
         location: `/docs/default/Component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
         text: mockSearchDocIndex.docs[idx].text,
         namespace: 'default',
+        entityTitle: entity!.metadata.title,
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
+        kind: entity.kind,
+        name: entity.metadata.name,
+      });
+    });
+  });
+});
+
+describe('DefaultTechDocsCollator', () => {
+  let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockTokenManager: jest.Mocked<TokenManager>;
+  let collator: DefaultTechDocsCollator;
+
+  const worker = setupServer();
+  setupRequestMockHandlers(worker);
+  beforeEach(() => {
+    mockDiscoveryApi = {
+      getBaseUrl: jest.fn().mockResolvedValue('http://test-backend'),
+      getExternalBaseUrl: jest.fn(),
+    };
+    mockTokenManager = {
+      getToken: jest.fn().mockResolvedValue({ token: '' }),
+      authenticate: jest.fn(),
+    };
+    collator = DefaultTechDocsCollator.fromConfig(new ConfigReader({}), {
+      discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
+      logger,
+    });
+
+    worker.use(
+      rest.get(
+        'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
+        (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
+      ),
+      rest.get('http://test-backend/entities', (_, res, ctx) =>
+        res(ctx.status(200), ctx.json(expectedEntities)),
+      ),
+    );
+  });
+
+  it('should create documents for each tech docs search index', async () => {
+    const documents = await collator.execute();
+    const entity = expectedEntities[0];
+    documents.forEach((document, idx) => {
+      expect(document).toMatchObject({
+        title: mockSearchDocIndex.docs[idx].title,
+        location: `/docs/default/component/${entity.metadata.name}/${mockSearchDocIndex.docs[idx].location}`,
+        text: mockSearchDocIndex.docs[idx].text,
+        namespace: 'default',
+        entityTitle: entity!.metadata.title,
+        componentType: entity!.spec!.type,
+        lifecycle: entity!.spec!.lifecycle,
+        owner: '',
+        kind: entity.kind.toLocaleLowerCase('en-US'),
+        name: entity.metadata.name.toLocaleLowerCase('en-US'),
+        authorization: {
+          resourceRef: `component:default/${entity.metadata.name}`,
+        },
       });
     });
   });
 
   it('maps a returned entity with a custom locationTemplate', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        legacyUseCaseSensitiveTripletPaths: true,
+      },
+    });
     // Provide an alternate location template.
-    collator = new DefaultTechDocsCollator({
+    collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
       discovery: mockDiscoveryApi,
+      tokenManager: mockTokenManager,
       locationTemplate: '/software/:name',
       logger,
     });

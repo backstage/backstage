@@ -13,52 +13,121 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { fireEvent } from '@testing-library/react';
+import { ApiProvider } from '@backstage/core-app-api';
+import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import {
+  AsyncEntityProvider,
+  catalogApiRef,
+  EntityProvider,
+  entityRouteRef,
+  starredEntitiesApiRef,
+  MockStarredEntitiesApi,
+} from '@backstage/plugin-catalog-react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import {
+  MockPermissionApi,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
+import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { Route, Routes } from 'react-router';
 import { EntityLayout } from './EntityLayout';
 
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+const mockEntity = {
+  kind: 'MyKind',
+  metadata: {
+    name: 'my-entity',
+  },
+} as Entity;
 
-const mockEntityData = {
-  loading: false,
-  error: undefined,
-  entity: {
-    kind: 'MyKind',
-    metadata: {
-      name: 'my-entity',
-    },
-  } as Entity,
-};
-
-const mockApis = ApiRegistry.with(catalogApiRef, {} as CatalogApi).with(
-  alertApiRef,
-  {} as AlertApi,
+const mockApis = TestApiRegistry.from(
+  [catalogApiRef, {} as CatalogApi],
+  [alertApiRef, {} as AlertApi],
+  [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+  [permissionApiRef, new MockPermissionApi()],
 );
 
 describe('EntityLayout', () => {
   it('renders simplest case', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <EntityContext.Provider value={mockEntityData}>
+        <EntityProvider entity={mockEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
               <div>tabbed-test-content</div>
             </EntityLayout.Route>
           </EntityLayout>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(rendered.getByText('my-entity')).toBeInTheDocument();
     expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
+  });
+
+  it('renders the entity title if defined', async () => {
+    const mockEntityWithTitle = {
+      kind: 'MyKind',
+      metadata: {
+        name: 'my-entity',
+        title: 'My Entity',
+      },
+    } as Entity;
+
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <EntityProvider entity={mockEntityWithTitle}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(rendered.getByText('My Entity')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-title')).toBeInTheDocument();
+    expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
+  });
+
+  it('renders error message when entity is not found', async () => {
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <AsyncEntityProvider loading={false}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </AsyncEntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(rendered.getByText('Warning: Entity not found')).toBeInTheDocument();
+    expect(rendered.queryByText('my-entity')).not.toBeInTheDocument();
+    expect(rendered.queryByText('tabbed-test-title')).not.toBeInTheDocument();
+    expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
   });
 
   it('navigates when user clicks different tab', async () => {
@@ -68,7 +137,7 @@ describe('EntityLayout', () => {
           path="/*"
           element={
             <ApiProvider apis={mockApis}>
-              <EntityContext.Provider value={mockEntityData}>
+              <EntityProvider entity={mockEntity}>
                 <EntityLayout>
                   <EntityLayout.Route path="/" title="tabbed-test-title">
                     <div>tabbed-test-content</div>
@@ -80,11 +149,16 @@ describe('EntityLayout', () => {
                     <div>tabbed-test-content-2</div>
                   </EntityLayout.Route>
                 </EntityLayout>
-              </EntityContext.Provider>
+              </EntityProvider>
             </ApiProvider>
           }
         />
       </Routes>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     const secondTab = rendered.queryAllByRole('tab')[1];
@@ -105,7 +179,7 @@ describe('EntityLayout', () => {
 
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
-        <EntityContext.Provider value={mockEntityData}>
+        <EntityProvider entity={mockEntity}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="tabbed-test-title">
               <div>tabbed-test-content</div>
@@ -125,8 +199,13 @@ describe('EntityLayout', () => {
               <div>tabbed-test-content-3</div>
             </EntityLayout.Route>
           </EntityLayout>
-        </EntityContext.Provider>
+        </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(rendered.queryByText('tabbed-test-title')).toBeInTheDocument();

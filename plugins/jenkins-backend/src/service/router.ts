@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,14 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
+  permissions?: PermissionAuthorizer;
 }
 
 export async function createRouter(
@@ -31,7 +35,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { jenkinsInfoProvider } = options;
 
-  const jenkinsApi = new JenkinsApiImpl();
+  const jenkinsApi = new JenkinsApiImpl(options.permissions);
 
   const router = Router();
   router.use(express.json());
@@ -75,13 +79,8 @@ export async function createRouter(
   router.get(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber',
     async (request, response) => {
-      const {
-        namespace,
-        kind,
-        name,
-        jobFullName,
-        buildNumber,
-      } = request.params;
+      const { namespace, kind, name, jobFullName, buildNumber } =
+        request.params;
 
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
@@ -108,7 +107,6 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
       const { namespace, kind, name, jobFullName } = request.params;
-
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
           kind,
@@ -117,12 +115,17 @@ export async function createRouter(
         },
         jobFullName,
       });
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
 
-      await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
+      const resourceRef = stringifyEntityRef({ kind, namespace, name });
+      await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef, {
+        token,
+      });
       response.json({});
     },
   );
-
   router.use(errorHandler());
   return router;
 }

@@ -15,17 +15,15 @@
  */
 
 import React from 'react';
-import { render, waitForElement } from '@testing-library/react';
+import { act, render, waitForElement } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
-import { act } from 'react-dom/test-utils';
-import { withLogCollector } from '@backstage/test-utils';
+import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
 
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
-import RadarComponent from './RadarComponent';
+import { RadarComponent } from './RadarComponent';
 import { TechRadarLoaderResponse, techRadarApiRef, TechRadarApi } from '../api';
 
-import { ApiRegistry, ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
 
 describe('RadarComponent', () => {
@@ -55,18 +53,18 @@ describe('RadarComponent', () => {
     const errorApi = { post: () => {} };
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={lightTheme}>
-        <ApiProvider
-          apis={ApiRegistry.from([
+        <TestApiProvider
+          apis={[
             [errorApiRef, errorApi],
             [techRadarApiRef, mockClient],
-          ])}
+          ]}
         >
           <RadarComponent
             width={1200}
             height={800}
             svgProps={{ 'data-testid': 'tech-radar-svg' }}
           />
-        </ApiProvider>
+        </TestApiProvider>
       </ThemeProvider>,
     );
 
@@ -87,18 +85,18 @@ describe('RadarComponent', () => {
 
     const { queryByTestId } = render(
       <ThemeProvider theme={lightTheme}>
-        <ApiProvider
-          apis={ApiRegistry.from([
+        <TestApiProvider
+          apis={[
             [errorApiRef, errorApi],
             [techRadarApiRef, mockClient],
-          ])}
+          ]}
         >
           <RadarComponent
             width={1200}
             height={800}
             svgProps={{ 'data-testid': 'tech-radar-svg' }}
           />
-        </ApiProvider>
+        </TestApiProvider>
       </ThemeProvider>,
     );
 
@@ -115,13 +113,13 @@ describe('RadarComponent', () => {
         expect(() => {
           render(
             <ThemeProvider theme={lightTheme}>
-              <ApiProvider apis={ApiRegistry.from([])}>
+              <TestApiProvider apis={[]}>
                 <RadarComponent
                   width={1200}
                   height={800}
                   svgProps={{ 'data-testid': 'tech-radar-svg' }}
                 />
-              </ApiProvider>
+              </TestApiProvider>
             </ThemeProvider>,
           );
         }).toThrow();

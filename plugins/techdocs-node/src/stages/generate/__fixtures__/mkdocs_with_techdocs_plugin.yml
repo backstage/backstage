@@ -1,0 +1,5 @@
+site_name: Test site name
+site_description: Test site description
+# This is a comment that is removed after editing
+plugins:
+  - techdocs-core

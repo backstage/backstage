@@ -1,5 +1,226 @@
 # @backstage/plugin-search-backend
 
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-permission-common@0.5.2
+  - @backstage/plugin-permission-node@0.5.3
+  - @backstage/plugin-search-backend-node@0.5.0
+  - @backstage/search-common@0.3.0
+  - @backstage/plugin-auth-node@0.1.4
+
+## 0.4.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-permission-node@0.5.2
+  - @backstage/plugin-auth-node@0.1.3
+
+## 0.4.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/search-common@0.2.4
+  - @backstage/types@0.1.3
+  - @backstage/plugin-auth-node@0.1.2
+  - @backstage/plugin-permission-common@0.5.1
+  - @backstage/plugin-permission-node@0.5.1
+  - @backstage/plugin-search-backend-node@0.4.7
+
+## 0.4.3
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-auth-node@0.1.1
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/types@0.1.2
+  - @backstage/plugin-permission-node@0.5.0
+  - @backstage/plugin-search-backend-node@0.4.6
+
+## 0.4.2
+
+### Patch Changes
+
+- b3f3e42036: Use `getBearerTokenFromAuthorizationHeader` from `@backstage/plugin-auth-node` instead of the deprecated `IdentityClient` method.
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-auth-node@0.1.0
+  - @backstage/plugin-permission-node@0.4.3
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.10.0-next.0
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/plugin-permission-node@0.4.3-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.9.0
+  - @backstage/backend-common@0.10.6
+  - @backstage/plugin-permission-node@0.4.2
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.9.0-next.1
+  - @backstage/backend-common@0.10.6-next.0
+  - @backstage/plugin-permission-node@0.4.2-next.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.9.0-next.0
+  - @backstage/plugin-permission-node@0.4.2-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- bbfbc755aa: **BREAKING** Added three additional required properties to `createRouter` to support filtering search results based on permissions. To make this change to an existing app, add the required parameters to the `createRouter` call in `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+  +  permissions,
+    discovery,
+    config,
+    tokenManager,
+  }: PluginEnvironment) {
+    /* ... */
+
+    return await createRouter({
+      engine: indexBuilder.getSearchEngine(),
+  +    types: indexBuilder.getDocumentTypes(),
+  +    permissions,
+  +    config,
+      logger,
+    });
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.4.5
+  - @backstage/plugin-auth-backend@0.8.0
+  - @backstage/search-common@0.2.2
+  - @backstage/backend-common@0.10.5
+  - @backstage/plugin-permission-node@0.4.1
+
+## 0.3.1
+
+### Patch Changes
+
+- cd6854046e: Validate query string in search endpoint
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- a41fbfe739: Search result location filtering
+
+  This change introduces a filter for search results based on their location protocol. The intention is to filter out unsafe or
+  malicious values before they can be consumed by the frontend. By default locations must be http/https URLs (or paths).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+
+## 0.2.8
+
+### Patch Changes
+
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/backend-common@0.9.13
+
+## 0.2.7
+
+### Patch Changes
+
+- bab752e2b3: Change default port of backend from 7000 to 7007.
+
+  This is due to the AirPlay Receiver process occupying port 7000 and preventing local Backstage instances on MacOS to start.
+
+  You can change the port back to 7000 or any other value by providing an `app-config.yaml` with the following values:
+
+  ```
+  backend:
+    listen: 0.0.0.0:7123
+    baseUrl: http://localhost:7123
+  ```
+
+  More information can be found here: https://backstage.io/docs/conf/writing
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.11
+
+## 0.2.6
+
+### Patch Changes
+
+- a13f21cdc: Implement optional `pageCursor` based paging in search.
+
+  To use paging in your app, add a `<SearchResultPager />` to your
+  `SearchPage.tsx`.
+
+- Updated dependencies
+  - @backstage/search-common@0.2.0
+  - @backstage/plugin-search-backend-node@0.4.2
+  - @backstage/backend-common@0.9.1
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+
+## 0.2.4
+
+### Patch Changes
+
+- 64baedea5: Improve search query logging message
+- Updated dependencies
+  - @backstage/backend-common@0.8.10
+
 ## 0.2.3
 
 ### Patch Changes

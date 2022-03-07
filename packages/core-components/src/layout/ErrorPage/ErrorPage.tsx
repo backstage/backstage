@@ -14,44 +14,56 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Typography, Link, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import { MicDrop } from './MicDrop';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
 import { useNavigate } from 'react-router';
+import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
+import { MicDrop } from './MicDrop';
 
 interface IErrorPageProps {
   status: string;
   statusMessage: string;
-  additionalInfo?: string;
+  additionalInfo?: React.ReactNode;
+  supportUrl?: string;
 }
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  container: {
-    padding: theme.spacing(8),
-    [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(2),
-    },
-  },
-  title: {
-    paddingBottom: theme.spacing(5),
-    [theme.breakpoints.down('xs')]: {
-      paddingBottom: theme.spacing(4),
-      fontSize: 32,
-    },
-  },
-  subtitle: {
-    color: theme.palette.textSubtle,
-  },
-}));
+/** @public */
+export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 
-export const ErrorPage = ({
-  status,
-  statusMessage,
-  additionalInfo,
-}: IErrorPageProps) => {
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    container: {
+      padding: theme.spacing(8),
+      [theme.breakpoints.down('xs')]: {
+        padding: theme.spacing(2),
+      },
+    },
+    title: {
+      paddingBottom: theme.spacing(5),
+      [theme.breakpoints.down('xs')]: {
+        paddingBottom: theme.spacing(4),
+        fontSize: 32,
+      },
+    },
+    subtitle: {
+      color: theme.palette.textSubtle,
+    },
+  }),
+  { name: 'BackstageErrorPage' },
+);
+
+/**
+ * Error page with status and description
+ *
+ * @public
+ *
+ */
+export function ErrorPage(props: IErrorPageProps) {
+  const { status, statusMessage, additionalInfo, supportUrl } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
@@ -60,7 +72,11 @@ export const ErrorPage = ({
     <Grid container spacing={0} className={classes.container}>
       <MicDrop />
       <Grid item xs={12} sm={8} md={4}>
-        <Typography variant="body1" className={classes.subtitle}>
+        <Typography
+          data-testid="error"
+          variant="body1"
+          className={classes.subtitle}
+        >
           ERROR {status}: {statusMessage}
         </Typography>
         <Typography variant="body1" className={classes.subtitle}>
@@ -70,16 +86,14 @@ export const ErrorPage = ({
           Looks like someone dropped the mic!
         </Typography>
         <Typography variant="h6">
-          <Link data-testid="go-back-link" onClick={() => navigate(-1)}>
+          <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
           ... or please{' '}
-          <Link href={support.url} rel="noopener noreferrer">
-            contact support
-          </Link>{' '}
-          if you think this is a bug.
+          <Link to={supportUrl || support.url}>contact support</Link> if you
+          think this is a bug.
         </Typography>
       </Grid>
     </Grid>
   );
-};
+}

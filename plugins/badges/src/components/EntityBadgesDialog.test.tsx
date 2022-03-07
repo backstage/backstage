@@ -16,12 +16,11 @@
 
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { renderWithEffects } from '@backstage/test-utils';
+import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import { BadgesApi, badgesApiRef } from '../api';
 import { EntityBadgesDialog } from './EntityBadgesDialog';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { ErrorApi, errorApiRef } from '@backstage/core-plugin-api';
 
 describe('EntityBadgesDialog', () => {
@@ -42,20 +41,20 @@ describe('EntityBadgesDialog', () => {
     const mockEntity = { metadata: { name: 'mock' } } as Entity;
 
     const rendered = await renderWithEffects(
-      <ApiProvider
-        apis={ApiRegistry.with(badgesApiRef, mockApi).with(
-          errorApiRef,
-          {} as ErrorApi,
-        )}
+      <TestApiProvider
+        apis={[
+          [badgesApiRef, mockApi],
+          [errorApiRef, {} as ErrorApi],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityBadgesDialog open />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await expect(
-      rendered.findByText('![test: badge](http://127.0.0.1/catalog/...)'),
+      rendered.findByText('test: badge'),
     ).resolves.toBeInTheDocument();
   });
 });

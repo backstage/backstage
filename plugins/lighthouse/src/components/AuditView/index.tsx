@@ -32,7 +32,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Audit, lighthouseApiRef, Website } from '../../api';
 import { formatTime } from '../../utils';
 import AuditStatusIcon from '../AuditStatusIcon';
@@ -123,7 +123,11 @@ export const AuditViewContent = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const { loading, error, value: nextValue } = useAsync(
+  const {
+    loading,
+    error,
+    value: nextValue,
+  } = useAsync(
     async () => await lighthouseApi.getWebsiteForAuditId(params.id),
     [params.id],
   );

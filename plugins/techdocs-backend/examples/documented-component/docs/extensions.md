@@ -87,3 +87,26 @@ I've read a lot of documentation, but I love :heart: this document.
 Weather: :sunny: :umbrella: :cloud: :snowflake:
 
 Animals: :tiger: :horse: :turtle: :wolf: :frog:
+
+### Attributes
+
+[A Download Link](./images/backstage-logo-cncf.svg){: download }
+
+![A Scaled Image](./images/backstage-logo-cncf.svg){: style="width: 100px" }
+
+### MDX truly sane lists
+
+- attributes
+
+- customer
+  - first_name
+    - test
+  - family_name
+  - email
+- person
+  - first_name
+  - family_name
+  - birth_date
+- subscription_id
+
+- request

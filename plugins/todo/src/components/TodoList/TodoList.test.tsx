@@ -16,11 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { renderWithEffects } from '@backstage/test-utils';
+import { renderWithEffects, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { TodoApi, todoApiRef } from '../../api';
 import { TodoList } from './TodoList';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('TodoList', () => {
   it('should render', async () => {
@@ -42,11 +41,11 @@ describe('TodoList', () => {
     const mockEntity = { metadata: { name: 'mock' } } as Entity;
 
     const rendered = await renderWithEffects(
-      <ApiProvider apis={ApiRegistry.with(todoApiRef, mockApi)}>
+      <TestApiProvider apis={[[todoApiRef, mockApi]]}>
         <EntityProvider entity={mockEntity}>
           <TodoList />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     await expect(rendered.findByText('FIXME')).resolves.toBeInTheDocument();

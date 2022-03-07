@@ -31,11 +31,9 @@ type CostInsightsPageLoadingProps = {
   dispatchReset: (loadingActions: string[]) => void;
 };
 
-export const mapLoadingToProps: MapLoadingToProps<CostInsightsPageLoadingProps> = ({
-  state,
-  actions,
-  dispatch,
-}) => ({
+export const mapLoadingToProps: MapLoadingToProps<
+  CostInsightsPageLoadingProps
+> = ({ state, actions, dispatch }) => ({
   loadingActions: actions,
   loadingGroups: state[DefaultLoadingAction.UserGroups],
   loadingBillingDate: state[DefaultLoadingAction.LastCompleteBillingDate],

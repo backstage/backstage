@@ -19,14 +19,15 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
-const NoIcon = () => null;
-
 export const exploreRouteRef = createRouteRef({
-  icon: NoIcon,
-  title: 'Explore',
+  id: 'explore',
 });
 
+/**
+ * @deprecated This route is no longer used and can be removed
+ */
 export const catalogEntityRouteRef = createExternalRouteRef({
   id: 'catalog-entity',
   params: ['namespace', 'kind', 'name'],
+  optional: true,
 });

@@ -15,6 +15,7 @@
  */
 
 import {
+  CacheManager,
   createServiceBuilder,
   DockerContainerRunner,
   SingleHostDiscovery,
@@ -27,7 +28,7 @@ import {
   Preparers,
   Publisher,
   TechdocsGenerator,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -70,14 +71,15 @@ export async function startStandaloneServer(
   const containerRunner = new DockerContainerRunner({ dockerClient });
 
   const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator({
+  const techdocsGenerator = TechdocsGenerator.fromConfig(config, {
     logger,
     containerRunner,
-    config,
   });
   generators.register('techdocs', techdocsGenerator);
 
   const publisher = await Publisher.fromConfig(config, { logger, discovery });
+
+  const cache = CacheManager.fromConfig(config).forPlugin('techdocs');
 
   logger.debug('Starting application server...');
   const router = await createRouter({
@@ -87,6 +89,7 @@ export async function startStandaloneServer(
     publisher,
     config,
     discovery,
+    cache,
   });
   let service = createServiceBuilder(module)
     .setPort(options.port)

@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import cors from 'cors';
-import { Router, RequestHandler } from 'express';
+import { Router, RequestHandler, ErrorRequestHandler } from 'express';
 import { Server } from 'http';
 import { Logger } from 'winston';
-import { HttpsSettings } from './lib/config';
 
+/**
+ * A helper for building backend service instances.
+ *
+ * @public
+ */
 export type ServiceBuilder = {
   /**
    * Sets the service parameters based on configuration.
    *
-   * @param config The configuration to read
+   * @param config - The configuration to read
    */
-  loadConfig(config: ConfigReader): ServiceBuilder;
+  loadConfig(config: Config): ServiceBuilder;
 
   /**
    * Sets the port to listen on.
    *
    * If no port is specified, the service will first look for an environment
    * variable named PORT and use that if present, otherwise it picks a default
-   * port (7000).
+   * port (7007).
    *
-   * @param port The port to listen on
+   * @param port - The port to listen on
    */
   setPort(port: number): ServiceBuilder;
 
@@ -45,7 +49,7 @@ export type ServiceBuilder = {
    *
    * '' is express default, which listens to all interfaces.
    *
-   * @param host The host to listen on
+   * @param host - The host to listen on
    */
   setHost(host: string): ServiceBuilder;
 
@@ -54,7 +58,7 @@ export type ServiceBuilder = {
    *
    * If no logger is given, the default root logger is used.
    *
-   * @param logger A winston logger
+   * @param logger - A winston logger
    */
   setLogger(logger: Logger): ServiceBuilder;
 
@@ -64,7 +68,7 @@ export type ServiceBuilder = {
    * If this method is not called, the resulting service will not have any
    * built in CORS handling.
    *
-   * @param options Standard CORS options
+   * @param options - Standard CORS options
    */
   enableCors(options: cors.CorsOptions): ServiceBuilder;
 
@@ -73,15 +77,17 @@ export type ServiceBuilder = {
    *
    * If this method is not called, the resulting service will use sensible defaults
    *
-   * @param options Standard certificate options
+   * @param options - Standard certificate options
    */
-  setHttpsSettings(settings: HttpsSettings): ServiceBuilder;
+  setHttpsSettings(settings: {
+    certificate: { key: string; cert: string } | { hostname: string };
+  }): ServiceBuilder;
 
   /**
    * Adds a router (similar to the express .use call) to the service.
    *
-   * @param root The root URL to bind to (e.g. "/api/function1")
-   * @param router An express router
+   * @param root - The root URL to bind to (e.g. "/api/function1")
+   * @param router - An express router
    */
   addRouter(root: string, router: Router | RequestHandler): ServiceBuilder;
 
@@ -90,11 +96,26 @@ export type ServiceBuilder = {
    *
    * If no handler is given the default one is used
    *
-   * @param requestLoggingHandler a factory function that given a logger returns an handler
+   * @param requestLoggingHandler - a factory function that given a logger returns an handler
    */
   setRequestLoggingHandler(
     requestLoggingHandler: RequestLoggingHandlerFactory,
   ): ServiceBuilder;
+
+  /**
+   * Sets an additional errorHandler to run before the defaultErrorHandler.
+   *
+   * For execution of only the custom error handler make sure to also invoke disableDefaultErrorHandler()
+   * otherwise the defaultErrorHandler is executed at the end of the error middleware chain.
+   *
+   * @param errorHandler - an error handler
+   */
+  setErrorHandler(errorHandler: ErrorRequestHandler): ServiceBuilder;
+
+  /**
+   * Disables the default error handler
+   */
+  disableDefaultErrorHandler(): ServiceBuilder;
 
   /**
    * Starts the server using the given settings.
@@ -102,4 +123,9 @@ export type ServiceBuilder = {
   start(): Promise<Server>;
 };
 
+/**
+ * A factory for request loggers.
+ *
+ * @public
+ */
 export type RequestLoggingHandlerFactory = (logger?: Logger) => RequestHandler;

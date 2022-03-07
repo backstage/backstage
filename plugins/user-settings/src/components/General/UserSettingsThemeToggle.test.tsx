@@ -15,26 +15,33 @@
  */
 
 import { AppTheme, appThemeApiRef } from '@backstage/core-plugin-api';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import {
+  renderWithEffects,
+  TestApiRegistry,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { UserSettingsThemeToggle } from './UserSettingsThemeToggle';
-import {
-  ApiProvider,
-  ApiRegistry,
-  AppThemeSelector,
-} from '@backstage/core-app-api';
+import { ApiProvider, AppThemeSelector } from '@backstage/core-app-api';
 
 const mockTheme: AppTheme = {
   id: 'light-theme',
   title: 'Mock Theme',
   variant: 'light',
-  theme: lightTheme,
+  Provider: ({ children }) => (
+    <ThemeProvider theme={lightTheme}>
+      <CssBaseline>{children}</CssBaseline>
+    </ThemeProvider>
+  ),
 };
 
-const apiRegistry = ApiRegistry.from([
-  [appThemeApiRef, AppThemeSelector.createWithStorage([mockTheme])],
+const apiRegistry = TestApiRegistry.from([
+  appThemeApiRef,
+  AppThemeSelector.createWithStorage([mockTheme]),
 ]);
 
 describe('<UserSettingsThemeToggle />', () => {

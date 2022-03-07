@@ -24,6 +24,4 @@ const newRelicPlugin: BackstagePlugin<
 >;
 export { newRelicPlugin };
 export { newRelicPlugin as plugin };
-
-// (No @packageDocumentation comment for this package)
 ```

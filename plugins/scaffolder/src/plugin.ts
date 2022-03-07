@@ -16,12 +16,12 @@
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
-import { EntityPicker } from './components/fields/EntityPicker';
-import { OwnerPicker } from './components/fields/OwnerPicker';
-import {
-  repoPickerValidation,
-  RepoUrlPicker,
-} from './components/fields/RepoUrlPicker';
+import { EntityPicker } from './components/fields/EntityPicker/EntityPicker';
+import { entityNamePickerValidation } from './components/fields/EntityNamePicker';
+import { EntityNamePicker } from './components/fields/EntityNamePicker/EntityNamePicker';
+import { OwnerPicker } from './components/fields/OwnerPicker/OwnerPicker';
+import { repoPickerValidation } from './components/fields/RepoUrlPicker';
+import { RepoUrlPicker } from './components/fields/RepoUrlPicker/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
 import { registerComponentRouteRef, rootRouteRef } from './routes';
 import {
@@ -29,8 +29,10 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
+import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
+import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTagsPicker';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -39,11 +41,15 @@ export const scaffolderPlugin = createPlugin({
       api: scaffolderApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
         scmIntegrationsApi: scmIntegrationsApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
-        new ScaffolderClient({ discoveryApi, identityApi, scmIntegrationsApi }),
+      factory: ({ discoveryApi, scmIntegrationsApi, fetchApi }) =>
+        new ScaffolderClient({
+          discoveryApi,
+          scmIntegrationsApi,
+          fetchApi,
+        }),
     }),
   ],
   routes: {
@@ -58,6 +64,14 @@ export const EntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: EntityPicker,
     name: 'EntityPicker',
+  }),
+);
+
+export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: EntityNamePicker,
+    name: 'EntityNamePicker',
+    validation: entityNamePickerValidation,
   }),
 );
 
@@ -78,7 +92,26 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
 
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
+    name: 'ScaffolderPage',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
+  }),
+);
+
+export const OwnedEntityPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: OwnedEntityPicker,
+    name: 'OwnedEntityPicker',
+  }),
+);
+
+/**
+ * EntityTagsPickerFieldExtension
+ * @public
+ */
+export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: EntityTagsPicker,
+    name: 'EntityTagsPicker',
   }),
 );

@@ -2,7 +2,7 @@
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UX layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone.
 
-Therefore we want to create strong community of contributors -- all working together to create the kind of delightful experience that our developers deserve.
+Therefore we want to create a strong community of contributors -- all working together to create the kind of delightful experience that our developers deserve.
 
 Contributions are welcome, and they are greatly appreciated! Every little bit helps, and credit will always be given. ❤️
 
@@ -78,7 +78,7 @@ If you're contributing to the backend or CLI tooling, be mindful of cross-platfo
 
 Also be sure to skim through our [ADRs](docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
 
-If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
+If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) `1.4.0` separately and make sure it is accessed by global command.
 
 ## Developer Certificate of Origin
 
@@ -100,7 +100,19 @@ Signed-off-by: Jane Smith <jane.smith@example.com>
 - In case you forgot to add it to the last N commits in your branch, use `git rebase --signoff HEAD~N` and replace N with the number of new commits you created in your branch.
 - If you have a very deep branch with a lot of commits, run `git rebase -i --signoff $(git merge-base -a master HEAD)`, double check to make sense of the commits (keep all lines as `pick`) and save and close the editor. This should bulk sign all the commits in your PR. Do be careful though. If you have a complex flow with a lot of branching and re-merging of work branches and stuff, merge-base may not be the right solution for you.
 
-Note: If you have already pushed you branch to a remote, you might have to force push: `git push -f` after the rebase.
+Note: If you have already pushed your branch to a remote, you might have to force push: `git push -f` after the rebase.
+
+### Using GitHub Desktop?
+
+If you are using the GitHub Desktop client, you need to manually add the `Signed-off-by` line to the Description field on the Changes tab before committing:
+
+```
+Awesome description (commit message)
+
+Signed-off-by: Jane Smith <jane.smith@example.com>
+```
+
+In case you forgot to add the line to your most recent commit, you can amend the commit message from the History tab before pushing your branch (GitHub Desktop 2.9 or later).
 
 ## Creating Changesets
 
@@ -110,16 +122,19 @@ We use [changesets](https://github.com/atlassian/changesets) to help us prepare 
 
 Any time a patch, minor, or major change aligning to [Semantic Versioning](https://semver.org) is made to any published package in `packages/` or `plugins/`, a changeset should be used. It helps to align your change to the [Backstage stability index](https://backstage.io/docs/overview/stability-index) for the package you are changing, for example, when to provide additional clarity on deprecation or impacting changes which will then be included into CHANGELOGs.
 
-In general, changesets are not needed for the documentation, build utilities, contributed samples in `contrib/`, or the [example `packages/app`](packages/app).
+In general, changesets are only needed for changes to packages within `packages/` or `plugins/` directories, and only for the packages that are not marked as `private`. Changesets are also not needed for changes that do not affect the published version of each package, for example changes to tests or in-line source code comments.
+
+Changesets **are** needed for new packages, as that is what triggers the package to be part of the next release.
 
 ### How to create a changeset
 
 1. Run `yarn changeset`
 2. Select which packages you want to include a changeset for
-3. Select impact of change that you're introducing (patch, minor, or major)
-4. Add generated changeset to Git
-5. Push the commit with your changeset to the branch associated with your PR
-6. Accept our gratitude for making the release process easier on the maintainers
+3. Select impact of change that you're introducing, using `minor` for breaking changes and `patch` otherwise. We do not use `major` changes while packages are at version `0.x`.
+4. Explain your changes in the generated changeset. See [examples of well written changesets](https://backstage.io/docs/getting-started/contributors#writing-changesets).
+5. Add generated changeset to Git
+6. Push the commit with your changeset to the branch associated with your PR
+7. Accept our gratitude for making the release process easier on the maintainers
 
 For more information, checkout [adding a changeset](https://github.com/atlassian/changesets/blob/master/docs/adding-a-changeset.md) documentation in the changesets repository.
 

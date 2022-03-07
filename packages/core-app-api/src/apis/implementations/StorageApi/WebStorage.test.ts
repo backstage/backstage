@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CreateStorageApiOptions, WebStorage } from './WebStorage';
-import { StorageApi } from '@backstage/core-plugin-api';
+
+import { WebStorage } from './WebStorage';
+import { ErrorApi, StorageApi } from '@backstage/core-plugin-api';
 
 describe('WebStorage Storage API', () => {
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
   const createWebStorage = (
-    args?: Partial<CreateStorageApiOptions>,
+    args?: Partial<{
+      errorApi: ErrorApi;
+      namespace?: string;
+    }>,
   ): StorageApi => {
     return WebStorage.create({
       errorApi: mockErrorApi,
@@ -29,7 +33,12 @@ describe('WebStorage Storage API', () => {
   it('should return undefined for values which are unset', async () => {
     const storage = createWebStorage();
 
-    expect(storage.get('myfakekey')).toBeUndefined();
+    expect(storage.snapshot('myfakekey').value).toBeUndefined();
+    expect(storage.snapshot('myfakekey')).toEqual({
+      key: 'myfakekey',
+      presence: 'absent',
+      value: undefined,
+    });
   });
 
   it('should allow the setting and getting of the simple data structures', async () => {
@@ -38,12 +47,27 @@ describe('WebStorage Storage API', () => {
     await storage.set('myfakekey', 'helloimastring');
     await storage.set('mysecondfakekey', 1234);
     await storage.set('mythirdfakekey', true);
-    expect(storage.get('myfakekey')).toBe('helloimastring');
-    expect(storage.get('mysecondfakekey')).toBe(1234);
-    expect(storage.get('mythirdfakekey')).toBe(true);
+    expect(storage.snapshot('myfakekey').value).toBe('helloimastring');
+    expect(storage.snapshot('mysecondfakekey').value).toBe(1234);
+    expect(storage.snapshot('mythirdfakekey').value).toBe(true);
+    expect(storage.snapshot('myfakekey')).toEqual({
+      key: 'myfakekey',
+      presence: 'present',
+      value: 'helloimastring',
+    });
+    expect(storage.snapshot('mysecondfakekey')).toEqual({
+      key: 'mysecondfakekey',
+      presence: 'present',
+      value: 1234,
+    });
+    expect(storage.snapshot('mythirdfakekey')).toEqual({
+      key: 'mythirdfakekey',
+      presence: 'present',
+      value: true,
+    });
   });
 
-  it('should allow setting of complex datastructures', async () => {
+  it('should allow setting of complex data structures', async () => {
     const storage = createWebStorage();
 
     const mockData = {
@@ -53,7 +77,12 @@ describe('WebStorage Storage API', () => {
 
     await storage.set('myfakekey', mockData);
 
-    expect(storage.get('myfakekey')).toEqual(mockData);
+    expect(storage.snapshot('myfakekey').value).toEqual(mockData);
+    expect(storage.snapshot('myfakekey')).toEqual({
+      key: 'myfakekey',
+      presence: 'present',
+      value: mockData,
+    });
   });
 
   it('should subscribe to key changes when setting a new value', async () => {
@@ -64,10 +93,12 @@ describe('WebStorage Storage API', () => {
     const mockData = { hello: 'im a great new value' };
 
     await new Promise<void>(resolve => {
-      storage.observe$<String>('correctKey').subscribe({
-        next: (...args) => {
-          selectedKeyNextHandler(...args);
-          resolve();
+      storage.observe$<typeof mockData>('correctKey').subscribe({
+        next: snapshot => {
+          selectedKeyNextHandler(snapshot);
+          if (snapshot.presence === 'present') {
+            resolve();
+          }
         },
       });
 
@@ -76,11 +107,12 @@ describe('WebStorage Storage API', () => {
       storage.set('correctKey', mockData);
     });
 
-    expect(wrongKeyNextHandler).not.toHaveBeenCalled();
+    expect(wrongKeyNextHandler).toHaveBeenCalledTimes(0);
     expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
     expect(selectedKeyNextHandler).toHaveBeenCalledWith({
       key: 'correctKey',
-      newValue: mockData,
+      presence: 'present',
+      value: mockData,
     });
   });
 
@@ -95,9 +127,11 @@ describe('WebStorage Storage API', () => {
 
     await new Promise<void>(resolve => {
       storage.observe$('correctKey').subscribe({
-        next: (...args) => {
-          selectedKeyNextHandler(...args);
-          resolve();
+        next: snapshot => {
+          selectedKeyNextHandler(snapshot);
+          if (snapshot.presence === 'absent') {
+            resolve();
+          }
         },
       });
 
@@ -106,11 +140,12 @@ describe('WebStorage Storage API', () => {
       storage.remove('correctKey');
     });
 
-    expect(wrongKeyNextHandler).not.toHaveBeenCalled();
+    expect(wrongKeyNextHandler).toHaveBeenCalledTimes(0);
     expect(selectedKeyNextHandler).toHaveBeenCalledTimes(1);
     expect(selectedKeyNextHandler).toHaveBeenCalledWith({
       key: 'correctKey',
-      newValue: undefined,
+      presence: 'absent',
+      value: undefined,
     });
   });
 
@@ -124,12 +159,27 @@ describe('WebStorage Storage API', () => {
     await firstStorage.set(keyName, 'boop');
     await secondStorage.set(keyName, 'deerp');
 
-    expect(firstStorage.get(keyName)).not.toBe(secondStorage.get(keyName));
-    expect(firstStorage.get(keyName)).toBe('boop');
-    expect(secondStorage.get(keyName)).toBe('deerp');
+    expect(firstStorage.snapshot(keyName)).not.toBe(
+      secondStorage.snapshot(keyName),
+    );
+    expect(firstStorage.snapshot(keyName).value).toBe('boop');
+    expect(secondStorage.snapshot(keyName).value).toBe('deerp');
+    expect(firstStorage.snapshot(keyName)).not.toEqual(
+      secondStorage.snapshot(keyName),
+    );
+    expect(firstStorage.snapshot(keyName)).toEqual({
+      key: keyName,
+      presence: 'present',
+      value: 'boop',
+    });
+    expect(secondStorage.snapshot(keyName)).toEqual({
+      key: keyName,
+      presence: 'present',
+      value: 'deerp',
+    });
   });
 
-  it('should not clash with other namesapces when creating buckets', async () => {
+  it('should not clash with other namespaces when creating buckets', async () => {
     const rootStorage = createWebStorage();
 
     // when getting key test2 it will translate to /profile/something/deep/test2
@@ -142,7 +192,9 @@ describe('WebStorage Storage API', () => {
 
     await firstStorage.set('test2', { error: true });
 
-    expect(secondStorage.get('deep/test2')).toBe(undefined);
+    expect(secondStorage.snapshot('deep/test2')).toMatchObject({
+      presence: 'absent',
+    });
   });
 
   it('should call the error api when the json can not be parsed in local storage', async () => {
@@ -152,9 +204,13 @@ describe('WebStorage Storage API', () => {
 
     localStorage.setItem('/Test/Mock/Thing/key', '{smd: asdouindA}');
 
-    const value = rootStorage.get('key');
+    const value = rootStorage.snapshot('key');
 
-    expect(value).toBe(undefined);
+    expect(value).toEqual({
+      key: 'key',
+      presence: 'absent',
+      value: undefined,
+    });
     expect(mockErrorApi.post).toHaveBeenCalledWith(expect.any(Error));
     expect(mockErrorApi.post).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -163,11 +219,35 @@ describe('WebStorage Storage API', () => {
     );
   });
 
-  it('should return a singleton for the same namespace and same bucket', async () => {
+  it('should return a stable reference for the same namespace and same bucket', async () => {
     const rootStorage = createWebStorage({
       namespace: '/Test/Mock/Thing/Thing ',
     });
 
     expect(rootStorage.forBucket('test')).toBe(rootStorage.forBucket('test'));
+  });
+
+  it('should freeze the snapshot value', async () => {
+    const storage = createWebStorage();
+
+    const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
+    storage.set('foo', data);
+
+    const snapshot = storage.snapshot<typeof data>('foo');
+    expect(snapshot.value).not.toBe(data);
+
+    if (snapshot.presence !== 'present') {
+      throw new Error('Invalid presence');
+    }
+
+    expect(() => {
+      snapshot.value.foo = 'buzz';
+    }).toThrow(/Cannot assign to read only property/);
+    expect(() => {
+      snapshot.value.baz[0].foo = 'buzz';
+    }).toThrow(/Cannot assign to read only property/);
+    expect(() => {
+      snapshot.value.baz.push({ foo: 'buzz' });
+    }).toThrow(/Cannot add property 1, object is not extensible/);
   });
 });

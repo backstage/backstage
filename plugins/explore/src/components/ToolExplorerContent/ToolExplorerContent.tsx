@@ -16,7 +16,7 @@
 
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { ToolCard } from '../ToolCard';
 
 import {
@@ -33,7 +33,11 @@ import { useApi } from '@backstage/core-plugin-api';
 
 const Body = () => {
   const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
-  const { value: tools, loading, error } = useAsync(async () => {
+  const {
+    value: tools,
+    loading,
+    error,
+  } = useAsync(async () => {
     return await exploreToolsConfigApi.getTools();
   }, [exploreToolsConfigApi]);
 

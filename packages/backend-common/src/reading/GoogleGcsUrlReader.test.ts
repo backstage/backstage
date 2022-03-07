@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ConfigReader, JsonObject } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';

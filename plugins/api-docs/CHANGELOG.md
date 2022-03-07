@@ -1,5 +1,344 @@
 # @backstage/plugin-api-docs
 
+## 0.8.1
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog@0.9.1
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 2262fe19c9: **BREAKING**: Removed support for passing in an explicit `entity` prop to entity page extensions, which has been deprecated for a long time. This is only a breaking change at the TypeScript level, as this property was already ignored.
+
+### Patch Changes
+
+- 306c366fc9: chore(deps): bump `@asyncapi/react-component`
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/plugin-catalog@0.9.0
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.7.3
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-catalog@0.8.0
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/catalog-model@0.10.0
+  - @backstage/theme@0.2.15
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+  - @backstage/plugin-catalog@0.7.12
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+  - @backstage/plugin-catalog@0.7.12-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+  - @backstage/plugin-catalog@0.7.11
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog@0.7.11-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- b3831be2fe: Renamed the `createComponent` external route to `registerApi` since it's now recommended to link to the entity registration page rather than the creation page.
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- c007bea546: Export `GraphQlDefinitionWidget` to be reused.
+- cd4e3c4d4e: Using an explicitly empty string for the url argument ensures that the swagger UI does not run into undefined errors.
+- 0c0d8a47e7: Bump @asyncapi/react-component for CVE
+
+  [CVE-2022-21680](https://github.com/advisories/GHSA-rrrm-qjm4-v8hf) and [CVE-2022-21681](https://github.com/advisories/GHSA-5v2h-r2cx-5xgj)
+
+  See https://github.com/asyncapi/asyncapi-react/pull/522
+
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog@0.7.9
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/catalog-model@0.9.10
+
+## 0.6.23-next.0
+
+### Patch Changes
+
+- 306d879536: chore(deps): bump `react-syntax-highligher` and `swagger-ui-react`
+- c007bea546: Export `GraphQlDefinitionWidget` to be reused.
+- cd4e3c4d4e: Using an explicitly empty string for the url argument ensures that the swagger UI does not run into undefined errors.
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/plugin-catalog@0.7.9-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+
+## 0.6.22
+
+### Patch Changes
+
+- faf844e269: Update @asyncapi/react-component to 1.0.0-next.26, which will fix the
+  `ResizeObserver loop limit exceeded` errors which we encountered in several E2E
+  tests.
+
+  For more details check the following links:
+
+  - https://github.com/backstage/backstage/pull/8088#issuecomment-991183968
+  - https://github.com/asyncapi/asyncapi-react/issues/498
+
+- Updated dependencies
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+  - @backstage/plugin-catalog@0.7.8
+
+## 0.6.21
+
+### Patch Changes
+
+- 11b81683a9: Support customizing index page layouts via outlets
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/core-components@0.8.3
+  - @backstage/plugin-catalog@0.7.7
+
+## 0.6.20
+
+### Patch Changes
+
+- de81b7455e: Display entity title on `ApiDefinitionCard` if defined
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.6
+  - @backstage/plugin-catalog-react@0.6.9
+
+## 0.6.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+  - @backstage/plugin-catalog@0.7.5
+
+## 0.6.18
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-catalog@0.7.4
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.6.17
+
+### Patch Changes
+
+- dde1681f33: chore(dependencies): bump `graphiql` package to latest
+- ef64a444ca: Update AsyncAPI component to 1.0.0-x releases
+
+## 0.6.16
+
+### Patch Changes
+
+- 752a53d94e: Improve theme integration for OpenApi definition
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+
+## 0.6.15
+
+### Patch Changes
+
+- c982fc12cb: Adjusted some styles in the OpenAPI definition, for elements which were barely readable in dark mode.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.6.14
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/plugin-catalog@0.7.3
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.6.13
+
+### Patch Changes
+
+- 044c38e739: Lazy load all API definition widgets. The widgets use libraries like
+  `swagger-ui`, `graphiql`, and `@asyncapi/react-component` which are quite heavy
+  weight. To improve initial load times, the widgets are only loaded once used.
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.6.12
+
+### Patch Changes
+
+- d03ee85ff8: Bump `swagger-ui-react` to `^4.0.0-rc.3`.
+- 3c50c86604: Remove unused dependency on material-icons/font
+- 6ed423c139: lock down the `swagger-client`
+- b6ab93c421: Add actions props to the ApiExplorerPage
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/plugin-catalog@0.7.1
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.6.11
+
+### Patch Changes
+
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog@0.7.0
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog@0.6.17
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.6.9
+
+### Patch Changes
+
+- cc464a56b3: This makes Type and Lifecycle columns consistent for all table cases and adds a new line in Description column for better readability
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog@0.6.16
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+
+## 0.6.8
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog@0.6.15
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/plugin-catalog@0.6.14
+  - @backstage/catalog-model@0.9.1
+
+## 0.6.6
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- 0383314c9: Support deep linking in OpenAPI definitions.
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog@0.6.11
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.6.5
+
+### Patch Changes
+
+- 7b8aa8d0d: Move the `CreateComponentButton` from the catalog plugin to the `core-components` & rename it to `CreateButton` to be reused inside the api-docs plugin & scaffolder plugin, but also future plugins. Additionally, improve responsiveness of `CreateButton` & `SupportButton` by shrinking them to `IconButtons` on smaller screens.
+- Updated dependencies
+  - @backstage/plugin-catalog@0.6.10
+  - @backstage/core-components@0.3.0
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.6.4
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- bebc09fa8: Add explicit import for `isomorphic-form-data` needed for `swagger-ui-react`
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog@0.6.9
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
 ## 0.6.3
 
 ### Patch Changes

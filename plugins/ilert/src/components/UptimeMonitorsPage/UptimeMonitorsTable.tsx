@@ -165,8 +165,8 @@ export const UptimeMonitorsTable = ({
         </Typography>
       }
       page={tableState.page}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangeRowsPerPage}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangeRowsPerPage}
       localization={{ header: { actions: undefined } }}
       isLoading={isLoading}
       columns={columns}

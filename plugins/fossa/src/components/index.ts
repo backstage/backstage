@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './FossaCard';
+export type { FossaPageProps } from './FossaPage';

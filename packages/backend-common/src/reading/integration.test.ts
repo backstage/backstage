@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { isError } from '@backstage/errors';
 import { getVoidLogger } from '../logging';
 import { UrlReaders } from './UrlReaders';
 
@@ -71,7 +72,10 @@ function withRetries(count: number, fn: () => Promise<void>) {
         error = err;
       }
     }
-    if (!error.message.match(/rate limit|Too Many Requests/)) {
+    if (
+      isError(error) &&
+      !error.message.match(/rate limit|Too Many Requests/)
+    ) {
       throw error;
     } else {
       console.warn('Request was rate limited', error);

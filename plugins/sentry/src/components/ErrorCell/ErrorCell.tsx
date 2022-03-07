@@ -16,9 +16,10 @@
 
 import React from 'react';
 import { SentryIssue } from '../../api';
-import { Link, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
+import { Link } from '@backstage/core-components';
 
 function stripText(text: string, maxLength: number) {
   return text.length > maxLength ? `${text.substr(0, maxLength)}...` : text;
@@ -44,13 +45,18 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const ErrorCell = ({ sentryIssue }: { sentryIssue: SentryIssue }) => {
   const classes = useStyles();
+  let issueType = '[No Type]';
+  if (sentryIssue.metadata.type) {
+    issueType = sentryIssue.metadata.type;
+  } else if (sentryIssue.title) {
+    issueType = sentryIssue.title;
+  }
+
   return (
     <div className={classes.root}>
-      <Link href={sentryIssue.permalink}>
+      <Link to={sentryIssue.permalink}>
         <Typography variant="body1" gutterBottom className={classes.text}>
-          {sentryIssue.metadata.type
-            ? stripText(sentryIssue.metadata.type, 28)
-            : '[No type]'}
+          {stripText(issueType, 28)}
         </Typography>
       </Link>
       <Typography

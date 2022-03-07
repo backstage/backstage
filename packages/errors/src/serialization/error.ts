@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import {
   deserializeError as deserializeErrorInternal,
   serializeError as serializeErrorInternal,
 } from 'serialize-error';
+import { isError } from '../errors';
 
 /**
  * The serialized form of an Error.
+ *
+ * @public
  */
 export type SerializedError = JsonObject & {
   /** The name of the exception that was thrown */
@@ -37,12 +40,16 @@ export type SerializedError = JsonObject & {
 /**
  * Serializes an error object to a JSON friendly form.
  *
- * @param error The error
- * @param options.includeStackTraces: Include stack trace in the output (default false)
+ * @public
+ * @param error - The error.
+ * @param options - Optional serialization options.
  */
 export function serializeError(
   error: Error,
-  options?: { includeStack?: boolean },
+  options?: {
+    /** Include stack trace in the output (default false) */
+    includeStack?: boolean;
+  },
 ): SerializedError {
   const serialized = serializeErrorInternal(error);
   const result: SerializedError = {
@@ -60,6 +67,8 @@ export function serializeError(
 
 /**
  * Deserializes a serialized error object back to an Error.
+ *
+ * @public
  */
 export function deserializeError<T extends Error = Error>(
   data: SerializedError,
@@ -69,4 +78,20 @@ export function deserializeError<T extends Error = Error>(
     result.stack = undefined;
   }
   return result;
+}
+
+/**
+ * Stringifies an error, including its name and message where available.
+ *
+ * @param error - The error.
+ * @public
+ */
+export function stringifyError(error: unknown): string {
+  if (isError(error)) {
+    // Prefer error.toString, but if it's not implemented we use a nicer fallback
+    const str = String(error);
+    return str !== '[object Object]' ? str : `${error.name}: ${error.message}`;
+  }
+
+  return `unknown error '${error}'`;
 }

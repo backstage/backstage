@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { IconButton, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import { ShortcutIcon } from './ShortcutIcon';
 import { EditShortcut } from './EditShortcut';
@@ -41,8 +43,10 @@ const useStyles = makeStyles({
 const getIconText = (title: string) =>
   title.split(' ').length === 1
     ? // If there's only one word, keep the first two characters
+      // eslint-disable-next-line no-restricted-syntax
       title[0].toUpperCase() + title[1].toLowerCase()
     : // If there's more than one word, take the first character of the first two words
+      // eslint-disable-next-line no-restricted-syntax
       title
         .replace(/\B\W/g, '')
         .split(' ')
@@ -74,21 +78,23 @@ export const ShortcutItem = ({ shortcut, api }: Props) => {
 
   return (
     <>
-      <SidebarItem
-        className={classes.root}
-        to={shortcut.url}
-        text={shortcut.title}
-        icon={() => <ShortcutIcon text={text} color={color} />}
-      >
-        <IconButton
-          id="edit"
-          data-testid="edit"
-          onClick={handleClick}
-          className={classes.button}
+      <Tooltip title={shortcut.title} enterDelay={500}>
+        <SidebarItem
+          className={classes.root}
+          to={shortcut.url}
+          text={shortcut.title}
+          icon={() => <ShortcutIcon text={text} color={color} />}
         >
-          <EditIcon className={classes.icon} />
-        </IconButton>
-      </SidebarItem>
+          <IconButton
+            id="edit"
+            data-testid="edit"
+            onClick={handleClick}
+            className={classes.button}
+          >
+            <EditIcon className={classes.icon} />
+          </IconButton>
+        </SidebarItem>
+      </Tooltip>
       <EditShortcut
         onClose={handleClose}
         anchorEl={anchorEl}

@@ -23,7 +23,7 @@ exports.up = async function up(knex) {
   // Sqlite does not support alter column.
   if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities_search', table => {
-      table.text('value').nullable().alter();
+      table.text('value').nullable().alter({ alterType: true });
     });
   }
 };
@@ -35,7 +35,7 @@ exports.down = async function down(knex) {
   // Sqlite does not support alter column.
   if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities_search', table => {
-      table.string('value').nullable().alter();
+      table.string('value').nullable().alter({ alterType: true });
     });
   }
 };

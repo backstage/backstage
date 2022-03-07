@@ -23,9 +23,8 @@ type Props = {
 };
 
 export const TechDocsNotFound = ({ errorMessage }: Props) => {
-  const techdocsBuilder = useApi(configApiRef).getOptionalString(
-    'techdocs.builder',
-  );
+  const techdocsBuilder =
+    useApi(configApiRef).getOptionalString('techdocs.builder');
 
   let additionalInfo = '';
   if (techdocsBuilder !== 'local') {

@@ -15,30 +15,60 @@
  */
 
 import { ComponentType, ReactNode } from 'react';
-import { getOrCreateGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
 type DataContainer = {
   map: Map<string, unknown>;
 };
 
-type MaybeComponentNode = ReactNode & {
-  type?: ComponentType<any>;
-};
-
-// The store is bridged across versions using the global object
+// This method of storing the component data was deprecated in September 2021, it
+// will be removed in the future for the reasons described below.
 const globalStore = getOrCreateGlobalSingleton(
   'component-data-store',
   () => new WeakMap<ComponentType<any>, DataContainer>(),
 );
 
+// This key is used to attach component data to the component type (function or class)
+// itself. This method is used because it has better compatibility component wrappers
+// like react-hot-loader, as opposed to the WeakMap method or using a symbol.
+const componentDataKey = '__backstage_data';
+
+type ComponentWithData = ComponentType<any> & {
+  [componentDataKey]?: DataContainer;
+};
+
+type MaybeComponentNode = ReactNode & {
+  type?: ComponentWithData;
+};
+
+/**
+ * Stores data related to a component in a global store.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#component-data}.
+ *
+ * @param component - The component to attach the data to.
+ * @param type - The key under which the data will be stored.
+ * @param data - Arbitrary value.
+ * @public
+ */
 export function attachComponentData<P>(
   component: ComponentType<P>,
   type: string,
   data: unknown,
 ) {
-  let container = globalStore.get(component);
+  const dataComponent = component as ComponentWithData;
+
+  let container = dataComponent[componentDataKey] ?? globalStore.get(component);
   if (!container) {
     container = { map: new Map() };
+    Object.defineProperty(dataComponent, componentDataKey, {
+      enumerable: false,
+      configurable: true,
+      writable: false,
+      value: container,
+    });
     globalStore.set(component, container);
   }
 
@@ -52,6 +82,18 @@ export function attachComponentData<P>(
   container.map.set(type, data);
 }
 
+/**
+ * Retrieves data attached to a component.
+ *
+ * @remarks
+ *
+ * See {@link https://backstage.io/docs/plugins/composability#component-data}.
+ *
+ * @param node - React component to look up.
+ * @param type - Key of the data to retrieve.
+ * @returns Data stored using {@link attachComponentData}.
+ * @public
+ */
 export function getComponentData<T>(
   node: ReactNode,
   type: string,
@@ -65,7 +107,7 @@ export function getComponentData<T>(
     return undefined;
   }
 
-  const container = globalStore.get(component);
+  const container = component[componentDataKey] ?? globalStore.get(component);
   if (!container) {
     return undefined;
   }

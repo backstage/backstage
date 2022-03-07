@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { AppConfig, JsonObject } from '@backstage/config';
+import { AppConfig } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { assertError } from '@backstage/errors';
 
 const ENV_PREFIX = 'APP_CONFIG_';
 
@@ -38,6 +40,8 @@ const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
  * For example, to set the config app.title to "My Title", use the following:
  *
  * APP_CONFIG_app_title='"My Title"'
+ *
+ * @public
  */
 export function readEnvConfig(env: {
   [name: string]: string | undefined;
@@ -94,6 +98,7 @@ function safeJsonParse(str: string): [Error | null, any] {
   try {
     return [null, JSON.parse(str)];
   } catch (err) {
+    assertError(err);
     return [err, str];
   }
 }

@@ -20,10 +20,9 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
 import { GroupsDiagram } from './GroupsDiagram';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('<GroupsDiagram />', () => {
   beforeAll(() => {
@@ -33,7 +32,7 @@ describe('<GroupsDiagram />', () => {
     });
   });
 
-  it('shows groups', async () => {
+  it('show single group', async () => {
     const catalogApi: Partial<CatalogApi> = {
       getEntities: () =>
         Promise.resolve({
@@ -57,16 +56,15 @@ describe('<GroupsDiagram />', () => {
     };
 
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <GroupsDiagram />
-      </ApiProvider>,
+      </TestApiProvider>,
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
         },
       },
     );
-
-    expect(getByText('Group A')).toBeInTheDocument();
+    expect(getByText('Group A', { selector: 'div' })).toBeInTheDocument();
   });
 });

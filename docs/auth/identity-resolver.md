@@ -27,6 +27,8 @@ sign-in resolvers and set them for any of the Authentication providers inside
 `@backstage/plugin-auth-backend` plugin.
 
 ```ts
+import { DEFAULT_NAMESPACE, stringifyEntityRef } from '@backstage/catalog-model';
+
 export default async function createPlugin({
   ...
 }: PluginEnvironment): Promise<Router> {
@@ -38,22 +40,31 @@ export default async function createPlugin({
           resolver: async ({ profile: { email } }, ctx) => {
             // Call a custom validator function that checks that the email is
             // valid and on our own company's domain, and throws an Error if it
-            // isn't
+            // isn't.
+            // TODO: Implement this function
             validateEmail(email);
 
             // List of entity references that denote the identity and
             // membership of the user
-            const ent = [];
+            const ent: string[] = [];
 
             // Let's use the username in the email ID as the user's default
             // unique identifier inside Backstage.
             const [id] = email.split('@');
-            ent.push(`User:default/${id}`)
+            ent.push(stringifyEntityRef({
+              kind: 'User',
+              namespace: DEFAULT_NAMESPACE,
+              name: id,
+            }));
 
             // Let's call the internal LDAP provider to get a list of groups
             // that the user belongs to, and add those to the list as well
             const ldapGroups = await getLdapGroups(email);
-            ldapGroups.forEach(group => ent.push(`Group:default/${group}`))
+            ldapGroups.forEach(group => ent.push(stringifyEntityRef({
+              kind: 'Group',
+              namespace: DEFAULT_NAMESPACE,
+              name: group,
+            })));
 
             // Issue the token containing the entity claims
             const token = await ctx.tokenIssuer.issueToken({
@@ -96,7 +107,7 @@ It can be enabled like this
 
 ```tsx
 // File: packages/backend/src/plugins/auth.ts
-import { googleEmailSignInResolver } from '@backstage/plugin-auth-backend';
+import { googleEmailSignInResolver, createGoogleProvider } from '@backstage/plugin-auth-backend';
 
 export default async function createPlugin({
   ...
@@ -110,6 +121,48 @@ export default async function createPlugin({
         }
 ...
 ```
+
+## Resolving membership through the catalog
+
+If you want to provide additional claims through Sign-In resolvers but still
+have the software catalog handle group (and transitive group) membership, you
+can do this using the `CatalogIdentityClient` provided as context to Sign-In
+resolvers:
+
+```ts
+export default async function createPlugin({
+  ...
+}: PluginEnvironment): Promise<Router> {
+  return await createRouter({
+    ...
+    providerFactories: {
+      google: createGoogleProvider({
+        signIn: {
+          resolver: async ({ profile: { email } }, ctx) => {
+            const [id] = email?.split('@') ?? '';
+            // Fetch from an external system that returns entity claims like:
+            // ['user:default/breanna.davison', ...]
+            const ent = await externalSystemClient.getUsernames(email);
+
+            // Resolve group membership from the Backstage catalog
+            const fullEnt = await ctx.catalogIdentityClient.resolveCatalogMembership({
+              entityRefs: [id].concat(ent),
+              logger: ctx.logger,
+            });
+            const token = await ctx.tokenIssuer.issueToken({
+              claims: { sub: id, ent: fullEnt },
+            });
+            return { id, token };
+          },
+        },
+      }),
+      ...
+```
+
+The `resolveCatalogMembership` method will retrieve the referenced entities from
+the catalog, if possible, and check for
+[memberOf](../features/software-catalog/well-known-relations.md#memberof-and-hasmember)
+relations to add additional entity claims.
 
 ## AuthHandler
 

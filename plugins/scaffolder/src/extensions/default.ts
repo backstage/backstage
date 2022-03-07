@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityPicker } from '../components/fields/EntityPicker';
-import { OwnerPicker } from '../components/fields/OwnerPicker';
-import {
-  repoPickerValidation,
-  RepoUrlPicker,
-} from '../components/fields/RepoUrlPicker';
-import { FieldExtensionOptions } from './types';
+import { EntityPicker } from '../components/fields/EntityPicker/EntityPicker';
+import { EntityNamePicker } from '../components/fields/EntityNamePicker/EntityNamePicker';
+import { entityNamePickerValidation } from '../components/fields/EntityNamePicker/validation';
+import { EntityTagsPicker } from '../components/fields/EntityTagsPicker/EntityTagsPicker';
+import { OwnerPicker } from '../components/fields/OwnerPicker/OwnerPicker';
+import { RepoUrlPicker } from '../components/fields/RepoUrlPicker/RepoUrlPicker';
+import { repoPickerValidation } from '../components/fields/RepoUrlPicker/validation';
+import { OwnedEntityPicker } from '../components/fields/OwnedEntityPicker/OwnedEntityPicker';
 
-export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
+export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
     component: EntityPicker,
     name: 'EntityPicker',
+  },
+  {
+    component: EntityNamePicker,
+    name: 'EntityNamePicker',
+    validation: entityNamePickerValidation,
+  },
+  {
+    component: EntityTagsPicker,
+    name: 'EntityTagsPicker',
   },
   {
     component: RepoUrlPicker,
@@ -34,5 +44,9 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
   {
     component: OwnerPicker,
     name: 'OwnerPicker',
+  },
+  {
+    component: OwnedEntityPicker,
+    name: 'OwnedEntityPicker',
   },
 ];

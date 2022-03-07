@@ -23,11 +23,13 @@ import {
   systemEntityHelpLink,
 } from '../RelatedEntitiesCard';
 
-type Props = {
+/** @public */
+export interface HasSystemsCardProps {
   variant?: 'gridItem';
-};
+}
 
-export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
+export function HasSystemsCard(props: HasSystemsCardProps) {
+  const { variant = 'gridItem' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -40,4 +42,4 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
       emptyHelpLink={systemEntityHelpLink}
     />
   );
-};
+}

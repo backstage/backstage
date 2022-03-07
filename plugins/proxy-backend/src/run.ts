@@ -18,7 +18,7 @@ import { getRootLogger } from '@backstage/backend-common';
 import yn from 'yn';
 import { startStandaloneServer } from './service/standaloneServer';
 
-const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7000;
+const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
 const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
 

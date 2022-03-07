@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
+import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
 
 describe('<EntityRefLink />', () => {
-  it('renders link for entity in default namespace', () => {
+  it('renders link for entity in default namespace', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -33,9 +33,14 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<EntityRefLink entityRef={entity} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <EntityRefLink entityRef={entity} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
 
     expect(getByText('component:software')).toHaveAttribute(
       'href',
@@ -43,7 +48,7 @@ describe('<EntityRefLink />', () => {
     );
   });
 
-  it('renders link for entity in other namespace', () => {
+  it('renders link for entity in other namespace', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -57,16 +62,21 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<EntityRefLink entityRef={entity} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <EntityRefLink entityRef={entity} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(getByText('component:test/software')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
     );
   });
 
-  it('renders link for entity and hides default kind', () => {
+  it('renders link for entity and hides default kind', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -80,10 +90,12 @@ describe('<EntityRefLink />', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <EntityRefLink entityRef={entity} defaultKind="Component" />,
       {
-        wrapper: MemoryRouter,
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
     );
     expect(getByText('test/software')).toHaveAttribute(
@@ -92,46 +104,58 @@ describe('<EntityRefLink />', () => {
     );
   });
 
-  it('renders link for entity name in default namespace', () => {
+  it('renders link for entity name in default namespace', async () => {
     const entityName = {
       kind: 'Component',
       namespace: 'default',
       name: 'software',
     };
-    const { getByText } = render(<EntityRefLink entityRef={entityName} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <EntityRefLink entityRef={entityName} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(getByText('component:software')).toHaveAttribute(
       'href',
       '/catalog/default/component/software',
     );
   });
 
-  it('renders link for entity name in other namespace', () => {
+  it('renders link for entity name in other namespace', async () => {
     const entityName = {
       kind: 'Component',
       namespace: 'test',
       name: 'software',
     };
-    const { getByText } = render(<EntityRefLink entityRef={entityName} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <EntityRefLink entityRef={entityName} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
     expect(getByText('component:test/software')).toHaveAttribute(
       'href',
       '/catalog/test/component/software',
     );
   });
 
-  it('renders link for entity name and hides default kind', () => {
+  it('renders link for entity name and hides default kind', async () => {
     const entityName = {
       kind: 'Component',
       namespace: 'test',
       name: 'software',
     };
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <EntityRefLink entityRef={entityName} defaultKind="component" />,
       {
-        wrapper: MemoryRouter,
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
     );
     expect(getByText('test/software')).toHaveAttribute(
@@ -140,18 +164,20 @@ describe('<EntityRefLink />', () => {
     );
   });
 
-  it('renders link with custom children', () => {
+  it('renders link with custom children', async () => {
     const entityName = {
       kind: 'Component',
       namespace: 'test',
       name: 'software',
     };
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <EntityRefLink entityRef={entityName} defaultKind="component">
         Custom Children
       </EntityRefLink>,
       {
-        wrapper: MemoryRouter,
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
       },
     );
     expect(getByText('Custom Children')).toHaveAttribute(

@@ -24,7 +24,7 @@ export const UserSettingsProfileCard = () => {
   const { profile, displayName } = useUserProfile();
 
   return (
-    <InfoCard title="Profile">
+    <InfoCard title="Profile" variant="gridItem">
       <Grid container spacing={6}>
         <Grid item>
           <UserSettingsSignInAvatar size={96} />

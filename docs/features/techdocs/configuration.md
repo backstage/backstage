@@ -24,25 +24,35 @@ techdocs:
 
     runIn: 'docker'
 
-    # techdocs.generator.dockerImage can be used to control the docker image used during documentation generation. This can be useful
+    # (Optional) techdocs.generator.dockerImage can be used to control the docker image used during documentation generation. This can be useful
     # if you want to use MkDocs plugins or other packages that are not included in the default techdocs-container (spotify/techdocs).
     # NOTE: This setting is only used when techdocs.generator.runIn is set to 'docker'.
 
     dockerImage: 'spotify/techdocs'
 
-    # techdocs.generator.pullImage can be used to disable pulling the latest docker image by default. This can be useful when you are
+    # (Optional) techdocs.generator.pullImage can be used to disable pulling the latest docker image by default. This can be useful when you are
     # using a custom techdocs.generator.dockerImage and you have a custom docker login requirement. For example, you need to login to
     # AWS ECR to pull the docker image.
     # NOTE: Disabling this requires the docker image was pulled by other means before running the techdocs generator.
 
     pullImage: true
 
+    mkdocs:
+      # (Optional)  techdocs.generator.omitTechdocsCoreMkdocsPlugin can be used to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
+      # Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+      omitTechdocsCorePlugin: false
+
   # techdocs.builder can be either 'local' or 'external.
-  # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to generate the docs, publish to storage
-  # and show the generated docs afterwords. This is the "Basic" setup of the TechDocs Architecture.
-  # If builder is set to 'external', techdocs-backend will only fetch the docs and will NOT try to generate and publish. In this case of 'external',
-  # we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository). This is the "Recommended" setup of
-  # the architecture. Read more here https://backstage.io/docs/features/techdocs/architecture
+  # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
+  # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwords.
+  # This is the "Basic" setup of the TechDocs Architecture.
+  # Using the default build strategy, if builder is set to 'external' (or anything other than 'local'), techdocs-backend
+  # will only fetch the docs and will NOT try to generate and publish.
+  # In this case, we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository).
+  # This is the "Recommended" setup of the architecture.
+  # Note that custom build strategies may alter this behaviour.
+  # Read more about the "Basic" and "Recommended" setups here https://backstage.io/docs/features/techdocs/architecture
+  # Read more about build strategies here: https://backstage.io/docs/features/techdocs/concepts#techdocs-build-strategy
 
   builder: 'local'
 
@@ -63,6 +73,10 @@ techdocs:
       # (Required) Cloud Storage Bucket Name
       bucketName: 'techdocs-storage'
 
+      # (Optional) Location in storage bucket to save files
+      # If not set, the default location will be the root of the storage bucket
+      bucketRootPath: '/'
+
       # (Optional) An API key is required to write to a storage bucket.
       # If missing, GOOGLE_APPLICATION_CREDENTIALS environment variable will be used.
       # https://cloud.google.com/docs/authentication/production
@@ -74,6 +88,10 @@ techdocs:
     awsS3:
       # (Required) AWS S3 Bucket Name
       bucketName: 'techdocs-storage'
+
+      # (Optional) Location in storage bucket to save files
+      # If not set, the default location will be the root of the storage bucket
+      bucketRootPath: '/'
 
       # (Optional) An API key is required to write to a storage bucket.
       # If not set, environment variables or aws config file will be used to authenticate.
@@ -98,6 +116,12 @@ techdocs:
       # This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
       s3ForcePathStyle: false
 
+      # (Optional) AWS Server Side Encryption
+      # Defaults to undefined.
+      # If not set, encrypted buckets will fail to publish.
+      # https://docs.aws.amazon.com/AmazonS3/latest/userguide/specifying-s3-encryption.html
+      sse: 'aws:kms' # or AES256
+
     # Required when techdocs.publisher.type is set to 'azureBlobStorage'. Skip otherwise.
 
     azureBlobStorage:
@@ -113,14 +137,38 @@ techdocs:
         # https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
         accountKey: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY}
 
+  # (Optional and not recommended) Prior to version [0.x.y] of TechDocs, docs
+  # sites could only be accessed over paths with case-sensitive entity triplets
+  # e.g. (namespace/Kind/name). If you are upgrading from an older version of
+  # TechDocs and are unable to perform the necessary migration of files in your
+  # external storage, you can set this value to `true` to temporarily revert to
+  # the old, case-sensitive entity triplet behavior.
+  legacyUseCaseSensitiveTripletPaths: false
+
+  # techdocs.cache is optional, and is only recommended when you've configured
+  # an external techdocs.publisher.type above. Also requires backend.cache to
+  # be configured with a valid cache store.
+  cache:
+    # Represents the number of milliseconds a statically built asset should
+    # stay cached. Cache invalidation is handled automatically by the frontend,
+    # which compares the build times in cached metadata vs. canonical storage,
+    # allowing long TTLs (e.g. 1 month/year)
+    ttl: 3600000
+
+    # (Optional) The time (in milliseconds) that the TechDocs backend will wait
+    # for a cache service to respond before continuing on as though the cached
+    # object was not found (e.g. when the cache sercice is unavailable). The
+    # default value is 1000
+    readTimeout: 500
+
   # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
   # You don't have to specify this anymore.
 
-  requestUrl: http://localhost:7000/api/techdocs
+  requestUrl: http://localhost:7007/api/techdocs
 
   # (Optional and Legacy) Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
   # to serve files from either a local directory or an External storage provider.
   # You don't have to specify this anymore.
 
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  storageUrl: http://localhost:7007/api/techdocs/static/docs
 ```

@@ -20,20 +20,20 @@ import {
   createPlugin,
   createRoutableExtension,
   createRouteRef,
+  createSubRouteRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
 import { JenkinsClient, jenkinsApiRef } from './api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'Jenkins',
+  id: 'jenkins',
 });
 
-export const buildRouteRef = createRouteRef({
-  path: 'build/:jobFullName/:buildNumber',
-  params: ['jobFullName', 'buildNumber'],
-  title: 'Jenkins build',
+export const buildRouteRef = createSubRouteRef({
+  id: 'jenkins/builds',
+  path: '/builds/:jobFullName/:buildNumber',
+  parent: rootRouteRef,
 });
 
 export const jenkinsPlugin = createPlugin({
@@ -53,12 +53,14 @@ export const jenkinsPlugin = createPlugin({
 
 export const EntityJenkinsContent = jenkinsPlugin.provide(
   createRoutableExtension({
+    name: 'EntityJenkinsContent',
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );
 export const EntityLatestJenkinsRunCard = jenkinsPlugin.provide(
   createComponentExtension({
+    name: 'EntityLatestJenkinsRunCard',
     component: {
       lazy: () => import('./components/Cards').then(m => m.LatestRunCard),
     },

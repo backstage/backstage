@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, EntityName } from '@backstage/catalog-model';
 
-export type EntityRow = {
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+
+/** @public */
+export interface CatalogTableRow {
   entity: Entity;
   resolved: {
     name: string;
     partOfSystemRelationTitle?: string;
-    partOfSystemRelations: EntityName[];
+    partOfSystemRelations: CompoundEntityRef[];
     ownedByRelationsTitle?: string;
-    ownedByRelations: EntityName[];
+    ownedByRelations: CompoundEntityRef[];
   };
-};
+}

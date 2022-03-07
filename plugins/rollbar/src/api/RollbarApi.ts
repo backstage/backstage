@@ -23,8 +23,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const rollbarApiRef = createApiRef<RollbarApi>({
   id: 'plugin.rollbar.service',
-  description:
-    'Used by the Rollbar plugin to make requests to accompanying backend',
 });
 
 export interface RollbarApi {

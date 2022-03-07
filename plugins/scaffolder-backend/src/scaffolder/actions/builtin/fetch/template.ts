@@ -14,45 +14,44 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { extname } from 'path';
 import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
 import { createTemplateAction } from '../../createTemplateAction';
 import globby from 'globby';
-import nunjucks from 'nunjucks';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
+import {
+  TemplateFilter,
+  SecureTemplater,
+} from '../../../../lib/templating/SecureTemplater';
 
-/*
- * Maximise compatibility with Jinja (and therefore cookiecutter)
- * using nunjucks jinja compat mode. Since this method mutates
- * the global nunjucks instance, we can't enable this per-template,
- * or only for templates with cookiecutter compat enabled, so the
- * next best option is to explicitly enable it globally and allow
- * folks to rely on jinja compatibility behaviour in fetch:template
- * templates if they wish.
+/**
+ * Downloads a skeleton, templates variables into file and directory names and content.
+ * Then places the result in the workspace, or optionally in a subdirectory
+ * specified by the 'targetPath' input option.
  *
- * cf. https://mozilla.github.io/nunjucks/api.html#installjinjacompat
+ * @public
  */
-nunjucks.installJinjaCompat();
-
-export type FetchTemplateInput = {
-  url: string;
-  targetPath?: string;
-  values: any;
-  copyWithoutRender?: string[];
-  cookiecutterCompat?: boolean;
-};
-
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
 }) {
-  const { reader, integrations } = options;
+  const { reader, integrations, additionalTemplateFilters } = options;
 
-  return createTemplateAction<FetchTemplateInput>({
+  return createTemplateAction<{
+    url: string;
+    targetPath?: string;
+    values: any;
+    templateFileExtension?: string | boolean;
+
+    // Cookiecutter compat options
+    copyWithoutRender?: string[];
+    cookiecutterCompat?: boolean;
+  }>({
     id: 'fetch:template',
     description:
       "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
@@ -93,6 +92,12 @@ export function createFetchTemplateAction(options: {
               'Enable features to maximise compatibility with templates built for fetch:cookiecutter',
             type: 'boolean',
           },
+          templateFileExtension: {
+            title: 'Template File Extension',
+            description:
+              'If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.',
+            type: ['string', 'boolean'],
+          },
         },
       },
     },
@@ -100,7 +105,7 @@ export function createFetchTemplateAction(options: {
       ctx.logger.info('Fetching template content from remote URL');
 
       const workDir = await ctx.createTemporaryDirectory();
-      const templateDir = resolvePath(workDir, 'template');
+      const templateDir = resolveSafeChildPath(workDir, 'template');
 
       const targetPath = ctx.input.targetPath ?? './';
       const outputDir = resolveSafeChildPath(ctx.workspacePath, targetPath);
@@ -114,10 +119,30 @@ export function createFetchTemplateAction(options: {
         );
       }
 
+      if (
+        ctx.input.templateFileExtension &&
+        (ctx.input.copyWithoutRender || ctx.input.cookiecutterCompat)
+      ) {
+        throw new InputError(
+          'Fetch action input extension incompatible with copyWithoutRender and cookiecutterCompat',
+        );
+      }
+
+      let extension: string | false = false;
+      if (ctx.input.templateFileExtension) {
+        extension =
+          ctx.input.templateFileExtension === true
+            ? '.njk'
+            : ctx.input.templateFileExtension;
+        if (!extension.startsWith('.')) {
+          extension = `.${extension}`;
+        }
+      }
+
       await fetchContents({
         reader,
         integrations,
-        baseUrl: ctx.baseUrl,
+        baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath: templateDir,
       });
@@ -145,36 +170,6 @@ export function createFetchTemplateAction(options: {
         ).flat(),
       );
 
-      // Create a templater
-      const templater = nunjucks.configure({
-        ...(ctx.input.cookiecutterCompat
-          ? {}
-          : {
-              tags: {
-                // TODO(mtlewis/orkohunter): Document Why we are changing the literals? Not here, but on scaffolder docs. ADR?
-                variableStart: '${{',
-                variableEnd: '}}',
-              },
-            }),
-        // We don't want this builtin auto-escaping, since uses HTML escape sequences
-        // like `&quot;` - the correct way to escape strings in our case depends on
-        // the file type.
-        autoescape: false,
-      });
-
-      if (ctx.input.cookiecutterCompat) {
-        // The "jsonify" filter built into cookiecutter is common
-        // in fetch:cookiecutter templates, so when compat mode
-        // is enabled we alias the "dump" filter from nunjucks as
-        // jsonify. Dump accepts an optional `spaces` parameter
-        // which enables indented output, but when this parameter
-        // is not supplied it works identically to jsonify.
-        //
-        // cf. https://cookiecutter.readthedocs.io/en/latest/advanced/template_extensions.html?highlight=jsonify#jsonify-extension
-        // cf. https://mozilla.github.io/nunjucks/templating.html#dump
-        templater.addFilter('jsonify', templater.getFilter('dump'));
-      }
-
       // Cookiecutter prefixes all parameters in templates with
       // `cookiecutter.`. To replicate this, we wrap our parameters
       // in an object with a `cookiecutter` property when compat
@@ -189,19 +184,38 @@ export function createFetchTemplateAction(options: {
         ctx.input.values,
       );
 
+      const renderTemplate = await SecureTemplater.loadRenderer({
+        cookiecutterCompat: ctx.input.cookiecutterCompat,
+        additionalTemplateFilters,
+      });
+
       for (const location of allEntriesInTemplate) {
-        const shouldCopyWithoutRender = nonTemplatedEntries.has(location);
+        let renderFilename: boolean;
+        let renderContents: boolean;
 
-        const outputPath = resolvePath(
-          outputDir,
-          shouldCopyWithoutRender
-            ? location
-            : templater.renderString(location, context),
-        );
+        let localOutputPath = location;
+        if (extension) {
+          renderFilename = true;
+          renderContents = extname(localOutputPath) === extension;
+          if (renderContents) {
+            localOutputPath = localOutputPath.slice(0, -extension.length);
+          }
+        } else {
+          renderFilename = renderContents = !nonTemplatedEntries.has(location);
+        }
+        if (renderFilename) {
+          localOutputPath = renderTemplate(localOutputPath, context);
+        }
+        const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
+        // variables have been expanded to make an empty file name
+        // this is due to a conditional like if values.my_condition then file-name.txt else empty string so skip
+        if (outputDir === outputPath) {
+          continue;
+        }
 
-        if (shouldCopyWithoutRender) {
+        if (!renderContents && !extension) {
           ctx.logger.info(
-            `Copying file/directory ${location} without processing since it matches a pattern in "copyWithoutRender".`,
+            `Copying file/directory ${location} without processing.`,
           );
         }
 
@@ -211,7 +225,7 @@ export function createFetchTemplateAction(options: {
           );
           await fs.ensureDir(outputPath);
         } else {
-          const inputFilePath = resolvePath(templateDir, location);
+          const inputFilePath = resolveSafeChildPath(templateDir, location);
 
           if (await isBinaryFile(inputFilePath)) {
             ctx.logger.info(
@@ -219,15 +233,17 @@ export function createFetchTemplateAction(options: {
             );
             await fs.copy(inputFilePath, outputPath);
           } else {
+            const statsObj = await fs.stat(inputFilePath);
             ctx.logger.info(
-              `Writing file ${location} to template output path.`,
+              `Writing file ${location} to template output path with mode ${statsObj.mode}.`,
             );
             const inputFileContents = await fs.readFile(inputFilePath, 'utf-8');
             await fs.outputFile(
               outputPath,
-              shouldCopyWithoutRender
-                ? inputFileContents
-                : templater.renderString(inputFileContents, context),
+              renderContents
+                ? renderTemplate(inputFileContents, context)
+                : inputFileContents,
+              { mode: statsObj.mode },
             );
           }
         }

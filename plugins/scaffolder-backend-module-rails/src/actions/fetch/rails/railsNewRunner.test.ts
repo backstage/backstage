@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const runCommand = jest.fn();
+
+const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
 
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({ runCommand }));
+jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+  executeShellCommand,
+}));
 jest.mock('command-exists', () => commandExists);
 jest.mock('fs-extra');
 
@@ -194,7 +197,7 @@ describe('Rails Templater', () => {
         logStream: stream,
       });
 
-      expect(runCommand).toHaveBeenCalledWith({
+      expect(executeShellCommand).toHaveBeenCalledWith({
         command: 'rails',
         args: expect.arrayContaining([
           'new',
@@ -224,7 +227,7 @@ describe('Rails Templater', () => {
         logStream: stream,
       });
 
-      expect(runCommand).toHaveBeenCalledWith({
+      expect(executeShellCommand).toHaveBeenCalledWith({
         command: 'rails',
         args: expect.arrayContaining([
           'new',

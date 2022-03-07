@@ -1,5 +1,268 @@
 # @backstage/test-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- bb2bb36651: **BREAKING**: Removed the deprecated `get` method from `StorageAPI` and its implementations, this method has been replaced by the `snapshot` method. The return value from snapshot no longer includes `newValue` which has been replaced by `value`. For getting notified when a value changes, use `observe# @backstage/test-utils.
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.6.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/plugin-permission-common@0.5.2
+  - @backstage/plugin-permission-react@0.3.3
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/core-app-api@0.5.4
+  - @backstage/plugin-permission-react@0.3.2
+
+## 0.2.5
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-app-api@0.5.3
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/plugin-permission-react@0.3.1
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+  - @backstage/types@0.1.2
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.5.2
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.5.2-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- c54c0d9d10: Add MockPermissionApi
+- 6bf7826258: Added a `MockFetchApi`
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.3.0
+  - @backstage/plugin-permission-common@0.4.0
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/core-app-api@0.5.0
+  - @backstage/config@0.1.13
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/core-app-api@0.5.0-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- 2d3fd91e33: Add new `MockConfigApi` as a more discoverable and leaner method for mocking configuration.
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/core-app-api@0.4.0
+
+## 0.2.1
+
+### Patch Changes
+
+- c36b7794f7: JSON serialize and freeze values stored by the `MockStorageApi`.
+
+## 0.2.0
+
+### Minor Changes
+
+- a195284c7b: Updated `MockStorageApi` to reflect the `StorageApi` changes in `@backstage/core-plugin-api`.
+- 771b9c07fe: Removed deprecated `Keyboard` class which has been superseded by `@testing-library/user-event#userEvent`
+- f6722d2458: Removed deprecated `msw` definition which was replaced by calling `setupRequestMockHandlers` directly
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@0.3.0
+  - @backstage/core-plugin-api@0.4.0
+
+## 0.1.24
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- dcd1a0c3f4: Minor improvement to the API reports, by not unpacking arguments directly
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/core-app-api@0.2.0
+
+## 0.1.23
+
+### Patch Changes
+
+- 000190de69: The `ApiRegistry` from `@backstage/core-app-api` class has been deprecated and will be removed in a future release. To replace it, we have introduced two new helpers that are exported from `@backstage/test-utils`, namely `TestApiProvider` and `TestApiRegistry`.
+
+  These two new helpers are more tailored for writing tests and development setups, as they allow for partial implementations of each of the APIs.
+
+  When migrating existing code it is typically best to prefer usage of `TestApiProvider` when possible, so for example the following code:
+
+  ```tsx
+  render(
+    <ApiProvider
+      apis={ApiRegistry.from([
+        [identityApiRef, mockIdentityApi as unknown as IdentityApi]
+      ])}
+    >
+      {...}
+    </ApiProvider>
+  )
+  ```
+
+  Would be migrated to this:
+
+  ```tsx
+  render(
+    <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
+      {...}
+    </TestApiProvider>
+  )
+  ```
+
+  In cases where the `ApiProvider` is used in a more standalone way, for example to reuse a set of APIs across multiple tests, the `TestApiRegistry` can be used instead. Note that the `TestApiRegistry` only has a single static factory method, `.from()`, and it is slightly different from the existing `.from()` method on `ApiRegistry` in that it doesn't require the API pairs to be wrapped in an outer array.
+
+  Usage that looks like this:
+
+  ```ts
+  const apis = ApiRegistry.with(
+    identityApiRef,
+    mockIdentityApi as unknown as IdentityApi,
+  ).with(configApiRef, new ConfigReader({}));
+  ```
+
+  OR like this:
+
+  ```ts
+  const apis = ApiRegistry.from([
+    [identityApiRef, mockIdentityApi as unknown as IdentityApi],
+    [configApiRef, new ConfigReader({})],
+  ]);
+  ```
+
+  Would be migrated to this:
+
+  ```ts
+  const apis = TestApiRegistry.from(
+    [identityApiRef, mockIdentityApi],
+    [configApiRef, new ConfigReader({})],
+  );
+  ```
+
+  If your app is still using the `ApiRegistry` to construct the `apis` for `createApp`, we recommend that you move over to use the new method of supplying API factories instead, using `createApiFactory`.
+
+- Updated dependencies
+  - @backstage/core-app-api@0.1.23
+  - @backstage/core-plugin-api@0.2.1
+
+## 0.1.22
+
+### Patch Changes
+
+- 0b1de52732: Migrated to using new `ErrorApiError` and `ErrorApiErrorContext` names.
+- 2dd2a7b2cc: Migrated to using `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.2.0
+  - @backstage/core-app-api@0.1.21
+
+## 0.1.21
+
+### Patch Changes
+
+- 71fd5cd735: Update Keyboard deprecation with a link to the recommended successor
+- Updated dependencies
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/core-app-api@0.1.20
+
+## 0.1.20
+
+### Patch Changes
+
+- bb12aae352: Migrates all utility methods from `test-utils-core` into `test-utils` and delete exports from the old package.
+  This should have no impact since this package is considered internal and have no usages outside core packages.
+
+  Notable changes are that the testing tool `msw.setupDefaultHandlers()` have been deprecated in favour of `setupRequestMockHandlers()`.
+
+- c5bb1df55d: Bump `msw` to `v0.35.0` to resolve [CVE-2021-32796](https://github.com/advisories/GHSA-5fg8-2547-mr8q).
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/theme@0.2.12
+  - @backstage/core-app-api@0.1.19
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.1.19
+
+### Patch Changes
+
+- 54bbe25c34: Store the namespaced bucket storage for each instance that was created with `MockStorage.create()` instead of global variable.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.17
+  - @backstage/theme@0.2.11
+
+## 0.1.18
+
+### Patch Changes
+
+- e749a38e89: Added a mock implementation of the `AnalyticsApi`, which can be used to make
+  assertions about captured analytics events.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/core-app-api@0.1.16
+  - @backstage/test-utils-core@0.1.3
+
+## 0.1.17
+
+### Patch Changes
+
+- 56c773909: Switched `@types/react` dependency to request `*` rather than a specific version.
+- Updated dependencies
+  - @backstage/core-app-api@0.1.8
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/test-utils-core@0.1.2
+
+## 0.1.16
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- Updated dependencies
+  - @backstage/core-app-api@0.1.6
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+
 ## 0.1.15
 
 ### Patch Changes

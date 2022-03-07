@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { TechDocsStorageApi } from '../../api';
 import type { Transformer } from './transformer';
 
 type AddBaseUrlOptions = {
   techdocsStorageApi: TechDocsStorageApi;
-  entityId: EntityName;
+  entityId: CompoundEntityRef;
   path: string;
 };
 
@@ -84,6 +84,7 @@ export const addBaseUrl = ({
     await Promise.all([
       updateDom<HTMLImageElement>(dom.querySelectorAll('img'), 'src'),
       updateDom<HTMLScriptElement>(dom.querySelectorAll('script'), 'src'),
+      updateDom<HTMLSourceElement>(dom.querySelectorAll('source'), 'src'),
       updateDom<HTMLLinkElement>(dom.querySelectorAll('link'), 'href'),
       updateDom<HTMLAnchorElement>(dom.querySelectorAll('a[download]'), 'href'),
     ]);

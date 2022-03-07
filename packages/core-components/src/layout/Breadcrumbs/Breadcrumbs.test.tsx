@@ -15,7 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Link } from '../../components/Link';

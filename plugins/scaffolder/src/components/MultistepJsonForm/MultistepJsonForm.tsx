@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import {
   Box,
   Button,
@@ -24,11 +24,18 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
+import {
+  errorApiRef,
+  useApi,
+  featureFlagsApiRef,
+} from '@backstage/core-plugin-api';
 import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 import { transformSchemaToProps } from './schema';
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
+import cloneDeep from 'lodash/cloneDeep';
+import * as fieldOverrides from './FieldOverrides';
 
 const Form = withTheme(MuiTheme);
 type Step = {
@@ -44,7 +51,7 @@ type Props = {
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
-  onFinish: () => void;
+  onFinish: () => Promise<void>;
   widgets?: FormProps<any>['widgets'];
   fields?: FormProps<any>['fields'];
 };
@@ -102,16 +109,50 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
   return reviewData;
 }
 
-export const MultistepJsonForm = ({
-  steps,
-  formData,
-  onChange,
-  onReset,
-  onFinish,
-  fields,
-  widgets,
-}: Props) => {
+export const MultistepJsonForm = (props: Props) => {
+  const { formData, onChange, onReset, onFinish, fields, widgets } = props;
   const [activeStep, setActiveStep] = useState(0);
+  const [disableButtons, setDisableButtons] = useState(false);
+  const errorApi = useApi(errorApiRef);
+  const featureFlagApi = useApi(featureFlagsApiRef);
+  const featureFlagKey = 'backstage:featureFlag';
+  const filterOutProperties = (step: Step): Step => {
+    const filteredStep = cloneDeep(step);
+    const removedPropertyKeys: Array<string> = [];
+    if (filteredStep.schema.properties) {
+      filteredStep.schema.properties = Object.fromEntries(
+        Object.entries(filteredStep.schema.properties).filter(
+          ([key, value]) => {
+            if (value[featureFlagKey]) {
+              if (featureFlagApi.isActive(value[featureFlagKey])) {
+                return true;
+              }
+              removedPropertyKeys.push(key);
+              return false;
+            }
+            return true;
+          },
+        ),
+      );
+
+      // remove the feature flag property key from required if they are not active
+      filteredStep.schema.required = Array.isArray(filteredStep.schema.required)
+        ? filteredStep.schema.required?.filter(
+            r => !removedPropertyKeys.includes(r as string),
+          )
+        : filteredStep.schema.required;
+    }
+    return filteredStep;
+  };
+
+  const steps = props.steps
+    .filter(step => {
+      const featureFlag = step.schema[featureFlagKey];
+      return (
+        typeof featureFlag !== 'string' || featureFlagApi.isActive(featureFlag)
+      );
+    })
+    .map(filterOutProperties);
 
   const handleReset = () => {
     setActiveStep(0);
@@ -121,6 +162,15 @@ export const MultistepJsonForm = ({
     setActiveStep(Math.min(activeStep + 1, steps.length));
   };
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
+  const handleCreate = async () => {
+    setDisableButtons(true);
+    try {
+      await onFinish();
+    } catch (err) {
+      setDisableButtons(false);
+      errorApi.post(err);
+    }
+  };
 
   return (
     <>
@@ -140,7 +190,7 @@ export const MultistepJsonForm = ({
               <StepContent key={title}>
                 <Form
                   showErrorList={false}
-                  fields={fields}
+                  fields={{ ...fieldOverrides, ...fields }}
                   widgets={widgets}
                   noHtml5Validate
                   formData={formData}
@@ -172,9 +222,18 @@ export const MultistepJsonForm = ({
               metadata={getReviewData(formData, steps)}
             />
             <Box mb={4} />
-            <Button onClick={handleBack}>Back</Button>
-            <Button onClick={handleReset}>Reset</Button>
-            <Button variant="contained" color="primary" onClick={onFinish}>
+            <Button onClick={handleBack} disabled={disableButtons}>
+              Back
+            </Button>
+            <Button onClick={handleReset} disabled={disableButtons}>
+              Reset
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreate}
+              disabled={disableButtons}
+            >
               Create
             </Button>
           </Paper>

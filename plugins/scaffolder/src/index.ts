@@ -14,18 +14,48 @@
  * limitations under the License.
  */
 
+/**
+ * The Backstage plugin that helps you create new things
+ *
+ * @packageDocumentation
+ */
+
 export { scaffolderApiRef, ScaffolderClient } from './api';
-export type { ScaffolderApi } from './api';
+export type {
+  JobStatus,
+  ListActionsResponse,
+  LogEvent,
+  ScaffolderApi,
+  ScaffolderGetIntegrationsListOptions,
+  ScaffolderGetIntegrationsListResponse,
+  ScaffolderOutputLink,
+  ScaffolderScaffoldOptions,
+  ScaffolderScaffoldResponse,
+  ScaffolderStreamLogsOptions,
+  ScaffolderTask,
+  ScaffolderTaskOutput,
+  ScaffolderTaskStatus,
+  TemplateParameterSchema,
+} from './types';
 export {
   createScaffolderFieldExtension,
   ScaffolderFieldExtensions,
 } from './extensions';
-export type { CustomFieldValidator, FieldExtensionOptions } from './extensions';
+export type {
+  CustomFieldValidator,
+  FieldExtensionOptions,
+  FieldExtensionComponentProps,
+  FieldExtensionComponent,
+} from './extensions';
 export {
   EntityPickerFieldExtension,
+  EntityNamePickerFieldExtension,
+  EntityTagsPickerFieldExtension,
   OwnerPickerFieldExtension,
+  OwnedEntityPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   ScaffolderPage,
-  scaffolderPlugin as plugin,
   scaffolderPlugin,
 } from './plugin';
+export * from './components';
+export type { TaskPageProps } from './components/TaskPage';

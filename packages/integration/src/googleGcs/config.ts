@@ -18,6 +18,8 @@ import { Config } from '@backstage/config';
 
 /**
  * The configuration parameters for a single Google Cloud Storage provider.
+ *
+ * @public
  */
 export type GoogleGcsIntegrationConfig = {
   /**
@@ -33,7 +35,8 @@ export type GoogleGcsIntegrationConfig = {
 /**
  * Reads a single Google GCS integration config.
  *
- * @param config The config object of a single integration
+ * @param config - The config object of a single integration
+ * @public
  */
 export function readGoogleGcsIntegrationConfig(
   config: Config,

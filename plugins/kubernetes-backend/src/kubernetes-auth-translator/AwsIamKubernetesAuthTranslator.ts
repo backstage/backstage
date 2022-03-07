@@ -18,17 +18,6 @@ import { sign } from 'aws4';
 import { AWSClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
 
-const base64 = (str: string) =>
-  Buffer.from(str.toString(), 'binary').toString('base64');
-const prepend = (prep: string) => (str: string) => prep + str;
-const replace = (search: string | RegExp, substitution: string) => (
-  str: string,
-) => str.replace(search, substitution);
-const pipe = (fns: ReadonlyArray<any>) => (thing: string): string =>
-  fns.reduce((val, fn) => fn(val), thing);
-const removePadding = replace(/=+$/, '');
-const makeUrlSafe = pipe([replace('+', '-'), replace('/', '_')]);
-
 type SigningCreds = {
   accessKeyId: string | undefined;
   secretAccessKey: string | undefined;
@@ -36,11 +25,10 @@ type SigningCreds = {
 };
 
 export class AwsIamKubernetesAuthTranslator
-  implements KubernetesAuthTranslator {
+  implements KubernetesAuthTranslator
+{
   validCredentials(creds: SigningCreds): boolean {
-    return ((creds?.accessKeyId &&
-      creds?.secretAccessKey &&
-      creds?.sessionToken) as unknown) as boolean;
+    return (creds?.accessKeyId && creds?.secretAccessKey) as unknown as boolean;
   }
 
   awsGetCredentials = async (): Promise<Credentials> => {
@@ -55,7 +43,10 @@ export class AwsIamKubernetesAuthTranslator
     });
   };
 
-  async getCredentials(assumeRole: string | undefined): Promise<SigningCreds> {
+  async getCredentials(
+    assumeRole?: string,
+    externalId?: string,
+  ): Promise<SigningCreds> {
     return new Promise<SigningCreds>(async (resolve, reject) => {
       const awsCreds = await this.awsGetCredentials();
 
@@ -73,10 +64,12 @@ export class AwsIamKubernetesAuthTranslator
       if (!assumeRole) return resolve(creds);
 
       try {
-        const params = {
+        const params: AWS.STS.Types.AssumeRoleRequest = {
           RoleArn: assumeRole,
           RoleSessionName: 'backstage-login',
         };
+        if (externalId) params.ExternalId = externalId;
+
         const assumedRole = await new AWS.STS().assumeRole(params).promise();
 
         if (!assumedRole.Credentials) {
@@ -97,9 +90,10 @@ export class AwsIamKubernetesAuthTranslator
   }
   async getBearerToken(
     clusterName: string,
-    assumeRole: string | undefined,
+    assumeRole?: string,
+    externalId?: string,
   ): Promise<string> {
-    const credentials = await this.getCredentials(assumeRole);
+    const credentials = await this.getCredentials(assumeRole, externalId);
 
     const request = {
       host: `sts.amazonaws.com`,
@@ -110,15 +104,15 @@ export class AwsIamKubernetesAuthTranslator
       signQuery: true,
     };
 
-    const signedRequest = sign(request, credentials);
+    const signed = sign(request, credentials);
+    const url = `https://${signed.host}${signed.path}`;
+    const base64Url = Buffer.from(url, 'binary').toString('base64');
+    const urlSafeBase64Url = base64Url
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
 
-    return pipe([
-      (signed: any) => `https://${signed.host}${signed.path}`,
-      base64,
-      removePadding,
-      makeUrlSafe,
-      prepend('k8s-aws-v1.'),
-    ])(signedRequest);
+    return `k8s-aws-v1.${urlSafeBase64Url}`;
   }
 
   async decorateClusterDetailsWithAuth(
@@ -132,6 +126,7 @@ export class AwsIamKubernetesAuthTranslator
     clusterDetailsWithAuthToken.serviceAccountToken = await this.getBearerToken(
       clusterDetails.name,
       clusterDetails.assumeRole,
+      clusterDetails.externalId,
     );
     return clusterDetailsWithAuthToken;
   }

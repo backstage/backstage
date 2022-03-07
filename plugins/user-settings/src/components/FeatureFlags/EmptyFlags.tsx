@@ -18,13 +18,11 @@ import React from 'react';
 import { Button, Typography } from '@material-ui/core';
 import { CodeSnippet, EmptyState } from '@backstage/core-components';
 
-const EXAMPLE = `import { createPlugin } from '@backstage/core';
+const EXAMPLE = `import { createPlugin } from '@backstage/core-plugin-api';
 
 export default createPlugin({
   id: 'plugin-name',
-  register({ router, featureFlags }) {
-    featureFlags.register('enable-example-feature');
-  },
+  featureFlags: [{ name: 'enable-example-feature' }],
 });
 `;
 

@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  TemplateEntityV1beta2,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import {
   EntityRefLinks,
+  FavoriteEntity,
   getEntityRelations,
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
-import { BackstageTheme, pageTheme } from '@backstage/theme';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -44,11 +42,13 @@ import {
 } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
-import { generatePath } from 'react-router';
-import { rootRouteRef } from '../../routes';
-import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
+import { selectedTemplateRouteRef } from '../../routes';
 
-import { Button, ItemCardHeader } from '@backstage/core-components';
+import {
+  Button,
+  ItemCardHeader,
+  MarkdownContent,
+} from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
@@ -77,6 +77,12 @@ const useStyles = makeStyles(theme => ({
   },
   leftButton: {
     marginRight: 'auto',
+  },
+  starButton: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(0.5),
+    padding: '0.25rem',
   },
 }));
 
@@ -123,7 +129,8 @@ const DeprecationWarning = () => {
 
   const Title = (
     <Typography style={{ padding: 10, maxWidth: 300 }}>
-      This template syntax is deprecated. Click for more info.
+      This template uses a syntax that has been deprecated, and should be
+      migrated to a newer syntax. Click for more info.
     </Typography>
   );
 
@@ -131,7 +138,7 @@ const DeprecationWarning = () => {
     <div className={styles.deprecationIcon}>
       <Tooltip title={Title}>
         <Link
-          href="https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2"
+          href="https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3"
           className={styles.link}
         >
           <WarningIcon />
@@ -143,18 +150,18 @@ const DeprecationWarning = () => {
 
 export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
-  const rootLink = useRouteRef(rootRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const templateProps = getTemplateCardProps(template);
   const ownedByRelations = getEntityRelations(
     template as Entity,
     RELATION_OWNED_BY,
   );
-  const themeId = pageTheme[templateProps.type] ? templateProps.type : 'other';
+  const themeId = backstageTheme.getPageTheme({ themeId: templateProps.type })
+    ? templateProps.type
+    : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
-  const href = generatePath(`${rootLink()}/templates/:templateName`, {
-    templateName: templateProps.name,
-  });
+  const href = templateRoute({ templateName: templateProps.name });
 
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const sourceLocation = getEntitySourceLocation(template, scmIntegrationsApi);
@@ -162,7 +169,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   return (
     <Card>
       <CardMedia className={classes.cardHeader}>
-        <FavouriteTemplate entity={template} />
+        <FavoriteEntity className={classes.starButton} entity={template} />
         {deprecated && <DeprecationWarning />}
         <ItemCardHeader
           title={templateProps.title}
@@ -175,7 +182,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          {templateProps.description}
+          <MarkdownContent content={templateProps.description} />
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>

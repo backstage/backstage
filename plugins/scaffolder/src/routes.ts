@@ -16,6 +16,7 @@
 import {
   createExternalRouteRef,
   createRouteRef,
+  createSubRouteRef,
 } from '@backstage/core-plugin-api';
 
 export const registerComponentRouteRef = createExternalRouteRef({
@@ -24,5 +25,23 @@ export const registerComponentRouteRef = createExternalRouteRef({
 });
 
 export const rootRouteRef = createRouteRef({
-  title: 'Create new entity',
+  id: 'scaffolder',
+});
+
+export const selectedTemplateRouteRef = createSubRouteRef({
+  id: 'scaffolder/selected-template',
+  parent: rootRouteRef,
+  path: '/templates/:templateName',
+});
+
+export const scaffolderTaskRouteRef = createSubRouteRef({
+  id: 'scaffolder/task',
+  parent: rootRouteRef,
+  path: '/tasks/:taskId',
+});
+
+export const actionsRouteRef = createSubRouteRef({
+  id: 'scaffolder/actions',
+  parent: rootRouteRef,
+  path: '/actions',
 });

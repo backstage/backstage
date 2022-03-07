@@ -41,6 +41,7 @@ import {
   getOwnedPodsThroughReplicaSets,
 } from '../../../utils/owner';
 import { StatusError, StatusOK } from '@backstage/core-components';
+import { READY_COLUMNS, RESOURCE_COLUMNS } from '../../Pods/PodsTable';
 
 type RolloutAccordionsProps = {
   rollouts: any[];
@@ -97,7 +98,12 @@ const RolloutSummary = ({
   const abortedMessage = findAbortedMessage(rollout);
 
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="center">
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
       <Grid xs={3} item>
         <RolloutDrawer rollout={rollout} />
       </Grid>
@@ -111,7 +117,7 @@ const RolloutSummary = ({
               item
               container
               direction="column"
-              justify="flex-start"
+              justifyContent="flex-start"
               alignItems="flex-start"
               spacing={0}
             >
@@ -142,7 +148,7 @@ const RolloutSummary = ({
         container
         xs={3}
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
       >
         <Grid item>
@@ -232,7 +238,10 @@ const RolloutAccordion = ({
             />
           </div>
           <div>
-            <PodsTable pods={ownedPods} />
+            <PodsTable
+              pods={ownedPods}
+              extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+            />
           </div>
         </div>
       </AccordionDetails>
@@ -250,7 +259,7 @@ export const RolloutAccordions = ({
     <Grid
       container
       direction="column"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       {rollouts.map((rollout, i) => (

@@ -18,6 +18,8 @@ import { ConfigReader } from '@backstage/config';
 import Keyv from 'keyv';
 /* @ts-expect-error */
 import KeyvMemcache from 'keyv-memcache';
+/* @ts-expect-error */
+import KeyvRedis from '@keyv/redis';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManager } from './CacheManager';
 import { NoStore } from './NoStore';
@@ -26,6 +28,8 @@ jest.createMockFromModule('keyv');
 jest.mock('keyv');
 jest.createMockFromModule('keyv-memcache');
 jest.mock('keyv-memcache');
+jest.createMockFromModule('@keyv/redis');
+jest.mock('@keyv/redis');
 jest.mock('./CacheClient', () => {
   return {
     DefaultCacheClient: jest.fn(),
@@ -104,7 +108,7 @@ describe('CacheManager', () => {
       manager.forPlugin(plugin2Id).getClient({ defaultTtl: expectedTtl });
 
       const client = DefaultCacheClient as jest.Mock;
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       expect(cache).toHaveBeenCalledTimes(2);
       expect(client).toHaveBeenCalledTimes(2);
 
@@ -124,7 +128,7 @@ describe('CacheManager', () => {
       const expectedNamespace = 'test-plugin';
       manager.forPlugin(expectedNamespace).getClient();
 
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
       const callArgs = mockCalls[0];
       expect(callArgs[0].store).toBeInstanceOf(NoStore);
@@ -138,13 +142,29 @@ describe('CacheManager', () => {
         .forPlugin(expectedNamespace)
         .getClient({ defaultTtl: expectedTtl });
 
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
       const callArgs = mockCalls[0];
       expect(callArgs[0]).toMatchObject({
         ttl: expectedTtl,
         namespace: expectedNamespace,
       });
+    });
+
+    it('shares memory across multiple instances of the memory client', () => {
+      const manager = CacheManager.fromConfig(defaultConfig());
+      const plugin = 'test-plugin';
+
+      // Instantiate two in-memory clients.
+      manager.forPlugin(plugin).getClient({ defaultTtl: 10 });
+      manager.forPlugin(plugin).getClient({ defaultTtl: 10 });
+
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCall2 = cache.mock.calls.splice(-1)[0][0];
+      const mockCall1 = cache.mock.calls.splice(-1)[0][0];
+
+      // Note: .toBe() checks referential identity of object instances.
+      expect(mockCall1.store).toBe(mockCall2.store);
     });
 
     it('returns a memcache client when configured', () => {
@@ -162,7 +182,7 @@ describe('CacheManager', () => {
       const expectedTtl = 3600;
       manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
 
-      const cache = (Keyv as unknown) as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCacheCalls = cache.mock.calls.splice(-1);
       expect(mockCacheCalls[0][0]).toMatchObject({
         ttl: expectedTtl,
@@ -172,6 +192,32 @@ describe('CacheManager', () => {
       const mockMemcacheCalls = memcache.mock.calls.splice(-1);
       expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
     });
+  });
+
+  it('returns a Redis client when configured', () => {
+    const redisConnection = 'redis://127.0.0.1:6379';
+    const manager = CacheManager.fromConfig(
+      new ConfigReader({
+        backend: {
+          cache: {
+            store: 'redis',
+            connection: redisConnection,
+          },
+        },
+      }),
+    );
+    const expectedTtl = 3600;
+    manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
+
+    const cache = Keyv as unknown as jest.Mock;
+    const mockCacheCalls = cache.mock.calls.splice(-1);
+    expect(mockCacheCalls[0][0]).toMatchObject({
+      ttl: expectedTtl,
+    });
+    expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
+    const redis = KeyvRedis as jest.Mock;
+    const mockRedisCalls = redis.mock.calls.splice(-1);
+    expect(mockRedisCalls[0][0]).toEqual(redisConnection);
   });
 
   describe('connection errors', () => {

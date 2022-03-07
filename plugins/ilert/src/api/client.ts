@@ -41,7 +41,6 @@ import {
 
 export const ilertApiRef = createApiRef<ILertApi>({
   id: 'plugin.ilert.service',
-  description: 'Used to make requests towards iLert API',
 });
 
 const DEFAULT_PROXY_PATH = '/ilert';

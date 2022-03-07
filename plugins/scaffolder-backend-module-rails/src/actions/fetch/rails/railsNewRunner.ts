@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import path from 'path';
-import { runCommand } from '@backstage/plugin-scaffolder-backend';
+import { executeShellCommand } from '@backstage/plugin-scaffolder-backend';
 import commandExists from 'command-exists';
 import {
   railsArgumentResolver,
   RailsRunOptions,
 } from './railsArgumentResolver';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { Writable } from 'stream';
 
 export class RailsNewRunner {
@@ -64,7 +64,7 @@ export class RailsNewRunner {
         railsArguments as RailsRunOptions,
       );
 
-      await runCommand({
+      await executeShellCommand({
         command: baseCommand,
         args: [
           ...baseArguments,

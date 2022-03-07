@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  loadBackendConfig,
-  SingleHostDiscovery,
-} from '@backstage/backend-common';
+import { getVoidLogger, SingleHostDiscovery } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';
 import * as http from 'http';
 import { createProxyMiddleware, Options } from 'http-proxy-middleware';
@@ -33,16 +30,96 @@ const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
 >;
 
 describe('createRouter', () => {
-  it('works', async () => {
-    const logger = getVoidLogger();
-    const config = await loadBackendConfig({ logger, argv: [] });
-    const discovery = SingleHostDiscovery.fromConfig(config);
-    const router = await createRouter({
-      config,
-      logger,
-      discovery,
+  describe('where all proxy config are valid', () => {
+    it('works', async () => {
+      const logger = getVoidLogger();
+      const config = new ConfigReader({
+        backend: {
+          baseUrl: 'https://example.com:7007',
+          listen: {
+            port: 7007,
+          },
+        },
+        proxy: {
+          '/test': {
+            target: 'https://example.com',
+            headers: {
+              Authorization: 'Bearer supersecret',
+            },
+          },
+        },
+      });
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const router = await createRouter({
+        config,
+        logger,
+        discovery,
+      });
+      expect(router).toBeDefined();
     });
-    expect(router).toBeDefined();
+  });
+
+  describe('where buildMiddleware would fail', () => {
+    it('throws an error if skip failures is not set', async () => {
+      const logger = getVoidLogger();
+      logger.warn = jest.fn();
+      const config = new ConfigReader({
+        backend: {
+          baseUrl: 'https://example.com:7007',
+          listen: {
+            port: 7007,
+          },
+        },
+        // no target would cause the buildMiddleware to fail
+        proxy: {
+          '/test': {
+            headers: {
+              Authorization: 'Bearer supersecret',
+            },
+          },
+        },
+      });
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      await expect(
+        createRouter({
+          config,
+          logger,
+          discovery,
+        }),
+      ).rejects.toThrow(new Error('Proxy target must be a string'));
+    });
+
+    it('works if skip failures is set', async () => {
+      const logger = getVoidLogger();
+      logger.warn = jest.fn();
+      const config = new ConfigReader({
+        backend: {
+          baseUrl: 'https://example.com:7007',
+          listen: {
+            port: 7007,
+          },
+        },
+        // no target would cause the buildMiddleware to fail
+        proxy: {
+          '/test': {
+            headers: {
+              Authorization: 'Bearer supersecret',
+            },
+          },
+        },
+      });
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const router = await createRouter({
+        config,
+        logger,
+        discovery,
+        skipInvalidProxies: true,
+      });
+      expect((logger.warn as jest.Mock).mock.calls[0][0]).toEqual(
+        'skipped configuring /test due to Proxy target must be a string',
+      );
+      expect(router).toBeDefined();
+    });
   });
 });
 

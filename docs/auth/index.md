@@ -16,13 +16,16 @@ Backstage identity information in your app or plugins.
 
 Backstage comes with many common authentication providers in the core library:
 
+- [Atlassian](atlassian/provider.md)
 - [Auth0](auth0/provider.md)
 - [Azure](microsoft/provider.md)
+- [Bitbucket](bitbucket/provider.md)
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
 - [Okta](okta/provider.md)
 - [OneLogin](onelogin/provider.md)
+- [OAuth2Proxy](oauth2-proxy/provider.md)
 
 These built-in providers handle the authentication flow for a particular service
 including required scopes, callbacks, etc. These providers are each added to a
@@ -53,19 +56,15 @@ allows a single auth backend to serve multiple environments, such as running a
 local frontend against a deployed backend. The provider configuration matching
 the local `auth.environment` setting will be selected.
 
-### Adding the provider to the sign-in page
+## Using an authentication provider for sign-in
 
-After configuring an authentication provider, the `app` frontend package needs a
-small update to show this provider as a login option. The `SignInPage` component
-handles this, and takes either a `provider` or `providers` (array) prop of
-`SignInProviderConfig` definitions.
+If you want to use an authentication provider for sign-in, as opposed to just accessing external resources, you'll need to configure that in your app as well. This is done by providing a custom `SignInPage` component to the app, which will require the user to sign in before they can access the app. Note that this does not block access to the app, which you can read more about [here](./using-auth.md).
 
-These reference the [ApiRef](../reference/utility-apis/README.md) exported by
-the provider. Again, an example using GitHub that can be adapted to any of the
-built-in providers:
+If you want to, you can use the `SignInPage` component that is provided by `@backstage/core-components`, which takes either a `provider` or `providers` (array) prop of `SignInProviderConfig` definitions. These reference the `ApiRef` exported for the provider.
+
+Again, the following example for GitHub shows the additions needed to `packages/app/src/App.tsx`, and can be adapted to any of the built-in providers:
 
 ```diff
-# packages/app/src/App.tsx
 + import { githubAuthApiRef } from '@backstage/core-plugin-api';
 + import { SignInProviderConfig, SignInPage } from '@backstage/core-components';
 
@@ -76,8 +75,8 @@ built-in providers:
 +  apiRef: githubAuthApiRef,
 +};
 +
-const app = createApp({
-  apis,
+ const app = createApp({
+   apis,
 +  components: {
 +    SignInPage: props => (
 +      <SignInPage
@@ -87,15 +86,15 @@ const app = createApp({
 +      />
 +    ),
 +  },
-  bindRoutes({ bind }) {
+   bindRoutes({ bind }) {
 ```
 
 To also allow unauthenticated guest access, use the `providers` prop for
 `SignInPage`:
 
 ```diff
-const app = createApp({
-  apis,
+ const app = createApp({
+   apis,
 +  components: {
 +    SignInPage: props => (
 +      <SignInPage
@@ -104,7 +103,7 @@ const app = createApp({
 +      />
 +    ),
 +  },
-  bindRoutes({ bind }) {
+   bindRoutes({ bind }) {
 ```
 
 ## Adding a custom authentication provider
@@ -117,3 +116,26 @@ Backstage uses [Passport](http://www.passportjs.org/) under the hood, which has
 a wide library of authentication strategies for different providers. See
 [Add authentication provider](add-auth-provider.md) for details on adding a new
 Passport-supported authentication method.
+
+## Custom ScmAuthApi Implementation
+
+If you are using any custom authentication providers, like for example one for GitHub Enterprise, then you are likely to need a custom implementation of the [`ScmAuthApi`](https://backstage.io/docs/reference/integration-react.scmauthapi). It is an API used to authenticate towards different SCM systems in a generic way, based on what resource is being accessed, and is used for example by the Scaffolder (Software Templates) and Catalog Import plugins.
+
+To set up a custom `ScmAuthApi` implementation, you'll need to add an API factory entry to `packages/app/src/apis.ts`. The following example shows an implementation that supports both public GitHub via `githubAuthApi` as well as a GitHub Enterprise installation hosted at `ghe.example.com` via `gheAuthApi`:
+
+```ts
+createApiFactory({
+  api: scmAuthApiRef,
+  deps: {
+    gheAuthApi: gheAuthApiRef,
+    githubAuthApi: githubAuthApiRef,
+  },
+  factory: ({ githubAuthApi, gheAuthApi }) =>
+    ScmAuth.merge(
+      ScmAuth.forGithub(githubAuthApi),
+      ScmAuth.forGithub(gheAuthApi, {
+        host: 'ghe.example.com',
+      }),
+    ),
+});
+```

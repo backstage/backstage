@@ -19,6 +19,7 @@ import {
   Box,
   Checkbox,
   FormControlLabel,
+  makeStyles,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -27,28 +28,48 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityLifecycleFilter } from '../../filters';
+
+/** @public */
+export type CatalogReactEntityLifecyclePickerClassKey = 'input';
+
+const useStyles = makeStyles(
+  {
+    input: {},
+  },
+  {
+    name: 'CatalogReactEntityLifecyclePicker',
+  },
+);
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/** @public */
 export const EntityLifecyclePicker = () => {
-  const {
-    updateFilters,
-    backendEntities,
-    filters,
-    queryParameters,
-  } = useEntityListProvider();
+  const classes = useStyles();
+  const { updateFilters, backendEntities, filters, queryParameters } =
+    useEntityList();
 
-  const queryParamLifecycles = [queryParameters.lifecycles]
-    .flat()
-    .filter(Boolean) as string[];
+  const queryParamLifecycles = useMemo(
+    () => [queryParameters.lifecycles].flat().filter(Boolean) as string[],
+    [queryParameters],
+  );
+
   const [selectedLifecycles, setSelectedLifecycles] = useState(
     queryParamLifecycles.length
       ? queryParamLifecycles
       : filters.lifecycles?.values ?? [],
   );
+
+  // Set selected lifecycles on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamLifecycles.length) {
+      setSelectedLifecycles(queryParamLifecycles);
+    }
+  }, [queryParamLifecycles]);
 
   useEffect(() => {
     updateFilters({
@@ -75,7 +96,7 @@ export const EntityLifecyclePicker = () => {
   return (
     <Box pb={1} pt={1}>
       <Typography variant="button">Lifecycle</Typography>
-      <Autocomplete<string>
+      <Autocomplete
         aria-label="Lifecycle"
         multiple
         options={availableLifecycles}
@@ -95,7 +116,9 @@ export const EntityLifecyclePicker = () => {
         )}
         size="small"
         popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
+        renderInput={params => (
+          <TextField {...params} className={classes.input} variant="outlined" />
+        )}
       />
     </Box>
   );

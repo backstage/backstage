@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
+/**
+ * Types and validators that help describe the model of a Backstage Catalog
+ *
+ * @packageDocumentation
+ */
+
 export * from './entity';
 export { EntityPolicies } from './EntityPolicies';
 export * from './kinds';
 export * from './location';
-export type { EntityName, EntityRef, JSONSchema } from './types';
+export type { EntityName, CompoundEntityRef } from './types';
 export * from './validation';

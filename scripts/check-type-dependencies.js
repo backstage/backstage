@@ -20,13 +20,10 @@ const { resolve: resolvePath } = require('path');
 // Cba polluting root package.json, we'll have this
 // eslint-disable-next-line import/no-extraneous-dependencies
 const chalk = require('chalk');
+const { getPackages } = require('@manypkg/get-packages');
 
 async function main() {
-  // This is from lerna, and cba polluting root package.json
-  // eslint-disable-next-line import/no-extraneous-dependencies
-  const { Project } = require('@lerna/project');
-  const project = new Project(resolvePath('.'));
-  const packages = await project.getPackages();
+  const { packages } = await getPackages(resolvePath('.'));
 
   let hadErrors = false;
 
@@ -38,7 +35,7 @@ async function main() {
     if (errors.length) {
       hadErrors = true;
       console.error(
-        `Incorrect type dependencies in ${chalk.yellow(pkg.name)}:`,
+        `Incorrect type dependencies in ${chalk.yellow(pkg.packageJson.name)}:`,
       );
       for (const error of errors) {
         if (error.name === 'WrongDepError') {
@@ -71,8 +68,8 @@ async function main() {
 function shouldCheckTypes(pkg) {
   return (
     !pkg.private &&
-    pkg.get('types') &&
-    fs.existsSync(resolvePath(pkg.location, 'dist/index.d.ts'))
+    pkg.packageJson.types &&
+    fs.existsSync(resolvePath(pkg.dir, 'dist/index.d.ts'))
   );
 }
 
@@ -82,7 +79,7 @@ function shouldCheckTypes(pkg) {
  */
 function checkTypes(pkg) {
   const typeDecl = fs.readFileSync(
-    resolvePath(pkg.location, 'dist/index.d.ts'),
+    resolvePath(pkg.dir, 'dist/index.d.ts'),
     'utf8',
   );
   const allDeps = (typeDecl.match(/from '.*'/g) || [])
@@ -114,21 +111,21 @@ function checkTypes(pkg) {
  */
 function findTypesPackage(dep, pkg) {
   try {
-    require.resolve(`@types/${dep}/package.json`, { paths: [pkg.location] });
+    require.resolve(`@types/${dep}/package.json`, { paths: [pkg.dir] });
     return `@types/${dep}`;
   } catch {
     try {
-      require.resolve(dep, { paths: [pkg.location] });
+      require.resolve(dep, { paths: [pkg.dir] });
       return undefined;
     } catch {
       try {
         // Some type-only modules don't have a working main field, so try resolving package.json too
-        require.resolve(`${dep}/package.json`, { paths: [pkg.location] });
+        require.resolve(`${dep}/package.json`, { paths: [pkg.dir] });
         return undefined;
       } catch {
         try {
           // Finally check if it's just a .d.ts file
-          require.resolve(`${dep}.d.ts`, { paths: [pkg.location] });
+          require.resolve(`${dep}.d.ts`, { paths: [pkg.dir] });
           return undefined;
         } catch {
           throw mkErr('MissingDepError', `No types for ${dep}`, { dep });
@@ -142,8 +139,11 @@ function findTypesPackage(dep, pkg) {
  * Figures out what type dependencies are missing, or should be moved between dep types
  */
 function findTypeDepErrors(typeDeps, pkg) {
-  const devDeps = mkTypeDepSet(pkg.get('devDependencies'));
-  const deps = mkTypeDepSet(pkg.get('dependencies'));
+  const devDeps = mkTypeDepSet(pkg.packageJson.devDependencies);
+  const deps = mkTypeDepSet({
+    ...pkg.packageJson.dependencies,
+    ...pkg.packageJson.peerDependencies,
+  });
 
   const errors = [];
   for (const typeDep of typeDeps) {

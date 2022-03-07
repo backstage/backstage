@@ -19,7 +19,7 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { SearchResult } from '@backstage/search-common';
+import { SearchResult } from '@backstage/plugin-search-common';
 import React from 'react';
 import { useSearch } from '../SearchContext';
 
@@ -27,7 +27,7 @@ type Props = {
   children: (results: { results: SearchResult[] }) => JSX.Element;
 };
 
-const SearchResultComponent = ({ children }: Props) => {
+export const SearchResultComponent = ({ children }: Props) => {
   const {
     result: { loading, error, value },
   } = useSearch();
@@ -48,7 +48,7 @@ const SearchResultComponent = ({ children }: Props) => {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
-  return children({ results: value.results });
+  return <>{children({ results: value.results })}</>;
 };
 
 export { SearchResultComponent as SearchResult };

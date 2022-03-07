@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * A Backstage plugin that helps you manage projects in GCP
+ *
+ * @packageDocumentation
+ */
+
 export {
   gcpProjectsPlugin,
   gcpProjectsPlugin as plugin,

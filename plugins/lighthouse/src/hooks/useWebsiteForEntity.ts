@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../../constants';
 import { lighthouseApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
@@ -27,9 +27,10 @@ export const useWebsiteForEntity = () => {
     entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION] ?? '';
   const lighthouseApi = useApi(lighthouseApiRef);
   const errorApi = useApi(errorApiRef);
-  const response = useAsync(() => lighthouseApi.getWebsiteByUrl(websiteUrl), [
-    websiteUrl,
-  ]);
+  const response = useAsync(
+    () => lighthouseApi.getWebsiteByUrl(websiteUrl),
+    [websiteUrl],
+  );
   if (response.error) {
     errorApi.post(response.error);
   }

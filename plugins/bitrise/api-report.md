@@ -22,6 +22,4 @@ export const EntityBitriseContent: () => JSX.Element;
 //
 // @public (undocumented)
 export const isBitriseAvailable: (entity: Entity) => boolean;
-
-// (No @packageDocumentation comment for this package)
 ```

@@ -16,12 +16,13 @@
 
 import type { ApiRef } from './types';
 
+/**
+ * API reference configuration - holds an ID of the referenced API.
+ *
+ * @public
+ */
 export type ApiRefConfig = {
   id: string;
-  /**
-   * @deprecated Will be removed in the future
-   */
-  description?: string;
 };
 
 class ApiRefImpl<T> implements ApiRef<T> {
@@ -41,12 +42,6 @@ class ApiRefImpl<T> implements ApiRef<T> {
     return this.config.id;
   }
 
-  get description() {
-    // eslint-disable-next-line no-console
-    console.warn('Deprecated use of ApiRef.description');
-    return this.config.description;
-  }
-
   // Utility for getting type of an api, using `typeof apiRef.T`
   get T(): T {
     throw new Error(`tried to read ApiRef.T of ${this}`);
@@ -57,6 +52,13 @@ class ApiRefImpl<T> implements ApiRef<T> {
   }
 }
 
+/**
+ * Creates a reference to an API.
+ *
+ * @param config - The descriptor of the API to reference.
+ * @returns An API reference.
+ * @public
+ */
 export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> {
   return new ApiRefImpl<T>(config);
 }

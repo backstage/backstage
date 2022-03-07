@@ -42,7 +42,8 @@ const entity = (name?: string) =>
     relations: [
       {
         type: RELATION_OWNED_BY,
-        target: { kind: 'Group', namespace: 'default', name },
+        targetRef: `group:default/${name}`,
+        target: { kind: 'group', namespace: 'default', name },
       },
     ],
   } as Entity);
@@ -135,7 +136,7 @@ createDevApp()
     api: catalogApiRef,
     deps: {},
     factory: () =>
-      (({
+      ({
         getEntities: async () => {
           await new Promise(r => setTimeout(r, 1000));
 
@@ -148,7 +149,7 @@ createDevApp()
             ],
           };
         },
-      } as Partial<CatalogApi>) as any),
+      } as Partial<CatalogApi> as any),
   })
   .addPage({
     title: 'Entity Content',

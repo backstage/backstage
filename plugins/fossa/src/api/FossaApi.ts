@@ -26,14 +26,13 @@ export interface FindingSummary {
 
 export const fossaApiRef = createApiRef<FossaApi>({
   id: 'plugin.fossa.service',
-  description: 'Used by the Fossa plugin to make requests',
 });
 
 export type FossaApi = {
   /**
    * Get the finding summary for a list of projects
    *
-   * @param projectTitles a list of project titles in FOSSA
+   * @param projectTitles - a list of project titles in FOSSA
    */
   getFindingSummaries(
     projectTitles: Array<string>,
@@ -42,7 +41,7 @@ export type FossaApi = {
   /**
    * Get the finding summary of a single project.
    *
-   * @param projectTitle the project title in FOSSA
+   * @param projectTitle - the project title in FOSSA
    */
   getFindingSummary(projectTitle: string): Promise<FindingSummary | undefined>;
 };

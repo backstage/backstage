@@ -1,0 +1,9 @@
+---
+title: Shortcuts
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Utility
+description: The shortcuts plugin allows a user to have easy access to pages within a Backstage app by storing them as "shortcuts" in the Sidebar.
+documentation: https://github.com/backstage/backstage/blob/master/plugins/shortcuts/README.md
+iconUrl: img/shortcuts.svg
+npmPackageName: '@backstage/plugin-shortcuts'

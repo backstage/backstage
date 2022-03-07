@@ -26,12 +26,18 @@ describe('LinkedPackageResolvePlugin', () => {
       path.resolve(root, 'repo/node_modules'),
       [
         {
-          name: 'a',
-          location: path.resolve(root, 'external-a'),
+          dir: path.resolve(root, 'external-a'),
+          packageJson: {
+            name: 'a',
+            version: '1.0.0',
+          },
         },
         {
-          name: '@s/b',
-          location: path.resolve(root, 'external-b'),
+          dir: path.resolve(root, 'external-b'),
+          packageJson: {
+            name: '@s/b',
+            version: '1.0.0',
+          },
         },
       ],
     );

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import { EntityRef } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { JenkinsInfo } from './jenkinsInfoProvider';
 
 export interface ServerOptions {
@@ -35,7 +35,9 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     jenkinsInfoProvider: {
-      async getInstance(_: { entityRef: EntityRef }): Promise<JenkinsInfo> {
+      async getInstance(_: {
+        entityRef: CompoundEntityRef;
+      }): Promise<JenkinsInfo> {
         return { baseUrl: 'https://example.com/', jobFullName: 'build-foo' };
       },
     },

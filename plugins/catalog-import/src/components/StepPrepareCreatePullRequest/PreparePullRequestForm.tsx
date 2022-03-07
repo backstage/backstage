@@ -16,23 +16,28 @@
 
 import React from 'react';
 import {
+  FormProvider,
   SubmitHandler,
   UnpackNestedValue,
   useForm,
-  UseFormMethods,
-  UseFormOptions,
+  UseFormProps,
+  UseFormReturn,
 } from 'react-hook-form';
 
-type Props<TFieldValues extends Record<string, any>> = Pick<
-  UseFormOptions<TFieldValues>,
-  'defaultValues'
-> & {
+/**
+ * Props for {@link PreparePullRequestForm}.
+ *
+ * @public
+ */
+export type PreparePullRequestFormProps<
+  TFieldValues extends Record<string, any>,
+> = Pick<UseFormProps<TFieldValues>, 'defaultValues'> & {
   onSubmit: SubmitHandler<TFieldValues>;
 
   render: (
     props: Pick<
-      UseFormMethods<TFieldValues>,
-      'errors' | 'register' | 'control'
+      UseFormReturn<TFieldValues>,
+      'formState' | 'register' | 'control' | 'setValue'
     > & {
       values: UnpackNestedValue<TFieldValues>;
     },
@@ -43,29 +48,28 @@ type Props<TFieldValues extends Record<string, any>> = Pick<
  * A form wrapper that creates a form that is used to prepare a pull request. It
  * hosts the form logic.
  *
- * @param defaultValues the default values of the form
- * @param onSubmit a callback that is executed when the form is submitted
+ * @param defaultValues - the default values of the form
+ * @param onSubmit - a callback that is executed when the form is submitted
  *   (initiated by a button of type="submit")
- * @param render render the form elements
+ * @param render - render the form elements
+ * @public
  */
 export const PreparePullRequestForm = <
-  TFieldValues extends Record<string, any>
->({
-  defaultValues,
-  onSubmit,
-  render,
-}: Props<TFieldValues>) => {
-  const {
-    handleSubmit,
-    watch,
-    control,
-    register,
-    errors,
-  } = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+  TFieldValues extends Record<string, any>,
+>(
+  props: PreparePullRequestFormProps<TFieldValues>,
+) => {
+  const { defaultValues, onSubmit, render } = props;
+
+  const methods = useForm<TFieldValues>({ mode: 'onTouched', defaultValues });
+  const { handleSubmit, watch, control, register, formState, setValue } =
+    methods;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {render({ values: watch(), errors, register, control })}
-    </form>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {render({ values: watch(), formState, register, control, setValue })}
+      </form>
+    </FormProvider>
   );
 };

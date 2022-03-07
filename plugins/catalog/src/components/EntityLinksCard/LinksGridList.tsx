@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-import { GridList, GridListTile } from '@material-ui/core';
+import { ImageList, ImageListItem } from '@material-ui/core';
 import React from 'react';
 import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';
 import { useDynamicColumns } from './useDynamicColumns';
 import { IconComponent } from '@backstage/core-plugin-api';
 
-export type LinksGridListItem = {
+export interface LinksGridListItem {
   href: string;
   text?: string;
   Icon?: IconComponent;
-};
+}
 
-type Props = {
+interface LinksGridListProps {
   items: LinksGridListItem[];
   cols?: ColumnBreakpoints | number;
-};
+}
 
-export const LinksGridList = ({ items, cols = undefined }: Props) => {
+export function LinksGridList(props: LinksGridListProps) {
+  const { items, cols = undefined } = props;
   const numOfCols = useDynamicColumns(cols);
 
   return (
-    <GridList cellHeight="auto" cols={numOfCols}>
+    <ImageList rowHeight="auto" cols={numOfCols}>
       {items.map(({ text, href, Icon }, i) => (
-        <GridListTile key={i}>
+        <ImageListItem key={i}>
           <IconLink href={href} text={text ?? href} Icon={Icon} />
-        </GridListTile>
+        </ImageListItem>
       ))}
-    </GridList>
+    </ImageList>
   );
-};
+}

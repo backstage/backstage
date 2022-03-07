@@ -16,14 +16,15 @@
 import React from 'react';
 import { FeatureFlagged } from './FeatureFlagged';
 import { render } from '@testing-library/react';
-import { ApiProvider, ApiRegistry, LocalStorageFeatureFlags } from '../apis';
+import { LocalStorageFeatureFlags } from '../apis';
+import { TestApiProvider } from '@backstage/test-utils';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-  <ApiProvider apis={ApiRegistry.with(featureFlagsApiRef, mockFeatureFlagsApi)}>
+  <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
-  </ApiProvider>
+  </TestApiProvider>
 );
 
 describe('FeatureFlagged', () => {

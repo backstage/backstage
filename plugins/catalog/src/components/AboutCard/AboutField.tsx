@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { useElementFilter } from '@backstage/core-plugin-api';
+import { Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { makeStyles, Typography, Grid } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   value: {
@@ -35,24 +36,34 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type Props = {
+/**
+ * Props for {@link AboutField}.
+ *
+ * @public
+ */
+export interface AboutFieldProps {
   label: string;
   value?: string;
   gridSizes?: Record<string, number>;
   children?: React.ReactNode;
-};
+}
 
-export const AboutField = ({ label, value, gridSizes, children }: Props) => {
+/** @public */
+export function AboutField(props: AboutFieldProps) {
+  const { label, value, gridSizes, children } = props;
   const classes = useStyles();
 
+  const childElements = useElementFilter(children, c => c.getElements());
+
   // Content is either children or a string prop `value`
-  const content = React.Children.count(children) ? (
-    children
-  ) : (
-    <Typography variant="body2" className={classes.value}>
-      {value || `unknown`}
-    </Typography>
-  );
+  const content =
+    childElements.length > 0 ? (
+      childElements
+    ) : (
+      <Typography variant="body2" className={classes.value}>
+        {value || `unknown`}
+      </Typography>
+    );
   return (
     <Grid item {...gridSizes}>
       <Typography variant="subtitle2" className={classes.label}>
@@ -61,4 +72,4 @@ export const AboutField = ({ label, value, gridSizes, children }: Props) => {
       {content}
     </Grid>
   );
-};
+}

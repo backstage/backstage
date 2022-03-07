@@ -27,10 +27,22 @@ describe('simplifyMkdocsFooter', () => {
       },
     );
 
-    expect(shadowDom.querySelector('.md-footer-copyright')).toBeTruthy();
+    expect(shadowDom.querySelector('.md-footer .md-copyright')).toBeTruthy();
   });
 
-  it('does remove mkdocs copyright', async () => {
+  it('does remove new mkdocs copyright', async () => {
+    const shadowDom = await createTestShadowDom(
+      FIXTURES.FIXTURE_STANDARD_PAGE,
+      {
+        preTransformers: [simplifyMkdocsFooter()],
+        postTransformers: [],
+      },
+    );
+
+    expect(shadowDom.querySelector('.md-footer .md-copyright')).toBeFalsy();
+  });
+
+  it('does remove old mkdocs copyright', async () => {
     const shadowDom = await createTestShadowDom(
       FIXTURES.FIXTURE_STANDARD_PAGE,
       {

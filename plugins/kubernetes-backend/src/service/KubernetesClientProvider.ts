@@ -15,11 +15,9 @@
  */
 
 import {
-  AppsV1Api,
-  AutoscalingV1Api,
   CoreV1Api,
   KubeConfig,
-  NetworkingV1beta1Api,
+  Metrics,
   CustomObjectsApi,
 } from '@kubernetes/client-node';
 import { ClusterDetails } from '../types/types';
@@ -31,6 +29,7 @@ export class KubernetesClientProvider {
       name: clusterDetails.name,
       server: clusterDetails.url,
       skipTLSVerify: clusterDetails.skipTLSVerify,
+      caData: clusterDetails.caData,
     };
 
     // TODO configure
@@ -46,12 +45,17 @@ export class KubernetesClientProvider {
     };
 
     const kc = new KubeConfig();
-    kc.loadFromOptions({
-      clusters: [cluster],
-      users: [user],
-      contexts: [context],
-      currentContext: context.name,
-    });
+    if (clusterDetails.serviceAccountToken) {
+      kc.loadFromOptions({
+        clusters: [cluster],
+        users: [user],
+        contexts: [context],
+        currentContext: context.name,
+      });
+    } else {
+      kc.loadFromDefault();
+    }
+
     return kc;
   }
 
@@ -61,22 +65,10 @@ export class KubernetesClientProvider {
     return kc.makeApiClient(CoreV1Api);
   }
 
-  getAppsClientByClusterDetails(clusterDetails: ClusterDetails) {
+  getMetricsClient(clusterDetails: ClusterDetails) {
     const kc = this.getKubeConfig(clusterDetails);
 
-    return kc.makeApiClient(AppsV1Api);
-  }
-
-  getAutoscalingClientByClusterDetails(clusterDetails: ClusterDetails) {
-    const kc = this.getKubeConfig(clusterDetails);
-
-    return kc.makeApiClient(AutoscalingV1Api);
-  }
-
-  getNetworkingBeta1Client(clusterDetails: ClusterDetails) {
-    const kc = this.getKubeConfig(clusterDetails);
-
-    return kc.makeApiClient(NetworkingV1beta1Api);
+    return new Metrics(kc);
   }
 
   getCustomObjectsClient(clusterDetails: ClusterDetails) {

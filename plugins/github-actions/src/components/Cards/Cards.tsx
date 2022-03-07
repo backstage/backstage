@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   LinearProgress,
-  Link,
   makeStyles,
   Theme,
   Typography,
 } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import React, { useEffect } from 'react';
-import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
+import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunsTable } from '../WorkflowRunsTable';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
@@ -34,6 +32,7 @@ import { configApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   InfoCard,
   InfoCardVariants,
+  Link,
   StructuredMetadataTable,
 } from '@backstage/core-components';
 
@@ -71,7 +70,7 @@ const WidgetContent = ({
         ),
         message: lastRun.message,
         url: (
-          <Link href={lastRun.githubUrl} target="_blank">
+          <Link to={lastRun.githubUrl ?? ''}>
             See more on GitHub{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>
@@ -122,8 +121,6 @@ export const LatestWorkflowRunCard = ({
 };
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   branch: string;
   variant?: InfoCardVariants;
 };

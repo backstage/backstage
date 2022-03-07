@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   GroupEntity,
-  RELATION_MEMBER_OF,
   UserEntity,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -28,21 +28,21 @@ import {
   Box,
   createStyles,
   Grid,
-  Link,
   makeStyles,
   Theme,
   Typography,
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
-import { useAsync } from 'react-use';
+import { generatePath } from 'react-router-dom';
+import useAsync from 'react-use/lib/useAsync';
 
 import {
   Avatar,
   InfoCard,
   Progress,
   ResponseErrorPanel,
+  Link,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -90,7 +90,6 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
           <Box pt={2} textAlign="center">
             <Typography variant="h5">
               <Link
-                component={RouterLink}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
                   entityRouteParams(member),
@@ -99,7 +98,9 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
                 {displayName}
               </Link>
             </Typography>
-            <Typography variant="caption">{profile?.email}</Typography>
+            {profile?.email && (
+              <Link to={`mailto:${profile.email}`}>{profile.email}</Link>
+            )}
           </Box>
         </Box>
       </Box>
@@ -108,10 +109,11 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
 };
 
 export const MembersListCard = (_props: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: GroupEntity;
+  memberDisplayTitle?: string;
+  pageSize?: number;
 }) => {
   const { entity: groupEntity } = useEntity<GroupEntity>();
+  let { memberDisplayTitle, pageSize } = _props;
   const {
     metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
@@ -120,30 +122,34 @@ export const MembersListCard = (_props: {
 
   const displayName = profile?.displayName ?? groupName;
 
-  const groupNamespace = grpNamespace || ENTITY_DEFAULT_NAMESPACE;
+  const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
   const [page, setPage] = React.useState(1);
   const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
-  const pageSize = 50;
+  pageSize = pageSize ? pageSize : 50;
+  memberDisplayTitle = memberDisplayTitle ? memberDisplayTitle : 'Members';
 
-  const { loading, error, value: members } = useAsync(async () => {
+  const {
+    loading,
+    error,
+    value: members,
+  } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
-      filter: { kind: 'User' },
+      filter: {
+        kind: 'User',
+        'relations.memberof': [
+          stringifyEntityRef({
+            kind: 'group',
+            namespace: groupNamespace.toLocaleLowerCase('en-US'),
+            name: groupName.toLocaleLowerCase('en-US'),
+          }),
+        ],
+      },
     });
-    const groupMembersList = (membersList.items as UserEntity[]).filter(
-      member =>
-        member?.relations?.some(
-          r =>
-            r.type === RELATION_MEMBER_OF &&
-            r.target.name.toLocaleLowerCase('en-US') ===
-              groupName.toLocaleLowerCase('en-US') &&
-            r.target.namespace.toLocaleLowerCase('en-US') ===
-              groupNamespace.toLocaleLowerCase('en-US'),
-        ),
-    );
-    return groupMembersList;
+
+    return membersList.items as UserEntity[];
   }, [catalogApi, groupEntity]);
 
   if (loading) {
@@ -168,9 +174,11 @@ export const MembersListCard = (_props: {
   return (
     <Grid item>
       <InfoCard
-        title={`Members (${members?.length || 0}${paginationLabel})`}
+        title={`${memberDisplayTitle} (${
+          members?.length || 0
+        }${paginationLabel})`}
         subheader={`of ${displayName}`}
-        actions={pagination}
+        {...(nbPages <= 1 ? {} : { actions: pagination })}
       >
         <Grid container spacing={3}>
           {members && members.length > 0 ? (
@@ -181,7 +189,9 @@ export const MembersListCard = (_props: {
               ))
           ) : (
             <Box p={2}>
-              <Typography>This group has no members.</Typography>
+              <Typography>
+                This group has no {memberDisplayTitle.toLocaleLowerCase()}.
+              </Typography>
             </Box>
           )}
         </Grid>

@@ -34,7 +34,9 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
     },
   };
 
-  let credentialsResponse: any = new AWS.Credentials(credentials);
+  let mockedCredentials: any = undefined;
+
+  AWS.config.credentials = new AWS.Credentials(credentials);
 
   AWSMock.setSDKInstance(AWS);
 
@@ -53,19 +55,25 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
 
     const authTranslator = new AwsIamKubernetesAuthTranslator();
 
-    jest
-      .spyOn(authTranslator, 'awsGetCredentials')
-      .mockImplementation(async () => credentialsResponse);
+    if (mockedCredentials) {
+      jest
+        .spyOn(authTranslator, 'awsGetCredentials')
+        .mockImplementation(async () => mockedCredentials);
+    }
 
-    return authTranslator.decorateClusterDetailsWithAuth({
+    const response = authTranslator.decorateClusterDetailsWithAuth({
       assumeRole: role,
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
     });
+
+    mockedCredentials = undefined;
+
+    return response;
   });
 
-  it('returns a signed url for aws credentials', async () => {
+  it('returns a signed url for AWS credentials', async () => {
     // These credentials are not real.
     // Pulled from example in docs: https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
     AWS.config.credentials = new AWS.Credentials(
@@ -87,7 +95,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
     role = 'SomeRole';
 
     describe('When the role is valid', () => {
-      it('returns a signed url for aws credentials', async () => {
+      it('returns a signed url for AWS credentials', async () => {
         const subject = await get('subject');
         expect(subject.serviceAccountToken).toBeDefined();
       });
@@ -101,16 +109,20 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
     });
   });
 
-  describe('When no creds are returned from AWS', () => {
-    it('throws unable to get aws credentials', async () => {
-      credentialsResponse = new Error();
+  describe('When no AWS creds are available', () => {
+    it('throws unable to get AWS credentials', async () => {
+      mockedCredentials = new Error();
       await expect(get('subject')).rejects.toThrow('No AWS credentials found.');
     });
   });
 
-  describe('When invalid creds are returned from AWS', () => {
-    it('throws credentials are invalid to get aws credentials', async () => {
-      credentialsResponse = new AWS.Credentials(credentialsResponse);
+  describe('When invalid AWS creds are available', () => {
+    it('throws credentials are invalid to get AWS credentials', async () => {
+      const undefinedSecret: any = undefined;
+      AWS.config.credentials = new AWS.Credentials(
+        'AKIAIOSFODNN7EXAMPLE',
+        undefinedSecret,
+      );
       await expect(get('subject')).rejects.toThrow(
         'Invalid AWS credentials found.',
       );

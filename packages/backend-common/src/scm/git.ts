@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import git, {
   ProgressCallback,
   MergeResult,
@@ -31,6 +32,12 @@ From : https://isomorphic-git.org/docs/en/onAuth with fix for GitHub
 
 Azure       'notempty'      token
 */
+
+/**
+ * A convenience wrapper around the `isomorphic-git` library.
+ *
+ * @public
+ */
 export class Git {
   private constructor(
     private readonly config: {
@@ -40,44 +47,32 @@ export class Git {
     },
   ) {}
 
-  async add({
-    dir,
-    filepath,
-  }: {
-    dir: string;
-    filepath: string;
-  }): Promise<void> {
+  async add(options: { dir: string; filepath: string }): Promise<void> {
+    const { dir, filepath } = options;
     this.config.logger?.info(`Adding file {dir=${dir},filepath=${filepath}}`);
 
     return git.add({ fs, dir, filepath });
   }
 
-  async addRemote({
-    dir,
-    url,
-    remote,
-  }: {
+  async addRemote(options: {
     dir: string;
     remote: string;
     url: string;
   }): Promise<void> {
+    const { dir, url, remote } = options;
     this.config.logger?.info(
       `Creating new remote {dir=${dir},remote=${remote},url=${url}}`,
     );
     return git.addRemote({ fs, dir, remote, url });
   }
 
-  async commit({
-    dir,
-    message,
-    author,
-    committer,
-  }: {
+  async commit(options: {
     dir: string;
     message: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
   }): Promise<string> {
+    const { dir, message, author, committer } = options;
     this.config.logger?.info(
       `Committing file to repo {dir=${dir},message=${message}}`,
     );
@@ -85,15 +80,15 @@ export class Git {
     return git.commit({ fs, dir, message, author, committer });
   }
 
-  async clone({
-    url,
-    dir,
-    ref,
-  }: {
+  /** https://isomorphic-git.org/docs/en/clone */
+  async clone(options: {
     url: string;
     dir: string;
     ref?: string;
+    depth?: number;
+    noCheckout?: boolean;
   }): Promise<void> {
+    const { url, dir, ref, depth, noCheckout } = options;
     this.config.logger?.info(`Cloning repo {dir=${dir},url=${url}}`);
     return git.clone({
       fs,
@@ -102,7 +97,8 @@ export class Git {
       dir,
       ref,
       singleBranch: true,
-      depth: 1,
+      depth: depth ?? 1,
+      noCheckout,
       onProgress: this.onProgressHandler(),
       headers: {
         'user-agent': 'git/@isomorphic-git',
@@ -111,52 +107,36 @@ export class Git {
     });
   }
 
-  // https://isomorphic-git.org/docs/en/currentBranch
-  async currentBranch({
-    dir,
-    fullName,
-  }: {
+  /** https://isomorphic-git.org/docs/en/currentBranch */
+  async currentBranch(options: {
     dir: string;
     fullName?: boolean;
   }): Promise<string | undefined> {
-    const fullname = fullName ?? false;
-    return git.currentBranch({ fs, dir, fullname }) as Promise<
+    const { dir, fullName = false } = options;
+    return git.currentBranch({ fs, dir, fullname: fullName }) as Promise<
       string | undefined
     >;
   }
 
-  // https://isomorphic-git.org/docs/en/fetch
-  async fetch({
-    dir,
-    remote,
-  }: {
-    dir: string;
-    remote?: string;
-  }): Promise<void> {
-    const remoteValue = remote ?? 'origin';
+  /** https://isomorphic-git.org/docs/en/fetch */
+  async fetch(options: { dir: string; remote?: string }): Promise<void> {
+    const { dir, remote = 'origin' } = options;
     this.config.logger?.info(
-      `Fetching remote=${remoteValue} for repository {dir=${dir}}`,
+      `Fetching remote=${remote} for repository {dir=${dir}}`,
     );
     await git.fetch({
       fs,
       http,
       dir,
-      remote: remoteValue,
+      remote,
       onProgress: this.onProgressHandler(),
-      headers: {
-        'user-agent': 'git/@isomorphic-git',
-      },
+      headers: { 'user-agent': 'git/@isomorphic-git' },
       onAuth: this.onAuth,
     });
   }
 
-  async init({
-    dir,
-    defaultBranch = 'master',
-  }: {
-    dir: string;
-    defaultBranch?: string;
-  }): Promise<void> {
+  async init(options: { dir: string; defaultBranch?: string }): Promise<void> {
+    const { dir, defaultBranch = 'master' } = options;
     this.config.logger?.info(`Init git repository {dir=${dir}}`);
 
     return git.init({
@@ -166,20 +146,15 @@ export class Git {
     });
   }
 
-  // https://isomorphic-git.org/docs/en/merge
-  async merge({
-    dir,
-    theirs,
-    ours,
-    author,
-    committer,
-  }: {
+  /** https://isomorphic-git.org/docs/en/merge */
+  async merge(options: {
     dir: string;
     theirs: string;
     ours?: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
   }): Promise<MergeResult> {
+    const { dir, theirs, ours, author, committer } = options;
     this.config.logger?.info(
       `Merging branch '${theirs}' into '${ours}' for repository {dir=${dir}}`,
     );
@@ -195,7 +170,8 @@ export class Git {
     });
   }
 
-  async push({ dir, remote }: { dir: string; remote: string }) {
+  async push(options: { dir: string; remote: string }) {
+    const { dir, remote } = options;
     this.config.logger?.info(
       `Pushing directory to remote {dir=${dir},remote=${remote}}`,
     );
@@ -212,26 +188,32 @@ export class Git {
     });
   }
 
-  // https://isomorphic-git.org/docs/en/readCommit
-  async readCommit({
-    dir,
-    sha,
-  }: {
+  /** https://isomorphic-git.org/docs/en/readCommit */
+  async readCommit(options: {
     dir: string;
     sha: string;
   }): Promise<ReadCommitResult> {
+    const { dir, sha } = options;
     return git.readCommit({ fs, dir, oid: sha });
   }
 
-  // https://isomorphic-git.org/docs/en/resolveRef
-  async resolveRef({
-    dir,
-    ref,
-  }: {
-    dir: string;
-    ref: string;
-  }): Promise<string> {
+  /** https://isomorphic-git.org/docs/en/resolveRef */
+  async resolveRef(options: { dir: string; ref: string }): Promise<string> {
+    const { dir, ref } = options;
     return git.resolveRef({ fs, dir, ref });
+  }
+
+  /** https://isomorphic-git.org/docs/en/log */
+  async log(options: {
+    dir: string;
+    ref?: string;
+  }): Promise<ReadCommitResult[]> {
+    const { dir, ref } = options;
+    return git.log({
+      fs,
+      dir,
+      ref: ref ?? 'HEAD',
+    });
   }
 
   private onAuth = () => ({
@@ -254,13 +236,12 @@ export class Git {
     };
   };
 
-  static fromAuth = ({
-    username,
-    password,
-    logger,
-  }: {
+  static fromAuth = (options: {
     username?: string;
     password?: string;
     logger?: Logger;
-  }) => new Git({ username, password, logger });
+  }) => {
+    const { username, password, logger } = options;
+    return new Git({ username, password, logger });
+  };
 }

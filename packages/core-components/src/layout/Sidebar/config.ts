@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createContext } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
 
 const drawerWidthClosed = 72;
 const iconPadding = 24;
@@ -25,7 +25,7 @@ export const sidebarConfig = {
   drawerWidthOpen: 224,
   // As per NN/g's guidance on timing for exposing hidden content
   // See https://www.nngroup.com/articles/timing-exposing-content/
-  defaultOpenDelayMs: 300,
+  defaultOpenDelayMs: 100,
   defaultCloseDelayMs: 0,
   defaultFadeDuration: 200,
   logoHeight: 32,
@@ -35,15 +35,41 @@ export const sidebarConfig = {
   selectedIndicatorWidth: 3,
   userBadgePadding,
   userBadgeDiameter: drawerWidthClosed - userBadgePadding * 2,
+  mobileSidebarHeight: 56,
+};
+
+export const submenuConfig = {
+  drawerWidthClosed: 0,
+  drawerWidthOpen: 202,
+  defaultOpenDelayMs: sidebarConfig.defaultOpenDelayMs + 200,
 };
 
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
 
+/**
+ * Types for the `SidebarContext`
+ */
 export type SidebarContextType = {
   isOpen: boolean;
+  setOpen: (open: boolean) => void;
 };
 
+/**
+ * Context wether the `Sidebar` is open
+ */
 export const SidebarContext = createContext<SidebarContextType>({
   isOpen: false,
+  setOpen: () => {},
 });
+
+export type SidebarItemWithSubmenuContextType = {
+  isHoveredOn: boolean;
+  setIsHoveredOn: Dispatch<SetStateAction<boolean>>;
+};
+
+export const SidebarItemWithSubmenuContext =
+  createContext<SidebarItemWithSubmenuContextType>({
+    isHoveredOn: false,
+    setIsHoveredOn: () => {},
+  });

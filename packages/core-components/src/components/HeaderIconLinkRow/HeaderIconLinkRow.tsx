@@ -13,25 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
-import { makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles(theme => ({
-  links: {
-    margin: theme.spacing(2, 0),
-    display: 'grid',
-    gridAutoFlow: 'column',
-    gridAutoColumns: 'min-content',
-    gridGap: theme.spacing(3),
-  },
-}));
+/** @public */
+export type HeaderIconLinkRowClassKey = 'links';
+
+const useStyles = makeStyles(
+  theme => ({
+    links: {
+      margin: theme.spacing(2, 0),
+      display: 'grid',
+      gridAutoFlow: 'column',
+      gridAutoColumns: 'min-content',
+      gridGap: theme.spacing(3),
+    },
+  }),
+  { name: 'BackstageHeaderIconLinkRow' },
+);
 
 type Props = {
   links: IconLinkVerticalProps[];
 };
 
-export const HeaderIconLinkRow = ({ links }: Props) => {
+/**
+ * HTML nav tag with links mapped inside
+ *
+ * @public
+ *
+ */
+export function HeaderIconLinkRow(props: Props) {
+  const { links } = props;
   const classes = useStyles();
   return (
     <nav className={classes.links}>
@@ -40,4 +53,4 @@ export const HeaderIconLinkRow = ({ links }: Props) => {
       ))}
     </nav>
   );
-};
+}

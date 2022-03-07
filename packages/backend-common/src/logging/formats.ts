@@ -31,6 +31,11 @@ const coloredTemplate = (info: TransformableInfo) => {
   return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;
 };
 
+/**
+ * A logging format that adds coloring to console output.
+ *
+ * @public
+ */
 export const coloredFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.colorize({

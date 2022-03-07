@@ -15,12 +15,18 @@
  */
 
 import { readdir, stat } from 'fs-extra';
-import { relative, resolve } from 'path';
+import { relative, join } from 'path';
 import { createTemplateAction } from '../../createTemplateAction';
 
 /**
+ * Writes a message into the log or lists all files in the workspace
+ *
+ * @remarks
+ *
  * This task is useful for local development and testing of both the scaffolder
  * and scaffolder templates.
+ *
+ * @public
  */
 export function createDebugLogAction() {
   return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({
@@ -39,10 +45,15 @@ export function createDebugLogAction() {
             title: 'List all files in the workspace, if true.',
             type: 'boolean',
           },
+          extra: {
+            title: 'Extra info',
+          },
         },
       },
     },
     async handler(ctx) {
+      ctx.logger.info(JSON.stringify(ctx.input, null, 2));
+
       if (ctx.input?.message) {
         ctx.logStream.write(ctx.input.message);
       }
@@ -63,7 +74,7 @@ export async function recursiveReadDir(dir: string): Promise<string[]> {
   const subdirs = await readdir(dir);
   const files = await Promise.all(
     subdirs.map(async subdir => {
-      const res = resolve(dir, subdir);
+      const res = join(dir, subdir);
       return (await stat(res)).isDirectory() ? recursiveReadDir(res) : [res];
     }),
   );

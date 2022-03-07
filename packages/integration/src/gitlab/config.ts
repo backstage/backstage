@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { trimEnd } from 'lodash';
 import { isValidHost, isValidUrl } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
@@ -22,16 +23,18 @@ const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
 
 /**
  * The configuration parameters for a single GitLab integration.
+ *
+ * @public
  */
 export type GitLabIntegrationConfig = {
   /**
-   * The host of the target that this matches on, e.g. "gitlab.com".
+   * The host of the target that this matches on, e.g. `gitlab.com`.
    */
   host: string;
 
   /**
    * The base URL of the API of this provider, e.g.
-   * "https://gitlab.com/api/v4", with no trailing slash.
+   * `https://gitlab.com/api/v4`, with no trailing slash.
    *
    * May be omitted specifically for public GitLab; then it will be deduced.
    */
@@ -45,10 +48,10 @@ export type GitLabIntegrationConfig = {
   token?: string;
 
   /**
-   * The baseUrl of this provider, e.g. "https://gitlab.com", which is passed
+   * The baseUrl of this provider, e.g. `https://gitlab.com`, which is passed
    * into the GitLab client.
    *
-   * If no baseUrl is provided, it will default to https://${host}
+   * If no baseUrl is provided, it will default to `https://${host}`
    */
   baseUrl: string;
 };
@@ -56,7 +59,8 @@ export type GitLabIntegrationConfig = {
 /**
  * Reads a single GitLab integration config.
  *
- * @param config The config object of a single integration
+ * @param config - The config object of a single integration
+ * @public
  */
 export function readGitLabIntegrationConfig(
   config: Config,
@@ -67,22 +71,18 @@ export function readGitLabIntegrationConfig(
   let baseUrl = config.getOptionalString('baseUrl');
 
   if (apiBaseUrl) {
-    apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
+    apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else if (host === GITLAB_HOST) {
     apiBaseUrl = GITLAB_API_BASE_URL;
   }
 
   if (baseUrl) {
-    baseUrl = baseUrl.replace(/\/+$/, '');
+    baseUrl = trimEnd(baseUrl, '/');
   } else {
     baseUrl = `https://${host}`;
   }
 
-  if (host.includes(':')) {
-    throw new Error(
-      `Invalid GitLab integration config, host '${host}' should just be the host name (e.g. "github.com"), not a URL`,
-    );
-  } else if (!isValidHost(host)) {
+  if (!isValidHost(host)) {
     throw new Error(
       `Invalid GitLab integration config, '${host}' is not a valid host`,
     );
@@ -103,7 +103,8 @@ export function readGitLabIntegrationConfig(
  * Reads a set of GitLab integration configs, and inserts some defaults for
  * public GitLab if not specified.
  *
- * @param configs All of the integration config objects
+ * @param configs - All of the integration config objects
+ * @public
  */
 export function readGitLabIntegrationConfigs(
   configs: Config[],

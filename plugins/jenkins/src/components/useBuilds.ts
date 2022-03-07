@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { useState } from 'react';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { jenkinsApiRef } from '../api';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { getEntityName } from '@backstage/catalog-model';
+import { getCompoundEntityRef } from '@backstage/catalog-model';
 
 export enum ErrorType {
   CONNECTION_ERROR,
@@ -33,7 +33,7 @@ export enum ErrorType {
  */
 export function useBuilds({ branch }: { branch?: string } = {}) {
   const { entity } = useEntity();
-  const entityName = getEntityName(entity);
+  const entityName = getCompoundEntityRef(entity);
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -53,10 +53,14 @@ export function useBuilds({ branch }: { branch?: string } = {}) {
     }
   };
 
-  const { loading, value: projects, retry } = useAsyncRetry(async () => {
+  const {
+    loading,
+    value: projects,
+    retry,
+  } = useAsyncRetry(async () => {
     try {
       const build = await api.getProjects({
-        entity: getEntityName(entity),
+        entity: getCompoundEntityRef(entity),
         filter: { branch },
       });
 

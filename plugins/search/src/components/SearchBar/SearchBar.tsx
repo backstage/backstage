@@ -14,54 +14,171 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useState } from 'react';
-import { useDebounce } from 'react-use';
-import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
+import useDebounce from 'react-use/lib/useDebounce';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  InputBase,
+  InputBaseProps,
+  InputAdornment,
+  IconButton,
+} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
-import { useSearch } from '../SearchContext';
+import {
+  SearchContext,
+  SearchContextProvider,
+  useSearch,
+} from '../SearchContext';
+import { TrackSearch } from '../SearchTracker';
 
-type Props = {
-  className?: string;
+/**
+ * Props for {@link SearchBarBase}.
+ *
+ * @public
+ */
+export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   debounceTime?: number;
+  clearButton?: boolean;
+  onClear?: () => void;
+  onSubmit?: () => void;
+  onChange: (value: string) => void;
 };
 
-export const SearchBar = ({ className, debounceTime = 0 }: Props) => {
-  const { term, setTerm } = useSearch();
-  const [value, setValue] = useState<string>(term);
+const useSearchContextCheck = () => {
+  const context = useContext(SearchContext);
+  return context !== undefined;
+};
 
-  useDebounce(() => setTerm(value), debounceTime, [value]);
+/**
+ * All search boxes exported by the search plugin are based on the <SearchBarBase />,
+ * and this one is based on the <InputBase /> component from Material UI.
+ * Recommended if you don't use Search Provider or Search Context.
+ *
+ * @public
+ */
+export const SearchBarBase = ({
+  onChange,
+  onKeyDown,
+  onSubmit,
+  debounceTime = 200,
+  clearButton = true,
+  fullWidth = true,
+  value: defaultValue,
+  inputProps: defaultInputProps = {},
+  endAdornment: defaultEndAdornment,
+  ...props
+}: SearchBarBaseProps) => {
+  const configApi = useApi(configApiRef);
+  const [value, setValue] = useState<string>(defaultValue as string);
+  const hasSearchContext = useSearchContextCheck();
 
-  const handleQuery = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
+  useEffect(() => {
+    setValue(prevValue =>
+      prevValue !== defaultValue ? (defaultValue as string) : prevValue,
+    );
+  }, [defaultValue]);
 
-  const handleClear = () => setValue('');
+  useDebounce(() => onChange(value), debounceTime, [value]);
 
-  return (
-    <InputBase
-      className={className}
-      data-testid="search-bar-next"
-      fullWidth
-      placeholder="Search in Backstage"
-      value={value}
-      onChange={handleQuery}
-      inputProps={{ 'aria-label': 'Search term' }}
-      startAdornment={
-        <InputAdornment position="start">
-          <IconButton aria-label="Query term" disabled>
-            <SearchIcon />
-          </IconButton>
-        </InputAdornment>
-      }
-      endAdornment={
-        <InputAdornment position="end">
-          <IconButton aria-label="Clear term" onClick={handleClear}>
-            <ClearButton />
-          </IconButton>
-        </InputAdornment>
-      }
-    />
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    },
+    [setValue],
   );
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (onKeyDown) onKeyDown(e);
+      if (onSubmit && e.key === 'Enter') {
+        onSubmit();
+      }
+    },
+    [onKeyDown, onSubmit],
+  );
+
+  const handleClear = useCallback(() => {
+    onChange('');
+  }, [onChange]);
+
+  const placeholder = `Search in ${
+    configApi.getOptionalString('app.title') || 'Backstage'
+  }`;
+
+  const startAdornment = (
+    <InputAdornment position="start">
+      <IconButton aria-label="Query" disabled>
+        <SearchIcon />
+      </IconButton>
+    </InputAdornment>
+  );
+
+  const endAdornment = (
+    <InputAdornment position="end">
+      <IconButton aria-label="Clear" onClick={handleClear}>
+        <ClearButton />
+      </IconButton>
+    </InputAdornment>
+  );
+
+  const searchBar = (
+    <TrackSearch>
+      <InputBase
+        data-testid="search-bar-next"
+        value={value}
+        placeholder={placeholder}
+        startAdornment={startAdornment}
+        endAdornment={clearButton ? endAdornment : defaultEndAdornment}
+        inputProps={{ 'aria-label': 'Search', ...defaultInputProps }}
+        fullWidth={fullWidth}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        {...props}
+      />
+    </TrackSearch>
+  );
+
+  return hasSearchContext ? (
+    searchBar
+  ) : (
+    <SearchContextProvider>{searchBar}</SearchContextProvider>
+  );
+};
+
+/**
+ * Props for {@link SearchBar}.
+ *
+ * @public
+ */
+export type SearchBarProps = Partial<SearchBarBaseProps>;
+
+/**
+ * Recommended search bar when you use the Search Provider or Search Context.
+ *
+ * @public
+ */
+export const SearchBar = ({ onChange, ...props }: SearchBarProps) => {
+  const { term, setTerm } = useSearch();
+
+  const handleChange = useCallback(
+    (newValue: string) => {
+      if (onChange) {
+        onChange(newValue);
+      } else {
+        setTerm(newValue);
+      }
+    },
+    [onChange, setTerm],
+  );
+
+  return <SearchBarBase value={term} onChange={handleChange} {...props} />;
 };

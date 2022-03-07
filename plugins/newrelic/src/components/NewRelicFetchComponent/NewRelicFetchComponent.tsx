@@ -16,7 +16,7 @@
 
 import React from 'react';
 import Alert from '@material-ui/lab/Alert';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { newRelicApiRef, NewRelicApplications } from '../../api';
 
 import { Progress, Table, TableColumn } from '@backstage/core-components';
@@ -54,7 +54,7 @@ export const NewRelicAPMTable = ({ applications }: NewRelicApplications) => {
   return (
     <Table
       title="Application Performance Monitoring"
-      options={{ search: false, paging: false }}
+      options={{ search: true, paging: true }}
       columns={columns}
       data={data}
     />

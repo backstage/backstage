@@ -18,7 +18,8 @@ import { KubernetesAuthProvider } from './types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 
 export class ServiceAccountKubernetesAuthProvider
-  implements KubernetesAuthProvider {
+  implements KubernetesAuthProvider
+{
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {

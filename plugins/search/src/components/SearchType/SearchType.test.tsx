@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen, render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { SearchType } from './SearchType';
-
-import { SearchContextProvider } from '../SearchContext';
 import { useApi } from '@backstage/core-plugin-api';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { SearchContextProvider } from '../SearchContext';
+import { SearchType } from './SearchType';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -32,7 +31,6 @@ describe('SearchType', () => {
     term: '',
     filters: {},
     types: [],
-    pageCursor: '',
   };
 
   const name = 'field';
@@ -101,9 +99,6 @@ describe('SearchType', () => {
       expect(
         screen.getByRole('option', { name: values[1] }),
       ).not.toHaveAttribute('aria-selected');
-      expect(screen.getByRole('option', { name: 'All' })).not.toHaveAttribute(
-        'aria-selected',
-      );
     });
 
     it('Renders correctly based on type filter defaultValue', async () => {
@@ -130,9 +125,6 @@ describe('SearchType', () => {
       expect(
         screen.getByRole('option', { name: values[1] }),
       ).not.toHaveAttribute('aria-selected');
-      expect(screen.getByRole('option', { name: 'All' })).not.toHaveAttribute(
-        'aria-selected',
-      );
     });
 
     it('Selecting a value sets type filter state', async () => {
@@ -169,19 +161,9 @@ describe('SearchType', () => {
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
-
-      userEvent.click(screen.getByRole('option', { name: 'All' }));
-
-      await waitFor(() => {
-        expect(query).toHaveBeenLastCalledWith(
-          expect.objectContaining({
-            types: [],
-          }),
-        );
-      });
     });
 
-    it('Selecting a value maintains unrelated filter state, selecting All defaults to default empty state', async () => {
+    it('Selecting none defaults to empty state', async () => {
       render(
         <SearchContextProvider
           initialState={{
@@ -221,7 +203,7 @@ describe('SearchType', () => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: 'All' }));
+      userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(expect.objectContaining([]));

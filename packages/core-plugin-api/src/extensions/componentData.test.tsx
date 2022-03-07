@@ -17,7 +17,7 @@
 import React from 'react';
 import { attachComponentData, getComponentData } from './componentData';
 
-describe('elementData', () => {
+describe('componentData', () => {
   it('should attach a single piece of data', () => {
     const data = { foo: 'bar' };
     const Component = () => null;
@@ -58,5 +58,52 @@ describe('elementData', () => {
     expect(() => attachComponentData(MyComponent, 'my-data', data)).toThrow(
       'Attempted to attach duplicate data "my-data" to component "MyComponent"',
     );
+  });
+
+  describe('works across versions', () => {
+    it('should should be able to get data from newer versions', () => {
+      const data = { foo: 'bar' };
+      const Component = () => null;
+      attachComponentData(Component, 'my-data', data);
+
+      const element = <Component />;
+      expect((element as any).type.__backstage_data.map.get('my-data')).toBe(
+        data,
+      );
+    });
+
+    it('should should be able to attach data for newer versions', () => {
+      const data = { foo: 'bar' };
+      const Component = () => null;
+      (Component as any).__backstage_data = {
+        map: new Map([['my-data', data]]),
+      };
+
+      const element = <Component />;
+      expect(getComponentData(element, 'my-data')).toBe(data);
+    });
+
+    it('should be able to get data from older versions', () => {
+      const data = { foo: 'bar' };
+      const Component = () => null;
+      attachComponentData(Component, 'my-data', data);
+
+      const element = <Component />;
+      const container = (global as any)[
+        '__@backstage/component-data-store__'
+      ].get(element.type);
+      expect(container.map.get('my-data')).toBe(data);
+    });
+
+    it('should should be able to attach data for older versions', () => {
+      const data = { foo: 'bar' };
+      const Component = () => null;
+      (global as any)['__@backstage/component-data-store__'].set(Component, {
+        map: new Map([['my-data', data]]),
+      });
+
+      const element = <Component />;
+      expect(getComponentData(element, 'my-data')).toBe(data);
+    });
   });
 });

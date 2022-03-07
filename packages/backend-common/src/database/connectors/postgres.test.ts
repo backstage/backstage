@@ -76,6 +76,24 @@ describe('postgres', () => {
       });
     });
 
+    it('overrides the schema name', () => {
+      const mockConnection = {
+        ...createMockConnection(),
+        schema: 'schemaName',
+      };
+
+      expect(
+        buildPgDatabaseConfig(createConfig(mockConnection), {
+          searchPath: ['schemaName'],
+        }),
+      ).toEqual({
+        client: 'pg',
+        connection: mockConnection,
+        searchPath: ['schemaName'],
+        useNullAsDefault: true,
+      });
+    });
+
     it('adds additional config settings', () => {
       const mockConnection = createMockConnection();
 

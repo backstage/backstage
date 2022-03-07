@@ -25,8 +25,8 @@ import { DatabaseConnector } from '../types';
 /**
  * Creates a knex SQLite3 database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function createSqliteDatabaseClient(
   dbConfig: Config,
@@ -58,8 +58,8 @@ export function createSqliteDatabaseClient(
 /**
  * Builds a knex SQLite3 connection config
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function buildSqliteDatabaseConfig(
   dbConfig: Config,
@@ -85,19 +85,6 @@ export function buildSqliteDatabaseConfig(
     },
     overrides,
   );
-
-  // If we don't create an in-memory database, interpret the connection string
-  // as a directory that contains multiple sqlite files based on the database
-  // name.
-  const database = (config.connection as Knex.ConnectionConfig).database;
-  const sqliteConnection = config.connection as Knex.Sqlite3ConnectionConfig;
-
-  if (database && sqliteConnection.filename !== ':memory:') {
-    sqliteConnection.filename = path.join(
-      sqliteConnection.filename,
-      `${database}.sqlite`,
-    );
-  }
 
   return config;
 }

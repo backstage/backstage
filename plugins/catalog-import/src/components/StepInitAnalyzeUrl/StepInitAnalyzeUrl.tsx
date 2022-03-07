@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { FormHelperText, Grid, TextField } from '@material-ui/core';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { NextButton } from '../Buttons';
+import { asInputRef } from '../helpers';
 import { ImportFlows, PrepareResult } from '../useImportState';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 type FormData = {
   url: string;
 };
 
-type Props = {
+/**
+ * Props for {@link StepInitAnalyzeUrl}.
+ *
+ * @public
+ */
+export interface StepInitAnalyzeUrlProps {
   onAnalysis: (
     flow: ImportFlows,
     url: string,
@@ -35,24 +41,34 @@ type Props = {
   ) => void;
   disablePullRequest?: boolean;
   analysisUrl?: string;
-};
+  exampleLocationUrl?: string;
+}
 
 /**
  * A form that lets the user input a url and analyze it for existing locations or potential entities.
  *
- * @param onAnalysis is called when the analysis was successful
- * @param analysisUrl a url that can be used as a default value
- * @param disablePullRequest if true, repositories without entities will abort the wizard
+ * @param onAnalysis - is called when the analysis was successful
+ * @param analysisUrl - a url that can be used as a default value
+ * @param disablePullRequest - if true, repositories without entities will abort the wizard
+ * @public
  */
-export const StepInitAnalyzeUrl = ({
-  onAnalysis,
-  analysisUrl = '',
-  disablePullRequest = false,
-}: Props) => {
+export const StepInitAnalyzeUrl = (props: StepInitAnalyzeUrlProps) => {
+  const {
+    onAnalysis,
+    analysisUrl = '',
+    disablePullRequest = false,
+    exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+  } = props;
+
   const errorApi = useApi(errorApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
 
-  const { register, handleSubmit, errors, watch } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<FormData>({
     mode: 'onTouched',
     defaultValues: {
       url: analysisUrl,
@@ -107,8 +123,8 @@ export const StepInitAnalyzeUrl = ({
             break;
           }
         }
-      } catch (e) {
-        setError(e.data?.error?.message ?? e.message);
+      } catch (e: any) {
+        setError(e?.data?.error?.message ?? e.message);
         setSubmitted(false);
       }
     },
@@ -118,24 +134,25 @@ export const StepInitAnalyzeUrl = ({
   return (
     <form onSubmit={handleSubmit(handleResult)}>
       <TextField
+        {...asInputRef(
+          register('url', {
+            required: true,
+            validate: {
+              httpsValidator: (value: any) =>
+                (typeof value === 'string' &&
+                  value.match(/^http[s]?:\/\//) !== null) ||
+                'Must start with http:// or https://.',
+            },
+          }),
+        )}
         fullWidth
         id="url"
-        name="url"
         label="Repository URL"
-        placeholder="https://github.com/backstage/backstage/blob/master/catalog-info.yaml"
+        placeholder={exampleLocationUrl}
         helperText="Enter the full path to your entity file to start tracking your component"
         margin="normal"
         variant="outlined"
         error={Boolean(errors.url)}
-        inputRef={register({
-          required: true,
-          validate: {
-            httpsValidator: (value: any) =>
-              (typeof value === 'string' &&
-                value.match(/^http[s]?:\/\//) !== null) ||
-              'Must start with http:// or https://.',
-          },
-        })}
         required
       />
 

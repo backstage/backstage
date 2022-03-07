@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isError } from './assertion';
 import { CustomErrorBase } from './CustomErrorBase';
 
 /*
@@ -29,16 +30,22 @@ import { CustomErrorBase } from './CustomErrorBase';
 
 /**
  * The given inputs are malformed and cannot be processed.
+ *
+ * @public
  */
 export class InputError extends CustomErrorBase {}
 
 /**
  * The request requires authentication, which was not properly supplied.
+ *
+ * @public
  */
 export class AuthenticationError extends CustomErrorBase {}
 
 /**
  * The authenticated caller is not allowed to perform this request.
+ *
+ * @public
  */
 export class NotAllowedError extends CustomErrorBase {}
 
@@ -47,16 +54,38 @@ export class NotAllowedError extends CustomErrorBase {}
  *
  * Note that this error usually is used to indicate that an entity with a given
  * ID does not exist, rather than signalling that an entire route is missing.
+ *
+ * @public
  */
 export class NotFoundError extends CustomErrorBase {}
 
 /**
  * The request could not complete due to a conflict in the current state of the
  * resource.
+ *
+ * @public
  */
 export class ConflictError extends CustomErrorBase {}
 
 /**
  * The requested resource has not changed since last request.
+ *
+ * @public
  */
 export class NotModifiedError extends CustomErrorBase {}
+
+/**
+ * An error that forwards an underlying cause with additional context in the message.
+ *
+ * The `name` property of the error will be inherited from the `cause` if
+ * possible, and will otherwise be set to `'Error'`.
+ *
+ * @public
+ */
+export class ForwardedError extends CustomErrorBase {
+  constructor(message: string, cause: Error | unknown) {
+    super(message, cause);
+
+    this.name = isError(cause) ? cause.name : 'Error';
+  }
+}

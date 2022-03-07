@@ -51,7 +51,7 @@ entries.push({
   title: 'JavaScript',
   quadrant: 'languages',
   description:
-    'Excepteur **sint** occaecat *cupidatat* non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
+    'Excepteur **sint** occaecat *cupidatat* non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n```ts\nconst x = "3";\n```\n',
 });
 entries.push({
   timeline: [
@@ -161,9 +161,10 @@ entries.push({
     {
       ringId: 'use',
       date: new Date('2020-08-06'),
+      description: 'long description',
     },
   ],
-  url: '#',
+  url: 'https://github.com',
   key: 'github-actions',
   id: 'github-actions',
   title: 'GitHub Actions',

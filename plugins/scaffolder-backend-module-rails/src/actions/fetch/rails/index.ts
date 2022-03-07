@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 import { ContainerRunner, UrlReader } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
@@ -27,6 +27,16 @@ import {
 import { resolve as resolvePath } from 'path';
 import { RailsNewRunner } from './railsNewRunner';
 
+/**
+ * Creates the `fetch:rails` Scaffolder action.
+ *
+ * @remarks
+ *
+ * See {@link https://guides.rubyonrails.org/rails_application_templates.html} and {@link https://backstage.io/docs/features/software-templates/writing-custom-actions}.
+ *
+ * @param options - Configuration of the templater.
+ * @public
+ */
 export function createFetchRailsAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
@@ -84,6 +94,16 @@ export function createFetchRailsAction(options: {
                   skipWebpackInstall: {
                     title: 'skipWebpackInstall',
                     description: "Don't run Webpack install",
+                    type: 'boolean',
+                  },
+                  skipTest: {
+                    title: 'skipTest',
+                    description: 'Skip test files',
+                    type: 'boolean',
+                  },
+                  force: {
+                    title: 'force',
+                    description: 'Overwrite files that already exist',
                     type: 'boolean',
                   },
                   api: {
@@ -150,7 +170,7 @@ export function createFetchRailsAction(options: {
       await fetchContents({
         reader,
         integrations,
-        baseUrl: ctx.baseUrl,
+        baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath: workDir,
       });

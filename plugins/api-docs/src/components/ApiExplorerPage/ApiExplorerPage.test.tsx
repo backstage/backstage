@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,96 +14,31 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
 import React from 'react';
-import { apiDocsConfigRef } from '../../config';
+import { renderInTestApp } from '@backstage/test-utils';
+import { useOutlet } from 'react-router';
 import { ApiExplorerPage } from './ApiExplorerPage';
 
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigReader,
-} from '@backstage/core-app-api';
-import {
-  storageApiRef,
-  ConfigApi,
-  configApiRef,
-} from '@backstage/core-plugin-api';
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useOutlet: jest.fn().mockReturnValue('Route Children'),
+}));
 
-describe('ApiCatalogPage', () => {
-  const catalogApi: Partial<CatalogApi> = {
-    getEntities: () =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
-            metadata: {
-              name: 'Entity1',
-            },
-            spec: { type: 'openapi' },
-          },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'API',
-            metadata: {
-              name: 'Entity2',
-            },
-            spec: { type: 'openapi' },
-          },
-        ] as Entity[],
-      }),
-    getLocationByEntity: () =>
-      Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
-    getEntityByName: async entityName => {
-      return {
-        apiVersion: 'backstage.io/v1alpha1',
-        kind: 'User',
-        metadata: { name: entityName.name },
-        relations: [
-          {
-            type: RELATION_MEMBER_OF,
-            target: { namespace: 'default', kind: 'Group', name: 'tools' },
-          },
-        ],
-      };
-    },
-  };
+jest.mock('./DefaultApiExplorerPage', () => ({
+  DefaultApiExplorerPage: jest.fn().mockReturnValue('DefaultApiExplorerPage'),
+}));
 
-  const configApi: ConfigApi = new ConfigReader({
-    organization: {
-      name: 'My Company',
-    },
+describe('ApiExplorerPage', () => {
+  it('renders provided router element', async () => {
+    const { getByText } = await renderInTestApp(<ApiExplorerPage />);
+
+    expect(getByText('Route Children')).toBeInTheDocument();
   });
 
-  const apiDocsConfig = {
-    getApiDefinitionWidget: () => undefined,
-  };
+  it('renders DefaultApiExplorerPage home when no router children are provided', async () => {
+    (useOutlet as jest.Mock).mockReturnValueOnce(null);
+    const { getByText } = await renderInTestApp(<ApiExplorerPage />);
 
-  const renderWrapped = (children: React.ReactNode) =>
-    render(
-      wrapInTestApp(
-        <ApiProvider
-          apis={ApiRegistry.from([
-            [catalogApiRef, catalogApi],
-            [configApiRef, configApi],
-            [storageApiRef, MockStorageApi.create()],
-            [apiDocsConfigRef, apiDocsConfig],
-          ])}
-        >
-          {children}
-        </ApiProvider>,
-      ),
-    );
-
-  // this test right now causes some red lines in the log output when running tests
-  // related to some theme issues in mui-table
-  // https://github.com/mbrn/material-table/issues/1293
-  it('should render', async () => {
-    const { findByText } = renderWrapped(<ApiExplorerPage />);
-    expect(await findByText(/My Company API Explorer/)).toBeInTheDocument();
+    expect(getByText('DefaultApiExplorerPage')).toBeInTheDocument();
   });
 });

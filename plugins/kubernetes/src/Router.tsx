@@ -18,7 +18,6 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import { rootCatalogKubernetesRouteRef } from './plugin';
 import { KubernetesContent } from './components/KubernetesContent';
 import { Button } from '@material-ui/core';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
@@ -27,10 +26,13 @@ const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
   'backstage.io/kubernetes-label-selector';
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
+export const isKubernetesAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[KUBERNETES_ANNOTATION]) ||
+  Boolean(
+    entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION],
+  );
+
+type Props = {};
 
 export const Router = (_props: Props) => {
   const { entity } = useEntity();
@@ -47,10 +49,7 @@ export const Router = (_props: Props) => {
   ) {
     return (
       <Routes>
-        <Route
-          path={`/${rootCatalogKubernetesRouteRef.path}`}
-          element={<KubernetesContent entity={entity} />}
-        />
+        <Route path="/" element={<KubernetesContent entity={entity} />} />
       </Routes>
     );
   }

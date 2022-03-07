@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { Entity } from '@backstage/catalog-model';
 
 export const CLOUDBUILD_ANNOTATION = 'google.com/cloudbuild-project-slug';

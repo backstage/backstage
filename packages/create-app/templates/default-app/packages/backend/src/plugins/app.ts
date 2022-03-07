@@ -5,10 +5,12 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin({
   logger,
   config,
+  database,
 }: PluginEnvironment): Promise<Router> {
   return await createRouter({
     logger,
     config,
+    database,
     appPackageName: 'app',
   });
 }

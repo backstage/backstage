@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RELATION_OWNED_BY, RELATION_PART_OF } from '@backstage/catalog-model';
 import {
-  formatEntityRefTitle,
-  getEntityMetadataEditUrl,
-  getEntityMetadataViewUrl,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_VIEW_URL,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
+import {
+  humanizeEntityRef,
   getEntityRelations,
-  useEntityListProvider,
+  useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
-import React from 'react';
-import {
-  favouriteEntityIcon,
-  favouriteEntityTooltip,
-} from '../FavouriteEntity/FavouriteEntity';
-import * as columnFactories from './columns';
-import { EntityRow } from './types';
+import React, { useMemo } from 'react';
+import { columnFactories } from './columns';
+import { CatalogTableRow } from './types';
 import {
   CodeSnippet,
   Table,
@@ -39,25 +38,44 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
+import StarBorder from '@material-ui/icons/StarBorder';
+import { withStyles } from '@material-ui/core/styles';
+import Star from '@material-ui/icons/Star';
 
-const defaultColumns: TableColumn<EntityRow>[] = [
-  columnFactories.createNameColumn(),
-  columnFactories.createSystemColumn(),
-  columnFactories.createOwnerColumn(),
-  columnFactories.createSpecTypeColumn(),
-  columnFactories.createSpecLifecycleColumn(),
-  columnFactories.createMetadataDescriptionColumn(),
-  columnFactories.createTagsColumn(),
-];
+/**
+ * Props for {@link CatalogTable}.
+ *
+ * @public
+ */
+export interface CatalogTableProps {
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+}
 
-type CatalogTableProps = {
-  columns?: TableColumn<EntityRow>[];
-  actions?: TableProps<EntityRow>['actions'];
-};
+const YellowStar = withStyles({
+  root: {
+    color: '#f3ba37',
+  },
+})(Star);
 
-export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
+/** @public */
+export const CatalogTable = (props: CatalogTableProps) => {
+  const { columns, actions } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  const { loading, error, entities, filters } = useEntityListProvider();
+  const { loading, error, entities, filters } = useEntityList();
+
+  const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(
+    () => [
+      columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
+      columnFactories.createSystemColumn(),
+      columnFactories.createOwnerColumn(),
+      columnFactories.createSpecTypeColumn(),
+      columnFactories.createSpecLifecycleColumn(),
+      columnFactories.createMetadataDescriptionColumn(),
+      columnFactories.createTagsColumn(),
+    ],
+    [filters.kind?.value],
+  );
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
@@ -76,9 +94,9 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
     );
   }
 
-  const defaultActions: TableProps<EntityRow>['actions'] = [
+  const defaultActions: TableProps<CatalogTableRow>['actions'] = [
     ({ entity }) => {
-      const url = getEntityMetadataViewUrl(entity);
+      const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
       return {
         icon: () => <OpenInNew aria-label="View" fontSize="small" />,
         tooltip: 'View',
@@ -90,7 +108,7 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
       };
     },
     ({ entity }) => {
-      const url = getEntityMetadataEditUrl(entity);
+      const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
       return {
         icon: () => <Edit aria-label="Edit" fontSize="small" />,
         tooltip: 'Edit',
@@ -105,8 +123,8 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
       const isStarred = isStarredEntity(entity);
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => favouriteEntityIcon(isStarred),
-        tooltip: favouriteEntityTooltip(isStarred),
+        icon: () => (isStarred ? <YellowStar /> : <StarBorder />),
+        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
         onClick: () => toggleStarredEntity(entity),
       };
     },
@@ -121,16 +139,16 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
     return {
       entity,
       resolved: {
-        name: formatEntityRefTitle(entity, {
+        name: humanizeEntityRef(entity, {
           defaultKind: 'Component',
         }),
         ownedByRelationsTitle: ownedByRelations
-          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
           .join(', '),
         ownedByRelations,
         partOfSystemRelationTitle: partOfSystemRelations
           .map(r =>
-            formatEntityRefTitle(r, {
+            humanizeEntityRef(r, {
               defaultKind: 'system',
             }),
           )
@@ -144,13 +162,14 @@ export const CatalogTable = ({ columns, actions }: CatalogTableProps) => {
   if (typeColumn) {
     typeColumn.hidden = !showTypeColumn;
   }
+  const showPagination = rows.length > 20;
 
   return (
-    <Table<EntityRow>
+    <Table<CatalogTableRow>
       isLoading={loading}
       columns={columns || defaultColumns}
       options={{
-        paging: true,
+        paging: showPagination,
         pageSize: 20,
         actionsColumnIndex: -1,
         loadingType: 'linear',

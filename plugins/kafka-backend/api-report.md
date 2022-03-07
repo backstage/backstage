@@ -12,6 +12,4 @@ import { Logger as Logger_2 } from 'winston';
 //
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
-
-// (No @packageDocumentation comment for this package)
 ```

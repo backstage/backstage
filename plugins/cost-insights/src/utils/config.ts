@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-import { Metric } from '../types';
+import { Metric, Currency } from '../types';
 
 export function validateMetrics(metrics: Metric[]) {
   const defaults = metrics.filter(metric => metric.default);
   if (defaults.length > 1) {
     throw new Error(
       `Only one default metric can be set at a time. Found ${defaults.length}`,
+    );
+  }
+}
+
+export function validateCurrencies(currencies: Currency[]) {
+  const withoutKinds = currencies.filter(currency => currency.kind === null);
+  if (withoutKinds.length > 1) {
+    throw new Error(
+      `Only one currency can be without kind. Found ${withoutKinds.length}`,
     );
   }
 }

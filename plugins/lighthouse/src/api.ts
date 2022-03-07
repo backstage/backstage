@@ -109,7 +109,6 @@ export type LighthouseApi = {
 
 export const lighthouseApiRef = createApiRef<LighthouseApi>({
   id: 'plugin.lighthouse.service',
-  description: 'Used by the Lighthouse plugin to make requests',
 });
 
 export class LighthouseRestApi implements LighthouseApi {

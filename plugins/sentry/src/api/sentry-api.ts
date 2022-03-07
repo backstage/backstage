@@ -19,9 +19,12 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const sentryApiRef = createApiRef<SentryApi>({
   id: 'plugin.sentry.service',
-  description: 'Used by the Sentry plugin to make requests',
 });
 
 export interface SentryApi {
-  fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]>;
+  fetchIssues(
+    project: string,
+    statsFor: string,
+    query?: string,
+  ): Promise<SentryIssue[]>;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+export type {
+  LocationService,
+  RefreshService,
+  RefreshOptions,
+  LocationStore,
+  LocationInput,
+} from './types';
+export { createRouter } from './createRouter';
+export type { RouterOptions } from './createRouter';
+export type { CatalogEnvironment } from './CatalogBuilder';
 export { CatalogBuilder } from './CatalogBuilder';
-export { createRouter } from './router';
-export type { RouterOptions } from './router';

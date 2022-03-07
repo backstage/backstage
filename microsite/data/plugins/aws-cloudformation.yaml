@@ -1,0 +1,9 @@
+---
+title: AWS CloudFormation
+author: Purple Technology
+authorUrl: https://blog.purple-technology.com
+category: Infrastructure
+description: Load Backstage entities from AWS CloudFormation stacks
+documentation: https://github.com/purple-technology/backstage-aws-cloudformation-plugin#readme
+iconUrl: https://raw.githubusercontent.com/purple-technology/backstage-aws-cloudformation-plugin/master/docs/cloudformation-logo.png
+npmPackageName: 'backstage-aws-cloudformation-plugin'

@@ -14,109 +14,132 @@
  * limitations under the License.
  */
 
-import {
-  Checkbox,
-  Chip,
-  ClickAwayListener,
-  FormControl,
-  InputBase,
-  MenuItem,
-  Select,
-  Typography,
-} from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import FormControl from '@material-ui/core/FormControl';
+import InputBase from '@material-ui/core/InputBase';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import {
   createStyles,
   makeStyles,
   Theme,
   withStyles,
 } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
-const BootstrapInput = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      'label + &': {
-        marginTop: theme.spacing(3),
+/** @public */
+export type SelectInputBaseClassKey = 'root' | 'input';
+
+const BootstrapInput = withStyles(
+  (theme: Theme) =>
+    createStyles({
+      root: {
+        'label + &': {
+          marginTop: theme.spacing(3),
+        },
       },
-    },
-    input: {
-      borderRadius: 4,
-      position: 'relative',
-      backgroundColor: theme.palette.background.paper,
-      border: '1px solid #ced4da',
-      fontSize: 16,
-      padding: '10px 26px 10px 12px',
-      transition: theme.transitions.create(['border-color', 'box-shadow']),
-      fontFamily: 'Helvetica Neue',
-      '&:focus': {
-        background: theme.palette.background.paper,
+      input: {
         borderRadius: 4,
+        position: 'relative',
+        backgroundColor: theme.palette.background.paper,
+        border: '1px solid #ced4da',
+        fontSize: 16,
+        padding: '10px 26px 10px 12px',
+        transition: theme.transitions.create(['border-color', 'box-shadow']),
+        fontFamily: 'Helvetica Neue',
+        '&:focus': {
+          background: theme.palette.background.paper,
+          borderRadius: 4,
+        },
       },
-    },
-  }),
+    }),
+  { name: 'BackstageSelectInputBase' },
 )(InputBase);
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: `${theme.spacing(1)} 0px`,
-      maxWidth: 300,
-    },
-    label: {
-      transform: 'initial',
-      fontWeight: 'bold',
-      fontSize: 14,
-      fontFamily: theme.typography.fontFamily,
-      color: theme.palette.text.primary,
-      '&.Mui-focused': {
-        color: theme.palette.text.primary,
+/** @public */
+export type SelectClassKey =
+  | 'formControl'
+  | 'label'
+  | 'chips'
+  | 'chip'
+  | 'checkbox'
+  | 'root';
+
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      formControl: {
+        margin: `${theme.spacing(1)} 0px`,
+        maxWidth: 300,
       },
-    },
-    chips: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    chip: {
-      margin: 2,
-    },
-    checkbox: {},
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-  }),
+      label: {
+        transform: 'initial',
+        fontWeight: 'bold',
+        fontSize: 14,
+        fontFamily: theme.typography.fontFamily,
+        color: theme.palette.text.primary,
+        '&.Mui-focused': {
+          color: theme.palette.text.primary,
+        },
+      },
+      chips: {
+        display: 'flex',
+        flexWrap: 'wrap',
+      },
+      chip: {
+        margin: 2,
+      },
+      checkbox: {},
+
+      root: {
+        display: 'flex',
+        flexDirection: 'column',
+      },
+    }),
+  { name: 'BackstageSelect' },
 );
 
-type Item = {
+/** @public */
+export type SelectItem = {
   label: string;
   value: string | number;
 };
 
-type Selection = string | string[] | number | number[];
+/** @public */
+export type SelectedItems = string | string[] | number | number[];
 
 export type SelectProps = {
   multiple?: boolean;
-  items: Item[];
+  items: SelectItem[];
   label: string;
   placeholder?: string;
-  selected?: Selection;
-  onChange: (arg: Selection) => void;
+  selected?: SelectedItems;
+  onChange: (arg: SelectedItems) => void;
   triggerReset?: boolean;
+  native?: boolean;
+  disabled?: boolean;
 };
 
-export const SelectComponent = ({
-  multiple,
-  items,
-  label,
-  placeholder,
-  selected,
-  onChange,
-  triggerReset,
-}: SelectProps) => {
+/** @public */
+export function SelectComponent(props: SelectProps) {
+  const {
+    multiple,
+    items,
+    label,
+    placeholder,
+    selected,
+    onChange,
+    triggerReset,
+    native = false,
+    disabled = false,
+  } = props;
   const classes = useStyles();
-  const [value, setValue] = useState<Selection>(
+  const [value, setValue] = useState<SelectedItems>(
     selected || (multiple ? [] : ''),
   );
   const [isOpen, setOpen] = useState(false);
@@ -132,11 +155,15 @@ export const SelectComponent = ({
   }, [selected]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setValue(event.target.value as Selection);
-    onChange(event.target.value as Selection);
+    setValue(event.target.value as SelectedItems);
+    onChange(event.target.value as SelectedItems);
   };
 
   const handleClick = (event: React.ChangeEvent<any>) => {
+    if (disabled) {
+      event.preventDefault();
+      return;
+    }
     setOpen(previous => {
       if (multiple && !(event.target instanceof HTMLElement)) {
         return true;
@@ -162,6 +189,8 @@ export const SelectComponent = ({
         <FormControl className={classes.formControl}>
           <Select
             value={value}
+            native={native}
+            disabled={disabled}
             data-testid="select"
             displayEmpty
             multiple={multiple}
@@ -210,22 +239,29 @@ export const SelectComponent = ({
             {placeholder && !multiple && (
               <MenuItem value={[]}>{placeholder}</MenuItem>
             )}
-            {items &&
-              items.map(item => (
-                <MenuItem key={item.value} value={item.value}>
-                  {multiple && (
-                    <Checkbox
-                      color="primary"
-                      checked={(value as any[]).includes(item.value) || false}
-                      className={classes.checkbox}
-                    />
-                  )}
-                  {item.label}
-                </MenuItem>
-              ))}
+            {native
+              ? items &&
+                items.map(item => (
+                  <option value={item.value} key={item.value}>
+                    {item.label}
+                  </option>
+                ))
+              : items &&
+                items.map(item => (
+                  <MenuItem key={item.value} value={item.value}>
+                    {multiple && (
+                      <Checkbox
+                        color="primary"
+                        checked={(value as any[]).includes(item.value) || false}
+                        className={classes.checkbox}
+                      />
+                    )}
+                    {item.label}
+                  </MenuItem>
+                ))}
           </Select>
         </FormControl>
       </ClickAwayListener>
     </div>
   );
-};
+}

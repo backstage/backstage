@@ -26,13 +26,11 @@ import {
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  path: '/search',
-  title: 'search',
+  id: 'search',
 });
 
 export const rootNextRouteRef = createRouteRef({
-  path: '/search-next',
-  title: 'search',
+  id: 'search:next',
 });
 
 export const searchPlugin = createPlugin({
@@ -54,6 +52,7 @@ export const searchPlugin = createPlugin({
 
 export const SearchPage = searchPlugin.provide(
   createRoutableExtension({
+    name: 'SearchPage',
     component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootRouteRef,
   }),
@@ -67,6 +66,7 @@ export const SearchPage = searchPlugin.provide(
  */
 export const SearchPageNext = searchPlugin.provide(
   createRoutableExtension({
+    name: 'SearchPageNext',
     component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootNextRouteRef,
   }),
@@ -74,6 +74,7 @@ export const SearchPageNext = searchPlugin.provide(
 
 export const SearchBar = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchBar',
     component: {
       lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
     },
@@ -88,6 +89,7 @@ export const SearchBar = searchPlugin.provide(
  */
 export const SearchBarNext = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchBarNext',
     component: {
       lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
     },
@@ -96,6 +98,7 @@ export const SearchBarNext = searchPlugin.provide(
 
 export const SearchResult = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchResult',
     component: {
       lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
     },
@@ -110,19 +113,43 @@ export const SearchResult = searchPlugin.provide(
  */
 export const SearchResultNext = searchPlugin.provide(
   createComponentExtension({
+    name: 'SearchResultNext',
     component: {
       lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
     },
   }),
 );
 
+export const SidebarSearchModal = searchPlugin.provide(
+  createComponentExtension({
+    name: 'SidebarSearchModal',
+    component: {
+      lazy: () =>
+        import('./components/SidebarSearchModal').then(
+          m => m.SidebarSearchModal,
+        ),
+    },
+  }),
+);
+
 export const DefaultResultListItem = searchPlugin.provide(
   createComponentExtension({
+    name: 'DefaultResultListItem',
     component: {
       lazy: () =>
         import('./components/DefaultResultListItem').then(
           m => m.DefaultResultListItem,
         ),
+    },
+  }),
+);
+
+export const HomePageSearchBar = searchPlugin.provide(
+  createComponentExtension({
+    name: 'HomePageSearchBar',
+    component: {
+      lazy: () =>
+        import('./components/HomePageComponent').then(m => m.HomePageSearchBar),
     },
   }),
 );

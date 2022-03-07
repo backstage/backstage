@@ -26,6 +26,8 @@ import { DEFAULT_PORT } from '../service/lib/ServiceBuilderImpl';
  * The deployment may be scaled horizontally, as long as the external URL
  * is the same for all instances. However, internal URLs will always be
  * resolved to the same host, so there won't be any balancing of internal traffic.
+ *
+ * @public
  */
 export class SingleHostDiscovery implements PluginEndpointDiscovery {
   /**
@@ -35,7 +37,7 @@ export class SingleHostDiscovery implements PluginEndpointDiscovery {
    * for the internal one.
    *
    * The basePath defaults to `/api`, meaning the default full internal
-   * path for the `catalog` plugin will be `http://localhost:7000/api/catalog`.
+   * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
    */
   static fromConfig(config: Config, options?: { basePath?: string }) {
     const basePath = options?.basePath ?? '/api';

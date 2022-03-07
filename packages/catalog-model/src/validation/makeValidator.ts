@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CommonValidatorFunctions } from './CommonValidatorFunctions';
 import { KubernetesValidatorFunctions } from './KubernetesValidatorFunctions';
 import { Validators } from './types';
 
@@ -27,9 +26,22 @@ const defaultValidators: Validators = {
   isValidLabelValue: KubernetesValidatorFunctions.isValidLabelValue,
   isValidAnnotationKey: KubernetesValidatorFunctions.isValidAnnotationKey,
   isValidAnnotationValue: KubernetesValidatorFunctions.isValidAnnotationValue,
-  isValidTag: CommonValidatorFunctions.isValidDnsLabel,
+  isValidTag: (value: unknown): boolean => {
+    // NOTE(freben): This one is a bit of an oddball and doesn't fit well anywhere to delegate to, so it's just inlined for now.
+    return (
+      typeof value === 'string' &&
+      value.length >= 1 &&
+      value.length <= 63 &&
+      /^[a-z0-9:+#]+(\-[a-z0-9:+#]+)*$/.test(value)
+    );
+  },
 };
 
+/**
+ * Creates a {@link Validators} object from `overrides`, with default values taken from {@link KubernetesValidatorFunctions}
+ *
+ * @public
+ */
 export function makeValidator(overrides: Partial<Validators> = {}): Validators {
   return {
     ...defaultValidators,

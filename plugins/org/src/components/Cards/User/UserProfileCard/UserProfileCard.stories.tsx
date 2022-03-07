@@ -15,19 +15,18 @@
  */
 
 import { UserEntity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
+import {
+  EntityProvider,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { wrapInTestApp } from '@backstage/test-utils';
 import { Grid } from '@material-ui/core';
-import React from 'react';
-import { MemoryRouter } from 'react-router';
+import React, { ComponentType } from 'react';
 import { UserProfileCard } from './UserProfileCard';
-
-export default {
-  title: 'Plugins/Org/User Profile Card',
-  component: UserProfileCard,
-};
 
 const dummyGroup = {
   type: 'memberOf',
+  targetRef: 'group:default/team-a',
   target: {
     namespace: 'default',
     kind: 'group',
@@ -40,6 +39,7 @@ const defaultEntity: UserEntity = {
   kind: 'User',
   metadata: {
     name: 'guest',
+    description: 'Description for guest',
   },
   spec: {
     profile: {
@@ -54,15 +54,13 @@ const defaultEntity: UserEntity = {
 };
 
 export const Default = () => (
-  <MemoryRouter>
-    <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
-          <UserProfileCard variant="gridItem" />
-        </Grid>
+  <EntityProvider entity={defaultEntity}>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={4}>
+        <UserProfileCard variant="gridItem" />
       </Grid>
-    </EntityContext.Provider>
-  </MemoryRouter>
+    </Grid>
+  </EntityProvider>
 );
 
 const noImageEntity: UserEntity = {
@@ -70,6 +68,7 @@ const noImageEntity: UserEntity = {
   kind: 'User',
   metadata: {
     name: 'guest',
+    description: 'Description for guest',
   },
   spec: {
     profile: {
@@ -82,13 +81,24 @@ const noImageEntity: UserEntity = {
 };
 
 export const NoImage = () => (
-  <MemoryRouter>
-    <EntityContext.Provider value={{ entity: noImageEntity, loading: false }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
-          <UserProfileCard variant="gridItem" />
-        </Grid>
+  <EntityProvider entity={noImageEntity}>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={4}>
+        <UserProfileCard variant="gridItem" />
       </Grid>
-    </EntityContext.Provider>
-  </MemoryRouter>
+    </Grid>
+  </EntityProvider>
 );
+
+export default {
+  title: 'Plugins/Org/User Profile Card',
+  component: UserProfileCard,
+  decorators: [
+    (Story: ComponentType<{}>) =>
+      wrapInTestApp(<Story />, {
+        mountedRoutes: {
+          '/a': entityRouteRef,
+        },
+      }),
+  ],
+};

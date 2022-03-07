@@ -15,9 +15,11 @@
  */
 
 import React, { useState, useEffect, PropsWithChildren } from 'react';
-import { LinearProgress, LinearProgressProps } from '@material-ui/core';
+import LinearProgress, {
+  LinearProgressProps,
+} from '@material-ui/core/LinearProgress';
 
-export const Progress = (props: PropsWithChildren<LinearProgressProps>) => {
+export function Progress(props: PropsWithChildren<LinearProgressProps>) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -30,4 +32,4 @@ export const Progress = (props: PropsWithChildren<LinearProgressProps>) => {
   ) : (
     <div style={{ display: 'none' }} />
   );
-};
+}

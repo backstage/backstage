@@ -4,13 +4,13 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { GraphQLModule } from '@graphql-modules/core';
 import { Logger as Logger_2 } from 'winston';
+import { Module } from 'graphql-modules';
 
 // Warning: (ae-missing-release-tag) "createModule" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function createModule(options: ModuleOptions): Promise<GraphQLModule>;
+export function createModule(options: ModuleOptions): Promise<Module>;
 
 // Warning: (ae-missing-release-tag) "ModuleOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -21,6 +21,4 @@ export interface ModuleOptions {
   // (undocumented)
   logger: Logger_2;
 }
-
-// (No @packageDocumentation comment for this package)
 ```

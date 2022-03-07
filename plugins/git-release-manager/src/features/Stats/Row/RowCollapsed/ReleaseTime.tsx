@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { DateTime } from 'luxon';
 import { Box, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';

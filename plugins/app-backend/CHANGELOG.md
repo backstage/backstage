@@ -1,5 +1,190 @@
 # @backstage/plugin-app-backend
 
+## 0.3.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+
+## 0.3.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/config-loader@0.9.6
+
+## 0.3.26
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/config-loader@0.9.5
+  - @backstage/types@0.1.3
+
+## 0.3.25
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/config-loader@0.9.4
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.3.24
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.3.24-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
+## 0.3.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.6-next.0
+
+## 0.3.22
+
+### Patch Changes
+
+- f685e1398f: Loading of app configurations now reference the `@deprecated` construct from
+  JSDoc to determine if a property in-use has been deprecated. Users are notified
+  of deprecated keys in the format:
+
+  ```txt
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+  When the `withDeprecatedKeys` option is set to `true` in the `process` method
+  of `loadConfigSchema`, the user will be notified that deprecated keys have been
+  identified in their app configuration.
+
+  The `backend-common` and `plugin-app-backend` packages have been updated to set
+  `withDeprecatedKeys` to true so that users are notified of deprecated settings
+  by default.
+
+- eb00e8af14: Updated the cache control headers for static assets to instruct clients to cache them for 14 days.
+- eb00e8af14: Added a new asset cache that stores static assets from previous deployments in the database. This fixes an issue where users have old browser tabs open and try to lazy-load static assets that no longer exist in the latest version.
+
+  The asset cache is enabled by passing the `database` option to `createRouter`.
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4
+  - @backstage/config@0.1.13
+  - @backstage/config-loader@0.9.3
+
+## 0.3.22-next.0
+
+### Patch Changes
+
+- f685e1398f: Loading of app configurations now reference the `@deprecated` construct from
+  JSDoc to determine if a property in-use has been deprecated. Users are notified
+  of deprecated keys in the format:
+
+  ```txt
+  The configuration key 'catalog.processors.githubOrg' of app-config.yaml is deprecated and may be removed soon. Configure a GitHub integration instead.
+  ```
+
+  When the `withDeprecatedKeys` option is set to `true` in the `process` method
+  of `loadConfigSchema`, the user will be notified that deprecated keys have been
+  identified in their app configuration.
+
+  The `backend-common` and `plugin-app-backend` packages have been updated to set
+  `withDeprecatedKeys` to true so that users are notified of deprecated settings
+  by default.
+
+- eb00e8af14: Updated the cache control headers for static assets to instruct clients to cache them for 14 days.
+- eb00e8af14: Added a new asset cache that stores static assets from previous deployments in the database. This fixes an issue where users have old browser tabs open and try to lazy-load static assets that no longer exist in the latest version.
+
+  The asset cache is enabled by passing the `database` option to `createRouter`.
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.4-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/config-loader@0.9.3-next.0
+
+## 0.3.21
+
+### Patch Changes
+
+- 9d9cfc1b8a: Set `X-Frame-Options: deny` rather than the default `sameorigin` for all content served by the `app-backend`.`
+- Updated dependencies
+  - @backstage/backend-common@0.10.1
+  - @backstage/config-loader@0.9.1
+
+## 0.3.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.0
+  - @backstage/config-loader@0.9.0
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@0.8.0
+  - @backstage/backend-common@0.9.10
+
+## 0.3.18
+
+### Patch Changes
+
+- 10615525f3: Switch to use the json and observable types from `@backstage/types`
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/backend-common@0.9.8
+  - @backstage/config-loader@0.7.1
+
+## 0.3.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@0.7.0
+  - @backstage/backend-common@0.9.7
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.9.0
+  - @backstage/config@0.1.8
+
 ## 0.3.15
 
 ### Patch Changes

@@ -24,7 +24,7 @@ To become a maintainer you need to demonstrate the following:
 - Monitor Discord (delayed response is perfectly acceptable).
 - Triage GitHub issues and perform pull request reviews for other maintainers and the community.
 - Triage build issues - file issues for known flaky builds or bugs, and either fix or find someone to fix any master build breakages.
-- During GitHub issue triage, apply all applicable ([labels](https://github.com/backstage/backstage/labels)) to each new issue. Labels are extremely useful for future issue follow up. Which labels to apply is somewhat subjective so just use your best judgment. A few of the most important labels that are not self explanatory are:
+- During GitHub issue triage, apply all applicable ([labels](https://github.com/backstage/backstage/labels)) to each new issue. Labels are extremely useful for future issue follow-up. Which labels to apply is somewhat subjective so just use your best judgment. A few of the most important labels that are not self-explanatory are:
   - good first issue: Mark any issue that can reasonably be accomplished by a new contributor with this label.
   - help wanted: Unless it is immediately obvious that someone is going to work on an issue (and if so assign it), mark it help wanted.
 - Make sure that ongoing PRs are moving forward at the right pace or closing them.
@@ -35,6 +35,25 @@ To become a maintainer you need to demonstrate the following:
 # When does a maintainer lose maintainer status
 
 If a maintainer is no longer interested or cannot perform the maintainer duties listed above, they should volunteer to be moved to emeritus status. In extreme cases this can also occur by a vote of the sponsors and maintainers per the voting process below.
+
+# End User Sponsors
+
+## Role of a Backstage End User Sponsor
+
+- Provide support for Backstage by removing blockers, securing funding, providing advocacy, feedback, and ensuring project continuity and long term success.
+- Assist Backstage maintainers in prioritizing upcoming roadmap items and planned work.
+- Provide neutral mediation for any disputes that arise as part of the project.
+
+## Backstage End User Sponsor Membership
+
+The End User Sponsors group comprises at most 5 people. To be eligible for membership in the group, you or the company where you work you must:
+
+- Be responsible for and end user of a production Backstage deployment of non-trivial size
+- Be active contributors to the open source project
+- Be willing and able to attend regularly-scheduled End User Sponsor meetings
+- Abide by [Backstage’s Code of Conduct](./CODE_OF_CONDUCT.md).
+
+Candidates for membership will be nominated by current Sponsor members or by Backstage maintainers. If there are more nominations than Sponsor seats remaining, existing sponsors shall vote on the candidates, and the candidates with the most votes will become Sponsors. Any ties will be broken by current Backstage sponsors.
 
 # Reviewers
 

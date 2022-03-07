@@ -41,6 +41,7 @@ import {
   PodNamesWithErrorsContext,
 } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
+import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
 
 type DeploymentsAccordionsProps = {
   children?: React.ReactNode;
@@ -68,7 +69,12 @@ const DeploymentSummary = ({
   hpa,
 }: DeploymentSummaryProps) => {
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="center">
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
       <Grid xs={3} item>
         <DeploymentDrawer deployment={deployment} />
       </Grid>
@@ -82,7 +88,7 @@ const DeploymentSummary = ({
               item
               container
               direction="column"
-              justify="flex-start"
+              justifyContent="flex-start"
               alignItems="flex-start"
               spacing={0}
             >
@@ -113,7 +119,7 @@ const DeploymentSummary = ({
         container
         xs={3}
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
       >
         <Grid item>
@@ -156,7 +162,10 @@ const DeploymentAccordion = ({
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PodsTable pods={ownedPods} />
+        <PodsTable
+          pods={ownedPods}
+          extraColumns={[READY_COLUMNS, RESOURCE_COLUMNS]}
+        />
       </AccordionDetails>
     </Accordion>
   );
@@ -169,7 +178,7 @@ export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
     <Grid
       container
       direction="column"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
     >
       {groupedResponses.deployments.map((deployment, i) => (

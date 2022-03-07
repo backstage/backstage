@@ -1,5 +1,5 @@
 ---
-title: New Backstage feature: Kubernetes for Service owners
+title: 'New Backstage feature: Kubernetes for Service owners'
 author: Matthew Clarke, Spotify
 authorURL: https://github.com/mclarke47
 ---

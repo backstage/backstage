@@ -21,7 +21,7 @@ externalDocs:
   description: Backstage official documentation
   url: https://github.com/backstage/backstage/blob/master/docs/README.md
 servers:
-  - url: http://localhost:7000/api/auth/
+  - url: http://localhost:7007/api/auth/
 tags:
   - name: provider
     description: List of endpoints per provider
@@ -86,8 +86,7 @@ paths:
             example: email
         - name: code
           in: query
-          description:
-            Short-term authorization code used to be exchanged for access tokens
+          description: Short-term authorization code used to be exchanged for access tokens
           required: true
           schema:
             type: string

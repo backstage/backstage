@@ -26,6 +26,6 @@ describe('scmIntegrationsApiRef', () => {
 
   it('should be instantiated', () => {
     const i = ScmIntegrationsApi.fromConfig(new ConfigReader({}));
-    expect(i.list().length).toBe(4); // The default ones
+    expect(i.list().length).toBe(5); // The default ones
   });
 });

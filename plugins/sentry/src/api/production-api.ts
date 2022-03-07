@@ -16,23 +16,32 @@
 
 import { SentryIssue } from './sentry-issue';
 import { SentryApi } from './sentry-api';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export class ProductionSentryApi implements SentryApi {
   constructor(
     private readonly discoveryApi: DiscoveryApi,
     private readonly organization: string,
+    private readonly identityApi?: IdentityApi,
   ) {}
 
-  async fetchIssues(project: string, statsFor: string): Promise<SentryIssue[]> {
+  async fetchIssues(
+    project: string,
+    statsFor: string,
+    query?: string,
+  ): Promise<SentryIssue[]> {
     if (!project) {
       return [];
     }
 
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sentry/api`;
+    const options = await this.authOptions();
+
+    const queryPart = query ? `&query=${query}` : '';
 
     const response = await fetch(
-      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsFor=${statsFor}`,
+      `${apiUrl}/0/projects/${this.organization}/${project}/issues/?statsPeriod=${statsFor}${queryPart}`,
+      options,
     );
 
     if (response.status >= 400 && response.status < 600) {
@@ -40,5 +49,17 @@ export class ProductionSentryApi implements SentryApi {
     }
 
     return (await response.json()) as SentryIssue[];
+  }
+
+  private async authOptions() {
+    if (!this.identityApi) {
+      return {};
+    }
+    const { token } = await this.identityApi.getCredentials();
+    return {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    };
   }
 }

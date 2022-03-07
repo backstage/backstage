@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+const globalRestrictedSyntax = [
+  {
+    message:
+      'Default import from winston is not allowed, import `* as winston` instead.',
+    selector:
+      'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
+  },
+];
+
 module.exports = {
   extends: [
     '@spotify/eslint-config-base',
@@ -45,11 +54,10 @@ module.exports = {
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'
     'import/newline-after-import': 'error',
-    'import/no-duplicates': 'warn',
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: false,
+        devDependencies: ['**/*.test.*', 'src/setupTests.*', 'dev/**'],
         optionalDependencies: true,
         peerDependencies: true,
         bundledDependencies: true,
@@ -62,21 +70,19 @@ module.exports = {
       { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
     ],
     // Avoid cross-package imports
-    'no-restricted-imports': [2, { patterns: ['**/../../**/*/src/**'] }],
+    'no-restricted-imports': [
+      2,
+      { patterns: ['**/../../**/*/src/**', '**/../../**/*/src'] },
+    ],
     // Avoid default import from winston as it breaks at runtime
     'no-restricted-syntax': [
       'error',
       {
         message:
-          'Default import from winston is not allowed, import `* as winston` instead.',
-        selector:
-          'ImportDeclaration[source.value="winston"] ImportDefaultSpecifier',
-      },
-      {
-        message:
           "`__dirname` doesn't refer to the same dir in production builds, try `resolvePackagePath()` from `@backstage/backend-common` instead.",
         selector: 'Identifier[name="__dirname"]',
       },
+      ...globalRestrictedSyntax,
     ],
   },
   overrides: [
@@ -90,16 +96,7 @@ module.exports = {
     {
       files: ['*.test.*', 'src/setupTests.*', 'dev/**'],
       rules: {
-        // Tests are allowed to import dev dependencies
-        'import/no-extraneous-dependencies': [
-          'error',
-          {
-            devDependencies: true,
-            optionalDependencies: true,
-            peerDependencies: true,
-            bundledDependencies: true,
-          },
-        ],
+        'no-restricted-syntax': ['error', ...globalRestrictedSyntax],
       },
     },
   ],

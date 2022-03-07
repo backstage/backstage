@@ -14,54 +14,27 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
-import { makeStyles } from '@material-ui/core/styles';
-import 'graphiql/graphiql.css';
-import { buildSchema } from 'graphql';
-import React, { Suspense } from 'react';
 import { Progress } from '@backstage/core-components';
+import React, { Suspense } from 'react';
 
-const GraphiQL = React.lazy(() => import('graphiql'));
+// The graphql component, graphql and related CSS has a significant size, only
+// load it if the element is actually used.
+const LazyGraphQlDefinition = React.lazy(() =>
+  import('./GraphQlDefinition').then(m => ({
+    default: m.GraphQlDefinition,
+  })),
+);
 
-const useStyles = makeStyles<BackstageTheme>(() => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexFlow: 'column nowrap',
-  },
-  graphiQlWrapper: {
-    flex: 1,
-    '@global': {
-      '.graphiql-container': {
-        boxSizing: 'initial',
-        height: '100%',
-        minHeight: '600px',
-        flex: '1 1 auto',
-      },
-    },
-  },
-}));
-
-type Props = {
-  definition: any;
+export type GraphQlDefinitionWidgetProps = {
+  definition: string;
 };
 
-export const GraphQlDefinitionWidget = ({ definition }: Props) => {
-  const classes = useStyles();
-  const schema = buildSchema(definition);
-
+export const GraphQlDefinitionWidget = (
+  props: GraphQlDefinitionWidgetProps,
+) => {
   return (
     <Suspense fallback={<Progress />}>
-      <div className={classes.root}>
-        <div className={classes.graphiQlWrapper}>
-          <GraphiQL
-            fetcher={() => Promise.resolve(null) as any}
-            schema={schema}
-            docExplorerOpen
-            defaultSecondaryEditorOpen={false}
-          />
-        </div>
-      </div>
+      <LazyGraphQlDefinition {...props} />
     </Suspense>
   );
 };

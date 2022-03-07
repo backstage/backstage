@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
@@ -113,9 +117,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
     });
   }
 
-  async handler(
-    req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  async handler(req: express.Request) {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
@@ -127,26 +129,35 @@ export class GoogleAuthProvider implements OAuthHandlers {
     };
   }
 
-  async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
-    const { accessToken, params } = await executeRefreshTokenStrategy(
-      this._strategy,
-      req.refreshToken,
-      req.scope,
-    );
+  async refresh(req: OAuthRefreshRequest) {
+    const { accessToken, refreshToken, params } =
+      await executeRefreshTokenStrategy(
+        this._strategy,
+        req.refreshToken,
+        req.scope,
+      );
     const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
-    return this.handleResult({
-      fullProfile,
-      params,
-      accessToken,
-      refreshToken: req.refreshToken,
-    });
+
+    return {
+      response: await this.handleResult({
+        fullProfile,
+        params,
+        accessToken,
+      }),
+      refreshToken,
+    };
   }
 
   private async handleResult(result: OAuthResult) {
-    const { profile } = await this.authHandler(result);
+    const context = {
+      logger: this.logger,
+      catalogIdentityClient: this.catalogIdentityClient,
+      tokenIssuer: this.tokenIssuer,
+    };
+    const { profile } = await this.authHandler(result, context);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -164,11 +175,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        {
-          tokenIssuer: this.tokenIssuer,
-          catalogIdentityClient: this.catalogIdentityClient,
-          logger: this.logger,
-        },
+        context,
       );
     }
 
@@ -223,8 +230,17 @@ const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
     userId = profile.email.split('@')[0];
   }
 
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: userId,
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
-    claims: { sub: userId, ent: [`user:default/${userId}`] },
+    claims: {
+      sub: entityRef,
+      ent: [entityRef],
+    },
   });
 
   return { id: userId, token };
@@ -240,13 +256,10 @@ export type GoogleProviderOptions = {
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
-  /**
-   * Maps an auth result to a Backstage identity for the user.
-   *
-   * Set to `'email'` to use the default email-based sign in resolver, which will search
-   * the catalog for a single user entity that has a matching `google.com/email` annotation.
-   */
   signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
     resolver?: SignInResolver<OAuthResult>;
   };
 };
@@ -259,17 +272,21 @@ export const createGoogleProvider = (
     globalConfig,
     config,
     tokenIssuer,
+    tokenManager,
     catalogApi,
     logger,
   }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+      const callbackUrl =
+        customCallbackUrl ||
+        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
       const catalogIdentityClient = new CatalogIdentityClient({
         catalogApi,
-        tokenIssuer,
+        tokenManager,
       });
 
       const authHandler: AuthHandler<OAuthResult> = options?.authHandler
@@ -303,6 +320,7 @@ export const createGoogleProvider = (
         disableRefresh: false,
         providerId,
         tokenIssuer,
+        callbackUrl,
       });
     });
 };

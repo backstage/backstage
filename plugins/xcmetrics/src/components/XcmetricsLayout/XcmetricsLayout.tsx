@@ -13,9 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
-import { OverviewComponent } from '../OverviewComponent';
+import React, { ReactChild } from 'react';
+import {
+  Content,
+  Header,
+  HeaderLabel,
+  Page,
+  TabbedLayout,
+} from '@backstage/core-components';
+import { Overview } from '../Overview';
+import { buildsRouteRef } from '../../routes';
+import { BuildsPage } from '../BuildsPage';
+
+export interface TabConfig {
+  path: string;
+  title: string;
+  component: ReactChild;
+}
+
+const TABS: TabConfig[] = [
+  {
+    path: '/',
+    title: 'Overview',
+    component: <Overview />,
+  },
+  {
+    path: buildsRouteRef.path,
+    title: 'Builds',
+    component: <BuildsPage />,
+  },
+];
 
 export const XcmetricsLayout = () => (
   <Page themeId="tool">
@@ -23,8 +50,12 @@ export const XcmetricsLayout = () => (
       <HeaderLabel label="Owner" value="Spotify" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
-    <Content>
-      <OverviewComponent />
-    </Content>
+    <TabbedLayout>
+      {TABS.map(tab => (
+        <TabbedLayout.Route key={tab.path} path={tab.path} title={tab.title}>
+          <Content>{tab.component}</Content>
+        </TabbedLayout.Route>
+      ))}
+    </TabbedLayout>
   </Page>
 );

@@ -15,8 +15,7 @@
  */
 
 import { Entity, EntityMeta } from '@backstage/catalog-model';
-import fetch from 'cross-fetch';
-import { JsonObject } from '@backstage/config';
+import fetch from 'node-fetch';
 
 export interface ReaderEntityMeta extends EntityMeta {
   uid: string;
@@ -26,20 +25,24 @@ export interface ReaderEntityMeta extends EntityMeta {
   annotations: Record<string, string>;
   labels: Record<string, string>;
 }
+
 export interface ReaderEntity extends Entity {
-  metadata: JsonObject & ReaderEntityMeta;
+  metadata: ReaderEntityMeta;
 }
+
 export class CatalogClient {
   constructor(private baseUrl: string) {}
+
   async list(): Promise<ReaderEntity[]> {
-    const res = await fetch(`${this.baseUrl}/catalog/entities`);
+    const res = await fetch(`${this.baseUrl}/api/catalog/entities`);
+
     if (!res.ok) {
       // todo(blam): need some better way to handle errors here
       // experiment with throwing the input errors etc and having graphql versions of that
       throw new Error(await res.text());
     }
 
-    const entities: ReaderEntity[] = await res.json();
+    const entities = (await res.json()) as ReaderEntity[];
     return entities;
   }
 }

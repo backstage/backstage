@@ -14,49 +14,67 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
-import {
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  CardHeaderProps,
-  Divider,
-  withStyles,
-  makeStyles,
-} from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader, { CardHeaderProps } from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
+import React, { ReactNode } from 'react';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
+import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
-const useStyles = makeStyles(theme => ({
-  noPadding: {
-    padding: 0,
-    '&:last-child': {
-      paddingBottom: 0,
+/** @public */
+export type InfoCardClassKey =
+  | 'noPadding'
+  | 'header'
+  | 'headerTitle'
+  | 'headerSubheader'
+  | 'headerAvatar'
+  | 'headerAction'
+  | 'headerContent';
+
+const useStyles = makeStyles(
+  theme => ({
+    noPadding: {
+      padding: 0,
+      '&:last-child': {
+        paddingBottom: 0,
+      },
     },
-  },
-  header: {
-    padding: theme.spacing(2, 2, 2, 2.5),
-  },
-  headerTitle: {
-    fontWeight: 700,
-  },
-  headerSubheader: {
-    paddingTop: theme.spacing(1),
-  },
-  headerAvatar: {},
-  headerAction: {},
-  headerContent: {},
-}));
+    header: {
+      padding: theme.spacing(2, 2, 2, 2.5),
+    },
+    headerTitle: {
+      fontWeight: 700,
+    },
+    headerSubheader: {
+      paddingTop: theme.spacing(1),
+    },
+    headerAvatar: {},
+    headerAction: {},
+    headerContent: {},
+    subheader: {
+      display: 'flex',
+    },
+  }),
+  { name: 'BackstageInfoCard' },
+);
 
-const CardActionsTopRight = withStyles(theme => ({
-  root: {
-    display: 'inline-block',
-    padding: theme.spacing(8, 8, 0, 0),
-    float: 'right',
-  },
-}))(CardActions);
+/** @public */
+export type CardActionsTopRightClassKey = 'root';
+
+const CardActionsTopRight = withStyles(
+  theme => ({
+    root: {
+      display: 'inline-block',
+      padding: theme.spacing(8, 8, 0, 0),
+      float: 'right',
+    },
+  }),
+  { name: 'BackstageInfoCardCardActionsTopRight' },
+)(CardActions);
 
 const VARIANT_STYLES = {
   card: {
@@ -86,13 +104,14 @@ const VARIANT_STYLES = {
   },
 };
 
+/** @public */
 export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 
 /**
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
  *
- * You can custom style an InfoCard with the 'style' (outer container) and 'cardStyle' (inner container)
- * styles.
+ * You can custom style an InfoCard with the 'className' (outer container) and 'cardClassName' (inner container)
+ * props. This is typically used with the material-ui makeStyles mechanism.
  *
  * The InfoCard serves as an error boundary. As a result, if you provide an 'errorBoundaryProps' property this
  * specifies the extra information to display in the error component that is displayed if an error occurs
@@ -104,7 +123,7 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
  * When the InfoCard is displayed as a grid item within a grid, you may want items to have the same height for all items.
  * Set to the 'gridItem' variant to display the InfoCard with full height suitable for Grid:
  *
- *   <InfoCard variant="gridItem">...</InfoCard>
+ * `<InfoCard variant="gridItem">...</InfoCard>`
  */
 type Props = {
   title?: ReactNode;
@@ -115,11 +134,10 @@ type Props = {
   slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   variant?: InfoCardVariants;
-  style?: object;
-  cardStyle?: object;
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;
+  icon?: ReactNode;
   action?: ReactNode;
   actionsClassName?: string;
   actions?: ReactNode;
@@ -130,26 +148,34 @@ type Props = {
   titleTypographyProps?: object;
 };
 
-export const InfoCard = ({
-  title,
-  subheader,
-  divider = true,
-  deepLink,
-  slackChannel,
-  errorBoundaryProps,
-  variant,
-  children,
-  headerStyle,
-  headerProps,
-  action,
-  actionsClassName,
-  actions,
-  cardClassName,
-  actionsTopRight,
-  className,
-  noPadding,
-  titleTypographyProps,
-}: Props): JSX.Element => {
+/**
+ * Material-ui card with header , content and actions footer
+ *
+ * @public
+ *
+ */
+export function InfoCard(props: Props): JSX.Element {
+  const {
+    title,
+    subheader,
+    divider = true,
+    deepLink,
+    slackChannel,
+    errorBoundaryProps,
+    variant,
+    children,
+    headerStyle,
+    headerProps,
+    icon,
+    action,
+    actionsClassName,
+    actions,
+    cardClassName,
+    actionsTopRight,
+    className,
+    noPadding,
+    titleTypographyProps,
+  } = props;
   const classes = useStyles();
   /**
    * If variant is specified, we build up styles for that particular variant for both
@@ -173,6 +199,15 @@ export const InfoCard = ({
     });
   }
 
+  const cardSubTitle = () => {
+    return (
+      <div className={classes.headerSubheader}>
+        {subheader && <div className={classes.subheader}>{subheader}</div>}
+        {icon}
+      </div>
+    );
+  };
+
   const errProps: ErrorBoundaryProps =
     errorBoundaryProps || (slackChannel ? { slackChannel } : {});
 
@@ -190,7 +225,7 @@ export const InfoCard = ({
               content: classes.headerContent,
             }}
             title={title}
-            subheader={subheader}
+            subheader={cardSubTitle()}
             action={action}
             style={{ ...headerStyle }}
             titleTypographyProps={titleTypographyProps}
@@ -216,4 +251,4 @@ export const InfoCard = ({
       </ErrorBoundary>
     </Card>
   );
-};
+}

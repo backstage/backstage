@@ -17,7 +17,6 @@
 import React from 'react';
 import {
   Avatar,
-  Link,
   Typography,
   Box,
   IconButton,
@@ -26,7 +25,7 @@ import {
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { Link as RouterLink, generatePath } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { durationHumanized, relativeTimeTo } from '../../../../util';
 import { circleCIBuildRouteRef } from '../../../../route-refs';
 import {
@@ -37,7 +36,9 @@ import {
   StatusRunning,
   Table,
   TableColumn,
+  Link,
 } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 export type CITableBuildInfo = {
   id: string;
@@ -120,9 +121,7 @@ const SourceInfo = ({ build }: { build: CITableBuildInfo }) => {
         <Typography variant="button">{source?.branchName}</Typography>
         <Typography variant="body1">
           {source?.commit?.url !== undefined ? (
-            <Link href={source?.commit?.url} target="_blank">
-              {source?.commit.shortHash}
-            </Link>
+            <Link to={source?.commit?.url}>{source?.commit.shortHash}</Link>
           ) : (
             source?.commit.shortHash
           )}
@@ -144,23 +143,31 @@ const generatedColumns: TableColumn[] = [
     field: 'buildName',
     highlight: true,
     width: '20%',
-    render: (row: Partial<CITableBuildInfo>) => (
-      <Link
-        component={RouterLink}
-        to={`${generatePath(circleCIBuildRouteRef.path, {
-          buildId: row.id!,
-        })}`}
-      >
-        {row.buildName ? row.buildName : row?.workflow?.name}
-      </Link>
-    ),
+    render: (row: Partial<CITableBuildInfo>) => {
+      const LinkWrapper = () => {
+        const routeLink = useRouteRef(circleCIBuildRouteRef);
+
+        return (
+          <Link
+            component={RouterLink}
+            to={`${routeLink({
+              buildId: row.id!,
+            })}`}
+          >
+            {row.buildName ? row.buildName : row?.workflow?.name}
+          </Link>
+        );
+      };
+
+      return <LinkWrapper />;
+    },
   },
   {
     title: 'Job',
     field: 'buildName',
     highlight: true,
     render: (row: Partial<CITableBuildInfo>) => (
-      <Link href={row?.buildUrl} target="_blank">
+      <Link to={row?.buildUrl ?? ''}>
         <Box display="flex" alignItems="center">
           <LaunchIcon fontSize="small" color="disabled" />
           <Box mr={1} />
@@ -260,8 +267,8 @@ export const CITable = ({
         },
       ]}
       data={builds}
-      onChangePage={onChangePage}
-      onChangeRowsPerPage={onChangePageSize}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={onChangePageSize}
       title={
         <Box display="flex" alignItems="center">
           <GitHubIcon />

@@ -14,76 +14,68 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../../icons/types';
-import { Observable } from '../../types';
+import { Observable } from '@backstage/types';
 import { ApiRef, createApiRef } from '../system';
-
-/**
- * Information about the auth provider that we're requesting a login towards.
- *
- * This should be shown to the user so that they can be informed about what login is being requested
- * before a popup is shown.
- */
-export type AuthProvider = {
-  /**
-   * Title for the auth provider, for example "GitHub"
-   */
-  title: string;
-
-  /**
-   * Icon for the auth provider.
-   */
-  icon: IconComponent;
-};
+import { AuthProviderInfo } from './auth';
 
 /**
  * Describes how to handle auth requests. Both how to show them to the user, and what to do when
  * the user accesses the auth request.
+ *
+ * @public
  */
-export type AuthRequesterOptions<AuthResponse> = {
+export type OAuthRequesterOptions<TOAuthResponse> = {
   /**
    * Information about the auth provider, which will be forwarded to auth requests.
    */
-  provider: AuthProvider;
+  provider: AuthProviderInfo;
 
   /**
    * Implementation of the auth flow, which will be called synchronously when
    * trigger() is called on an auth requests.
    */
-  onAuthRequest(scopes: Set<string>): Promise<AuthResponse>;
+  onAuthRequest(scopes: Set<string>): Promise<TOAuthResponse>;
 };
 
 /**
  * Function used to trigger new auth requests for a set of scopes.
  *
+ * @remarks
+ *
  * The returned promise will resolve to the same value returned by the onAuthRequest in the
- * AuthRequesterOptions. Or rejected, if the request is rejected.
+ * {@link OAuthRequesterOptions}. Or rejected, if the request is rejected.
  *
  * This function can be called multiple times before the promise resolves. All calls
  * will be merged into one request, and the scopes forwarded to the onAuthRequest will be the
  * union of all requested scopes.
+ *
+ * @public
  */
-export type AuthRequester<AuthResponse> = (
+export type OAuthRequester<TAuthResponse> = (
   scopes: Set<string>,
-) => Promise<AuthResponse>;
+) => Promise<TAuthResponse>;
 
 /**
  * An pending auth request for a single auth provider. The request will remain in this pending
  * state until either reject() or trigger() is called.
  *
+ * @remarks
+ *
  * Any new requests for the same provider are merged into the existing pending request, meaning
  * there will only ever be a single pending request for a given provider.
+ *
+ * @public
  */
-export type PendingAuthRequest = {
+export type PendingOAuthRequest = {
   /**
    * Information about the auth provider, as given in the AuthRequesterOptions
    */
-  provider: AuthProvider;
+  provider: AuthProviderInfo;
 
   /**
    * Rejects the request, causing all pending AuthRequester calls to fail with "RejectedError".
    */
-  reject: () => void;
+  reject(): void;
 
   /**
    * Trigger the auth request to continue the auth flow, by for example showing a popup.
@@ -95,6 +87,8 @@ export type PendingAuthRequest = {
 
 /**
  * Provides helpers for implemented OAuth login flows within Backstage.
+ *
+ * @public
  */
 export type OAuthRequestApi = {
   /**
@@ -109,9 +103,9 @@ export type OAuthRequestApi = {
    *
    * See AuthRequesterOptions, AuthRequester, and handleAuthRequests for more info.
    */
-  createAuthRequester<AuthResponse>(
-    options: AuthRequesterOptions<AuthResponse>,
-  ): AuthRequester<AuthResponse>;
+  createAuthRequester<OAuthResponse>(
+    options: OAuthRequesterOptions<OAuthResponse>,
+  ): OAuthRequester<OAuthResponse>;
 
   /**
    * Observers pending auth requests. The returned observable will emit all
@@ -124,9 +118,14 @@ export type OAuthRequestApi = {
    * If a auth is triggered, and the auth handler resolves successfully, then all currently pending
    * AuthRequester calls will resolve to the value returned by the onAuthRequest call.
    */
-  authRequest$(): Observable<PendingAuthRequest[]>;
+  authRequest$(): Observable<PendingOAuthRequest[]>;
 };
 
+/**
+ * The {@link ApiRef} of {@link OAuthRequestApi}.
+ *
+ * @public
+ */
 export const oauthRequestApiRef: ApiRef<OAuthRequestApi> = createApiRef({
   id: 'core.oauthrequest',
 });

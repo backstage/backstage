@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
-export { DatabaseLocationsCatalog } from './DatabaseLocationsCatalog';
-export type { EntitiesCatalog, LocationsCatalog } from './types';
+export type {
+  EntitiesCatalog,
+  EntitiesRequest,
+  EntitiesResponse,
+  EntitiesSearchFilter,
+  EntityAncestryResponse,
+  EntityFacetsRequest,
+  EntityFacetsResponse,
+  EntityFilter,
+  EntityPagination,
+  PageInfo,
+} from './types';

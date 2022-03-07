@@ -17,13 +17,18 @@ import {
   createComponentExtension,
   createPlugin,
 } from '@backstage/core-plugin-api';
+import { catalogIndexRouteRef } from './routes';
 
 export const orgPlugin = createPlugin({
   id: 'org',
+  externalRoutes: {
+    catalogIndex: catalogIndexRouteRef,
+  },
 });
 
 export const EntityGroupProfileCard = orgPlugin.provide(
   createComponentExtension({
+    name: 'EntityGroupProfileCard',
     component: {
       lazy: () => import('./components').then(m => m.GroupProfileCard),
     },
@@ -31,6 +36,7 @@ export const EntityGroupProfileCard = orgPlugin.provide(
 );
 export const EntityMembersListCard = orgPlugin.provide(
   createComponentExtension({
+    name: 'EntityMembersListCard',
     component: {
       lazy: () => import('./components').then(m => m.MembersListCard),
     },
@@ -38,6 +44,7 @@ export const EntityMembersListCard = orgPlugin.provide(
 );
 export const EntityOwnershipCard = orgPlugin.provide(
   createComponentExtension({
+    name: 'EntityOwnershipCard',
     component: {
       lazy: () => import('./components').then(m => m.OwnershipCard),
     },
@@ -45,6 +52,7 @@ export const EntityOwnershipCard = orgPlugin.provide(
 );
 export const EntityUserProfileCard = orgPlugin.provide(
   createComponentExtension({
+    name: 'EntityUserProfileCard',
     component: {
       lazy: () => import('./components').then(m => m.UserProfileCard),
     },

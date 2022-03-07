@@ -40,17 +40,12 @@ const fileHandlers = [
     handler: handlers.packageJson,
   },
   {
-    // Not all plugins have routes
-    patterns: ['src/routes.ts'],
-    handler: handlers.skip,
-  },
-  {
     // make sure files in 1st level of src/ and dev/ exist
-    patterns: ['.eslintrc.js', /^(src|dev)\/[^/]+$/],
+    patterns: ['.eslintrc.js'],
     handler: handlers.exists,
   },
   {
-    patterns: ['README.md', 'tsconfig.json', /^src\//],
+    patterns: ['README.md', 'tsconfig.json', /^src\//, /^dev\//],
     handler: handlers.skip,
   },
 ];

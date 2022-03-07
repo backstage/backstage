@@ -19,7 +19,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const badgesApiRef = createApiRef<BadgesApi>({
   id: 'plugin.badges.client',
-  description: 'Used to make requests to the badges backend',
 });
 
 export type BadgeStyle =

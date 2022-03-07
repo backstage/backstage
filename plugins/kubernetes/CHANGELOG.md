@@ -1,5 +1,335 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/plugin-kubernetes-common@0.2.6
+
+## 0.6.0
+
+### Minor Changes
+
+- 2262fe19c9: **BREAKING**: Removed support for passing in an explicit `entity` prop to entity page extensions, which has been deprecated for a long time. This is only a breaking change at the TypeScript level, as this property was already ignored.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/plugin-kubernetes-common@0.2.5
+
+## 0.5.8
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+  - @backstage/plugin-kubernetes-common@0.2.3
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7
+  - @backstage/plugin-catalog-react@0.6.13
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.7-next.0
+  - @backstage/plugin-catalog-react@0.6.13-next.0
+
+## 0.5.5
+
+### Patch Changes
+
+- edbd626d0a: add a new auth provider to support use GOOGLE_APPLICATION_CREDENTIALS
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5
+  - @backstage/core-plugin-api@0.6.0
+  - @backstage/plugin-catalog-react@0.6.12
+  - @backstage/config@0.1.13
+  - @backstage/catalog-model@0.9.10
+  - @backstage/plugin-kubernetes-common@0.2.2
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- 51fbedc445: Migrated usage of deprecated `IdentityApi` methods.
+- Updated dependencies
+  - @backstage/core-components@0.8.5-next.0
+  - @backstage/core-plugin-api@0.6.0-next.0
+  - @backstage/config@0.1.13-next.0
+  - @backstage/plugin-catalog-react@0.6.12-next.0
+  - @backstage/catalog-model@0.9.10-next.0
+  - @backstage/plugin-kubernetes-common@0.2.2-next.0
+
+## 0.5.4
+
+### Patch Changes
+
+- 7612e2856b: Clean up emptystate.svg image, removing wrong white artifact from the background
+- Updated dependencies
+  - @backstage/config@0.1.12
+  - @backstage/core-components@0.8.4
+  - @backstage/core-plugin-api@0.5.0
+  - @backstage/plugin-catalog-react@0.6.11
+  - @backstage/catalog-model@0.9.9
+
+## 0.5.3
+
+### Patch Changes
+
+- 7ac0bd2c66: implement dashboard link formatter for GKE
+- 4ce51ab0f1: Internal refactor of the `react-use` imports to use `react-use/lib/*` instead.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.1
+  - @backstage/plugin-catalog-react@0.6.10
+  - @backstage/plugin-kubernetes-common@0.2.1
+  - @backstage/core-components@0.8.3
+
+## 0.5.2
+
+### Patch Changes
+
+- 610614a06d: Includes `KubernetesBackendClient` in the export to allow developers to use it externally.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.4.0
+  - @backstage/plugin-catalog-react@0.6.8
+  - @backstage/core-components@0.8.2
+
+## 0.5.1
+
+### Patch Changes
+
+- 6f0c850a86: Fixed styling bug for the CronJobsAccordions and updated Completed pods to display a green dot.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.3.1
+  - @backstage/core-components@0.8.1
+  - @backstage/catalog-model@0.9.8
+  - @backstage/plugin-catalog-react@0.6.7
+
+## 0.5.0
+
+### Minor Changes
+
+- c010632f88: Add pod metrics lookup and display in pod table.
+
+  ## Backwards incompatible changes
+
+  If your Kubernetes distribution does not have the [metrics server](https://github.com/kubernetes-sigs/metrics-server) installed,
+  you will need to set the `skipMetricsLookup` config flag to `true`.
+
+  See the [configuration docs](https://backstage.io/docs/features/kubernetes/configuration) for more details.
+
+### Patch Changes
+
+- cd450844f6: Moved React dependencies to `peerDependencies` and allow both React v16 and v17 to be used.
+- Updated dependencies
+  - @backstage/core-components@0.8.0
+  - @backstage/core-plugin-api@0.3.0
+  - @backstage/plugin-kubernetes-common@0.2.0
+  - @backstage/plugin-catalog-react@0.6.5
+
+## 0.4.22
+
+### Patch Changes
+
+- 86ed770308: Added accordions to display information on Jobs and CronJobs in the kubernetes plugin. Updated the PodsTable with fewer default columns and the ability to pass in additional ones depending on the use case.
+- Updated dependencies
+  - @backstage/core-components@0.7.6
+  - @backstage/theme@0.2.14
+  - @backstage/core-plugin-api@0.2.2
+  - @backstage/plugin-kubernetes-common@0.1.7
+
+## 0.4.21
+
+### Patch Changes
+
+- 3739d3f773: Implement support for formatting OpenShift dashboard url links
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.1.6
+  - @backstage/core-plugin-api@0.2.1
+  - @backstage/core-components@0.7.5
+
+## 0.4.20
+
+### Patch Changes
+
+- a125278b81: Refactor out the deprecated path and icon from RouteRefs
+- Updated dependencies
+  - @backstage/catalog-model@0.9.7
+  - @backstage/plugin-catalog-react@0.6.4
+  - @backstage/core-components@0.7.4
+  - @backstage/core-plugin-api@0.2.0
+
+## 0.4.19
+
+### Patch Changes
+
+- 9f3dd76bc7: fix: kubernetes plugin shall pass id token on get clusters request if possible
+- Updated dependencies
+  - @backstage/core-components@0.7.3
+  - @backstage/theme@0.2.13
+  - @backstage/core-plugin-api@0.1.13
+  - @backstage/plugin-catalog-react@0.6.3
+
+## 0.4.18
+
+### Patch Changes
+
+- 14df942bae: The Kubernetes plugin will now re-fetch the kubernetes objects every ten seconds (not current configurable), this allows users to track the progress of deployments without refreshing the browser.
+- Updated dependencies
+  - @backstage/config@0.1.11
+  - @backstage/theme@0.2.12
+  - @backstage/core-components@0.7.2
+  - @backstage/plugin-catalog-react@0.6.2
+  - @backstage/catalog-model@0.9.6
+  - @backstage/core-plugin-api@0.1.12
+
+## 0.4.17
+
+### Patch Changes
+
+- 89bcf90b66: Refactor kubernetes fetcher to reduce boilerplate code
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.6.0
+  - @backstage/core-components@0.7.0
+  - @backstage/theme@0.2.11
+
+## 0.4.16
+
+### Patch Changes
+
+- c148c8854b: Support Rancher URL's with an existing path component
+- ca0559444c: Avoid usage of `.to*Case()`, preferring `.toLocale*Case('en-US')` instead.
+- 81a41ec249: Added a `name` key to all extensions in order to improve Analytics API metadata.
+- Updated dependencies
+  - @backstage/core-components@0.6.1
+  - @backstage/core-plugin-api@0.1.10
+  - @backstage/plugin-catalog-react@0.5.2
+  - @backstage/catalog-model@0.9.4
+  - @backstage/plugin-kubernetes-common@0.1.5
+
+## 0.4.15
+
+### Patch Changes
+
+- e6aaf246c2: Enhanced deployment accordion to display the namespace of the deployment.
+- 6ba06efe08: Exported `KubernetesApi`, `kubernetesApiRef`, and `KubernetesAuthProvidersApi`.
+- 8d397ef27a: Added a check for the Kubernetes annotation on the entity
+- 6c0bd7fb75: Add dashboard support for Rancher
+- Updated dependencies
+  - @backstage/core-plugin-api@0.1.9
+  - @backstage/core-components@0.6.0
+  - @backstage/plugin-catalog-react@0.5.1
+
+## 0.4.14
+
+### Patch Changes
+
+- 7a0c334707: Provide access to the Kubernetes dashboard when viewing a specific resource
+- Updated dependencies
+  - @backstage/core-components@0.5.0
+  - @backstage/plugin-catalog-react@0.5.0
+  - @backstage/catalog-model@0.9.3
+  - @backstage/config@0.1.10
+  - @backstage/plugin-kubernetes-common@0.1.4
+
+## 0.4.13
+
+### Patch Changes
+
+- 9f1362dcc1: Upgrade `@material-ui/lab` to `4.0.0-alpha.57`.
+- Updated dependencies
+  - @backstage/core-components@0.4.2
+  - @backstage/plugin-catalog-react@0.4.6
+  - @backstage/core-plugin-api@0.1.8
+
+## 0.4.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.4.5
+  - @backstage/core-components@0.4.0
+  - @backstage/catalog-model@0.9.1
+
+## 0.4.11
+
+### Patch Changes
+
+- 8bedb75ae: Update Luxon dependency to 2.x
+- Updated dependencies
+  - @backstage/core-components@0.3.1
+  - @backstage/core-plugin-api@0.1.6
+  - @backstage/plugin-catalog-react@0.4.2
+
+## 0.4.10
+
+### Patch Changes
+
+- 260c053b9: Fix All Material UI Warnings
+- Updated dependencies
+  - @backstage/core-components@0.3.0
+  - @backstage/config@0.1.6
+  - @backstage/core-plugin-api@0.1.5
+  - @backstage/plugin-catalog-react@0.4.1
+
+## 0.4.9
+
+### Patch Changes
+
+- 9d40fcb1e: - Bumping `material-ui/core` version to at least `4.12.2` as they made some breaking changes in later versions which broke `Pagination` of the `Table`.
+  - Switching out `material-table` to `@material-table/core` for support for the later versions of `material-ui/core`
+  - This causes a minor API change to `@backstage/core-components` as the interface for `Table` re-exports the `prop` from the underlying `Table` components.
+  - `onChangeRowsPerPage` has been renamed to `onRowsPerPageChange`
+  - `onChangePage` has been renamed to `onPageChange`
+  - Migration guide is here: https://material-table-core.com/docs/breaking-changes
+- 7f24f4088: chore(deps): bump `@kubernetes/client-node` from 0.14.3 to 0.15.0
+- Updated dependencies
+  - @backstage/core-components@0.2.0
+  - @backstage/plugin-catalog-react@0.4.0
+  - @backstage/core-plugin-api@0.1.4
+  - @backstage/theme@0.2.9
+  - @backstage/plugin-kubernetes-common@0.1.3
+
 ## 0.4.8
 
 ### Patch Changes

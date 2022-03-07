@@ -19,7 +19,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 
 export const githubActionsApiRef = createApiRef<GithubActionsApi>({
   id: 'plugin.githubactions.service',
-  description: 'Used by the GitHub Actions plugin to make requests',
 });
 
 export type GithubActionsApi = {

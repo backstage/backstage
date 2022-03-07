@@ -17,7 +17,7 @@
 import {
   AuthenticationError,
   ConflictError,
-  ErrorResponse,
+  ErrorResponseBody,
   InputError,
   NotAllowedError,
   NotFoundError,
@@ -28,6 +28,11 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
 
+/**
+ * Options passed to the {@link errorHandler} middleware.
+ *
+ * @public
+ */
 export type ErrorHandlerOptions = {
   /**
    * Whether error response bodies should show error stack traces or not.
@@ -44,9 +49,9 @@ export type ErrorHandlerOptions = {
   logger?: Logger;
 
   /**
-   * Whether any error < 4XX should be logged or not.
+   * Whether any 4xx errors should be logged or not.
    *
-   * If not specified, by default log any 5xx errors.
+   * If not specified, default to only logging 5xx errors.
    */
   logClientErrors?: boolean;
 };
@@ -62,6 +67,7 @@ export type ErrorHandlerOptions = {
  * error types (such as http-error exceptions) and returns the enclosed status
  * code accordingly.
  *
+ * @public
  * @returns An Express error request handler
  */
 export function errorHandler(
@@ -87,7 +93,7 @@ export function errorHandler(
       return;
     }
 
-    const body: ErrorResponse = {
+    const body: ErrorResponseBody = {
       error: serializeError(error, { includeStack: showStackTraces }),
       request: { method: req.method, url: req.url },
       response: { statusCode },

@@ -13,10 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ProfileInfo, BackstageIdentity } from '@backstage/core-plugin-api';
 
+import {
+  BackstageIdentityResponse,
+  ProfileInfo,
+} from '@backstage/core-plugin-api';
+import { z } from 'zod';
+
+/** @internal */
 export type SamlSession = {
-  userId: string;
   profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
+  backstageIdentity: BackstageIdentityResponse;
 };
+
+/** @internal */
+export const samlSessionSchema: z.ZodSchema<SamlSession> = z.object({
+  profile: z.object({
+    email: z.string().optional(),
+    displayName: z.string().optional(),
+    picture: z.string().optional(),
+  }),
+  backstageIdentity: z.object({
+    id: z.string(),
+    token: z.string(),
+    identity: z.object({
+      type: z.literal('user'),
+      userEntityRef: z.string(),
+      ownershipEntityRefs: z.array(z.string()),
+    }),
+  }),
+});

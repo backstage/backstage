@@ -16,20 +16,22 @@
 
 import {
   PluginConfig,
-  PluginOutput,
   BackstagePlugin,
   Extension,
   AnyRoutes,
   AnyExternalRoutes,
+  PluginFeatureFlagConfig,
 } from './types';
 import { AnyApiFactory } from '../apis';
 
+/**
+ * @internal
+ */
 export class PluginImpl<
   Routes extends AnyRoutes,
-  ExternalRoutes extends AnyExternalRoutes
-> implements BackstagePlugin<Routes, ExternalRoutes> {
-  private storedOutput?: PluginOutput[];
-
+  ExternalRoutes extends AnyExternalRoutes,
+> implements BackstagePlugin<Routes, ExternalRoutes>
+{
   constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
 
   getId(): string {
@@ -40,34 +42,16 @@ export class PluginImpl<
     return this.config.apis ?? [];
   }
 
+  getFeatureFlags(): Iterable<PluginFeatureFlagConfig> {
+    return this.config.featureFlags?.slice() ?? [];
+  }
+
   get routes(): Routes {
     return this.config.routes ?? ({} as Routes);
   }
 
   get externalRoutes(): ExternalRoutes {
     return this.config.externalRoutes ?? ({} as ExternalRoutes);
-  }
-
-  output(): PluginOutput[] {
-    if (this.storedOutput) {
-      return this.storedOutput;
-    }
-    if (!this.config.register) {
-      return [];
-    }
-
-    const outputs = new Array<PluginOutput>();
-
-    this.config.register({
-      featureFlags: {
-        register(name) {
-          outputs.push({ type: 'feature-flag', name });
-        },
-      },
-    });
-
-    this.storedOutput = outputs;
-    return this.storedOutput;
   }
 
   provide<T>(extension: Extension<T>): T {
@@ -79,9 +63,15 @@ export class PluginImpl<
   }
 }
 
+/**
+ * Creates Backstage Plugin from config.
+ *
+ * @param config - Plugin configuration.
+ * @public
+ */
 export function createPlugin<
   Routes extends AnyRoutes = {},
-  ExternalRoutes extends AnyExternalRoutes = {}
+  ExternalRoutes extends AnyExternalRoutes = {},
 >(
   config: PluginConfig<Routes, ExternalRoutes>,
 ): BackstagePlugin<Routes, ExternalRoutes> {

@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { LatestRunCard } from './Cards';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { JenkinsApi, jenkinsApiRef } from '../../api';
-import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { Project } from '../../api/JenkinsApi';
 
 describe('<LatestRunCard />', () => {
@@ -36,19 +35,17 @@ describe('<LatestRunCard />', () => {
   const jenkinsApi: Partial<JenkinsApi> = {
     getProjects: () =>
       Promise.resolve([
-        { lastBuild: { timestamp: 0, status: 'success' } },
+        { lastBuild: { timestamp: 0, status: 'success', url: 'foo' } },
       ] as Project[]),
   };
 
   it('should show success status of latest build', async () => {
-    const apis = ApiRegistry.from([[jenkinsApiRef, jenkinsApi]]);
-
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={[[jenkinsApiRef, jenkinsApi]]}>
         <EntityProvider entity={entity}>
           <LatestRunCard branch="master" />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(getByText('Completed')).toBeInTheDocument();
@@ -59,14 +56,12 @@ describe('<LatestRunCard />', () => {
       getProjects: () => Promise.reject(new Error('Unauthorized')),
     };
 
-    const apis = ApiRegistry.from([[jenkinsApiRef, jenkinsApiWithError]]);
-
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={[[jenkinsApiRef, jenkinsApiWithError]]}>
         <EntityProvider entity={entity}>
           <LatestRunCard branch="master" />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(getByText("Error: Can't connect to Jenkins")).toBeInTheDocument();
@@ -82,14 +77,12 @@ describe('<LatestRunCard />', () => {
         }),
     };
 
-    const apis = ApiRegistry.from([[jenkinsApiRef, jenkinsApiWithError]]);
-
     const { getByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <TestApiProvider apis={[[jenkinsApiRef, jenkinsApiWithError]]}>
         <EntityProvider entity={entity}>
           <LatestRunCard branch="master" />
         </EntityProvider>
-      </ApiProvider>,
+      </TestApiProvider>,
     );
 
     expect(getByText("Error: Can't find Jenkins project")).toBeInTheDocument();

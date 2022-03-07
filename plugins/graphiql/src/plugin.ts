@@ -42,6 +42,7 @@ export const graphiqlPlugin = createPlugin({
 
 export const GraphiQLPage = graphiqlPlugin.provide(
   createRoutableExtension({
+    name: 'GraphiQLPage',
     component: () => import('./components').then(m => m.GraphiQLPage),
     mountPoint: graphiQLRouteRef,
   }),

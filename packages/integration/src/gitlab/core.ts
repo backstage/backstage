@@ -21,6 +21,8 @@ import fetch from 'cross-fetch';
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
  * for fetching the contents of the data.
  *
+ * @remarks
+ *
  * Converts
  * from: https://gitlab.example.com/a/b/blob/master/c.yaml
  * to:   https://gitlab.example.com/a/b/raw/master/c.yaml
@@ -28,8 +30,9 @@ import fetch from 'cross-fetch';
  * from: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
  * to:   https://gitlab.com/api/v4/projects/projectId/repository/files/filepath?ref=branch
  *
- * @param url A URL pointing to a file
- * @param config The relevant provider config
+ * @param url - A URL pointing to a file
+ * @param config - The relevant provider config
+ * @public
  */
 export async function getGitLabFileFetchUrl(
   url: string,
@@ -48,11 +51,12 @@ export async function getGitLabFileFetchUrl(
 /**
  * Gets the request options necessary to make requests to a given provider.
  *
- * @param config The relevant provider config
+ * @param config - The relevant provider config
+ * @public
  */
-export function getGitLabRequestOptions(
-  config: GitLabIntegrationConfig,
-): RequestInit {
+export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
+  headers: Record<string, string>;
+} {
   const { token = '' } = config;
   return {
     headers: {
@@ -68,20 +72,15 @@ export function buildRawUrl(target: string): URL {
   try {
     const url = new URL(target);
 
-    const [
-      empty,
-      userOrOrg,
-      repoName,
-      blobKeyword,
-      ...restOfPath
-    ] = url.pathname.split('/');
+    const [empty, userOrOrg, repoName, blobKeyword, ...restOfPath] =
+      url.pathname.split('/');
 
     if (
       empty !== '' ||
       userOrOrg === '' ||
       repoName === '' ||
       blobKeyword !== 'blob' ||
-      !restOfPath.join('/').match(/\.yaml$/)
+      !restOfPath.join('/').match(/\.(yaml|yml)$/)
     ) {
       throw new Error('Wrong GitLab URL');
     }
@@ -139,7 +138,7 @@ export async function getProjectId(
     // Convert
     // to: https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo
     const repoIDLookup = new URL(
-      `${url.protocol + url.hostname}/api/v4/projects/${encodeURIComponent(
+      `${url.origin}/api/v4/projects/${encodeURIComponent(
         repo.replace(/^\//, ''),
       )}`,
     );

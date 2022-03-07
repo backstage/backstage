@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from '@material-ui/core';
+
+import Grid from '@material-ui/core/Grid';
 import React, { PropsWithChildren, useState } from 'react';
 import { MemoryRouter } from 'react-router';
 import { CardTab, TabbedCard } from './TabbedCard';

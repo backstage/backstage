@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApiHolder, configApiRef } from '@backstage/core-plugin-api';
 
 export type SupportItemLink = {
   url: string;
@@ -42,8 +42,7 @@ const DEFAULT_SUPPORT_CONFIG: SupportConfig = {
         {
           // TODO: Update to dedicated support page on backstage.io/docs
           title: 'Add `app.support` config key',
-          url:
-            'https://github.com/andrewthauer/backstage/blob/master/app-config.yaml',
+          url: 'https://github.com/andrewthauer/backstage/blob/master/app-config.yaml',
         },
       ],
     },
@@ -51,8 +50,9 @@ const DEFAULT_SUPPORT_CONFIG: SupportConfig = {
 };
 
 export function useSupportConfig(): SupportConfig {
-  const config = useApi(configApiRef);
-  const supportConfig = config.getOptionalConfig('app.support');
+  const apiHolder = useApiHolder();
+  const config = apiHolder.get(configApiRef);
+  const supportConfig = config?.getOptionalConfig('app.support');
 
   if (!supportConfig) {
     return DEFAULT_SUPPORT_CONFIG;

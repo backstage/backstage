@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Config, JsonObject } from '@backstage/config';
+import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import knexFactory, { Knex } from 'knex';
 import { mergeDatabaseConfig } from './config';
@@ -40,8 +41,9 @@ const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
 /**
  * Creates a knex database connection
  *
- * @param dbConfig The database config
- * @param overrides Additional options to merge with the config
+ * @public
+ * @param dbConfig - The database config
+ * @param overrides - Additional options to merge with the config
  */
 export function createDatabaseClient(
   dbConfig: Config,
@@ -56,13 +58,9 @@ export function createDatabaseClient(
 }
 
 /**
- * Alias for createDatabaseClient
- * @deprecated Use createDatabaseClient instead
- */
-export const createDatabase = createDatabaseClient;
-
-/**
  * Ensures that the given databases all exist, creating them if they do not.
+ *
+ * @public
  */
 export async function ensureDatabaseExists(
   dbConfig: Config,
@@ -77,7 +75,25 @@ export async function ensureDatabaseExists(
 }
 
 /**
- * Provides a Knex.Config object with the provided database name for a given client.
+ * Ensures that the given schemas all exist, creating them if they do not.
+ *
+ * @public
+ */
+export async function ensureSchemaExists(
+  dbConfig: Config,
+  ...schemas: Array<string>
+): Promise<void> {
+  const client: DatabaseClient = dbConfig.getString('client');
+
+  return await ConnectorMapping[client]?.ensureSchemaExists?.(
+    dbConfig,
+    ...schemas,
+  );
+}
+
+/**
+ * Provides a `Knex.Config` object with the provided database name for a given
+ * client.
  */
 export function createNameOverride(
   client: string,
@@ -88,6 +104,24 @@ export function createNameOverride(
   } catch (e) {
     throw new InputError(
       `Unable to create database name override for '${client}' connector`,
+      e,
+    );
+  }
+}
+
+/**
+ * Provides a `Knex.Config` object with the provided database schema for a given
+ * client. Currently only supported by `pg`.
+ */
+export function createSchemaOverride(
+  client: string,
+  name: string,
+): Partial<Knex.Config | undefined> {
+  try {
+    return ConnectorMapping[client]?.createSchemaOverride?.(name);
+  } catch (e) {
+    throw new InputError(
+      `Unable to create database schema override for '${client}' connector`,
       e,
     );
   }
@@ -116,7 +150,8 @@ export function parseConnectionString(
 }
 
 /**
- * Normalizes a connection config or string into an object which can be passed to Knex.
+ * Normalizes a connection config or string into an object which can be passed
+ * to Knex.
  */
 export function normalizeConnection(
   connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,

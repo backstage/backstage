@@ -6,21 +6,21 @@ description: Details around creating your own custom Software Templates
 
 Templates are stored in the **Software Catalog** under a kind `Template`. You
 can create your own templates with a small `yaml` definition which describes the
-template and it's metadata, along with some input variables that your template
+template and its metadata, along with some input variables that your template
 will need, and then a list of actions which are then executed by the scaffolding
 service.
 
 Let's take a look at a simple example:
 
 ```yaml
-# Notice the v1beta2 version
-apiVersion: backstage.io/v1beta2
+# Notice the v1beta3 version
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 # some metadata about the template itself
 metadata:
-  name: v1beta2-demo
+  name: v1beta3-demo
   title: Test Action template
-  description: scaffolder v1beta2 template demo
+  description: scaffolder v1beta3 template demo
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -66,8 +66,8 @@ spec:
       input:
         url: ./template
         values:
-          name: '{{ parameters.name }}'
-          owner: '{{ parameters.owner }}'
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
 
     - id: fetch-docs
       name: Fetch Docs
@@ -81,25 +81,25 @@ spec:
       action: publish:github
       input:
         allowedHosts: ['github.com']
-        description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
 
     - id: register
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   # some outputs which are saved along with the job for use in the frontend
   output:
-    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
-    entityRef: '{{ steps.register.output.entityRef }}'
+    remoteUrl: ${{ steps.publish.output.remoteUrl }}
+    entityRef: ${{ steps.register.output.entityRef }}
 ```
 
-Let's dive in an pick apart what each of these sections do and what they are.
+Let's dive in and pick apart what each of these sections do and what they are.
 
-### `spec.parameters` - `FormStep | FormStep[]`
+## `spec.parameters` - `FormStep | FormStep[]`
 
 These `parameters` are template variables which can be modified in the frontend
 as a sequence. It can either be one `Step` if you just want one big list of
@@ -183,12 +183,12 @@ this:
 It would look something like the following in a template:
 
 ```yaml
-apiVersion: backstage.io/v1beta2
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: v1beta2-demo
+  name: v1beta3-demo
   title: Test Action template
-  description: scaffolder v1beta2 template demo
+  description: scaffolder v1beta3 template demo
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -227,7 +227,7 @@ spec:
             inputType: tel
 ```
 
-#### Hide or mask sensitive data on Review step
+### Hide or mask sensitive data on Review step
 
 Sometimes, specially in custom fields, you collect some data on Create form that
 must not be shown to the user on Review step. To hide or mask this data, you can
@@ -254,13 +254,13 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
           show: false # wont print any info about 'hidden' property on Review Step
 ```
 
-#### The Repository Picker
+### The Repository Picker
 
-So in order to make working with repository providers easier, we've built a
-custom picker that can be used by overriding the `ui:field` option in the
-`uiSchema` for a `string` field. Instead of displaying a text input block it
-will render our custom component that we've built which makes it easy to select
-a repository provider, and insert a project or owner, and repository name.
+In order to make working with repository providers easier, we've built a custom
+picker that can be used by overriding the `ui:field` option in the `uiSchema`
+for a `string` field. Instead of displaying a text input block it will render
+our custom component that we've built which makes it easy to select a repository
+provider, and insert a project or owner, and repository name.
 
 You can see it in the above full example which is a separate step and it looks a
 little like this:
@@ -284,10 +284,83 @@ to publish to. And it can be any host that is listed in your `integrations`
 config in `app-config.yaml`.
 
 The `RepoUrlPicker` is a custom field that we provide part of the
-`plugin-scaffolder`. It's currently not possible to create your own fields yet,
-but contributions are welcome! :)
+`plugin-scaffolder`. You can provide your own custom fields by
+[writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
 
-#### The Owner Picker
+#### Using the Users `oauth` token
+
+There's a little bit of extra magic that you get out of the box when using the
+`RepoUrlPicker` as a field input. You can provide some additional options under
+`ui:options` to allow the `RepoUrlPicker` to grab an `oauth` token for the user
+for the required `repository`.
+
+This is great for when you are wanting to create a new repository, or wanting to
+perform operations on top of an existing repository.
+
+A sample template that takes advantage of this is like so:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: v1beta3-demo
+  title: Test Action template
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    ...
+
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            # Here's the option you can pass to the RepoUrlPicker
+            requestUserCredentials:
+              secretsKey: USER_OAUTH_TOKEN
+              additionalScopes:
+                github:
+                  - workflow:write
+            allowedHosts:
+              - github.com
+    ...
+
+  steps:
+    ...
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
+        # here's where the secret can be used
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+
+    ...
+```
+
+You will see from above that there is an additional `requestUserCredentials`
+object that is passed to the `RepoUrlPicker`. This object defines what the
+returned `secret` should be stored as when accessing using
+`${{ secrets.secretName }}`, in this case it is `USER_OAUTH_TOKEN`. And then you
+will see that there is an additional `input` field into the `publish:github`
+action called `token`, in which you can use the `secret` like so:
+`token: ${{ secrets.USER_OAUTH_TOKEN }}`.
+
+There's also the ability to pass additional scopes when requesting the `oauth`
+token from the user, which you can do on a per-provider basis, in case your
+template can be published to multiple providers.
+
+### The Owner Picker
 
 When the scaffolder needs to add new components to the catalog, it needs to have
 an owner for them. Ideally, users should be able to select an owner when they go
@@ -307,7 +380,7 @@ owner:
       - Group
 ```
 
-### `spec.steps` - `Action[]`
+## `spec.steps` - `Action[]`
 
 The `steps` is an array of the things that you want to happen part of this
 template. These follow the same standard format:
@@ -315,19 +388,19 @@ template. These follow the same standard format:
 ```yaml
 - id: fetch-base # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
-  if: '{{ parameters.name }}' # Optional condition, skip the step if not truthy
+  if: ${{ parameters.name }} # Optional condition, skip the step if not truthy
   action: fetch:template # An action to call
   input: # Input that is passed as arguments to the action handler
     url: ./template
     values:
-      name: '{{ parameters.name }}'
+      name: ${{ parameters.name }}
 ```
 
-By default we ship some built in actions that you can take a look at
-[here](./builtin-actions.md), or you can create your own custom actions by
-looking at the docs [here](./writing-custom-actions.md)
+By default we ship some [built in actions](./builtin-actions.md) that you can
+take a look at, or you can
+[create your own custom actions](./writing-custom-actions.md).
 
-### Outputs
+## Outputs
 
 Each individual step can output some variables that can be used in the
 scaffolder frontend for after the job is finished. This is useful for things
@@ -338,26 +411,23 @@ The main two that are used are the following:
 
 ```yaml
 output:
-  remoteUrl: '{{ steps.publish.output.remoteUrl }}' # link to the remote repository
-  entityRef: '{{ steps.register.output.entityRef }}' # link to the entity that has been ingested to the catalog
+  remoteUrl: ${{ steps.publish.output.remoteUrl }} # link to the remote repository
+  entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
 ```
 
-### The templating syntax
+## The templating syntax
 
-You might have noticed variables wrapped in `{{ }}` in the examples. These are
-`handlebars` template strings for linking and gluing the different parts of the
-template together. All the form inputs from the `parameters` section will be
-available by using this template syntax (for example,
-`{{ parameters.firstName }}` inserts the value of `firstName` from the
-parameters). This is great for passing the values from the form into different
-steps and reusing these input variables. To pass arrays or objects use the
-`json` custom [helper](https://handlebarsjs.com/guide/expressions.html#helpers).
-For example, `{{ json parameters.nicknames }}` will insert the result of calling
-`JSON.stringify` on the value of the `nicknames` parameter.
+You might have noticed variables wrapped in `${{ }}` in the examples. These are
+template strings for linking and gluing the different parts of the template
+together. All the form inputs from the `parameters` section will be available by
+using this template syntax (for example, `${{ parameters.firstName }}` inserts
+the value of `firstName` from the parameters). This is great for passing the
+values from the form into different steps and reusing these input variables.
+These template strings preserve the type of the parameter.
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
 output things. You can grab that output using `steps.$stepId.output.$property`.
 
 You can read more about all the `inputs` and `outputs` defined in the actions in
-code part of the `JSONSchema`, or you can read more about our built in ones
-[here](./builtin-actions.md).
+code part of the `JSONSchema`, or you can read more about our
+[built in actions](./builtin-actions.md).

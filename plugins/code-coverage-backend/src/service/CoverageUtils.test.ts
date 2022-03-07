@@ -15,6 +15,7 @@
  */
 import fs from 'fs';
 import { Readable } from 'stream';
+import { Request } from 'express';
 import {
   calculatePercentage,
   aggregateCoverage,
@@ -202,13 +203,10 @@ describe('CodeCoverageUtils', () => {
     it('rejects missing content type', () => {
       let err: Error | null = null;
       try {
-        const mockRequest: Partial<Request> = {
-          // @ts-ignore
+        utils.validateRequestBody({
           headers: {},
-        };
-        // @ts-ignore
-        utils.validateRequestBody(mockRequest as Request);
-      } catch (error) {
+        } as Request);
+      } catch (error: any) {
         err = error;
       }
       expect(err?.message).toEqual('Content-Type missing');
@@ -217,51 +215,40 @@ describe('CodeCoverageUtils', () => {
     it('rejects unsupported content type', () => {
       let err: Error | null = null;
       try {
-        const mockRequest: Partial<Request> = {
+        utils.validateRequestBody({
           headers: {
-            // @ts-ignore
             'content-type': 'application/json',
           },
-        };
-
-        // @ts-ignore
-        utils.validateRequestBody(mockRequest as Request);
-      } catch (error) {
+        } as Request);
+      } catch (error: any) {
         err = error;
       }
       expect(err?.message).toEqual('Illegal Content-Type');
     });
 
     it('parses the body', () => {
-      const mockRequest: Partial<Request> = {
+      const data: Readable = utils.validateRequestBody({
         headers: {
-          // @ts-ignore
           'content-type': 'text/xml',
         },
-        // @ts-ignore
         body: Readable.from(
           '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><report name="example"></report>',
         ),
-      };
-
-      // @ts-ignore
-      const data: Readable = utils.validateRequestBody(mockRequest as Request);
+      } as Request);
 
       expect(data.read()).toContain('<?xml');
     });
   });
 
   describe('processCoveragePayload', () => {
-    const mockRequest: Partial<Request> = {
+    const mockRequest = {
       headers: {
-        // @ts-ignore
         'content-type': 'text/xml',
       },
-      // @ts-ignore
       body: Readable.from(
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><report name="example"></report>',
       ),
-    };
+    } as Request;
 
     it('ignores scm if annotation is not set', async () => {
       const entity: Entity = {
@@ -273,12 +260,8 @@ describe('CodeCoverageUtils', () => {
         apiVersion: 'backstage.io/v1alpha1',
       };
 
-      const {
-        scmFiles,
-        sourceLocation,
-        vcs,
-        body, // @ts-ignore
-      } = await utils.processCoveragePayload(entity, mockRequest);
+      const { scmFiles, sourceLocation, vcs, body } =
+        await utils.processCoveragePayload(entity, mockRequest);
       let data;
       // in normal flow the express app will already have done this through the middleware
       parseString((body as Readable).read(), (_e, r) => {
@@ -312,11 +295,8 @@ describe('CodeCoverageUtils', () => {
         apiVersion: 'backstage.io/v1alpha1',
       };
 
-      const {
-        scmFiles,
-        sourceLocation,
-        vcs, // @ts-ignore
-      } = await utils.processCoveragePayload(entity, mockRequest);
+      const { scmFiles, sourceLocation, vcs } =
+        await utils.processCoveragePayload(entity, mockRequest);
 
       expect(scmFiles.length).toBe(scmFiles.length);
       expect(vcs).not.toBeUndefined();

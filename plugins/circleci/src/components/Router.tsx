@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router';
-import { circleCIRouteRef, circleCIBuildRouteRef } from '../route-refs';
+import { circleCIBuildRouteRef } from '../route-refs';
 import { BuildWithStepsPage } from './BuildWithStepsPage/';
 import { BuildsPage } from './BuildsPage';
 import { CIRCLECI_ANNOTATION } from '../constants';
@@ -27,12 +27,7 @@ import { MissingAnnotationEmptyState } from '@backstage/core-components';
 export const isCircleCIAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const Router = (_props: Props) => {
+export const Router = () => {
   const { entity } = useEntity();
 
   if (!isCircleCIAvailable(entity)) {
@@ -41,9 +36,9 @@ export const Router = (_props: Props) => {
 
   return (
     <Routes>
-      <Route path={`/${circleCIRouteRef.path}`} element={<BuildsPage />} />
+      <Route path="/" element={<BuildsPage />} />
       <Route
-        path={`/${circleCIBuildRouteRef.path}`}
+        path={`${circleCIBuildRouteRef.path}`}
         element={<BuildWithStepsPage />}
       />
     </Routes>
