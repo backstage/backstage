@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,18 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Grid } from '@material-ui/core';
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardHeader,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import React from 'react';
-import { ImportInfoCard } from '../ImportInfoCard';
-import { ImportStepper } from '../ImportStepper';
 
 /**
  * The default catalog import page.
@@ -38,22 +46,65 @@ export const DefaultImportPage = () => {
 
   return (
     <Page themeId="home">
-      <Header title="Register an existing component" />
+      <Header title="Catalog Import" />
       <Content>
-        <ContentHeader title={`Start tracking your component in ${appTitle}`}>
+        <ContentHeader title="What would you like to import?">
           <SupportButton>
-            Start tracking your component in {appTitle} by adding it to the
-            software catalog.
+            Import software or other entities into {appTitle} by adding it to
+            the software catalog.
           </SupportButton>
         </ContentHeader>
 
-        <Grid container spacing={2} direction="row-reverse">
-          <Grid item xs={12} md={4} lg={6} xl={8}>
-            <ImportInfoCard />
+        <Grid container>
+          <Grid item xs={8}>
+            <Card raised>
+              <CardActionArea>
+                <CardHeader
+                  avatar={<PlaylistAddIcon style={{ marginTop: 5 }} />}
+                  title="Software components"
+                  titleTypographyProps={{ variant: 'h6' }}
+                />
+                <CardContent>
+                  <Typography>
+                    Import software components such as services, websites,
+                    libraries and APIs. These will be imported from a source
+                    code repository.
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
           </Grid>
-
-          <Grid item xs={12} md={8} lg={6} xl={4}>
-            <ImportStepper />
+          <Grid item xs={8}>
+            <Card raised>
+              <CardActionArea>
+                <CardHeader
+                  avatar={<GroupAddIcon style={{ marginTop: 5 }} />}
+                  title="Organizational data"
+                  titleTypographyProps={{ variant: 'h5' }}
+                />
+                <CardContent>
+                  <Typography>
+                    Import users and groups from an external system such as
+                    LDAP, GitHub, or Azure Active Directory.
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+          <Grid item xs={8}>
+            <Card aria-disabled="true" style={{ opacity: 0.5 }}>
+              <CardHeader
+                avatar={<CloudDownloadIcon style={{ marginTop: 5 }} />}
+                title="Cloud resources"
+                titleTypographyProps={{ variant: 'h5' }}
+              />
+              <CardContent>
+                <Typography>
+                  Import cloud resources such as databases, storage buckets, or
+                  machine instances.
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </Content>
