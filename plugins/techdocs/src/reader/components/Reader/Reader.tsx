@@ -824,11 +824,10 @@ export const useTechDocsReaderDom = (
 };
 
 const TheReader = ({
-  entityRef,
-  onReady = () => {},
   withSearch = true,
-}: ReaderProps) => {
+}: Omit<ReaderProps, 'entityRef' | 'onReady'>) => {
   const classes = useStyles();
+  const { entityRef, onReady } = useTechDocsReader();
   const dom = useTechDocsReaderDom(entityRef);
   const shadowDomRef = useRef<HTMLDivElement>(null);
 
@@ -870,14 +869,10 @@ const TheReader = ({
  * @public
  */
 export const Reader = (props: ReaderProps) => {
-  const { entityRef, onReady = () => {}, withSearch = true } = props;
+  const { entityRef, onReady, withSearch = true } = props;
   return (
-    <TechDocsReaderProvider entityRef={entityRef}>
-      <TheReader
-        entityRef={entityRef}
-        onReady={onReady}
-        withSearch={withSearch}
-      />
+    <TechDocsReaderProvider entityRef={entityRef} onReady={onReady}>
+      <TheReader withSearch={withSearch} />
     </TechDocsReaderProvider>
   );
 };
