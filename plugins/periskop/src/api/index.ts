@@ -15,6 +15,7 @@
  */
 
 import { ConfigApi, DiscoveryApi } from '@backstage/core-plugin-api';
+import { ResponseError } from '@backstage/errors';
 import { AggregatedError, NotFoundInInstance } from '../types';
 
 /** @public */
@@ -111,9 +112,7 @@ export class PeriskopClient implements PeriskopApi {
           body: await response.text(),
         };
       }
-      throw new Error(
-        `failed to fetch data, status ${response.status}: ${response.statusText}`,
-      );
+      throw await ResponseError.fromResponse(response);
     }
     return response.json();
   }
