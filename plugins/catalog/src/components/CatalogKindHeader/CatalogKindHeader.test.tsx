@@ -135,4 +135,34 @@ describe('<CatalogKindHeader />', () => {
       kind: new EntityKindFilter('template'),
     });
   });
+
+  it('responds to external queryParameters changes', async () => {
+    const updateFilters = jest.fn();
+    const rendered = await renderWithEffects(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { kind: ['Component'] },
+        }}
+      >
+        <CatalogKindHeader />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: new EntityKindFilter('Components'),
+    });
+    rendered.rerender(
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: { kind: ['Template'] },
+        }}
+      >
+        <CatalogKindHeader />
+      </MockEntityListContextProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: new EntityKindFilter('Template'),
+    });
+  });
 });
