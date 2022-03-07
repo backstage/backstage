@@ -24,11 +24,21 @@ import { FormControl, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { FieldExtensionComponentProps } from '../../../extensions';
 
+/**
+ * The input props that can be specified under `ui:options` for the
+ * `EntityTagsPicker` field extension.
+ *
+ * @public
+ */
 export interface EntityTagsPickerUiOptions {
   kinds?: string[];
 }
+
 /**
- * EntityTagsPicker
+ * The underling component that is rendered in the form for the `EntityTagsPicker`
+ * field extension.
+ *
+ * @public
  */
 export const EntityTagsPicker = (
   props: FieldExtensionComponentProps<string[], EntityTagsPickerUiOptions>,

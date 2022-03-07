@@ -34,6 +34,10 @@ import {
 import { OwnedEntityPicker } from './components/fields/OwnedEntityPicker/OwnedEntityPicker';
 import { EntityTagsPicker } from './components/fields/EntityTagsPicker/EntityTagsPicker';
 
+/**
+ * The main plugin export for the scaffolder.
+ * @public
+ */
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
   apis: [
@@ -60,6 +64,11 @@ export const scaffolderPlugin = createPlugin({
   },
 });
 
+/**
+ * A field extension for selecting an Entity that exists in the Catalog.
+ *
+ * @public
+ */
 export const EntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: EntityPicker,
@@ -67,6 +76,11 @@ export const EntityPickerFieldExtension = scaffolderPlugin.provide(
   }),
 );
 
+/**
+ * The field extension for selecting a name for a new Entity in the Catalog.
+ *
+ * @public
+ */
 export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: EntityNamePicker,
@@ -75,6 +89,12 @@ export const EntityNamePickerFieldExtension = scaffolderPlugin.provide(
   }),
 );
 
+/**
+ * The field extension which provides the ability to select a RepositoryUrl.
+ * Currently this is an encoded URL that looks something like the following `github.com?repo=myRepoName&owner=backstage`.
+ *
+ * @public
+ */
 export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: RepoUrlPicker,
@@ -83,6 +103,11 @@ export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
   }),
 );
 
+/**
+ * A field extensions for picking users and groups out of the Catalog.
+ *
+ * @public
+ */
 export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: OwnerPicker,
@@ -90,6 +115,11 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
   }),
 );
 
+/**
+ * The Router and main entrypoint to the Scaffolder plugin.
+ *
+ * @public
+ */
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
     name: 'ScaffolderPage',
@@ -98,6 +128,11 @@ export const ScaffolderPage = scaffolderPlugin.provide(
   }),
 );
 
+/**
+ * A field extension to show all the Entities that are owned by the current logged-in User for use in templates.
+ *
+ * @public
+ */
 export const OwnedEntityPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: OwnedEntityPicker,

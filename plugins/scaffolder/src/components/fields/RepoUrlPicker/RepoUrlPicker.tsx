@@ -30,6 +30,12 @@ import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '../../secrets';
 
+/**
+ * The input props that can be specified under `ui:options` for the
+ * `RepoUrlPicker` field extension.
+ *
+ * @public
+ */
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   allowedOwners?: string[];
@@ -45,7 +51,10 @@ export interface RepoUrlPickerUiOptions {
 }
 
 /**
- * Repo Url Picker
+ * The underling component that is rendered in the form for the `RepoUrlPicker`
+ * field extension.
+ *
+ * @public
  */
 export const RepoUrlPicker = (
   props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,

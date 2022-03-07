@@ -32,14 +32,11 @@ import {
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
 
+/**
+ * The props for the entrypoint `ScaffolderPage` component the plugin.
+ * @public
+ */
 export type RouterProps = {
-  /** @deprecated use components.TemplateCardComponent instead */
-  TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta3 }>
-    | undefined;
-  /** @deprecated use component.TaskPageComponent instead */
-  TaskPageComponent?: ComponentType<{}>;
-
   components?: {
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
@@ -53,6 +50,11 @@ export type RouterProps = {
   }>;
 };
 
+/**
+ * The main entirypoint `Router` for the `ScaffolderPlugin`.
+ *
+ * @public
+ */
 export const Router = (props: RouterProps) => {
   const { groups, components = {} } = props;
 
