@@ -57,6 +57,14 @@ export enum AuthorizeResult {
 export type BasicPermission = PermissionBase<'basic', {}>;
 
 // @public
+export type ConditionalPolicyDecision = {
+  result: AuthorizeResult.CONDITIONAL;
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+};
+
+// @public
 export function createPermission<TResourceType extends string>(input: {
   name: string;
   attributes: PermissionAttributes;
@@ -68,6 +76,11 @@ export function createPermission(input: {
   name: string;
   attributes: PermissionAttributes;
 }): BasicPermission;
+
+// @public
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
 
 // @public
 export type DiscoveryApi = {
@@ -148,6 +161,17 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
+
+// @public
+export type PolicyDecision =
+  | DefinitivePolicyDecision
+  | ConditionalPolicyDecision;
+
+// @public
+export type PolicyQuery<TPermission extends Permission = Permission> = {
+  permission: TPermission;
+  resourceRef?: never;
+};
 
 // @public
 export type ResourcePermission<TResourceType extends string = string> =

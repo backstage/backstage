@@ -8,9 +8,10 @@ import { AnyOfCriteria } from '@backstage/plugin-permission-common';
 import { AuthorizeDecision } from '@backstage/plugin-permission-common';
 import { AuthorizeQuery } from '@backstage/plugin-permission-common';
 import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
+import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import express from 'express';
 import { Identified } from '@backstage/plugin-permission-common';
 import { NotCriteria } from '@backstage/plugin-permission-common';
@@ -18,6 +19,8 @@ import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PolicyDecision } from '@backstage/plugin-permission-common';
+import { PolicyQuery } from '@backstage/plugin-permission-common';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
@@ -48,14 +51,6 @@ export type Condition<TRule> = TRule extends PermissionRule<
 >
   ? (...params: TParams) => PermissionCondition<TParams>
   : never;
-
-// @public
-export type ConditionalPolicyDecision = {
-  result: AuthorizeResult.CONDITIONAL;
-  pluginId: string;
-  resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition>;
-};
 
 // @public
 export type Conditions<
@@ -116,11 +111,6 @@ export const createPermissionRule: <
   rule: PermissionRule<TResource, TQuery, TParams>,
 ) => PermissionRule<TResource, TQuery, TParams>;
 
-// @public
-export type DefinitivePolicyDecision = {
-  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-};
-
 // @alpha
 export const isAndCriteria: <T>(
   criteria: PermissionCriteria<T>,
@@ -147,7 +137,7 @@ export const makeCreatePermissionRule: <TResource, TQuery>() => <
 export interface PermissionPolicy {
   // (undocumented)
   handle(
-    request: PolicyAuthorizeQuery,
+    request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }
@@ -163,14 +153,6 @@ export type PermissionRule<
   apply(resource: TResource, ...params: TParams): boolean;
   toQuery(...params: TParams): PermissionCriteria<TQuery>;
 };
-
-// @public
-export type PolicyAuthorizeQuery = Omit<AuthorizeQuery, 'resourceRef'>;
-
-// @public
-export type PolicyDecision =
-  | DefinitivePolicyDecision
-  | ConditionalPolicyDecision;
 
 // @public
 export class ServerPermissionClient implements PermissionAuthorizer {
