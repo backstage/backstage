@@ -97,29 +97,6 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
-// @public
-export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: Logger_2;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger_2;
-    },
-  ): AzureDevOpsDiscoveryProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
 // @public (undocumented)
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
@@ -759,25 +736,6 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// @public
-export class GitLabDiscoveryProcessor implements CatalogProcessor {
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger_2;
-    },
-  ): GitLabDiscoveryProcessor;
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

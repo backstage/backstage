@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import {
-  ScmIntegrationRegistry,
-  ScmIntegrations,
-} from '@backstage/integration';
-import { Logger } from 'winston';
-import {
-  CatalogProcessor,
-  CatalogProcessorEmit,
-  LocationSpec,
-  processingResult,
-} from '../../api';
-import { GitLabClient, GitLabProject, paginated } from './lib';
 import {
   CacheClient,
   CacheManager,
   PluginCacheManager,
 } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  LocationSpec,
+  processingResult,
+} from '@backstage/plugin-catalog-backend';
+import { Logger } from 'winston';
+import { GitLabClient, GitLabProject, paginated } from './lib';
 
 /**
  * Extracts repositories out of an GitLab instance.

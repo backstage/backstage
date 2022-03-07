@@ -49,10 +49,8 @@ import {
   BuiltinKindsEntityProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
-  AzureDevOpsDiscoveryProcessor,
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
-  GitLabDiscoveryProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   UrlReaderProcessor,
@@ -360,7 +358,6 @@ export class CatalogBuilder {
     return [
       new FileReaderProcessor(),
       BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
-      AzureDevOpsDiscoveryProcessor.fromConfig(config, { logger }),
       GithubDiscoveryProcessor.fromConfig(config, {
         logger,
         githubCredentialsProvider,
@@ -369,7 +366,6 @@ export class CatalogBuilder {
         logger,
         githubCredentialsProvider,
       }),
-      GitLabDiscoveryProcessor.fromConfig(config, { logger }),
       new UrlReaderProcessor({ reader, logger }),
       CodeOwnersProcessor.fromConfig(config, { logger, reader }),
       new AnnotateLocationEntityProcessor({ integrations }),
