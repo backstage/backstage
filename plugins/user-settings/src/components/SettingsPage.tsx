@@ -25,11 +25,17 @@ import { UserSettingsAuthProviders } from './AuthProviders';
 import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
 
+export interface SettingsTab {
+  title: string;
+  content: React.ReactElement;
+}
+
 type Props = {
   providerSettings?: JSX.Element;
+  tabs?: SettingsTab[];
 };
 
-export const SettingsPage = ({ providerSettings }: Props) => {
+export const SettingsPage = ({ providerSettings, tabs }: Props) => {
   const { isMobile } = useContext(SidebarPinStateContext);
 
   return (
@@ -48,6 +54,15 @@ export const SettingsPage = ({ providerSettings }: Props) => {
         <TabbedLayout.Route path="feature-flags" title="Feature Flags">
           <UserSettingsFeatureFlags />
         </TabbedLayout.Route>
+        {tabs?.map(({ title, content }) => {
+          // Hyphenated the title
+          const path = title.toLocaleLowerCase().replace(/\s/, '-');
+          return (
+            <TabbedLayout.Route key={path} path={path} title={title}>
+              {content}
+            </TabbedLayout.Route>
+          );
+        })}
       </TabbedLayout>
     </Page>
   );
