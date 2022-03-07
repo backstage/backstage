@@ -399,8 +399,6 @@ export type ScaffolderTaskStatus =
 
 // @public
 export interface ScaffolderUseTemplateSecrets {
-  // @deprecated (undocumented)
-  setSecret: (input: Record<string, string>) => void;
   // (undocumented)
   setSecrets: (input: Record<string, string>) => void;
 }
@@ -411,30 +409,6 @@ export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 // @public
 export type TaskPageProps = {
   loadingText?: string;
-};
-
-// Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const TemplateList: ({
-  TemplateCardComponent,
-  group,
-}: TemplateListProps) => JSX.Element | null;
-
-// Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export type TemplateListProps = {
-  TemplateCardComponent?:
-    | ComponentType<{
-        template: TemplateEntityV1beta3;
-      }>
-    | undefined;
-  group?: {
-    title?: React_2.ReactNode;
-    titleComponent?: React_2.ReactNode;
-    filter: (entity: Entity) => boolean;
-  };
 };
 
 // Warning: (ae-missing-release-tag) "TemplateParameterSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
