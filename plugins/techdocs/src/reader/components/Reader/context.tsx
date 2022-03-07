@@ -20,13 +20,12 @@ import React, {
   createContext,
   useContext,
 } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 
-import { useReaderState } from '../useReaderState';
+import { TechDocsState, useTechDocsState } from './useReaderState';
 
-type TechDocsReaderValue = ReturnType<typeof useReaderState> & {
+type TechDocsReaderValue = TechDocsState & {
   entityRef: CompoundEntityRef;
   onReady: () => void;
 };
@@ -45,9 +44,7 @@ export const TechDocsReaderProvider = ({
   entityRef,
   onReady = () => {},
 }: TechDocsReaderProviderProps) => {
-  const { '*': path } = useParams();
-  const { kind, namespace, name } = entityRef;
-  const state = useReaderState(kind, namespace, name, path);
+  const state = useTechDocsState();
 
   const value = { ...state, entityRef, onReady };
 
