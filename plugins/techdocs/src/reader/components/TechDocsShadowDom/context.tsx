@@ -16,17 +16,34 @@
 
 import React, { createContext, useContext, PropsWithChildren } from 'react';
 
-type TechDocsShadowDomValue = { dom: HTMLElement };
+/**
+ * The value of the TechDocs shadow context
+ * @public
+ */
+export type TechDocsShadowDomValue = { dom: HTMLElement };
 
+/**
+ * Stores the DOM attached to the host element
+ * @public
+ */
 const TechDocsShadowDomContext = createContext<TechDocsShadowDomValue>({
   dom: document.createElement('html'),
 });
 
+/**
+ * Returns the DOM attached to the host element
+ * @public
+ */
 export const useTechDocsShadowDom = () => {
   const { dom } = useContext(TechDocsShadowDomContext);
   return dom;
 };
 
+/**
+ * Provides access TechDocs shadow DOM context.
+ * @param dom - A DOM element
+ * @public
+ */
 export const TechDocsShadowDomProvider = ({
   dom,
   children,
