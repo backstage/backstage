@@ -7,7 +7,7 @@ import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
 import { DurationLike } from 'luxon';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 // @public
@@ -56,7 +56,7 @@ export interface FactRetriever {
 export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
-  logger: Logger_2;
+  logger: Logger;
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
     | Record<string, string | symbol | (string | symbol)[]>;

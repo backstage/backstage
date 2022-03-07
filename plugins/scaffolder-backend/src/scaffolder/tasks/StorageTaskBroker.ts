@@ -120,14 +120,6 @@ export interface CurrentClaimedTask {
   secrets?: TaskSecrets;
 }
 
-/**
- * TaskState
- *
- * @public
- * @deprecated use CurrentClaimedTask instead
- */
-export type TaskState = CurrentClaimedTask;
-
 function defer() {
   let resolve = () => {};
   const promise = new Promise<void>(_resolve => {

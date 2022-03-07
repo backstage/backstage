@@ -22,5 +22,5 @@ export * from './filesystem';
 export * from './publish';
 export * from './github';
 
-export { runCommand, executeShellCommand } from './helpers';
+export { executeShellCommand } from './helpers';
 export type { RunCommandOptions } from './helpers';

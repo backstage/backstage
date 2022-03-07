@@ -4,7 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Module } from 'graphql-modules';
 
 // Warning: (ae-missing-release-tag) "createModule" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -19,6 +19,6 @@ export interface ModuleOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
 }
 ```

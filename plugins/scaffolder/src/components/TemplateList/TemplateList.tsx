@@ -16,7 +16,7 @@
 
 import React, { ComponentType } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   Content,
   ContentHeader,
@@ -34,7 +34,7 @@ import { TemplateCard } from '../TemplateCard';
  */
 export type TemplateListProps = {
   TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | ComponentType<{ template: TemplateEntityV1beta3 }>
     | undefined;
   group?: {
     title?: React.ReactNode;
@@ -106,7 +106,7 @@ export const TemplateList = ({
             maybeFilteredEntities.map((template: Entity) => (
               <Card
                 key={stringifyEntityRef(template)}
-                template={template as TemplateEntityV1beta2}
+                template={template as TemplateEntityV1beta3}
                 deprecated={template.apiVersion === 'backstage.io/v1beta2'}
               />
             ))}

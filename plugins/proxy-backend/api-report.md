@@ -5,7 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 // Warning: (ae-forgotten-export) The symbol "RouterOptions" needs to be exported by the entry point index.d.ts

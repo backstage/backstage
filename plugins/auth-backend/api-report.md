@@ -11,7 +11,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { JsonValue } from '@backstage/types';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
@@ -85,7 +85,7 @@ export type AuthProviderFactoryOptions = {
   providerId: string;
   globalConfig: AuthProviderConfig;
   config: Config;
-  logger: Logger_2;
+  logger: Logger;
   tokenManager: TokenManager;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
@@ -106,7 +106,7 @@ export interface AuthProviderRouteHandlers {
 export type AuthResolverContext = {
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger_2;
+  logger: Logger;
 };
 
 // Warning: (ae-missing-release-tag) "AuthResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -642,7 +642,7 @@ export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // Warning: (ae-forgotten-export) The symbol "ProviderFactories" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)

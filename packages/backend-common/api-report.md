@@ -24,7 +24,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -135,7 +135,7 @@ export class CacheManager {
 
 // @public
 export type CacheManagerOptions = {
-  logger?: Logger_2;
+  logger?: Logger;
   onError?: (err: Error) => void;
 };
 
@@ -187,7 +187,7 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
 export function createStatusCheckRouter(options: {
-  logger: Logger_2;
+  logger: Logger;
   path?: string;
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
@@ -227,7 +227,7 @@ export function errorHandler(
 // @public
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
-  logger?: Logger_2;
+  logger?: Logger;
   logClientErrors?: boolean;
 };
 
@@ -297,7 +297,7 @@ export class Git {
   static fromAuth: (options: {
     username?: string;
     password?: string;
-    logger?: Logger_2;
+    logger?: Logger;
   }) => Git;
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
@@ -373,7 +373,7 @@ export function isDatabaseConflictError(e: unknown): boolean;
 
 // @public
 export function loadBackendConfig(options: {
-  logger: Logger_2;
+  logger: Logger;
   remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
@@ -403,7 +403,7 @@ export type PluginEndpointDiscovery = {
 // @public
 export type ReaderFactory = (options: {
   config: Config;
-  logger: Logger_2;
+  logger: Logger;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
@@ -480,12 +480,10 @@ export type ReadUrlResponse = {
 };
 
 // @public
-export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
+export function requestLoggingHandler(logger?: Logger): RequestHandler;
 
 // @public
-export type RequestLoggingHandlerFactory = (
-  logger?: Logger_2,
-) => RequestHandler;
+export type RequestLoggingHandlerFactory = (logger?: Logger) => RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -531,7 +529,7 @@ export class ServerTokenManager implements TokenManager {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
     },
   ): ServerTokenManager;
   // (undocumented)
@@ -547,7 +545,7 @@ export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
   setHost(host: string): ServiceBuilder;
-  setLogger(logger: Logger_2): ServiceBuilder;
+  setLogger(logger: Logger): ServiceBuilder;
   enableCors(options: cors.CorsOptions): ServiceBuilder;
   setHttpsSettings(settings: {
     certificate:
@@ -631,7 +629,7 @@ export class UrlReaders {
 // @public
 export type UrlReadersOptions = {
   config: Config;
-  logger: Logger_2;
+  logger: Logger;
   factories?: ReaderFactory[];
 };
 

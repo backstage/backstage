@@ -7,7 +7,7 @@ import { BooleanCheckResult } from '@backstage/plugin-tech-insights-common';
 import { CheckResponse } from '@backstage/plugin-tech-insights-common';
 import { CheckValidationResponse } from '@backstage/plugin-tech-insights-node';
 import { FactChecker } from '@backstage/plugin-tech-insights-node';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Operator } from 'json-rules-engine';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
 import { TechInsightCheckRegistry } from '@backstage/plugin-tech-insights-node';
@@ -79,7 +79,7 @@ export class JsonRulesEngineFactCheckerFactory {
 // @public
 export type JsonRulesEngineFactCheckerFactoryOptions = {
   checks: TechInsightJsonRuleCheck[];
-  logger: Logger_2;
+  logger: Logger;
   checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   operators?: Operator[];
 };
@@ -88,7 +88,7 @@ export type JsonRulesEngineFactCheckerFactoryOptions = {
 export type JsonRulesEngineFactCheckerOptions = {
   checks: TechInsightJsonRuleCheck[];
   repository: TechInsightsStore;
-  logger: Logger_2;
+  logger: Logger;
   checkRegistry?: TechInsightCheckRegistry<any>;
   operators?: Operator[];
 };

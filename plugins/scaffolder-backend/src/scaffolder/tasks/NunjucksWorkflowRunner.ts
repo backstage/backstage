@@ -257,8 +257,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           const stepOutput: { [outputName: string]: JsonValue } = {};
 
           await action.handler({
-            // deprecated in favourof templateInfo.baseUrl
-            baseUrl: task.spec.baseUrl,
             input,
             secrets: task.secrets ?? {},
             logger: taskLogger,
@@ -274,8 +272,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             output(name: string, value: JsonValue) {
               stepOutput[name] = value;
             },
-            // deprecated in favour of templateInfo
-            metadata: task.spec.metadata,
             templateInfo: task.spec.templateInfo,
           });
 

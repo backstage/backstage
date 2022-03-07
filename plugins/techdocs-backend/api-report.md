@@ -12,7 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GeneratorBuilder } from '@backstage/plugin-techdocs-node';
 import { Knex } from 'knex';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -71,7 +71,7 @@ export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
-  logger: Logger_2;
+  logger: Logger;
   discovery: PluginEndpointDiscovery;
   database?: Knex;
   config: Config;
@@ -82,7 +82,7 @@ export type OutOfTheBoxDeploymentOptions = {
 // @public
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
-  logger: Logger_2;
+  logger: Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
@@ -102,7 +102,7 @@ export type ShouldBuildParameters = {
 // @public
 export type TechDocsCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
-  logger: Logger_2;
+  logger: Logger;
   tokenManager: TokenManager;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
@@ -113,7 +113,7 @@ export type TechDocsCollatorFactoryOptions = {
 // @public
 export type TechDocsCollatorOptions = {
   discovery: PluginEndpointDiscovery;
-  logger: Logger_2;
+  logger: Logger;
   tokenManager: TokenManager;
   locationTemplate?: string;
   catalogClient?: CatalogApi;

@@ -17,7 +17,7 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
@@ -25,27 +25,22 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
-import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
 // @public
 export type ActionContext<Input extends JsonObject> = {
-  baseUrl?: string;
-  logger: Logger_2;
+  logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: Input;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
-  metadata?: TemplateMetadata;
   templateInfo?: TemplateInfo;
 };
-
-// @public @deprecated
-export type CompletedTaskState = TaskCompletionState;
 
 // @public
 export const createBuiltinActions: (
@@ -297,7 +292,7 @@ export type CreateWorkerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger_2;
+  logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
@@ -360,9 +355,6 @@ export type DatabaseTaskStoreOptions = {
   database: Knex;
 };
 
-// @public @deprecated
-export type DispatchResult = TaskBrokerDispatchResult;
-
 // @public
 export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
@@ -404,7 +396,7 @@ export interface RouterOptions {
   // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)
@@ -412,9 +404,6 @@ export interface RouterOptions {
   // (undocumented)
   taskWorkers?: number;
 }
-
-// @public @deprecated
-export const runCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)
 export type RunCommandOptions = {
@@ -456,9 +445,6 @@ export type SerializedTaskEvent = {
   type: TaskEventType;
   createdAt: string;
 };
-
-// @public @deprecated
-export type Status = TaskStatus;
 
 // @public
 export interface TaskBroker {
@@ -519,7 +505,7 @@ export class TaskManager implements TaskContext {
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
-    logger: Logger_2,
+    logger: Logger,
   ): TaskManager;
   // (undocumented)
   get done(): boolean;
@@ -530,16 +516,13 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get secrets(): TaskSecrets | undefined;
   // (undocumented)
-  get spec(): TaskSpec;
+  get spec(): TaskSpecV1beta3;
 }
 
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
-
-// @public @deprecated
-export type TaskState = CurrentClaimedTask;
 
 // @public
 export type TaskStatus =

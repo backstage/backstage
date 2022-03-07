@@ -35,7 +35,7 @@ import {
   UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ConfigReader } from '@backstage/config';
 import ObservableImpl from 'zen-observable';
 import express from 'express';
@@ -76,8 +76,8 @@ const mockUrlReader = UrlReaders.default({
 describe('createRouter', () => {
   let app: express.Express;
   let taskBroker: TaskBroker;
-  const template: TemplateEntityV1beta2 = {
-    apiVersion: 'backstage.io/v1beta2',
+  const template: TemplateEntityV1beta3 = {
+    apiVersion: 'scaffolder.backstage.io/v1beta3',
     kind: 'Template',
     metadata: {
       description: 'Create a new CRA website project',

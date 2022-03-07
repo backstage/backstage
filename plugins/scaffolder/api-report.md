@@ -24,7 +24,7 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @public
 export function createScaffolderFieldExtension<
@@ -222,14 +222,14 @@ export interface RepoUrlPickerUiOptions {
 export type RouterProps = {
   TemplateCardComponent?:
     | ComponentType<{
-        template: TemplateEntityV1beta2;
+        template: TemplateEntityV1beta3;
       }>
     | undefined;
   TaskPageComponent?: ComponentType<{}>;
   components?: {
     TemplateCardComponent?:
       | ComponentType<{
-          template: TemplateEntityV1beta2;
+          template: TemplateEntityV1beta3;
         }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
@@ -427,7 +427,7 @@ export const TemplateList: ({
 export type TemplateListProps = {
   TemplateCardComponent?:
     | ComponentType<{
-        template: TemplateEntityV1beta2;
+        template: TemplateEntityV1beta3;
       }>
     | undefined;
   group?: {

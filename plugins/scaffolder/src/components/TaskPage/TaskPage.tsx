@@ -298,10 +298,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
       return;
     }
 
-    const formData =
-      taskStream.task!.spec.apiVersion === 'backstage.io/v1beta2'
-        ? taskStream.task!.spec.values
-        : taskStream.task!.spec.parameters;
+    const formData = taskStream.task!.spec.parameters;
 
     const { name } = parseEntityRef(
       taskStream.task!.spec.templateInfo?.entityRef,

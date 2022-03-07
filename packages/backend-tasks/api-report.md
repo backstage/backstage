@@ -7,7 +7,7 @@ import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { Config } from '@backstage/config';
 import { DatabaseManager } from '@backstage/backend-common';
 import { Duration } from 'luxon';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
@@ -31,14 +31,14 @@ export type TaskFunction =
 
 // @public
 export class TaskScheduler {
-  constructor(databaseManager: DatabaseManager, logger: Logger_2);
+  constructor(databaseManager: DatabaseManager, logger: Logger);
   forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static fromConfig(
     config: Config,
     options?: {
       databaseManager?: DatabaseManager;
-      logger?: Logger_2;
+      logger?: Logger;
     },
   ): TaskScheduler;
 }
