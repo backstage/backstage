@@ -1,0 +1,73 @@
+{
+  "name": "@backstage/plugin-techdocs-mkdocs",
+  "description": "The Backstage plugin that renders technical documentation using mkdocs for your components",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/techdocs-mkdocs"
+  },
+  "keywords": [
+    "backstage",
+    "techdocs"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "start": "backstage-cli package start",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "diff": "backstage-cli plugin:diff",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
+  },
+  "dependencies": {
+    "@backstage/core-components": "^0.8.10",
+    "@backstage/core-plugin-api": "0.7.0",
+    "@backstage/dev-utils": "^0.2.23",
+    "@backstage/integration": "^0.7.5",
+    "@backstage/integration-react": "^0.1.23",
+    "@backstage/plugin-techdocs": "^0.14.0",
+    "@backstage/theme": "^0.2.15",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "dompurify": "^2.2.9",
+    "git-url-parse": "^11.6.0",
+    "react-router-dom": "6.0.0-beta.0",
+    "react-use": "^17.2.4"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.14.1",
+    "@backstage/test-utils": "^0.2.6",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/user-event": "^13.1.8",
+    "@types/jest": "^26.0.7",
+    "@types/node": "^14.14.32",
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "canvas": "^2.6.1",
+    "cross-fetch": "^3.1.5",
+    "jest-fetch-mock": "^3.0.3",
+    "msw": "^0.35.0"
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
+}
