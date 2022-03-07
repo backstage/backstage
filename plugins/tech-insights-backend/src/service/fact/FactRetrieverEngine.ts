@@ -118,7 +118,7 @@ export class FactRetrieverEngine {
     return this.factRetrieverRegistry.get(ref);
   }
 
-  async triggerJob(ref: string): Promise<boolean> {
+  async triggerJob(ref: string): Promise<void> {
     return this.scheduler.triggerTask(ref);
   }
 

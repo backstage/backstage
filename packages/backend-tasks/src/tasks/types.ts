@@ -214,11 +214,9 @@ export const taskSettingsV1Schema = z.object({
     .refine(isValidOptionalDurationString, {
       message: 'Invalid duration, expecting ISO Period',
     }),
-  timeoutAfterDuration: z
-    .string()
-    .refine(isValidOptionalDurationString, {
-      message: 'Invalid duration, expecting ISO Period',
-    }),
+  timeoutAfterDuration: z.string().refine(isValidOptionalDurationString, {
+    message: 'Invalid duration, expecting ISO Period',
+  }),
 });
 
 /**
