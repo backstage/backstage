@@ -103,6 +103,7 @@ Firestore
 Fiverr
 gitbeaker
 GitHub
+gitlab
 GitLab
 Gource
 Grafana
