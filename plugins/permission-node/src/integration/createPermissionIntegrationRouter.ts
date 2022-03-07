@@ -24,6 +24,7 @@ import {
   Identified,
   PermissionCondition,
   PermissionCriteria,
+  DefinitivePolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 import {
@@ -32,7 +33,6 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
-import { DefinitivePolicyDecision } from '../policy/types';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
