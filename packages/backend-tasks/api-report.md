@@ -7,18 +7,17 @@ import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { Config } from '@backstage/config';
 import { DatabaseManager } from '@backstage/backend-common';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
   scheduleTask(task: TaskDefinition): Promise<void>;
-  triggerTask(id: string): Promise<boolean>;
+  triggerTask(id: string): Promise<void>;
 }
 
 // @public
 export interface TaskDefinition {
   fn: TaskFunction;
-  // (undocumented)
   frequency: string | Duration;
   id: string;
   initialDelay?: Duration;
@@ -33,14 +32,14 @@ export type TaskFunction =
 
 // @public
 export class TaskScheduler {
-  constructor(databaseManager: DatabaseManager, logger: Logger);
+  constructor(databaseManager: DatabaseManager, logger: Logger_2);
   forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static fromConfig(
     config: Config,
     options?: {
       databaseManager?: DatabaseManager;
-      logger?: Logger;
+      logger?: Logger_2;
     },
   ): TaskScheduler;
 }
