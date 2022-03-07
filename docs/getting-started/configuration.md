@@ -218,7 +218,7 @@ for 7 days, it's a lucky number.
   <img src='../assets/getting-started/gh-pat.png' alt='Screenshot of the GitHub Personal Access Token creation page' />
 </p>
 
-Set the scope to your likings. For this tutorial, selecting "repo" should be
+Set the scope to your likings. For this tutorial, selecting "repo" and "workflow" should be
 enough.
 
 In the `app-config.yaml`, search for `integrations:` and add your token, like we
