@@ -21,7 +21,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   Card,
   CardActionArea,
@@ -34,6 +34,8 @@ import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { importComponentsRouteRef, importOrgRouteRef } from '../../plugin';
 
 /**
  * The default catalog import page.
@@ -43,6 +45,8 @@ import React from 'react';
 export const DefaultImportPage = () => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const componentLink = useRouteRef(importComponentsRouteRef);
+  const orgLink = useRouteRef(importOrgRouteRef);
 
   return (
     <Page themeId="home">
@@ -59,35 +63,39 @@ export const DefaultImportPage = () => {
           <Grid item xs={8}>
             <Card raised>
               <CardActionArea>
-                <CardHeader
-                  avatar={<PlaylistAddIcon style={{ marginTop: 5 }} />}
-                  title="Software components"
-                  titleTypographyProps={{ variant: 'h6' }}
-                />
-                <CardContent>
-                  <Typography>
-                    Import software components such as services, websites,
-                    libraries and APIs. These will be imported from a source
-                    code repository.
-                  </Typography>
-                </CardContent>
+                <Link to={componentLink?.()}>
+                  <CardHeader
+                    avatar={<PlaylistAddIcon style={{ marginTop: 5 }} />}
+                    title="Software components"
+                    titleTypographyProps={{ variant: 'h5' }}
+                  />
+                  <CardContent>
+                    <Typography>
+                      Import software components such as services, websites,
+                      libraries and APIs. These will be imported from a source
+                      code repository.
+                    </Typography>
+                  </CardContent>
+                </Link>
               </CardActionArea>
             </Card>
           </Grid>
           <Grid item xs={8}>
             <Card raised>
               <CardActionArea>
-                <CardHeader
-                  avatar={<GroupAddIcon style={{ marginTop: 5 }} />}
-                  title="Organizational data"
-                  titleTypographyProps={{ variant: 'h5' }}
-                />
-                <CardContent>
-                  <Typography>
-                    Import users and groups from an external system such as
-                    LDAP, GitHub, or Azure Active Directory.
-                  </Typography>
-                </CardContent>
+                <Link to={orgLink?.()}>
+                  <CardHeader
+                    avatar={<GroupAddIcon style={{ marginTop: 5 }} />}
+                    title="Organization data"
+                    titleTypographyProps={{ variant: 'h5' }}
+                  />
+                  <CardContent>
+                    <Typography>
+                      Import users and groups from an external system such as
+                      LDAP, GitHub, or Azure Active Directory.
+                    </Typography>
+                  </CardContent>
+                </Link>
               </CardActionArea>
             </Card>
           </Grid>

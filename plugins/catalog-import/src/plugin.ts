@@ -20,6 +20,7 @@ import {
   createPlugin,
   createRoutableExtension,
   createRouteRef,
+  createSubRouteRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -32,6 +33,18 @@ import { catalogImportApiRef, CatalogImportClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   id: 'catalog-import',
+});
+
+export const importComponentsRouteRef = createSubRouteRef({
+  id: 'catalog-import/components',
+  path: '/components',
+  parent: rootRouteRef,
+});
+
+export const importOrgRouteRef = createSubRouteRef({
+  id: 'catalog-import/org',
+  path: '/organization',
+  parent: rootRouteRef,
 });
 
 /**
@@ -73,6 +86,8 @@ export const catalogImportPlugin = createPlugin({
   ],
   routes: {
     importPage: rootRouteRef,
+    componentImportPage: importComponentsRouteRef,
+    orgImportPage: importOrgRouteRef,
   },
 });
 
@@ -84,7 +99,7 @@ export const catalogImportPlugin = createPlugin({
 export const CatalogImportPage = catalogImportPlugin.provide(
   createRoutableExtension({
     name: 'CatalogImportPage',
-    component: () => import('./components/ImportPage').then(m => m.ImportPage),
+    component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );
