@@ -151,10 +151,6 @@ export class TaskWorker {
         ? this.knex.raw('datetime(?)', [startAt.toISO()])
         : this.knex.raw(`?`, [startAt.toISO()]);
 
-    this.logger.debug(
-      `version: ${settings.version} starting task at: ${startAt}`,
-    );
-
     const settingsJson = JSON.stringify(settings);
 
     // It's OK if the task already exists; if it does, just replace its
@@ -260,8 +256,6 @@ export class TaskWorker {
       this.knex.client.config.client === 'sqlite3'
         ? this.knex.raw('datetime(?)', [time])
         : this.knex.raw(`?`, [time]);
-
-    this.logger.debug(`next run will occur around ${time}`);
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)
