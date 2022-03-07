@@ -49,7 +49,7 @@ schedule it:
 +      id: 'our-ldap-master',
 +      target: 'ldaps://ds.example.net',
 +      logger: env.logger,
-+      schedule: env.scheduler.createTaskSchedule({
++      schedule: env.scheduler.createScheduledTaskRunner({
 +        frequency: Duration.fromObject({ minutes: 60 }),
 +        timeout: Duration.fromObject({ minutes: 15 }),
 +      }),

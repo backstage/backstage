@@ -62,7 +62,7 @@ describe('PluginTaskManagerImpl', () => {
 
   // This is just to test the wrapper code; most of the actual tests are in
   // TaskWorker.test.ts
-  describe('createTaskSchedule', () => {
+  describe('createScheduledTaskRunner', () => {
     it.each(databases.eachSupportedId())(
       'can run the happy path, %p',
       async databaseId => {
@@ -70,7 +70,7 @@ describe('PluginTaskManagerImpl', () => {
 
         const fn = jest.fn();
         await manager
-          .createTaskSchedule({
+          .createScheduledTaskRunner({
             timeout: Duration.fromMillis(5000),
             frequency: Duration.fromMillis(5000),
           })

@@ -15,7 +15,7 @@ import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
-import { TaskSchedule } from '@backstage/backend-tasks';
+import { TaskRunner } from '@backstage/backend-tasks';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -119,7 +119,7 @@ export interface LdapOrgEntityProviderOptions {
   groupTransformer?: GroupTransformer;
   id: string;
   logger: Logger;
-  schedule: 'manual' | TaskSchedule;
+  schedule: 'manual' | TaskRunner;
   target: string;
   userTransformer?: UserTransformer;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskSchedule } from '@backstage/backend-tasks';
+import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -69,11 +69,16 @@ export interface LdapOrgEntityProviderOptions {
   /**
    * The refresh schedule to use.
    *
-   * If you pass in 'manual', you are responsible for calling the `read`
-   * method manually at some interval. If not, it will be automatically
-   * called regularly with the given schedule using the scheduler.
+   * @remarks
+   *
+   * If you pass in 'manual', you are responsible for calling the `read` method
+   * manually at some interval.
+   *
+   * But more commonly you will pass in the result of
+   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * to enable automatic scheduling of tasks.
    */
-  schedule: 'manual' | TaskSchedule;
+  schedule: 'manual' | TaskRunner;
 
   /**
    * The function that transforms a user entry in LDAP to an entity.

@@ -20,7 +20,7 @@ import { TaskWorker } from './TaskWorker';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
-  TaskSchedule,
+  TaskRunner,
   TaskScheduleDefinition,
 } from './types';
 import { validateId } from './util';
@@ -55,7 +55,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     );
   }
 
-  createTaskSchedule(schedule: TaskScheduleDefinition): TaskSchedule {
+  createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner {
     return {
       run: async task => {
         await this.scheduleTask({ ...task, ...schedule });

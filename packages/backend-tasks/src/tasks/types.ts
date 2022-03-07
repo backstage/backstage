@@ -103,7 +103,7 @@ export interface TaskInvocationDefinition {
  *
  * @public
  */
-export interface TaskSchedule {
+export interface TaskRunner {
   /**
    * Takes the schedule and executes an actual task using it.
    *
@@ -136,7 +136,8 @@ export interface PluginTaskScheduler {
   ): Promise<void>;
 
   /**
-   * Creates a task schedule, ready to be invoked at a later time.
+   * Creates a scheduled but dormant recurring task, ready to be launched at a
+   * later time.
    *
    * @remarks
    *
@@ -146,7 +147,7 @@ export interface PluginTaskScheduler {
    *
    * @param schedule - The task schedule
    */
-  createTaskSchedule(schedule: TaskScheduleDefinition): TaskSchedule;
+  createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
 }
 
 function isValidOptionalDurationString(d: string | undefined): boolean {

@@ -11,7 +11,7 @@ import { Logger } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
-  createTaskSchedule(schedule: TaskScheduleDefinition): TaskSchedule;
+  createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
   scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void>;
@@ -30,7 +30,7 @@ export interface TaskInvocationDefinition {
 }
 
 // @public
-export interface TaskSchedule {
+export interface TaskRunner {
   run(task: TaskInvocationDefinition): Promise<void>;
 }
 
