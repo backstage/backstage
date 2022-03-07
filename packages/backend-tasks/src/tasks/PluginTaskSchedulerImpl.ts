@@ -26,6 +26,7 @@ import {
 } from './types';
 import { validateId } from './util';
 import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 
 /**
  * Implements the actual task management.
@@ -36,18 +37,24 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     private readonly logger: Logger,
   ) {}
 
-  async triggerTask(id: string): Promise<boolean> {
+  async triggerTask(id: string): Promise<void> {
     const knex = await this.databaseFactory();
 
-    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE).select({
-      currentRun: 'current_run_ticket',
-    });
+    // get the task definition
+    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .select({
+        currentRun: 'current_run_ticket',
+        id: 'id',
+      })
+      .where('id', '=', id);
 
-    if (rows.length <= 0) {
-      throw new Error(`id ${id} does not exist`);
+    // validate the task exists
+    if (rows.length <= 0 || rows[0].id !== id) {
+      throw new NotFoundError(`id ${id} does not exist`);
     }
+
     if (rows[0].currentRun) {
-      return false;
+      throw new ConflictError(`task ${id} is currently running`);
     }
 
     const updatedRows = await knex<DbTasksRow>(DB_TASKS_TABLE)
@@ -56,7 +63,9 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       .update({
         next_run_start_at: knex.fn.now(),
       });
-    return updatedRows === 1;
+    if (updatedRows < 1) {
+      throw new ConflictError(`task ${id} is currently running`);
+    }
   }
 
   async scheduleTask(

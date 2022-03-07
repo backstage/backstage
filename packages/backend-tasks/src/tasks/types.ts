@@ -137,15 +137,15 @@ export interface TaskRunner {
  */
 export interface PluginTaskScheduler {
   /**
-   * Manually updates a task next_run timestamp to be picked up by the next worker.
+   * Manually triggers a task by ID.
    *
-   * If the task doesn't exist, an error is thrown.
+   * If the task doesn't exist, a NotFoundError is thrown.
+   * If the task is currently running, a ConflictError is thrown.
    *
    * @param id - The task ID
-   * @returns Promise<boolean> - whether the task could be successfully triggered.
    *
    */
-  triggerTask(id: string): Promise<boolean>;
+  triggerTask(id: string): Promise<void>;
 
   /**
    * Schedules a task function for coordinated exclusive invocation across
@@ -206,13 +206,19 @@ export const taskSettingsV1Schema = z.object({
   initialDelayDuration: z
     .string()
     .optional()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration, expecting ISO Period',
+    }),
   recurringAtMostEveryDuration: z
     .string()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration, expecting ISO Period',
+    }),
   timeoutAfterDuration: z
     .string()
-    .refine(isValidOptionalDurationString, { message: 'Invalid duration' }),
+    .refine(isValidOptionalDurationString, {
+      message: 'Invalid duration, expecting ISO Period',
+    }),
 });
 
 /**
@@ -227,21 +233,21 @@ export const taskSettingsV2Schema = z.object({
     .refine(isValidCronFormat, { message: 'Invalid cron' })
     .or(
       z.string().refine(isValidOptionalDurationString, {
-        message: 'invalid duration, expecting ISO Period',
+        message: 'Invalid duration, expecting ISO Period',
       }),
     ),
   timeoutAfterDuration: z.string().refine(isValidOptionalDurationString, {
-    message: 'Invalid duration expecting ISO Period',
+    message: 'Invalid duration, expecting ISO Period',
   }),
   initialDelayDuration: z
     .string()
     .optional()
     .refine(isValidOptionalDurationString, {
-      message: 'Invalid duration expecting ISO Period',
+      message: 'Invalid duration, expecting ISO Period',
     }),
 });
 
 /**
- * The properties that control a scheduled task (version 1).
+ * The properties that control a scheduled task (version 2).
  */
 export type TaskSettingsV2 = z.infer<typeof taskSettingsV2Schema>;

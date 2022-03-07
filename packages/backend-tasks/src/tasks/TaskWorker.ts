@@ -154,6 +154,8 @@ export class TaskWorker {
 
     const settingsJson = JSON.stringify(settings);
 
+    this.logger.debug(`task: ${this.taskId} configured to run at: ${startAt}`);
+
     // It's OK if the task already exists; if it does, just replace its
     // settings with the new value and start the loop as usual.
     await this.knex<DbTasksRow>(DB_TASKS_TABLE)
@@ -250,12 +252,18 @@ export class TaskWorker {
     let nextRun: Raw;
     if (isCron) {
       const time = new CronTime(n.cadence).sendAt().toISOString();
+      this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
       nextRun =
         this.knex.client.config.client === 'sqlite3'
           ? this.knex.raw('datetime(?)', [time])
           : this.knex.raw(`?`, [time]);
     } else {
       const dt = Duration.fromISO(n.cadence).as('seconds');
+      this.logger.debug(
+        `task: ${this.taskId} will next occur around ${DateTime.now().plus({
+          seconds: dt,
+        })}`,
+      );
       nextRun =
         this.knex.client.config.client === 'sqlite3'
           ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])

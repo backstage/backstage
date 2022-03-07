@@ -26,12 +26,9 @@ import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
+import waitForExpect from 'wait-for-expect';
 
-function sleep(ms: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
+jest.useFakeTimers();
 
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
@@ -176,6 +173,7 @@ describe('FactRetrieverEngine', () => {
         schemaAssertionCallback,
       );
     },
+    60_000,
   );
 
   it.each(databases.eachSupportedId())(
@@ -207,14 +205,19 @@ describe('FactRetrieverEngine', () => {
       const job: FactRetrieverRegistration = engine.getJobRegistration(
         testFactRetriever.id,
       );
-      await engine.triggerJob(job.factRetriever.id);
-      await sleep(6000);
       expect(job.cadence!!).toEqual(defaultCadence);
-      expect(testFactRetriever.handler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          entityFilter: testFactRetriever.entityFilter,
-        }),
-      );
+
+      await engine.triggerJob(job.factRetriever.id);
+      jest.advanceTimersByTime(5000);
+
+      await waitForExpect(() => {
+        expect(testFactRetriever.handler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            entityFilter: testFactRetriever.entityFilter,
+          }),
+        );
+      });
     },
+    60_000,
   );
 });
