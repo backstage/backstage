@@ -69,7 +69,7 @@
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0",
     "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.2.2",
     "react-use": "^17.2.4",
     "zen-observable": "^0.8.15"
   },
