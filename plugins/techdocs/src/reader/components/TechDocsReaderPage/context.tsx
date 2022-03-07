@@ -14,72 +14,77 @@
  * limitations under the License.
  */
 
-import React, {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useMemo,
-} from 'react';
-import { useParams } from 'react-router-dom';
+import React, { PropsWithChildren, createContext, useContext } from 'react';
 import useAsync from 'react-use/lib/useAsync';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 
+import { useApi } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useApi, useApp } from '@backstage/core-plugin-api';
 
 import { techdocsApiRef } from '../../../api';
-import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
+import { TechDocsMetadata, TechDocsEntityMetadata } from '../../../types';
 
 type TechDocsReaderPageValue = {
   path: string;
+  metadata: {
+    loading: boolean;
+    value?: TechDocsMetadata;
+    error?: Error;
+    retry: () => void;
+  };
   entityRef: CompoundEntityRef;
-  entityMetadataValue?: TechDocsEntityMetadata | undefined;
-  techdocsMetadataValue?: TechDocsMetadata | undefined;
+  entityMetadata: {
+    loading: boolean;
+    value?: TechDocsEntityMetadata;
+    error?: Error;
+  };
 };
 
 const TechDocsReaderPageContext = createContext<TechDocsReaderPageValue>({
   path: '',
+  metadata: { loading: true, retry: () => {} },
   entityRef: { kind: '', namespace: '', name: '' },
+  entityMetadata: { loading: true },
 });
-
-export const TechDocsReaderPageProvider = ({
-  children,
-}: PropsWithChildren<{}>) => {
-  const { kind, name, namespace, '*': path } = useParams();
-  const techdocsApi = useApi(techdocsApiRef);
-  const { NotFoundErrorPage } = useApp().getComponents();
-
-  const entityRef = useMemo(
-    () => ({ kind, name, namespace }),
-    [kind, name, namespace],
-  );
-
-  const { value: techdocsMetadataValue, error: techddocsMetadataError } =
-    useAsync(async () => {
-      return await techdocsApi.getTechDocsMetadata(entityRef);
-    }, [entityRef, techdocsApi]);
-
-  const { value: entityMetadataValue, error: entityMetadataError } =
-    useAsync(async () => {
-      return await techdocsApi.getEntityMetadata(entityRef);
-    }, [entityRef, techdocsApi]);
-
-  const value = {
-    path,
-    entityRef,
-    entityMetadataValue,
-    techdocsMetadataValue,
-  };
-
-  if (techddocsMetadataError || entityMetadataError) {
-    return <NotFoundErrorPage />;
-  }
-
-  return (
-    <TechDocsReaderPageContext.Provider value={value}>
-      {children instanceof Function ? children(value) : children}
-    </TechDocsReaderPageContext.Provider>
-  );
-};
 
 export const useTechDocsReaderPage = () =>
   useContext(TechDocsReaderPageContext);
+
+export const TechDocsReaderPageProvider = ({
+  path = '',
+  entityRef,
+  children,
+}: PropsWithChildren<{
+  path?: string;
+  onReady?: () => void;
+  entityRef: CompoundEntityRef;
+}>) => {
+  const techdocsApi = useApi(techdocsApiRef);
+
+  const metadata = useAsyncRetry(async () => {
+    return await techdocsApi.getTechDocsMetadata(entityRef);
+  }, [entityRef, techdocsApi]);
+
+  const entityMetadata = useAsync(async () => {
+    return await techdocsApi.getEntityMetadata(entityRef);
+  }, [entityRef, techdocsApi]);
+
+  const value = {
+    path,
+    metadata,
+    entityRef,
+    entityMetadata,
+  };
+
+  return (
+    <TechDocsReaderPageContext.Provider value={value}>
+      {children instanceof Function
+        ? children({
+            entityRef,
+            techdocsMetadataValue: metadata.value,
+            entityMetadataValue: entityMetadata.value,
+          })
+        : children}
+    </TechDocsReaderPageContext.Provider>
+  );
+};

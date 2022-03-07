@@ -18,10 +18,14 @@ import React, { PropsWithChildren } from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
 
 import { BackstageTheme } from '@backstage/theme';
+import { useApp } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { MkDocsContent } from '@backstage/plugin-techdocs-mkdocs';
 
 import { TechDocsSearch } from '../../../search';
+
+import { EntityDocsProvider } from '../TechDocsEntityDocs';
+import { EntityDocsSyncProvider } from '../TechDocsEntityDocsSync';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 
 import { useTechDocsReader, TechDocsReaderProvider } from './context';
@@ -48,21 +52,39 @@ const TechDocsReaderPage = ({
   children = <MkDocsContent />,
 }: TechDocsReaderPageProps) => {
   const classes = useStyles();
-  const { entityRef } = useTechDocsReader();
+  const { NotFoundErrorPage } = useApp().getComponents();
+  const { entityRef, status, content } = useTechDocsReader();
+
+  if (status === 'CONTENT_STALE_ERROR') {
+    return (
+      <Grid container>
+        <Grid xs={12} item>
+          <TechDocsStateIndicator />
+        </Grid>
+        <Grid xs={12} item>
+          <NotFoundErrorPage />
+        </Grid>
+      </Grid>
+    );
+  }
 
   return (
     <Grid container>
       <Grid xs={12} item>
         <TechDocsStateIndicator />
       </Grid>
-      {withSearch && (
-        <Grid className={classes.searchBar} xs={12} item>
-          <TechDocsSearch entityId={entityRef} />
-        </Grid>
+      {content && (
+        <>
+          {withSearch && (
+            <Grid className={classes.searchBar} xs={12} item>
+              <TechDocsSearch entityId={entityRef} />
+            </Grid>
+          )}
+          <Grid xs={12} item>
+            {children}
+          </Grid>
+        </>
       )}
-      <Grid xs={12} item>
-        {children}
-      </Grid>
     </Grid>
   );
 };
@@ -86,8 +108,12 @@ export type ReaderProps = PropsWithChildren<{
 export const Reader = (props: ReaderProps) => {
   const { entityRef, onReady, ...rest } = props;
   return (
-    <TechDocsReaderProvider entityRef={entityRef} onReady={onReady}>
-      <TechDocsReaderPage {...rest} />
-    </TechDocsReaderProvider>
+    <EntityDocsProvider entityRef={entityRef}>
+      <EntityDocsSyncProvider entityRef={entityRef}>
+        <TechDocsReaderProvider entityRef={entityRef} onReady={onReady}>
+          <TechDocsReaderPage {...rest} />
+        </TechDocsReaderProvider>
+      </EntityDocsSyncProvider>
+    </EntityDocsProvider>
   );
 };

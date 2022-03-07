@@ -15,7 +15,7 @@
  */
 
 import React, { FC, ReactNode } from 'react';
-import { useOutlet } from 'react-router';
+import { useOutlet, useParams } from 'react-router';
 
 import { Page, Content } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -49,6 +49,7 @@ export type TechDocsReaderPageProps = {
 
 export const TechDocsReaderPage = ({ children }: TechDocsReaderPageProps) => {
   const outlet = useOutlet();
+  const { '*': path, ...entityRef } = useParams();
 
   if (!children) {
     return outlet || techDocsPage;
@@ -56,14 +57,19 @@ export const TechDocsReaderPage = ({ children }: TechDocsReaderPageProps) => {
 
   return (
     <Page themeId="documentation">
-      <TechDocsReaderPageProvider>{children}</TechDocsReaderPageProvider>
+      <TechDocsReaderPageProvider
+        path={path}
+        entityRef={entityRef as CompoundEntityRef}
+      >
+        {children}
+      </TechDocsReaderPageProvider>
     </Page>
   );
 };
 
 export const TechDocsReaderPageLayout: FC = ({ children }) => (
   <TechDocsReaderPage>
-    {({ onReady, entityRef, entityMetadataValue, techdocsMetadataValue }) => (
+    {({ entityRef, entityMetadataValue, techdocsMetadataValue }) => (
       <>
         <TechDocsReaderPageHeader
           entityRef={entityRef}
@@ -71,9 +77,7 @@ export const TechDocsReaderPageLayout: FC = ({ children }) => (
           techDocsMetadata={techdocsMetadataValue}
         />
         <Content data-testid="techdocs-content">
-          <Reader onReady={onReady} entityRef={entityRef}>
-            {children}
-          </Reader>
+          <Reader entityRef={entityRef}>{children}</Reader>
         </Content>
       </>
     )}
