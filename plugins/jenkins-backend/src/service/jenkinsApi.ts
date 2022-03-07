@@ -139,7 +139,7 @@ export class JenkinsApiImpl {
   async buildProject(
     jenkinsInfo: JenkinsInfo,
     jobFullName: string,
-    resourceRef?: string,
+    resourceRef: string,
     options?: { token?: string },
   ) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
