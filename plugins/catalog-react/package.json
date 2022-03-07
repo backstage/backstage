@@ -40,6 +40,7 @@
     "@backstage/core-plugin-api": "^0.8.0",
     "@backstage/errors": "^0.2.2",
     "@backstage/integration": "^0.8.0",
+    "@backstage/plugin-catalog-common": "^0.2.2-next.0",
     "@backstage/plugin-permission-common": "^0.5.2",
     "@backstage/plugin-permission-react": "^0.3.3",
     "@backstage/types": "^0.1.3",

@@ -15,7 +15,7 @@
  */
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Permission } from '@backstage/plugin-permission-common';
+import { CatalogEntityPermission } from '@backstage/plugin-catalog-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { useEntity } from './useEntity';
 
@@ -23,14 +23,14 @@ import { useEntity } from './useEntity';
  * A thin wrapper around the
  * {@link @backstage/plugin-permission-react#usePermission} hook which uses the
  * current entity in context to make an authorization request for the given
- * permission.
+ * {@link @backstage/plugin-catalog-common#CatalogEntityPermission}.
  *
  * Note: this hook blocks the permission request until the entity has loaded in
  * context. If you have the entityRef and need concurrent requests, use the
  * `usePermission` hook directly.
  * @alpha
  */
-export function useEntityPermission(permission: Permission): {
+export function useEntityPermission(permission: CatalogEntityPermission): {
   loading: boolean;
   allowed: boolean;
   error?: Error;
