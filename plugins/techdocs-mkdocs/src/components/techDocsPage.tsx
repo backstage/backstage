@@ -26,4 +26,8 @@ const TechDocsPage = () => (
   </TechDocsReaderPageLayout>
 );
 
+/**
+ * Implements a TechDocsReaderPage using MkDocs
+ * @public
+ */
 export const techDocsPage = <TechDocsPage />;

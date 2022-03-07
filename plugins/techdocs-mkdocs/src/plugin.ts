@@ -16,6 +16,11 @@
 
 import { createPlugin } from '@backstage/core-plugin-api';
 
+/**
+ * The Backstage plugin that renders technical documentation for your components using MkDocs
+ *
+ * @public
+ */
 export const techdocsMkdocsPlugin = createPlugin({
   id: 'techdocs-mkdocs',
 });

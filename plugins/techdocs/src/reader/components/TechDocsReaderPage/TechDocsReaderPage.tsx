@@ -67,6 +67,10 @@ export const TechDocsReaderPage = ({ children }: TechDocsReaderPageProps) => {
   );
 };
 
+/**
+ * Render a children in a TechDocs reader page.
+ * @public
+ */
 export const TechDocsReaderPageLayout: FC = ({ children }) => (
   <TechDocsReaderPage>
     {({ entityRef, entityMetadataValue, techdocsMetadataValue }) => (
