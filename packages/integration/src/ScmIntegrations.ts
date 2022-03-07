@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
+import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import { defaultScmResolveUrl } from './helpers';
@@ -33,6 +34,7 @@ export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  gerrit: ScmIntegrationsGroup<GerritIntegration>;
   github: ScmIntegrationsGroup<GitHubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 }
@@ -50,6 +52,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
       awsS3: AwsS3Integration.factory({ config }),
       azure: AzureIntegration.factory({ config }),
       bitbucket: BitbucketIntegration.factory({ config }),
+      gerrit: GerritIntegration.factory({ config }),
       github: GitHubIntegration.factory({ config }),
       gitlab: GitLabIntegration.factory({ config }),
     });
@@ -69,6 +72,10 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
 
   get bitbucket(): ScmIntegrationsGroup<BitbucketIntegration> {
     return this.byType.bitbucket;
+  }
+
+  get gerrit(): ScmIntegrationsGroup<GerritIntegration> {
+    return this.byType.gerrit;
   }
 
   get github(): ScmIntegrationsGroup<GitHubIntegration> {

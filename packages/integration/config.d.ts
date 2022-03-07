@@ -60,6 +60,32 @@ export interface Config {
       appPassword?: string;
     }>;
 
+    /** Integration configuration for Gerrit */
+    gerrit?: Array<{
+      /**
+       * The hostname of the given Gerrit instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * The base url for the Gerrit API.
+       * @visibility frontend
+       */
+      apiBaseUrl?: string;
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Gerrit password used to authenticate requests. This can be either a password
+       * or a generated access token.
+       * .
+       * @visibility secret
+       */
+      password?: string;
+    }>;
+
     /** Integration configuration for GitHub */
     github?: Array<{
       /**
