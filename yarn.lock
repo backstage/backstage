@@ -109,12 +109,33 @@
   dependencies:
     tslib "^2.0.0"
 
+"@azure/arm-consumption@^8.0.0":
+  version "8.0.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@azure/arm-consumption/-/arm-consumption-8.0.1.tgz#65afc3a8fbf91cb9ed5216d0cb1536c3bd6395bb"
+  integrity sha1-Za/DqPv5HLntUhbQyxU2w71jlbs=
+  dependencies:
+    "@azure/core-auth" "^1.1.4"
+    "@azure/ms-rest-azure-js" "^2.1.0"
+    "@azure/ms-rest-js" "^2.2.0"
+    tslib "^1.10.0"
+
+"@azure/arm-resources-subscriptions@^2.0.0":
+  version "2.0.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@azure/arm-resources-subscriptions/-/arm-resources-subscriptions-2.0.0.tgz#5894ff484bcfb6bf03997a78d3e663d15f947a9f"
+  integrity sha1-WJT/SEvPtr8DmXp40+Zj0V+Uep8=
+  dependencies:
+    "@azure/core-auth" "^1.3.0"
+    "@azure/core-client" "^1.0.0"
+    "@azure/core-paging" "^1.2.0"
+    "@azure/core-rest-pipeline" "^1.1.0"
+    tslib "^2.2.0"
+
 "@azure/core-asynciterator-polyfill@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@azure/core-asynciterator-polyfill/-/core-asynciterator-polyfill-1.0.0.tgz#dcccebb88406e5c76e0e1d52e8cc4c43a68b3ee7"
   integrity sha512-kmv8CGrPfN9SwMwrkiBK9VTQYxdFQEGe0BmQk+M8io56P9KNzpAxcWE/1fxJj7uouwN4kXF0BHW8DNlgx+wtCg==
 
-"@azure/core-auth@^1.1.3", "@azure/core-auth@^1.3.0":
+"@azure/core-auth@^1.1.3", "@azure/core-auth@^1.1.4", "@azure/core-auth@^1.3.0":
   version "1.3.2"
   resolved "https://registry.npmjs.org/@azure/core-auth/-/core-auth-1.3.2.tgz#6a2c248576c26df365f6c7881ca04b7f6d08e3d0"
   integrity sha512-7CU6DmCHIZp5ZPiZ9r3J17lTKMmYsm/zGvNkjArQwPkrLlZ1TZ+EUYfGgh2X31OLMVAQCTJZW4cXHJi02EbJnA==
@@ -122,7 +143,7 @@
     "@azure/abort-controller" "^1.0.0"
     tslib "^2.2.0"
 
-"@azure/core-client@^1.4.0":
+"@azure/core-client@^1.0.0", "@azure/core-client@^1.4.0":
   version "1.5.0"
   resolved "https://registry.npmjs.org/@azure/core-client/-/core-client-1.5.0.tgz#7aabb87d20e08db3683a117191c844bc19adb74e"
   integrity sha512-YNk8i9LT6YcFdFO+RRU0E4Ef+A8Y5lhXo6lz61rwbG8Uo7kSqh0YqK04OexiilM43xd6n3Y9yBhLnb1NFNI9dA==
@@ -172,6 +193,14 @@
   integrity sha512-his7Ah40ThEYORSpIAwuh6B8wkGwO/zG7gqVtmSE4WAJ46e36zUDXTKReUCLBDc6HmjjApQQxxcRFy5FruG79A==
   dependencies:
     "@azure/core-asynciterator-polyfill" "^1.0.0"
+
+"@azure/core-paging@^1.2.0":
+  version "1.2.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@azure/core-paging/-/core-paging-1.2.1.tgz#1b884f563b6e49971e9a922da3c7a20931867b54"
+  integrity sha1-G4hPVjtuSZcempIto8eiCTGGe1Q=
+  dependencies:
+    "@azure/core-asynciterator-polyfill" "^1.0.0"
+    tslib "^2.2.0"
 
 "@azure/core-rest-pipeline@^1.1.0", "@azure/core-rest-pipeline@^1.5.0":
   version "1.5.0"
@@ -249,6 +278,44 @@
   integrity sha512-QYQeaJ+A5x6aMNu8BG5qdsVBnYBop9UMwgUvGihSjf1PdZZXB+c/oMdM2ajKwzobLBh9e9QuMQkN9iL+IxLBLA==
   dependencies:
     tslib "^2.0.0"
+
+"@azure/ms-rest-azure-env@^2.0.0":
+  version "2.0.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@azure/ms-rest-azure-env/-/ms-rest-azure-env-2.0.0.tgz#45809f89763a480924e21d3c620cd40866771625"
+  integrity sha1-RYCfiXY6SAkk4h08YgzUCGZ3FiU=
+
+"@azure/ms-rest-azure-js@^2.1.0":
+  version "2.1.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@azure/ms-rest-azure-js/-/ms-rest-azure-js-2.1.0.tgz#8c90b31468aeca3146b06c7144b386fd4827f64c"
+  integrity sha1-jJCzFGiuyjFGsGxxRLOG/Ugn9kw=
+  dependencies:
+    "@azure/core-auth" "^1.1.4"
+    "@azure/ms-rest-js" "^2.2.0"
+    tslib "^1.10.0"
+
+"@azure/ms-rest-js@^2.0.4", "@azure/ms-rest-js@^2.2.0", "@azure/ms-rest-js@^2.2.3":
+  version "2.6.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@azure/ms-rest-js/-/ms-rest-js-2.6.1.tgz#4f94688a750d51afcbab4b55d6ecb9d3df4ddd94"
+  integrity sha1-T5RoinUNUa/Lq0tV1uy5099N3ZQ=
+  dependencies:
+    "@azure/core-auth" "^1.1.4"
+    abort-controller "^3.0.0"
+    form-data "^2.5.0"
+    node-fetch "^2.6.7"
+    tough-cookie "^3.0.1"
+    tslib "^1.10.0"
+    tunnel "0.0.6"
+    uuid "^8.3.2"
+    xml2js "^0.4.19"
+
+"@azure/ms-rest-nodeauth@^3.0.7":
+  version "3.1.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@azure/ms-rest-nodeauth/-/ms-rest-nodeauth-3.1.1.tgz#2624222f0685ae580801d6f1abeab20923814693"
+  integrity sha1-JiQiLwaFrlgIAdbxq+qyCSOBRpM=
+  dependencies:
+    "@azure/ms-rest-azure-env" "^2.0.0"
+    "@azure/ms-rest-js" "^2.0.4"
+    adal-node "^0.2.2"
 
 "@azure/msal-browser@^2.16.0":
   version "2.20.0"
@@ -1723,6 +1790,97 @@
     human-id "^1.0.2"
     prettier "^1.19.1"
 
+"@cloud-carbon-footprint/api@^1.3.1":
+  version "1.3.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/api/-/api-1.3.1.tgz#16f4918903782a9dd360d74b6f09499fd040f39a"
+  integrity sha1-FvSRiQN4Kp3TYNdLbwlJn9BA85o=
+  dependencies:
+    "@cloud-carbon-footprint/app" "^0.4.1"
+    "@cloud-carbon-footprint/common" "^1.3.1"
+    "@types/express" "^4.17.12"
+    express "^4.17.1"
+    helmet "^4.6.0"
+    module-alias "^2.2.2"
+
+"@cloud-carbon-footprint/app@^0.4.1":
+  version "0.4.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/app/-/app-0.4.2.tgz#3dc9e719d7f674f08d9072b8c7fe06719b1c7b76"
+  integrity sha1-PcnnGdf2dPCNkHK4x/4GcZsce3Y=
+  dependencies:
+    "@cloud-carbon-footprint/aws" "^0.9.0"
+    "@cloud-carbon-footprint/azure" "^0.8.0"
+    "@cloud-carbon-footprint/common" "^1.4.0"
+    "@cloud-carbon-footprint/gcp" "^0.8.0"
+    "@google-cloud/monitoring" "^2.3.5"
+    "@google-cloud/storage" "^5.16.1"
+    moment "^2.29.1"
+    ramda "^0.28.0"
+
+"@cloud-carbon-footprint/aws@^0.9.0":
+  version "0.9.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/aws/-/aws-0.9.1.tgz#2c5dbd0af31637603026cc4c3865e4d59227fe18"
+  integrity sha1-LF29CvMWN2AwJsxMOGXk1ZIn/hg=
+  dependencies:
+    "@cloud-carbon-footprint/common" "^1.4.0"
+    "@cloud-carbon-footprint/core" "^0.15.0"
+    "@google-cloud/iam-credentials" "^1.1.1"
+    aws-sdk "^2.927.0"
+    aws-sdk-mock "^5.1.0"
+    csvtojson "^2.0.10"
+    moment "^2.29.1"
+    ramda "^0.28.0"
+
+"@cloud-carbon-footprint/azure@^0.8.0":
+  version "0.8.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/azure/-/azure-0.8.0.tgz#059aecc39cd3553f529fa5efe38b614ab013ad70"
+  integrity sha1-BZrsw5zTVT9Sn6Xv44thSrATrXA=
+  dependencies:
+    "@azure/arm-consumption" "^8.0.0"
+    "@azure/arm-resources-subscriptions" "^2.0.0"
+    "@azure/identity" "^2.0.1"
+    "@azure/ms-rest-js" "^2.2.3"
+    "@azure/ms-rest-nodeauth" "^3.0.7"
+    "@cloud-carbon-footprint/common" "^1.4.0"
+    "@cloud-carbon-footprint/core" "^0.15.0"
+    "@google-cloud/secret-manager" "^3.10.1"
+    moment "^2.29.1"
+
+"@cloud-carbon-footprint/common@^1.3.1", "@cloud-carbon-footprint/common@^1.4.0":
+  version "1.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/common/-/common-1.4.0.tgz#30e5daf2fc84b1bb69f053c9787bbe1c51674e5d"
+  integrity sha1-MOXa8vyEsbtp8FPJeHu+HFFnTl0=
+  dependencies:
+    "@google-cloud/logging-winston" "^4.1.1"
+    dotenv "^14.2.0"
+    moment "^2.29.1"
+    winston "^3.3.3"
+
+"@cloud-carbon-footprint/core@^0.15.0":
+  version "0.15.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/core/-/core-0.15.0.tgz#b6f9d1ff21128736cd7dcb2c7fbe370168b8f4bb"
+  integrity sha1-tvnR/yEShzbNfcssf743AWi49Ls=
+  dependencies:
+    "@cloud-carbon-footprint/common" "^1.4.0"
+    "@types/ramda" "^0.27.40"
+    aws-sdk "^2.910.0"
+    moment "^2.29.1"
+    ramda "^0.28.0"
+
+"@cloud-carbon-footprint/gcp@^0.8.0":
+  version "0.8.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/gcp/-/gcp-0.8.0.tgz#a370c06b38d83c580034e9ff8c42f077d006132a"
+  integrity sha1-o3DAazjYPFgANOn/jELwd9AGEyo=
+  dependencies:
+    "@cloud-carbon-footprint/common" "^1.4.0"
+    "@cloud-carbon-footprint/core" "^0.15.0"
+    "@google-cloud/bigquery" "^5.9.3"
+    "@google-cloud/monitoring" "^2.3.5"
+    "@google-cloud/recommender" "^4.2.5"
+    "@google-cloud/resource-manager" "^3.0.0"
+    google-gax "^2.29.0"
+    googleapis "^92.0.0"
+    moment "^2.29.1"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -1795,6 +1953,11 @@
     "@codemirror/text" "^0.19.0"
     style-mod "^4.0.0"
     w3c-keyname "^2.2.4"
+
+"@colors/colors@1.5.0":
+  version "1.5.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
+  integrity sha1-u1BFecHK6SPmV2pPXaQ9Jfl729k=
 
 "@cspotcode/source-map-consumer@0.8.0":
   version "0.8.0"
@@ -1987,6 +2150,39 @@
     qs "^6.10.1"
     xcase "^2.0.1"
 
+"@google-cloud/bigquery@^5.9.3":
+  version "5.11.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/bigquery/-/bigquery-5.11.0.tgz#ee55005cf3ede32e057be7a387c3f522d7e0b950"
+  integrity sha1-7lUAXPPt4y4Fe+ejh8P1ItfguVA=
+  dependencies:
+    "@google-cloud/common" "^3.9.0"
+    "@google-cloud/paginator" "^3.0.0"
+    "@google-cloud/promisify" "^2.0.0"
+    arrify "^2.0.1"
+    big.js "^6.0.0"
+    duplexify "^4.0.0"
+    extend "^3.0.2"
+    is "^3.3.0"
+    p-event "^4.1.0"
+    readable-stream "^3.6.0"
+    stream-events "^1.0.5"
+    uuid "^8.0.0"
+
+"@google-cloud/common@^3.4.1", "@google-cloud/common@^3.8.1", "@google-cloud/common@^3.9.0":
+  version "3.10.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/common/-/common-3.10.0.tgz#454d1155bb512109cd83c6183aabbd39f9aabda7"
+  integrity sha1-RU0RVbtRIQnNg8YYOqu9Ofmqvac=
+  dependencies:
+    "@google-cloud/projectify" "^2.0.0"
+    "@google-cloud/promisify" "^2.0.0"
+    arrify "^2.0.1"
+    duplexify "^4.1.1"
+    ent "^2.2.0"
+    extend "^3.0.2"
+    google-auth-library "^7.14.0"
+    retry-request "^4.2.2"
+    teeny-request "^7.0.0"
+
 "@google-cloud/common@^3.7.0":
   version "3.7.0"
   resolved "https://registry.npmjs.org/@google-cloud/common/-/common-3.7.0.tgz#ee3fba75aeaa614978aebf8740380670026592aa"
@@ -2019,10 +2215,63 @@
     google-gax "^2.24.1"
     protobufjs "^6.8.6"
 
+"@google-cloud/iam-credentials@^1.1.1":
+  version "1.1.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/iam-credentials/-/iam-credentials-1.1.1.tgz#34c3a2396400539d318d620eb73de81a8d22da9f"
+  integrity sha1-NMOiOWQAU50xjWIOtz3oGo0i2p8=
+  dependencies:
+    google-gax "^2.24.1"
+
+"@google-cloud/logging-winston@^4.1.1":
+  version "4.1.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/logging-winston/-/logging-winston-4.1.2.tgz#e49c7119629fb0c73c7b14b079acdc95ac2dbbb6"
+  integrity sha1-5JxxGWKfsMc8exSweazclawtu7Y=
+  dependencies:
+    "@google-cloud/logging" "^9.6.9"
+    google-auth-library "^7.0.0"
+    lodash.mapvalues "^4.6.0"
+    winston-transport "^4.3.0"
+
+"@google-cloud/logging@^9.6.9":
+  version "9.8.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/logging/-/logging-9.8.0.tgz#e2bc70ad133db28d76ecc9d1c3d4950ee549f6e1"
+  integrity sha1-4rxwrRM9so127MnRw9SVDuVJ9uE=
+  dependencies:
+    "@google-cloud/common" "^3.4.1"
+    "@google-cloud/paginator" "^3.0.0"
+    "@google-cloud/projectify" "^2.0.0"
+    "@google-cloud/promisify" "^2.0.0"
+    arrify "^2.0.1"
+    dot-prop "^6.0.0"
+    eventid "^2.0.0"
+    extend "^3.0.2"
+    gcp-metadata "^4.0.0"
+    google-auth-library "^7.0.0"
+    google-gax "^2.24.1"
+    on-finished "^2.3.0"
+    pumpify "^2.0.1"
+    stream-events "^1.0.5"
+    uuid "^8.0.0"
+
+"@google-cloud/monitoring@^2.3.5":
+  version "2.3.5"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/monitoring/-/monitoring-2.3.5.tgz#3f2d0b23402d51cca338e5700244cfda820e55fe"
+  integrity sha1-Py0LI0AtUcyjOOVwAkTP2oIOVf4=
+  dependencies:
+    google-gax "^2.24.1"
+
 "@google-cloud/paginator@^3.0.0":
   version "3.0.5"
   resolved "https://registry.npmjs.org/@google-cloud/paginator/-/paginator-3.0.5.tgz#9d6b96c421a89bd560c1bc2c197c7611ef21db6c"
   integrity sha512-N4Uk4BT1YuskfRhKXBs0n9Lg2YTROZc6IMpkO/8DIHODtm5s3xY8K5vVBo23v/2XulY3azwITQlYWgT4GdLsUw==
+  dependencies:
+    arrify "^2.0.0"
+    extend "^3.0.2"
+
+"@google-cloud/paginator@^3.0.7":
+  version "3.0.7"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/paginator/-/paginator-3.0.7.tgz#fb6f8e24ec841f99defaebf62c75c2e744dd419b"
+  integrity sha1-+2+OJOyEH5ne+uv2LHXC50TdQZs=
   dependencies:
     arrify "^2.0.0"
     extend "^3.0.2"
@@ -2036,6 +2285,55 @@
   version "2.0.3"
   resolved "https://registry.npmjs.org/@google-cloud/promisify/-/promisify-2.0.3.tgz#f934b5cdc939e3c7039ff62b9caaf59a9d89e3a8"
   integrity sha512-d4VSA86eL/AFTe5xtyZX+ePUjE8dIFu2T8zmdeNBSa5/kNgXPCx/o/wbFNHAGLJdGnk1vddRuMESD9HbOC8irw==
+
+"@google-cloud/recommender@^4.2.5":
+  version "4.2.5"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/recommender/-/recommender-4.2.5.tgz#4ae9750c1bd003ef2531a5904c37084f3d67072e"
+  integrity sha1-Sul1DBvQA+8lMaWQTDcITz1nBy4=
+  dependencies:
+    google-gax "^2.24.1"
+
+"@google-cloud/resource-manager@^3.0.0":
+  version "3.0.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/resource-manager/-/resource-manager-3.0.0.tgz#4e81309e3523a410d61eda37d86884b53303bb5a"
+  integrity sha1-ToEwnjUjpBDWHto32GiEtTMDu1o=
+  dependencies:
+    google-gax "^2.24.1"
+
+"@google-cloud/secret-manager@^3.10.1":
+  version "3.11.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/secret-manager/-/secret-manager-3.11.0.tgz#99bddd9ccef6d12b5d14e27e21977fcbaa8f3916"
+  integrity sha1-mb3dnM720StdFOJ+IZd/y6qPORY=
+  dependencies:
+    google-gax "^2.24.1"
+
+"@google-cloud/storage@^5.16.1":
+  version "5.18.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@google-cloud/storage/-/storage-5.18.2.tgz#0ded98a69323d253e6dd986650edc89b5c504bf9"
+  integrity sha1-De2YppMj0lPm3ZhmUO3Im1xQS/k=
+  dependencies:
+    "@google-cloud/common" "^3.8.1"
+    "@google-cloud/paginator" "^3.0.7"
+    "@google-cloud/promisify" "^2.0.0"
+    abort-controller "^3.0.0"
+    arrify "^2.0.0"
+    async-retry "^1.3.3"
+    compressible "^2.0.12"
+    configstore "^5.0.0"
+    date-and-time "^2.0.0"
+    duplexify "^4.0.0"
+    extend "^3.0.2"
+    gaxios "^4.0.0"
+    get-stream "^6.0.0"
+    google-auth-library "^7.0.0"
+    hash-stream-validation "^0.2.2"
+    mime "^3.0.0"
+    mime-types "^2.0.8"
+    p-limit "^3.0.1"
+    pumpify "^2.0.0"
+    snakeize "^0.1.0"
+    stream-events "^1.0.4"
+    xdg-basedir "^4.0.0"
 
 "@google-cloud/storage@^5.6.0", "@google-cloud/storage@^5.8.0":
   version "5.11.0"
@@ -2587,6 +2885,14 @@
   version "1.4.5"
   resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.4.5.tgz#0cd840b47180624eeedf066f2cdc422d052401f8"
   integrity sha512-A6cOzSu7dqXZ7rzvh/9JZf+Jg/MOpLEMP0IdT8pT8hrWJZ6TB4ydN/MRuqOtAugInJe/VQ9F8BPricUpYZSaZA==
+  dependencies:
+    "@grpc/proto-loader" "^0.6.4"
+    "@types/node" ">=12.12.47"
+
+"@grpc/grpc-js@~1.5.0":
+  version "1.5.7"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@grpc/grpc-js/-/grpc-js-1.5.7.tgz#c83a5dc1d0cf7b8aa82371cfa7125955d1f25a96"
+  integrity sha1-yDpdwdDPe4qoI3HPpxJZVdHyWpY=
   dependencies:
     "@grpc/proto-loader" "^0.6.4"
     "@types/node" ">=12.12.47"
@@ -5787,7 +6093,7 @@
     "@types/express" "*"
     "@types/xml2js" "*"
 
-"@types/express@*", "@types/express@4.17.13", "@types/express@^4.17.6":
+"@types/express@*", "@types/express@4.17.13", "@types/express@^4.17.12", "@types/express@^4.17.6":
   version "4.17.13"
   resolved "https://registry.npmjs.org/@types/express/-/express-4.17.13.tgz#a76e2995728999bab51a33fabce1d705a3709034"
   integrity sha512-6bSZTPaTIACxn48l50SR+axgrqm6qXFIxrdAKaG6PaJk3+zuUr35hBlgT7vOmJcum+OEaIBLtHV/qloEAFITeA==
@@ -6279,6 +6585,13 @@
   version "6.9.6"
   resolved "https://registry.npmjs.org/@types/qs/-/qs-6.9.6.tgz#df9c3c8b31a247ec315e6996566be3171df4b3b1"
   integrity sha512-0/HnwIfW4ki2D8L8c9GVcG5I72s9jP5GSLVF0VIXDW00kmIpA6O33G7a8n59Tmh7Nz0WUC3rSb7PTY/sdW2JzA==
+
+"@types/ramda@^0.27.40":
+  version "0.27.66"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@types/ramda/-/ramda-0.27.66.tgz#f1a23d13b0087d806a62e3ff941e5e59b3318999"
+  integrity sha1-8aI9E7AIfYBqYuP/lB5eWbMxiZk=
+  dependencies:
+    ts-toolbelt "^6.15.1"
 
 "@types/range-parser@*":
   version "1.2.3"
@@ -7109,6 +7422,20 @@ acorn@^8.2.4, acorn@^8.4.1, acorn@^8.7.0:
   resolved "https://registry.npmjs.org/acorn/-/acorn-8.7.0.tgz#90951fde0f8f09df93549481e5fc141445b791cf"
   integrity sha512-V/LGr1APy+PXIwKebEWrkZPwoeoF+w1jiOBUmuxuiUIaOHtob8Qc9BTrYo7VuI5fR8tqsy+buA2WFooR5olqvQ==
 
+adal-node@^0.2.2:
+  version "0.2.3"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/adal-node/-/adal-node-0.2.3.tgz#87ed3dbed344f6e114e36bf18fe1c4e7d3cc6069"
+  integrity sha1-h+09vtNE9uEU42vxj+HE59PMYGk=
+  dependencies:
+    "@xmldom/xmldom" "^0.7.0"
+    async "^2.6.3"
+    axios "^0.21.1"
+    date-utils "*"
+    jws "3.x.x"
+    underscore ">= 1.3.1"
+    uuid "^3.1.0"
+    xpath.js "~1.1.0"
+
 add-stream@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/add-stream/-/add-stream-1.0.0.tgz#6a7990437ca736d5e1288db92bd3266d5f5cb2aa"
@@ -7720,12 +8047,19 @@ async-retry@^1.2.1, async-retry@^1.3.1:
   dependencies:
     retry "0.12.0"
 
+async-retry@^1.3.3:
+  version "1.3.3"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/async-retry/-/async-retry-1.3.3.tgz#0e7f36c04d8478e7a58bdbed80cedf977785f280"
+  integrity sha1-Dn82wE2EeOeli9vtgM7fl3eF8oA=
+  dependencies:
+    retry "0.13.1"
+
 async@0.9.x:
   version "0.9.2"
   resolved "https://registry.npmjs.org/async/-/async-0.9.2.tgz#aea74d5e61c1f899613bf64bda66d4c78f2fd17d"
   integrity sha1-rqdNXmHB+JlhO/ZL2mbUx48v0X0=
 
-async@^2.6.2:
+async@^2.6.2, async@^2.6.3:
   version "2.6.3"
   resolved "https://registry.npmjs.org/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"
   integrity sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
@@ -7776,6 +8110,15 @@ available-typed-arrays@^1.0.2:
   dependencies:
     array-filter "^1.0.0"
 
+aws-sdk-mock@^5.1.0:
+  version "5.6.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/aws-sdk-mock/-/aws-sdk-mock-5.6.2.tgz#664771462953ca8d3806d5a50a63b4a6dbd5290f"
+  integrity sha1-ZkdxRilTyo04BtWlCmO0ptvVKQ8=
+  dependencies:
+    aws-sdk "^2.928.0"
+    sinon "^11.1.1"
+    traverse "^0.6.6"
+
 aws-sdk-mock@^5.2.1:
   version "5.2.1"
   resolved "https://registry.npmjs.org/aws-sdk-mock/-/aws-sdk-mock-5.2.1.tgz#126d4d5362c96b7d1d0bd87708a99d626c19ffd4"
@@ -7789,6 +8132,21 @@ aws-sdk@^2.840.0, aws-sdk@^2.928.0, aws-sdk@^2.948.0:
   version "2.1065.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1065.0.tgz#82b6e4e2a6fbccb1767339e309edd4f0daa958e6"
   integrity sha512-OFvpXoL104dTFKpU14ILcLDPAlDbkJNIKXnnG2pK+2x++CvzIRJeNyERtUuEo7QMUOwq5U4nIQJKSPt5fBC/HA==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
+aws-sdk@^2.910.0, aws-sdk@^2.927.0:
+  version "2.1087.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/aws-sdk/-/aws-sdk-2.1087.0.tgz#bb00dbac5c6bf415040ad00e7c95462b34c26ddf"
+  integrity sha1-uwDbrFxr9BUECtAOfJVGKzTCbd8=
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -8128,6 +8486,11 @@ big.js@^5.2.2:
   resolved "https://registry.npmjs.org/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
+big.js@^6.0.0:
+  version "6.1.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/big.js/-/big.js-6.1.1.tgz#63b35b19dc9775c94991ee5db7694880655d5537"
+  integrity sha1-Y7NbGdyXdclJke5dt2lIgGVdVTc=
+
 bignumber.js@^9.0.0:
   version "9.0.1"
   resolved "https://registry.npmjs.org/bignumber.js/-/bignumber.js-9.0.1.tgz#8d7ba124c882bfd8e43260c67475518d0689e4e5"
@@ -8192,7 +8555,7 @@ blob@0.0.5:
   resolved "https://registry.npmjs.org/blob/-/blob-0.0.5.tgz#d680eeef25f8cd91ad533f5b01eed48e64caf683"
   integrity sha512-gaqbzQPqOoamawKg0LGVd7SzLgXS+JH61oWprSLH+P+abTczqJbhTR8CmJ2u9/bUYNmHTGJx/UEmn6doAvvuig==
 
-bluebird@3.7.2, bluebird@^3.3.5, bluebird@^3.5.5, bluebird@^3.7.2:
+bluebird@3.7.2, bluebird@^3.3.5, bluebird@^3.5.1, bluebird@^3.5.5, bluebird@^3.7.2:
   version "3.7.2"
   resolved "https://registry.npmjs.org/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -10097,6 +10460,15 @@ csv@^5.3.1:
     csv-stringify "^5.3.6"
     stream-transform "^2.0.1"
 
+csvtojson@^2.0.10:
+  version "2.0.10"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/csvtojson/-/csvtojson-2.0.10.tgz#11e7242cc630da54efce7958a45f443210357574"
+  integrity sha1-EeckLMYw2lTvznlYpF9EMhA1dXQ=
+  dependencies:
+    bluebird "^3.5.1"
+    lodash "^4.17.3"
+    strip-bom "^2.0.0"
+
 cypress-plugin-snapshots@^1.4.4:
   version "1.4.4"
   resolved "https://registry.npmjs.org/cypress-plugin-snapshots/-/cypress-plugin-snapshots-1.4.4.tgz#3a57f9763da1ab6df34950b8ad01803820885310"
@@ -10440,6 +10812,11 @@ date-and-time@^1.0.0:
   resolved "https://registry.npmjs.org/date-and-time/-/date-and-time-1.0.0.tgz#0062394bdf6f44e961f0db00511cb19cdf3cc0a5"
   integrity sha512-477D7ypIiqlXBkxhU7YtG9wWZJEQ+RUpujt2quTfgf4+E8g5fNUkB0QIL0bVyP5/TKBg8y55Hfa1R/c4bt3dEw==
 
+date-and-time@^2.0.0:
+  version "2.2.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/date-and-time/-/date-and-time-2.2.1.tgz#70691b7d8a17633f3abe32aab148e194f9f2e215"
+  integrity sha1-cGkbfYoXYz86vjKqsUjhlPny4hU=
+
 date-fns@^1.27.2:
   version "1.30.1"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
@@ -10449,6 +10826,11 @@ date-fns@^2.16.1, date-fns@^2.18.0:
   version "2.19.0"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.19.0.tgz#65193348635a28d5d916c43ec7ce6fbd145059e1"
   integrity sha512-X3bf2iTPgCAQp9wvjOQytnf5vO5rESYRXlPIVcgSbtT5OTScPcsf9eZU+B/YIkKAtYr5WeCii58BgATrNitlWg==
+
+date-utils@*:
+  version "1.2.21"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/date-utils/-/date-utils-1.2.21.tgz#61fb16cdc1274b3c9acaaffe9fc69df8720a2b64"
+  integrity sha1-YfsWzcEnSzyayq/+n8ad+HIKK2Q=
 
 dateformat@^3.0.0, dateformat@^3.0.3:
   version "3.0.3"
@@ -11024,7 +11406,7 @@ dot-prop@^5.1.0, dot-prop@^5.2.0:
   dependencies:
     is-obj "^2.0.0"
 
-dot-prop@^6.0.1:
+dot-prop@^6.0.0, dot-prop@^6.0.1:
   version "6.0.1"
   resolved "https://registry.npmjs.org/dot-prop/-/dot-prop-6.0.1.tgz#fc26b3cf142b9e59b74dbd39ed66ce620c681083"
   integrity sha512-tE7ztYzXHIeyvc7N+hR3oi7FIbf/NIjVP9hmAt3yMXzrQ072/fpjGLx2GxNxGxUl5V73MEqYzioOMoVhGMJ5cA==
@@ -11035,6 +11417,11 @@ dotenv@^10.0.0:
   version "10.0.0"
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
+
+dotenv@^14.2.0:
+  version "14.3.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/dotenv/-/dotenv-14.3.2.tgz#7c30b3a5f777c79a3429cb2db358eef6751e8369"
+  integrity sha1-fDCzpfd3x5o0Kcsts1ju9nUeg2k=
 
 dset@^3.1.0:
   version "3.1.0"
@@ -11938,6 +12325,13 @@ eventemitter3@^4.0.0, eventemitter3@^4.0.1, eventemitter3@^4.0.4:
   version "4.0.7"
   resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
+
+eventid@^2.0.0:
+  version "2.0.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/eventid/-/eventid-2.0.1.tgz#574e860149457a79a2efe788c459f0c3062d02ec"
+  integrity sha1-V06GAUlFenmi7+eIxFnwwwYtAuw=
+  dependencies:
+    uuid "^8.0.0"
 
 events@1.1.1:
   version "1.1.1"
@@ -12962,6 +13356,14 @@ gaxios@^4.0.0:
     is-stream "^2.0.0"
     node-fetch "^2.3.0"
 
+gcp-metadata@^4.0.0:
+  version "4.3.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/gcp-metadata/-/gcp-metadata-4.3.1.tgz#fb205fe6a90fef2fd9c85e6ba06e5559ee1eefa9"
+  integrity sha1-+yBf5qkP7y/ZyF5roG5VWe4e76k=
+  dependencies:
+    gaxios "^4.0.0"
+    json-bigint "^1.0.0"
+
 gcp-metadata@^4.2.0:
   version "4.2.1"
   resolved "https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-4.2.1.tgz#31849fbcf9025ef34c2297c32a89a1e7e9f2cd62"
@@ -13286,6 +13688,21 @@ google-auth-library@^7.0.0, google-auth-library@^7.0.2, google-auth-library@^7.6
     jws "^4.0.0"
     lru-cache "^6.0.0"
 
+google-auth-library@^7.14.0:
+  version "7.14.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/google-auth-library/-/google-auth-library-7.14.0.tgz#9d6a20592f7b4d4c463cd3e93934c4b1711d5dc6"
+  integrity sha1-nWogWS97TUxGPNPpOTTEsXEdXcY=
+  dependencies:
+    arrify "^2.0.0"
+    base64-js "^1.3.0"
+    ecdsa-sig-formatter "^1.0.11"
+    fast-text-encoding "^1.0.0"
+    gaxios "^4.0.0"
+    gcp-metadata "^4.2.0"
+    gtoken "^5.0.4"
+    jws "^4.0.0"
+    lru-cache "^6.0.0"
+
 google-gax@^2.12.0, google-gax@^2.24.1:
   version "2.28.1"
   resolved "https://registry.npmjs.org/google-gax/-/google-gax-2.28.1.tgz#99bc234b5769d901d70959d40bd1651729eb4a34"
@@ -13305,12 +13722,51 @@ google-gax@^2.12.0, google-gax@^2.24.1:
     protobufjs "6.11.2"
     retry-request "^4.0.0"
 
+google-gax@^2.29.0:
+  version "2.30.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/google-gax/-/google-gax-2.30.0.tgz#f30fac36fbbcb7d63a88b9a370b763b534c308b0"
+  integrity sha1-8w+sNvu8t9Y6iLmjcLdjtTTDCLA=
+  dependencies:
+    "@grpc/grpc-js" "~1.5.0"
+    "@grpc/proto-loader" "^0.6.1"
+    "@types/long" "^4.0.0"
+    abort-controller "^3.0.0"
+    duplexify "^4.0.0"
+    fast-text-encoding "^1.0.3"
+    google-auth-library "^7.14.0"
+    is-stream-ended "^0.1.4"
+    node-fetch "^2.6.1"
+    object-hash "^3.0.0"
+    proto3-json-serializer "^0.1.8"
+    protobufjs "6.11.2"
+    retry-request "^4.0.0"
+
 google-p12-pem@^3.0.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/google-p12-pem/-/google-p12-pem-3.1.3.tgz#5497998798ee86c2fc1f4bb1f92b7729baf37537"
   integrity sha512-MC0jISvzymxePDVembypNefkAQp+DRP7dBE+zNUPaIjEspIlYg0++OrsNr248V9tPbz6iqtZ7rX1hxWA5B8qBQ==
   dependencies:
     node-forge "^1.0.0"
+
+googleapis-common@^5.0.2:
+  version "5.1.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/googleapis-common/-/googleapis-common-5.1.0.tgz#845a79471c787e522e03c50d415467140e9e356a"
+  integrity sha1-hFp5Rxx4flIuA8UNQVRnFA6eNWo=
+  dependencies:
+    extend "^3.0.2"
+    gaxios "^4.0.0"
+    google-auth-library "^7.14.0"
+    qs "^6.7.0"
+    url-template "^2.0.8"
+    uuid "^8.0.0"
+
+googleapis@^92.0.0:
+  version "92.0.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/googleapis/-/googleapis-92.0.0.tgz#291b9826a5a4509a9e9a6974ef942328857bfe18"
+  integrity sha1-KRuYJqWkUJqemml075QjKIV7/hg=
+  dependencies:
+    google-auth-library "^7.0.2"
+    googleapis-common "^5.0.2"
 
 got@11.8.3, got@^11.8.0:
   version "11.8.3"
@@ -13738,6 +14194,11 @@ headers-utils@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/headers-utils/-/headers-utils-3.0.2.tgz#dfc65feae4b0e34357308aefbcafa99c895e59ef"
   integrity sha512-xAxZkM1dRyGV2Ou5bzMxBPNLoRCjcX+ya7KSWybQD2KwLphxsapUVK6x/02o7f4VU6GPSXch9vNY2+gkU8tYWQ==
+
+helmet@^4.6.0:
+  version "4.6.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/helmet/-/helmet-4.6.0.tgz#579971196ba93c5978eb019e4e8ec0e50076b4df"
+  integrity sha1-V5lxGWupPFl46wGeTo7A5QB2tN8=
 
 helmet@^5.0.2:
   version "5.0.2"
@@ -15009,6 +15470,11 @@ is-yarn-global@^0.3.0:
   resolved "https://registry.npmjs.org/is-yarn-global/-/is-yarn-global-0.3.0.tgz#d502d3382590ea3004893746754c89139973e232"
   integrity sha512-VjSeb/lHmkoyd8ryPVIKvOCn4D1koMqY+vqyjjUfc3xyKtP4dYOxM44sZrnqQSzSds3xyOrUTLTC9LVCVgLngw==
 
+is@^3.3.0:
+  version "3.3.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/is/-/is-3.3.0.tgz#61cff6dd3c4193db94a3d62582072b44e5645d79"
+  integrity sha1-Yc/23TxBk9uUo9YlggcrROVkXXk=
+
 isarray@0.0.1:
   version "0.0.1"
   resolved "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
@@ -16148,7 +16614,7 @@ jwa@^2.0.0:
     ecdsa-sig-formatter "1.0.11"
     safe-buffer "^5.0.1"
 
-jws@^3.2.2:
+jws@3.x.x, jws@^3.2.2:
   version "3.2.2"
   resolved "https://registry.npmjs.org/jws/-/jws-3.2.2.tgz#001099f3639468c9414000e99995fa52fb478304"
   integrity sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==
@@ -16767,6 +17233,11 @@ lodash.isstring@^4.0.1:
   resolved "https://registry.npmjs.org/lodash.isstring/-/lodash.isstring-4.0.1.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
   integrity sha1-1SfftUVuynzJu5XV2ur4i6VKVFE=
 
+lodash.mapvalues@^4.6.0:
+  version "4.6.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/lodash.mapvalues/-/lodash.mapvalues-4.6.0.tgz#1bafa5005de9dd6f4f26668c30ca37230cc9689c"
+  integrity sha1-G6+lAF3p3W9PJmaMMMo3IwzJaJw=
+
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.npmjs.org/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
@@ -16832,7 +17303,7 @@ lodash.without@^4.4.0:
   resolved "https://registry.npmjs.org/lodash.without/-/lodash.without-4.4.0.tgz#3cd4574a00b67bae373a94b748772640507b7aac"
   integrity sha1-PNRXSgC2e643OpS3SHcmQFB7eqw=
 
-lodash@4.17.21, lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.7.0, lodash@~4.17.0, lodash@~4.17.15, lodash@~4.17.4:
+lodash@4.17.21, lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.7.0, lodash@~4.17.0, lodash@~4.17.15, lodash@~4.17.4:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -16880,6 +17351,17 @@ logform@^2.3.2:
     fecha "^4.2.0"
     ms "^2.1.1"
     safe-stable-stringify "^1.1.0"
+    triple-beam "^1.3.0"
+
+logform@^2.4.0:
+  version "2.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/logform/-/logform-2.4.0.tgz#131651715a17d50f09c2a2c1a524ff1a4164bcfe"
+  integrity sha1-ExZRcVoX1Q8JwqLBpST/GkFkvP4=
+  dependencies:
+    "@colors/colors" "1.5.0"
+    fecha "^4.2.0"
+    ms "^2.1.1"
+    safe-stable-stringify "^2.3.1"
     triple-beam "^1.3.0"
 
 loglevel@^1.6.8:
@@ -18028,6 +18510,11 @@ modify-values@^1.0.0:
   resolved "https://registry.npmjs.org/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
+module-alias@^2.2.2:
+  version "2.2.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/module-alias/-/module-alias-2.2.2.tgz#151cdcecc24e25739ff0aa6e51e1c5716974c0e0"
+  integrity sha1-FRzc7MJOJXOf8KpuUeHFcWl0wOA=
+
 moment-timezone@^0.5.31:
   version "0.5.33"
   resolved "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.33.tgz#b252fd6bb57f341c9b59a5ab61a8e51a73bbd22c"
@@ -18755,6 +19242,11 @@ object-hash@^2.0.1, object-hash@^2.1.1, object-hash@^2.2.0:
   resolved "https://registry.npmjs.org/object-hash/-/object-hash-2.2.0.tgz#5ad518581eefc443bd763472b8ff2e9c2c0d54a5"
   integrity sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==
 
+object-hash@^3.0.0:
+  version "3.0.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/object-hash/-/object-hash-3.0.0.tgz#73f97f753e7baffc0e2cc9d6e079079744ac82e9"
+  integrity sha1-c/l/dT57r/wOLMnW4HkHl0Ssguk=
+
 object-inspect@^1.11.0, object-inspect@^1.12.0, object-inspect@^1.9.0:
   version "1.12.0"
   resolved "https://registry.npmjs.org/object-inspect/-/object-inspect-1.12.0.tgz#6e2c120e868fd1fd18cb4f18c31741d0d6e776f0"
@@ -19050,6 +19542,13 @@ p-each-series@^2.1.0:
   resolved "https://registry.npmjs.org/p-each-series/-/p-each-series-2.1.0.tgz#961c8dd3f195ea96c747e636b262b800a6b1af48"
   integrity sha512-ZuRs1miPT4HrjFa+9fRfOFXxGJfORgelKV9f9nNOWw2gl6gVsRaVDOQP0+MI0G0wGKns1Yacsu0GjOFbTK0JFQ==
 
+p-event@^4.1.0:
+  version "4.2.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/p-event/-/p-event-4.2.0.tgz#af4b049c8acd91ae81083ebd1e6f5cae2044c1b5"
+  integrity sha1-r0sEnIrNka6BCD69Hm9criBEwbU=
+  dependencies:
+    p-timeout "^3.1.0"
+
 p-filter@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/p-filter/-/p-filter-2.1.0.tgz#1b1472562ae7a0f742f0f3d3d3718ea66ff9c09c"
@@ -19159,7 +19658,7 @@ p-retry@^4.5.0:
     "@types/retry" "^0.12.0"
     retry "^0.12.0"
 
-p-timeout@^3.2.0:
+p-timeout@^3.1.0, p-timeout@^3.2.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/p-timeout/-/p-timeout-3.2.0.tgz#c7e17abc971d2a7962ef83626b35d635acf23dfe"
   integrity sha512-rhIwUycgwwKcP9yTOOFK/AKsAopjjCakVqLHePO3CC6Mir1Z99xT+R63jZxAT5lFZLa2inS5h+ZS2GvR99/FBg==
@@ -20454,6 +20953,13 @@ proto3-json-serializer@^0.1.5:
   dependencies:
     protobufjs "^6.11.2"
 
+proto3-json-serializer@^0.1.8:
+  version "0.1.8"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/proto3-json-serializer/-/proto3-json-serializer-0.1.8.tgz#f80f9afc1efe5ed9a9856bbbd17dc7cabd7ce9a3"
+  integrity sha1-+A+a/B7+XtmphWu70X3Hyr186aM=
+  dependencies:
+    protobufjs "^6.11.2"
+
 protobufjs@6.11.2, protobufjs@^6.10.0, protobufjs@^6.11.2, protobufjs@^6.8.6:
   version "6.11.2"
   resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.11.2.tgz#de39fabd4ed32beaa08e9bb1e30d08544c1edf8b"
@@ -20543,7 +21049,7 @@ pump@^3.0.0:
     end-of-stream "^1.1.0"
     once "^1.3.1"
 
-pumpify@^2.0.0:
+pumpify@^2.0.0, pumpify@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/pumpify/-/pumpify-2.0.1.tgz#abfc7b5a621307c728b551decbbefb51f0e4aa1e"
   integrity sha512-m7KOje7jZxrmutanlkS1daj1dS6z6BgslzOXmcSEpIlCxM3VJH7lG5QLeck/6hgF6F4crFf01UtQmNsJfweTAw==
@@ -20607,7 +21113,7 @@ qs@6.9.7:
   resolved "https://registry.npmjs.org/qs/-/qs-6.9.7.tgz#4610846871485e1e048f44ae3b94033f0e675afe"
   integrity sha512-IhMFgUmuNpyRfxA90umL7ByLlgRXu6tIfKPpF5TmcfRLlLCckfP/g3IQmju6jjpu+Hh8rA+2p6A27ZSPOOHdKw==
 
-qs@^6.10.1, qs@^6.10.2, qs@^6.5.1, qs@^6.9.1, qs@^6.9.4, qs@^6.9.6:
+qs@^6.10.1, qs@^6.10.2, qs@^6.5.1, qs@^6.7.0, qs@^6.9.1, qs@^6.9.4, qs@^6.9.6:
   version "6.10.3"
   resolved "https://registry.npmjs.org/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"
   integrity sha512-wr7M2E0OFRfIfJZjKGieI8lBKb7fRCH4Fv5KNPEs7gJ8jadvotdsS08PzOKR7opXhZ/Xkjtt3WF9g38drmyRqQ==
@@ -20675,6 +21181,11 @@ ramda@^0.27.1:
   version "0.27.2"
   resolved "https://registry.npmjs.org/ramda/-/ramda-0.27.2.tgz#84463226f7f36dc33592f6f4ed6374c48306c3f1"
   integrity sha512-SbiLPU40JuJniHexQSAgad32hfwd+DRUdwF2PlVuI5RZD0/vahUco7R8vD86J/tcEKKF9vZrUVwgtmGCqlCKyA==
+
+ramda@^0.28.0:
+  version "0.28.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ramda/-/ramda-0.28.0.tgz#acd785690100337e8b063cab3470019be427cc97"
+  integrity sha1-rNeFaQEAM36LBjyrNHABm+QnzJc=
 
 random-bytes@~1.0.0:
   version "1.0.0"
@@ -21934,6 +22445,11 @@ retry@0.12.0, retry@^0.12.0:
   version "0.12.0"
   resolved "https://registry.npmjs.org/retry/-/retry-0.12.0.tgz#1b42a6266a21f07421d1b0b54b7dc167b01c013b"
   integrity sha1-G0KmJmoh8HQh0bC1S33BZ7AcATs=
+
+retry@0.13.1:
+  version "0.13.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/retry/-/retry-0.13.1.tgz#185b1587acf67919d63b357349e03537b2484658"
+  integrity sha1-GFsVh6z2eRnWOzVzSeA1N7JIRlg=
 
 reusify@^1.0.4:
   version "1.0.4"
@@ -24263,6 +24779,11 @@ ts-node@^9:
     source-map-support "^0.5.17"
     yn "3.1.1"
 
+ts-toolbelt@^6.15.1:
+  version "6.15.5"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
+  integrity sha1-yztD7XJctjZEeCxk+8rX2PKMCoM=
+
 tsconfig-paths@^3.12.0:
   version "3.12.0"
   resolved "https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-3.12.0.tgz#19769aca6ee8f6a1a341e38c8fa45dd9fb18899b"
@@ -24273,7 +24794,7 @@ tsconfig-paths@^3.12.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
-tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.14.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
@@ -24534,6 +25055,11 @@ undefsafe@^2.0.5:
   version "2.0.5"
   resolved "https://registry.npmjs.org/undefsafe/-/undefsafe-2.0.5.tgz#38733b9327bdcd226db889fb723a6efd162e6e2c"
   integrity sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==
+
+"underscore@>= 1.3.1":
+  version "1.13.2"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/underscore/-/underscore-1.13.2.tgz#276cea1e8b9722a8dbed0100a407dda572125881"
+  integrity sha1-J2zqHouXIqjb7QEApAfdpXISWIE=
 
 underscore@^1.12.1, underscore@^1.9.1:
   version "1.13.1"
@@ -24829,6 +25355,11 @@ url-parse@^1.5.3:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
 
+url-template@^2.0.8:
+  version "2.0.8"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/url-template/-/url-template-2.0.8.tgz#fc565a3cccbff7730c775f5641f9555791439f21"
+  integrity sha1-/FZaPMy/93MMd19WQflVV5FDnyE=
+
 url-value-parser@^2.0.0:
   version "2.0.3"
   resolved "https://registry.npmjs.org/url-value-parser/-/url-value-parser-2.0.3.tgz#cd4b8d6754e458d65e8125260c09718d926e6e21"
@@ -24937,7 +25468,7 @@ uuid@3.3.2:
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
-uuid@^3.3.2, uuid@^3.4.0:
+uuid@^3.1.0, uuid@^3.3.2, uuid@^3.4.0:
   version "3.4.0"
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
@@ -25457,7 +25988,7 @@ windows-release@^3.1.0:
   dependencies:
     execa "^1.0.0"
 
-winston-transport@^4.4.2:
+winston-transport@^4.3.0, winston-transport@^4.4.2, winston-transport@^4.5.0:
   version "4.5.0"
   resolved "https://registry.npmjs.org/winston-transport/-/winston-transport-4.5.0.tgz#6e7b0dd04d393171ed5e4e4905db265f7ab384fa"
   integrity sha512-YpZzcUzBedhlTAfJg6vJDlyEai/IFMIVcaEZZyl3UXIl4gmqRpU7AE89AHLkbzLUsv0NVmw7ts+iztqKxxPW1Q==
@@ -25481,6 +26012,22 @@ winston@^3.2.1:
     stack-trace "0.0.x"
     triple-beam "^1.3.0"
     winston-transport "^4.4.2"
+
+winston@^3.3.3:
+  version "3.6.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/winston/-/winston-3.6.0.tgz#be32587a099a292b88c49fac6fa529d478d93fb6"
+  integrity sha1-vjJYegmaKSuIxJ+sb6Up1HjZP7Y=
+  dependencies:
+    "@dabh/diagnostics" "^2.0.2"
+    async "^3.2.3"
+    is-stream "^2.0.0"
+    logform "^2.4.0"
+    one-time "^1.0.0"
+    readable-stream "^3.4.0"
+    safe-stable-stringify "^2.3.1"
+    stack-trace "0.0.x"
+    triple-beam "^1.3.0"
+    winston-transport "^4.5.0"
 
 word-wrap@^1.2.3, word-wrap@~1.2.3:
   version "1.2.3"
@@ -25710,6 +26257,11 @@ xmlhttprequest-ssl@~1.6.2:
   version "1.6.3"
   resolved "https://registry.npmjs.org/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.6.3.tgz#03b713873b01659dfa2c1c5d056065b27ddc2de6"
   integrity sha512-3XfeQE/wNkvrIktn2Kf0869fC0BN6UpydVasGIeSm2B1Llihf7/0UfZM+eCkOw3P7bP4+qPgqhm7ZoxuJtFU0Q==
+
+xpath.js@~1.1.0:
+  version "1.1.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/xpath.js/-/xpath.js-1.1.0.tgz#3816a44ed4bb352091083d002a383dd5104a5ff1"
+  integrity sha1-OBakTtS7NSCRCD0AKjg91RBKX/E=
 
 xpath@0.0.32:
   version "0.0.32"

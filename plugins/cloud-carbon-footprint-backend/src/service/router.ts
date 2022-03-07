@@ -18,9 +18,13 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+// @ts-ignore
+import CCFRouter from '@cloud-carbon-footprint/api/dist/api';
+import { Config } from '@backstage/config';
 
 export interface RouterOptions {
   logger: Logger;
+  config: Config;
 }
 
 export async function createRouter(
@@ -35,6 +39,7 @@ export async function createRouter(
     logger.info('PONG!');
     response.send({ status: 'ok' });
   });
+  router.use(CCFRouter);
   router.use(errorHandler());
   return router;
 }

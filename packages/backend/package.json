@@ -39,6 +39,7 @@
     "@backstage/plugin-azure-devops-backend": "^0.3.7",
     "@backstage/plugin-badges-backend": "^0.1.22",
     "@backstage/plugin-catalog-backend": "^0.23.0",
+    "@backstage/plugin-cloud-carbon-footprint-backend": "^0.0.0",
     "@backstage/plugin-code-coverage-backend": "^0.1.26",
     "@backstage/plugin-graphql-backend": "^0.1.18",
     "@backstage/plugin-jenkins-backend": "^0.1.17",

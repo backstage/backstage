@@ -29,7 +29,7 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({
-    service: 'cloud-carbon-footprint-backend-backend',
+    service: 'cloud-carbon-footprint-backend',
   });
   logger.debug('Starting application server...');
   const router = await createRouter({
@@ -38,7 +38,7 @@ export async function startStandaloneServer(
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/cloud-carbon-footprint-backend', router);
+    .addRouter('/cloud-carbon-footprint', router);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
