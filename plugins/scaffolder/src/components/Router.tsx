@@ -54,25 +54,12 @@ export type RouterProps = {
 };
 
 export const Router = (props: RouterProps) => {
-  const {
-    TemplateCardComponent: legacyTemplateCardComponent,
-    TaskPageComponent: legacyTaskPageComponent,
-    groups,
-    components = {},
-  } = props;
-
-  if (legacyTemplateCardComponent || legacyTaskPageComponent) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "DEPRECATION: 'TemplateCardComponent' and 'TaskPageComponent' are deprecated when calling the 'ScaffolderPage'. Use 'components' prop to pass these component overrides instead.",
-    );
-  }
+  const { groups, components = {} } = props;
 
   const { TemplateCardComponent, TaskPageComponent } = components;
 
   const outlet = useOutlet();
-  const TaskPageElement =
-    TaskPageComponent ?? legacyTaskPageComponent ?? TaskPage;
+  const TaskPageElement = TaskPageComponent ?? TaskPage;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -101,9 +88,7 @@ export const Router = (props: RouterProps) => {
         element={
           <ScaffolderPage
             groups={groups}
-            TemplateCardComponent={
-              TemplateCardComponent ?? legacyTemplateCardComponent
-            }
+            TemplateCardComponent={TemplateCardComponent}
           />
         }
       />
