@@ -16,6 +16,10 @@
 
 export { AuthorizeResult } from './api';
 export type {
+  PolicyQuery,
+  PolicyDecision,
+  ConditionalPolicyDecision,
+  DefinitivePolicyDecision,
   AuthorizeQuery,
   AuthorizeRequest,
   AuthorizeDecision,

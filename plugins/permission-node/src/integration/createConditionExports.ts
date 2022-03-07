@@ -18,8 +18,8 @@ import {
   AuthorizeResult,
   PermissionCondition,
   PermissionCriteria,
+  ConditionalPolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { ConditionalPolicyDecision } from '../policy';
 import { PermissionRule } from '../types';
 import { createConditionFactory } from './createConditionFactory';
 
