@@ -23,7 +23,6 @@ import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
 import { CronTime } from 'cron';
-import Raw = Knex.Raw;
 
 const WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
@@ -249,7 +248,7 @@ export class TaskWorker {
     const isCron = !settings?.cadence.startsWith('P');
 
     const n = settings as TaskSettingsV2;
-    let nextRun: Raw;
+    let nextRun: Knex.Raw;
     if (isCron) {
       const time = new CronTime(n.cadence).sendAt().toISOString();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
