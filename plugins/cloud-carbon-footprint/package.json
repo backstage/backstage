@@ -23,6 +23,8 @@
     "@backstage/core-components": "^0.9.0",
     "@backstage/core-plugin-api": "^0.8.0",
     "@backstage/theme": "^0.2.15",
+    "@cloud-carbon-footprint/client": "file:../../../cloud-carbon-footprint/packages/client",
+    "@cloud-carbon-footprint/common": "^1.4.0",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
@@ -41,8 +43,8 @@
     "@testing-library/user-event": "^13.1.8",
     "@types/jest": "*",
     "@types/node": "*",
-    "msw": "^0.35.0",
-    "cross-fetch": "^3.1.5"
+    "cross-fetch": "^3.1.5",
+    "msw": "^0.35.0"
   },
   "files": [
     "dist"
