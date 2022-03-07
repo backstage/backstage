@@ -59,20 +59,17 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
       .getEntityFacets({ facets: ['kind'] })
       .then(response => response.facets.kind?.map(f => f.value).sort() || []);
   });
-  const { updateFilters, queryParameters } = useEntityList();
+  const {
+    updateFilters,
+    queryParameters: { kind: kindParameter },
+  } = useEntityList();
 
   const queryParamKind = useMemo(
-    () =>
-      ([queryParameters.kind].flat()[0] ?? initialFilter).toLocaleLowerCase(
-        'en-US',
-      ),
-    [initialFilter, queryParameters],
+    () => [kindParameter].flat()[0],
+    [kindParameter],
   );
-
   const [selectedKind, setSelectedKind] = useState(
-    ([queryParameters.kind].flat()[0] ?? initialFilter).toLocaleLowerCase(
-      'en-US',
-    ),
+    queryParamKind ?? initialFilter,
   );
 
   useEffect(() => {
