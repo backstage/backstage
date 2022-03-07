@@ -87,6 +87,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { CloudCarbonFootprintPage } from '@backstage/plugin-cloud-carbon-footprint';
 
 const app = createApp({
   apis,
@@ -218,6 +219,10 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
+    <Route
+      path="/cloud-carbon-footprint"
+      element={<CloudCarbonFootprintPage />}
+    />
   </FlatRoutes>
 );
 
