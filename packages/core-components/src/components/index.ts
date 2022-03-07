@@ -36,6 +36,7 @@ export * from './OAuthRequestDialog';
 export * from './OverflowTooltip';
 export * from './Progress';
 export * from './ProgressBars';
+export * from './ResponsiveIconButton';
 export * from './Select';
 export * from './SimpleStepper';
 export * from './Status';

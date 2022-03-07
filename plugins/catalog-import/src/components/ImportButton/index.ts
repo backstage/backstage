@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,5 @@
  * limitations under the License.
  */
 
-export * from './DefaultImportPage';
-export * from './EntityListComponent';
-export * from './ImportButton';
-export * from './ImportInfoCard';
-export * from './ImportStepper';
-export * from './StepInitAnalyzeUrl';
-export * from './StepPrepareCreatePullRequest';
-export type { ImportFlows, ImportState, PrepareResult } from './useImportState';
+export { ImportButton } from './ImportButton';
+export type { ImportButtonProps } from './ImportButton';

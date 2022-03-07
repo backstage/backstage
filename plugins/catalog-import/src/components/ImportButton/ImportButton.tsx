@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,36 @@
  * limitations under the License.
  */
 
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import { ResponsiveIconButton } from '@backstage/core-components';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { usePermission } from '@backstage/plugin-permission-react';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import React from 'react';
 import { LinkProps } from 'react-router-dom';
-import { ResponsiveIconButton } from '../ResponsiveIconButton';
 
 /**
- * Properties for {@link CreateButton}
+ * Properties for {@link ImportButton}
  *
  * @public
  */
-export type CreateButtonProps = {
+export type ImportButtonProps = {
   title: string;
 } & Partial<Pick<LinkProps, 'to'>>;
 
 /**
- * "Create new component" button for the catalog. Responsive to display only an icon for small
+ * "Import component(s)" button for the catalog. Responsive to display only an icon for small
  * screens.
  *
  * @public
  */
-export function CreateButton(props: CreateButtonProps) {
+export function ImportButton(props: ImportButtonProps) {
+  const { allowed } = usePermission(catalogEntityCreatePermission);
+
+  if (!allowed) {
+    return null;
+  }
+
   return (
-    <ResponsiveIconButton
-      variant="contained"
-      color="primary"
-      icon={<AddCircleOutline />}
-      {...props}
-    />
+    <ResponsiveIconButton icon={<GetAppIcon />} variant="outlined" {...props} />
   );
 }

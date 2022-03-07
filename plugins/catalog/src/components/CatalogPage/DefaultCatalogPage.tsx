@@ -42,6 +42,10 @@ import {
   FilterContainer,
 } from '../FilteredEntityLayout';
 import { CatalogKindHeader } from '../CatalogKindHeader';
+import {
+  plugin as importPlugin,
+  ImportButton,
+} from '@backstage/plugin-catalog-import';
 
 /**
  * Props for root catalog pages.
@@ -59,6 +63,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
+  const importLink = useRouteRef(importPlugin.routes.importPage);
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
@@ -69,6 +74,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               title="Create Component"
               to={createComponentLink && createComponentLink()}
             />
+            <ImportButton title="Import" to={importLink && importLink()} />
             <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
           <FilteredEntityLayout>

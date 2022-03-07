@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
-  CreateButton,
   Header,
   Lifecycle,
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
   EntityListProvider,
@@ -33,13 +30,11 @@ import {
   EntityTagPicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { makeStyles } from '@material-ui/core';
 import React, { ComponentType } from 'react';
-import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
-import { usePermission } from '@backstage/plugin-permission-react';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -67,7 +62,6 @@ export const ScaffolderPageContents = ({
   groups,
 }: ScaffolderPageProps) => {
   const styles = useStyles();
-  const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
     title: groups ? 'Other Templates' : 'Templates',
     filter: (entity: Entity) => {
@@ -75,8 +69,6 @@ export const ScaffolderPageContents = ({
       return !filtered.some(result => result === true);
     },
   };
-
-  const { allowed } = usePermission(catalogEntityCreatePermission);
 
   return (
     <Page themeId="home">
@@ -91,12 +83,6 @@ export const ScaffolderPageContents = ({
       />
       <Content>
         <ContentHeader title="Available Templates">
-          {allowed && (
-            <CreateButton
-              title="Register Existing Component"
-              to={registerComponentLink && registerComponentLink()}
-            />
-          )}
           <SupportButton>
             Create new software components using standard templates. Different
             templates create different kinds of components (services, websites,

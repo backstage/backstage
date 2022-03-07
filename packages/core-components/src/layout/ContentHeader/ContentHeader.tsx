@@ -58,6 +58,9 @@ const useStyles = (props: ContentHeaderProps) =>
         marginLeft: theme.spacing(1),
         minWidth: 0,
         overflow: 'visible',
+        '& > *:not(:first-child)': {
+          marginLeft: theme.spacing(1),
+        },
       },
       description: {},
       title: {
