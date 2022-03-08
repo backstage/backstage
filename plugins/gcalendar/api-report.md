@@ -12,11 +12,6 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "CalendarCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const CalendarCard: () => JSX.Element;
-
 // Warning: (ae-missing-release-tag) "EventAttendee" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -69,6 +64,11 @@ export const gcalendarPlugin: BackstagePlugin<
   },
   {}
 >;
+
+// Warning: (ae-missing-release-tag) "HomePageCalendar" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HomePageCalendar: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "ResponseStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
