@@ -20,14 +20,14 @@ import { delegateAbortController, sleep, validateId } from './util';
 
 describe('util', () => {
   describe('validateId', () => {
-    it.each(['a', 'a_b', 'ab123c_2'])(
+    it.each(['a', 'a_b', 'ab123c_2', 'a!', 'A', 'a-b', 'a.b', '_a', 'a_'])(
       'accepts valid inputs, %p',
       async input => {
         expect(validateId(input)).toBeUndefined();
       },
     );
 
-    it.each(['', 'a!', 'A', 'a-b', 'a.b', '_a', 'a_', null, Symbol('a')])(
+    it.each(['', null, Symbol('a')])(
       'rejects invalid inputs, %p',
       async input => {
         expect(() => validateId(input as any)).toThrow();

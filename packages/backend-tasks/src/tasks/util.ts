@@ -19,12 +19,10 @@ import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
 import { AbortController, AbortSignal } from 'node-abort-controller';
 
-// Keep the IDs compatible with e.g. Prometheus
+// Keep the IDs compatible with e.g. Prometheus labels
 export function validateId(id: string) {
-  if (typeof id !== 'string' || !/^[a-z0-9]+(?:_[a-z0-9]+)*$/.test(id)) {
-    throw new InputError(
-      `${id} is not a valid ID, expected string of lowercase characters and digits separated by underscores`,
-    );
+  if (typeof id !== 'string' || !id.trim()) {
+    throw new InputError(`${id} is not a valid ID, expected non-empty string`);
   }
 }
 
