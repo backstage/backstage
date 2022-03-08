@@ -21,7 +21,7 @@
  */
 exports.up = async function up(knex) {
   // SQLite does not support FK and PK
-  if (knex.client.config.client !== 'sqlite3') {
+  if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities_search', table => {
       table.dropForeign(['entity_id']);
     });
@@ -130,7 +130,7 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   // SQLite does not support FK and PK
-  if (knex.client.config.client !== 'sqlite3') {
+  if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities_search', table => {
       table.dropForeign(['entity_id']);
     });
