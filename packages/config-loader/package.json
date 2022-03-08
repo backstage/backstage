@@ -41,7 +41,7 @@
     "@types/json-schema": "^7.0.6",
     "ajv": "^7.0.3",
     "chokidar": "^3.5.2",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.1",
     "json-schema": "^0.4.0",
     "json-schema-merge-allof": "^0.8.1",
     "json-schema-traverse": "^1.0.0",

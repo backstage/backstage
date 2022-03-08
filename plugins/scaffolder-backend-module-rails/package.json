@@ -31,7 +31,7 @@
     "@backstage/integration": "^0.8.0",
     "@backstage/types": "^0.1.3",
     "command-exists": "^1.2.9",
-    "fs-extra": "^9.0.0"
+    "fs-extra": "^10.0.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.15.0",
