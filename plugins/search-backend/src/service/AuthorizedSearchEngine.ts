@@ -21,6 +21,7 @@ import {
   AuthorizeDecision,
   AuthorizeQuery,
   AuthorizeResult,
+  isResourcePermission,
   PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 import {
@@ -197,7 +198,11 @@ export class AuthorizedSearchEngine implements SearchEngine {
           const permission = this.types[result.type]?.visibilityPermission;
           const resourceRef = result.document.authorization?.resourceRef;
 
-          if (!permission || !resourceRef) {
+          if (
+            !permission ||
+            !isResourcePermission(permission) ||
+            !resourceRef
+          ) {
             return result;
           }
 
