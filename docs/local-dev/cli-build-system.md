@@ -243,11 +243,8 @@ nevertheless be useful to know how it works, since all of the published
 Backstage packages are built using this process.
 
 The build is currently using [Rollup](https://rollupjs.org/) and executes in
-isolation for each individual package. There are currently three different
-commands in the Backstage CLI that invokes the build process, `plugin:build`,
-`backend:build`, and simply `build`. The two former are pre-configured commands
-for frontend and backend plugins, while the `build` command provides more
-control over the output.
+isolation for each individual package. The build is invoked using the `package build`
+command, and applies to all packages roles except the bundled ones, `frontend` and `backend`.
 
 There are three different possible outputs of the build process: JavaScript in
 CommonJS module format, JavaScript in ECMAScript module format, and type
@@ -281,11 +278,11 @@ cover each combination of these cases separately.
 
 ### Frontend Development
 
-There are two different commands that start the frontend development bundling:
-`app:serve`, which serves an app and uses `src/index` as the entrypoint, and
-`plugin:serve`, which serves a plugin and uses `dev/index` as the entrypoint.
-These are typically invoked via the `yarn start` script, and are intended for
-local development only. When running the bundle command, a development server
+The frontend development setup is used for all packages with a frontend role, and
+is invoked using the `package start` command.
+The only difference between the different roles is that packages with the `'frontend'`
+role use `src/index` as the entrypoint, while other roles instead use `dev/index`.
+When running the start command, a development server
 will be set up that listens to the protocol, host and port set by `app.baseUrl`
 in the configuration. If needed it is also possible to override the listening
 options through the `app.listen` configuration.
@@ -309,8 +306,8 @@ support for them instead.
 ### Frontend Production
 
 The frontend production bundling creates your typical web content bundle, all
-contained within a single folder, ready for static serving. It is invoked using
-the `app:build` command, and unlike the development bundling there is no way to
+contained within a single folder, ready for static serving. It is used when building
+packages with the `'frontend'` role, and unlike the development bundling there is no way to
 build a production bundle of an individual plugin. The output of the bundling
 process is written to the `dist` folder in the package.
 
@@ -405,7 +402,7 @@ dependencies installed, and as soon as you copy over and extract the contents of
 the `bundle.tar.gz` archive on top of it, the backend will be ready to run.
 
 The following is an example of a `Dockerfile` that can be used to package the
-output of `backstage-cli backend:bundle` into an image:
+output of building a package with role `'backend'` into an image:
 
 ```Dockerfile
 FROM node:16-bullseye-slim
@@ -617,12 +614,12 @@ The following is an excerpt of a typical setup of an isomorphic library package:
     "types": "dist/index.d.ts"
   },
   "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
   },
   "files": ["dist"],
 ```
