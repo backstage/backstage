@@ -18,6 +18,13 @@ import { render } from '@testing-library/react';
 import { CardHeader } from './CardHeader';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { starredEntitiesApiRef } from '@backstage/plugin-catalog-react';
+import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
 
 describe('CardHeader', () => {
   it('should select the correct theme from the theme provider from the header', () => {
@@ -29,7 +36,47 @@ describe('CardHeader', () => {
     };
 
     render(
-      <ThemeProvider theme={mockTheme}>
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <ThemeProvider theme={mockTheme}>
+          <CardHeader
+            template={{
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+              kind: 'Template',
+              metadata: { name: 'bob' },
+              spec: {
+                steps: [],
+                type: 'service',
+              },
+            }}
+          />
+        </ThemeProvider>
+      </TestApiProvider>,
+    );
+
+    expect(mockTheme.getPageTheme).toHaveBeenCalledWith({ themeId: 'service' });
+  });
+
+  it('should render the type', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
         <CardHeader
           template={{
             apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -41,27 +88,9 @@ describe('CardHeader', () => {
             },
           }}
         />
-      </ThemeProvider>,
+      </TestApiProvider>,
     );
 
-    expect(mockTheme.getPageTheme).toHaveBeenCalledWith({ themeId: 'service' });
-  });
-
-  it('should render the type', () => {
-    const { getByText } = render(
-      <CardHeader
-        template={{
-          apiVersion: 'scaffolder.backstage.io/v1beta3',
-          kind: 'Template',
-          metadata: { name: 'bob' },
-          spec: {
-            steps: [],
-            type: 'service',
-          },
-        }}
-      />,
-    );
-
-    expect(getByText('Service')).toBeInTheDocument();
+    expect(getByText('service')).toBeInTheDocument();
   });
 });
