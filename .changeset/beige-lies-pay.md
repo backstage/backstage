@@ -1,6 +1,7 @@
 ---
 '@backstage/backend-common': patch
 '@backstage/backend-tasks': patch
+'@backstage/backend-test-utils': patch
 '@backstage/plugin-app-backend': patch
 '@backstage/plugin-auth-backend': patch
 '@backstage/plugin-bazaar-backend': patch

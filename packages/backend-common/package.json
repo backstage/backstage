@@ -106,6 +106,7 @@
     "@types/unzipper": "^0.10.3",
     "@types/webpack-env": "^1.15.2",
     "aws-sdk-mock": "^5.2.1",
+    "better-sqlite3": "^7.5.0",
     "http-errors": "^2.0.0",
     "jest": "^26.0.1",
     "mock-fs": "^5.1.0",

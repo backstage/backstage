@@ -23,7 +23,13 @@ import { DatabaseConnector } from './types';
 
 import { mysqlConnector, pgConnector, sqlite3Connector } from './connectors';
 
-type DatabaseClient = 'pg' | 'sqlite3' | 'mysql' | 'mysql2' | string;
+type DatabaseClient =
+  | 'pg'
+  | 'better-sqlite3'
+  | 'sqlite3'
+  | 'mysql'
+  | 'mysql2'
+  | string;
 
 /**
  * Mapping of client type to supported database connectors
