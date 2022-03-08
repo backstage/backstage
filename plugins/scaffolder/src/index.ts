@@ -22,7 +22,6 @@
 
 export { scaffolderApiRef, ScaffolderClient } from './api';
 export type {
-  JobStatus,
   ListActionsResponse,
   LogEvent,
   ScaffolderApi,

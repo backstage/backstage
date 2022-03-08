@@ -32,14 +32,11 @@ import {
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
 
+/**
+ * The props for the entrypoint `ScaffolderPage` component the plugin.
+ * @public
+ */
 export type RouterProps = {
-  /** @deprecated use components.TemplateCardComponent instead */
-  TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta3 }>
-    | undefined;
-  /** @deprecated use component.TaskPageComponent instead */
-  TaskPageComponent?: ComponentType<{}>;
-
   components?: {
     TemplateCardComponent?:
       | ComponentType<{ template: TemplateEntityV1beta3 }>
@@ -53,26 +50,18 @@ export type RouterProps = {
   }>;
 };
 
+/**
+ * The main entrypoint `Router` for the `ScaffolderPlugin`.
+ *
+ * @public
+ */
 export const Router = (props: RouterProps) => {
-  const {
-    TemplateCardComponent: legacyTemplateCardComponent,
-    TaskPageComponent: legacyTaskPageComponent,
-    groups,
-    components = {},
-  } = props;
-
-  if (legacyTemplateCardComponent || legacyTaskPageComponent) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "DEPRECATION: 'TemplateCardComponent' and 'TaskPageComponent' are deprecated when calling the 'ScaffolderPage'. Use 'components' prop to pass these component overrides instead.",
-    );
-  }
+  const { groups, components = {} } = props;
 
   const { TemplateCardComponent, TaskPageComponent } = components;
 
   const outlet = useOutlet();
-  const TaskPageElement =
-    TaskPageComponent ?? legacyTaskPageComponent ?? TaskPage;
+  const TaskPageElement = TaskPageComponent ?? TaskPage;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -101,9 +90,7 @@ export const Router = (props: RouterProps) => {
         element={
           <ScaffolderPage
             groups={groups}
-            TemplateCardComponent={
-              TemplateCardComponent ?? legacyTemplateCardComponent
-            }
+            TemplateCardComponent={TemplateCardComponent}
           />
         }
       />

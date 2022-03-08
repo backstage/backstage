@@ -15,8 +15,6 @@
  */
 export * from './fields';
 export type { RepoUrlPickerUiOptions } from './fields';
-export { TemplateList } from './TemplateList';
-export type { TemplateListProps } from './TemplateList';
 export { TemplateTypePicker } from './TemplateTypePicker';
 export * from './secrets';
 export { TaskPage } from './TaskPage';

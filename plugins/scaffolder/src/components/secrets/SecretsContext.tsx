@@ -53,8 +53,6 @@ export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
  * @public
  */
 export interface ScaffolderUseTemplateSecrets {
-  /** @deprecated use setSecrets instead */
-  setSecret: (input: Record<string, string>) => void;
   setSecrets: (input: Record<string, string>) => void;
 }
 
@@ -79,5 +77,5 @@ export const useTemplateSecrets = (): ScaffolderUseTemplateSecrets => {
     [updateSecrets],
   );
 
-  return { setSecret: setSecrets, setSecrets };
+  return { setSecrets };
 };
