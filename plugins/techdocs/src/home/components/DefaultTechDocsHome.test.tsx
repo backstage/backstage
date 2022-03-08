@@ -23,8 +23,8 @@ import {
 import {
   CatalogApi,
   catalogApiRef,
-  DefaultStarredEntitiesApi,
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import {
   MockStorageApi,
@@ -36,16 +36,8 @@ import React from 'react';
 import { rootDocsRouteRef } from '../../routes';
 import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
-jest.mock('@backstage/plugin-catalog-react', () => {
-  const actual = jest.requireActual('@backstage/plugin-catalog-react');
-  return {
-    ...actual,
-    useOwnUser: () => 'test-user',
-  };
-});
-
 const mockCatalogApi = {
-  getEntityByName: () => Promise.resolve(),
+  getEntityByRef: () => Promise.resolve(),
   getEntities: async () => ({
     items: [
       {
@@ -73,7 +65,7 @@ describe('TechDocs Home', () => {
     [catalogApiRef, mockCatalogApi],
     [configApiRef, configApi],
     [storageApiRef, storageApi],
-    [starredEntitiesApiRef, new DefaultStarredEntitiesApi({ storageApi })],
+    [starredEntitiesApiRef, new MockStarredEntitiesApi()],
   );
 
   it('should render a TechDocs home page', async () => {

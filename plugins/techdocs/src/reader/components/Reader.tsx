@@ -34,7 +34,7 @@ import {
   alpha,
 } from '@material-ui/core';
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
@@ -68,7 +68,7 @@ import { useReaderState } from './useReaderState';
  * @public
  */
 export type ReaderProps = {
-  entityRef: EntityName;
+  entityRef: CompoundEntityRef;
   withSearch?: boolean;
   onReady?: () => void;
 };
@@ -95,7 +95,7 @@ const TechDocsReaderContext = createContext<TechDocsReaderValue>(
 const TechDocsReaderProvider = ({
   children,
   entityRef,
-}: PropsWithChildren<{ entityRef: EntityName }>) => {
+}: PropsWithChildren<{ entityRef: CompoundEntityRef }>) => {
   const { '*': path } = useParams();
   const { kind, namespace, name } = entityRef;
   const value = useReaderState(kind, namespace, name, path);
@@ -116,7 +116,7 @@ const TechDocsReaderProvider = ({
  * @internal
  */
 export const withTechDocsReaderProvider =
-  <T extends {}>(Component: ComponentType<T>, entityRef: EntityName) =>
+  <T extends {}>(Component: ComponentType<T>, entityRef: CompoundEntityRef) =>
   (props: T) =>
     (
       <TechDocsReaderProvider entityRef={entityRef}>
@@ -157,7 +157,9 @@ const headings: TypographyHeadingsKeys[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
  * todo: Make public or stop exporting (see others: "altReaderExperiments")
  * @internal
  */
-export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
+export const useTechDocsReaderDom = (
+  entityRef: CompoundEntityRef,
+): Element | null => {
   const navigate = useNavigate();
   const theme = useTheme<BackstageTheme>();
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
@@ -322,7 +324,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             --md-source-version-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25 0 0 1 .25-.25h5.025a.25.25 0 0 1 .177.073l6.25 6.25a.25.25 0 0 1 0 .354l-5.025 5.025a.25.25 0 0 1-.354 0l-6.25-6.25a.25.25 0 0 1-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775zM6 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>');
             --md-version-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="m310.6 246.6-127.1 128c-7.1 6.3-15.3 9.4-23.5 9.4s-16.38-3.125-22.63-9.375l-127.1-128C.224 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75s3.12 25.75-6.08 34.85z"/></svg>');
           }
-          
+
           :host > * {
             /* CODE */
             --md-code-fg-color: ${theme.palette.text.primary};
@@ -438,7 +440,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-main__inner {
               margin-top: 0;
             }
-            
+
             .md-sidebar {
               height: calc(100% - 100px);
               position: fixed;
@@ -450,13 +452,13 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-sidebar--secondary {
               right: ${theme.spacing(3)}px;
             }
-            
+
             .md-content {
               max-width: calc(100% - 16rem * 2);
               margin-left: 16rem;
               margin-bottom: 50px;
             }
-            
+
             .md-footer {
               position: fixed;
               bottom: 0px;
@@ -471,7 +473,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-dialog {
               background-color: unset;
             }
-            
+
             @media screen and (max-width: 76.1875em) {
               .md-nav {
                 transition: none !important;
@@ -567,7 +569,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
         }),
         injectCss({
           // Typeset
-          css: `        
+          css: `
             .md-typeset {
               font-size: var(--md-typeset-font-size);
             }
@@ -600,11 +602,11 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-typeset .md-content__button {
               color: var(--md-default-fg-color);
             }
-            
+
             .md-typeset hr {
               border-bottom: 0.05rem dotted ${theme.palette.divider};
             }
-            
+
             .md-typeset details {
               font-size: var(--md-typeset-font-size) !important;
             }
@@ -621,7 +623,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .md-typeset details[open] > summary:after {
               transform: rotate(90deg) translateX(-50%) !important;
             }
-            
+
             .md-typeset blockquote {
               color: var(--md-default-fg-color--light);
               border-left: 0.2rem solid var(--md-default-fg-color--light);
@@ -667,13 +669,13 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
             .highlight .md-clipboard:after {
               content: unset;
             }
-            
+
             .highlight .nx {
               color: ${isDarkTheme ? '#ff53a3' : '#ec407a'};
             }
 
             /* CODE HILITE */
-            .codehilite .gd { 
+            .codehilite .gd {
               background-color: ${
                 isDarkTheme ? 'rgba(248,81,73,0.65)' : '#fdd'
               };
@@ -753,7 +755,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
     async (transformedElement: Element) =>
       transformer(transformedElement, [
         scrollIntoAnchor(),
-        copyToClipboard(),
+        copyToClipboard(theme),
         addLinkClickListener({
           baseUrl: window.location.origin,
           onClick: (event: MouseEvent, url: string) => {
@@ -802,7 +804,7 @@ export const useTechDocsReaderDom = (entityRef: EntityName): Element | null => {
           },
         }),
       ]),
-    [navigate, techdocsStorageApi],
+    [theme, navigate, techdocsStorageApi],
   );
 
   useEffect(() => {

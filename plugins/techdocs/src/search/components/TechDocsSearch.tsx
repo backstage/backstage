@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { SearchContextProvider, useSearch } from '@backstage/plugin-search';
 import {
   makeStyles,
@@ -42,7 +42,7 @@ const useStyles = makeStyles({
  * @public
  */
 export type TechDocsSearchProps = {
-  entityId: EntityName;
+  entityId: CompoundEntityRef;
   debounceTime?: number;
 };
 

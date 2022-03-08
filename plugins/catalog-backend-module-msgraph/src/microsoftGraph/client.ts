@@ -38,7 +38,7 @@ export type ODataQuery = {
   /**
    * specifies the related resources or media streams to be included in line with retrieved resources
    */
-  expand?: string[];
+  expand?: string;
   /**
    * request a specific set of properties for each entity or complex type
    */
@@ -155,7 +155,7 @@ export class MicrosoftGraphClient {
         $search: query?.search,
         $filter: query?.filter,
         $select: query?.select?.join(','),
-        $expand: query?.expand?.join(','),
+        $expand: query?.expand,
       },
       {
         addQueryPrefix: true,
@@ -203,10 +203,14 @@ export class MicrosoftGraphClient {
    *
    * @public
    * @param userId - The unique identifier for the `User` resource
+   * @param query - OData Query {@link ODataQuery}
    *
    */
-  async getUserProfile(userId: string): Promise<MicrosoftGraph.User> {
-    const response = await this.requestApi(`users/${userId}`);
+  async getUserProfile(
+    userId: string,
+    query?: ODataQuery,
+  ): Promise<MicrosoftGraph.User> {
+    const response = await this.requestApi(`users/${userId}`, query);
 
     if (response.status !== 200) {
       await this.handleError('user profile', response);

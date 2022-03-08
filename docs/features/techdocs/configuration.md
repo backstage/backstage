@@ -37,12 +37,22 @@ techdocs:
 
     pullImage: true
 
+    mkdocs:
+      # (Optional)  techdocs.generator.omitTechdocsCoreMkdocsPlugin can be used to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
+      # Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+      omitTechdocsCorePlugin: false
+
   # techdocs.builder can be either 'local' or 'external.
-  # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to generate the docs, publish to storage
-  # and show the generated docs afterwords. This is the "Basic" setup of the TechDocs Architecture.
-  # If builder is set to 'external', techdocs-backend will only fetch the docs and will NOT try to generate and publish. In this case of 'external',
-  # we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository). This is the "Recommended" setup of
-  # the architecture. Read more here https://backstage.io/docs/features/techdocs/architecture
+  # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
+  # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwords.
+  # This is the "Basic" setup of the TechDocs Architecture.
+  # Using the default build strategy, if builder is set to 'external' (or anything other than 'local'), techdocs-backend
+  # will only fetch the docs and will NOT try to generate and publish.
+  # In this case, we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository).
+  # This is the "Recommended" setup of the architecture.
+  # Note that custom build strategies may alter this behaviour.
+  # Read more about the "Basic" and "Recommended" setups here https://backstage.io/docs/features/techdocs/architecture
+  # Read more about build strategies here: https://backstage.io/docs/features/techdocs/concepts#techdocs-build-strategy
 
   builder: 'local'
 

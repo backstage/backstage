@@ -1,5 +1,38 @@
 # @backstage/plugin-scaffolder
 
+## 0.14.0
+
+### Minor Changes
+
+- 1c2755991d: - **BREAKING**: Removed the `FavouriteTemplate` export in favor of the `FavoriteEntity` from `@backstage/plugin-catalog-react`. Please migrate any usages to that component instead if you are creating your own `TemplateCard` page.
+- 86da51cec5: **BREAKING**: Removing the exports of the raw components that back the `CustomFieldExtensions`.
+
+### Patch Changes
+
+- f41a293231: - **DEPRECATION**: Deprecated `formatEntityRefTitle` in favor of the new `humanizeEntityRef` method instead. Please migrate to using the new method instead.
+- 55361f3f7b: Added some deprecations as follows:
+
+  - **DEPRECATED**: `TemplateCardComponent` and `TaskPageComponent` props have been deprecated, and moved to a `components` prop instead. You can pass them in through there instead.
+  - **DEPRECATED**: `TemplateList` and `TemplateListProps` has been deprecated. Please use the `TemplateCard` to create your own list component instead.
+  - **DEPRECATED**: `setSecret` has been deprecated in favour of `setSecrets` when calling `useTemplateSecrets`
+
+  Other notable changes:
+
+  - `scaffolderApi.scaffold()` `values` type has been narrowed from `Record<string, any>` to `Record<string, JsonValue>` instead.
+  - Moved all navigation internally over to using `routeRefs` and `subRouteRefs`
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/plugin-catalog-common@0.2.0
+  - @backstage/integration@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/plugin-scaffolder-common@0.2.3
+  - @backstage/integration-react@0.1.24
+  - @backstage/plugin-permission-react@0.3.3
+
 ## 0.13.0
 
 ### Minor Changes

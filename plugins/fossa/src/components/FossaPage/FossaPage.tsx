@@ -16,14 +16,14 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   EntityRefLink,
   EntityRefLinks,
-  formatEntityRefTitle,
+  humanizeEntityRef,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { Tooltip } from '@material-ui/core';
@@ -56,7 +56,7 @@ type FossaRow = {
   resolved: {
     name: string;
     ownedByRelationsTitle?: string;
-    ownedByRelations: EntityName[];
+    ownedByRelations: CompoundEntityRef[];
     loading: boolean;
     details?: FindingSummary;
   };
@@ -222,10 +222,10 @@ export const FossaPage = ({
         return {
           entity,
           resolved: {
-            name: formatEntityRefTitle(entity),
+            name: humanizeEntityRef(entity),
             ownedByRelations,
             ownedByRelationsTitle: ownedByRelations
-              .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+              .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
               .join(', '),
             loading: summariesLoading,
             details: summary,

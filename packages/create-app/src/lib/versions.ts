@@ -30,6 +30,8 @@ Rollup will extract the value of the version field in each package at build time
 leaving any imports in place.
 */
 
+import { version as root } from '../../../../package.json';
+
 import { version as appDefaults } from '../../../app-defaults/package.json';
 import { version as backendCommon } from '../../../backend-common/package.json';
 import { version as backendTasks } from '../../../backend-tasks/package.json';
@@ -68,6 +70,7 @@ import { version as pluginScaffolder } from '../../../../plugins/scaffolder/pack
 import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
 import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as pluginSearchBackendModulePg } from '../../../../plugins/search-backend-module-pg/package.json';
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
 import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
@@ -75,6 +78,7 @@ import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-b
 import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
 
 export const packageVersions = {
+  root,
   '@backstage/app-defaults': appDefaults,
   '@backstage/backend-common': backendCommon,
   '@backstage/backend-tasks': backendTasks,
@@ -110,6 +114,7 @@ export const packageVersions = {
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
   '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-search-backend': pluginSearchBackend,
+  '@backstage/plugin-search-backend-module-pg': pluginSearchBackendModulePg,
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,

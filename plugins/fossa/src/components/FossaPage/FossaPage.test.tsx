@@ -29,7 +29,7 @@ describe('<FossaPage />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
-    getEntityByName: jest.fn(),
+    getEntityByRef: jest.fn(),
     getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),

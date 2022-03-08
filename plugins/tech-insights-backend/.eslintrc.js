@@ -1,5 +1,4 @@
-module.exports = {
-  extends: [require.resolve('@backstage/cli/config/eslint.backend')],
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
   rules: {
     'jest/expect-expect': [
       'error',
@@ -8,4 +7,4 @@ module.exports = {
       },
     ],
   },
-};
+});

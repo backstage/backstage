@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
@@ -26,7 +26,7 @@ import { getEntityRelations } from '../../utils';
 import {
   EntityRefLink,
   EntityRefLinks,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '../EntityRefLink';
 
 /** @public */
@@ -38,7 +38,7 @@ export const columnFactories = Object.freeze({
     function formatContent(entity: T): string {
       return (
         entity.metadata?.title ||
-        formatEntityRefTitle(entity, {
+        humanizeEntityRef(entity, {
           defaultKind,
         })
       );
@@ -81,13 +81,13 @@ export const columnFactories = Object.freeze({
     defaultKind?: string;
     filter?: { kind: string };
   }): TableColumn<T> {
-    function getRelations(entity: T): EntityName[] {
+    function getRelations(entity: T): CompoundEntityRef[] {
       return getEntityRelations(entity, relation, entityFilter);
     }
 
     function formatContent(entity: T): string {
       return getRelations(entity)
-        .map(r => formatEntityRefTitle(r, { defaultKind }))
+        .map(r => humanizeEntityRef(r, { defaultKind }))
         .join(', ');
     }
 

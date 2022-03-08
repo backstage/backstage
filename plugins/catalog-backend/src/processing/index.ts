@@ -19,10 +19,15 @@ export type {
   CatalogProcessingEngine,
   EntityProcessingRequest,
   EntityProcessingResult,
-  EntityRelationSpec,
   DeferredEntity,
 } from './types';
 export { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 
-export { createRandomRefreshInterval } from './refresh';
-export type { RefreshIntervalFunction } from './refresh';
+export {
+  createRandomRefreshInterval,
+  createRandomProcessingInterval,
+} from './refresh';
+export type {
+  RefreshIntervalFunction,
+  ProcessingIntervalFunction,
+} from './refresh';

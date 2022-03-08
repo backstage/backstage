@@ -27,23 +27,12 @@ export type StorageValueSnapshot<TValue extends JsonValue> =
       key: string;
       presence: 'unknown' | 'absent';
       value?: undefined;
-      /** @deprecated Use `value` instead */
-      newValue?: undefined;
     }
   | {
       key: string;
       presence: 'present';
       value: TValue;
-      /** @deprecated Use `value` instead */
-      newValue?: TValue;
     };
-
-/**
- * @public
- * @deprecated Use StorageValueSnapshot instead
- */
-export type StorageValueChange<TValue extends JsonValue> =
-  StorageValueSnapshot<TValue>;
 
 /**
  * Provides a key-value persistence API.
@@ -58,14 +47,6 @@ export interface StorageApi {
    *               will inherit previous namespaces too
    */
   forBucket(name: string): StorageApi;
-
-  /**
-   * Get the current value for persistent data, use observe$ to be notified of updates.
-   *
-   * @deprecated Use `snapshot` instead.
-   * @param key - Unique key associated with the data.
-   */
-  get<T extends JsonValue>(key: string): T | undefined;
 
   /**
    * Remove persistent data.

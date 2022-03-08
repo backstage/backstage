@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  EntityName,
+  CompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -32,8 +32,8 @@ import usePrevious from 'react-use/lib/usePrevious';
 import { Direction } from '../EntityRelationsGraph';
 
 export type CatalogGraphPageValue = {
-  rootEntityNames: EntityName[];
-  setRootEntityNames: Dispatch<React.SetStateAction<EntityName[]>>;
+  rootEntityNames: CompoundEntityRef[];
+  setRootEntityNames: Dispatch<React.SetStateAction<CompoundEntityRef[]>>;
   maxDepth: number;
   setMaxDepth: Dispatch<React.SetStateAction<number>>;
   selectedRelations: string[] | undefined;
@@ -82,11 +82,12 @@ export function useCatalogGraphPage({
   );
 
   // Initial state
-  const [rootEntityNames, setRootEntityNames] = useState<EntityName[]>(() =>
-    (Array.isArray(query.rootEntityRefs)
-      ? query.rootEntityRefs
-      : initialState?.rootEntityRefs ?? []
-    ).map(r => parseEntityRef(r)),
+  const [rootEntityNames, setRootEntityNames] = useState<CompoundEntityRef[]>(
+    () =>
+      (Array.isArray(query.rootEntityRefs)
+        ? query.rootEntityRefs
+        : initialState?.rootEntityRefs ?? []
+      ).map(r => parseEntityRef(r)),
   );
   const [maxDepth, setMaxDepth] = useState<number>(() =>
     typeof query.maxDepth === 'string'

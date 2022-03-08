@@ -5,7 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -19,6 +19,6 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
 }
 ```

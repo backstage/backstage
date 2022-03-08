@@ -41,6 +41,10 @@ export function registerRepoCommand(program: CommanderStatic) {
       '--all',
       'Build all packages, including bundled app and backend packages.',
     )
+    .option(
+      '--since <ref>',
+      'Only build packages and their dev dependents that changed since the specified ref',
+    )
     .action(lazy(() => import('./repo/build').then(m => m.command)));
 
   command
@@ -160,6 +164,15 @@ export function registerMigrateCommand(program: CommanderStatic) {
     .description('Set package scripts according to each package role')
     .action(
       lazy(() => import('./migrate/packageScripts').then(m => m.command)),
+    );
+
+  command
+    .command('package-lint-configs')
+    .description(
+      'Migrates all packages to use @backstage/cli/config/eslint-factory',
+    )
+    .action(
+      lazy(() => import('./migrate/packageLintConfigs').then(m => m.command)),
     );
 }
 

@@ -26,59 +26,62 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  item: {
-    height: 48,
-    width: '100%',
-    '&:hover': {
+const useStyles = makeStyles<BackstageTheme>(
+  theme => ({
+    item: {
+      height: 48,
+      width: '100%',
+      '&:hover': {
+        background: '#6f6f6f',
+        color: theme.palette.navigation.selectedColor,
+      },
+      display: 'flex',
+      alignItems: 'center',
+      color: theme.palette.navigation.color,
+      padding: 20,
+      cursor: 'pointer',
+      position: 'relative',
+      background: 'none',
+      border: 'none',
+    },
+    itemContainer: {
+      width: '100%',
+    },
+    selected: {
       background: '#6f6f6f',
-      color: theme.palette.navigation.selectedColor,
+      color: '#FFF',
     },
-    display: 'flex',
-    alignItems: 'center',
-    color: theme.palette.navigation.color,
-    padding: 20,
-    cursor: 'pointer',
-    position: 'relative',
-    background: 'none',
-    border: 'none',
-  },
-  itemContainer: {
-    width: '100%',
-  },
-  selected: {
-    background: '#6f6f6f',
-    color: '#FFF',
-  },
-  label: {
-    margin: 14,
-    marginLeft: 7,
-    fontSize: 14,
-  },
-  dropdownArrow: {
-    position: 'absolute',
-    right: 21,
-  },
-  dropdown: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'end',
-  },
-  dropdownItem: {
-    width: '100%',
-    padding: '10px 0 10px 0',
-  },
-  textContent: {
-    color: theme.palette.navigation.color,
-    display: 'flex',
-    justifyContent: 'center',
-    [theme.breakpoints.down('xs')]: {
-      display: 'block',
-      paddingLeft: theme.spacing(4),
+    label: {
+      margin: 14,
+      marginLeft: 7,
+      fontSize: 14,
     },
-    fontSize: '14px',
-  },
-}));
+    dropdownArrow: {
+      position: 'absolute',
+      right: 21,
+    },
+    dropdown: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'end',
+    },
+    dropdownItem: {
+      width: '100%',
+      padding: '10px 0 10px 0',
+    },
+    textContent: {
+      color: theme.palette.navigation.color,
+      display: 'flex',
+      justifyContent: 'center',
+      [theme.breakpoints.down('xs')]: {
+        display: 'block',
+        paddingLeft: theme.spacing(4),
+      },
+      fontSize: '14px',
+    },
+  }),
+  { name: 'BackstageSidebarSubmenuItem' },
+);
 
 /**
  * Clickable item displayed when submenu item is clicked.

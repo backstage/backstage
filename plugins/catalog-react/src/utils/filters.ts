@@ -17,10 +17,6 @@
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '../types';
 
-/**
- * @public
- * @deprecated will be made private.
- */
 export function reduceCatalogFilters(
   filters: EntityFilter[],
 ): Record<string, string | symbol | (string | symbol)[]> {
@@ -32,10 +28,6 @@ export function reduceCatalogFilters(
   }, {} as Record<string, string | symbol | (string | symbol)[]>);
 }
 
-/**
- * @public
- * @deprecated will be made private.
- */
 export function reduceEntityFilters(
   filters: EntityFilter[],
 ): (entity: Entity) => boolean {

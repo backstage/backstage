@@ -46,6 +46,10 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     defaultBranch?: string;
+    deleteBranchOnMerge?: boolean;
+    allowRebaseMerge?: boolean;
+    allowSquashMerge?: boolean;
+    allowMergeCommit?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
     repoVisibility?: 'private' | 'internal' | 'public';
@@ -93,6 +97,26 @@ export function createPublishGithubAction(options: {
             title: 'Default Branch',
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
+          },
+          deleteBranchOnMerge: {
+            title: 'Delete Branch On Merge',
+            type: 'boolean',
+            description: `Delete the branch after merging the PR. The default value is 'false'`,
+          },
+          allowMergeCommit: {
+            title: 'Allow Merge Commits',
+            type: 'boolean',
+            description: `Allow merge commits. The default value is 'true'`,
+          },
+          allowSquashMerge: {
+            title: 'Allow Squash Merges',
+            type: 'boolean',
+            description: `Allow squash merges. The default value is 'true'`,
+          },
+          allowRebaseMerge: {
+            title: 'Allow Rebase Merges',
+            type: 'boolean',
+            description: `Allow rebase merges. The default value is 'true'`,
           },
           sourcePath: {
             title: 'Source Path',
@@ -156,6 +180,10 @@ export function createPublishGithubAction(options: {
         requireCodeOwnerReviews = false,
         repoVisibility = 'private',
         defaultBranch = 'master',
+        deleteBranchOnMerge = false,
+        allowMergeCommit = true,
+        allowSquashMerge = true,
+        allowRebaseMerge = true,
         collaborators,
         topics,
         token: providedToken,
@@ -188,11 +216,19 @@ export function createPublishGithubAction(options: {
               private: repoVisibility === 'private',
               visibility: repoVisibility,
               description: description,
+              delete_branch_on_merge: deleteBranchOnMerge,
+              allow_merge_commit: allowMergeCommit,
+              allow_squash_merge: allowSquashMerge,
+              allow_rebase_merge: allowRebaseMerge,
             })
           : client.rest.repos.createForAuthenticatedUser({
               name: repo,
               private: repoVisibility === 'private',
               description: description,
+              delete_branch_on_merge: deleteBranchOnMerge,
+              allow_merge_commit: allowMergeCommit,
+              allow_squash_merge: allowSquashMerge,
+              allow_rebase_merge: allowRebaseMerge,
             });
 
       const { data: newRepo } = await repoCreationPromise;

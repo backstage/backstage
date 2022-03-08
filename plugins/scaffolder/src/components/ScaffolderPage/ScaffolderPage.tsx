@@ -24,7 +24,7 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | ComponentType<{ template: TemplateEntityV1beta3 }>
     | undefined;
   groups?: Array<{
     title?: React.ReactNode;

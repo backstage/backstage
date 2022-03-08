@@ -15,7 +15,6 @@
  */
 export * from './fields';
 export type { RepoUrlPickerUiOptions } from './fields';
-export { FavouriteTemplate } from './FavouriteTemplate';
 export { TemplateList } from './TemplateList';
 export type { TemplateListProps } from './TemplateList';
 export { TemplateTypePicker } from './TemplateTypePicker';

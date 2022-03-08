@@ -18,7 +18,7 @@ The next step is to add
 [add templates](http://backstage.io/docs/features/software-templates/adding-templates)
 to your Backstage app.
 
-### Publishing defaults
+## Publishing defaults
 
 Software templates can define _publish_ actions, such as `publish:github`, to
 create new repositories or submit pull / merge requests to existing
@@ -45,7 +45,7 @@ add the `repoVisibility` key within a software template:
     repoVisibility: public # or 'internal' or 'private'
 ```
 
-### Disabling Docker in Docker situation (Optional)
+## Disabling Docker in Docker situation (Optional)
 
 Software templates use the `fetch:template` action by default, which requires no
 external dependencies and offers a
@@ -68,7 +68,7 @@ RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install cookiecutter
 ```
 
-### Customizing the ScaffolderPage with Grouping and Filtering
+## Customizing the ScaffolderPage with Grouping and Filtering
 
 Once you have more than a few software templates you may want to customize your
 `ScaffolderPage` by grouping and surfacing certain templates together. You can

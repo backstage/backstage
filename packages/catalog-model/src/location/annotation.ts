@@ -15,43 +15,25 @@
  */
 
 /**
- * Constant storing location annotation.
+ * Entity annotation containing the location from which the entity is sourced.
  *
  * @public
- * @deprecated use {@link ANNOTATION_LOCATION} instead.
- * */
-export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
-/**
- * Constant storing origin location annotation
- *
- * @public
- * @deprecated use {@link ANNOTATION_ORIGIN_LOCATION} instead.
  */
-export const ORIGIN_LOCATION_ANNOTATION =
-  'backstage.io/managed-by-origin-location';
+export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
 
 /**
- * Contant storing source location annotation
+ * Entity annotation containing the originally sourced location which ultimately
+ * led to this entity being ingested.
  *
  * @public
- * @deprecated use {@link ANNOTATION_SOURCE_LOCATION} instead.
- * */
-export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';
-
-/**
- * Constant storing location annotation.
- *
- * @public */
-export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
-/**
- * Constant storing origin location annotation
- *
- * @public */
+ */
 export const ANNOTATION_ORIGIN_LOCATION =
   'backstage.io/managed-by-origin-location';
 
 /**
- * Contant storing source location annotation
+ * Entity annotation pointing to the source (e.g. source code repository root or
+ * similar) for this entity.
  *
- * @public */
+ * @public
+ */
 export const ANNOTATION_SOURCE_LOCATION = 'backstage.io/source-location';

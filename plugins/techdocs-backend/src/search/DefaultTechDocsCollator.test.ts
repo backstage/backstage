@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -70,18 +70,6 @@ const expectedEntities: Entity[] = [
       type: 'dog',
       lifecycle: 'experimental',
       owner: 'someone',
-    },
-  },
-  {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'test-entity',
-      description: 'The expected description',
-    },
-    spec: {
-      type: 'some-type',
-      lifecycle: 'experimental',
     },
   },
 ];

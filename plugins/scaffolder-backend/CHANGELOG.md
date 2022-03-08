@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.17.3
+
+### Patch Changes
+
+- 5c7f2343ea: Applied fix from version 0.17.2 of this package, which is part of the v0.69.2 release of Backstage.
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+- d6deb5e440: Set timeout for scaffolder octokit client
+- 83a83381b0: Use the new `processingResult` export from the catalog backend
+- 7372f29473: Cleanup API report
+- c7f6424a26: Applied fix from `v0.17.1` of this package which is part of the `v0.69.1` release of Backstage.
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- 8119a9e011: Fix the support for custom defaultBranch values for Bitbucket Cloud at the `publish:bitbucket` scaffolder action.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/plugin-catalog-backend@0.23.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.3
+  - @backstage/plugin-scaffolder-common@0.2.3
+
 ## 0.17.2
 
 ### Patch Changes

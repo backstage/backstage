@@ -20,16 +20,12 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
   catalogApiRef,
   starredEntitiesApiRef,
-  DefaultStarredEntitiesApi,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { scaffolderApiRef, ScaffolderClient } from '../src';
 import { ScaffolderPage } from '../src/plugin';
-import {
-  discoveryApiRef,
-  fetchApiRef,
-  storageApiRef,
-} from '@backstage/core-plugin-api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 createDevApp()
@@ -44,8 +40,8 @@ createDevApp()
   })
   .registerApi({
     api: starredEntitiesApiRef,
-    deps: { storageApi: storageApiRef },
-    factory: ({ storageApi }) => new DefaultStarredEntitiesApi({ storageApi }),
+    deps: {},
+    factory: () => new MockStarredEntitiesApi(),
   })
   .registerApi({
     api: scaffolderApiRef,

@@ -22,18 +22,6 @@ import { ANNOTATION_LOCATION } from './annotation';
  * Parses a string form location reference.
  *
  * @public
- * @param ref - A string-form location reference, e.g. `'url:https://host'`
- * @returns A location reference, e.g. `{ type: 'url', target: 'https://host' }`
- * @deprecated use {@link parseLocationRef} instead
- */
-export function parseLocationReference(ref: string) {
-  return parseLocationRef(ref);
-}
-
-/**
- * Parses a string form location reference.
- *
- * @public
  * @param ref - A string-form location ref, e.g. `'url:https://host'`
  * @returns A location ref, e.g. `{ type: 'url', target: 'https://host' }`
  */
@@ -70,21 +58,6 @@ export function parseLocationRef(ref: string): {
   }
 
   return { type, target };
-}
-
-/**
- * Turns a location reference into its string form.
- *
- * @public
- * @param ref - A location reference, e.g. `{ type: 'url', target: 'https://host' }`
- * @returns A string-form location reference, e.g. `'url:https://host'`
- * @deprecated use {@link stringifyLocationRef} instead
- */
-export function stringifyLocationReference(ref: {
-  type: string;
-  target: string;
-}): string {
-  return stringifyLocationRef(ref);
 }
 
 /**

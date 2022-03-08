@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
+import {
+  DocumentCollatorFactory,
+  DocumentDecoratorFactory,
+  SearchEngine,
+} from '@backstage/plugin-search-common';
+import { Logger } from 'winston';
+
+/**
+ * @beta
+ */
+export type IndexBuilderOptions = {
+  searchEngine: SearchEngine;
+  logger: Logger;
+};
 
 /**
  * Parameters required to register a collator.
+ * @beta
  */
 export interface RegisterCollatorParameters {
   /**
@@ -26,17 +40,18 @@ export interface RegisterCollatorParameters {
   defaultRefreshIntervalSeconds: number;
 
   /**
-   * The collator class responsible for returning all documents of the given type.
+   * The class responsible for returning the document collator of the given type.
    */
-  collator: DocumentCollator;
+  factory: DocumentCollatorFactory;
 }
 
 /**
  * Parameters required to register a decorator
+ * @beta
  */
 export interface RegisterDecoratorParameters {
   /**
-   * The decorator class responsible for appending or modifying documents of the given type(s).
+   * The class responsible for returning the decorator which appends, modifies, or filters documents.
    */
-  decorator: DocumentDecorator;
+  factory: DocumentDecoratorFactory;
 }

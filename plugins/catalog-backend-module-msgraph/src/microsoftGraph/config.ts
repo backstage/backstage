@@ -57,7 +57,7 @@ export type MicrosoftGraphProviderConfig = {
    *
    * E.g. "manager"
    */
-  userExpand?: string[];
+  userExpand?: string;
   /**
    * The filter to apply to extract users by groups memberships.
    *
@@ -70,6 +70,12 @@ export type MicrosoftGraphProviderConfig = {
    * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
    */
   userGroupMemberSearch?: string;
+  /**
+   * The "expand" argument to apply to groups.
+   *
+   * E.g. "member"
+   */
+  groupExpand?: string;
   /**
    * The filter to apply to extract groups.
    *
@@ -106,6 +112,8 @@ export function readMicrosoftGraphConfig(
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getString('clientId');
     const clientSecret = providerConfig.getString('clientSecret');
+
+    const userExpand = providerConfig.getOptionalString('userExpand');
     const userFilter = providerConfig.getOptionalString('userFilter');
     const userGroupMemberFilter = providerConfig.getOptionalString(
       'userGroupMemberFilter',
@@ -113,6 +121,7 @@ export function readMicrosoftGraphConfig(
     const userGroupMemberSearch = providerConfig.getOptionalString(
       'userGroupMemberSearch',
     );
+    const groupExpand = providerConfig.getOptionalString('groupExpand');
     const groupFilter = providerConfig.getOptionalString('groupFilter');
     const groupSearch = providerConfig.getOptionalString('groupSearch');
 
@@ -133,9 +142,11 @@ export function readMicrosoftGraphConfig(
       tenantId,
       clientId,
       clientSecret,
+      userExpand,
       userFilter,
       userGroupMemberFilter,
       userGroupMemberSearch,
+      groupExpand,
       groupFilter,
       groupSearch,
     });

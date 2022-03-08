@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import React, { PropsWithChildren } from 'react';
@@ -44,7 +44,7 @@ describe('useStarredEntity', () => {
   describe.each`
     title                 | entityOrRef
     ${'entity reference'} | ${'component:default/mock'}
-    ${'entity name'}      | ${{ kind: 'component', namespace: 'default', name: 'mock' } as EntityName}
+    ${'entity name'}      | ${{ kind: 'component', namespace: 'default', name: 'mock' } as CompoundEntityRef}
     ${'entity'}           | ${{ apiVersion: '1', kind: 'Component', metadata: { name: 'mock' } } as Entity}
   `('with $title', ({ entityOrRef }) => {
     describe('toggleStarredEntity', () => {

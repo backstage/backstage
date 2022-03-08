@@ -15,7 +15,7 @@
  */
 
 import { getRequestHeaders, RollbarApi } from './RollbarApi';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getVoidLogger } from '@backstage/backend-common';

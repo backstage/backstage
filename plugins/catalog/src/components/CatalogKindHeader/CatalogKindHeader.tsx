@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   capitalize,
   createStyles,
@@ -59,12 +59,17 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
       .getEntityFacets({ facets: ['kind'] })
       .then(response => response.facets.kind?.map(f => f.value).sort() || []);
   });
-  const { updateFilters, queryParameters } = useEntityList();
+  const {
+    updateFilters,
+    queryParameters: { kind: kindParameter },
+  } = useEntityList();
 
+  const queryParamKind = useMemo(
+    () => [kindParameter].flat()[0],
+    [kindParameter],
+  );
   const [selectedKind, setSelectedKind] = useState(
-    ([queryParameters.kind].flat()[0] ?? initialFilter).toLocaleLowerCase(
-      'en-US',
-    ),
+    queryParamKind ?? initialFilter,
   );
 
   useEffect(() => {
@@ -72,6 +77,14 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
       kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
     });
   }, [selectedKind, updateFilters]);
+
+  // Set selected Kind on query parameter updates; this happens at initial page load and from
+  // external updates to the page location.
+  useEffect(() => {
+    if (queryParamKind) {
+      setSelectedKind(queryParamKind);
+    }
+  }, [queryParamKind]);
 
   // Before allKinds is loaded, or when a kind is entered manually in the URL, selectedKind may not
   // be present in allKinds. It should still be shown in the dropdown, but may not have the nice

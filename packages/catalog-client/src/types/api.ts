@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -306,11 +306,12 @@ export interface CatalogApi {
    * Gets a single entity from the catalog by its ref (kind, namespace, name)
    * triplet.
    *
-   * @param name - A complete entity ref
+   * @param entityRef - A complete entity ref, either on string or compound form
    * @param options - Additional options
+   * @returns The matching entity, or undefined if there was no entity with that ref
    */
-  getEntityByName(
-    name: EntityName,
+  getEntityByRef(
+    entityRef: string | CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined>;
 

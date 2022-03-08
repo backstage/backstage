@@ -62,14 +62,9 @@ export class BitbucketUrlReader implements UrlReader {
     private readonly integration: BitbucketIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, apiBaseUrl, token, username, appPassword } =
-      integration.config;
+    const { host, token, username, appPassword } = integration.config;
 
-    if (!apiBaseUrl) {
-      throw new Error(
-        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
-      );
-    } else if (!token && username && !appPassword) {
+    if (!token && username && !appPassword) {
       throw new Error(
         `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
@@ -85,15 +80,17 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    // TODO: etag is not supported yet
-    const { signal } = options ?? {};
+    const { etag, signal } = options ?? {};
     const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
     const requestOptions = getBitbucketRequestOptions(this.integration.config);
 
     let response: Response;
     try {
       response = await fetch(bitbucketUrl.toString(), {
-        ...requestOptions,
+        headers: {
+          ...requestOptions.headers,
+          ...(etag && { 'If-None-Match': etag }),
+        },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
         // The difference does not affect us in practice however. The cast can be
@@ -106,9 +103,14 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
+    if (response.status === 304) {
+      throw new NotModifiedError();
+    }
+
     if (response.ok) {
       return {
         buffer: async () => Buffer.from(await response.arrayBuffer()),
+        etag: response.headers.get('ETag') ?? undefined,
       };
     }
 

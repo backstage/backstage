@@ -19,7 +19,7 @@ import {
   BitbucketIntegration,
   readBitbucketIntegrationConfig,
 } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { rest } from 'msw';
@@ -75,19 +75,73 @@ describe('BitbucketUrlReader', () => {
   setupRequestMockHandlers(worker);
 
   describe('readUrl', () => {
-    worker.use(
-      rest.get(
-        'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
-        (_, res, ctx) => res(ctx.status(200), ctx.body('foo')),
-      ),
-    );
+    it('should be able to readUrl without ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBeNull();
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'etag-value'),
+            );
+          },
+        ),
+      );
 
-    it('should be able to readUrl', async () => {
       const result = await bitbucketProcessor.readUrl(
         'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
+    });
+
+    it('should be able to readUrl with matching ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBe(
+              'matching-etag-value',
+            );
+            return res(ctx.status(304));
+          },
+        ),
+      );
+
+      await expect(
+        bitbucketProcessor.readUrl(
+          'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+          { etag: 'matching-etag-value' },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should be able to readUrl without matching ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBe(
+              'previous-etag-value',
+            );
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'new-etag-value'),
+            );
+          },
+        ),
+      );
+
+      const result = await bitbucketProcessor.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+        { etag: 'previous-etag-value' },
+      );
+      const buffer = await result.buffer();
+      expect(buffer.toString()).toBe('foo');
+      expect(result.etag).toBe('new-etag-value');
     });
   });
 
@@ -269,22 +323,6 @@ describe('BitbucketUrlReader', () => {
       );
 
       expect(response.etag).toBe('12ab34cd56ef');
-    });
-
-    it('should throw error when apiBaseUrl is missing', () => {
-      expect(() => {
-        /* eslint-disable no-new */
-        new BitbucketUrlReader(
-          new BitbucketIntegration(
-            readBitbucketIntegrationConfig(
-              new ConfigReader({
-                host: 'bitbucket.mycompany.net',
-              }),
-            ),
-          ),
-          { treeResponseFactory },
-        );
-      }).toThrowError('must configure an explicit apiBaseUrl');
     });
   });
 

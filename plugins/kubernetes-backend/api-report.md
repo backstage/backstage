@@ -9,7 +9,7 @@ import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
 
@@ -160,7 +160,7 @@ export interface KubernetesEnvironment {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesFetcher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -197,7 +197,7 @@ export interface KubernetesObjectsProviderOptions {
   // (undocumented)
   fetcher: KubernetesFetcher;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // (undocumented)
   objectTypesToFetch?: ObjectToFetch[];
   // (undocumented)
@@ -275,7 +275,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
 }
 
 // Warning: (ae-missing-release-tag) "ServiceAccountClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

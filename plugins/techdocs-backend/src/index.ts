@@ -25,14 +25,22 @@ export type {
   RouterOptions,
   RecommendedDeploymentOptions,
   OutOfTheBoxDeploymentOptions,
+  DocsBuildStrategy,
+  ShouldBuildParameters,
 } from './service';
 
-export { DefaultTechDocsCollator } from './search';
-export type { TechDocsCollatorOptions } from './search';
+export {
+  DefaultTechDocsCollator,
+  DefaultTechDocsCollatorFactory,
+} from './search';
+export type {
+  TechDocsCollatorFactoryOptions,
+  TechDocsCollatorOptions,
+} from './search';
 
 /**
- * @deprecated Use directly from @backstage/techdocs-common
+ * @deprecated Use directly from @backstage/plugin-techdocs-node
  */
-export type { TechDocsDocument } from '@backstage/techdocs-common';
+export type { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 
-export * from '@backstage/techdocs-common';
+export * from '@backstage/plugin-techdocs-node';

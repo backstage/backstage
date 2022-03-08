@@ -17,7 +17,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { relative as relativePath, resolve as resolvePath } from 'path';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
@@ -32,6 +31,19 @@ import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
 import { paths } from '../paths';
 import { svgrTemplate } from '../svgrTemplate';
+
+function isFileImport(source: string) {
+  if (source.startsWith('.')) {
+    return true;
+  }
+  if (source.startsWith('/')) {
+    return true;
+  }
+  if (source.match(/[a-z]:/i)) {
+    return true;
+  }
+  return false;
+}
 
 export async function makeRollupConfigs(
   options: BuildOptions,
@@ -81,12 +93,10 @@ export async function makeRollupConfigs(
       output,
       onwarn,
       preserveEntrySignatures: 'strict',
-      external: require('module').builtinModules,
+      // All module imports are always marked as external
+      external: (source, importer, isResolved) =>
+        Boolean(importer && !isResolved && !isFileImport(source)),
       plugins: [
-        peerDepsExternal({
-          packageJsonPath: resolvePath(targetDir, 'package.json'),
-          includeDependencies: true,
-        }),
         resolve({ mainFields }),
         commonjs({
           include: /node_modules/,

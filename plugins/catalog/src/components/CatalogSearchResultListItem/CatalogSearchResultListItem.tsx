@@ -24,7 +24,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -73,15 +73,3 @@ export function CatalogSearchResultListItem(
     </Link>
   );
 }
-
-/**
- * @public
- * @deprecated use {@link CatalogSearchResultListItemProps} instead
- */
-export type CatalogResultListItemProps = CatalogSearchResultListItemProps;
-
-/**
- * @public
- * @deprecated use {@link CatalogSearchResultListItem} instead
- */
-export const CatalogResultListItem = CatalogSearchResultListItem;

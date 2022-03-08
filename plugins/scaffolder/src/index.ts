@@ -28,6 +28,7 @@ export type {
   ScaffolderApi,
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
+  ScaffolderOutputLink,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,
@@ -44,6 +45,7 @@ export type {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  FieldExtensionComponent,
 } from './extensions';
 export {
   EntityPickerFieldExtension,

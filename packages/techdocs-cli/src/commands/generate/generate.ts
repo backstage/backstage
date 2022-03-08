@@ -21,7 +21,7 @@ import Docker from 'dockerode';
 import {
   TechdocsGenerator,
   ParsedLocationAnnotation,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import { DockerContainerRunner } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -31,7 +31,7 @@ import {
 import { stdout } from 'process';
 
 export default async function generate(cmd: Command) {
-  // Use techdocs-common package to generate docs. Keep consistency between Backstage and CI generating docs.
+  // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
   // Docs can be prepared using actions/checkout or git clone, or similar paradigms on CI. The TechDocs CI workflow
   // will run on the CI pipeline containing the documentation files.
 
@@ -39,6 +39,7 @@ export default async function generate(cmd: Command) {
 
   const sourceDir = resolve(cmd.sourceDir);
   const outputDir = resolve(cmd.outputDir);
+  const omitTechdocsCorePlugin = cmd.omitTechdocsCoreMkdocsPlugin;
   const dockerImage = cmd.dockerImage;
   const pullImage = cmd.pull;
 
@@ -55,6 +56,9 @@ export default async function generate(cmd: Command) {
         runIn: cmd.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
+        mkdocs: {
+          omitTechdocsCorePlugin,
+        },
       },
     },
   });
@@ -74,7 +78,7 @@ export default async function generate(cmd: Command) {
     }
   }
 
-  // Generate docs using @backstage/techdocs-common
+  // Generate docs using @backstage/plugin-techdocs-node
   const techdocsGenerator = await TechdocsGenerator.fromConfig(config, {
     logger,
     containerRunner,

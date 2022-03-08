@@ -20,7 +20,7 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
    yarn add @backstage/plugin-airbrake-backend
    ```
 
-3. Add the `EntityAirbrakeContent` to `packages/app/src/components/catalog/EntityPage.tsx`:
+3. Add the `EntityAirbrakeContent` to `packages/app/src/components/catalog/EntityPage.tsx` for all the entity pages you want Airbrake to be in:
 
    ```typescript jsx
    import { EntityAirbrakeContent } from '@backstage/plugin-airbrake';
@@ -32,39 +32,77 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
        </EntityLayout.Route>
      </EntityLayoutWrapper>
    );
+
+   const websiteEntityPage = (
+     <EntityLayoutWrapper>
+       <EntityLayout.Route path="/airbrake" title="Airbrake">
+         <EntityAirbrakeContent />
+       </EntityLayout.Route>
+     </EntityLayoutWrapper>
+   );
+
+   const defaultEntityPage = (
+     <EntityLayoutWrapper>
+       <EntityLayout.Route path="/airbrake" title="Airbrake">
+         <EntityAirbrakeContent />
+       </EntityLayout.Route>
+     </EntityLayoutWrapper>
+   );
    ```
 
-4. Setup the Backend code in `packages/backend/src/index.ts`:
+4. Create `packages/backend/src/plugins/airbrake.ts` with these contents:
 
    ```typescript
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
    import {
-     createRouter as createAirbrakeRouter,
+     createRouter,
      extractAirbrakeConfig,
    } from '@backstage/plugin-airbrake-backend';
 
-   async function main() {
-     //... After const config = await loadBackendConfig({ ...
-
-     const airbrakeRouter = await createAirbrakeRouter({
+   export default async function createPlugin({
+     logger,
+     config,
+   }: PluginEnvironment): Promise<Router> {
+     return createRouter({
        logger,
        airbrakeConfig: extractAirbrakeConfig(config),
      });
-
-     const service = createServiceBuilder(module)
-       // ... Add the airbrakeRouter here
-       .addRouter('/api/airbrake', airbrakeRouter);
    }
    ```
 
-5. Add this config as a top level section in your `app-config.yaml`:
+5. Setup the Backend code in `packages/backend/src/index.ts`:
+
+   ```typescript
+   import airbrake from './plugins/airbrake';
+
+   async function main() {
+     //... After const createEnv = makeCreateEnv(config) ...
+
+     const airbrakeEnv = useHotMemoize(module, () => createEnv('airbrake'));
+
+     //... After const apiRouter = Router() ...
+     apiRouter.use('/airbrake', await airbrake(airbrakeEnv));
+   }
+   ```
+
+6. Add this config as a top level section in your `app-config.yaml`:
 
    ```yaml
    airbrake:
      apiKey: ${AIRBRAKE_API_KEY}
    ```
 
-6. Set an environment variable `AIRBRAKE_API_KEY` with your [API key](https://airbrake.io/docs/api/#authentication)
+7. Set an environment variable `AIRBRAKE_API_KEY` with your [API key](https://airbrake.io/docs/api/#authentication)
    before starting Backstage backend.
+
+8. Add the following annotation to the `catalog-info.yaml` for a repo you want to link to an Airbrake project:
+
+   ```yaml
+   metadata:
+     annotations:
+       airbrake.io/project-id: '123456'
+   ```
 
 ## Local Development
 

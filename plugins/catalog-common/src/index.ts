@@ -31,3 +31,5 @@ export {
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
 } from './permissions';
+
+export * from './search';

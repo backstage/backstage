@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.1.1
+
+### Patch Changes
+
+- 83a83381b0: Use the new `processingResult` export from the catalog backend
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/plugin-catalog-backend@0.23.0
+
 ## 0.1.0
 
 ### Minor Changes

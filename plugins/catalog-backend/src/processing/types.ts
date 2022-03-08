@@ -14,30 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
-
-/**
- * Holds the relation data for entities.
- *
- * @public
- */
-export type EntityRelationSpec = {
-  /**
-   * The source entity of this relation.
-   */
-  source: EntityName;
-
-  /**
-   * The type of the relation.
-   */
-  type: string;
-
-  /**
-   * The target entity of this relation.
-   */
-  target: EntityName;
-};
+import { EntityRelationSpec } from '../api';
 
 /**
  * The request to process an entity.
@@ -69,7 +48,7 @@ export type EntityProcessingResult =
 /**
  * Responsible for executing the individual processing steps in order to fully process an entity.
  * @public
- * */
+ */
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
@@ -77,7 +56,7 @@ export interface CatalogProcessingOrchestrator {
 /**
  * Entities that are not yet processed.
  * @public
- * */
+ */
 export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;

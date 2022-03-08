@@ -18,8 +18,6 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
-  catalogRouteRef,
-  DefaultStarredEntitiesApi,
   entityRouteRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -33,6 +31,7 @@ import {
   fetchApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
 import { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
@@ -43,6 +42,7 @@ import { HasResourcesCardProps } from './components/HasResourcesCard';
 import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
+import { rootRouteRef } from './routes';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -65,7 +65,7 @@ export const catalogPlugin = createPlugin({
     }),
   ],
   routes: {
-    catalogIndex: catalogRouteRef,
+    catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,
   },
   externalRoutes: {
@@ -81,7 +81,7 @@ export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element =
       name: 'CatalogIndexPage',
       component: () =>
         import('./components/CatalogPage').then(m => m.CatalogPage),
-      mountPoint: catalogRouteRef,
+      mountPoint: rootRouteRef,
     }),
   );
 

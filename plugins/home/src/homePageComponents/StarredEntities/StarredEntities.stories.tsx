@@ -15,44 +15,27 @@
  */
 
 import { HomePageStarredEntities } from '../../plugin';
-import {
-  wrapInTestApp,
-  TestApiProvider,
-  MockStorageApi,
-} from '@backstage/test-utils';
+import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import {
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
   entityRouteRef,
-  DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 
-const mockStorageApi = MockStorageApi.create();
-mockStorageApi
-  .forBucket('starredEntities')
-  .set('entityRefs', [
-    'component:default/example-starred-entity',
-    'component:default/example-starred-entity-2',
-    'component:default/example-starred-entity-3',
-    'component:default/example-starred-entity-4',
-  ]);
+const starredEntitiesApi = new MockStarredEntitiesApi();
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity');
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity-2');
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity-3');
+starredEntitiesApi.toggleStarred('component:default/example-starred-entity-4');
 
 export default {
   title: 'Plugins/Home/Components/StarredEntities',
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
-        <TestApiProvider
-          apis={[
-            [
-              starredEntitiesApiRef,
-              new DefaultStarredEntitiesApi({
-                storageApi: mockStorageApi,
-              }),
-            ],
-          ]}
-        >
+        <TestApiProvider apis={[[starredEntitiesApiRef, starredEntitiesApi]]}>
           <Story />
         </TestApiProvider>,
         {

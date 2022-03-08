@@ -8,7 +8,7 @@
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
-    "build": "lerna run build",
+    "build": "backstage-cli repo build --all",
     "build:api-reports": "yarn build:api-reports:only --tsc",
     "build:api-reports:only": "ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
     "build:api-docs": "yarn build:api-reports --docs",
@@ -18,9 +18,9 @@
     "diff": "lerna run diff --",
     "test": "backstage-cli test",
     "test:all": "lerna run test -- --coverage",
-    "lint": "lerna run lint --since origin/master --",
+    "lint": "backstage-cli repo lint --since origin/master",
     "lint:docs": "node ./scripts/check-docs-quality",
-    "lint:all": "lerna run lint --",
+    "lint:all": "backstage-cli repo lint",
     "lint:type-deps": "node scripts/check-type-dependencies.js",
     "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
     "backstage-create": "backstage-cli create --scope backstage --no-private",
@@ -45,11 +45,9 @@
     ]
   },
   "resolutions": {
-    "**/@graphql-codegen/cli/**/ws": "^7.4.6",
-    "**/@roadiehq/**/@backstage/plugin-catalog": "*",
-    "**/@roadiehq/**/@backstage/catalog-model": "*"
+    "**/@graphql-codegen/cli/**/ws": "^7.4.6"
   },
-  "version": "0.69.0",
+  "version": "0.70.0",
   "dependencies": {
     "@manypkg/get-packages": "^1.1.3",
     "@microsoft/api-documenter": "^7.15.0",
@@ -67,7 +65,7 @@
     "cross-env": "^7.0.0",
     "concurrently": "^7.0.0",
     "eslint-plugin-notice": "^0.9.10",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.1",
     "husky": "^7.0.4",
     "lerna": "^4.0.0",
     "lint-staged": "^12.2.0",

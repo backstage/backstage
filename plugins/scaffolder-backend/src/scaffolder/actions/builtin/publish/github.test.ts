@@ -88,6 +88,10 @@ describe('publish:github', () => {
       name: 'repo',
       org: 'owner',
       private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
       visibility: 'private',
     });
 
@@ -103,6 +107,10 @@ describe('publish:github', () => {
       name: 'repo',
       org: 'owner',
       private: false,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
       visibility: 'public',
     });
   });
@@ -123,6 +131,10 @@ describe('publish:github', () => {
       description: 'description',
       name: 'repo',
       private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
     });
 
     await action.handler({
@@ -138,6 +150,10 @@ describe('publish:github', () => {
       description: 'description',
       name: 'repo',
       private: false,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
     });
   });
 

@@ -24,13 +24,13 @@ import {
   SearchEngine,
   SearchQuery,
   SearchResultSet,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Client } from '@elastic/elasticsearch';
 import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
 import { Logger } from 'winston';
-
 import type { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
+import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 
 export type { ElasticSearchClientOptions };
 
@@ -57,12 +57,6 @@ type ElasticSearchResult = {
   _score: number;
   _source: IndexableDocument;
 };
-
-function duration(startTimestamp: [number, number]): string {
-  const delta = process.hrtime(startTimestamp);
-  const seconds = delta[0] + delta[1] / 1e9;
-  return `${seconds.toFixed(1)}s`;
-}
 
 function isBlank(str: string) {
   return (isEmpty(str) && !isNumber(str)) || nan(str);
@@ -165,67 +159,37 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    this.logger.info(
-      `Started indexing ${documents.length} documents for index ${type}`,
-    );
-    const startTimestamp = process.hrtime();
+  async getIndexer(type: string) {
     const alias = this.constructSearchAlias(type);
-    const index = this.constructIndexName(type, `${Date.now()}`);
-    try {
-      const aliases = await this.elasticSearchClient.cat.aliases({
-        format: 'json',
-        name: alias,
-      });
-      const removableIndices = aliases.body.map(
-        (r: Record<string, any>) => r.index,
-      );
+    const indexer = new ElasticSearchSearchEngineIndexer({
+      type,
+      indexPrefix: this.indexPrefix,
+      indexSeparator: this.indexSeparator,
+      alias,
+      elasticSearchClient: this.elasticSearchClient,
+      logger: this.logger,
+    });
 
-      await this.elasticSearchClient.indices.create({
-        index,
-      });
-      const result = await this.elasticSearchClient.helpers.bulk({
-        datasource: documents,
-        onDocument() {
-          return {
-            index: { _index: index },
-          };
-        },
-        refreshOnCompletion: index,
-      });
-
-      this.logger.info(
-        `Indexing completed for index ${type} in ${duration(startTimestamp)}`,
-        result,
-      );
-      await this.elasticSearchClient.indices.updateAliases({
-        body: {
-          actions: [
-            { remove: { index: this.constructIndexName(type, '*'), alias } },
-            { add: { index, alias } },
-          ],
-        },
-      });
-
-      this.logger.info('Removing stale search indices', removableIndices);
-      if (removableIndices.length) {
-        await this.elasticSearchClient.indices.delete({
-          index: removableIndices,
-        });
-      }
-    } catch (e) {
+    // Attempt cleanup upon failure.
+    indexer.on('error', async e => {
       this.logger.error(`Failed to index documents for type ${type}`, e);
-      const response = await this.elasticSearchClient.indices.exists({
-        index,
-      });
-      const indexCreated = response.body;
-      if (indexCreated) {
-        this.logger.info(`Removing created index ${index}`);
-        await this.elasticSearchClient.indices.delete({
-          index,
+      try {
+        const response = await this.elasticSearchClient.indices.exists({
+          index: indexer.indexName,
         });
+        const indexCreated = response.body;
+        if (indexCreated) {
+          this.logger.info(`Removing created index ${indexer.indexName}`);
+          await this.elasticSearchClient.indices.delete({
+            index: indexer.indexName,
+          });
+        }
+      } catch (error) {
+        this.logger.error(`Unable to clean up elastic index: ${error}`);
       }
-    }
+    });
+
+    return indexer;
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
@@ -267,10 +231,6 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }
 
   private readonly indexSeparator = '-index__';
-
-  private constructIndexName(type: string, postFix: string) {
-    return `${this.indexPrefix}${type}${this.indexSeparator}${postFix}`;
-  }
 
   private getTypeFromIndex(index: string) {
     return index

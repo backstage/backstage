@@ -16,19 +16,42 @@
 
 /**
  * Function that returns the catalog refresh interval in seconds.
+ * @deprecated use {@link ProcessingIntervalFunction} instead
  * @public
  */
 export type RefreshIntervalFunction = () => number;
 
 /**
+ * Function that returns the catalog processing interval in seconds.
+ * @public
+ */
+export type ProcessingIntervalFunction = () => number;
+
+/**
  * Creates a function that returns a random refresh interval between minSeconds and maxSeconds.
  * @returns A {@link RefreshIntervalFunction} that provides the next refresh interval
+ * @deprecated use {@link createRandomProcessingInterval} instead
  * @public
  */
 export function createRandomRefreshInterval(options: {
   minSeconds: number;
   maxSeconds: number;
 }): RefreshIntervalFunction {
+  const { minSeconds, maxSeconds } = options;
+  return () => {
+    return Math.random() * (maxSeconds - minSeconds) + minSeconds;
+  };
+}
+
+/**
+ * Creates a function that returns a random processing interval between minSeconds and maxSeconds.
+ * @returns A {@link ProcessingIntervalFunction} that provides the next processing interval
+ * @public
+ */
+export function createRandomProcessingInterval(options: {
+  minSeconds: number;
+  maxSeconds: number;
+}): ProcessingIntervalFunction {
   const { minSeconds, maxSeconds } = options;
   return () => {
     return Math.random() * (maxSeconds - minSeconds) + minSeconds;

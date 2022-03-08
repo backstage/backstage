@@ -1,5 +1,17 @@
 # @backstage/plugin-org
 
+## 0.5.1
+
+### Patch Changes
+
+- f41a293231: - **DEPRECATION**: Deprecated `formatEntityRefTitle` in favor of the new `humanizeEntityRef` method instead. Please migrate to using the new method instead.
+- 8f0e8e039b: Removed usage of deprecated `getEntityMetadataViewUrl` and `getEntityMetadataEditUrl` helpers.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.5.0
 
 ### Minor Changes

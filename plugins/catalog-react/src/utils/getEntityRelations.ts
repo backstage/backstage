@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, parseEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  CompoundEntityRef,
+  parseEntityRef,
+} from '@backstage/catalog-model';
 
 // TODO(freben): This should be returning entity refs instead
 /**
@@ -26,7 +30,7 @@ export function getEntityRelations(
   entity: Entity | undefined,
   relationType: string,
   filter?: { kind: string },
-): EntityName[] {
+): CompoundEntityRef[] {
   let entityNames =
     entity?.relations
       ?.filter(r => r.type === relationType)

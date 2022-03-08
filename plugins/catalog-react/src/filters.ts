@@ -15,7 +15,7 @@
  */
 
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { formatEntityRefTitle } from './components/EntityRefLink';
+import { humanizeEntityRef } from './components/EntityRefLink';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils';
 
@@ -107,7 +107,7 @@ export class EntityOwnerFilter implements EntityFilter {
   filterEntity(entity: Entity): boolean {
     return this.values.some(v =>
       getEntityRelations(entity, RELATION_OWNED_BY).some(
-        o => formatEntityRefTitle(o, { defaultKind: 'group' }) === v,
+        o => humanizeEntityRef(o, { defaultKind: 'group' }) === v,
       ),
     );
   }

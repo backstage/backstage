@@ -5,13 +5,15 @@
 ```ts
 /// <reference types="node" />
 
+import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
+import { Client } from '@elastic/elasticsearch';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'tls';
-import { IndexableDocument } from '@backstage/search-common';
-import { Logger as Logger_2 } from 'winston';
-import { SearchEngine } from '@backstage/search-common';
-import { SearchQuery } from '@backstage/search-common';
-import { SearchResultSet } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
+import { Logger } from 'winston';
+import { SearchEngine } from '@backstage/plugin-search-common';
+import { SearchQuery } from '@backstage/plugin-search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "ElasticSearchClientOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/plugin-search-backend-module-elasticsearch" does not have an export "ElasticSearchEngine"
@@ -102,7 +104,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     elasticSearchClientOptions: ElasticSearchClientOptions,
     aliasPostfix: string,
     indexPrefix: string,
-    logger: Logger_2,
+    logger: Logger,
   );
   // Warning: (ae-forgotten-export) The symbol "ElasticSearchOptions" needs to be exported by the entry point index.d.ts
   //
@@ -114,7 +116,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexPrefix,
   }: ElasticSearchOptions): Promise<ElasticSearchSearchEngine>;
   // (undocumented)
-  index(type: string, documents: IndexableDocument[]): Promise<void>;
+  getIndexer(type: string): Promise<ElasticSearchSearchEngineIndexer>;
   newClient<T>(create: (options: ElasticSearchClientOptions) => T): T;
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
@@ -127,4 +129,31 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   // (undocumented)
   protected translator(query: SearchQuery): ConcreteElasticSearchQuery;
 }
+
+// Warning: (ae-missing-release-tag) "ElasticSearchSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
+  constructor(options: ElasticSearchSearchEngineIndexerOptions);
+  // (undocumented)
+  finalize(): Promise<void>;
+  // (undocumented)
+  index(documents: IndexableDocument[]): Promise<void>;
+  // (undocumented)
+  readonly indexName: string;
+  // (undocumented)
+  initialize(): Promise<void>;
+}
+
+// Warning: (ae-missing-release-tag) "ElasticSearchSearchEngineIndexerOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ElasticSearchSearchEngineIndexerOptions = {
+  type: string;
+  indexPrefix: string;
+  indexSeparator: string;
+  alias: string;
+  logger: Logger;
+  elasticSearchClient: Client;
+};
 ```

@@ -78,7 +78,18 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
 }
 
 export async function command(cmd: Command): Promise<void> {
-  const packages = await PackageGraph.listTargetPackages();
+  let packages = await PackageGraph.listTargetPackages();
+
+  if (cmd.since) {
+    const graph = PackageGraph.fromPackages(packages);
+    const changedPackages = await graph.listChangedPackages({ ref: cmd.since });
+    const withDevDependents = graph.collectPackageNames(
+      changedPackages.map(pkg => pkg.name),
+      pkg => pkg.localDevDependents.keys(),
+    );
+    packages = Array.from(withDevDependents).map(name => graph.get(name)!);
+  }
+
   const apps = new Array<ExtendedPackage>();
   const backends = new Array<ExtendedPackage>();
 

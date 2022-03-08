@@ -24,7 +24,7 @@ This method of serving the plugin provides quicker iteration speed and a faster 
 
 3. Go into the plugin's directory and run it in standalone mode by running `yarn start`.
 
-Access it from http://localhost:7007/api/airbrake. Or use the Airbrake plugin which will talk to it automatically.
+Access it from http://localhost:7007/api/airbrake. Or use the [Airbrake plugin in standalone mode](../airbrake/README.md#local-development) which will talk to it automatically.
 
 Here are some example endpoints:
 

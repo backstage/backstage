@@ -6,14 +6,12 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsync';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
-import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
@@ -24,11 +22,9 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
-import { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export const AsyncEntityProvider: ({
@@ -96,9 +92,6 @@ export type CatalogReactUserListPickerClassKey =
   | 'menuItem'
   | 'groupWrapper';
 
-// @public @deprecated (undocumented)
-export const catalogRouteRef: RouteRef<undefined>;
-
 // @public (undocumented)
 export const columnFactories: Readonly<{
   createEntityRefColumn<T extends Entity>(options: {
@@ -137,17 +130,6 @@ export type DefaultEntityFilters = {
   tags?: EntityTagFilter;
   text?: EntityTextFilter;
 };
-
-// @public
-export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
-  constructor(opts: { storageApi: StorageApi });
-  // (undocumented)
-  isStarred(entityRef: string): boolean;
-  // (undocumented)
-  starredEntitie$(): Observable<Set<string>>;
-  // (undocumented)
-  toggleStarred(entityRef: string): Promise<void>;
-}
 
 // @public (undocumented)
 export type EntityFilter = {
@@ -225,8 +207,8 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>({
 }: PropsWithChildren<{}>) => JSX.Element;
 
 // @public (undocumented)
-export type EntityLoadingStatus = {
-  entity?: Entity;
+export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
+  entity?: TEntity;
   loading: boolean;
   error?: Error;
   refresh?: VoidFunction;
@@ -265,7 +247,7 @@ export const EntityRefLink: (props: EntityRefLinkProps) => JSX.Element;
 
 // @public
 export type EntityRefLinkProps = {
-  entityRef: Entity | EntityName | string;
+  entityRef: Entity | CompoundEntityRef | string;
   defaultKind?: string;
   title?: string;
   children?: React_2.ReactNode;
@@ -280,16 +262,9 @@ export const EntityRefLinks: ({
 
 // @public
 export type EntityRefLinksProps = {
-  entityRefs: (Entity | EntityName)[];
+  entityRefs: (Entity | CompoundEntityRef)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
-
-// @public @deprecated (undocumented)
-export const entityRoute: RouteRef<{
-  name: string;
-  kind: string;
-  namespace: string;
-}>;
 
 // @public
 export function entityRouteParams(entity: Entity): {
@@ -410,19 +385,10 @@ export interface EntityTypePickerProps {
   initialFilter?: string;
 }
 
-// @public @deprecated (undocumented)
-export type EntityTypeReturn = {
-  loading: boolean;
-  error?: Error;
-  availableTypes: string[];
-  selectedTypes: string[];
-  setSelectedTypes: (types: string[]) => void;
-};
-
 // @public
 export const FavoriteEntity: (props: FavoriteEntityProps) => JSX.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const favoriteEntityIcon: (isStarred: boolean) => JSX.Element;
 
 // @public (undocumented)
@@ -430,18 +396,13 @@ export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
   entity: Entity;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const favoriteEntityTooltip: (
   isStarred: boolean,
 ) => 'Remove from favorites' | 'Add to favorites';
 
-// @public (undocumented)
-export function formatEntityRefTitle(
-  entityRef: Entity | EntityName,
-  opts?: {
-    defaultKind?: string;
-  },
-): string;
+// @public @deprecated (undocumented)
+export const formatEntityRefTitle: typeof humanizeEntityRef;
 
 // @public @deprecated (undocumented)
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
@@ -456,13 +417,21 @@ export function getEntityRelations(
   filter?: {
     kind: string;
   },
-): EntityName[];
+): CompoundEntityRef[];
 
 // @public (undocumented)
 export function getEntitySourceLocation(
   entity: Entity,
   scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined;
+
+// @public (undocumented)
+export function humanizeEntityRef(
+  entityRef: Entity | CompoundEntityRef,
+  opts?: {
+    defaultKind?: string;
+  },
+): string;
 
 // @public
 export function InspectEntityDialog(props: {
@@ -471,14 +440,8 @@ export function InspectEntityDialog(props: {
   onClose: () => void;
 }): JSX.Element | null;
 
-// @public
-export function isOwnerOf(owner: Entity, owned: Entity): boolean;
-
-// @public @deprecated
-export function loadCatalogOwnerRefs(
-  catalogApi: CatalogApi,
-  identityOwnerRefs: string[],
-): Promise<string[]>;
+// @alpha
+export function isOwnerOf(owner: Entity, entity: Entity): boolean;
 
 // @public (undocumented)
 export const MockEntityListContextProvider: ({
@@ -488,18 +451,13 @@ export const MockEntityListContextProvider: ({
   value?: Partial<EntityListContextProps<DefaultEntityFilters>> | undefined;
 }>) => JSX.Element;
 
-// @public @deprecated (undocumented)
-export function reduceCatalogFilters(
-  filters: EntityFilter[],
-): Record<string, string | symbol | (string | symbol)[]>;
-
-// @public @deprecated (undocumented)
-export function reduceEntityFilters(
-  filters: EntityFilter[],
-): (entity: Entity) => boolean;
-
-// @public @deprecated (undocumented)
-export const rootRoute: RouteRef<undefined>;
+// @public
+export class MockStarredEntitiesApi implements StarredEntitiesApi {
+  // (undocumented)
+  starredEntitie$(): Observable<Set<string>>;
+  // (undocumented)
+  toggleStarred(entityRef: string): Promise<void>;
+}
 
 // @public
 export interface StarredEntitiesApi {
@@ -524,28 +482,16 @@ export type UnregisterEntityDialogProps = {
 };
 
 // @public
-export function useEntity<T extends Entity = Entity>(): {
-  entity: T;
+export function useAsyncEntity<
+  TEntity extends Entity = Entity,
+>(): EntityLoadingStatus<TEntity>;
+
+// @public
+export function useEntity<TEntity extends Entity = Entity>(): {
+  entity: TEntity;
   loading: boolean;
-  error: Error | undefined;
-  refresh: VoidFunction | undefined;
-};
-
-// @public @deprecated
-export const useEntityCompoundName: () => {
-  kind: string;
-  namespace: string;
-  name: string;
-};
-
-// @public @deprecated (undocumented)
-export const useEntityFromUrl: () => EntityLoadingStatus;
-
-// @public @deprecated
-export function useEntityKinds(): {
-  error: Error | undefined;
-  loading: boolean;
-  kinds: string[] | undefined;
+  error?: Error;
+  refresh?: VoidFunction;
 };
 
 // @public
@@ -553,18 +499,13 @@ export function useEntityList<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters>;
 
-// @public @deprecated
-export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
->(): EntityListContextProps<EntityFilters>;
-
 // @public
 export function useEntityOwnership(): {
   loading: boolean;
-  isOwnedEntity: (entity: Entity | EntityName) => boolean;
+  isOwnedEntity: (entity: Entity) => boolean;
 };
 
-// @public
+// @alpha
 export function useEntityPermission(permission: Permission): {
   loading: boolean;
   allowed: boolean;
@@ -579,15 +520,6 @@ export function useEntityTypeFilter(): {
   selectedTypes: string[];
   setSelectedTypes: (types: string[]) => void;
 };
-
-// @public @deprecated
-export function useOwnedEntities(allowedKinds?: string[]): {
-  loading: boolean;
-  ownedEntities: GetEntitiesResponse | undefined;
-};
-
-// @public @deprecated
-export function useOwnUser(): AsyncState<UserEntity | undefined>;
 
 // @public (undocumented)
 export function useRelatedEntities(
@@ -636,12 +568,18 @@ export type UserListPickerProps = {
 // @public (undocumented)
 export function useStarredEntities(): {
   starredEntities: Set<string>;
-  toggleStarredEntity: (entityOrRef: Entity | EntityName | string) => void;
-  isStarredEntity: (entityOrRef: Entity | EntityName | string) => boolean;
+  toggleStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => void;
+  isStarredEntity: (
+    entityOrRef: Entity | CompoundEntityRef | string,
+  ) => boolean;
 };
 
 // @public (undocumented)
-export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+export function useStarredEntity(
+  entityOrRef: Entity | CompoundEntityRef | string,
+): {
   toggleStarredEntity: () => void;
   isStarredEntity: boolean;
 };

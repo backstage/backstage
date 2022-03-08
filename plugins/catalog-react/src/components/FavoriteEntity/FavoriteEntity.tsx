@@ -32,11 +32,17 @@ const YellowStar = withStyles({
   },
 })(Star);
 
-/** @public */
+/**
+ * @public
+ * @deprecated due to low utility value.
+ */
 export const favoriteEntityTooltip = (isStarred: boolean) =>
   isStarred ? 'Remove from favorites' : 'Add to favorites';
 
-/** @public */
+/**
+ * @public
+ * @deprecated due to low utility value.
+ */
 export const favoriteEntityIcon = (isStarred: boolean) =>
   isStarred ? <YellowStar /> : <StarBorder />;
 
@@ -55,8 +61,10 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
       {...props}
       onClick={() => toggleStarredEntity()}
     >
-      <Tooltip title={favoriteEntityTooltip(isStarredEntity)}>
-        {favoriteEntityIcon(isStarredEntity)}
+      <Tooltip
+        title={isStarredEntity ? 'Remove from favorites' : 'Add to favorites'}
+      >
+        {isStarredEntity ? <YellowStar /> : <StarBorder />}
       </Tooltip>
     </IconButton>
   );

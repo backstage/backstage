@@ -16,7 +16,7 @@
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
@@ -58,7 +58,7 @@ export const EntityPicker = (
   );
 
   const entityRefs = entities?.items.map(e =>
-    formatEntityRefTitle(e, { defaultKind }),
+    humanizeEntityRef(e, { defaultKind }),
   );
 
   const onSelect = useCallback(

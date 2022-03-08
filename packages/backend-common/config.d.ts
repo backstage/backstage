@@ -137,7 +137,7 @@ export interface Config {
       | {
           store: 'redis';
           /**
-           * A redis connection string in the form `user:pass@host:port`.
+           * A redis connection string in the form `redis://user:pass@host:port`.
            * @secret
            */
           connection: string;

@@ -46,7 +46,7 @@ export async function createRouter(
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
     const { namespace, kind, name } = req.params;
-    const entity = await catalog.getEntityByName(
+    const entity = await catalog.getEntityByRef(
       { namespace, kind, name },
       {
         token: getBearerToken(req.headers.authorization),
@@ -84,7 +84,7 @@ export async function createRouter(
     '/entity/:namespace/:kind/:name/badge/:badgeId',
     async (req, res) => {
       const { namespace, kind, name, badgeId } = req.params;
-      const entity = await catalog.getEntityByName(
+      const entity = await catalog.getEntityByRef(
         { namespace, kind, name },
         {
           token: getBearerToken(req.headers.authorization),

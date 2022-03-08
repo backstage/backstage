@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  catalogApiRef,
-  useEntityCompoundName,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 
 export function useCatalogEntity() {
   const catalogApi = useApi(catalogApiRef);
-  const { namespace, name } = useEntityCompoundName();
+  const { namespace, name } = useRouteRefParams(entityRouteRef);
 
   const {
     value: entity,
     error,
     loading,
   } = useAsync(
-    () => catalogApi.getEntityByName({ kind: 'Component', namespace, name }),
+    () => catalogApi.getEntityByRef({ kind: 'Component', namespace, name }),
     [catalogApi, namespace, name],
   );
 

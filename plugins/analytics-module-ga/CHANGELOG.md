@@ -1,5 +1,14 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.1.12
+
+### Patch Changes
+
+- 123019673b: Added CSP instructions to README
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.1.11
 
 ### Patch Changes

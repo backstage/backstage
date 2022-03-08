@@ -1,5 +1,13 @@
 # @backstage/plugin-airbrake-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- 3c1d3cb07e: The Airbrake plugin installation instructions have been updated to work better and conform to how the frontend and backend plugins are supposed to be integrated into a Backstage instance.
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+
 ## 0.2.0
 
 ### Minor Changes

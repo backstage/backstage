@@ -55,7 +55,7 @@ const mockConfigApi = {
 } as Partial<ConfigApi>;
 
 const mockCatalogApi = {
-  getEntityByName: () => Promise.resolve(mockUser),
+  getEntityByRef: () => Promise.resolve(mockUser),
 } as Partial<CatalogApi>;
 
 const mockIdentityApi = {

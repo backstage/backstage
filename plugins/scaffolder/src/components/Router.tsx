@@ -17,7 +17,7 @@
 import React, { ComponentType } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
@@ -35,14 +35,14 @@ import { useElementFilter } from '@backstage/core-plugin-api';
 export type RouterProps = {
   /** @deprecated use components.TemplateCardComponent instead */
   TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta2 }>
+    | ComponentType<{ template: TemplateEntityV1beta3 }>
     | undefined;
   /** @deprecated use component.TaskPageComponent instead */
   TaskPageComponent?: ComponentType<{}>;
 
   components?: {
     TemplateCardComponent?:
-      | ComponentType<{ template: TemplateEntityV1beta2 }>
+      | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
   };

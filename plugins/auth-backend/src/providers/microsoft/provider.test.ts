@@ -20,7 +20,7 @@ import { OAuthResult } from '../../lib/oauth';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TokenIssuer } from '../../identity/types';
 import { CatalogIdentityClient } from '../../lib/catalog';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 

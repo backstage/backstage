@@ -19,21 +19,13 @@ import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { TaskSecrets } from '../tasks/types';
-import {
-  TemplateInfo,
-  TemplateMetadata,
-} from '@backstage/plugin-scaffolder-common';
+import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 
 /**
  * ActionContext is passed into scaffolder actions.
- * @public */
+ * @public
+ */
 export type ActionContext<Input extends JsonObject> = {
-  /**
-   * Base URL for the location of the task spec, typically the url of the source entity file.
-   * @deprecated please use templateInfo.baseUrl instead
-   */
-  baseUrl?: string;
-
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
@@ -46,10 +38,6 @@ export type ActionContext<Input extends JsonObject> = {
    */
   createTemporaryDirectory(): Promise<string>;
 
-  /**
-   * @deprecated please use templateInfo instead
-   */
-  metadata?: TemplateMetadata;
   templateInfo?: TemplateInfo;
 };
 

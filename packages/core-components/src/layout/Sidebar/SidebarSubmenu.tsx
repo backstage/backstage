@@ -26,62 +26,65 @@ import {
 import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = (props: { left: number }) =>
-  makeStyles<BackstageTheme>(theme => ({
-    root: {
-      zIndex: 1000,
-      position: 'relative',
-      overflow: 'visible',
-      width: theme.spacing(7) + 1,
-    },
-    drawer: {
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      alignItems: 'flex-start',
-      position: 'fixed',
-      [theme.breakpoints.up('sm')]: {
-        marginLeft: props.left,
-        transition: theme.transitions.create('margin-left', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.shortest,
-        }),
-      },
-      top: 0,
-      bottom: 0,
-      padding: 0,
-      background: theme.palette.navigation.submenu?.background ?? '#404040',
-      overflowX: 'hidden',
-      msOverflowStyle: 'none',
-      scrollbarWidth: 'none',
-      cursor: 'default',
-      width: submenuConfig.drawerWidthClosed,
-      transitionDelay: `${submenuConfig.defaultOpenDelayMs}ms`,
-      '& > *': {
-        flexShrink: 0,
-      },
-      '&::-webkit-scrollbar': {
-        display: 'none',
-      },
-    },
-    drawerOpen: {
-      width: submenuConfig.drawerWidthOpen,
-      [theme.breakpoints.down('xs')]: {
-        width: '100%',
+  makeStyles<BackstageTheme>(
+    theme => ({
+      root: {
+        zIndex: 1000,
         position: 'relative',
-        paddingLeft: theme.spacing(3),
-        left: 0,
+        overflow: 'visible',
+        width: theme.spacing(7) + 1,
+      },
+      drawer: {
+        display: 'flex',
+        flexFlow: 'column nowrap',
+        alignItems: 'flex-start',
+        position: 'fixed',
+        [theme.breakpoints.up('sm')]: {
+          marginLeft: props.left,
+          transition: theme.transitions.create('margin-left', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.shortest,
+          }),
+        },
         top: 0,
+        bottom: 0,
+        padding: 0,
+        background: theme.palette.navigation.submenu?.background ?? '#404040',
+        overflowX: 'hidden',
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none',
+        cursor: 'default',
+        width: submenuConfig.drawerWidthClosed,
+        transitionDelay: `${submenuConfig.defaultOpenDelayMs}ms`,
+        '& > *': {
+          flexShrink: 0,
+        },
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
       },
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 500,
-      color: '#FFF',
-      padding: 20,
-      [theme.breakpoints.down('xs')]: {
-        display: 'none',
+      drawerOpen: {
+        width: submenuConfig.drawerWidthOpen,
+        [theme.breakpoints.down('xs')]: {
+          width: '100%',
+          position: 'relative',
+          paddingLeft: theme.spacing(3),
+          left: 0,
+          top: 0,
+        },
       },
-    },
-  }));
+      title: {
+        fontSize: 24,
+        fontWeight: 500,
+        color: '#FFF',
+        padding: 20,
+        [theme.breakpoints.down('xs')]: {
+          display: 'none',
+        },
+      },
+    }),
+    { name: 'BackstageSidebarSubmenu' },
+  );
 
 /**
  * Holds a title for text Header of a sidebar submenu and children

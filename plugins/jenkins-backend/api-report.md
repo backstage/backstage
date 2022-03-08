@@ -4,10 +4,11 @@
 
 ```ts
 import { CatalogApi } from '@backstage/catalog-client';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
+import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -25,7 +26,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   }): DefaultJenkinsInfoProvider;
   // (undocumented)
   getInstance(opt: {
-    entityRef: EntityName;
+    entityRef: CompoundEntityRef;
     jobFullName?: string;
   }): Promise<JenkinsInfo>;
   // (undocumented)
@@ -65,7 +66,7 @@ export interface JenkinsInfo {
 export interface JenkinsInfoProvider {
   // (undocumented)
   getInstance(options: {
-    entityRef: EntityName;
+    entityRef: CompoundEntityRef;
     jobFullName?: string;
   }): Promise<JenkinsInfo>;
 }
@@ -93,6 +94,8 @@ export interface RouterOptions {
   // (undocumented)
   jenkinsInfoProvider: JenkinsInfoProvider;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
+  // (undocumented)
+  permissions?: PermissionAuthorizer;
 }
 ```

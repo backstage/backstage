@@ -5,10 +5,8 @@ import {
   GithubAuth,
   GitlabAuth,
   GoogleAuth,
-  OAuth2,
   OAuthRequestManager,
   OktaAuth,
-  Auth0Auth,
   ConfigReader,
   LocalStorageFeatureFlags,
 } from '@backstage/core-app-api';
@@ -20,10 +18,8 @@ import {
   gitlabAuthApiRef,
   googleAuthApiRef,
   identityApiRef,
-  oauth2ApiRef,
   oauthRequestApiRef,
   oktaAuthApiRef,
-  auth0AuthApiRef,
   configApiRef,
   featureFlagsApiRef,
 } from '@backstage/core-plugin-api';
@@ -59,16 +55,6 @@ const oktaAuthApi = OktaAuth.create({
   basePath: '/auth/',
   oauthRequestApi,
 });
-const auth0AuthApi = Auth0Auth.create({
-  apiOrigin: 'http://localhost:7007',
-  basePath: '/auth/',
-  oauthRequestApi,
-});
-const oauth2Api = OAuth2.create({
-  apiOrigin: 'http://localhost:7007',
-  basePath: '/auth/',
-  oauthRequestApi,
-});
 
 export const apis = [
   [configApiRef, configApi],
@@ -81,6 +67,4 @@ export const apis = [
   [githubAuthApiRef, githubAuthApi],
   [gitlabAuthApiRef, gitlabAuthApi],
   [oktaAuthApiRef, oktaAuthApi],
-  [auth0AuthApiRef, auth0AuthApi],
-  [oauth2ApiRef, oauth2Api],
 ];

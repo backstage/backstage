@@ -20,7 +20,6 @@ Autoscaling
 autoselect
 Avro
 aws
-backrub
 backported
 backporting
 Bigtable
@@ -39,8 +38,6 @@ Changesets
 chanwit
 Chanwit
 ci
-cisphobia
-cissexist
 classname
 cli
 cloudbuild
@@ -68,7 +65,6 @@ css
 Datadog
 dataflow
 dayjs
-deadnaming
 debounce
 Debounce
 declaratively
@@ -88,6 +84,7 @@ dockerfiles
 Dockerize
 dockerode
 Docusaurus
+ecco
 env
 Env
 elasticsearch
@@ -106,6 +103,7 @@ Firestore
 Fiverr
 gitbeaker
 GitHub
+gitlab
 GitLab
 Gource
 Grafana
@@ -171,7 +169,6 @@ Minikube
 Minio
 misconfiguration
 misconfigured
-misgendering
 mkdocs
 Mkdocs
 monorepo
@@ -213,6 +210,9 @@ parallelization
 Patrik
 Peloton
 performant
+Performant
+periskop
+Periskop
 plantuml
 Platformize
 Podman

@@ -1,5 +1,86 @@
 # @backstage/create-app
 
+## 0.4.22
+
+### Patch Changes
+
+- ee3d6c6f10: Update the template to reflect the renaming of `DocsResultListItem` to `TechDocsSearchResultListItem` from `@backstage/plugin-techdocs`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/components/search/SearchPage.tsx`:
+
+  ```diff
+  -import { DocsResultListItem } from '@backstage/plugin-techdocs';
+  +import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
+  ```
+
+  ```diff
+     case 'techdocs':
+       return (
+  -      <DocsResultListItem
+  +      <TechDocsSearchResultListItem
+           key={document.location}
+           result={document}
+         />
+  ```
+
+  The `TechDocsIndexPage` now uses `DefaultTechDocsHome` as fall back if no children is provided as `LegacyTechDocsHome` is marked as deprecated. If you do not use a custom techdocs homepage, you can therefore update your app to the following:
+
+  ```diff
+  -  <Route path="/docs" element={<TechDocsIndexPage />}>
+  -    <DefaultTechDocsHome />
+  -  </Route>
+  +  <Route path="/docs" element={<TechDocsIndexPage />} />
+  ```
+
+- 617a132871: Update import location of catalogEntityCreatePermission.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+  +import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+  ```
+
+- 022507c860: The Backstage Search Platform's indexing process has been rewritten as a stream
+  pipeline in order to improve efficiency and performance on large document sets.
+
+  To take advantage of this, upgrade to the latest version of
+  `@backstage/plugin-search-backend-node`, as well as any backend plugins whose
+  collators you are using. Then, make the following changes to your
+  `/packages/backend/src/plugins/search.ts` file:
+
+  ```diff
+  -import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+  -import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+  +import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
+  +import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+
+  // ...
+
+    const indexBuilder = new IndexBuilder({ logger, searchEngine });
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+  -    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
+  +    factory: DefaultCatalogCollatorFactory.fromConfig(config, { discovery }),
+    });
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+  -    collator: DefaultTechDocsCollator.fromConfig(config, {
+  +    factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
+        discovery,
+        logger,
+      }),
+    });
+  ```
+
+  If you've written custom collators, decorators, or search engines in your
+  Backstage backend instance, you will need to re-implement them as readable,
+  transform, and writable streams respectively (including factory classes for
+  instantiating them). [A how-to guide for refactoring](https://backstage.io/docs/features/search/how-to-guides#rewriting-alpha-style-collators-for-beta)
+  existing implementations is available.
+
 ## 0.4.21
 
 ### Patch Changes

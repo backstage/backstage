@@ -1,5 +1,13 @@
 # @backstage/core-plugin-api
 
+## 0.8.0
+
+### Minor Changes
+
+- bb2bb36651: **BREAKING**: Removed the deprecated `get` method from `StorageAPI` and its implementations, this method has been replaced by the `snapshot` method. The return value from snapshot no longer includes `newValue` which has been replaced by `value`. For getting notified when a value changes, use `observe# @backstage/core-plugin-api.
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+- a480f670c7: **BREAKING**: OAuth provider id is now required when passing a provider to `createAuthRequester`.
+
 ## 0.7.0
 
 ### Minor Changes
