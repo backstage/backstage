@@ -19,7 +19,7 @@ import { useOutlet } from 'react-router';
 
 import { Page, Content } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { techDocsPage } from '@backstage/plugin-techdocs-mkdocs';
+import { techDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs';
 
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
@@ -51,7 +51,7 @@ export const TechDocsReaderPage = ({ children }: TechDocsReaderPageProps) => {
   const outlet = useOutlet();
 
   if (!children) {
-    return outlet || techDocsPage;
+    return outlet || techDocsReaderPage;
   }
 
   return (

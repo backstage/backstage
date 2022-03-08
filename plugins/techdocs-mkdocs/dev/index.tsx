@@ -26,7 +26,7 @@ import {
 } from '@backstage/plugin-techdocs';
 
 import { techdocsMkdocsPlugin } from '../src/plugin';
-import { MkDocsContent } from '../src/components';
+import { TechDocsReaderContent } from '../src/components';
 
 class TechDocsStorageApiImpl implements TechDocsStorageApi {
   getApiOrigin = async () => '';
@@ -63,7 +63,7 @@ createDevApp()
         <Header title="TechDocs MkDocs" />
         <Content>
           <TechDocsReaderProvider entityRef={entityRef}>
-            <MkDocsContent />
+            <TechDocsReaderContent />
           </TechDocsReaderProvider>
         </Content>
       </Page>

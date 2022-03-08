@@ -8,15 +8,15 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // @public
-export const MkDocsContent: () => JSX.Element | null;
-
-// @public
 const techdocsMkdocsPlugin: BackstagePlugin<{}, {}>;
 export { techdocsMkdocsPlugin as plugin };
 export { techdocsMkdocsPlugin };
 
 // @public
-export const techDocsPage: JSX.Element;
+export const TechDocsReaderContent: () => JSX.Element | null;
+
+// @public
+export const techDocsReaderPage: JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```
