@@ -79,7 +79,7 @@ implemented in a typical Backstage app.
 The Backstage build system uses the concept of package roles in order to help keep
 configuration lean, provide utility and tooling, and enable optimizations. A package
 role is a single string that identifies what the purpose of a package is, and it's
-define in the `package.json` of each package like this:
+defined in the `package.json` of each package like this:
 
 ```json
 {

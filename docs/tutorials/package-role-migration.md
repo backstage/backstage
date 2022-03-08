@@ -43,7 +43,7 @@ yarn backstage-cli migrate package-scripts
 yarn backstage-cli migrate package-lint-configs
 ```
 
-Have a look at the new commands under `yarn backstage-cli repo`, and switch to them wherever you can. They tend to be a much faster compared to their `lerna` equivalents.
+Have a look at the new commands under `yarn backstage-cli repo`, and switch to them wherever you can. They tend to be much faster compared to their `lerna` equivalents.
 
 ### Step 1 - Add package roles
 
@@ -53,7 +53,7 @@ The first step is to add the `"backstage"."role"` field to each package. This ca
 yarn backstage-cli migrate package-roles
 ```
 
-The automatic detection is not perfect, so it recommended to manually review the
+The automatic detection is not perfect, so it is recommended to manually review the
 roles that were assigned to each package.
 You can use the [package role definitions](../local-dev/cli-build-system.md#package-roles) as a reference.
 
@@ -73,7 +73,7 @@ Each command under the `package` category is designed to be mapped directly to a
 }
 ```
 
-Every package role each has a fixed set of recommended scripts. It is strongly recommended that you use these scripts, as it allows for optimizations in other parts of the CLI. You can migrate to using all of these scripts by running the following command:
+Every package role has a fixed set of recommended scripts. It is strongly recommended that you use these scripts, as it allows for optimizations in other parts of the CLI. You can migrate to using all of these scripts by running the following command:
 
 ```sh
 yarn backstage-cli migrate package-scripts
@@ -113,14 +113,14 @@ The way to execute this step of the migration is not as well defined as the prev
   backstage-cli repo lint --since origin/master
   ```
 
-- In places where the entire repo is being built, use `yarn backstage-cli repo build`, which also supports the `--since` flag. The migration here is a bit more nuanced as it depends why you are building all packages.
-  - If you are building all packages to **verify** that you are able to build them, you most likely want `backstage-cli repo build --all`. The `--all` flag signals that bundled packages like `packages/app` and `packages/backend` should be build as well. Pair this up with a `--since` flag in CI to avoid needing to build all packages.
+- In places where the entire repo is being built, use `yarn backstage-cli repo build`, which also supports the `--since` flag. The migration here is a bit more nuanced as it depends on why you are building all packages.
+  - If you are building all packages to **verify** that you are able to build them, you most likely want `backstage-cli repo build --all`. The `--all` flag signals that bundled packages like `packages/app` and `packages/backend` should be built as well. Pair this up with a `--since` flag in CI to avoid needing to build all packages.
   - If you are building all packages to **publish** them, then `backstage-cli repo build` is enough, as it builds all published packages.
   - If you are building all packages to **deploy** them, you likely don't want to use the `repo` command at all, simply call `yarn build` in the packages you want to deploy instead. For example, if you are deploying the backend with a docker host build, it's enough to call `yarn build` inside `packages/backend`.
 
 ## FAQ
 
-### Why where packages roles introduced?
+### Why were package roles introduced?
 
 To keep configuration lean, allow for more utilities and tooling, and to enable optimizations in the build system. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/8729).
 
@@ -128,11 +128,11 @@ To keep configuration lean, allow for more utilities and tooling, and to enable 
 
 Short answer - yes.
 
-Longer answer - mostly, you can get around having to declare package the role of your packages by instead explicitly declaring the role in the command invocation or configuration. For example, the `app:build` command will go away, but you can replace it with `package build --role frontend` if you don't want to declare the role in `package.json` . It is however strongly recommended to declare the package roles.
+Longer answer - mostly, you can get around having to declare the role of your packages by instead explicitly declaring the role in the command invocation or configuration. For example, the `app:build` command will go away, but you can replace it with `package build --role frontend` if you don't want to declare the role in `package.json` . It is however strongly recommended to declare the package roles.
 
 ### I have a package where none of the existing roles apply
 
-The `web-library`, `node-library` and `common-library` roles are general purpose roles that should cover most use cases. If you feel like none of those roles work for you either, then please open an issue in the [Backstage repo](https://github.com/backstage/backstage) and suggest the addition of a new role.
+The `web-library`, `node-library` and `common-library` roles are general purpose roles that should cover most use cases. If you feel like none of those roles work for you, then please open an issue in the [Backstage repo](https://github.com/backstage/backstage) and suggest the addition of a new role.
 
 ### Should I include the role in published packages?
 
