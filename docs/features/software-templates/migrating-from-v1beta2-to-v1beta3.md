@@ -162,6 +162,24 @@ away in future versions and the `RepoUrlPicker` will return an object so
 `parameters.repoUrl` will already be a
 `{ host: string; owner: string; repo: string }` 🚀
 
+## Links should be used instead of named outputs
+
+Previously, it was possible to provide links to the frontend using the named output `entityRef` and `remoteUrl`.
+These should be moved to `links` under the `output` object instead.
+
+```diff
+  output:
+-   remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+-   entityRef: '{{ steps.register.output.entityRef }}'
++   links:
++     - title: Repository
++       url: ${{ steps.publish.output.remoteUrl }}
++     - title: Open in catalog
++       icon: catalog
++       entityRef: ${{ steps.register.output.entityRef }}
+
+```
+
 ### Summary
 
 Of course, we're always available on [discord](https://discord.gg/MUpMjP2) if
