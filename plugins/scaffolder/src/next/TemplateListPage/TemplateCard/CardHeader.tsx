@@ -52,6 +52,7 @@ export const CardHeader = (props: CardHeaderProps) => {
   } = props;
   const { getPageTheme } = useTheme<BackstageTheme>();
   const themeForType = getPageTheme({ themeId: type });
+
   const styles = useStyles({
     cardBackgroundImage: themeForType.backgroundImage,
   });

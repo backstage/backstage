@@ -46,4 +46,22 @@ describe('CardHeader', () => {
 
     expect(mockTheme.getPageTheme).toHaveBeenCalledWith({ themeId: 'service' });
   });
+
+  it('should render the type', () => {
+    const { getByText } = render(
+      <CardHeader
+        template={{
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: { name: 'bob' },
+          spec: {
+            steps: [],
+            type: 'service',
+          },
+        }}
+      />,
+    );
+
+    expect(getByText('Service')).toBeInTheDocument();
+  });
 });
