@@ -65,7 +65,9 @@ export const DefaultImportPage = () => {
               <CardActionArea>
                 <Link to={componentLink?.()}>
                   <CardHeader
-                    avatar={<PlaylistAddIcon style={{ marginTop: 5 }} />}
+                    avatar={
+                      <PlaylistAddIcon style={{ verticalAlign: 'middle' }} />
+                    }
                     title="Software components"
                     titleTypographyProps={{ variant: 'h5' }}
                   />
@@ -85,7 +87,9 @@ export const DefaultImportPage = () => {
               <CardActionArea>
                 <Link to={orgLink?.()}>
                   <CardHeader
-                    avatar={<GroupAddIcon style={{ marginTop: 5 }} />}
+                    avatar={
+                      <GroupAddIcon style={{ verticalAlign: 'middle' }} />
+                    }
                     title="Organization data"
                     titleTypographyProps={{ variant: 'h5' }}
                   />
@@ -102,7 +106,9 @@ export const DefaultImportPage = () => {
           <Grid item xs={8}>
             <Card aria-disabled="true" style={{ opacity: 0.5 }}>
               <CardHeader
-                avatar={<CloudDownloadIcon style={{ marginTop: 5 }} />}
+                avatar={
+                  <CloudDownloadIcon style={{ verticalAlign: 'middle' }} />
+                }
                 title="Cloud resources"
                 titleTypographyProps={{ variant: 'h5' }}
               />

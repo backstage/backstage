@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ScmIntegration } from '@backstage/integration';
-import { GithubOrganizationsProvider } from '../../hooks/useGithubOrganizations';
 import { GithubOrganizationList } from '../GithubOrganizationList';
+import { GithubRepositoryList } from '../GithubRepositoryList';
 
 type ScmIntegrationProps = {
   integration: ScmIntegration;
 };
 
 export const GithubScmIntegration = ({ integration }: ScmIntegrationProps) => {
-  return (
-    <GithubOrganizationsProvider host={integration.title}>
-      <GithubOrganizationList />
-    </GithubOrganizationsProvider>
+  const [organization, setOrganization] = useState<string | undefined>(
+    undefined,
+  );
+
+  return organization ? (
+    <GithubRepositoryList host={integration.title} org={organization} />
+  ) : (
+    <GithubOrganizationList
+      host={integration.title}
+      setOrganization={setOrganization}
+    />
   );
 };

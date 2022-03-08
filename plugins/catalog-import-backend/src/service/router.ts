@@ -31,10 +31,36 @@ export interface RouterOptions {
   logger: Logger;
 }
 
+async function getOctokit(
+  config: Config,
+  host: string,
+  org?: string,
+): Promise<Octokit> {
+  const integrations = ScmIntegrations.fromConfig(config);
+  const integrationConfig = integrations.github.byHost(host)?.config;
+  if (!integrationConfig) {
+    throw new InputError(`No integration for host ${host}`);
+  }
+
+  const credentialsProvider =
+    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+  const { token } = await credentialsProvider.getCredentials({
+    url: `https://${host}`,
+  });
+  if (!token) {
+    throw new InputError(`No token available for host: ${host}`);
+  }
+
+  return new Octokit({
+    auth: token,
+    baseUrl: integrationConfig.apiBaseUrl,
+  });
+}
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { config, logger } = options;
+  const { config } = options;
   const integrations = ScmIntegrations.fromConfig(config);
 
   const router = Router();
@@ -51,28 +77,18 @@ export async function createRouter(
 
   router.get('/github/orgs/:host', async (request, response) => {
     const { host } = request.params;
-    const integrationConfig = integrations.github.byHost(host)?.config;
-    if (!integrationConfig) {
-      throw new InputError(`No integration for host ${host}`);
-    }
-
-    const credentialsProvider =
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-    const { token } = await credentialsProvider.getCredentials({
-      url: `https://${host}/`,
-    });
-    if (!token) {
-      throw new InputError(`No token available for host: ${host}`);
-    }
-    logger.warn(`token: ${token}`);
-
-    const octokit = new Octokit({
-      auth: token,
-      baseUrl: integrationConfig.apiBaseUrl,
-    });
+    const octokit = await getOctokit(config, host);
     const { data: orgs } = await octokit.rest.orgs.listForAuthenticatedUser();
     response.send(orgs);
   });
+
+  router.get('/github/repos/:host/:org', async (request, response) => {
+    const { host, org } = request.params;
+    const octokit = await getOctokit(config, host, org);
+    const { data: repos } = await octokit.rest.repos.listForOrg({ org });
+    response.send(repos);
+  });
+
   router.use(errorHandler());
   return router;
 }

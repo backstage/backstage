@@ -19,23 +19,24 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  CardHeader,
+  Checkbox,
   Grid,
   Typography,
 } from '@material-ui/core';
+import ForkIcon from '@material-ui/icons/CallSplit';
 import { Progress } from '@backstage/core-components';
-import { useGithubOrganizations } from '../../hooks/useGithubOrganizations';
+import { useGithubRepositories } from '../../hooks/useGithubRepositories';
 
-type GithubOrganizationListProps = {
+type GithubRepositoryListProps = {
   host: string;
-  setOrganization: (organization: string) => void;
+  org: string;
 };
 
-export const GithubOrganizationList = ({
+export const GithubRepositoryList = ({
   host,
-  setOrganization,
-}: GithubOrganizationListProps) => {
-  const { organizations, loading } = useGithubOrganizations({ host });
+  org,
+}: GithubRepositoryListProps) => {
+  const { loading, repositories } = useGithubRepositories({ host, org });
 
   if (loading) {
     return <Progress />;
@@ -43,25 +44,25 @@ export const GithubOrganizationList = ({
 
   return (
     <Grid container>
-      {organizations.map((org, index) => (
+      {repositories.map((repo, index) => (
         <Grid item xs={8} key={index}>
           <Card raised>
-            <CardActionArea onClick={() => setOrganization(org.login)}>
-              <CardHeader
-                avatar={
-                  <img
-                    src={org.avatar_url}
-                    alt="avatar"
-                    height="20"
-                    width="20"
-                    style={{ verticalAlign: 'middle' }}
-                  />
-                }
-                title={org.login}
-                titleTypographyProps={{ variant: 'h5' }}
-              />
+            <CardActionArea onClick={() => 0}>
               <CardContent>
-                <Typography>{org.description}</Typography>
+                <Grid container>
+                  <Grid item xs={1}>
+                    <Checkbox name={repo.name} />
+                  </Grid>
+                  <Grid item xs={10}>
+                    <Typography variant="h5">
+                      {repo.name}{' '}
+                      {repo.fork && (
+                        <ForkIcon style={{ verticalAlign: 'middle' }} />
+                      )}
+                    </Typography>
+                    <Typography>{repo.description}</Typography>
+                  </Grid>
+                </Grid>
               </CardContent>
             </CardActionArea>
           </Card>

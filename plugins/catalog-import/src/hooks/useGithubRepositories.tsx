@@ -14,45 +14,48 @@
  * limitations under the License.
  */
 
-import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEffect, useState } from 'react';
+import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 
-export type GithubOrganization = {
-  login: string;
-  avatar_url: string;
+export type GithubRepository = {
+  name: string;
   description: string;
+  visibility: 'public' | 'private' | 'internal';
+  fork: boolean;
+  url: string;
+  default_branch: string;
+  updated_at: string; // ISO-8601; 2011-01-26T19:14:43Z
 };
 
-type GithubOrganizationsContext = {
-  organizations: GithubOrganization[];
+type GithubRepositoriesContext = {
+  repositories: GithubRepository[];
   loading: boolean;
 };
 
-type GithubOrganizationsProps = {
+type GithubRepositoriesProps = {
   host: string;
+  org: string;
 };
 
-export function useGithubOrganizations({
+export function useGithubRepositories({
   host,
-}: GithubOrganizationsProps): GithubOrganizationsContext {
+  org,
+}: GithubRepositoriesProps): GithubRepositoriesContext {
   const fetchApi = useApi(fetchApiRef);
-  const [context, setContext] = useState<GithubOrganizationsContext>({
-    organizations: [],
+  const [context, setContext] = useState<GithubRepositoriesContext>({
+    repositories: [],
     loading: true,
   });
 
   useEffect(() => {
     async function fetchOrgs() {
       const response = await fetchApi.fetch(
-        `plugin://catalog-import/github/orgs/${host}`,
+        `plugin://catalog-import/github/repos/${host}/${org}`,
       );
-      setContext({
-        organizations: await response.json(),
-        loading: false,
-      });
+      setContext({ repositories: await response.json(), loading: false });
     }
     fetchOrgs();
-  }, [fetchApi, host]);
+  }, [fetchApi, host, org]);
 
   return context;
 }
