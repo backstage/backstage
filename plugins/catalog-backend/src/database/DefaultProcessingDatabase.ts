@@ -403,10 +403,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at:
-          tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
-            : tx.raw(`now() + interval '${interval} seconds'`),
+        next_update_at: tx.client.config.client.includes('sqlite3')
+          ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
+          : tx.raw(`now() + interval '${interval} seconds'`),
       });
 
     return {

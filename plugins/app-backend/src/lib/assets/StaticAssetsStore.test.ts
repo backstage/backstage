@@ -140,10 +140,9 @@ describe('StaticAssetsStore', () => {
       const updated = await database('static_assets_cache')
         .where({ path: 'old' })
         .update({
-          last_modified_at:
-            database.client.config.client === 'sqlite3'
-              ? database.raw(`datetime('now', '-3600 seconds')`)
-              : database.raw(`now() + interval '-3600 seconds'`),
+          last_modified_at: database.client.config.client.includes('sqlite3')
+            ? database.raw(`datetime('now', '-3600 seconds')`)
+            : database.raw(`now() + interval '-3600 seconds'`),
         });
       expect(updated).toBe(1);
 

@@ -229,10 +229,9 @@ export class TaskWorker {
     // leaning on the database as a central clock source
     const dbNull = this.knex.raw('null');
     const dt = Duration.fromISO(recurringAtMostEveryDuration).as('seconds');
-    const nextRun =
-      this.knex.client.config.client === 'sqlite3'
-        ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])
-        : this.knex.raw(`next_run_start_at + interval '${dt} seconds'`);
+    const nextRun = this.knex.client.config.client.includes('sqlite3')
+      ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])
+      : this.knex.raw(`next_run_start_at + interval '${dt} seconds'`);
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)
