@@ -30,6 +30,9 @@ const mockPermissionAuthorizer: PermissionAuthorizer = {
   authorize: () => {
     throw new Error('Not implemented');
   },
+  policyDecision: () => {
+    throw new Error('Not implemented');
+  },
 };
 
 describe('createRouter', () => {
