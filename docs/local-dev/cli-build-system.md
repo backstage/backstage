@@ -72,6 +72,53 @@ or IDE that has support for formatting, linting, and type checking.
 Let's dive into a detailed look at each of these steps and how they are
 implemented in a typical Backstage app.
 
+## Package Roles
+
+> Package roles were introduced in March 2022. To migrate existing projects, see the [migration guide](../tutorials/package-role-migration.md).
+
+The Backstage build system uses the concept of package roles in order to help keep
+configuration lean, provide utility and tooling, and enable optimizations. A package
+role is a single string that identifies what the purpose of a package is, and it's
+define in the `package.json` of each package like this:
+
+```json
+{
+  "name": "my-package",
+  "backstage": {
+    "role": "<role>"
+  },
+  ...
+}
+```
+
+These are the available roles that are currently supported by the Backstage build system:
+
+| Role                   | Description                                  | Example                                      |
+| ---------------------- | -------------------------------------------- | -------------------------------------------- |
+| frontend               | Bundled frontend application                 | `package/app`                                |
+| backend                | Bundled backend application                  | `packages/backend`                           |
+| cli                    | Package used as a command-line interface     | `@backstage/cli`, `@backstage/codemods`      |
+| web-library            | Web library for use by other packages        | `@backstage/plugin-catalog-react`            |
+| node-library           | Node.js library for use by other packages    | `@backstage/plugin-techdocs-node`            |
+| common-library         | Isomorphic library for use by other packages | `@backstage/plugin-permission-common`        |
+| frontend-plugin        | Backstage frontend plugin                    | `@backstage/plugin-scaffolder`               |
+| frontend-plugin-module | Backstage frontend plugin module             | `@backstage/plugin-analytics-module-ga`      |
+| backend-plugin         | Backstage backend plugin                     | `@backstage/plugin-auth-backend`             |
+| backend-plugin-module  | Backstage backend plugin module              | `@backstage/plugin-search-backend-module-pg` |
+
+Most of the steps that we cover below have an accompanying command that is intended to be used as a package script. The commands are all available under the `backstage-cli package` category, and many of the commands will behave differently depending on the role of the package. The commands are intended to be used like this:
+
+```json
+{
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    ...
+  }
+}
+```
+
 ## Formatting
 
 The formatting setup lives completely within each Backstage application and is

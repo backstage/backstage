@@ -60,7 +60,7 @@ based on existing information like what build scripts are in place and the packa
 
 This automatic detection is not perfect, so it recommended to manually review the
 roles that were assigned to each package.
-You can use the [package role definitions](./not-found#TODO) as a reference.
+You can use the [package role definitions](../local-dev/cli-build-system#package-roles) as a reference.
 
 ### Step 2 - Migrate package scripts
 
