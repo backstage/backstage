@@ -22,7 +22,9 @@ import {
   EvaluatePermissionRequest,
   AuthorizeResult,
   isResourcePermission,
-  PermissionAuthorizer,
+  PermissionEvaluator,
+  AuthorizePermissionRequest,
+  QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
@@ -67,7 +69,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
   constructor(
     private readonly searchEngine: SearchEngine,
     private readonly types: Record<string, DocumentTypeInfo>,
-    private readonly permissions: PermissionAuthorizer,
+    private readonly permissions: PermissionEvaluator,
     config: Config,
   ) {
     this.queryLatencyBudgetMs =
@@ -89,8 +91,16 @@ export class AuthorizedSearchEngine implements SearchEngine {
   ): Promise<IndexableResultSet> {
     const queryStartTime = Date.now();
 
+    const conditionFetcher = new DataLoader(
+      (requests: readonly QueryPermissionRequest[]) =>
+        this.permissions.query(requests.slice(), options),
+      {
+        cacheKeyFn: ({ permission: { name } }) => name,
+      },
+    );
+
     const authorizer = new DataLoader(
-      (requests: readonly EvaluatePermissionRequest[]) =>
+      (requests: readonly AuthorizePermissionRequest[]) =>
         this.permissions.authorize(requests.slice(), options),
       {
         // Serialize the permission name and resourceRef as
@@ -100,6 +110,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
           qs.stringify({ name, resourceRef }),
       },
     );
+
     const requestedTypes = query.types || Object.keys(this.types);
 
     const typeDecisions = zipObject(
@@ -108,9 +119,18 @@ export class AuthorizedSearchEngine implements SearchEngine {
         requestedTypes.map(type => {
           const permission = this.types[type]?.visibilityPermission;
 
-          return permission
-            ? authorizer.load({ permission })
-            : { result: AuthorizeResult.ALLOW as const };
+          // No permission configured for this document type - always allow.
+          if (!permission) {
+            return { result: AuthorizeResult.ALLOW as const };
+          }
+
+          // Resource permission supplied, so we need to check for conditional decisions.
+          if (isResourcePermission(permission)) {
+            return conditionFetcher.load({ permission });
+          }
+
+          // Non-resource permission supplied - we can perform a standard authorization.
+          return authorizer.load({ permission });
         }),
       ),
     );

@@ -20,6 +20,8 @@ import {
   AuthorizeResult,
   createPermission,
   PermissionAuthorizer,
+  PolicyDecision,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
@@ -69,12 +71,15 @@ describe('AuthorizedSearchEngine', () => {
     query: mockedQuery,
   };
 
-  const mockedAuthorize: jest.MockedFunction<
-    PermissionAuthorizer['authorize']
+  const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
+    jest.fn();
+  const mockedPermissionQuery: jest.MockedFunction<
+    PermissionEvaluator['query']
   > = jest.fn();
 
-  const permissionAuthorizer: PermissionAuthorizer = {
+  const permissionAuthorizer: PermissionEvaluator = {
     authorize: mockedAuthorize,
+    query: mockedPermissionQuery,
   };
 
   const defaultTypes: Record<string, DocumentTypeInfo> = {
@@ -117,7 +122,8 @@ describe('AuthorizedSearchEngine', () => {
 
   const options = { token: 'token' };
 
-  const allowAll: PermissionAuthorizer['authorize'] = async queries => {
+  const allowAll: PermissionAuthorizer['authorize'] &
+    PermissionEvaluator['query'] = async queries => {
     return queries.map(() => ({
       result: AuthorizeResult.ALLOW,
     }));
@@ -126,11 +132,12 @@ describe('AuthorizedSearchEngine', () => {
   beforeEach(() => {
     mockedQuery.mockReset();
     mockedAuthorize.mockClear();
+    mockedPermissionQuery.mockClear();
   });
 
   it('should forward the parameters correctly', async () => {
     mockedQuery.mockImplementation(async () => ({ results }));
-    mockedAuthorize.mockImplementation(allowAll);
+
     const filters = { just: 1, a: 2, filter: 3 };
     await authorizedSearchEngine.query(
       { term: 'term', filters, types: ['one', 'two'] },
@@ -148,7 +155,8 @@ describe('AuthorizedSearchEngine', () => {
 
   it('should forward the default types if none are passed', async () => {
     mockedQuery.mockImplementation(async () => ({ results }));
-    mockedAuthorize.mockImplementation(allowAll);
+    mockedPermissionQuery.mockImplementation(allowAll);
+
     await authorizedSearchEngine.query({ term: '' }, options);
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['users', 'templates', 'services', 'groups'] },
@@ -158,17 +166,17 @@ describe('AuthorizedSearchEngine', () => {
 
   it('should return all the results if all queries are allowed', async () => {
     mockedQuery.mockImplementation(async () => ({ results }));
-    mockedAuthorize.mockImplementation(allowAll);
+    mockedPermissionQuery.mockImplementation(allowAll);
 
     await expect(
       authorizedSearchEngine.query({ term: '' }, options),
     ).resolves.toEqual({ results });
-    expect(mockedAuthorize).toHaveBeenCalledTimes(1);
+    expect(mockedPermissionQuery).toHaveBeenCalledTimes(1);
   });
 
   it('should batch authorized requests', async () => {
     mockedQuery.mockImplementation(async () => ({ results }));
-    mockedAuthorize.mockImplementation(allowAll);
+    mockedPermissionQuery.mockImplementation(allowAll);
 
     await authorizedSearchEngine.query(
       { term: '', types: [typeUsers, typeTemplates] },
@@ -178,8 +186,8 @@ describe('AuthorizedSearchEngine', () => {
       { term: '', types: ['users', 'templates'] },
       { token: 'token' },
     );
-    expect(mockedAuthorize).toHaveBeenCalledTimes(1);
-    expect(mockedAuthorize).toHaveBeenLastCalledWith(
+    expect(mockedPermissionQuery).toHaveBeenCalledTimes(1);
+    expect(mockedPermissionQuery).toHaveBeenLastCalledWith(
       [
         { permission: defaultTypes[typeUsers].visibilityPermission },
         { permission: defaultTypes[typeTemplates].visibilityPermission },
@@ -190,7 +198,7 @@ describe('AuthorizedSearchEngine', () => {
 
   it('should skip sending request for types that are not allowed', async () => {
     mockedQuery.mockImplementation(async () => ({ results }));
-    mockedAuthorize.mockImplementation(async queries => {
+    mockedPermissionQuery.mockImplementation(async queries => {
       return queries.map(query => {
         if (
           query.permission.name ===
@@ -213,7 +221,7 @@ describe('AuthorizedSearchEngine', () => {
       { token: 'token' },
     );
 
-    expect(mockedAuthorize).toHaveBeenCalledTimes(1);
+    expect(mockedPermissionQuery).toHaveBeenCalledTimes(1);
   });
 
   it('should perform result-by-result filtering', async () => {
@@ -226,21 +234,12 @@ describe('AuthorizedSearchEngine', () => {
       results: resultsWithAuth,
     }));
 
-    const userToBeReturned = 8;
-
-    mockedAuthorize.mockImplementation(async queries =>
+    mockedPermissionQuery.mockImplementation(async queries =>
       queries.map(query => {
         if (
           query.permission.name ===
           defaultTypes.users.visibilityPermission?.name
         ) {
-          if (query.resourceRef) {
-            return {
-              result: query.resourceRef.endsWith(userToBeReturned.toString())
-                ? AuthorizeResult.ALLOW
-                : AuthorizeResult.DENY,
-            };
-          }
           return {
             result: AuthorizeResult.CONDITIONAL,
           } as EvaluatePermissionResponse;
@@ -252,9 +251,20 @@ describe('AuthorizedSearchEngine', () => {
       }),
     );
 
+    mockedAuthorize.mockImplementation(async queries =>
+      queries.map(query => {
+        return {
+          result:
+            query.resourceRef! === `users_doc_8`
+              ? AuthorizeResult.ALLOW
+              : AuthorizeResult.DENY,
+        };
+      }),
+    );
+
     await expect(
       authorizedSearchEngine.query({ term: '' }, options),
-    ).resolves.toEqual({ results: [usersWithAuth[userToBeReturned]] });
+    ).resolves.toEqual({ results: [usersWithAuth[8]] });
 
     expect(mockedQuery).toHaveBeenCalledWith(
       { term: '', types: ['users'] },
@@ -284,27 +294,27 @@ describe('AuthorizedSearchEngine', () => {
       results: searchResults,
     }));
 
-    mockedAuthorize.mockImplementation(async queries =>
-      queries.map(query => {
-        if (query.resourceRef) {
-          return {
-            result: AuthorizeResult.ALLOW,
-          };
-        }
+    mockedPermissionQuery.mockImplementation(async queries =>
+      queries.map(
+        _ =>
+          ({
+            result: AuthorizeResult.CONDITIONAL,
+          } as EvaluatePermissionResponse),
+      ),
+    );
 
-        return {
-          result: AuthorizeResult.CONDITIONAL,
-        } as EvaluatePermissionResponse;
-      }),
+    mockedAuthorize.mockImplementation(async queries =>
+      queries.map(_ => ({
+        result: AuthorizeResult.ALLOW,
+      })),
     );
 
     await expect(
       authorizedSearchEngine.query({ term: '', types: ['templates'] }, options),
     ).resolves.toEqual({ results: searchResults });
 
-    expect(mockedAuthorize).toHaveBeenCalledTimes(2);
-    expect(mockedAuthorize).toHaveBeenNthCalledWith(
-      1,
+    expect(mockedPermissionQuery).toHaveBeenCalledTimes(1);
+    expect(mockedPermissionQuery).toHaveBeenCalledWith(
       [
         {
           permission: expect.objectContaining({
@@ -314,8 +324,8 @@ describe('AuthorizedSearchEngine', () => {
       ],
       { token: 'token' },
     );
-    expect(mockedAuthorize).toHaveBeenNthCalledWith(
-      2,
+    expect(mockedAuthorize).toHaveBeenCalledTimes(1);
+    expect(mockedAuthorize).toHaveBeenCalledWith(
       [
         {
           permission: expect.objectContaining({
@@ -329,7 +339,16 @@ describe('AuthorizedSearchEngine', () => {
   });
 
   it('should perform search until the target number of results is reached', async () => {
-    mockedAuthorize.mockImplementation(async queries =>
+    mockedPermissionQuery.mockImplementation(async queries =>
+      queries.map(
+        _ =>
+          ({
+            result: AuthorizeResult.CONDITIONAL,
+          } as PolicyDecision),
+      ),
+    );
+
+    mockedPermissionQuery.mockImplementation(async queries =>
       queries.map(query => {
         if (query.resourceRef) {
           return {
@@ -340,6 +359,12 @@ describe('AuthorizedSearchEngine', () => {
           result: AuthorizeResult.CONDITIONAL,
         } as EvaluatePermissionResponse;
       }),
+    );
+
+    mockedAuthorize.mockImplementation(async queries =>
+      queries.map(_ => ({
+        result: AuthorizeResult.ALLOW,
+      })),
     );
 
     const usersWithAuth = generateSampleResults(typeUsers, true);
@@ -405,20 +430,22 @@ describe('AuthorizedSearchEngine', () => {
   });
 
   it('should perform search until the target number of results is reached, excluding unauthorized results', async () => {
+    mockedPermissionQuery.mockImplementation(async queries =>
+      queries.map(
+        _ =>
+          ({
+            result: AuthorizeResult.CONDITIONAL,
+          } as PolicyDecision),
+      ),
+    );
+
     mockedAuthorize.mockImplementation(async queries =>
-      queries.map(query => {
-        if (query.resourceRef) {
-          return {
-            result:
-              query.permission.name === 'search.services.read'
-                ? AuthorizeResult.DENY
-                : AuthorizeResult.ALLOW,
-          };
-        }
-        return {
-          result: AuthorizeResult.CONDITIONAL,
-        } as EvaluatePermissionResponse;
-      }),
+      queries.map(query => ({
+        result:
+          query.permission.name === 'search.services.read'
+            ? AuthorizeResult.DENY
+            : AuthorizeResult.ALLOW,
+      })),
     );
 
     const usersWithAuth = generateSampleResults(typeUsers, true);
@@ -494,15 +521,19 @@ describe('AuthorizedSearchEngine', () => {
   });
 
   it('should discard results until the target cursor is reached', async () => {
+    mockedPermissionQuery.mockImplementation(async queries =>
+      queries.map(
+        _ =>
+          ({
+            result: AuthorizeResult.CONDITIONAL,
+          } as PolicyDecision),
+      ),
+    );
+
     mockedAuthorize.mockImplementation(async queries =>
-      queries.map(query => {
-        if (query.resourceRef) {
-          return { result: AuthorizeResult.ALLOW };
-        }
-        return {
-          result: AuthorizeResult.CONDITIONAL,
-        } as EvaluatePermissionResponse;
-      }),
+      queries.map(_ => ({
+        result: AuthorizeResult.ALLOW,
+      })),
     );
 
     const usersWithAuth = generateSampleResults(typeUsers, true);
