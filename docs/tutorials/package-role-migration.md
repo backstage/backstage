@@ -141,3 +141,22 @@ The way to execute this step of the migration is not as well defined as the prev
   - If you are building all packages to **verify** that you are able to build them, you most likely want `backstage-cli repo build --all`. The `--all` flag signals that bundled packages like `packages/app` and `packages/backend` should be build as well. Pair this up with a `--since` flag in CI to avoid needing to build all packages.
   - If you are building all packages to **publish** them, then `backstage-cli repo build` is enough, as it builds all published packages.
   - If you are building all packages to **deploy** them, you likely don't want to use the `repo` command at all, simply call `yarn build` in the packages you want to deploy instead. For example, if you are deploying the backend with a docker host build, it's enough to call `yarn build` inside `packages/backend`.
+
+## FAQ
+
+### Why where packages roles introduced?
+
+To keep configuration lean, allow for more utilities and tooling, and to enable optimizations in the build system. You can read more about the reasoning in the [original RFC](https://github.com/backstage/backstage/issues/8729).
+
+### Do I have to migrate to using package roles?
+
+Short answer - yes.
+Longer answer - mostly, you can get around having to declare package the role of your packages by instead explicitly declaring the role in the command invocation or configuration. For example, the `app:build` command will go away, but you can replace it with `package build --role frontend` if you don't want to declare the role in `package.json` . It is however strongly recommended to declare the package roles.
+
+### I have a package where none of the existing roles apply
+
+The `web-library`, `node-library` and `common-library` roles are general purpose roles that should cover most use cases. If you feel like none of those roles work for you either, then please open an issue in the [Backstage repo](https://github.com/backstage/backstage) and suggest the addition of a new role.
+
+### Should I include the role in published packages?
+
+Yes. While there is nothing that will consume the role at the moment, it is likely that future tooling will be able to provide a better experience for users when published packages include the role.
