@@ -51,7 +51,7 @@ export type RouterProps = {
 };
 
 /**
- * The main entirypoint `Router` for the `ScaffolderPlugin`.
+ * The main entrypoint `Router` for the `ScaffolderPlugin`.
  *
  * @public
  */
