@@ -27,10 +27,8 @@ const configOption = [
 
 export function registerRepoCommand(program: CommanderStatic) {
   const command = program
-    .command('repo [command]', { hidden: true })
-    .description(
-      'Command that run across an entire Backstage project [EXPERIMENTAL]',
-    );
+    .command('repo [command]')
+    .description('Command that run across an entire Backstage project');
 
   command
     .command('build')
@@ -65,17 +63,14 @@ export function registerRepoCommand(program: CommanderStatic) {
 
 export function registerScriptCommand(program: CommanderStatic) {
   const command = program
-    .command('package [command]', { hidden: true })
-    .description('Lifecycle scripts for individual packages [EXPERIMENTAL]');
+    .command('package [command]')
+    .description('Lifecycle scripts for individual packages');
 
   command
     .command('start')
     .description('Start a package for local development')
     .option(...configOption)
-    .option(
-      '--role <name>',
-      'Run the command with an explicit package role [EXPERIMENTAL]',
-    )
+    .option('--role <name>', 'Run the command with an explicit package role')
     .option('--check', 'Enable type checking and linting if available')
     .option('--inspect', 'Enable debugger in Node.js environments')
     .option(
@@ -87,10 +82,7 @@ export function registerScriptCommand(program: CommanderStatic) {
   command
     .command('build')
     .description('Build a package for production deployment or publishing')
-    .option(
-      '--role <name>',
-      'Run the command with an explicit package role [EXPERIMENTAL]',
-    )
+    .option('--role <name>', 'Run the command with an explicit package role')
     .option(
       '--minify',
       'Minify the generated code. Does not apply to app or backend packages.',
@@ -151,8 +143,8 @@ export function registerScriptCommand(program: CommanderStatic) {
 
 export function registerMigrateCommand(program: CommanderStatic) {
   const command = program
-    .command('migrate [command]', { hidden: true })
-    .description('Migration utilities [EXPERIMENTAL]');
+    .command('migrate [command]')
+    .description('Migration utilities');
 
   command
     .command('package-roles')
