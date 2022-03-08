@@ -13,23 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
+import {Route} from 'react-router';
 import {Grid, ThemeProvider} from '@material-ui/core';
 import {
   Header,
   Page,
+  CardTab,
   Content,
   ContentHeader,
   HeaderLabel,
   SupportButton,
+  TabbedCard,
+  TabbedLayout,
 } from '@backstage/core-components';
-import EmissionsOverTimeCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsOverTimeCard';
-import CarbonComparisonCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonComparisonCard';
+import EmissionsOverTimeCard
+  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsOverTimeCard';
+import CarbonComparisonCard
+  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonComparisonCard';
+import EmissionsBreakdownCard
+  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsBreakdownCard';
+import CarbonIntensityMap
+  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonIntensityMap';
+import EmissionsFilterBar
+  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsFilterBar';
+
 import {determineTheme} from '@cloud-carbon-footprint/client/dist/utils/themes';
 
 import {
   EstimationResult,
 } from '@cloud-carbon-footprint/common';
+import {FlatRoutes} from "../../../../../packages/core-app-api";
+import {useFilterDataFromEstimates} from "@cloud-carbon-footprint/client/dist/utils/helpers";
+import {EmissionsFilters} from "@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsFilterBar/utils/EmissionsFilters";
+import {FilterResultResponse} from "@cloud-carbon-footprint/client/dist/Types";
+import useFilters from "@cloud-carbon-footprint/client/dist/common/FilterBar/utils/FilterHook";
 
 const mockData: EstimationResult[] = [
   {
@@ -259,29 +277,82 @@ const mockData: EstimationResult[] = [
   }
 ]
 
-export const ExampleComponent = () => (
-  <Page themeId="tool">
-    <Header
-      title="Welcome to cloud-carbon-footprint!"
-      subtitle="Optional subtitle"
-    >
-      <HeaderLabel label="Owner" value="Team X"/>
-      <HeaderLabel label="Lifecycle" value="Alpha"/>
-    </Header>
-    <Content>
-      <ContentHeader title="Plugin title">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
-      </ContentHeader>
-      <Grid container spacing={3} direction="column">
-        <ThemeProvider theme={determineTheme()}>
-          <EmissionsOverTimeCard
-            filteredData={mockData}
-          />
-          <CarbonComparisonCard
-            data={mockData}
-          />
-        </ThemeProvider>
-      </Grid>
-    </Content>
-  </Page>
+const Wrapper = ({children}: PropsWithChildren<{}>) => (
+  <FlatRoutes>
+    <Route path="/*" element={<>{children}</>}/>
+  </FlatRoutes>
 );
+
+
+export const ExampleComponent = () => {
+
+  const filteredDataResults: FilterResultResponse =
+    useFilterDataFromEstimates(mockData)
+
+  const buildFilters = (filteredResponse: FilterResultResponse) => {
+    const updatedConfig = EmissionsFilters.generateConfig(filteredResponse)
+    return new EmissionsFilters(updatedConfig)
+  }
+
+  const {filteredData, filters, setFilters} = useFilters(
+    mockData,
+    buildFilters,
+    filteredDataResults,
+  )
+  const filteredEstimationData = filteredData as EstimationResult[]
+
+  return (
+    <Page themeId="tool">
+      <Header
+        title="Welcome to cloud-carbon-footprint!"
+        subtitle="Optional subtitle"
+      >
+        <HeaderLabel label="Owner" value="Team X"/>
+        <HeaderLabel label="Lifecycle" value="Alpha"/>
+      </Header>
+      <Content>
+        <ContentHeader title="Cloud Carbon Footprint Plugin">
+          <SupportButton>A description of your plugin goes here.</SupportButton>
+        </ContentHeader>
+        <Wrapper>
+          <TabbedLayout>
+            <TabbedLayout.Route path="/emissions" title="Emissions">
+              <Grid container spacing={3} direction="column">
+                <ThemeProvider theme={determineTheme()}>
+                  <EmissionsFilterBar
+                    filters={filters}
+                    setFilters={setFilters}
+                    filteredDataResults={filteredDataResults}
+                  />
+                  <TabbedCard>
+                    <CardTab label="Emissions Over Time">
+
+                      <EmissionsOverTimeCard
+                        filteredData={filteredEstimationData}
+                      />
+                    </CardTab>
+                    <CardTab label="Carbon Comparison">
+                      <CarbonComparisonCard
+                        data={filteredEstimationData}
+                      />
+                    </CardTab>
+                    <CardTab label="Emissions Breakdown">
+                      <EmissionsBreakdownCard
+                        data={filteredEstimationData}
+                      />
+                    </CardTab>
+                  </TabbedCard>
+                  <CarbonIntensityMap/>
+                </ThemeProvider>
+              </Grid>
+            </TabbedLayout.Route>
+            <TabbedLayout.Route path="/recommendations" title="Recommendations">
+              <div>Recommendations-page</div>
+            </TabbedLayout.Route>
+          </TabbedLayout>
+        </Wrapper>
+
+      </Content>
+    </Page>
+  );
+}
