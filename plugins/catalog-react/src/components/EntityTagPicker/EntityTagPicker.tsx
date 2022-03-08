@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
@@ -30,6 +29,9 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTagFilter } from '../../filters';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+import { catalogApiRef } from '../../api';
 
 /** @public */
 export type CatalogReactEntityTagPickerClassKey = 'input';
@@ -49,8 +51,17 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityTagPicker = () => {
   const classes = useStyles();
-  const { updateFilters, backendEntities, filters, queryParameters } =
-    useEntityList();
+  const { updateFilters, filters, queryParameters } = useEntityList();
+
+  const catalogApi = useApi(catalogApiRef);
+  const { value: availableTags } = useAsync(async () => {
+    const facet = 'metadata.tags';
+    const { facets } = await catalogApi.getEntityFacets({
+      facets: [facet],
+    });
+
+    return facets[facet].map(({ value }) => value);
+  }, []);
 
   const queryParamTags = useMemo(
     () => [queryParameters.tags].flat().filter(Boolean) as string[],
@@ -75,19 +86,7 @@ export const EntityTagPicker = () => {
     });
   }, [selectedTags, updateFilters]);
 
-  const availableTags = useMemo(
-    () =>
-      [
-        ...new Set(
-          backendEntities
-            .flatMap((e: Entity) => e.metadata.tags)
-            .filter(Boolean) as string[],
-        ),
-      ].sort(),
-    [backendEntities],
-  );
-
-  if (!availableTags.length) return null;
+  if (!availableTags?.length) return null;
 
   return (
     <Box pb={1} pt={1}>
