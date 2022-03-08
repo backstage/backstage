@@ -43,7 +43,6 @@ clean                    Delete cache directories
 
 create                   Open up an interactive guide to creating new things in your app
 create-plugin            Creates a new plugin in the current repository
-remove-plugin            Removes plugin in the current repository
 
 config:docs              Browse the configuration reference documentation
 config:print             Print the app configuration for the current package
@@ -304,23 +303,6 @@ Options:
   --npm-registry &lt;URL&gt;  npm registry URL
   --no-private          Public npm package
   -h, --help            display help for command
-```
-
-## remove-plugin
-
-Scope: `root`
-
-A utility to remove a plugin from a repo, essentially undoing everything that
-was done by `create-plugin`.
-
-This is primarily intended as a utility for manual tests and end to end testing
-scripts.
-
-```text
-Usage: backstage-cli remove-plugin [options]
-
-Options:
-  -h, --help  display help for command
 ```
 
 ## plugin:build
