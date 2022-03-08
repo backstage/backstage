@@ -31,5 +31,6 @@ export {
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
 } from './permissions';
+export type { CatalogEntityPermission } from './permissions';
 
 export * from './search';
