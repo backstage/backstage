@@ -65,7 +65,7 @@
     "cross-env": "^7.0.0",
     "concurrently": "^7.0.0",
     "eslint-plugin-notice": "^0.9.10",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.1",
     "husky": "^7.0.4",
     "lerna": "^4.0.0",
     "lint-staged": "^12.2.0",

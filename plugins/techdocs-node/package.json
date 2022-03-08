@@ -53,7 +53,7 @@
     "@types/express": "^4.17.6",
     "aws-sdk": "^2.840.0",
     "express": "^4.17.1",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.1",
     "git-url-parse": "^11.6.0",
     "js-yaml": "^4.0.0",
     "json5": "^2.1.3",

@@ -37,7 +37,7 @@
     "chalk": "^4.0.0",
     "commander": "^6.1.0",
     "cross-fetch": "^3.1.5",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.1",
     "handlebars": "^4.7.3",
     "pgtools": "^0.3.0",
     "puppeteer": "^13.1.1",

@@ -53,7 +53,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fast-json-stable-stringify": "^2.1.0",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.1",
     "git-url-parse": "^11.6.0",
     "glob": "^7.1.6",
     "knex": "^1.0.2",
