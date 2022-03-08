@@ -5,27 +5,26 @@ description: Guide for how to migrate packages to use the new role utility
 ---
 
 The Backstage CLI has introduced the concept of package roles, whose purpose is to
-enable more powerful tooling and leaner package configuration. More background and
-information about the change can be found in the [original RFC](https://github.com/backstage/backstage/issues/8729).
+enable more powerful tooling, optimizations, and leaner package configuration. More background and
+information about the change can be found in the [original RFC](https://github.com/backstage/backstage/issues/8729) and the [FAQ](#faq) on this page.
 
 Package roles are implemented through a well-known `"backstage"."role"` field in the
 `package.json` of each package. There are a handful of roles defined so far, and it
-is not possible to use value outside the set of predefined roles. Some examples of
-these roles are `frontend-plugin`, `node-library`, and `backend-plugin-module`.
+is not possible to use values outside the [set of predefined roles](../local-dev/cli-build-system#package-roles).
 
 With roles in place in all packages, the Backstage CLI is able to automatically
 determine how to handle each package. For example, the different build commands
 have been replaced by a single one that instead knows how to build each role.
 The test and lint configurations are also selected automatically based on the role, and
 a new category of `repo` commands have been introduced in the CLI, which are able
-to operate across all packages at once.
+to operate across all packages simultaneously.
 
 Package roles have been used in the Backstage main repository for a while, and
 we now recommend that all Backstage projects are migrated to use package roles.
 
 ## Migration
 
-In order to make the migration as smooth as possible, `@backstage/cli` provides
+In order to make the migration as smooth as possible `@backstage/cli` provides
 a number of migration utilities. Using these in combination with some manual review
 and optional steps should be all you need to migrate to package roles in most projects.
 
@@ -48,24 +47,20 @@ Have a look at the new commands under `yarn backstage-cli repo`, and switch to t
 
 ### Step 1 - Add package roles
 
-The first step is to add the `"backstage"."role"` field to each package. This
-is done by running the following command:
+The first step is to add the `"backstage"."role"` field to each package. This can of course be done manually, but the following command will attempt to automatically detect the role of each package in your project:
 
 ```sh
 yarn backstage-cli migrate package-roles
 ```
 
-This will add the role field to each package in your project, detecting the role
-based on existing information like what build scripts are in place and the package name.
-
-This automatic detection is not perfect, so it recommended to manually review the
+The automatic detection is not perfect, so it recommended to manually review the
 roles that were assigned to each package.
 You can use the [package role definitions](../local-dev/cli-build-system#package-roles) as a reference.
 
 ### Step 2 - Migrate package scripts
 
 The migration to package roles also introduces a new `package` command category to the CLI.
-Each command under the `package` category is designed to be mapped directly to an entry in `"scripts"` in `package.json`. These commands replace the existing commands like `build`, `app:build`, `lint` and `test`. They look something like this:
+Each command under the `package` category is designed to be mapped directly to an entry in `"scripts"` in `package.json`. These commands replace the existing commands like `build`, `app:build`, `lint`, and `test`. They look something like this:
 
 ```json
 {
@@ -102,7 +97,7 @@ This will migrate all existing `.eslintrc.js` that extend the old configuration 
 
 ### Step 4 - Use `backstage-cli repo`
 
-The Backstage CLI recently introduced a new `repo` command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like `lerna`, as they're able to avoid the overhead of calling package scripts through `yarn`. You can read more about the `repo` command in the [CLI command documentation](./not-found#TODO).
+The Backstage CLI recently introduced a new `repo` command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like `lerna`, as they're able to avoid the overhead of calling package scripts through `yarn` and can operate on multiple packages at once. You can read more about the `repo` command in the [CLI command documentation](../local-dev/cli-commands#repo-build).
 
 The way to execute this step of the migration is not as well defined as the previous steps, as it depends on what your development and CI/CD setup looks like. Look for the following patterns to replace in your root `package.json` as well as CI/CD setup:
 
@@ -132,6 +127,7 @@ To keep configuration lean, allow for more utilities and tooling, and to enable 
 ### Do I have to migrate to using package roles?
 
 Short answer - yes.
+
 Longer answer - mostly, you can get around having to declare package the role of your packages by instead explicitly declaring the role in the command invocation or configuration. For example, the `app:build` command will go away, but you can replace it with `package build --role frontend` if you don't want to declare the role in `package.json` . It is however strongly recommended to declare the package roles.
 
 ### I have a package where none of the existing roles apply
