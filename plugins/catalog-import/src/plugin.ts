@@ -35,18 +35,6 @@ export const rootRouteRef = createRouteRef({
   id: 'catalog-import',
 });
 
-export const importComponentsRouteRef = createSubRouteRef({
-  id: 'catalog-import/components',
-  path: '/components',
-  parent: rootRouteRef,
-});
-
-export const importOrgRouteRef = createSubRouteRef({
-  id: 'catalog-import/org',
-  path: '/organization',
-  parent: rootRouteRef,
-});
-
 /**
  * A plugin that helps the user in importing projects and YAML files into the
  * catalog.
@@ -86,8 +74,6 @@ export const catalogImportPlugin = createPlugin({
   ],
   routes: {
     importPage: rootRouteRef,
-    componentImportPage: importComponentsRouteRef,
-    orgImportPage: importOrgRouteRef,
   },
 });
 

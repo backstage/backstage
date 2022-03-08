@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { ScmIntegration } from '@backstage/integration';
+import React from 'react';
+import {
+  Content,
+  ContentHeader,
+  Header,
+  Page,
+} from '@backstage/core-components';
 import { GithubOrganizationList } from '../GithubOrganizationList';
-import { GithubRepositoryList } from '../GithubRepositoryList';
+import { useParams } from 'react-router';
 
-type ScmIntegrationProps = {
-  integration: ScmIntegration;
-};
-
-export const GithubScmIntegration = ({ integration }: ScmIntegrationProps) => {
-  const [organization, setOrganization] = useState<string | undefined>(
-    undefined,
-  );
-
-  return organization ? (
-    <GithubRepositoryList host={integration.title} org={organization} />
-  ) : (
-    <GithubOrganizationList
-      host={integration.title}
-      setOrganization={setOrganization}
-    />
+export const ComponentImportSelectGithubOrgPage = () => {
+  const { host } = useParams();
+  return (
+    <Page themeId="tool">
+      <Header title="Catalog Import" />
+      <Content>
+        <ContentHeader title="Software components" />
+        <GithubOrganizationList host={host} />
+      </Content>
+    </Page>
   );
 };

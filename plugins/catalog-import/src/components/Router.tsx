@@ -19,6 +19,8 @@ import { Route, Routes } from 'react-router';
 import { OrgImportPage } from './OrgImportPage';
 import { ComponentImportPage } from './ComponentImportPage';
 import { DefaultImportPage } from './DefaultImportPage';
+import { ComponentImportSelectGithubOrgPage } from './ComponentImportSelectGithubOrgPage';
+import { ComponentImportSelectGithubRepoPage } from './ComponentImportSelectGithubRepoPage';
 
 export type RouterProps = {};
 
@@ -29,6 +31,14 @@ export const Router = (props: RouterProps) => {
     <Routes>
       <Route path="/" element={<DefaultImportPage />} />
       <Route path="/components" element={<ComponentImportPage />} />
+      <Route
+        path="/components/github/:host"
+        element={<ComponentImportSelectGithubOrgPage />}
+      />
+      <Route
+        path="/components/github/:host/:org"
+        element={<ComponentImportSelectGithubRepoPage />}
+      />
       <Route path="/organization" element={<OrgImportPage />} />
       {/* <Route path="/tasks/:taskId" element={<TaskPageElement />} /> */}
     </Routes>

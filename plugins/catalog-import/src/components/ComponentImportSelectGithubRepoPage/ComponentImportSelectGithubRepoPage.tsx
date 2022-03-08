@@ -21,20 +21,17 @@ import {
   Header,
   Page,
 } from '@backstage/core-components';
-import { ScmIntegrationList } from '../ScmIntegrationList';
+import { useParams } from 'react-router';
+import { GithubRepositoryList } from '../GithubRepositoryList';
 
-/**
- * The catalog import page for components.
- *
- * @public
- */
-export const ComponentImportPage = () => {
+export const ComponentImportSelectGithubRepoPage = () => {
+  const { host, org } = useParams();
   return (
     <Page themeId="tool">
       <Header title="Catalog Import" />
       <Content>
         <ContentHeader title="Software components" />
-        <ScmIntegrationList />
+        <GithubRepositoryList host={host} org={org} />
       </Content>
     </Page>
   );

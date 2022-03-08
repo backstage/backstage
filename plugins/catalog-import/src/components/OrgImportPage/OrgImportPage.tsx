@@ -30,7 +30,7 @@ import React from 'react';
  */
 export const OrgImportPage = () => {
   return (
-    <Page themeId="home">
+    <Page themeId="tool">
       <Header title="Catalog Import" />
       <Content>
         <ContentHeader title="Organization data" />

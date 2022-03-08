@@ -35,7 +35,6 @@ import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { importComponentsRouteRef, importOrgRouteRef } from '../../plugin';
 
 /**
  * The default catalog import page.
@@ -45,11 +44,9 @@ import { importComponentsRouteRef, importOrgRouteRef } from '../../plugin';
 export const DefaultImportPage = () => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
-  const componentLink = useRouteRef(importComponentsRouteRef);
-  const orgLink = useRouteRef(importOrgRouteRef);
 
   return (
-    <Page themeId="home">
+    <Page themeId="tool">
       <Header title="Catalog Import" />
       <Content>
         <ContentHeader title="What would you like to import?">
@@ -63,7 +60,7 @@ export const DefaultImportPage = () => {
           <Grid item xs={8}>
             <Card raised>
               <CardActionArea>
-                <Link to={componentLink?.()}>
+                <Link to="components">
                   <CardHeader
                     avatar={
                       <PlaylistAddIcon style={{ verticalAlign: 'middle' }} />
@@ -85,7 +82,7 @@ export const DefaultImportPage = () => {
           <Grid item xs={8}>
             <Card raised>
               <CardActionArea>
-                <Link to={orgLink?.()}>
+                <Link to="organization">
                   <CardHeader
                     avatar={
                       <GroupAddIcon style={{ verticalAlign: 'middle' }} />

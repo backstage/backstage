@@ -14,28 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import {
-  Content,
-  ContentHeader,
-  Header,
-  Page,
-} from '@backstage/core-components';
-import { ScmIntegrationList } from '../ScmIntegrationList';
-
-/**
- * The catalog import page for components.
- *
- * @public
- */
-export const ComponentImportPage = () => {
-  return (
-    <Page themeId="tool">
-      <Header title="Catalog Import" />
-      <Content>
-        <ContentHeader title="Software components" />
-        <ScmIntegrationList />
-      </Content>
-    </Page>
-  );
-};
+export { ComponentImportSelectGithubRepoPage } from './ComponentImportSelectGithubRepoPage';

@@ -31,11 +31,7 @@ export interface RouterOptions {
   logger: Logger;
 }
 
-async function getOctokit(
-  config: Config,
-  host: string,
-  org?: string,
-): Promise<Octokit> {
+async function getOctokit(config: Config, host: string): Promise<Octokit> {
   const integrations = ScmIntegrations.fromConfig(config);
   const integrationConfig = integrations.github.byHost(host)?.config;
   if (!integrationConfig) {
@@ -84,7 +80,7 @@ export async function createRouter(
 
   router.get('/github/repos/:host/:org', async (request, response) => {
     const { host, org } = request.params;
-    const octokit = await getOctokit(config, host, org);
+    const octokit = await getOctokit(config, host);
     const { data: repos } = await octokit.rest.repos.listForOrg({ org });
     response.send(repos);
   });

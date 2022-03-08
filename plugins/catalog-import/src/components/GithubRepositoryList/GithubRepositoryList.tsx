@@ -16,27 +16,44 @@
 
 import React from 'react';
 import {
-  Card,
-  CardActionArea,
-  CardContent,
+  Button,
   Checkbox,
+  FormControlLabel,
   Grid,
   Typography,
 } from '@material-ui/core';
 import ForkIcon from '@material-ui/icons/CallSplit';
 import { Progress } from '@backstage/core-components';
-import { useGithubRepositories } from '../../hooks/useGithubRepositories';
+import {
+  GithubRepository,
+  useGithubRepositories,
+} from '../../hooks/useGithubRepositories';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 type GithubRepositoryListProps = {
   host: string;
   org: string;
 };
 
+function getLabel(repo: GithubRepository) {
+  return (
+    <div>
+      <Typography variant="h6">
+        {repo.name}{' '}
+        {repo.fork && <ForkIcon style={{ verticalAlign: 'middle' }} />}
+      </Typography>
+      <Typography variant="body2">{repo.description}</Typography>
+    </div>
+  );
+}
+
 export const GithubRepositoryList = ({
   host,
   org,
 }: GithubRepositoryListProps) => {
   const { loading, repositories } = useGithubRepositories({ host, org });
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
 
   if (loading) {
     return <Progress />;
@@ -44,30 +61,24 @@ export const GithubRepositoryList = ({
 
   return (
     <Grid container>
+      <Grid item xs={12}>
+        <Typography variant="h6">
+          Select the repositories to import into the {orgName} software catalog:
+        </Typography>
+      </Grid>
       {repositories.map((repo, index) => (
         <Grid item xs={8} key={index}>
-          <Card raised>
-            <CardActionArea onClick={() => 0}>
-              <CardContent>
-                <Grid container>
-                  <Grid item xs={1}>
-                    <Checkbox name={repo.name} />
-                  </Grid>
-                  <Grid item xs={10}>
-                    <Typography variant="h5">
-                      {repo.name}{' '}
-                      {repo.fork && (
-                        <ForkIcon style={{ verticalAlign: 'middle' }} />
-                      )}
-                    </Typography>
-                    <Typography>{repo.description}</Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </CardActionArea>
-          </Card>
+          <FormControlLabel
+            control={<Checkbox name={repo.name} />}
+            label={getLabel(repo)}
+          />
         </Grid>
       ))}
+      <Grid item xs={12}>
+        <Button variant="contained" color="primary">
+          Import selected repositories
+        </Button>
+      </Grid>
     </Grid>
   );
 };
