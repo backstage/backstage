@@ -1,9 +1,9 @@
-apiVersion: backstage.io/v1beta2
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: bitbucket-demo
   title: Test Bitbucket RepoUrlPicker template
-  description: scaffolder v1beta2 template demo publishing to bitbucket
+  description: scaffolder v1beta3 template demo publishing to bitbucket
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -49,8 +49,8 @@ spec:
       input:
         url: ./template
         values:
-          name: '{{ parameters.name }}'
-          owner: '{{ parameters.owner }}'
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
 
     - id: fetch-docs
       name: Fetch Docs
@@ -63,16 +63,20 @@ spec:
       name: Publish
       action: publish:bitbucket
       input:
-        description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
 
     - id: register
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
   output:
-    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
-    entityRef: '{{ steps.register.output.entityRef }}'
+    links:	
+      - title: Repository	
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog	
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
