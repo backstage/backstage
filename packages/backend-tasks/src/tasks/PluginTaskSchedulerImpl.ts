@@ -20,7 +20,6 @@ import { TaskWorker } from './TaskWorker';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
-  TaskSettingsV2,
   TaskRunner,
   TaskScheduleDefinition,
 } from './types';
@@ -80,9 +79,10 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       {
         version: 2,
         initialDelayDuration: task.initialDelay?.toISO(),
-        cadence: typeof task.frequency === 'string'
-          ? task.frequency
-          : task.frequency.toISO(),
+        cadence:
+          typeof task.frequency === 'string'
+            ? task.frequency
+            : task.frequency.toISO(),
         timeoutAfterDuration: task.timeout.toISO(),
       },
       {
