@@ -23,6 +23,9 @@ import {
   AuthorizeResult,
   isResourcePermission,
   PermissionAuthorizer,
+  PolicyDecision,
+  PolicyQuery,
+  ResourcePermission,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
@@ -89,6 +92,14 @@ export class AuthorizedSearchEngine implements SearchEngine {
   ): Promise<IndexableResultSet> {
     const queryStartTime = Date.now();
 
+    const conditionFetcher = new DataLoader(
+      (requests: readonly PolicyQuery<ResourcePermission>[]) =>
+        this.permissions.policyDecision(requests.slice(), options),
+      {
+        cacheKeyFn: ({ permission: { name } }) => name,
+      },
+    );
+
     const authorizer = new DataLoader(
       (requests: readonly AuthorizeQuery[]) =>
         this.permissions.authorize(requests.slice(), options),
@@ -100,6 +111,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
           qs.stringify({ name, resourceRef }),
       },
     );
+
     const requestedTypes = query.types || Object.keys(this.types);
 
     const typeDecisions = zipObject(
@@ -108,9 +120,18 @@ export class AuthorizedSearchEngine implements SearchEngine {
         requestedTypes.map(type => {
           const permission = this.types[type]?.visibilityPermission;
 
-          return permission
-            ? authorizer.load({ permission })
-            : { result: AuthorizeResult.ALLOW as const };
+          // No permission configured for this document type - always allow.
+          if (!permission) {
+            return { result: AuthorizeResult.ALLOW as const };
+          }
+
+          // Resource permission supplied, so we need to check for conditional decisions.
+          if (isResourcePermission(permission)) {
+            return conditionFetcher.load({ permission });
+          }
+
+          // Non-resource permission supplied - we can perform a standard authorization.
+          return authorizer.load({ permission });
         }),
       ),
     );
@@ -185,7 +206,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
   private async filterResults(
     results: IndexableResult[],
-    typeDecisions: Record<string, AuthorizeDecision>,
+    typeDecisions: Record<string, PolicyDecision>,
     authorizer: DataLoader<AuthorizeQuery, AuthorizeDecision>,
   ) {
     return compact(
