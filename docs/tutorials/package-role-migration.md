@@ -90,26 +90,7 @@ If you in the end do not want to use this exact script setup, it is still recomm
 
 ### Step 3 - Migrate package ESLint configurations
 
-An area that has been simplified as part of the move to package roles is the ESLint configuration. Rather than having each package select which configuration they want (and getting it wrong), they now use a shared configuration factory that utilizes the package role.
-
-A minimal `.eslintrc.js` configuration now looks like this:
-
-```js
-module.exports = require('@backstage/cli/config/eslint-factory')(__dirname);
-```
-
-You can provide custom overrides for each package using the optional second argument:
-
-```js
-module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
-  ignorePatterns: ['templates/'],
-  rules: {
-    'jest/expect-expect': 'off',
-  },
-});
-```
-
-The configuration factory also provides utilities for extending the configuration in ways that are otherwise very cumbersome to do with plain ESLint, particularly for rules like `no-restricted-syntax`. You can read more about that in the [build system documentation](./not-found#TODO).
+An area that has been simplified as part of the move to package roles is the ESLint configuration. Rather than having each package select which configuration they want (and getting it wrong), they now use a shared configuration factory that utilizes the package role. You can read more about the new configuration setup in the [build system documentation](../local-dev/cli-build-system#linting).
 
 To migrate the ESLint configuration of all packages in your project, run the following command:
 

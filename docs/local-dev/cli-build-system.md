@@ -143,9 +143,38 @@ configurations in turn build on top of the lint rules from
 
 In a standard Backstage setup, each individual package has its own lint
 configuration, along with a root configuration that applies to the entire
-project. Each configuration is initially one that simply extends a base
-configuration provided by the Backstage CLI, but they can be customized to fit
-the needs of each package.
+project. The configuration in each package starts out as a standard configuration
+that is determined based on the package role, but it can be customized to fit the needs of each package.
+
+A minimal `.eslintrc.js` configuration now looks like this:
+
+```js
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname);
+```
+
+But you can provide custom overrides for each package using the optional second argument:
+
+```js
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  ignorePatterns: ['templates/'],
+  rules: {
+    'jest/expect-expect': 'off',
+  },
+});
+```
+
+The configuration factory also provides utilities for extending the configuration in ways that are otherwise very cumbersome to do with plain ESLint, particularly for rules like `no-restricted-syntax`. These are the extra keys that are available:
+
+| Key                     | Description                                                        |
+| ----------------------- | ------------------------------------------------------------------ |
+| `tsRules`               | Additional rules to apply to TypeScript files                      |
+| `testRules`             | Additional rules to apply to tests files                           |
+| `restrictedImports`     | Additional paths to add to `no-restricted-imports`                 |
+| `restrictedSrcImports`  | Additional paths to add to `no-restricted-imports` in src files    |
+| `restrictedTestImports` | Additional paths to add to `no-restricted-imports` in test files   |
+| `restrictedSyntax`      | Additional patterns to add to `no-restricted-syntax`               |
+| `restrictedSrcSyntax`   | Additional patterns to add to `no-restricted-syntax` in src files  |
+| `restrictedTestSyntax`  | Additional patterns to add to `no-restricted-syntax` in test files |
 
 ## Type Checking
 
