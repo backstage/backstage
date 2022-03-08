@@ -16,7 +16,12 @@
 
 import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import { InputError } from '@backstage/errors';
+import {
+  DefaultGithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+import { Octokit } from '@octokit/rest';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -29,19 +34,44 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { config } = options;
+  const { config, logger } = options;
+  const integrations = ScmIntegrations.fromConfig(config);
 
   const router = Router();
   router.use(express.json());
 
   router.get('/integrations', (_, response) => {
-    const integrations = ScmIntegrations.fromConfig(config);
     response.send(
       integrations.list().map(integration => ({
         type: integration.type,
         title: integration.title,
       })),
     );
+  });
+
+  router.get('/github/orgs/:host', async (request, response) => {
+    const { host } = request.params;
+    const integrationConfig = integrations.github.byHost(host)?.config;
+    if (!integrationConfig) {
+      throw new InputError(`No integration for host ${host}`);
+    }
+
+    const credentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+    const { token } = await credentialsProvider.getCredentials({
+      url: `https://${host}/`,
+    });
+    if (!token) {
+      throw new InputError(`No token available for host: ${host}`);
+    }
+    logger.warn(`token: ${token}`);
+
+    const octokit = new Octokit({
+      auth: token,
+      baseUrl: integrationConfig.apiBaseUrl,
+    });
+    const { data: orgs } = await octokit.rest.orgs.listForAuthenticatedUser();
+    response.send(orgs);
   });
   router.use(errorHandler());
   return router;

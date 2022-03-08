@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
+import React, { useState } from 'react';
 import {
   Content,
   ContentHeader,
+  ErrorPage,
   Header,
   Page,
 } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
-import React from 'react';
+import { ScmIntegration } from '@backstage/integration';
 import { ScmIntegrationsProvider } from '../../hooks/useIntegrations';
 import { ScmIntegrationList } from '../ScmIntegrationList';
+import { GithubScmIntegration } from '../GithubScmIntegration';
+
+function getScmIntegrationComponent(
+  integration: ScmIntegration | undefined,
+): JSX.Element | null {
+  switch (integration?.type) {
+    case 'github':
+      return <GithubScmIntegration integration={integration} />;
+    default:
+      return null;
+  }
+}
 
 /**
  * The catalog import page for components.
@@ -31,19 +44,33 @@ import { ScmIntegrationList } from '../ScmIntegrationList';
  * @public
  */
 export const ComponentImportPage = () => {
+  const [integration, setIntegration] = useState<ScmIntegration | undefined>(
+    undefined,
+  );
+  const ScmIntegrationComponent = getScmIntegrationComponent(integration);
+
+  if (integration && !ScmIntegrationComponent) {
+    return (
+      <ErrorPage
+        status="400"
+        statusMessage={`Integration ${integration.type} does not have an associated component`}
+      />
+    );
+  }
+
   return (
     <Page themeId="home">
       <Header title="Catalog Import" />
       <Content>
         <ContentHeader title="Software components" />
 
-        <Grid container>
-          <Grid item xs={12}>
-            <ScmIntegrationsProvider>
-              <ScmIntegrationList />
-            </ScmIntegrationsProvider>
-          </Grid>
-        </Grid>
+        {integration ? (
+          ScmIntegrationComponent
+        ) : (
+          <ScmIntegrationsProvider>
+            <ScmIntegrationList setIntegration={setIntegration} />
+          </ScmIntegrationsProvider>
+        )}
       </Content>
     </Page>
   );
