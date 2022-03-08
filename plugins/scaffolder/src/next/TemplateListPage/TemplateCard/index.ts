@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { TemplateCard } from './TemplateCard';
+export type { TemplateCardProps } from './TemplateCard';

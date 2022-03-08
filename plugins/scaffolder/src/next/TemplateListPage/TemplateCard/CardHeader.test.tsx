@@ -28,9 +28,19 @@ describe('CardHeader', () => {
       getPageTheme: jest.fn(lightTheme.getPageTheme),
     };
 
-    const { container } = render(
+    render(
       <ThemeProvider theme={mockTheme}>
-        <CardHeader title="Test" type="service" />
+        <CardHeader
+          template={{
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: { name: 'bob' },
+            spec: {
+              steps: [],
+              type: 'service',
+            },
+          }}
+        />
       </ThemeProvider>,
     );
 

@@ -15,14 +15,8 @@
  */
 
 import React from 'react';
-import {
-  Link,
-  makeStyles,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import { ItemCardHeader, WarningIcon } from '@backstage/core-components';
+import { makeStyles, useTheme } from '@material-ui/core';
+import { ItemCardHeader } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { FavoriteEntity } from '@backstage/plugin-catalog-react';
