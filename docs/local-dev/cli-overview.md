@@ -50,3 +50,4 @@ improve the tooling, as well as to more easily keep the system up to date.
 - **Bundle** - A collection of the deployment artifacts. The output of the
   bundling process, which brings a collection of packages into a single
   collection of deployment artifacts.
+- **Package Role** - The declared role of a package, see [package roles](./cli-build-system#package-roles).
