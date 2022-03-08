@@ -18,11 +18,11 @@ import React from 'react';
 
 import { TechDocsReaderPageLayout } from '@backstage/plugin-techdocs';
 
-import { MkDocsContent } from './MkDocsContent';
+import { TechDocsReaderContent } from './MkDocsContent';
 
-const TechDocsPage = () => (
+const TechDocsReaderPage = () => (
   <TechDocsReaderPageLayout>
-    <MkDocsContent />
+    <TechDocsReaderContent />
   </TechDocsReaderPageLayout>
 );
 
@@ -30,4 +30,4 @@ const TechDocsPage = () => (
  * Implements a TechDocsReaderPage using MkDocs
  * @public
  */
-export const techDocsPage = <TechDocsPage />;
+export const techDocsReaderPage = <TechDocsReaderPage />;

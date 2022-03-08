@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { MkDocsContent, techDocsPage } from './components';
+export { TechDocsReaderContent, techDocsReaderPage } from './components';
 export { techdocsMkdocsPlugin as plugin, techdocsMkdocsPlugin } from './plugin';

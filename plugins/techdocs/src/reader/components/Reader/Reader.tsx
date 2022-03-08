@@ -20,7 +20,7 @@ import { Grid, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useApp } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { MkDocsContent } from '@backstage/plugin-techdocs-mkdocs';
+import { TechDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs';
 
 import { TechDocsSearch } from '../../../search';
 
@@ -49,7 +49,7 @@ type TechDocsReaderPageProps = PropsWithChildren<{
 
 const TechDocsReaderPage = ({
   withSearch = true,
-  children = <MkDocsContent />,
+  children = <TechDocsReaderContent />,
 }: TechDocsReaderPageProps) => {
   const classes = useStyles();
   const { NotFoundErrorPage } = useApp().getComponents();

@@ -48,7 +48,7 @@ jest.mock('@backstage/plugin-techdocs-mkdocs', () => {
   const actual = jest.requireActual('@backstage/plugin-techdocs-mkdocs');
   return {
     ...actual,
-    techDocsPage: <div data-testid="techdocs-content" />,
+    techDocsReaderPage: <div data-testid="techdocs-content" />,
   };
 });
 

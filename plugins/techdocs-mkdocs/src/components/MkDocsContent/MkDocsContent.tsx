@@ -44,7 +44,7 @@ import { beforeSanitizeElements, afterSanitizeAttributes } from './hooks';
  * Renders TechDocs content using MkDocs and ShadowRoot
  * @public
  */
-export const MkDocsContent = () => {
+export const TechDocsReaderContent = () => {
   const configApi = useApi(configApiRef);
   const { content, onReady } = useTechDocsReader();
 
