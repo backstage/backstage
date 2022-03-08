@@ -141,7 +141,7 @@ Once it's been passed to the `ScaffolderPage` you should now be able to use the
 Something like this:
 
 ```yaml
-apiVersion: backstage.io/v1beta2
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: Test template
