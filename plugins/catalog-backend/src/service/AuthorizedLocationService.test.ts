@@ -27,6 +27,7 @@ describe('AuthorizedLocationService', () => {
   };
   const fakePermissionApi = {
     authorize: jest.fn(),
+    policyDecision: jest.fn(),
   };
 
   const mockAllow = () => {
