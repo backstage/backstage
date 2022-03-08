@@ -217,7 +217,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
     }
 
     this.scheduleFn = async () => {
-      const id = this.getScheduledTaskId();
+      const id = `${this.getProviderName()}:refresh`;
       await schedule.run({
         id,
         fn: async () => {
@@ -235,12 +235,6 @@ export class LdapOrgEntityProvider implements EntityProvider {
         },
       });
     };
-  }
-
-  // Gets a suitable scheduler task ID for this provider instance
-  private getScheduledTaskId(): string {
-    const rawId = `refresh_${this.getProviderName()}`;
-    return rawId.toLocaleLowerCase('en-US').replace(/[^a-z0-9]/g, '_');
   }
 }
 
