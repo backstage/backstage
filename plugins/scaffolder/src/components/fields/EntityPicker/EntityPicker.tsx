@@ -38,7 +38,7 @@ export interface EntityPickerUiOptions {
 }
 
 /**
- * The underling component that is rendered in the form for the `EntityPicker`
+ * The underlying component that is rendered in the form for the `EntityPicker`
  * field extension.
  *
  * @public

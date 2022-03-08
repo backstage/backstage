@@ -104,7 +104,7 @@ export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
 );
 
 /**
- * A field extensions for picking users and groups out of the Catalog.
+ * A field extension for picking users and groups out of the Catalog.
  *
  * @public
  */

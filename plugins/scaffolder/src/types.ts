@@ -123,7 +123,7 @@ export interface ScaffolderScaffoldResponse {
 }
 
 /**
- * The arguments for `getIntergationsList`.
+ * The arguments for `getIntegrationsList`.
  *
  * @public
  */

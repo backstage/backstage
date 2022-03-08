@@ -28,7 +28,7 @@ export interface OwnerPickerUiOptions {
 }
 
 /**
- * The underling component that is rendered in the form for the `OwnerPicker`
+ * The underlying component that is rendered in the form for the `OwnerPicker`
  * field extension.
  *
  * @public

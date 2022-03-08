@@ -40,7 +40,7 @@ export interface OwnedEntityPickerUiOptions {
 }
 
 /**
- * The underling component that is rendered in the form for the `OwnedEntityPicker`
+ * The underlying component that is rendered in the form for the `OwnedEntityPicker`
  * field extension.
  *
  * @public

@@ -35,7 +35,7 @@ export interface EntityTagsPickerUiOptions {
 }
 
 /**
- * The underling component that is rendered in the form for the `EntityTagsPicker`
+ * The underlying component that is rendered in the form for the `EntityTagsPicker`
  * field extension.
  *
  * @public

@@ -51,7 +51,7 @@ export interface RepoUrlPickerUiOptions {
 }
 
 /**
- * The underling component that is rendered in the form for the `RepoUrlPicker`
+ * The underlying component that is rendered in the form for the `RepoUrlPicker`
  * field extension.
  *
  * @public
