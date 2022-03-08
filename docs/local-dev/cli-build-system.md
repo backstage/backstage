@@ -326,12 +326,24 @@ correctly from linked in packages, the `ModuleScopePlugin` from
 [`react-dev-utils`](https://www.npmjs.com/package/react-dev-utils) which makes
 sure that imports don't reach outside the package, a few fallbacks for some
 Node.js modules like `'buffer'` and `'events'`, a plugin that writes the
-frontend configuration to the bundle as `process.env.APP_CONFIG` and build
-information as `process.env.BUILD_INFO`, and lastly minification handled by
+frontend configuration to the bundle as `process.env.APP_CONFIG`, and lastly minification handled by
 [esbuild](https://esbuild.github.io/) using the
 [`esbuild-loader`](https://npm.im/esbuild-loader). There are of course also a
 set of loaders configured, which you can read more about in the
 [loaders](#loaders) and [transpilation](#transpilation) sections.
+
+During the build, the following constants are also set:
+
+```java
+process.env.NODE_ENV = 'production';
+process.env.BUILD_INFO = {
+  cliVersion: '0.4.0', // The version of the CLI package
+  gitVersion: 'v0.4.0-86-ge54815618', // output of `git describe --always`
+  packageVersion: '1.0.5', // The version of the app package itself
+  timestamp: 1678900000000, // Date.now() when the build started
+  commit: 'e548156182a973ed4b459e18533afc22c85ffff8', // output of `git rev-parse HEAD`
+};
+```
 
 The output of the bundling process is split into two categories of files with
 separate caching strategies. The first is a set of generic assets with plain
