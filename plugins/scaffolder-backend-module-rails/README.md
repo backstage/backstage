@@ -198,7 +198,7 @@ spec:
       input:
         allowedHosts:
           - github.com
-        description: This is {{ parameters.name }}
+        description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
 
     - id: register
