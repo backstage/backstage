@@ -18,6 +18,7 @@ import { z } from 'zod';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { omit } from 'lodash';
 import {
   errorHandler,
   PluginEndpointDiscovery,
@@ -33,10 +34,14 @@ import {
   AuthorizeDecision,
   AuthorizeQuery,
   Identified,
-  AuthorizeRequest,
-  AuthorizeResponse,
   isResourcePermission,
   PermissionAttributes,
+  ResourcePermission,
+  BasicPermission,
+  Batch,
+  PolicyQuery,
+  DefinitivePolicyDecision,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -59,29 +64,51 @@ const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
     .optional(),
 });
 
-const permissionSchema = z.union([
-  z.object({
-    type: z.literal('basic'),
-    name: z.string(),
-    attributes: attributesSchema,
-  }),
-  z.object({
-    type: z.literal('resource'),
-    name: z.string(),
-    attributes: attributesSchema,
-    resourceType: z.string(),
-  }),
-]);
-
-const querySchema: z.ZodSchema<Identified<AuthorizeQuery>> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
+const basicPermissionSchema: z.ZodSchema<BasicPermission> = z.object({
+  type: z.literal('basic'),
+  name: z.string(),
+  attributes: attributesSchema,
 });
 
-const requestSchema: z.ZodSchema<AuthorizeRequest> = z.object({
-  items: z.array(querySchema),
+const resourcePermissionSchema: z.ZodSchema<ResourcePermission> = z.object({
+  type: z.literal('resource'),
+  name: z.string(),
+  attributes: attributesSchema,
+  resourceType: z.string(),
 });
+
+const requestSchema = <T extends z.ZodSchema<any>>(
+  itemSchema: T,
+): z.ZodSchema<Batch<Identified<z.infer<T>>>> =>
+  z.object({
+    items: z.array(itemSchema),
+  });
+
+const authorizeRequestSchema: z.ZodSchema<Batch<Identified<AuthorizeQuery>>> =
+  requestSchema(
+    z.union([
+      z.object({
+        id: z.string(),
+        permission: resourcePermissionSchema,
+        resourceRef: z.string(),
+      }),
+      z.object({
+        id: z.string(),
+        permission: basicPermissionSchema,
+        resourceRef: z.never().optional(),
+      }),
+    ]),
+  );
+
+const policyDecisionRequestSchema: z.ZodSchema<
+  Batch<Identified<PolicyQuery<ResourcePermission>>>
+> = requestSchema(
+  z.object({
+    id: z.string(),
+    permission: resourcePermissionSchema,
+    resourceRef: z.never().optional(),
+  }),
+);
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -97,13 +124,54 @@ export interface RouterOptions {
   config: Config;
 }
 
-const handleRequest = async (
-  requests: Identified<AuthorizeQuery>[],
+const authenticate = async (req: Request<any>, identity: IdentityClient) => {
+  const token = getBearerTokenFromAuthorizationHeader(
+    req.header('authorization'),
+  );
+  const user = token ? await identity.authenticate(token) : undefined;
+
+  return user;
+};
+
+const validateDecision = (query: PolicyQuery, decision: PolicyDecision) => {
+  if (decision.result !== AuthorizeResult.CONDITIONAL) {
+    return;
+  }
+
+  if (!isResourcePermission(query.permission)) {
+    throw new Error(
+      `Conditional decision returned from permission policy for non-resource permission ${query.permission.name}`,
+    );
+  }
+
+  if (decision.resourceType !== query.permission.resourceType) {
+    throw new Error(
+      `Invalid resource conditions returned from permission policy for permission ${query.permission.name}`,
+    );
+  }
+};
+
+const runPolicy = async (
+  queries: Identified<PolicyQuery>[],
   user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
+): Promise<Identified<PolicyDecision>[]> => {
+  return Promise.all(
+    queries.map(query =>
+      policy.handle(omit(query, 'id', 'resourceRef'), user).then(decision => {
+        validateDecision(query, decision);
+        return { id: query.id, ...decision };
+      }),
+    ),
+  );
+};
+
+const applyConditions = async (
+  queries: Identified<AuthorizeQuery>[],
+  decisions: Identified<PolicyDecision>[],
+  authHeader: string | undefined,
   permissionIntegrationClient: PermissionIntegrationClient,
-  authHeader?: string,
-): Promise<Identified<AuthorizeDecision>[]> => {
+): Promise<Identified<DefinitivePolicyDecision>[]> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -114,41 +182,27 @@ const handleRequest = async (
   });
 
   return Promise.all(
-    requests.map(({ id, resourceRef, ...request }) =>
-      policy.handle(request, user).then(decision => {
-        if (decision.result !== AuthorizeResult.CONDITIONAL) {
-          return {
-            id,
-            ...decision,
-          };
-        }
+    decisions.map((decision, index) => {
+      const query: Identified<AuthorizeQuery> = queries[index];
 
-        if (!isResourcePermission(request.permission)) {
-          throw new Error(
-            `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
-          );
-        }
+      if (decision.result !== AuthorizeResult.CONDITIONAL) {
+        return decision;
+      }
 
-        if (decision.resourceType !== request.permission.resourceType) {
-          throw new Error(
-            `Invalid resource conditions returned from permission policy for permission ${request.permission.name}`,
-          );
-        }
+      if (!query.resourceRef) {
+        // It's not encoded in the types we pass around, but this state isn't
+        // reachable. We validate incoming queries to guarantee that all
+        // authorizations for resource permissions include a resourceRef, and
+        // then validate that all conditional decisions are for resource
+        // permissions.
+        throw new Error('Incomplete authorize query');
+      }
 
-        if (!resourceRef) {
-          return {
-            id,
-            ...decision,
-          };
-        }
-
-        return applyConditionsLoaderFor(decision.pluginId).load({
-          id,
-          resourceRef,
-          ...decision,
-        });
-      }),
-    ),
+      return applyConditionsLoaderFor(decision.pluginId).load({
+        resourceRef: query.resourceRef,
+        ...decision,
+      });
+    }),
   );
 };
 
@@ -183,30 +237,52 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<AuthorizeRequest>,
-      res: Response<AuthorizeResponse>,
+      req: Request<Batch<Identified<AuthorizeQuery>>>,
+      res: Response<Batch<Identified<AuthorizeDecision>>>,
     ) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
-      const user = token ? await identity.authenticate(token) : undefined;
-
-      const parseResult = requestSchema.safeParse(req.body);
+      const user = await authenticate(req, identity);
+      const parseResult = authorizeRequestSchema.safeParse(req.body);
 
       if (!parseResult.success) {
         throw new InputError(parseResult.error.toString());
       }
 
-      const body = parseResult.data;
+      const { items: queries } = parseResult.data;
 
       res.json({
-        items: await handleRequest(
-          body.items,
+        items: await runPolicy(
+          queries.map(query => omit(query, 'resourceRef')),
           user,
           policy,
-          permissionIntegrationClient,
-          req.header('authorization'),
+        ).then(decisions =>
+          applyConditions(
+            queries,
+            decisions,
+            req.header('authorization'),
+            permissionIntegrationClient,
+          ),
         ),
+      });
+    },
+  );
+
+  router.post(
+    '/policy-decision',
+    async (
+      req: Request<Batch<Identified<PolicyQuery>>>,
+      res: Response<Batch<Identified<PolicyDecision>>>,
+    ) => {
+      const user = await authenticate(req, identity);
+      const parseResult = policyDecisionRequestSchema.safeParse(req.body);
+
+      if (!parseResult.success) {
+        throw new InputError(parseResult.error.toString());
+      }
+
+      const { items: queries } = parseResult.data;
+
+      res.json({
+        items: await runPolicy(queries, user, policy),
       });
     },
   );

@@ -21,6 +21,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { PolicyQuery } from '@backstage/plugin-permission-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
@@ -169,5 +170,10 @@ export class ServerPermissionClient implements PermissionAuthorizer {
       tokenManager: TokenManager;
     },
   ): ServerPermissionClient;
+  // (undocumented)
+  policyDecision(
+    queries: PolicyQuery<ResourcePermission>[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<PolicyDecision[]>;
 }
 ```

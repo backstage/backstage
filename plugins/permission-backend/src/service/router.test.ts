@@ -192,44 +192,6 @@ describe('createRouter', () => {
     });
 
     describe('conditional policy result', () => {
-      it('returns conditions if no resourceRef is supplied', async () => {
-        policy.handle.mockResolvedValueOnce({
-          result: AuthorizeResult.CONDITIONAL,
-          pluginId: 'test-plugin',
-          resourceType: 'test-resource-1',
-          conditions: { rule: 'test-rule', params: ['abc'] },
-        });
-
-        const response = await request(app)
-          .post('/authorize')
-          .send({
-            items: [
-              {
-                id: '123',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-              },
-            ],
-          });
-
-        expect(response.status).toEqual(200);
-        expect(response.body).toEqual({
-          items: [
-            {
-              id: '123',
-              result: AuthorizeResult.CONDITIONAL,
-              pluginId: 'test-plugin',
-              resourceType: 'test-resource-1',
-              conditions: { rule: 'test-rule', params: ['abc'] },
-            },
-          ],
-        });
-      });
-
       it('makes separate batched requests to multiple plugin backends', async () => {
         policy.handle
           .mockResolvedValueOnce({
@@ -504,132 +466,22 @@ describe('createRouter', () => {
         });
       });
 
-      it('leaves conditional results without resourceRefs unchanged', async () => {
-        policy.handle
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-2',
-            resourceType: 'test-resource-2',
-            conditions: { rule: 'test-rule', params: ['yes'] },
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.ALLOW,
-          })
-          .mockResolvedValueOnce({
-            result: AuthorizeResult.CONDITIONAL,
-            pluginId: 'plugin-1',
-            resourceType: 'test-resource-1',
-            conditions: { rule: 'test-rule', params: ['abc'] },
-          });
-
-        const response = await request(app)
-          .post('/authorize')
-          .auth('test-token', { type: 'bearer' })
-          .send({
-            items: [
-              {
-                id: '123',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.1',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:1',
-              },
-              {
-                id: '234',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.2',
-                  resourceType: 'test-resource-2',
-                  attributes: {},
-                },
-                resourceRef: 'resource:2',
-              },
-              {
-                id: '345',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.3',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-                resourceRef: 'resource:3',
-              },
-              {
-                id: '456',
-                permission: {
-                  type: 'resource',
-                  name: 'test.permission.4',
-                  resourceType: 'test-resource-1',
-                  attributes: {},
-                },
-              },
-            ],
-          });
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-1',
-          [
-            expect.objectContaining({
-              id: '123',
-              resourceType: 'test-resource-1',
-              resourceRef: 'resource:1',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-          ],
-          'Bearer test-token',
-        );
-
-        expect(mockApplyConditions).toHaveBeenCalledWith(
-          'plugin-2',
-          [
-            expect.objectContaining({
-              id: '234',
-              resourceType: 'test-resource-2',
-              resourceRef: 'resource:2',
-              conditions: { rule: 'test-rule', params: ['yes'] },
-            }),
-          ],
-          'Bearer test-token',
-        );
-
-        expect(response.status).toEqual(200);
-        expect(response.body).toEqual({
-          items: [
-            { id: '123', result: AuthorizeResult.ALLOW },
-            { id: '234', result: AuthorizeResult.ALLOW },
-            { id: '345', result: AuthorizeResult.ALLOW },
-            {
-              id: '456',
-              result: AuthorizeResult.CONDITIONAL,
-              pluginId: 'plugin-1',
-              resourceType: 'test-resource-1',
-              conditions: { rule: 'test-rule', params: ['abc'] },
-            },
-          ],
-        });
-      });
-
       it.each<[ApplyConditionsResponseEntry['result'], string]>([
         [AuthorizeResult.ALLOW, 'yes'],
         [AuthorizeResult.DENY, 'no'],
       ])(
         'applies conditions and returns %s if resourceRef is supplied',
         async (result, params) => {
-          policy.handle.mockResolvedValue({
+          const decision = {
             result: AuthorizeResult.CONDITIONAL,
             pluginId: 'test-plugin',
             resourceType: 'test-resource-1',
             conditions: { rule: 'test-rule', params },
-          });
+          };
+
+          policy.handle
+            .mockResolvedValueOnce(decision)
+            .mockResolvedValueOnce(decision);
 
           mockApplyConditions.mockResolvedValueOnce([
             {
@@ -746,6 +598,19 @@ describe('createRouter', () => {
           { id: '123', permission: { attributes: { invalid: 'attribute' } } },
         ],
       },
+      {
+        items: [
+          {
+            id: '123',
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              resourceType: 'test-resource-1',
+              attributes: {},
+            },
+          },
+        ],
+      },
     ])('returns a 400 error for invalid request %#', async requestBody => {
       const response = await request(app).post('/authorize').send(requestBody);
 
@@ -769,6 +634,346 @@ describe('createRouter', () => {
 
       const response = await request(app)
         .post('/authorize')
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                name: 'test.permission',
+                resourceType: 'test-resource-1',
+                attributes: {},
+              },
+              resourceRef: 'resource-a',
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(500);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: expect.stringMatching(/invalid resource conditions/i),
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('POST /policy-decision', () => {
+    it('calls the permission policy', async () => {
+      const response = await request(app)
+        .post('/policy-decision')
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                resourceType: 'test-resource-1',
+                name: 'test.permission1',
+                attributes: {},
+              },
+            },
+            {
+              id: '234',
+              permission: {
+                type: 'resource',
+                name: 'test.permission2',
+                attributes: {},
+                resourceType: 'test-resource-2',
+              },
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            type: 'resource',
+            resourceType: 'test-resource-1',
+            name: 'test.permission1',
+            attributes: {},
+          },
+        },
+        undefined,
+      );
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            type: 'resource',
+            resourceType: 'test-resource-2',
+            name: 'test.permission2',
+            attributes: {},
+          },
+        },
+        undefined,
+      );
+
+      expect(response.body).toEqual({
+        items: [
+          { id: '123', result: AuthorizeResult.DENY },
+          { id: '234', result: AuthorizeResult.DENY },
+        ],
+      });
+    });
+
+    it('resolves identity from the Authorization header', async () => {
+      const token = 'test-token';
+      const response = await request(app)
+        .post('/policy-decision')
+        .auth(token, { type: 'bearer' })
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                resourceType: 'test-resource-1',
+                name: 'test.permission',
+                attributes: {},
+              },
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            type: 'resource',
+            resourceType: 'test-resource-1',
+            name: 'test.permission',
+            attributes: {},
+          },
+        },
+        { id: 'test-user', token: 'test-token' },
+      );
+      expect(response.body).toEqual({
+        items: [{ id: '123', result: AuthorizeResult.ALLOW }],
+      });
+    });
+
+    it('does not apply conditional decisions', async () => {
+      policy.handle
+        .mockResolvedValueOnce({
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'plugin-1',
+          resourceType: 'test-resource-1',
+          conditions: { rule: 'test-rule', params: ['foo'] },
+        })
+        .mockResolvedValueOnce({
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'plugin-2',
+          resourceType: 'test-resource-2',
+          conditions: { rule: 'test-rule', params: ['bar'] },
+        });
+
+      const response = await request(app)
+        .post('/policy-decision')
+        .auth('test-token', { type: 'bearer' })
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                resourceType: 'test-resource-1',
+                name: 'test.permission.1',
+                attributes: {},
+              },
+            },
+            {
+              id: '234',
+              permission: {
+                type: 'resource',
+                resourceType: 'test-resource-2',
+                name: 'test.permission.2',
+                attributes: {},
+              },
+            },
+          ],
+        });
+
+      expect(mockApplyConditions).not.toHaveBeenCalled();
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            id: '123',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-1',
+            resourceType: 'test-resource-1',
+            conditions: { rule: 'test-rule', params: ['foo'] },
+          },
+          {
+            id: '234',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-2',
+            resourceType: 'test-resource-2',
+            conditions: { rule: 'test-rule', params: ['bar'] },
+          },
+        ],
+      });
+    });
+
+    it('leaves definitive results unchanged', async () => {
+      policy.handle
+        .mockResolvedValueOnce({
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'plugin-1',
+          resourceType: 'test-resource-1',
+          conditions: { rule: 'test-rule', params: ['foo'] },
+        })
+        .mockResolvedValueOnce({
+          result: AuthorizeResult.ALLOW,
+        })
+        .mockResolvedValueOnce({
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'plugin-3',
+          resourceType: 'test-resource-3',
+          conditions: { rule: 'test-rule', params: ['bar'] },
+        });
+
+      const response = await request(app)
+        .post('/policy-decision')
+        .auth('test-token', { type: 'bearer' })
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                name: 'test.permission.1',
+                resourceType: 'test-resource-1',
+                attributes: {},
+              },
+            },
+            {
+              id: '234',
+              permission: {
+                type: 'resource',
+                name: 'test.permission.2',
+                resourceType: 'test-resource-2',
+                attributes: {},
+              },
+            },
+            {
+              id: '345',
+              permission: {
+                type: 'resource',
+                name: 'test.permission.3',
+                resourceType: 'test-resource-3',
+                attributes: {},
+              },
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        items: [
+          {
+            id: '123',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-1',
+            resourceType: 'test-resource-1',
+            conditions: { rule: 'test-rule', params: ['foo'] },
+          },
+          { id: '234', result: AuthorizeResult.ALLOW },
+          {
+            id: '345',
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'plugin-3',
+            resourceType: 'test-resource-3',
+            conditions: { rule: 'test-rule', params: ['bar'] },
+          },
+        ],
+      });
+    });
+
+    it.each([
+      undefined,
+      '',
+      {},
+      [
+        {
+          permission: {
+            type: 'basic',
+            name: 'test.permission',
+            attributes: {},
+          },
+        },
+      ],
+      {
+        items: [
+          {
+            permission: {
+              type: 'basic',
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ],
+      },
+      { items: [{ id: '123' }] },
+      {
+        items: [
+          {
+            id: '123',
+            permission: { name: 'test.permission', attributes: {} },
+          },
+        ],
+      },
+      { items: [{ id: '123', permission: { type: 'basic', attributes: {} } }] },
+      { items: [{ id: '123', permission: { type: 'basic' } }] },
+      {
+        items: [
+          { id: '123', permission: { attributes: { invalid: 'attribute' } } },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              resourceType: 'test-resource-1',
+              attributes: {},
+            },
+            resourceRef: 'resource-a',
+          },
+        ],
+      },
+    ])('returns a 400 error for invalid request %#', async requestBody => {
+      const response = await request(app)
+        .post('/policy-decision')
+        .send(requestBody);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: expect.stringMatching(/invalid/i),
+          }),
+        }),
+      );
+    });
+
+    it('returns a 500 error if the policy returns a different resourceType', async () => {
+      policy.handle.mockResolvedValueOnce({
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-2',
+        conditions: {},
+      });
+
+      const response = await request(app)
+        .post('/policy-decision')
         .send({
           items: [
             {

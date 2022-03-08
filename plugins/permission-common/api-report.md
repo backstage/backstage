@@ -16,34 +16,22 @@ export type AnyOfCriteria<TQuery> = {
 };
 
 // @public
-export type AuthorizeDecision =
+export type AuthorizeDecision = DefinitivePolicyDecision;
+
+// @public
+export type AuthorizeQuery =
   | {
-      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+      permission: Exclude<Permission, ResourcePermission>;
+      resourceRef?: never;
     }
   | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
+      permission: ResourcePermission;
+      resourceRef: string;
     };
-
-// @public
-export type AuthorizeQuery = {
-  permission: Permission;
-  resourceRef?: string;
-};
-
-// @public
-export type AuthorizeRequest = {
-  items: Identified<AuthorizeQuery>[];
-};
 
 // @public
 export type AuthorizeRequestOptions = {
   token?: string;
-};
-
-// @public
-export type AuthorizeResponse = {
-  items: Identified<AuthorizeDecision>[];
 };
 
 // @public
@@ -55,6 +43,11 @@ export enum AuthorizeResult {
 
 // @public
 export type BasicPermission = PermissionBase<'basic', {}>;
+
+// @public
+export type Batch<T> = {
+  items: Identified<T>[];
+};
 
 // @public
 export type ConditionalPolicyDecision = {
@@ -130,6 +123,11 @@ export interface PermissionAuthorizer {
     queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeDecision[]>;
+  // (undocumented)
+  policyDecision(
+    queries: PolicyQuery<ResourcePermission>[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<PolicyDecision[]>;
 }
 
 // @public
@@ -147,6 +145,10 @@ export class PermissionClient implements PermissionAuthorizer {
     queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeDecision[]>;
+  policyDecision(
+    queries: PolicyQuery<ResourcePermission>[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<PolicyDecision[]>;
 }
 
 // @public

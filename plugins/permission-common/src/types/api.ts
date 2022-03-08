@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Permission } from './permission';
+import { Permission, ResourcePermission } from './permission';
 
 /**
  * A request with a UUID identifier, so that batched responses can be matched up with the original
@@ -22,6 +22,14 @@ import { Permission } from './permission';
  * @public
  */
 export type Identified<T> = T & { id: string };
+
+/**
+ * A batch of query or decision items used in {@link PermissionClient} methods.
+ * @public
+ */
+export type Batch<T> = {
+  items: Identified<T>[];
+};
 
 /**
  * The result of an authorization request.
@@ -46,18 +54,20 @@ export enum AuthorizeResult {
  * An individual request for {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeQuery = {
-  permission: Permission;
-  resourceRef?: string;
-};
+export type AuthorizeQuery =
+  | {
+      permission: Exclude<Permission, ResourcePermission>;
+      // Prohibit resourceRefs for non-resource permissions to
+      // avoid accidental misuse of authorization APIs.
+      resourceRef?: never;
+    }
+  | { permission: ResourcePermission; resourceRef: string };
 
 /**
- * A batch of authorization requests from {@link PermissionClient#authorize}.
+ * An individual decision from {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeRequest = {
-  items: Identified<AuthorizeQuery>[];
-};
+export type AuthorizeDecision = DefinitivePolicyDecision;
 
 /**
  * An request for a {@link @backstage/plugin-permission-node#PermissionPolicy}
@@ -176,22 +186,3 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
-
-/**
- * An individual authorization response from {@link PermissionClient#authorize}.
- * @public
- */
-export type AuthorizeDecision =
-  | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
-  | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
-    };
-
-/**
- * A batch of authorization responses from {@link PermissionClient#authorize}.
- * @public
- */
-export type AuthorizeResponse = {
-  items: Identified<AuthorizeDecision>[];
-};

@@ -26,13 +26,15 @@ import {
   Identified,
   PermissionCriteria,
   PermissionCondition,
-  AuthorizeResponse,
-  AuthorizeRequest,
+  Batch,
+  PolicyQuery,
+  PolicyDecision,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import {
   PermissionAuthorizer,
   AuthorizeRequestOptions,
+  ResourcePermission,
 } from './types/permission';
 
 const permissionCriteriaSchema: z.ZodSchema<
@@ -57,24 +59,46 @@ const permissionCriteriaSchema: z.ZodSchema<
     .or(z.object({ not: permissionCriteriaSchema }).strict()),
 );
 
-const responseSchema = z.object({
-  items: z.array(
-    z
-      .object({
-        id: z.string(),
-        result: z
-          .literal(AuthorizeResult.ALLOW)
-          .or(z.literal(AuthorizeResult.DENY)),
-      })
-      .or(
-        z.object({
-          id: z.string(),
-          result: z.literal(AuthorizeResult.CONDITIONAL),
-          conditions: permissionCriteriaSchema,
-        }),
-      ),
-  ),
+const authorizeDecisionSchema: z.ZodSchema<AuthorizeDecision> = z.object({
+  result: z.literal(AuthorizeResult.ALLOW).or(z.literal(AuthorizeResult.DENY)),
 });
+
+const policyDecisionSchema: z.ZodSchema<PolicyDecision> = z.union([
+  z.object({
+    result: z
+      .literal(AuthorizeResult.ALLOW)
+      .or(z.literal(AuthorizeResult.DENY)),
+  }),
+  z.object({
+    result: z.literal(AuthorizeResult.CONDITIONAL),
+    pluginId: z.string(),
+    resourceType: z.string(),
+    conditions: permissionCriteriaSchema,
+  }),
+]);
+
+const responseSchema = <T>(
+  itemSchema: z.ZodSchema<T>,
+  ids: Set<string>,
+): z.ZodSchema<Batch<T>> =>
+  z.object({
+    items: z
+      .array(
+        z.intersection(
+          z.object({
+            id: z.string(),
+          }),
+          itemSchema,
+        ),
+      )
+      .refine(
+        items =>
+          items.length === ids.size && items.every(({ id }) => ids.has(id)),
+        {
+          message: 'Items in response do not match request',
+        },
+      ),
+  });
 
 /**
  * An isomorphic client for requesting authorization for Backstage permissions.
@@ -91,35 +115,73 @@ export class PermissionClient implements PermissionAuthorizer {
   }
 
   /**
-   * Request authorization from the permission-backend for the given set of permissions.
+   * Request authorization from the permission-backend for the given set of
+   * permissions.
    *
-   * Authorization requests check that a given Backstage user can perform a protected operation,
-   * potentially for a specific resource (such as a catalog entity). The Backstage identity token
-   * should be included in the `options` if available.
+   * @remarks
    *
-   * Permissions can be imported from plugins exposing them, such as `catalogEntityReadPermission`.
+   * Checks that a given Backstage user can perform a protected operation. When
+   * authorization is for a {@link ResourcePermission}s, a resourceRef
+   * corresponding to the resource should always be supplied along with the
+   * permission. The Backstage identity token should be included in the
+   * `options` if available.
    *
-   * The response will be either ALLOW or DENY when either the permission has no resourceType, or a
-   * resourceRef is provided in the request. For permissions with a resourceType, CONDITIONAL may be
-   * returned if no resourceRef is provided in the request. Conditional responses are intended only
-   * for backends which have access to the data source for permissioned resources, so that filters
-   * can be applied when loading collections of resources.
+   * Permissions can be imported from plugins exposing them, such as
+   * `catalogEntityReadPermission`.
+   *
+   * For each query, the response will be either ALLOW or DENY.
+   *
    * @public
    */
   async authorize(
     queries: AuthorizeQuery[],
     options?: AuthorizeRequestOptions,
   ): Promise<AuthorizeDecision[]> {
-    // TODO(permissions): it would be great to provide some kind of typing guarantee that
-    // conditional responses will only ever be returned for requests containing a resourceType
-    // but no resourceRef. That way clients who aren't prepared to handle filtering according
-    // to conditions can be guaranteed that they won't unexpectedly get a CONDITIONAL response.
+    return this.makeRequest(
+      '/authorize',
+      queries,
+      authorizeDecisionSchema,
+      options,
+    );
+  }
 
+  /**
+   * Fetch the conditional authorization decisions for the given set of
+   * {@link ResourcePermission}s in order to apply the conditions to an upstream
+   * data source.
+   *
+   * @remarks
+   *
+   * For each query, the response will be either ALLOW, DENY, or CONDITIONAL.
+   * Conditional responses are intended only for backends which have access to
+   * the data source for permissioned resources, so that filters can be applied
+   * when loading collections of resources.
+   *
+   * @public
+   */
+  async policyDecision(
+    queries: PolicyQuery<ResourcePermission>[],
+    options?: AuthorizeRequestOptions,
+  ): Promise<PolicyDecision[]> {
+    return this.makeRequest(
+      '/policy-decision',
+      queries,
+      policyDecisionSchema,
+      options,
+    );
+  }
+
+  private async makeRequest<TQuery, TResult>(
+    path: string,
+    queries: TQuery[],
+    itemSchema: z.ZodSchema<TResult>,
+    options?: AuthorizeRequestOptions,
+  ) {
     if (!this.enabled) {
-      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
     }
 
-    const request: AuthorizeRequest = {
+    const request: Batch<Identified<TQuery>> = {
       items: queries.map(query => ({
         id: uuid.v4(),
         ...query,
@@ -127,7 +189,7 @@ export class PermissionClient implements PermissionAuthorizer {
     };
 
     const permissionApi = await this.discovery.getBaseUrl('permission');
-    const response = await fetch(`${permissionApi}/authorize`, {
+    const response = await fetch(`${permissionApi}${path}`, {
       method: 'POST',
       body: JSON.stringify(request),
       headers: {
@@ -140,33 +202,21 @@ export class PermissionClient implements PermissionAuthorizer {
     }
 
     const responseBody = await response.json();
-    this.assertValidResponse(request, responseBody);
 
-    const responsesById = responseBody.items.reduce((acc, r) => {
+    const parsedResponse = responseSchema(
+      itemSchema,
+      new Set(request.items.map(({ id }) => id)),
+    ).parse(responseBody);
+
+    const responsesById = parsedResponse.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
-    }, {} as Record<string, Identified<AuthorizeDecision>>);
+    }, {} as Record<string, Identified<TResult>>);
 
     return request.items.map(query => responsesById[query.id]);
   }
 
   private getAuthorizationHeader(token?: string): Record<string, string> {
     return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
-  private assertValidResponse(
-    request: AuthorizeRequest,
-    json: any,
-  ): asserts json is AuthorizeResponse {
-    const authorizedResponses = responseSchema.parse(json);
-    const responseIds = authorizedResponses.items.map(r => r.id);
-    const hasAllRequestIds = request.items.every(r =>
-      responseIds.includes(r.id),
-    );
-    if (!hasAllRequestIds) {
-      throw new Error(
-        'Unexpected authorization response from permission-backend',
-      );
-    }
   }
 }
