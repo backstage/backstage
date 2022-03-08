@@ -46,8 +46,8 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       {
         version: 2,
         cadence:
-          typeof task.frequency === 'string'
-            ? task.frequency
+          'cron' in task.frequency
+            ? task.frequency.cron
             : task.frequency.toISO(),
         initialDelayDuration: task.initialDelay?.toISO(),
         timeoutAfterDuration: task.timeout.toISO(),

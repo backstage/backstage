@@ -38,18 +38,8 @@ export type TaskFunction =
  */
 export interface TaskScheduleDefinition {
   /**
-   * The maximum amount of time that a single task invocation can take, before
-   * it's considered timed out and gets "released" such that a new invocation
-   * is permitted to take place (possibly, then, on a different worker).
-   *
-   * This is a required field.
-   */
-  timeout: Duration;
-
-  /**
-   * The amount of time that should pass between task invocation starts.
-   * Essentially, this equals roughly how often you want the task to run.
-   * The system does its best to avoid overlapping invocations.
+   * How often you want the task to run. The system does its best to avoid
+   * overlapping invocations.
    *
    * This is a best effort value; under some circumstances there can be
    * deviations. For example, if the task runtime is longer than the frequency
@@ -57,24 +47,37 @@ export interface TaskScheduleDefinition {
    * invocation of this task will be delayed until after the previous one
    * finishes.
    *
-   * This value can be a crontab style string (see below), or an ISO period
-   * string (e.g. 'PT1M').
-   *
    * This is a required field.
-   *
-   * Cron expressions help:
-   *
-   *   ┌────────────── second (optional)
-   *   │ ┌──────────── minute
-   *   │ │ ┌────────── hour
-   *   │ │ │ ┌──────── day of month
-   *   │ │ │ │ ┌────── month
-   *   │ │ │ │ │ ┌──── day of week
-   *   │ │ │ │ │ │
-   *   │ │ │ │ │ │
-   *   * * * * * *
    */
-  frequency: string | Duration;
+  frequency:
+    | {
+        /**
+         * A crontab style string.
+         *
+         * Overview:
+         *
+         * ```
+         *   ┌────────────── second (optional)
+         *   │ ┌──────────── minute
+         *   │ │ ┌────────── hour
+         *   │ │ │ ┌──────── day of month
+         *   │ │ │ │ ┌────── month
+         *   │ │ │ │ │ ┌──── day of week
+         *   │ │ │ │ │ │
+         *   │ │ │ │ │ │
+         *   * * * * * *
+         * ```
+         */
+        cron: string;
+      }
+    | Duration;
+
+  /**
+   * The maximum amount of time that a single task invocation can take, before
+   * it's considered timed out and gets "released" such that a new invocation
+   * is permitted to take place (possibly, then, on a different worker).
+   */
+  timeout: Duration;
 
   /**
    * The amount of time that should pass before the first invocation happens.

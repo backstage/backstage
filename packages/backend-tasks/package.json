@@ -48,14 +48,9 @@
     "zod": "^3.9.5"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@backstage/backend-test-utils": "^0.1.21-next.0",
     "@backstage/cli": "^0.15.2-next.0",
-=======
-    "@backstage/backend-test-utils": "^0.1.20",
-    "@backstage/cli": "^0.15.0",
     "@types/cron": "^1.7.3",
->>>>>>> ab18600147 (Add cron support to `@backstage/backend-tasks`)
     "jest": "^26.0.1",
     "wait-for-expect": "^3.0.2"
   },

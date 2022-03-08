@@ -69,7 +69,7 @@ describe('TaskScheduler', () => {
       await manager.scheduleTask({
         id: 'task2',
         timeout: Duration.fromMillis(5000),
-        frequency: '* * * * * *',
+        frequency: { cron: '* * * * * *' },
         fn,
       });
 
