@@ -22,6 +22,8 @@ import {
 } from '@backstage/core-components';
 import { Grid } from '@material-ui/core';
 import React from 'react';
+import { ScmIntegrationsProvider } from '../../hooks/useIntegrations';
+import { ScmIntegrationList } from '../ScmIntegrationList';
 
 /**
  * The catalog import page for components.
@@ -37,7 +39,9 @@ export const ComponentImportPage = () => {
 
         <Grid container>
           <Grid item xs={12}>
-            Components!
+            <ScmIntegrationsProvider>
+              <ScmIntegrationList />
+            </ScmIntegrationsProvider>
           </Grid>
         </Grid>
       </Content>
