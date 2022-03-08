@@ -93,7 +93,7 @@ Options:
 
 ## package start
 
-Starts the package for local development. See the frontend and backend development parts in the build system [bundling](./cli-build-system#bundling) section for more details.
+Starts the package for local development. See the frontend and backend development parts in the build system [bundling](./cli-build-system.md#bundling) section for more details.
 
 ```text
 Usage: backstage-cli package start [options]
@@ -110,7 +110,7 @@ Options:
 
 ## package build
 
-Build an individual package based on its role. See the build system [building](./cli-build-system#building) and [bundling](./cli-build-system#bundling) sections for more details.
+Build an individual package based on its role. See the build system [building](./cli-build-system.md#building) and [bundling](./cli-build-system.md#bundling) sections for more details.
 
 ```text
 Usage: backstage-cli package build [options]
