@@ -33,6 +33,7 @@ type DatabaseClient = 'pg' | 'sqlite3' | 'mysql' | 'mysql2' | string;
  */
 const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
   pg: pgConnector,
+  'better-sqlite3': sqlite3Connector,
   sqlite3: sqlite3Connector,
   mysql: mysqlConnector,
   mysql2: mysqlConnector,

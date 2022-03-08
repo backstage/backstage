@@ -40,7 +40,7 @@ export function nowPlus(duration: Duration | undefined, knex: Knex) {
   if (!seconds) {
     return knex.fn.now();
   }
-  return knex.client.config.client === 'sqlite3'
+  return knex.client.config.client.includes('sqlite3')
     ? knex.raw(`datetime('now', ?)`, [`${seconds} seconds`])
     : knex.raw(`now() + interval '${seconds} seconds'`);
 }
