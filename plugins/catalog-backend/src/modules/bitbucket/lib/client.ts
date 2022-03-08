@@ -28,6 +28,39 @@ export class BitbucketClient {
     this.config = options.config;
   }
 
+  async searchCode(
+    workspace: string,
+    query: string,
+    options?: ListOptions20,
+  ): Promise<PagedResponse20<CodeSearchResultItem>> {
+    // load all fields relevant for creating refs later, but not more
+    const fields = [
+      // exclude code/content match details
+      '-values.content_matches',
+      // include/add relevant repository details
+      '+values.file.commit.repository.mainbranch.name',
+      '+values.file.commit.repository.project.key',
+      '+values.file.commit.repository.slug',
+      // remove irrelevant links
+      '-values.*.links',
+      '-values.*.*.links',
+      '-values.*.*.*.links',
+      // ...except the one we need
+      '+values.file.commit.repository.links.html.href',
+    ].join(',');
+
+    return this.pagedRequest20<CodeSearchResultItem>(
+      `${this.config.apiBaseUrl}/workspaces/${encodeURIComponent(
+        workspace,
+      )}/search/code`,
+      {
+        ...options,
+        fields: fields,
+        search_query: query,
+      },
+    );
+  }
+
   async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
     return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
   }
@@ -104,6 +137,22 @@ export class BitbucketClient {
     return response.json() as Promise<PagedResponse20<T>>;
   }
 }
+
+export type CodeSearchResultItem = {
+  type: string;
+  content_match_count: number;
+  path_matches: Array<{
+    text: string;
+    match?: boolean;
+  }>;
+  file: {
+    path: string;
+    type: string;
+    commit: {
+      repository: BitbucketRepository20;
+    };
+  };
+};
 
 export type ListOptions = {
   [key: string]: number | undefined;

@@ -104,6 +104,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     parser?: (options: {
       integration: BitbucketIntegration;
       target: string;
+      presence?: 'optional' | 'required';
       logger: Logger;
     }) => AsyncIterable<CatalogProcessorResult>;
     logger: Logger;
@@ -115,6 +116,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
       parser?: (options: {
         integration: BitbucketIntegration;
         target: string;
+        presence?: 'optional' | 'required';
         logger: Logger;
       }) => AsyncIterable<CatalogProcessorResult>;
       logger: Logger;
@@ -134,6 +136,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;
+  presence?: 'optional' | 'required';
   logger: Logger;
 }) => AsyncIterable<CatalogProcessorResult>;
 

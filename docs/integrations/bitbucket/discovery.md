@@ -80,6 +80,18 @@ The target is composed of the following parts:
   reduce the amount of API calls if you have a large workspace.
   [See here for the specification](https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering)
   for the query argument (will be passed as the `q` query parameter).
+- (Optional) The `search=true` query argument to activate the mode utilizing code search.
+  - Is mutually exclusive to the `q` query argument.
+  - Allows providing values at `catalogPath` for finding catalog files as allowed by the `path` filter/modifier
+    [at Bitbucket Cloud's code search](https://confluence.atlassian.com/bitbucket/code-search-in-bitbucket-873876782.html#Search-Pathmodifier).
+    - `catalogPath=/catalog-info.yaml`
+    - `catalogPath=catalog-info.yaml` (anywhere in the repository)
+    - `catalogPath=/path/catalog-info.yaml`
+    - `catalogPath=path/catalog-info.yaml`
+    - `catalogPath=/path/*/catalog-info.yaml`
+    - `catalogPath=path/*/catalog-info.yaml`
+  - Supports multiple catalog files per repository depending on the `catalogPath` value.
+  - Registers `Location` entities for existing files only vs all matching repositories.
 
 Examples:
 
@@ -95,6 +107,23 @@ Examples:
 - `https://bitbucket.org/workspaces/my-workspace?catalogPath=my/nested/path/catalog.yaml`
   will find all repositories in the `my-workspace` workspace and use the catalog
   file at `my/nested/path/catalog.yaml`.
+- `https://bitbucket.org/workspaces/my-workspace?search=true&catalogPath=/catalog.yaml`
+  will find all `catalog.yaml` files located in the root of repositories in the workspace `my-workspace`.
+- `https://bitbucket.org/workspaces/my-workspace?search=true&catalogPath=catalog.yaml`
+  will find all `catalog.yaml` files located anywhere within repositories in the workspace `my-workspace`.
+- `https://bitbucket.org/workspaces/my-workspace?search=true&catalogPath=/my/nested/path/catalog.yaml`
+  will find all `catalog.yaml` files located within the directory `/my/nested/path/` within
+  repositories in the workspace `my-workspace`.
+- `https://bitbucket.org/workspaces/my-workspace?search=true&catalogPath=my/nested/path/catalog.yaml`
+  will find all `catalog.yaml` files located within the directory `my/nested/path/` located anywhere within
+  repositories in the workspace `my-workspace`.
+- `https://bitbucket.org/workspaces/my-workspace?search=true&catalogPath=/my/*/path/catalog.yaml`
+  will find all `catalog.yaml` files located within a directory `path/` located within any (recursive) directory
+  within the directory `my/` in the root of repositories in the workspace `my-workspace`
+  (`/my/nested/path/catalog.yaml`, `/my/very/nested/path/catalog.yaml`, ...).
+- `https://bitbucket.org/workspaces/my-workspace/projects/apis-*/repos/service-*?search=true&catalogPath=catalog.yaml`
+  will find all `catalog.yaml` files located anywhere within repositories starting with `service-`
+  in projects starting with `api-` in the workspace `my-workspace`.
 
 ## Custom repository processing
 

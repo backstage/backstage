@@ -39,7 +39,6 @@ import {
 
 const DEFAULT_BRANCH = 'master';
 const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';
-const EMPTY_CATALOG_LOCATION = '/';
 
 /** @public */
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
@@ -47,6 +46,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private readonly parser: (options: {
     integration: BitbucketIntegration;
     target: string;
+    presence?: 'optional' | 'required';
     logger: Logger;
   }) => AsyncIterable<CatalogProcessorResult>;
   private readonly logger: Logger;
@@ -57,6 +57,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
       parser?: (options: {
         integration: BitbucketIntegration;
         target: string;
+        presence?: 'optional' | 'required';
         logger: Logger;
       }) => AsyncIterable<CatalogProcessorResult>;
       logger: Logger;
@@ -75,6 +76,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     parser?: (options: {
       integration: BitbucketIntegration;
       target: string;
+      presence?: 'optional' | 'required';
       logger: Logger;
     }) => AsyncIterable<CatalogProcessorResult>;
     logger: Logger;
@@ -136,19 +138,17 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   ): Promise<ResultSummary> {
     const { client, location, integration, emit } = options;
 
-    const { catalogPath: requestedCatalogPath } = parseBitbucketCloudUrl(
-      location.target,
-    );
-    const catalogPath =
-      requestedCatalogPath === EMPTY_CATALOG_LOCATION
-        ? DEFAULT_CATALOG_LOCATION
-        : requestedCatalogPath;
-    const result = await readBitbucketCloud(client, location.target);
-    for (const repository of result.matches) {
-      const mainbranch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
+    const { searchEnabled } = parseBitbucketCloudUrl(location.target);
+
+    const result = searchEnabled
+      ? await searchBitbucketCloudLocations(client, location.target)
+      : await readBitbucketCloudLocations(client, location.target);
+
+    for (const locationTarget of result.matches) {
       for await (const entity of this.parser({
         integration,
-        target: `${repository.links.html.href}/src/${mainbranch}${catalogPath}`,
+        target: locationTarget,
+        presence: searchEnabled ? 'required' : 'optional',
         logger: this.logger,
       })) {
         emit(entity);
@@ -165,10 +165,10 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   ): Promise<ResultSummary> {
     const { client, location, integration, emit } = options;
     const { catalogPath: requestedCatalogPath } = parseUrl(location.target);
-    const catalogPath =
-      requestedCatalogPath === EMPTY_CATALOG_LOCATION
-        ? DEFAULT_CATALOG_LOCATION
-        : requestedCatalogPath;
+    const catalogPath = requestedCatalogPath
+      ? `/${requestedCatalogPath}`
+      : DEFAULT_CATALOG_LOCATION;
+
     const result = await readBitbucketOrg(client, location.target);
     for (const repository of result.matches) {
       for await (const entity of this.parser({
@@ -214,6 +214,81 @@ export async function readBitbucketOrg(
   return result;
 }
 
+export async function searchBitbucketCloudLocations(
+  client: BitbucketClient,
+  target: string,
+): Promise<Result<string>> {
+  const {
+    workspacePath,
+    catalogPath: requestedCatalogPath,
+    projectSearchPath,
+    repoSearchPath,
+  } = parseBitbucketCloudUrl(target);
+
+  const result: Result<string> = {
+    scanned: 0,
+    matches: [],
+  };
+
+  const catalogPath = requestedCatalogPath
+    ? requestedCatalogPath
+    : DEFAULT_CATALOG_LOCATION;
+  const catalogFilename = catalogPath.substring(
+    catalogPath.lastIndexOf('/') + 1,
+  );
+
+  const searchResults = paginated20(options =>
+    client.searchCode(
+      workspacePath,
+      `"${catalogFilename}" path:${catalogPath}`,
+      options,
+    ),
+  );
+
+  for await (const searchResult of searchResults) {
+    // not a file match, but a code match
+    if (searchResult.path_matches.length === 0) {
+      continue;
+    }
+
+    const repository = searchResult.file.commit.repository;
+    if (!matchesPostFilters(repository, projectSearchPath, repoSearchPath)) {
+      continue;
+    }
+
+    const repoUrl = repository.links.html.href;
+    const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
+    const filePath = searchResult.file.path;
+    const location = `${repoUrl}/src/${branch}/${filePath}`;
+
+    result.matches.push(location);
+  }
+
+  return result;
+}
+
+export async function readBitbucketCloudLocations(
+  client: BitbucketClient,
+  target: string,
+): Promise<Result<string>> {
+  const { catalogPath: requestedCatalogPath } = parseBitbucketCloudUrl(target);
+  const catalogPath = requestedCatalogPath
+    ? `/${requestedCatalogPath}`
+    : DEFAULT_CATALOG_LOCATION;
+
+  return readBitbucketCloud(client, target).then(result => {
+    const matches = result.matches.map(repository => {
+      const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
+      return `${repository.links.html.href}/src/${branch}${catalogPath}`;
+    });
+
+    return {
+      scanned: result.scanned,
+      matches,
+    };
+  });
+}
+
 export async function readBitbucketCloud(
   client: BitbucketClient,
   target: string,
@@ -238,14 +313,22 @@ export async function readBitbucketCloud(
 
   for await (const repository of repositories) {
     result.scanned++;
-    if (
-      (!projectSearchPath || projectSearchPath.test(repository.project.key)) &&
-      (!repoSearchPath || repoSearchPath.test(repository.slug))
-    ) {
+    if (matchesPostFilters(repository, projectSearchPath, repoSearchPath)) {
       result.matches.push(repository);
     }
   }
   return result;
+}
+
+function matchesPostFilters(
+  repository: BitbucketRepository20,
+  projectSearchPath: RegExp | undefined,
+  repoSearchPath: RegExp | undefined,
+): boolean {
+  return (
+    (!projectSearchPath || projectSearchPath.test(repository.project.key)) &&
+    (!repoSearchPath || repoSearchPath.test(repository.slug))
+  );
 }
 
 function parseUrl(urlString: string): {
@@ -263,9 +346,7 @@ function parseUrl(urlString: string): {
     return {
       projectSearchPath: escapeRegExp(decodeURIComponent(path[1])),
       repoSearchPath: escapeRegExp(decodeURIComponent(path[3])),
-      catalogPath: `/${decodeURIComponent(
-        path.slice(4).join('/') + url.search,
-      )}`,
+      catalogPath: decodeURIComponent(path.slice(4).join('/') + url.search),
     };
   }
 
@@ -282,10 +363,11 @@ function readPathParameters(pathParts: string[]): Map<string, string> {
 
 function parseBitbucketCloudUrl(urlString: string): {
   workspacePath: string;
-  catalogPath: string;
+  catalogPath?: string;
   projectSearchPath?: RegExp;
   repoSearchPath?: RegExp;
   queryParam?: string;
+  searchEnabled: boolean;
 } {
   const url = new URL(urlString);
   const pathMap = readPathParameters(url.pathname.substr(1).split('/'));
@@ -303,8 +385,9 @@ function parseBitbucketCloudUrl(urlString: string): {
     repoSearchPath: pathMap.has('repos')
       ? escapeRegExp(pathMap.get('repos')!)
       : undefined,
-    catalogPath: `/${query.get('catalogPath') || ''}`,
+    catalogPath: query.get('catalogPath') || undefined,
     queryParam: query.get('q') || undefined,
+    searchEnabled: query.get('search')?.toLowerCase() === 'true',
   };
 }
 
