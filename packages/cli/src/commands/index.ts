@@ -165,6 +165,15 @@ export function registerMigrateCommand(program: CommanderStatic) {
     .action(
       lazy(() => import('./migrate/packageScripts').then(m => m.command)),
     );
+
+  command
+    .command('package-lint-configs')
+    .description(
+      'Migrates all packages to use @backstage/cli/config/eslint-factory',
+    )
+    .action(
+      lazy(() => import('./migrate/packageLintConfigs').then(m => m.command)),
+    );
 }
 
 export function registerCommands(program: CommanderStatic) {

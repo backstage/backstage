@@ -1,5 +1,4 @@
-module.exports = {
-  extends: [require.resolve('@backstage/cli/config/eslint.backend')],
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
   rules: {
     'no-console': 0,
     'import/no-extraneous-dependencies': [
@@ -12,4 +11,4 @@ module.exports = {
       },
     ],
   },
-};
+});

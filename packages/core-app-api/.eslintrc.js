@@ -1,8 +1,5 @@
-module.exports = {
-  extends: [require.resolve('@backstage/cli/config/eslint')],
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
   rules: {
-    // TODO: add prop types to JS and remove
-    'react/prop-types': 0,
     'jest/expect-expect': 0,
   },
-};
+});
