@@ -67,9 +67,7 @@ export const ComponentImportPage = () => {
         {integration ? (
           ScmIntegrationComponent
         ) : (
-          <ScmIntegrationsProvider>
-            <ScmIntegrationList setIntegration={setIntegration} />
-          </ScmIntegrationsProvider>
+          <ScmIntegrationList setIntegration={setIntegration} />
         )}
       </Content>
     </Page>

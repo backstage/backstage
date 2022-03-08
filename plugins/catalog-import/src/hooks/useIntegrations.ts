@@ -16,53 +16,32 @@
 
 import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { ScmIntegration } from '@backstage/integration';
-import React, {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
-type IntegrationsContextProps = {
+type IntegrationsContext = {
   integrations: ScmIntegration[];
   loading: boolean;
 };
 
-const IntegrationsContext = createContext<IntegrationsContextProps>({
-  integrations: [],
-  loading: true,
-});
-
-export function ScmIntegrationsProvider({ children }: PropsWithChildren<{}>) {
+export function useScmIntegrations(): IntegrationsContext {
   const fetchApi = useApi(fetchApiRef);
-  const [loading, setLoading] = useState(true);
-  const [integrations, setIntegrations] = useState<ScmIntegration[]>([]);
+  const [context, setContext] = useState<IntegrationsContext>({
+    loading: true,
+    integrations: [],
+  });
 
   useEffect(() => {
     async function fetchIntegrations() {
       const response = await fetchApi.fetch(
         'plugin://catalog-import/integrations',
       );
-      setIntegrations((await response.json()) as ScmIntegration[]);
-      setLoading(false);
+      setContext({
+        integrations: await response.json(),
+        loading: false,
+      });
     }
     fetchIntegrations();
   }, [fetchApi]);
 
-  return (
-    <IntegrationsContext.Provider value={{ integrations, loading }}>
-      {children}
-    </IntegrationsContext.Provider>
-  );
-}
-
-export function useScmIntegrations(): IntegrationsContextProps {
-  const value = useContext(IntegrationsContext);
-  if (!value) {
-    throw new Error(
-      'Cannot use useScmIntegrations outside of ScmIntegrationsProvider',
-    );
-  }
-  return value;
+  return context;
 }
