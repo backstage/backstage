@@ -103,9 +103,11 @@ const msGraphOrgEntityProvider = MicrosoftGraphOrgEntityProvider.fromConfig(
 builder.addEntityProvider(msGraphOrgEntityProvider);
 
 // Trigger a read every 5 minutes
+const intervalId = setInterval(msGraphOrgEntityProvider.read, 5 * 60 * 1000);
+
 useHotCleanup(
   module,
-  runPeriodically(() => msGraphOrgEntityProvider.read(), 5 * 60 * 1000),
+  () => clearInterval(intervalId),
 );
 ```
 
