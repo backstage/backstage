@@ -45,7 +45,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const authorizeDecision = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.policyDecision(
         [{ permission: catalogEntityReadPermission }],
         { token: request?.authorizationToken },
       )
@@ -78,7 +78,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     options?: { authorizationToken?: string },
   ): Promise<void> {
     const authorizeResponse = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.policyDecision(
         [{ permission: catalogEntityDeletePermission }],
         { token: options?.authorizationToken },
       )
@@ -155,7 +155,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
   async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
     const authorizeDecision = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.policyDecision(
         [{ permission: catalogEntityReadPermission }],
         { token: request?.authorizationToken },
       )
