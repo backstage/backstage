@@ -90,6 +90,12 @@ export function isCreatePermission(permission: Permission): boolean;
 export function isDeletePermission(permission: Permission): boolean;
 
 // @public
+export function isPermission<T extends Permission>(
+  permission: Permission,
+  comparedPermission: T,
+): permission is T;
+
+// @public
 export function isReadPermission(permission: Permission): boolean;
 
 // @public

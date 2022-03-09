@@ -17,6 +17,17 @@
 import { Permission, ResourcePermission } from '../types';
 
 /**
+ * Check if the two parameters are equivalent permissions.
+ * @public
+ */
+export function isPermission<T extends Permission>(
+  permission: Permission,
+  comparedPermission: T,
+): permission is T {
+  return permission.name === comparedPermission.name;
+}
+
+/**
  * Check if a given permission is a {@link ResourcePermission}. When
  * `resourceType` is supplied as the second parameter, also checks if
  * the permission has the specified resource type.
