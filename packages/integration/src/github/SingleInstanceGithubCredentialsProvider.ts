@@ -119,7 +119,7 @@ class GithubAppManager {
         const repos = await installationClient.paginate(
           installationClient.apps.listReposAccessibleToInstallation,
         );
-        const hasRepo = repos.some(repository => {
+        const hasRepo = repos.repositories.some(repository => {
           return repository.name === repo;
         });
         if (!hasRepo) {

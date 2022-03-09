@@ -4626,7 +4626,7 @@
     deprecation "^2.0.0"
     once "^1.4.0"
 
-"@octokit/request@^5.3.0", "@octokit/request@^5.4.11", "@octokit/request@^5.4.12", "@octokit/request@^5.4.14", "@octokit/request@^5.6.0":
+"@octokit/request@^5.3.0", "@octokit/request@^5.4.11", "@octokit/request@^5.4.12", "@octokit/request@^5.4.14", "@octokit/request@^5.6.0", "@octokit/request@^5.6.3":
   version "5.6.3"
   resolved "https://registry.npmjs.org/@octokit/request/-/request-5.6.3.tgz#19a022515a5bba965ac06c9d1334514eb50c48b0"
   integrity sha512-bFJl0I1KVc9jYTe9tdGGpAMPy32dLBXXo1dS/YwSCTL/2nd9XeHsY616RE3HPXDVk+a+dBuzyz5YdlXwcDTr2A==

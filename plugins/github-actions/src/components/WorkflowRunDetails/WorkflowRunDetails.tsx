@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity } from '@backstage/catalog-model';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
@@ -44,7 +45,6 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunJobs } from './useWorkflowRunJobs';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { WorkflowRunLogs } from '../WorkflowRunLogs';
-
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Breadcrumbs, Link } from '@backstage/core-components';
 
@@ -73,13 +73,21 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-const getElapsedTime = (start: string, end: string) => {
+function getElapsedTime(
+  start: string | null | undefined,
+  end: string | null | undefined,
+) {
+  if (!start) {
+    return 'pending...';
+  } else if (!end) {
+    return 'running...';
+  }
   const startDate = DateTime.fromISO(start);
   const endDate = end ? DateTime.fromISO(end) : DateTime.now();
   const diff = endDate.diff(startDate);
   const timeElapsed = diff.toFormat(`m 'minutes' s 'seconds'`);
   return timeElapsed;
-};
+}
 
 const StepView = ({ step }: { step: Step }) => {
   return (
@@ -100,15 +108,12 @@ const StepView = ({ step }: { step: Step }) => {
   );
 };
 
-const JobListItem = ({
-  job,
-  className,
-  entity,
-}: {
+const JobListItem = (props: {
   job: Job;
   className: string;
   entity: Entity;
 }) => {
+  const { job, className, entity } = props;
   const classes = useStyles();
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
@@ -127,7 +132,7 @@ const JobListItem = ({
       <AccordionDetails className={classes.accordionDetails}>
         <TableContainer>
           <Table>
-            {job.steps.map(step => (
+            {job.steps?.map(step => (
               <StepView key={step.number} step={step} />
             ))}
           </Table>

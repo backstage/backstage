@@ -17,21 +17,21 @@
 export type Step = {
   name: string;
   status: string;
-  conclusion?: string;
+  conclusion?: string | null;
   number: number; // starts from 1
-  started_at: string;
-  completed_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
 };
 
 export type Job = {
-  html_url: string;
+  html_url?: string | null;
   status: string;
-  conclusion: string;
+  conclusion?: string | null;
   started_at: string;
-  completed_at: string;
+  completed_at?: string | null;
   id: number;
   name: string;
-  steps: Step[];
+  steps?: Step[] | null;
 };
 
 export type Jobs = {

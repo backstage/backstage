@@ -32,7 +32,7 @@ export type WorkflowRun = {
     };
   };
   status: string;
-  conclusion: string;
+  conclusion?: string;
   onReRunClick: () => void;
 };
 
@@ -74,37 +74,39 @@ export function useWorkflowRuns({
     });
     setTotal(workflowRunsData.total_count);
     // Transformation here
-    return workflowRunsData.workflow_runs.map(run => ({
-      workflowName: run.name,
-      message: run.head_commit.message,
-      id: `${run.id}`,
-      onReRunClick: async () => {
-        try {
-          await api.reRunWorkflow({
-            hostname,
-            owner,
-            repo,
-            runId: run.id,
-          });
-        } catch (e) {
-          errorApi.post(e);
-        }
-      },
-      source: {
-        branchName: run.head_branch,
-        commit: {
-          hash: run.head_commit.id,
-          url: run.head_repository?.branches_url?.replace(
-            '{/branch}',
-            run.head_branch,
-          ),
+    return workflowRunsData.workflow_runs
+      .filter(run => run.head_commit && run.head_branch && run.status)
+      .map(run => ({
+        workflowName: run.name!,
+        message: run.head_commit!.message,
+        id: `${run.id}`,
+        onReRunClick: async () => {
+          try {
+            await api.reRunWorkflow({
+              hostname,
+              owner,
+              repo,
+              runId: run.id,
+            });
+          } catch (e) {
+            errorApi.post(e);
+          }
         },
-      },
-      status: run.status,
-      conclusion: run.conclusion,
-      url: run.url,
-      githubUrl: run.html_url,
-    }));
+        source: {
+          branchName: run.head_branch!,
+          commit: {
+            hash: run.head_commit!.id,
+            url: run.head_repository?.branches_url?.replace(
+              '{/branch}',
+              run.head_branch!,
+            ),
+          },
+        },
+        status: run.status!,
+        conclusion: run.conclusion || undefined,
+        url: run.url,
+        githubUrl: run.html_url,
+      }));
   }, [page, pageSize, repo, owner]);
 
   return [

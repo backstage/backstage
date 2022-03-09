@@ -28,10 +28,10 @@ export const WorkflowRunStatus = ({
   status,
   conclusion,
 }: {
-  status: string | undefined;
-  conclusion: string | undefined;
+  status?: string | null;
+  conclusion?: string | null;
 }) => {
-  if (status === undefined) return null;
+  if (!status) return null;
   switch (status.toLocaleLowerCase('en-US')) {
     case 'queued':
       return (

@@ -286,14 +286,14 @@ export { isGithubActionsAvailable as isPluginApplicableToEntity };
 //
 // @public (undocumented)
 export type Job = {
-  html_url: string;
+  html_url?: string | null;
   status: string;
-  conclusion: string;
+  conclusion?: string | null;
   started_at: string;
-  completed_at: string;
+  completed_at?: string | null;
   id: number;
   name: string;
-  steps: Step[];
+  steps?: Step[] | null;
 };
 
 // Warning: (ae-missing-release-tag) "Jobs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -342,9 +342,9 @@ export const Router: () => JSX.Element;
 export type Step = {
   name: string;
   status: string;
-  conclusion?: string;
+  conclusion?: string | null;
   number: number;
-  started_at: string;
-  completed_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
 };
 ```
