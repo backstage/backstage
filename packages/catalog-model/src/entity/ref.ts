@@ -23,18 +23,25 @@ function parseRefString(ref: string): {
   namespace?: string;
   name: string;
 } {
-  const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
-  if (!match) {
+  let colonI = ref.indexOf(':');
+  const slashI = ref.indexOf('/');
+
+  // If the / is ahead of the :, treat the rest as the name
+  if (slashI !== -1 && slashI < colonI) {
+    colonI = -1;
+  }
+
+  const kind = colonI === -1 ? undefined : ref.slice(0, colonI);
+  const namespace = slashI === -1 ? undefined : ref.slice(colonI + 1, slashI);
+  const name = ref.slice(Math.max(colonI + 1, slashI + 1));
+
+  if (kind === '' || namespace === '' || name === '') {
     throw new TypeError(
       `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`,
     );
   }
 
-  return {
-    kind: match[1]?.slice(0, -1),
-    namespace: match[2]?.slice(0, -1),
-    name: match[3],
-  };
+  return { kind, namespace, name };
 }
 
 /**
