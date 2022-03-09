@@ -169,4 +169,47 @@ describe('<CatalogKindHeader />', () => {
       kind: new EntityKindFilter('template'),
     });
   });
+
+  it('limits kinds when allowedKinds is set', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider>
+          <CatalogKindHeader allowedKinds={['component', 'system']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    const input = rendered.getByText('Components');
+    fireEvent.mouseDown(input);
+
+    expect(
+      rendered.getByRole('option', { name: 'Components' }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByRole('option', { name: 'Systems' }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.queryByRole('option', { name: 'Templates' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders kind from the query parameter even when not in allowedKinds', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { kind: 'Frob' } }}
+        >
+          <CatalogKindHeader allowedKinds={['system']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('Frobs')).toBeInTheDocument();
+    const input = rendered.getByText('Frobs');
+    fireEvent.mouseDown(input);
+
+    expect(
+      rendered.getByRole('option', { name: 'Systems' }),
+    ).toBeInTheDocument();
+  });
 });

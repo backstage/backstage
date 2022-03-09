@@ -46,12 +46,21 @@ const useStyles = makeStyles((theme: Theme) =>
  * @public
  */
 export interface CatalogKindHeaderProps {
+  /**
+   * Entity kinds to show in the dropdown; by default all kinds are fetched from the catalog and
+   * displayed.
+   */
+  allowedKinds?: string[];
+  /**
+   * The initial kind to select; defaults to 'component'. A kind filter entered directly in the
+   * query parameter will override this value.
+   */
   initialFilter?: string;
 }
 
 /** @public */
 export function CatalogKindHeader(props: CatalogKindHeaderProps) {
-  const { initialFilter = 'component' } = props;
+  const { initialFilter = 'component', allowedKinds } = props;
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const { value: allKinds } = useAsync(async () => {
@@ -65,7 +74,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   } = useEntityList();
 
   const queryParamKind = useMemo(
-    () => [kindParameter].flat()[0],
+    () => [kindParameter].flat()[0]?.toLocaleLowerCase('en-US'),
     [kindParameter],
   );
   const [selectedKind, setSelectedKind] = useState(
@@ -91,13 +100,19 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   // enforced casing from the catalog-backend. This makes a key/value record for the Select options,
   // including selectedKind if it's unknown - but allows the selectedKind to get clobbered by the
   // more proper catalog kind if it exists.
-  const options = [capitalize(selectedKind)]
-    .concat(allKinds ?? [])
-    .sort()
-    .reduce((acc, kind) => {
-      acc[kind.toLocaleLowerCase('en-US')] = kind;
-      return acc;
-    }, {} as Record<string, string>);
+  const availableKinds = [capitalize(selectedKind)].concat(
+    allKinds?.filter(k =>
+      allowedKinds
+        ? allowedKinds.some(
+            a => a.toLocaleLowerCase('en-US') === k.toLocaleLowerCase('en-US'),
+          )
+        : true,
+    ) ?? [],
+  );
+  const options = availableKinds.sort().reduce((acc, kind) => {
+    acc[kind.toLocaleLowerCase('en-US')] = kind;
+    return acc;
+  }, {} as Record<string, string>);
 
   return (
     <Select
