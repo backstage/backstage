@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { CardHeader } from './CardHeader';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
@@ -25,6 +25,9 @@ import {
 } from '@backstage/test-utils';
 import { starredEntitiesApiRef } from '@backstage/plugin-catalog-react';
 import { DefaultStarredEntitiesApi } from '@backstage/plugin-catalog';
+import Observable from 'zen-observable';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 describe('CardHeader', () => {
   it('should select the correct theme from the theme provider from the header', () => {
@@ -92,5 +95,94 @@ describe('CardHeader', () => {
     );
 
     expect(getByText('service')).toBeInTheDocument();
+  });
+
+  it('should enable favoriting of the entity', async () => {
+    const starredEntitiesApi = {
+      starredEntitie$: () => new Observable(() => {}),
+      toggleStarred: jest.fn(async () => {}),
+    };
+
+    const mockTemplate: TemplateEntityV1beta3 = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: { name: 'bob' },
+      spec: {
+        steps: [],
+        type: 'service',
+      },
+    };
+
+    const { getByRole } = await renderInTestApp(
+      <TestApiProvider apis={[[starredEntitiesApiRef, starredEntitiesApi]]}>
+        <CardHeader template={mockTemplate} />
+      </TestApiProvider>,
+    );
+
+    const favorite = getByRole('button', { name: 'favorite' });
+
+    await fireEvent.click(favorite);
+
+    expect(starredEntitiesApi.toggleStarred).toHaveBeenCalledWith(
+      stringifyEntityRef(mockTemplate),
+    );
+  });
+
+  it('should render the name of the entity', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <CardHeader
+          template={{
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: { name: 'bob' },
+            spec: {
+              steps: [],
+              type: 'service',
+            },
+          }}
+        />
+      </TestApiProvider>,
+    );
+
+    expect(getByText('bob')).toBeInTheDocument();
+  });
+
+  it('should render the title of the entity in favor of the name if it is provided', async () => {
+    const { getByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <CardHeader
+          template={{
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            kind: 'Template',
+            metadata: { name: 'bob', title: 'Iamtitle' },
+            spec: {
+              steps: [],
+              type: 'service',
+            },
+          }}
+        />
+      </TestApiProvider>,
+    );
+
+    expect(getByText('Iamtitle')).toBeInTheDocument();
   });
 });
