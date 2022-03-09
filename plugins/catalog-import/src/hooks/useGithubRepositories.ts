@@ -25,6 +25,7 @@ export type GithubRepository = {
   url: string;
   default_branch: string;
   updated_at: string; // ISO-8601; 2011-01-26T19:14:43Z
+  descriptor_paths: string[];
 };
 
 type GithubRepositoriesContext = {
@@ -54,11 +55,14 @@ export function useGithubRepositories({
       );
       const repositories = (await response.json()) as GithubRepository[];
       setContext({
-        repositories: repositories.sort((a, b) =>
-          a.name
+        repositories: repositories.sort((a, b) => {
+          if (a.descriptor_paths.length !== b.descriptor_paths.length) {
+            return b.descriptor_paths.length - a.descriptor_paths.length;
+          }
+          return a.name
             .toLocaleLowerCase('en-US')
-            .localeCompare(b.name.toLocaleLowerCase('en-US')),
-        ),
+            .localeCompare(b.name.toLocaleLowerCase('en-US'));
+        }),
         loading: false,
       });
     }

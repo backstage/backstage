@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, UrlReader } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
@@ -81,8 +81,36 @@ export async function createRouter(
   router.get('/github/repos/:host/:org', async (request, response) => {
     const { host, org } = request.params;
     const octokit = await getOctokit(config, host);
+
     const { data: repos } = await octokit.rest.repos.listForOrg({ org });
-    response.send(repos);
+
+    // Exit early since code search bombs out with 422 if there's no code to search
+    if (!repos.length) {
+      response.send([]);
+      return;
+    }
+
+    const { data: search } = await octokit.rest.search.code({
+      q: `filename:catalog-info.yaml org:${org}`,
+    });
+    const hits = search.items
+      .map(item => {
+        // URLs are in the format:
+        // https://api.github.com/repositories/<id>/contents/<path>?ref=<sha>
+        const regex =
+          /https:\/\/api\.github\.com\/repositories\/(?<id>\d+)\/contents\/(?<path>[^?]+)\?ref=(?<ref>.*)/g;
+        return regex.exec(item.url)?.groups;
+      })
+      .filter(Boolean);
+
+    response.send(
+      repos.map(repo => ({
+        ...repo,
+        descriptor_paths: hits
+          .filter(hit => parseInt(hit!.id, 10) === repo.id)
+          .map(hit => hit!.path),
+      })),
+    );
   });
 
   router.use(errorHandler());

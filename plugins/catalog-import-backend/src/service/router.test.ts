@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
+
+const mockUrlReader = UrlReaders.default({
+  logger: getVoidLogger(),
+  config: new ConfigReader({}),
+});
 
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
     const router = await createRouter({
+      config: new ConfigReader({}),
+      reader: mockUrlReader,
       logger: getVoidLogger(),
     });
     app = express().use(router);

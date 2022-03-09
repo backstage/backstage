@@ -18,11 +18,11 @@ import React from 'react';
 import {
   Button,
   Checkbox,
+  Chip,
   FormControlLabel,
   Grid,
   Typography,
 } from '@material-ui/core';
-import ForkIcon from '@material-ui/icons/CallSplit';
 import { Progress } from '@backstage/core-components';
 import {
   GithubRepository,
@@ -40,7 +40,13 @@ function getLabel(repo: GithubRepository) {
     <div>
       <Typography variant="h6">
         {repo.name}{' '}
-        {repo.fork && <ForkIcon style={{ verticalAlign: 'middle' }} />}
+        {!!repo.descriptor_paths.length && (
+          <Chip
+            variant="outlined"
+            size="small"
+            label={`${repo.descriptor_paths.length} entities`}
+          />
+        )}
       </Typography>
       <Typography variant="body2">{repo.description}</Typography>
     </div>
@@ -69,15 +75,24 @@ export const GithubRepositoryList = ({
       {repositories.map((repo, index) => (
         <Grid item xs={8} key={index}>
           <FormControlLabel
-            control={<Checkbox name={repo.name} />}
+            control={
+              <Checkbox
+                name={repo.name}
+                disabled={repo.descriptor_paths.length === 0}
+              />
+            }
             label={getLabel(repo)}
           />
         </Grid>
       ))}
       <Grid item xs={12}>
-        <Button variant="contained" color="primary">
-          Import selected repositories
-        </Button>
+        {repositories.length ? (
+          <Button variant="contained" color="primary">
+            Import selected repositories
+          </Button>
+        ) : (
+          'No repositories found'
+        )}
       </Grid>
     </Grid>
   );
