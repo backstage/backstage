@@ -15,7 +15,7 @@
  */
 
 import { Groups } from '../airbrakeGroups';
-import { AirbrakeApi, NoProjectIdError } from '../AirbrakeApi';
+import { AirbrakeApi } from '../AirbrakeApi';
 import mockGroupsData from './airbrakeGroupsApiMock.json';
 
 export class MockAirbrakeApi implements AirbrakeApi {
@@ -25,10 +25,7 @@ export class MockAirbrakeApi implements AirbrakeApi {
     this.waitTimeInMillis = waitTimeInMillis;
   }
 
-  fetchGroups(projectId: string): Promise<Groups> {
-    if (!projectId) {
-      return Promise.reject(new NoProjectIdError());
-    }
+  fetchGroups(): Promise<Groups> {
     return new Promise(resolve => {
       setTimeout(() => resolve(mockGroupsData), this.waitTimeInMillis);
     });
