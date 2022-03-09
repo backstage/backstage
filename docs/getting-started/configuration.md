@@ -133,9 +133,9 @@ familiar with. For other options, see
 Go to
 [https://github.com/settings/applications/new](https://github.com/settings/applications/new)
 to create your OAuth App. The `Homepage URL` should point to Backstage's
-frontend, in our tutorial it would be `http://127.0.0.1:3000`. The
+frontend, in our tutorial it would be `http://localhost:3000`. The
 `Authorization callback URL` will point to the auth backend, which will most
-likely be `http://127.0.0.1:7007/api/auth/github/handler/frame`.
+likely be `http://localhost:7007/api/auth/github/handler/frame`.
 
 <p align='center'>
   <img src='../assets/getting-started/gh-oauth.png' alt='Screenshot of the GitHub OAuth creation page' />
