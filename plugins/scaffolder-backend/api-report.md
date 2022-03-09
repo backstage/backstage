@@ -9,8 +9,6 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
-import { ContainerRunner } from '@backstage/backend-common';
-import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
@@ -19,36 +17,30 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Observable } from '@backstage/types';
-import { Octokit } from 'octokit';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskSpecV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
-import { TemplateMetadata } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
 // @public
 export type ActionContext<Input extends JsonObject> = {
-  baseUrl?: string;
-  logger: Logger_2;
+  logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: Input;
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
-  metadata?: TemplateMetadata;
   templateInfo?: TemplateInfo;
 };
-
-// @public @deprecated
-export type CompletedTaskState = TaskCompletionState;
 
 // @public
 export const createBuiltinActions: (
@@ -63,8 +55,6 @@ export interface CreateBuiltInActionsOptions {
   catalogClient: CatalogApi;
   // (undocumented)
   config: Config;
-  // @deprecated (undocumented)
-  containerRunner?: ContainerRunner;
   // (undocumented)
   integrations: ScmIntegrations;
   // (undocumented)
@@ -98,8 +88,6 @@ export function createDebugLogAction(): TemplateAction<{
   message?: string | undefined;
   listWorkspace?: boolean | undefined;
 }>;
-
-export { createFetchCookiecutterAction };
 
 // @public
 export function createFetchPlainAction(options: {
@@ -233,6 +221,10 @@ export function createPublishGithubAction(options: {
   description?: string | undefined;
   access?: string | undefined;
   defaultBranch?: string | undefined;
+  deleteBranchOnMerge?: boolean | undefined;
+  allowRebaseMerge?: boolean | undefined;
+  allowSquashMerge?: boolean | undefined;
+  allowMergeCommit?: boolean | undefined;
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
@@ -300,7 +292,7 @@ export type CreateWorkerOptions = {
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger_2;
+  logger: Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 };
 
@@ -363,9 +355,6 @@ export type DatabaseTaskStoreOptions = {
   database: Knex;
 };
 
-// @public @deprecated
-export type DispatchResult = TaskBrokerDispatchResult;
-
 // @public
 export const executeShellCommand: (options: RunCommandOptions) => Promise<void>;
 
@@ -383,25 +372,6 @@ export function fetchContents({
   fetchUrl?: string;
   outputPath: string;
 }): Promise<void>;
-
-// Warning: (ae-missing-release-tag) "OctokitProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated
-export class OctokitProvider {
-  constructor(
-    integrations: ScmIntegrationRegistry,
-    githubCredentialsProvider?: GithubCredentialsProvider,
-  );
-  // Warning: (ae-forgotten-export) The symbol "OctokitIntegration" needs to be exported by the entry point index.d.ts
-  //
-  // @deprecated
-  getOctokit(
-    repoUrl: string,
-    options?: {
-      token?: string;
-    },
-  ): Promise<OctokitIntegration>;
-}
 
 // @public (undocumented)
 export interface OctokitWithPullRequestPluginClient {
@@ -424,11 +394,9 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  containerRunner?: ContainerRunner;
-  // (undocumented)
   database: PluginDatabaseManager;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)
@@ -436,9 +404,6 @@ export interface RouterOptions {
   // (undocumented)
   taskWorkers?: number;
 }
-
-// @public @deprecated
-export const runCommand: (options: RunCommandOptions) => Promise<void>;
 
 // @public (undocumented)
 export type RunCommandOptions = {
@@ -480,9 +445,6 @@ export type SerializedTaskEvent = {
   type: TaskEventType;
   createdAt: string;
 };
-
-// @public @deprecated
-export type Status = TaskStatus;
 
 // @public
 export interface TaskBroker {
@@ -543,7 +505,7 @@ export class TaskManager implements TaskContext {
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
-    logger: Logger_2,
+    logger: Logger,
   ): TaskManager;
   // (undocumented)
   get done(): boolean;
@@ -554,16 +516,13 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   get secrets(): TaskSecrets | undefined;
   // (undocumented)
-  get spec(): TaskSpec;
+  get spec(): TaskSpecV1beta3;
 }
 
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
-
-// @public @deprecated
-export type TaskState = CurrentClaimedTask;
 
 // @public
 export type TaskStatus =

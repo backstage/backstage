@@ -17,17 +17,6 @@
 import { JsonValue, JsonObject } from '@backstage/types';
 
 /**
- * Metadata about the Template that was the originator of a scaffolder task, as
- * stored in the database.
- *
- * @public
- * @deprecated use templateInfo on the spec instead
- */
-export type TemplateMetadata = {
-  name: string;
-};
-
-/**
  * Information about a template that is stored on a task specification.
  * Includes a stringified entityRef, and the baseUrl which is usually the relative path of the template definition
  *
@@ -52,26 +41,6 @@ export interface TaskStep {
 }
 
 /**
- * A scaffolder task as stored in the database, generated from a v1beta2
- * apiVersion Template.
- *
- * @public
- * @deprecated Please convert your templates to TaskSpecV1beta3 on apiVersion
- *             scaffolder.backstage.io/v1beta3
- */
-export interface TaskSpecV1beta2 {
-  apiVersion: 'backstage.io/v1beta2';
-  /** @deprecated use templateInfo.baseUrl instead */
-  baseUrl?: string;
-  values: JsonObject;
-  steps: TaskStep[];
-  output: { [name: string]: string };
-  /** @deprecated use templateInfo instead */
-  metadata?: TemplateMetadata;
-  templateInfo?: TemplateInfo;
-}
-
-/**
  * A scaffolder task as stored in the database, generated from a v1beta3
  * apiVersion Template.
  *
@@ -79,13 +48,9 @@ export interface TaskSpecV1beta2 {
  */
 export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
-  /** @deprecated use templateInfo.baseUrl instead */
-  baseUrl?: string;
   parameters: JsonObject;
   steps: TaskStep[];
   output: { [name: string]: JsonValue };
-  /** @deprecated use templateInfo instead */
-  metadata?: TemplateMetadata;
   templateInfo?: TemplateInfo;
 }
 
@@ -94,4 +59,4 @@ export interface TaskSpecV1beta3 {
  *
  * @public
  */
-export type TaskSpec = TaskSpecV1beta2 | TaskSpecV1beta3;
+export type TaskSpec = TaskSpecV1beta3;

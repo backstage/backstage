@@ -15,13 +15,13 @@ A list of all registered actions can be found under `/create/actions`. For local
 development you should be able to reach them at
 `http://localhost:3000/create/actions`.
 
-### Migrating from `fetch:cookiecutter` to `fetch:template`
+## Migrating from `fetch:cookiecutter` to `fetch:template`
 
 The `fetch:template` action is a new action with a similar API to
 `fetch:cookiecutter` but no dependency on `cookiecutter`. There are two options
 for migrating templates that use `fetch:cookiecutter` to use `fetch:template`:
 
-#### Using `cookiecutterCompat` mode
+### Using `cookiecutterCompat` mode
 
 The new `fetch:template` action has a `cookiecutterCompat` flag which should
 allow most templates built for `fetch:cookiecutter` to work without any changes.
@@ -43,7 +43,7 @@ allow most templates built for `fetch:cookiecutter` to work without any changes.
         values:
 ```
 
-#### Manual migration
+### Manual migration
 
 If you prefer, you can manually migrate your templates to avoid the need for
 enabling cookiecutter compatibility mode, which will result in slightly less

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ContainerRunner,
-  PluginDatabaseManager,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
@@ -26,11 +22,8 @@ import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
-  TemplateEntityV1beta2,
   TemplateEntityV1beta3,
-  TaskSpecV1beta3,
   TaskSpec,
-  TaskSpecV1beta2,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -61,18 +54,12 @@ export interface RouterOptions {
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
   taskWorkers?: number;
-  containerRunner?: ContainerRunner;
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 }
 
-function isSupportedTemplate(
-  entity: TemplateEntityV1beta2 | TemplateEntityV1beta3,
-) {
-  return (
-    entity.apiVersion === 'backstage.io/v1beta2' ||
-    entity.apiVersion === 'scaffolder.backstage.io/v1beta3'
-  );
+function isSupportedTemplate(entity: TemplateEntityV1beta3) {
+  return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
 }
 
 /** @public */
@@ -89,7 +76,6 @@ export async function createRouter(
     database,
     catalogClient,
     actions,
-    containerRunner,
     taskWorkers,
     additionalTemplateFilters,
   } = options;
@@ -128,7 +114,6 @@ export async function createRouter(
     : createBuiltinActions({
         integrations,
         catalogClient,
-        containerRunner,
         reader,
         config,
         additionalTemplateFilters,
@@ -188,70 +173,42 @@ export async function createRouter(
         token: getBearerToken(req.headers.authorization),
       });
 
-      let taskSpec: TaskSpec;
-
-      if (isSupportedTemplate(template)) {
-        if (template.apiVersion === 'backstage.io/v1beta2') {
-          logger.warn(
-            `Scaffolding ${stringifyEntityRef(
-              template,
-            )} with deprecated apiVersion ${
-              template.apiVersion
-            }. Please migrate the template to backstage.io/v1beta3. https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3`,
-          );
-        }
-
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(values, parameters);
-          if (!result.valid) {
-            res.status(400).json({ errors: result.errors });
-            return;
-          }
-        }
-
-        const baseUrl = getEntityBaseUrl(template);
-
-        const baseTaskSpec = {
-          baseUrl,
-          steps: template.spec.steps.map((step, index) => ({
-            ...step,
-            id: step.id ?? `step-${index + 1}`,
-            name: step.name ?? step.action,
-          })),
-          output: template.spec.output ?? {},
-
-          // deprecated in favour of templateInfo
-          metadata: { name: template.metadata?.name },
-
-          templateInfo: {
-            entityRef: stringifyEntityRef({
-              kind,
-              namespace,
-              name: template.metadata?.name,
-            }),
-            baseUrl,
-          },
-        };
-
-        taskSpec =
-          template.apiVersion === 'backstage.io/v1beta2'
-            ? ({
-                ...baseTaskSpec,
-                apiVersion: template.apiVersion,
-                values,
-              } as TaskSpecV1beta2)
-            : ({
-                ...baseTaskSpec,
-                apiVersion: template.apiVersion,
-                parameters: values,
-              } as TaskSpecV1beta3);
-      } else {
+      if (!isSupportedTemplate(template)) {
         throw new InputError(
           `Unsupported apiVersion field in schema entity, ${
             (template as Entity).apiVersion
           }`,
         );
       }
+
+      for (const parameters of [template.spec.parameters ?? []].flat()) {
+        const result = validate(values, parameters);
+        if (!result.valid) {
+          res.status(400).json({ errors: result.errors });
+          return;
+        }
+      }
+
+      const baseUrl = getEntityBaseUrl(template);
+
+      const taskSpec: TaskSpec = {
+        apiVersion: template.apiVersion,
+        steps: template.spec.steps.map((step, index) => ({
+          ...step,
+          id: step.id ?? `step-${index + 1}`,
+          name: step.name ?? step.action,
+        })),
+        output: template.spec.output ?? {},
+        parameters: values,
+        templateInfo: {
+          entityRef: stringifyEntityRef({
+            kind,
+            namespace,
+            name: template.metadata?.name,
+          }),
+          baseUrl,
+        },
+      };
 
       const result = await taskBroker.dispatch({
         spec: taskSpec,

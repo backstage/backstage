@@ -133,7 +133,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
       .where(
         'last_modified_at',
         '<=',
-        this.#db.client.config.client === 'sqlite3'
+        this.#db.client.config.client.includes('sqlite3')
           ? this.#db.raw(`datetime('now', ?)`, [`-${maxAgeSeconds} seconds`])
           : this.#db.raw(`now() + interval '${-maxAgeSeconds} seconds'`),
       )

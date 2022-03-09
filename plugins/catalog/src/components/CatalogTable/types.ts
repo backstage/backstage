@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 
 /** @public */
 export interface CatalogTableRow {
@@ -22,8 +22,8 @@ export interface CatalogTableRow {
   resolved: {
     name: string;
     partOfSystemRelationTitle?: string;
-    partOfSystemRelations: EntityName[];
+    partOfSystemRelations: CompoundEntityRef[];
     ownedByRelationsTitle?: string;
-    ownedByRelations: EntityName[];
+    ownedByRelations: CompoundEntityRef[];
   };
 }

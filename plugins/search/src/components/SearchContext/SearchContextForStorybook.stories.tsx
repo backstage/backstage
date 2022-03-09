@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiProvider } from '@backstage/core-app-api';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 import { TestApiRegistry } from '@backstage/test-utils';
 import React, { ComponentProps, PropsWithChildren } from 'react';
 import { searchApiRef } from '../../apis';

@@ -28,28 +28,12 @@ type TaskPageLinksProps = {
 };
 
 export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
-  const { entityRef: entityRefOutput, remoteUrl } = output;
-  let { links = [] } = output;
+  const { links = [] } = output;
   const app = useApp();
   const entityRoute = useRouteRef(entityRouteRef);
 
   const iconResolver = (key?: string): IconComponent =>
     key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
-
-  if (remoteUrl) {
-    links = [{ url: remoteUrl, title: 'Repo' }, ...links];
-  }
-
-  if (entityRefOutput) {
-    links = [
-      {
-        entityRef: entityRefOutput,
-        title: 'Open in catalog',
-        icon: 'catalog',
-      },
-      ...links,
-    ];
-  }
 
   return (
     <Box px={3} pb={3}>

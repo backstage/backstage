@@ -217,12 +217,8 @@ export const TaskStatusStepper = memo(
   },
 );
 
-const hasLinks = ({
-  entityRef,
-  remoteUrl,
-  links = [],
-}: ScaffolderTaskOutput): boolean =>
-  !!(entityRef || remoteUrl || links.length > 0);
+const hasLinks = ({ links = [] }: ScaffolderTaskOutput): boolean =>
+  links.length > 0;
 
 /**
  * TaskPageProps for constructing a TaskPage
@@ -302,10 +298,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
       return;
     }
 
-    const formData =
-      taskStream.task!.spec.apiVersion === 'backstage.io/v1beta2'
-        ? taskStream.task!.spec.values
-        : taskStream.task!.spec.parameters;
+    const formData = taskStream.task!.spec.parameters;
 
     const { name } = parseEntityRef(
       taskStream.task!.spec.templateInfo?.entityRef,

@@ -18,44 +18,8 @@
  * The namespace that entities without an explicit namespace fall into.
  *
  * @public
- * @deprecated use {@link DEFAULT_NAMESPACE} instead.
- */
-export const ENTITY_DEFAULT_NAMESPACE = 'default';
-
-/**
- * The namespace that entities without an explicit namespace fall into.
- *
- * @public
  */
 export const DEFAULT_NAMESPACE = 'default';
-
-/**
- * The keys of EntityMeta that are auto-generated.
- *
- * @public
- * @deprecated will be removed in a future release.
- */
-export const ENTITY_META_GENERATED_FIELDS = [
-  'uid',
-  'etag',
-  'generation',
-] as const;
-
-/**
- * Annotation for linking to entity page from catalog pages.
- *
- * @public
- * @deprecated use {@link ANNOTATION_VIEW_URL} instead.
- */
-export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
-
-/**
- * Annotation for linking to entity edit page from catalog pages.
- *
- * @public
- * @deprecated use {@link ANNOTATION_EDIT_URL} instead.
- */
-export const EDIT_URL_ANNOTATION = 'backstage.io/edit-url';
 
 /**
  * Annotation for linking to entity page from catalog pages.

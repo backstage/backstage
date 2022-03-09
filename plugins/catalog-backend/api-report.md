@@ -7,22 +7,22 @@
 
 import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogEntityDocument as CatalogEntityDocument_2 } from '@backstage/plugin-catalog-common';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
-import { DocumentCollator } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
-import { EntityName } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegrationConfig } from '@backstage/integration';
-import { IndexableDocument } from '@backstage/search-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-client';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
@@ -30,6 +30,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Readable } from 'stream';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -97,55 +98,28 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
 }
 
 // @public (undocumented)
-export class AwsS3DiscoveryProcessor implements CatalogProcessor {
-  constructor(reader: UrlReader);
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    optional: boolean,
-    emit: CatalogProcessorEmit,
-    parser: CatalogProcessorParser,
-  ): Promise<boolean>;
-}
-
-// @public
-export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: Logger_2;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger_2;
-    },
-  ): AzureDevOpsDiscoveryProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// @public (undocumented)
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    parser?: BitbucketRepositoryParser;
-    logger: Logger_2;
+    parser?: (options: {
+      integration: BitbucketIntegration;
+      target: string;
+      presence?: 'optional' | 'required';
+      logger: Logger;
+    }) => AsyncIterable<CatalogProcessorResult>;
+    logger: Logger;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      parser?: BitbucketRepositoryParser;
-      logger: Logger_2;
+      parser?: (options: {
+        integration: BitbucketIntegration;
+        target: string;
+        presence?: 'optional' | 'required';
+        logger: Logger;
+      }) => AsyncIterable<CatalogProcessorResult>;
+      logger: Logger;
     },
   ): BitbucketDiscoveryProcessor;
   // (undocumented)
@@ -158,11 +132,12 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;
-  logger: Logger_2;
+  presence?: 'optional' | 'required';
+  logger: Logger;
 }) => AsyncIterable<CatalogProcessorResult>;
 
 // @public (undocumented)
@@ -209,11 +184,17 @@ export class CatalogBuilder {
     key: string,
     resolver: PlaceholderResolver,
   ): CatalogBuilder;
+  setProcessingInterval(
+    processingInterval: ProcessingIntervalFunction,
+  ): CatalogBuilder;
+  setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
+  // @deprecated
   setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder;
+  // @deprecated
   setRefreshIntervalSeconds(seconds: number): CatalogBuilder;
 }
 
-// @public
+// @alpha
 export const catalogConditions: Conditions<{
   hasAnnotation: PermissionRule<
     Entity,
@@ -239,23 +220,12 @@ export const catalogConditions: Conditions<{
   >;
 }>;
 
-// @public (undocumented)
-export interface CatalogEntityDocument extends IndexableDocument {
-  // (undocumented)
-  componentType: string;
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  lifecycle: string;
-  // (undocumented)
-  namespace: string;
-  // (undocumented)
-  owner: string;
-}
+// @public @deprecated (undocumented)
+export type CatalogEntityDocument = CatalogEntityDocument_2;
 
 // @public (undocumented)
 export type CatalogEnvironment = {
-  logger: Logger_2;
+  logger: Logger;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
@@ -300,11 +270,6 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
-  handleError?(
-    error: Error,
-    location: LocationSpec,
-    emit: CatalogProcessorEmit,
-  ): Promise<void>;
 };
 
 // @public
@@ -334,7 +299,6 @@ export type CatalogProcessorErrorResult = {
 export type CatalogProcessorLocationResult = {
   type: 'location';
   location: LocationSpec;
-  optional?: boolean;
 };
 
 // @public
@@ -347,7 +311,6 @@ export type CatalogProcessorParser = (options: {
 export type CatalogProcessorRelationResult = {
   type: 'relation';
   relation: EntityRelationSpec;
-  entityRef?: string;
 };
 
 // @public (undocumented)
@@ -377,14 +340,14 @@ export type CatalogRulesEnforcer = {
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger_2;
+    logger: Logger;
     reader: UrlReader;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
       reader: UrlReader;
     },
   ): CodeOwnersProcessor;
@@ -394,17 +357,23 @@ export class CodeOwnersProcessor implements CatalogProcessor {
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
-// @public
+// @alpha
 export const createCatalogPermissionRule: <TParams extends unknown[]>(
   rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
 
-// @public
+// @alpha
 export const createCatalogPolicyDecision: (
   conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
 ) => ConditionalPolicyDecision;
 
 // @public
+export function createRandomProcessingInterval(options: {
+  minSeconds: number;
+  maxSeconds: number;
+}): ProcessingIntervalFunction;
+
+// @public @deprecated
 export function createRandomRefreshInterval(options: {
   minSeconds: number;
   maxSeconds: number;
@@ -413,8 +382,8 @@ export function createRandomRefreshInterval(options: {
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public (undocumented)
-export class DefaultCatalogCollator implements DocumentCollator {
+// @public @deprecated (undocumented)
+export class DefaultCatalogCollator {
   constructor(options: {
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
@@ -432,7 +401,7 @@ export class DefaultCatalogCollator implements DocumentCollator {
   // (undocumented)
   protected discovery: PluginEndpointDiscovery;
   // (undocumented)
-  execute(): Promise<CatalogEntityDocument[]>;
+  execute(): Promise<CatalogEntityDocument_2[]>;
   // (undocumented)
   protected filter?: GetEntitiesRequest['filter'];
   // (undocumented)
@@ -455,13 +424,38 @@ export class DefaultCatalogCollator implements DocumentCollator {
 }
 
 // @public (undocumented)
+export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
+  // (undocumented)
+  static fromConfig(
+    _config: Config,
+    options: DefaultCatalogCollatorFactoryOptions,
+  ): DefaultCatalogCollatorFactory;
+  // (undocumented)
+  getCollator(): Promise<Readable>;
+  // (undocumented)
+  readonly type: string;
+  // (undocumented)
+  readonly visibilityPermission: Permission;
+}
+
+// @public (undocumented)
+export type DefaultCatalogCollatorFactoryOptions = {
+  discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
+  locationTemplate?: string;
+  filter?: GetEntitiesRequest['filter'];
+  batchSize?: number;
+  catalogClient?: CatalogApi;
+};
+
+// @public (undocumented)
 export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator
 {
   constructor(options: {
     processors: CatalogProcessor[];
     integrations: ScmIntegrationRegistry;
-    logger: Logger_2;
+    logger: Logger;
     parser: CatalogProcessorParser;
     policy: EntityPolicy;
     rulesEnforcer: CatalogRulesEnforcer;
@@ -522,7 +516,7 @@ export type EntitiesSearchFilter = {
   values?: string[];
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 function entity(
   atLocation: LocationSpec,
   newEntity: Entity,
@@ -621,9 +615,9 @@ export type EntityProviderMutation =
 
 // @public
 export type EntityRelationSpec = {
-  source: EntityName;
+  source: CompoundEntityRef;
   type: string;
-  target: EntityName;
+  target: CompoundEntityRef;
 };
 
 // @public (undocumented)
@@ -639,7 +633,7 @@ export class FileReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 function generalError(
   atLocation: LocationSpec,
   message: string,
@@ -649,14 +643,14 @@ function generalError(
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger_2;
+    logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubDiscoveryProcessor;
@@ -677,11 +671,11 @@ export type GithubMultiOrgConfig = Array<{
   userNamespace: string | undefined;
 }>;
 
-// @alpha
+// @public
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger_2;
+    logger: Logger;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
@@ -689,7 +683,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubMultiOrgReaderProcessor;
@@ -709,7 +703,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     id: string;
     orgUrl: string;
     gitHubConfig: GitHubIntegrationConfig;
-    logger: Logger_2;
+    logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
@@ -720,7 +714,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     options: {
       id: string;
       orgUrl: string;
-      logger: Logger_2;
+      logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GitHubOrgEntityProvider;
@@ -734,14 +728,14 @@ export class GitHubOrgEntityProvider implements EntityProvider {
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger_2;
+    logger: Logger;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;
@@ -755,35 +749,16 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public
-export class GitLabDiscoveryProcessor implements CatalogProcessor {
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger_2;
-    },
-  ): GitLabDiscoveryProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// @public (undocumented)
+// @public @deprecated (undocumented)
 function inputError(
   atLocation: LocationSpec,
   message: string,
 ): CatalogProcessorResult;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 function location_2(
   newLocation: LocationSpec,
-  optional?: boolean,
+  _optional?: boolean,
 ): CatalogProcessorResult;
 
 // @public (undocumented)
@@ -874,7 +849,7 @@ export interface LocationStore {
   listLocations(): Promise<Location_2[]>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 function notFoundError(
   atLocation: LocationSpec,
   message: string,
@@ -896,7 +871,7 @@ export function parseEntityYaml(
   location: LocationSpec,
 ): Iterable<CatalogProcessorResult>;
 
-// @public
+// @alpha
 export const permissionRules: {
   hasAnnotation: PermissionRule<
     Entity,
@@ -962,6 +937,31 @@ export type PlaceholderResolverResolveUrl = (
 ) => string;
 
 // @public
+export type ProcessingIntervalFunction = () => number;
+
+// @public
+export const processingResult: Readonly<{
+  readonly notFoundError: (
+    atLocation: LocationSpec,
+    message: string,
+  ) => CatalogProcessorResult;
+  readonly inputError: (
+    atLocation: LocationSpec,
+    message: string,
+  ) => CatalogProcessorResult;
+  readonly generalError: (
+    atLocation: LocationSpec,
+    message: string,
+  ) => CatalogProcessorResult;
+  readonly location: (newLocation: LocationSpec) => CatalogProcessorResult;
+  readonly entity: (
+    atLocation: LocationSpec,
+    newEntity: Entity,
+  ) => CatalogProcessorResult;
+  readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
+}>;
+
+// @public
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
     ? RecursivePartial<U>[]
@@ -970,7 +970,7 @@ export type RecursivePartial<T> = {
     : T[P];
 };
 
-// @public
+// @public @deprecated
 export type RefreshIntervalFunction = () => number;
 
 // @public
@@ -984,7 +984,7 @@ export interface RefreshService {
   refresh(options: RefreshOptions): Promise<void>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 function relation(spec: EntityRelationSpec): CatalogProcessorResult;
 
 declare namespace results {
@@ -1010,32 +1010,16 @@ export interface RouterOptions {
   // (undocumented)
   locationService: LocationService;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // (undocumented)
   permissionIntegrationRouter?: express.Router;
   // (undocumented)
   refreshService?: RefreshService;
 }
 
-// @public @deprecated
-export function runPeriodically(fn: () => any, delayMs: number): () => void;
-
-// @public @deprecated (undocumented)
-export class StaticLocationProcessor implements StaticLocationProcessor {
-  constructor(staticLocations: LocationSpec[]);
-  // (undocumented)
-  static fromConfig(config: Config): StaticLocationProcessor;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {
-  constructor(options: { reader: UrlReader; logger: Logger_2 });
+  constructor(options: { reader: UrlReader; logger: Logger });
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

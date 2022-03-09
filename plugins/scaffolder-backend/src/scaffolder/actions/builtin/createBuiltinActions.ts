@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -30,7 +30,6 @@ import {
 
 import { createDebugLogAction } from './debug';
 import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
-import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
@@ -49,7 +48,6 @@ import {
 } from './github';
 import { TemplateFilter } from '../../../lib';
 import { TemplateAction } from '../types';
-import { getRootLogger } from '@backstage/backend-common';
 
 /**
  * The options passed to {@link createBuiltinActions}
@@ -59,8 +57,6 @@ export interface CreateBuiltInActionsOptions {
   reader: UrlReader;
   integrations: ScmIntegrations;
   catalogClient: CatalogApi;
-  /** @deprecated when the cookiecutter action is removed this won't be necessary */
-  containerRunner?: ContainerRunner;
   config: Config;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 }
@@ -78,11 +74,11 @@ export const createBuiltinActions = (
   const {
     reader,
     integrations,
-    containerRunner,
     catalogClient,
     config,
     additionalTemplateFilters,
   } = options;
+
   const githubCredentialsProvider: GithubCredentialsProvider =
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
@@ -134,21 +130,6 @@ export const createBuiltinActions = (
       githubCredentialsProvider,
     }),
   ];
-
-  if (containerRunner) {
-    getRootLogger().warn(
-      `[DEPRECATED] The fetch:cookiecutter action will be removed part of the default scaffolder actions in later versions. 
-You can install the package seperately and remove the containerRunner from the createBuiltInActions to remove this warning,
-or you can migrate to using fetch:template https://backstage.io/docs/features/software-templates/builtin-actions#migrating-from-fetchcookiecutter-to-fetchtemplate`,
-    );
-    actions.push(
-      createFetchCookiecutterAction({
-        reader,
-        integrations,
-        containerRunner,
-      }),
-    );
-  }
 
   return actions as TemplateAction<JsonObject>[];
 };

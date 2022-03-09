@@ -15,21 +15,16 @@
  */
 
 import React, { useState } from 'react';
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/styles';
 import {
   CATALOG_FILTER_EXISTS,
   catalogApiRef,
   CatalogApi,
-  isOwnerOf,
+  useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
-import {
-  DEFAULT_NAMESPACE,
-  Entity,
-  parseEntityRef,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { DocsTable } from './Tables';
 import { DocsCardGrid } from './Grids';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
@@ -43,8 +38,7 @@ import {
   SupportButton,
   ContentHeader,
 } from '@backstage/core-components';
-
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 
 const panels = {
   DocsTable: DocsTable,
@@ -104,16 +98,16 @@ const CustomPanel = ({
     },
   });
   const classes = useStyles();
-  const { value: user } = useOwnUser();
+  const { loading: loadingOwnership, isOwnedEntity } = useEntityOwnership();
 
   const Panel = panels[config.panelType];
 
   const shownEntities = entities.filter(entity => {
     if (config.filterPredicate === 'ownedByUser') {
-      if (!user) {
+      if (loadingOwnership) {
         return false;
       }
-      return isOwnerOf(user, entity);
+      return isOwnedEntity(entity);
     }
 
     return (
@@ -225,18 +219,3 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
     </TechDocsPageWrapper>
   );
 };
-
-function useOwnUser(): AsyncState<UserEntity | undefined> {
-  const catalogApi = useApi(catalogApiRef);
-  const identityApi = useApi(identityApiRef);
-
-  return useAsync(async () => {
-    const identity = await identityApi.getBackstageIdentity();
-    return catalogApi.getEntityByName(
-      parseEntityRef(identity.userEntityRef, {
-        defaultKind: 'User',
-        defaultNamespace: DEFAULT_NAMESPACE,
-      }),
-    ) as Promise<UserEntity | undefined>;
-  }, [catalogApi, identityApi]);
-}

@@ -15,7 +15,7 @@
  */
 
 import { DEFAULT_NAMESPACE } from './constants';
-import { EntityName } from '../types';
+import { CompoundEntityRef } from '../types';
 import { Entity } from './Entity';
 
 function parseRefString(ref: string): {
@@ -23,86 +23,52 @@ function parseRefString(ref: string): {
   namespace?: string;
   name: string;
 } {
-  const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
-  if (!match) {
+  let colonI = ref.indexOf(':');
+  const slashI = ref.indexOf('/');
+
+  // If the / is ahead of the :, treat the rest as the name
+  if (slashI !== -1 && slashI < colonI) {
+    colonI = -1;
+  }
+
+  const kind = colonI === -1 ? undefined : ref.slice(0, colonI);
+  const namespace = slashI === -1 ? undefined : ref.slice(colonI + 1, slashI);
+  const name = ref.slice(Math.max(colonI + 1, slashI + 1));
+
+  if (kind === '' || namespace === '' || name === '') {
     throw new TypeError(
       `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`,
     );
   }
 
-  return {
-    kind: match[1]?.slice(0, -1),
-    namespace: match[2]?.slice(0, -1),
-    name: match[3],
-  };
+  return { kind, namespace, name };
 }
 
 /**
- * Extracts the kind, namespace and name that form the name triplet of the
- * given entity.
+ * Extracts the kind, namespace and name that form the compound entity ref
+ * triplet of the given entity.
+ *
+ * @public
+ * @deprecated Use getCompoundEntityRef instead
+ * @param entity - An entity
+ * @returns The compound entity ref
+ */
+export const getEntityName = getCompoundEntityRef;
+
+/**
+ * Extracts the kind, namespace and name that form the compound entity ref
+ * triplet of the given entity.
  *
  * @public
  * @param entity - An entity
- * @returns The complete entity name
+ * @returns The compound entity ref
  */
-export function getEntityName(entity: Entity): EntityName {
+export function getCompoundEntityRef(entity: Entity): CompoundEntityRef {
   return {
     kind: entity.kind,
     namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
     name: entity.metadata.name,
   };
-}
-
-/**
- * The context of defaults that entity reference parsing happens within.
- *
- * @public
- * @deprecated type inlined, will be removed in a future release.
- */
-export type EntityRefContext = {
-  /** The default kind, if none is given in the reference */
-  defaultKind?: string;
-  /** The default namespace, if none is given in the reference */
-  defaultNamespace?: string;
-};
-
-/**
- * Parses an entity reference, either on string or compound form, and always
- * returns a complete entity name including kind, namespace and name.
- *
- * @remarks
- *
- * This function automatically assumes the default namespace "default" unless
- * otherwise specified as part of the options, and will throw an error if no
- * kind was specified in the input reference and no default kind was given.
- *
- * @deprecated Please use parseEntityRef instead
- * @public
- * @param ref - The reference to parse
- * @param context - The context of defaults that the parsing happens within
- * @returns A complete entity name
- */
-export function parseEntityName(
-  ref: string | { kind?: string; namespace?: string; name: string },
-  context: {
-    /** The default kind, if none is given in the reference */
-    defaultKind?: string;
-    /** The default namespace, if none is given in the reference */
-    defaultNamespace?: string;
-  } = {},
-): EntityName {
-  const { kind, namespace, name } = parseEntityRef(ref, {
-    defaultNamespace: DEFAULT_NAMESPACE,
-    ...context,
-  });
-
-  if (!kind) {
-    throw new Error(
-      `Entity reference ${namespace}/${name} did not contain a kind`,
-    );
-  }
-
-  return { kind, namespace, name };
 }
 
 /**
@@ -127,7 +93,7 @@ export function parseEntityRef(
     /** The default namespace, if none is given in the reference */
     defaultNamespace?: string;
   },
-): EntityName {
+): CompoundEntityRef {
   if (!ref) {
     throw new Error(`Entity reference must not be empty`);
   }
@@ -202,68 +168,4 @@ export function stringifyEntityRef(
   return `${kind.toLocaleLowerCase('en-US')}:${namespace.toLocaleLowerCase(
     'en-US',
   )}/${name.toLocaleLowerCase('en-US')}`;
-}
-
-/**
- * Compares an entity to either a string reference or a compound reference.
- *
- * @remarks
- *
- * The comparison is case insensitive, and all of kind, namespace, and name
- * must match (after applying the optional context to the ref).
- *
- * @public
- * @param entity - The entity to match
- * @param ref - A string or compound entity ref
- * @param context - An optional context of default kind and namespace, that apply
- *                to the ref if given
- * @returns True if matching, false otherwise
- * @deprecated compare using stringifyEntityRef instead.
- */
-export function compareEntityToRef(
-  entity: Entity,
-  ref:
-    | string
-    | { kind?: string; namespace?: string; name: string }
-    | EntityName,
-  context?: {
-    /** The default kind, if none is given in the reference */
-    defaultKind?: string;
-    /** The default namespace, if none is given in the reference */
-    defaultNamespace?: string;
-  },
-): boolean {
-  const entityKind = entity.kind;
-  const entityNamespace = entity.metadata.namespace || DEFAULT_NAMESPACE;
-  const entityName = entity.metadata.name;
-
-  let refKind: string | undefined;
-  let refNamespace: string | undefined;
-  let refName: string;
-  if (typeof ref === 'string') {
-    const parsed = parseRefString(ref);
-    refKind = parsed.kind || context?.defaultKind;
-    refNamespace =
-      parsed.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
-    refName = parsed.name;
-  } else {
-    refKind = ref.kind || context?.defaultKind;
-    refNamespace =
-      ref.namespace || context?.defaultNamespace || DEFAULT_NAMESPACE;
-    refName = ref.name;
-  }
-
-  if (!refKind || !refNamespace) {
-    throw new Error(
-      `Entity reference or context did not contain kind and namespace`,
-    );
-  }
-
-  return (
-    entityKind.toLocaleLowerCase('en-US') ===
-      refKind.toLocaleLowerCase('en-US') &&
-    entityNamespace.toLocaleLowerCase('en-US') ===
-      refNamespace.toLocaleLowerCase('en-US') &&
-    entityName.toLocaleLowerCase('en-US') === refName.toLocaleLowerCase('en-US')
-  );
 }

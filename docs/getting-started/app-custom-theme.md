@@ -57,6 +57,7 @@ done like this:
 import { createApp } from '@backstage/app-defaults';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import LightIcon from '@material-ui/icons/WbSunny';
 
 const app = createApp({
   apis: ...,
@@ -65,6 +66,7 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
+    icon: <LightIcon />,
     Provider: ({ children }) => (
       <ThemeProvider theme={myTheme}>
         <CssBaseline>{children}</CssBaseline>

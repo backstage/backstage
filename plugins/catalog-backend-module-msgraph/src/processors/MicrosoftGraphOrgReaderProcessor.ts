@@ -19,7 +19,7 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
-  results,
+  processingResult,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import {
@@ -109,6 +109,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
         userFilter: provider.userFilter,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
+        groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
         userTransformer: this.userTransformer,
@@ -125,10 +126,10 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
 
     // Done!
     for (const group of groups) {
-      emit(results.entity(location, group));
+      emit(processingResult.entity(location, group));
     }
     for (const user of users) {
-      emit(results.entity(location, user));
+      emit(processingResult.entity(location, user));
     }
 
     return true;

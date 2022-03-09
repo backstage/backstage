@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.2.4-next.0
+
+### Patch Changes
+
+- 8122e27717: Updating documentation for supporting `apiVersion: scaffolder.backstage.io/v1beta3`
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/plugin-scaffolder-backend@0.18.0-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- 6c7a879660: Fixed bug where existing cookiecutter.json file is not used.
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-scaffolder-backend@0.17.3
+  - @backstage/integration@0.8.0
+
 ## 0.2.2
 
 ### Patch Changes

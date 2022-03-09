@@ -133,7 +133,7 @@ export class CacheManager {
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
-      store: new KeyvRedis(`redis://${this.connection}`),
+      store: new KeyvRedis(this.connection),
     });
   }
 

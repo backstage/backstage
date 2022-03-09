@@ -24,7 +24,6 @@ import {
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { DocumentCollator } from '@backstage/search-common';
 import fetch from 'node-fetch';
 import unescape from 'lodash/unescape';
 import { Logger } from 'winston';
@@ -36,7 +35,7 @@ import {
   CatalogClient,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
-import { TechDocsDocument } from '@backstage/techdocs-common';
+import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 
 interface MkSearchIndexDoc {
   title: string;
@@ -69,8 +68,10 @@ type EntityInfo = {
  * A search collator responsible for gathering and transforming TechDocs documents.
  *
  * @public
+ * @deprecated Upgrade to a more recent `@backstage/search-backend-node` and
+ * use `DefaultTechDocsCollatorFactory` instead.
  */
-export class DefaultTechDocsCollator implements DocumentCollator {
+export class DefaultTechDocsCollator {
   public readonly type: string = 'techdocs';
   public readonly visibilityPermission = catalogEntityReadPermission;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   scmIntegrationsApiRef,
@@ -81,7 +81,7 @@ class TechDocsDevStorageApi implements TechDocsStorageApi {
     return this.configApi.getString('techdocs.builder');
   }
 
-  async getEntityDocs(_entityId: EntityName, path: string) {
+  async getEntityDocs(_entityId: CompoundEntityRef, path: string) {
     const apiOrigin = await this.getApiOrigin();
     // Irrespective of the entity, use mkdocs server to find the file for the path.
     const url = `${apiOrigin}/${path}`;
@@ -97,7 +97,7 @@ class TechDocsDevStorageApi implements TechDocsStorageApi {
     return request.text();
   }
 
-  async syncEntityDocs(_: EntityName): Promise<SyncResult> {
+  async syncEntityDocs(_: CompoundEntityRef): Promise<SyncResult> {
     // this is just stub of this function as we don't need to check if docs are up to date,
     // we always want to retrigger a new build
     return 'cached';
@@ -106,7 +106,7 @@ class TechDocsDevStorageApi implements TechDocsStorageApi {
   // Used by transformer to modify the request to assets (CSS, Image) from inside the HTML.
   async getBaseUrl(
     oldBaseUrl: string,
-    _entityId: EntityName,
+    _entityId: CompoundEntityRef,
     path: string,
   ): Promise<string> {
     const apiOrigin = await this.getApiOrigin();
@@ -154,7 +154,7 @@ class TechDocsDevApi implements TechDocsApi {
     };
   }
 
-  async getTechDocsMetadata(_entityId: EntityName) {
+  async getTechDocsMetadata(_entityId: CompoundEntityRef) {
     return {
       site_name: 'Live preview environment',
       site_description: '',

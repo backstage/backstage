@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import React from 'react';
 import { EntityRefLink } from './EntityRefLink';
 import { LinkProps } from '@backstage/core-components';
@@ -25,7 +25,7 @@ import { LinkProps } from '@backstage/core-components';
  * @public
  */
 export type EntityRefLinksProps = {
-  entityRefs: (Entity | EntityName)[];
+  entityRefs: (Entity | CompoundEntityRef)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
 

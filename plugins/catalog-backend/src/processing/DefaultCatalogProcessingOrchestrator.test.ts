@@ -29,11 +29,11 @@ import {
   CatalogProcessorEmit,
   CatalogProcessorParser,
   LocationSpec,
-  results,
-} from '../ingestion';
+  processingResult,
+} from '../api';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
-import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
+import { defaultEntityDataParser } from '../modules/util/parse';
 import { ConfigReader } from '@backstage/config';
 
 class FooBarProcessor implements CatalogProcessor {
@@ -51,7 +51,7 @@ class FooBarProcessor implements CatalogProcessor {
   ) {
     if (await cache.get('emit')) {
       emit(
-        results.entity(
+        processingResult.entity(
           { type: 'url', target: './new-place' },
           {
             apiVersion: 'my-api/v1',
@@ -63,7 +63,7 @@ class FooBarProcessor implements CatalogProcessor {
         ),
       );
       emit(
-        results.relation({
+        processingResult.relation({
           type: 'my-type',
           source: { kind: 'foobar', name: 'my-source', namespace: 'default' },
           target: { kind: 'foobar', name: 'my-target', namespace: 'default' },
@@ -211,7 +211,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
         getProcessorName: jest.fn(),
         validateEntityKind: jest.fn(async () => true),
         readLocation: jest.fn(async (_l, _o, emit) => {
-          emit(results.entity({ type: 't', target: 't' }, entity));
+          emit(processingResult.entity({ type: 't', target: 't' }, entity));
           return true;
         }),
       };

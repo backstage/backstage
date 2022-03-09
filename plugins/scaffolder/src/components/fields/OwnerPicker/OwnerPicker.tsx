@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 import React from 'react';
-import { EntityPicker } from '../EntityPicker';
+import { EntityPicker } from '../EntityPicker/EntityPicker';
 import { FieldExtensionComponentProps } from '../../../extensions';
 
+/**
+ * The input props that can be specified under `ui:options` for the
+ * `OwnerPicker` field extension.
+ *
+ * @public
+ */
 export interface OwnerPickerUiOptions {
   allowedKinds?: string[];
 }
 
 /**
- * Owner Picker
+ * The underlying component that is rendered in the form for the `OwnerPicker`
+ * field extension.
+ *
+ * @public
  */
 export const OwnerPicker = (
   props: FieldExtensionComponentProps<string, OwnerPickerUiOptions>,

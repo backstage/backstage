@@ -23,7 +23,7 @@ export type Props = {
   rings: Ring[];
 };
 
-const useStyles = makeStyles<Theme>(() => ({
+const useStyles = makeStyles<Theme>(theme => ({
   ring: {
     fill: 'none',
     stroke: '#bbb',
@@ -37,7 +37,7 @@ const useStyles = makeStyles<Theme>(() => ({
   text: {
     pointerEvents: 'none',
     userSelect: 'none',
-    fill: '#e5e5e5',
+    fill: theme.palette.text.primary,
     fontSize: '25px',
     fontWeight: 800,
   },

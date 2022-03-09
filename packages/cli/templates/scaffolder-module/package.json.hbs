@@ -16,13 +16,17 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
   "scripts": {
-    "build": "backstage-cli build --output cjs,types",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
     "@backstage/plugin-scaffolder-backend": "{{versionQuery '@backstage/plugin-scaffolder-backend'}}"

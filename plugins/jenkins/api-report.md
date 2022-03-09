@@ -7,9 +7,9 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import type { CompoundEntityRef } from '@backstage/catalog-model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import type { EntityName } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -48,20 +48,20 @@ export const JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
 export interface JenkinsApi {
   // Warning: (ae-forgotten-export) The symbol "Build" needs to be exported by the entry point index.d.ts
   getBuild(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
   // Warning: (ae-forgotten-export) The symbol "Project" needs to be exported by the entry point index.d.ts
   getProjects(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     filter: {
       branch?: string;
     };
   }): Promise<Project[]>;
   // (undocumented)
   retry(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<void>;
@@ -82,20 +82,20 @@ export class JenkinsClient implements JenkinsApi {
   });
   // (undocumented)
   getBuild(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<Build>;
   // (undocumented)
   getProjects(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     filter: {
       branch?: string;
     };
   }): Promise<Project[]>;
   // (undocumented)
   retry(options: {
-    entity: EntityName;
+    entity: CompoundEntityRef;
     jobFullName: string;
     buildNumber: string;
   }): Promise<void>;

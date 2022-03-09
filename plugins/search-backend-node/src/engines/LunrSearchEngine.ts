@@ -20,10 +20,14 @@ import {
   SearchResultSet,
   QueryTranslator,
   SearchEngine,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
+import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
+/**
+ * @beta
+ */
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
   documentTypes?: string[];
@@ -35,8 +39,14 @@ type LunrResultEnvelope = {
   type: string;
 };
 
-type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
+/**
+ * @beta
+ */
+export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
+/**
+ * @beta
+ */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
@@ -124,30 +134,17 @@ export class LunrSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    const lunrBuilder = new lunr.Builder();
+  async getIndexer(type: string) {
+    const indexer = new LunrSearchEngineIndexer();
 
-    lunrBuilder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
-    lunrBuilder.searchPipeline.add(lunr.stemmer);
-
-    // Make this lunr index aware of all relevant fields.
-    Object.keys(documents[0]).forEach(field => {
-      lunrBuilder.field(field);
+    indexer.on('close', () => {
+      // Once the stream is closed, build the index and store the documents in
+      // memory for later retrieval.
+      this.lunrIndices[type] = indexer.buildIndex();
+      this.docStore = { ...this.docStore, ...indexer.getDocumentStore() };
     });
 
-    // Set "location" field as reference field
-    lunrBuilder.ref('location');
-
-    documents.forEach((document: IndexableDocument) => {
-      // Add document to Lunar index
-      lunrBuilder.add(document);
-      // Store documents in memory to be able to look up document using the ref during query time
-      // This is not how you should implement your SearchEngine implementation! Do not copy!
-      this.docStore[document.location] = document;
-    });
-
-    // "Rotate" the index by simply overwriting any existing index of the same name.
-    this.lunrIndices[type] = lunrBuilder.build();
+    return indexer;
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {

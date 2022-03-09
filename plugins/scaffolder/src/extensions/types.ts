@@ -35,10 +35,12 @@ export type CustomFieldValidator<TFieldReturnValue> = (
  */
 export type FieldExtensionOptions<
   TFieldReturnValue = unknown,
-  TProps = FieldProps<TFieldReturnValue>,
+  TInputProps = unknown,
 > = {
   name: string;
-  component: (props: TProps) => JSX.Element | null;
+  component: (
+    props: FieldExtensionComponentProps<TFieldReturnValue, TInputProps>,
+  ) => JSX.Element | null;
   validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 

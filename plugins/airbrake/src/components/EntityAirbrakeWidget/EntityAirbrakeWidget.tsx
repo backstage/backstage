@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import {
   EmptyState,
+  ErrorPanel,
   InfoCard,
   MissingAnnotationEmptyState,
   Progress,
@@ -25,7 +26,7 @@ import {
 import hash from 'object-hash';
 import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
-import { ErrorApi, errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { airbrakeApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';
@@ -40,55 +41,50 @@ export const EntityAirbrakeWidget = ({ entity }: { entity: Entity }) => {
   const classes = useStyles();
 
   const projectId = useProjectId(entity);
-  const errorApi = useApi<ErrorApi>(errorApiRef);
   const airbrakeApi = useApi(airbrakeApiRef);
 
-  const { loading, value, error } = useAsync(
-    () => airbrakeApi.fetchGroups(projectId),
-    [airbrakeApi, projectId],
-  );
-
-  useEffect(() => {
-    if (error) {
-      errorApi.post(error);
+  const { loading, value, error } = useAsync(() => {
+    if (!projectId) {
+      return Promise.resolve(undefined);
     }
-  }, [error, errorApi]);
 
-  if (loading || !projectId || error) {
+    return airbrakeApi.fetchGroups(projectId);
+  }, [airbrakeApi, projectId]);
+
+  if (!projectId) {
     return (
-      <InfoCard title="Airbrake groups" variant="gridItem">
-        {loading && <Progress />}
-
-        {!loading && !projectId && (
-          <MissingAnnotationEmptyState
-            annotation={AIRBRAKE_PROJECT_ID_ANNOTATION}
-          />
-        )}
-
-        {!loading && error && (
-          <EmptyState
-            missing="info"
-            title="No information to display"
-            description={`There is no Airbrake project with id '${projectId}' or there was an issue communicating with Airbrake.`}
-          />
-        )}
-      </InfoCard>
+      <MissingAnnotationEmptyState
+        annotation={AIRBRAKE_PROJECT_ID_ANNOTATION}
+      />
+    );
+  } else if (loading) {
+    return <Progress />;
+  } else if (value) {
+    return (
+      <Grid container spacing={3} direction="column">
+        {value.groups?.map(group => (
+          <Grid item key={group.id}>
+            {group.errors?.map(groupError => (
+              <InfoCard title={groupError.type} key={hash(groupError)}>
+                <Typography variant="body1" className={classes.multilineText}>
+                  {groupError.message}
+                </Typography>
+              </InfoCard>
+            ))}
+          </Grid>
+        ))}
+      </Grid>
     );
   }
 
   return (
-    <Grid container spacing={3} direction="column">
-      {value?.groups?.map(group => (
-        <Grid item key={group.id}>
-          {group.errors?.map(groupError => (
-            <InfoCard title={groupError.type} key={hash(groupError)}>
-              <Typography variant="body1" className={classes.multilineText}>
-                {groupError.message}
-              </Typography>
-            </InfoCard>
-          ))}
-        </Grid>
-      ))}
-    </Grid>
+    <>
+      {error && <ErrorPanel error={error} />}
+      <EmptyState
+        missing="info"
+        title="No information to display"
+        description={`There is no Airbrake project with id '${projectId}' or there was an issue communicating with Airbrake.`}
+      />
+    </>
   );
 };

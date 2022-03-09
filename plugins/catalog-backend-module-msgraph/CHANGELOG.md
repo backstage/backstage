@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.19-next.0
+
+### Patch Changes
+
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.24.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+
+## 0.2.18
+
+### Patch Changes
+
+- c820a49426: add config option `groupExpand` to allow expanding a single relationship
+- 83a83381b0: Use the new `processingResult` export from the catalog backend
+- 4bc61a64e2: add documentation for config options `userGroupMemberSearch` and `groupSearch`
+- f9bb6aa0aa: add `userExpand` config option to allow expanding a single relationship
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/plugin-catalog-backend@0.23.0
+
 ## 0.2.17
 
 ### Patch Changes

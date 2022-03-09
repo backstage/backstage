@@ -16,7 +16,7 @@
 
 import { JsonObject } from '@backstage/types';
 import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
-import { SearchResultSet } from '@backstage/search-common';
+import { SearchResultSet } from '@backstage/plugin-search-common';
 import React, {
   createContext,
   PropsWithChildren,

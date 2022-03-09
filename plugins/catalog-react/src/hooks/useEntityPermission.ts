@@ -28,7 +28,7 @@ import { useEntity } from './useEntity';
  * Note: this hook blocks the permission request until the entity has loaded in
  * context. If you have the entityRef and need concurrent requests, use the
  * `usePermission` hook directly.
- * @public
+ * @alpha
  */
 export function useEntityPermission(permission: Permission): {
   loading: boolean;

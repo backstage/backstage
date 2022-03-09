@@ -1,5 +1,33 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.1-next.0
+  - @backstage/plugin-search-backend-node@0.5.1-next.0
+
+## 0.1.0
+
+### Minor Changes
+
+- 022507c860: **BREAKING**
+
+  The `ElasticSearchSearchEngine` implements the new stream-based indexing
+  process expected by the latest `@backstage/search-backend-node`.
+
+  When updating to this version, you must also update to the latest version of
+  `@backstage/search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  for further details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.5.0
+  - @backstage/search-common@0.3.0
+
 ## 0.0.10
 
 ### Patch Changes

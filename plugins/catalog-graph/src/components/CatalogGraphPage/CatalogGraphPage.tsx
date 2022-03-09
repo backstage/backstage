@@ -24,7 +24,7 @@ import {
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
   entityRouteRef,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -149,14 +149,14 @@ export const CatalogGraphPage = ({
 
         analytics.captureEvent(
           'click',
-          node.title ?? formatEntityRefTitle(nodeEntityName),
+          node.title ?? humanizeEntityRef(nodeEntityName),
           { attributes: { to: path } },
         );
         navigate(path);
       } else {
         analytics.captureEvent(
           'click',
-          node.title ?? formatEntityRefTitle(nodeEntityName),
+          node.title ?? humanizeEntityRef(nodeEntityName),
         );
         setRootEntityNames([nodeEntityName]);
       }
@@ -168,7 +168,7 @@ export const CatalogGraphPage = ({
     <Page themeId="home">
       <Header
         title="Catalog Graph"
-        subtitle={rootEntityNames.map(e => formatEntityRefTitle(e)).join(', ')}
+        subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
       />
       <Content stretch className={classes.content}>
         <ContentHeader

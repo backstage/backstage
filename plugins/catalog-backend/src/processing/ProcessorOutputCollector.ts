@@ -22,9 +22,9 @@ import {
 } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import { Logger } from 'winston';
-import { CatalogProcessorResult } from '../ingestion';
+import { CatalogProcessorResult, EntityRelationSpec } from '../api';
 import { locationSpecToLocationEntity } from '../util/conversion';
-import { DeferredEntity, EntityRelationSpec } from './types';
+import { DeferredEntity } from './types';
 import {
   getEntityLocationRef,
   getEntityOriginLocationRef,
@@ -72,16 +72,16 @@ export class ProcessorOutputCollector {
 
     if (i.type === 'entity') {
       let entity: Entity;
+      const location = stringifyLocationRef(i.location);
+
       try {
         entity = validateEntityEnvelope(i.entity);
       } catch (e) {
         assertError(e);
-        this.logger.debug(`Envelope validation failed at ${i.location}, ${e}`);
+        this.logger.debug(`Envelope validation failed at ${location}, ${e}`);
         this.errors.push(e);
         return;
       }
-
-      const location = stringifyLocationRef(i.location);
 
       // Note that at this point, we have only validated the envelope part of
       // the entity data. Annotations are not part of that, so we have to be
@@ -106,9 +106,8 @@ export class ProcessorOutputCollector {
 
       this.deferredEntities.push({ entity, locationKey: location });
     } else if (i.type === 'location') {
-      const presence = i.optional ? 'optional' : 'required';
       const entity = locationSpecToLocationEntity(
-        { presence, ...i.location },
+        i.location,
         this.parentEntity,
       );
       const locationKey = getEntityLocationRef(entity);

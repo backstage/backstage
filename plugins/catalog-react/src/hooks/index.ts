@@ -15,20 +15,18 @@
  */
 export {
   useEntity,
-  useEntityFromUrl,
   EntityProvider,
   AsyncEntityProvider,
+  useAsyncEntity,
 } from './useEntity';
 export type {
   EntityLoadingStatus,
   EntityProviderProps,
   AsyncEntityProviderProps,
 } from './useEntity';
-export { useEntityCompoundName } from './useEntityCompoundName';
 export {
   EntityListContext,
   EntityListProvider,
-  useEntityListProvider,
   useEntityList,
 } from './useEntityListProvider';
 export type {
@@ -36,12 +34,8 @@ export type {
   EntityListContextProps,
 } from './useEntityListProvider';
 export { useEntityTypeFilter } from './useEntityTypeFilter';
-export type { EntityTypeReturn } from './useEntityTypeFilter';
-export { useEntityKinds } from './useEntityKinds';
-export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
 export { useStarredEntity } from './useStarredEntity';
-export { loadCatalogOwnerRefs, useEntityOwnership } from './useEntityOwnership';
-export { useOwnedEntities } from './useOwnedEntities';
+export { useEntityOwnership } from './useEntityOwnership';
 export { useEntityPermission } from './useEntityPermission';

@@ -40,6 +40,7 @@ export type Instance = {
   databaseManager: DatabaseManager;
   connections: Array<Knex>;
 };
+
 export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
   Object.freeze({
     POSTGRES_13: {

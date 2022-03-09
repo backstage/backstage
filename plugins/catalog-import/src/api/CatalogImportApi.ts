@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { createApiRef } from '@backstage/core-plugin-api';
 import { PartialEntity } from '../types';
 
@@ -38,7 +38,7 @@ export type AnalyzeResult =
       locations: Array<{
         target: string;
         exists?: boolean;
-        entities: EntityName[];
+        entities: CompoundEntityRef[];
       }>;
     }
   | {

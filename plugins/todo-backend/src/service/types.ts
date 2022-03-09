@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { TodoItem } from '../lib';
 
 /** @public */
 export type ListTodosRequest = {
-  entity?: EntityName;
+  entity?: CompoundEntityRef;
   offset?: number;
   limit?: number;
   orderBy?: {

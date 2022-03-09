@@ -18,21 +18,6 @@ import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { createRouteRef } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
 
-// TODO(Rugvip): Move these route refs back to the catalog plugin once we're all ported to using external routes
-/**
- * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
- * @public
- */
-export const rootRoute = createRouteRef({
-  id: 'catalog',
-});
-
-/**
- * @deprecated Use an `ExternalRouteRef` instead, which can point to `catalogPlugin.routes.catalogIndex`.
- * @public
- */
-export const catalogRouteRef = rootRoute;
-
 /**
  * A stable route ref that points to the catalog page for an individual entity.
  *
@@ -51,12 +36,6 @@ export const entityRouteRef = getOrCreateGlobalSingleton(
       params: ['namespace', 'kind', 'name'],
     }),
 );
-
-/**
- * @deprecated use `entityRouteRef` instead.
- * @public
- */
-export const entityRoute = entityRouteRef;
 
 /**
  * Utility function to get suitable route params for entityRoute, given an

@@ -15,7 +15,7 @@
  */
 
 import { SingleHostDiscovery } from '@backstage/backend-common';
-import { Publisher } from '@backstage/techdocs-common';
+import { Publisher } from '@backstage/plugin-techdocs-node';
 import { Command } from 'commander';
 import { createLogger } from '../../lib/utility';
 import { PublisherConfig } from '../../lib/PublisherConfig';

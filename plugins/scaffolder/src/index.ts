@@ -22,12 +22,12 @@
 
 export { scaffolderApiRef, ScaffolderClient } from './api';
 export type {
-  JobStatus,
   ListActionsResponse,
   LogEvent,
   ScaffolderApi,
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
+  ScaffolderOutputLink,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,
@@ -44,6 +44,7 @@ export type {
   CustomFieldValidator,
   FieldExtensionOptions,
   FieldExtensionComponentProps,
+  FieldExtensionComponent,
 } from './extensions';
 export {
   EntityPickerFieldExtension,

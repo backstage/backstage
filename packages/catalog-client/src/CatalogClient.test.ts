@@ -195,6 +195,60 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('getEntityByRef', () => {
+    const existingEntity: Entity = {
+      apiVersion: 'v1',
+      kind: 'CustomKind',
+      metadata: {
+        namespace: 'default',
+        name: 'exists',
+      },
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/customkind/default/exists`,
+          (_, res, ctx) => {
+            return res(ctx.json(existingEntity));
+          },
+        ),
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/customkind/default/missing`,
+          (_, res, ctx) => {
+            return res(ctx.status(404));
+          },
+        ),
+      );
+    });
+
+    it('finds by string and compound', async () => {
+      await expect(
+        client.getEntityByRef('customkind:default/exists'),
+      ).resolves.toEqual(existingEntity);
+      await expect(
+        client.getEntityByRef({
+          kind: 'CustomKind',
+          namespace: 'default',
+          name: 'exists',
+        }),
+      ).resolves.toEqual(existingEntity);
+    });
+
+    it('returns undefined for 404s', async () => {
+      await expect(
+        client.getEntityByRef('customkind:default/missing'),
+      ).resolves.toBeUndefined();
+      await expect(
+        client.getEntityByRef({
+          kind: 'CustomKind',
+          namespace: 'default',
+          name: 'missing',
+        }),
+      ).resolves.toBeUndefined();
+    });
+  });
+
   describe('getLocationById', () => {
     const defaultResponse = {
       data: {

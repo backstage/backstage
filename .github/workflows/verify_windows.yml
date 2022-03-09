@@ -47,7 +47,7 @@ jobs:
       # End of yarn setup
 
       - name: lint
-        run: yarn lerna -- run lint
+        run: yarn backstage-cli repo lint
 
       - name: type checking and declarations
         run: yarn tsc:full

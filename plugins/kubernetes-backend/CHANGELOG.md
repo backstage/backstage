@@ -1,5 +1,24 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.4.12-next.0
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/plugin-kubernetes-common@0.2.7-next.0
+
+## 0.4.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-kubernetes-common@0.2.6
+
 ## 0.4.10
 
 ### Patch Changes

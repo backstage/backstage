@@ -1,5 +1,26 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+
+## 0.1.26
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+
 ## 0.1.25
 
 ### Patch Changes

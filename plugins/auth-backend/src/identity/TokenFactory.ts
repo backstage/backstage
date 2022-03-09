@@ -19,6 +19,7 @@ import { JSONWebKey, JWK, JWS } from 'jose';
 import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
 import { DateTime } from 'luxon';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 const MS_IN_S = 1000;
 
@@ -71,6 +72,15 @@ export class TokenFactory implements TokenIssuer {
     const aud = 'backstage';
     const iat = Math.floor(Date.now() / MS_IN_S);
     const exp = iat + this.keyDurationSeconds;
+
+    // Validate that the subject claim is a valid EntityRef
+    try {
+      parseEntityRef(sub);
+    } catch (error) {
+      throw new Error(
+        '"sub" claim provided by the auth resolver is not a valid EntityRef.',
+      );
+    }
 
     this.logger.info(`Issuing token for ${sub}, with entities ${ent ?? []}`);
 

@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import {
-  formatEntityRefTitle,
+  humanizeEntityRef,
   EntityRefLink,
   EntityRefLinks,
 } from '@backstage/plugin-catalog-react';
@@ -34,7 +34,7 @@ export const columnFactories = Object.freeze({
     function formatContent(entity: Entity): string {
       return (
         entity.metadata?.title ||
-        formatEntityRefTitle(entity, {
+        humanizeEntityRef(entity, {
           defaultKind: options?.defaultKind,
         })
       );

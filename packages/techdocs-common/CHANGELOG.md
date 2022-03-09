@@ -1,5 +1,28 @@
 # @backstage/techdocs-common
 
+## 0.11.12-next.0
+
+### Patch Changes
+
+- cea6f10b97: **DEPRECATION**
+
+  The `@backstage/techdocs-common` package is being renamed `@backstage/plugin-techdocs-node`. We may continue to publish changes to `@backstage/techdocs-common` for a time, but will stop doing so in the near future. If you depend on this package, you should update your dependencies to point at the renamed package.
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@0.11.12-next.0
+
+## 0.11.11
+
+### Patch Changes
+
+- 955be6bc7d: adds passing projectID to the Storage client
+- ff0a16fb1a: Modify techdocs builder to automatically append techdocs-core plugin to mkdocs.yaml file if it is missing. Adds an optional configuration item if this plugin needs to be omitted.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+  - @backstage/search-common@0.3.0
+
 ## 0.11.10
 
 ### Patch Changes

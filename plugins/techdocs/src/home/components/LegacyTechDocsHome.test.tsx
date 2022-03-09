@@ -24,16 +24,8 @@ import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { rootDocsRouteRef } from '../../routes';
 
-jest.mock('@backstage/plugin-catalog-react', () => {
-  const actual = jest.requireActual('@backstage/plugin-catalog-react');
-  return {
-    ...actual,
-    useOwnUser: () => 'test-user',
-  };
-});
-
 const mockCatalogApi = {
-  getEntityByName: jest.fn(),
+  getEntityByRef: jest.fn(),
   getEntities: async () => ({
     items: [
       {

@@ -170,6 +170,7 @@ nav:
       - Deprecations: 'api/deprecations.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
+      - Package Role Migration: 'tutorials/package-role-migration.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'

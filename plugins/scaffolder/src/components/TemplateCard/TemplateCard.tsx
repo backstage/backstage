@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import {
   EntityRefLinks,
+  FavoriteEntity,
   getEntityRelations,
   getEntitySourceLocation,
 } from '@backstage/plugin-catalog-react';
@@ -42,9 +43,12 @@ import {
 import WarningIcon from '@material-ui/icons/Warning';
 import React from 'react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
 
-import { Button, ItemCardHeader } from '@backstage/core-components';
+import {
+  Button,
+  ItemCardHeader,
+  MarkdownContent,
+} from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
@@ -74,6 +78,12 @@ const useStyles = makeStyles(theme => ({
   leftButton: {
     marginRight: 'auto',
   },
+  starButton: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(0.5),
+    padding: '0.25rem',
+  },
 }));
 
 const useDeprecationStyles = makeStyles(theme => ({
@@ -89,7 +99,7 @@ const useDeprecationStyles = makeStyles(theme => ({
 }));
 
 export type TemplateCardProps = {
-  template: TemplateEntityV1beta2;
+  template: TemplateEntityV1beta3;
   deprecated?: boolean;
 };
 
@@ -102,7 +112,7 @@ type TemplateProps = {
 };
 
 const getTemplateCardProps = (
-  template: TemplateEntityV1beta2,
+  template: TemplateEntityV1beta3,
 ): TemplateProps & { key: string } => {
   return {
     key: template.metadata.uid!,
@@ -159,7 +169,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   return (
     <Card>
       <CardMedia className={classes.cardHeader}>
-        <FavouriteTemplate entity={template} />
+        <FavoriteEntity className={classes.starButton} entity={template} />
         {deprecated && <DeprecationWarning />}
         <ItemCardHeader
           title={templateProps.title}
@@ -172,7 +182,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Description
           </Typography>
-          {templateProps.description}
+          <MarkdownContent content={templateProps.description} />
         </Box>
         <Box className={classes.box}>
           <Typography variant="body2" className={classes.label}>

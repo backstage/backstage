@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-search-backend-node",
   "description": "A library for Backstage backend plugins that want to interact with the search backend plugin",
-  "version": "0.4.7",
+  "version": "0.5.1-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -23,14 +23,16 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/search-common": "^0.2.4",
-    "winston": "^3.2.1",
+    "@backstage/errors": "^0.2.2",
+    "@backstage/plugin-search-common": "^0.3.1-next.0",
+    "@types/lunr": "^2.3.3",
+    "lodash": "^4.17.21",
     "lunr": "^2.3.9",
-    "@types/lunr": "^2.3.3"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.11.0",
-    "@backstage/cli": "^0.14.1"
+    "@backstage/backend-common": "^0.13.0-next.0",
+    "@backstage/cli": "^0.15.2-next.0"
   },
   "files": [
     "dist"

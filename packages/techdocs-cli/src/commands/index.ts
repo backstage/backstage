@@ -15,7 +15,7 @@
  */
 
 import { CommanderStatic } from 'commander';
-import { TechdocsGenerator } from '@backstage/techdocs-common';
+import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
 
@@ -54,6 +54,11 @@ export function registerCommands(program: CommanderStatic) {
       'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.',
     )
     .option('-v --verbose', 'Enable verbose output.', false)
+    .option(
+      '--omitTechdocsCoreMkdocsPlugin',
+      "Don't patch MkDocs file automatically with techdocs-core plugin.",
+      false,
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
 

@@ -23,7 +23,7 @@ import { EntitiesSearchFilter } from '../../catalog/types';
  * {@link @backstage/plugin-permission-node#PermissionRule}s for the
  * catalog-backend.
  *
- * @public
+ * @alpha
  */
 export const createCatalogPermissionRule = makeCreatePermissionRule<
   Entity,

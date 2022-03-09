@@ -1,5 +1,68 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.18.0-next.0
+
+### Minor Changes
+
+- 310e905998: The following deprecations are now breaking and have been removed:
+
+  - **BREAKING**: Support for `backstage.io/v1beta2` Software Templates has been removed. Please migrate your legacy templates to the new `scaffolder.backstage.io/v1beta3` `apiVersion` by following the [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3)
+
+  - **BREAKING**: Removed the deprecated `TemplateMetadata`. Please use `TemplateInfo` instead.
+
+  - **BREAKING**: Removed the deprecated `context.baseUrl`. It's now available on `context.templateInfo.baseUrl`.
+
+  - **BREAKING**: Removed the deprecated `DispatchResult`, use `TaskBrokerDispatchResult` instead.
+
+  - **BREAKING**: Removed the deprecated `runCommand`, use `executeShellCommond` instead.
+
+  - **BREAKING**: Removed the deprecated `Status` in favour of `TaskStatus` instead.
+
+  - **BREAKING**: Removed the deprecated `TaskState` in favour of `CurrentClaimedTask` instead.
+
+- f9c7bdd899: **BREAKING**:
+
+  - Removed the `createFetchCookiecutterAction` export, please use the `@backstage/plugin-scaffolder-backend-module-cookiecutter` package explicitly (see [its README](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-cookiecutter) for installation instructions).
+  - Removed the `containerRunner` argument from the types `RouterOptions` (as used by `createRouter`) and `CreateBuiltInActionsOptions` (as used by `createBuiltinActions`).
+
+- 5afbd16d43: **BREAKING**: Removed the previously deprecated `OctokitProvider` class.
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- 8122e27717: Updating documentation for supporting `apiVersion: scaffolder.backstage.io/v1beta3`
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- 458d16869c: Allow passing more repo configuration for `publish:github` action
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/plugin-catalog-backend@0.24.0-next.0
+  - @backstage/plugin-scaffolder-common@0.3.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+
+## 0.17.3
+
+### Patch Changes
+
+- 5c7f2343ea: Applied fix from version 0.17.2 of this package, which is part of the v0.69.2 release of Backstage.
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+- d6deb5e440: Set timeout for scaffolder octokit client
+- 83a83381b0: Use the new `processingResult` export from the catalog backend
+- 7372f29473: Cleanup API report
+- c7f6424a26: Applied fix from `v0.17.1` of this package which is part of the `v0.69.1` release of Backstage.
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- 8119a9e011: Fix the support for custom defaultBranch values for Bitbucket Cloud at the `publish:bitbucket` scaffolder action.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/plugin-catalog-backend@0.23.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+  - @backstage/plugin-scaffolder-backend-module-cookiecutter@0.2.3
+  - @backstage/plugin-scaffolder-common@0.2.3
+
 ## 0.17.2
 
 ### Patch Changes

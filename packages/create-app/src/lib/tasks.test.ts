@@ -18,6 +18,7 @@ import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import child_process from 'child_process';
 import path from 'path';
+import { version as releaseVersion } from '../../../../package.json';
 import {
   buildAppTask,
   checkAppExistsTask,
@@ -195,11 +196,11 @@ describe('templatingTask', () => {
       name: 'SuperCoolBackstageInstance',
       dbTypeSqlite: true,
     };
-    await templatingTask(templateDir, destinationDir, context, '1.0.0');
+    await templatingTask(templateDir, destinationDir, context);
     expect(fs.existsSync('templatedApp/package.json')).toBe(true);
     expect(fs.existsSync('templatedApp/.dockerignore')).toBe(true);
     await expect(fs.readJson('templatedApp/backstage.json')).resolves.toEqual({
-      version: '1.0.0',
+      version: releaseVersion,
     });
     // catalog was populated with `context.name`
     expect(

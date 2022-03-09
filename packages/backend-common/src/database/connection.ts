@@ -23,7 +23,13 @@ import { DatabaseConnector } from './types';
 
 import { mysqlConnector, pgConnector, sqlite3Connector } from './connectors';
 
-type DatabaseClient = 'pg' | 'sqlite3' | 'mysql' | 'mysql2' | string;
+type DatabaseClient =
+  | 'pg'
+  | 'better-sqlite3'
+  | 'sqlite3'
+  | 'mysql'
+  | 'mysql2'
+  | string;
 
 /**
  * Mapping of client type to supported database connectors
@@ -33,6 +39,7 @@ type DatabaseClient = 'pg' | 'sqlite3' | 'mysql' | 'mysql2' | string;
  */
 const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
   pg: pgConnector,
+  'better-sqlite3': sqlite3Connector,
   sqlite3: sqlite3Connector,
   mysql: mysqlConnector,
   mysql2: mysqlConnector,
@@ -56,14 +63,6 @@ export function createDatabaseClient(
     knexFactory(mergeDatabaseConfig(dbConfig.get(), overrides))
   );
 }
-
-/**
- * Alias for {@link createDatabaseClient}
- *
- * @public
- * @deprecated Use createDatabaseClient instead
- */
-export const createDatabase = createDatabaseClient;
 
 /**
  * Ensures that the given databases all exist, creating them if they do not.

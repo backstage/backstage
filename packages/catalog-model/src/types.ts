@@ -14,46 +14,22 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
-
 /**
- * JSONSchema extendable by arbitrary JSON attributes
- *
- * @public
- * @deprecated use JSONSchema7 from the json-schema package instead.
- */
-export type JSONSchema = JSONSchema7 & { [key in string]?: JsonValue };
-
-/**
- * A complete entity name, with the full kind-namespace-name triplet.
+ * All parts of a complete entity ref, forming a full kind-namespace-name
+ * triplet.
  *
  * @public
  */
-export type EntityName = {
+export type CompoundEntityRef = {
   kind: string;
   namespace: string;
   name: string;
 };
 
 /**
- * A reference by name to an entity, either as a compact string representation,
- * or as a compound reference structure.
+ * A complete entity name, with the full kind-namespace-name triplet.
  *
- * @deprecated Please use string directly, or EntityName (depending on what you actually need)
- * @remarks
- *
- * The string representation is on the form `[<kind>:][<namespace>/]<name>`.
- *
- * Left-out parts of the reference need to be handled by the application,
- * either by rejecting the reference or by falling back to default values.
- *
+ * @deprecated Use CompoundEntityRef instead
  * @public
  */
-export type EntityRef =
-  | string
-  | {
-      kind?: string;
-      namespace?: string;
-      name: string;
-    };
+export type EntityName = CompoundEntityRef;

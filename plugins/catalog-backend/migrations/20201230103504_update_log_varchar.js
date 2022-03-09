@@ -20,7 +20,7 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  if (knex.client.config.client !== 'sqlite3') {
+  if (!knex.client.config.client.includes('sqlite3')) {
     // We actually just want to widen columns, but can't do that while a
     // view is dependent on them - so we just reconstruct it exactly as it was
     await knex.schema
@@ -49,7 +49,7 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  if (knex.client.config.client !== 'sqlite3') {
+  if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema
       .raw('DROP VIEW location_update_log_latest;')
       .alterTable('location_update_log', table => {

@@ -17,7 +17,8 @@
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import { DateTime } from 'luxon';
-import { DeferredEntity, EntityRelationSpec } from '../processing/types';
+import { EntityRelationSpec } from '../api';
+import { DeferredEntity } from '../processing/types';
 
 /**
  * An abstraction for transactions of the underlying database technology.

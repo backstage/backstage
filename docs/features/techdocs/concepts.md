@@ -46,6 +46,24 @@ between `techdocs-backend` and the storage)
 
 [TechDocs Backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend)
 
+## TechDocs Build Strategy
+
+To accommodate more complex logic surrounding whether or not to build TechDocs, the TechDocs backend
+supports selecting a Build Strategy.
+The Build Strategy is responsible for deciding whether the documentation requested should be built locally
+by the TechDocs backend or not.
+Customization of the Build Strategy allows for more complex behaviour regarding whether the TechDocs backend
+is responsible for building TechDocs, whether an external process is responsible, or whether a combination
+of local builds and an external process is responsible, on an entity-by-entity basis.
+
+The default Build Strategy results in the TechDocs backend building documentation locally if the
+`techdocs.builder` configuration option is set to `'local'`, and skipping any building otherwise.
+However any logic that satisfies the Build Strategy interface can be implemented, using the Backstage
+config as well as the entity being processed to make a decision.
+
+For an example of how the Build Strategy can be used to implement a 'hybrid' build model, refer to
+the [How to implement a hybrid build strategy](./how-to-guides.md#how-to-implement-a-hybrid-build-strategy) guide.
+
 ## TechDocs Container
 
 The TechDocs container is a Docker container available at

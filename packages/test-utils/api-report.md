@@ -164,8 +164,6 @@ export class MockStorageApi implements StorageApi {
   // (undocumented)
   forBucket(name: string): StorageApi;
   // (undocumented)
-  get<T>(key: string): T | undefined;
-  // (undocumented)
   observe$<T>(key: string): Observable<StorageValueSnapshot<T>>;
   // (undocumented)
   remove(key: string): Promise<void>;

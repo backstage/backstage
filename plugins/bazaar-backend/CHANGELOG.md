@@ -1,5 +1,22 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.13-next.0
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/backend-test-utils@0.1.21-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+  - @backstage/backend-test-utils@0.1.20
+
 ## 0.1.11
 
 ### Patch Changes

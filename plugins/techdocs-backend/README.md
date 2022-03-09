@@ -21,7 +21,7 @@ yarn start
 This provides serving and building of documentation for any entity.
 To configure various storage providers and building options, see http://backstage.io/docs/features/techdocs/configuration.
 
-The techdocs-backend re-exports the [techdocs-common](https://github.com/backstage/backstage/tree/master/packages/techdocs-common) package which has the features to prepare, generate and publish docs.
+The techdocs-backend re-exports the [techdocs-node](https://github.com/backstage/backstage/tree/master/plugins/techdocs-node) package which has the features to prepare, generate and publish docs.
 The Publishers are also used to fetch the static documentation files and render them in TechDocs.
 
 ## Links

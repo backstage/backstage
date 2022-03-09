@@ -21,4 +21,5 @@
  */
 
 export * from './database';
+export * from './msw';
 export * from './util';

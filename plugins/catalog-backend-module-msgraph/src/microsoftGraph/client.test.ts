@@ -15,7 +15,7 @@
  */
 
 import * as msal from '@azure/msal-node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
@@ -85,7 +85,7 @@ describe('MicrosoftGraphClient', () => {
 
     const response = await client.requestApi('users', {
       filter: 'test eq true',
-      expand: ['children'],
+      expand: 'children',
       select: ['id', 'children'],
     });
 

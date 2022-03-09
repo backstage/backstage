@@ -72,6 +72,53 @@ or IDE that has support for formatting, linting, and type checking.
 Let's dive into a detailed look at each of these steps and how they are
 implemented in a typical Backstage app.
 
+## Package Roles
+
+> Package roles were introduced in March 2022. To migrate existing projects, see the [migration guide](../tutorials/package-role-migration.md).
+
+The Backstage build system uses the concept of package roles in order to help keep
+configuration lean, provide utility and tooling, and enable optimizations. A package
+role is a single string that identifies what the purpose of a package is, and it's
+defined in the `package.json` of each package like this:
+
+```json
+{
+  "name": "my-package",
+  "backstage": {
+    "role": "<role>"
+  },
+  ...
+}
+```
+
+These are the available roles that are currently supported by the Backstage build system:
+
+| Role                   | Description                                  | Example                                      |
+| ---------------------- | -------------------------------------------- | -------------------------------------------- |
+| frontend               | Bundled frontend application                 | `package/app`                                |
+| backend                | Bundled backend application                  | `packages/backend`                           |
+| cli                    | Package used as a command-line interface     | `@backstage/cli`, `@backstage/codemods`      |
+| web-library            | Web library for use by other packages        | `@backstage/plugin-catalog-react`            |
+| node-library           | Node.js library for use by other packages    | `@backstage/plugin-techdocs-node`            |
+| common-library         | Isomorphic library for use by other packages | `@backstage/plugin-permission-common`        |
+| frontend-plugin        | Backstage frontend plugin                    | `@backstage/plugin-scaffolder`               |
+| frontend-plugin-module | Backstage frontend plugin module             | `@backstage/plugin-analytics-module-ga`      |
+| backend-plugin         | Backstage backend plugin                     | `@backstage/plugin-auth-backend`             |
+| backend-plugin-module  | Backstage backend plugin module              | `@backstage/plugin-search-backend-module-pg` |
+
+Most of the steps that we cover below have an accompanying command that is intended to be used as a package script. The commands are all available under the `backstage-cli package` category, and many of the commands will behave differently depending on the role of the package. The commands are intended to be used like this:
+
+```json
+{
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    ...
+  }
+}
+```
+
 ## Formatting
 
 The formatting setup lives completely within each Backstage application and is
@@ -96,9 +143,38 @@ configurations in turn build on top of the lint rules from
 
 In a standard Backstage setup, each individual package has its own lint
 configuration, along with a root configuration that applies to the entire
-project. Each configuration is initially one that simply extends a base
-configuration provided by the Backstage CLI, but they can be customized to fit
-the needs of each package.
+project. The configuration in each package starts out as a standard configuration
+that is determined based on the package role, but it can be customized to fit the needs of each package.
+
+A minimal `.eslintrc.js` configuration now looks like this:
+
+```js
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname);
+```
+
+But you can provide custom overrides for each package using the optional second argument:
+
+```js
+module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
+  ignorePatterns: ['templates/'],
+  rules: {
+    'jest/expect-expect': 'off',
+  },
+});
+```
+
+The configuration factory also provides utilities for extending the configuration in ways that are otherwise very cumbersome to do with plain ESLint, particularly for rules like `no-restricted-syntax`. These are the extra keys that are available:
+
+| Key                     | Description                                                        |
+| ----------------------- | ------------------------------------------------------------------ |
+| `tsRules`               | Additional rules to apply to TypeScript files                      |
+| `testRules`             | Additional rules to apply to tests files                           |
+| `restrictedImports`     | Additional paths to add to `no-restricted-imports`                 |
+| `restrictedSrcImports`  | Additional paths to add to `no-restricted-imports` in src files    |
+| `restrictedTestImports` | Additional paths to add to `no-restricted-imports` in test files   |
+| `restrictedSyntax`      | Additional patterns to add to `no-restricted-syntax`               |
+| `restrictedSrcSyntax`   | Additional patterns to add to `no-restricted-syntax` in src files  |
+| `restrictedTestSyntax`  | Additional patterns to add to `no-restricted-syntax` in test files |
 
 ## Type Checking
 
@@ -167,11 +243,8 @@ nevertheless be useful to know how it works, since all of the published
 Backstage packages are built using this process.
 
 The build is currently using [Rollup](https://rollupjs.org/) and executes in
-isolation for each individual package. There are currently three different
-commands in the Backstage CLI that invokes the build process, `plugin:build`,
-`backend:build`, and simply `build`. The two former are pre-configured commands
-for frontend and backend plugins, while the `build` command provides more
-control over the output.
+isolation for each individual package. The build is invoked using the `package build`
+command, and applies to all packages roles except the bundled ones, `frontend` and `backend`.
 
 There are three different possible outputs of the build process: JavaScript in
 CommonJS module format, JavaScript in ECMAScript module format, and type
@@ -181,12 +254,10 @@ files like stylesheets or images. For more details on what syntax and file
 formats are supported by the build process, see the [loaders section](#loaders).
 
 When building CommonJS or ESM output, the build commands will always use
-`src/index.ts` as the entrypoint. All dependencies of the package will be marked
-as external, meaning that in general it is only the contents of the `src` folder
-that ends up being compiled and output to `dist`. All import statements of
-external dependencies, even within the same monorepo, will stay intact. The
-externalized dependencies are based on dependency information in `package.json`,
-which means it's important to keep it up to date.
+`src/index.ts` as the entrypoint. All non-relative modules imports are considered
+external, meaning the Rollup build will only compile the source code of the package
+itself. All import statements of external dependencies, even within the same
+monorepo, will stay intact.
 
 The build of the type definitions works quite differently. The entrypoint of the
 type definition build is the relative location of the package within the
@@ -207,11 +278,11 @@ cover each combination of these cases separately.
 
 ### Frontend Development
 
-There are two different commands that start the frontend development bundling:
-`app:serve`, which serves an app and uses `src/index` as the entrypoint, and
-`plugin:serve`, which serves a plugin and uses `dev/index` as the entrypoint.
-These are typically invoked via the `yarn start` script, and are intended for
-local development only. When running the bundle command, a development server
+The frontend development setup is used for all packages with a frontend role, and
+is invoked using the `package start` command.
+The only difference between the different roles is that packages with the `'frontend'`
+role use `src/index` as the entrypoint, while other roles instead use `dev/index`.
+When running the start command, a development server
 will be set up that listens to the protocol, host and port set by `app.baseUrl`
 in the configuration. If needed it is also possible to override the listening
 options through the `app.listen` configuration.
@@ -235,8 +306,8 @@ support for them instead.
 ### Frontend Production
 
 The frontend production bundling creates your typical web content bundle, all
-contained within a single folder, ready for static serving. It is invoked using
-the `app:build` command, and unlike the development bundling there is no way to
+contained within a single folder, ready for static serving. It is used when building
+packages with the `'frontend'` role, and unlike the development bundling there is no way to
 build a production bundle of an individual plugin. The output of the bundling
 process is written to the `dist` folder in the package.
 
@@ -255,12 +326,24 @@ correctly from linked in packages, the `ModuleScopePlugin` from
 [`react-dev-utils`](https://www.npmjs.com/package/react-dev-utils) which makes
 sure that imports don't reach outside the package, a few fallbacks for some
 Node.js modules like `'buffer'` and `'events'`, a plugin that writes the
-frontend configuration to the bundle as `process.env.APP_CONFIG` and build
-information as `process.env.BUILD_INFO`, and lastly minification handled by
+frontend configuration to the bundle as `process.env.APP_CONFIG`, and lastly minification handled by
 [esbuild](https://esbuild.github.io/) using the
 [`esbuild-loader`](https://npm.im/esbuild-loader). There are of course also a
 set of loaders configured, which you can read more about in the
 [loaders](#loaders) and [transpilation](#transpilation) sections.
+
+During the build, the following constants are also set:
+
+```java
+process.env.NODE_ENV = 'production';
+process.env.BUILD_INFO = {
+  cliVersion: '0.4.0', // The version of the CLI package
+  gitVersion: 'v0.4.0-86-ge54815618', // output of `git describe --always`
+  packageVersion: '1.0.5', // The version of the app package itself
+  timestamp: 1678900000000, // Date.now() when the build started
+  commit: 'e548156182a973ed4b459e18533afc22c85ffff8', // output of `git rev-parse HEAD`
+};
+```
 
 The output of the bundling process is split into two categories of files with
 separate caching strategies. The first is a set of generic assets with plain
@@ -331,7 +414,7 @@ dependencies installed, and as soon as you copy over and extract the contents of
 the `bundle.tar.gz` archive on top of it, the backend will be ready to run.
 
 The following is an example of a `Dockerfile` that can be used to package the
-output of `backstage-cli backend:bundle` into an image:
+output of building a package with role `'backend'` into an image:
 
 ```Dockerfile
 FROM node:16-bullseye-slim
@@ -543,12 +626,45 @@ The following is an excerpt of a typical setup of an isomorphic library package:
     "types": "dist/index.d.ts"
   },
   "scripts": {
-    "build": "backstage-cli build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
   },
   "files": ["dist"],
 ```
+
+## Experimental Type Build
+
+The Backstage CLI has an experimental feature where multiple different type definition files can be generated for different release stages. The release stages are marked in the [TSDoc](https://tsdoc.org/) for each individual export, using either `@public`, `@alpha`, or `@beta`. Rather than just building a single `index.d.ts` file, the build process will instead output `index.d.ts`, `index.beta.d.ts`, and `index.alpha.d.ts`. Each of these files will have exports from more unstable release stages stripped, meaning that `index.d.ts` will omit all exports marked with `@alpha` or `@beta`, while `index.beta.d.ts` will omit all exports marked with `@alpha`.
+
+This feature is aimed at projects that publish to package registries and wish to maintain different levels of API stability within each package. There is no need to use this within a single monorepo, as it has no effect due to only applying to built and published packages.
+
+In order for the experimental type build to work, `@microsoft/api-extractor` must be installed in your project, as it is an optional peer dependency of the Backstage CLI. There are then three steps that need to be taken for each package where you want to enable this feature:
+
+- Add the `--experimental-type-build` flag to the `"build"` script of the package.
+- Add either one or both of `"alphaTypes"` and `"betaTypes"` to the `"publishConfig"` of the package:
+  ```json
+  "publishConfig": {
+    ...
+    "types": "dist/index.d.ts",
+    "alphaTypes": "dist/index.alpha.d.ts",
+    "betaTypes": "dist/index.beta.d.ts"
+  },
+  ```
+- Add either one or both of `"alpha"` and `"beta"` to the `"files"` of the package:
+  ```json
+  "files": [
+    "dist",
+    "alpha",
+    "beta"
+  ]
+  ```
+
+Once this setup is complete, users of the published packages will only be able to access the stable API via the main package entry point, for example `@acme/my-plugin`. Exports marked with `@alpha` or `@beta` will only be available via the `/alpha` entry point, for example `@acme/my-plugin/alpha`, and exports marked with `@beta` will only be available via `/beta`. This does not apply within the monorepo that contains the package. There all exports still have to be imported via the main entry point.
+
+Note that these different entry points are only separated during type checking. At runtime they all share the same code which contains the exports from all releases stages.
+
+An example of this setup can be seen in the [`@backstage/catalog-model`](https://github.com/backstage/backstage/blob/da0675bf9f28ed1460f03635a22d3c26abd14707/packages/catalog-model/package.json#L14) package, which has enabled `alpha` type exports. With this setup, exports marked as `@alpha` are only available for import via `@backstage/catalog-model/alpha`. The `@backstage/catalog-model` package currently does not have any exports marked as `@beta`, or a `/beta` entry point.

@@ -12,7 +12,7 @@ by writing custom actions which can be used along side our
 > built-in actions too**. To ensure you can continue to include the builtin
 > actions, see below to include them during registration of your action.
 
-### Writing your Custom Action
+## Writing your Custom Action
 
 Your custom action can live where you choose, but simplest is to include it
 alongside your `backend` package in `packages/backend`.
@@ -79,7 +79,7 @@ The `createTemplateAction` takes an object which specifies the following:
   function using `ctx.output`
 - `handler` - the actual code which is run part of the action, with a context
 
-#### The context object
+### The context object
 
 When the action `handler` is called, we provide you a `context` as the only
 argument. It looks like the following:
@@ -98,7 +98,7 @@ argument. It looks like the following:
 - `ctx.metadata` - an object containing a `name` field, indicating the template
   name. More metadata fields may be added later.
 
-### Registering Custom Actions
+## Registering Custom Actions
 
 Once you have your Custom Action ready for usage with the scaffolder, you'll
 need to pass this into the `scaffolder-backend` `createRouter` function. You
@@ -145,7 +145,7 @@ return await createRouter({
 });
 ```
 
-### List of custom action packages
+## List of custom action packages
 
 Here is a list of Open Source custom actions that you can add to your Backstage
 scaffolder backend:

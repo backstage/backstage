@@ -24,7 +24,10 @@ import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { DocumentTypeInfo, SearchResultSet } from '@backstage/search-common';
+import {
+  DocumentTypeInfo,
+  SearchResultSet,
+} from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { AuthorizedSearchEngine } from './AuthorizedSearchEngine';
 

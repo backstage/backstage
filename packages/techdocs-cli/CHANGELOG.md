@@ -1,5 +1,26 @@
 # @techdocs/cli
 
+## 0.8.17-next.0
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 91bf1e6c1a: Use `@backstage/plugin-techdocs-node` package instead of `@backstage/techdocs-common`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/plugin-techdocs-node@0.11.12-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+
+## 0.8.16
+
+### Patch Changes
+
+- 853efd42bd: Bump `@backstage/techdocs-common` to `0.11.10` to use `spotify/techdocs:v0.3.7` which upgrades `mkdocs-theme` as a dependency of `mkdocs-techdocs-core`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/techdocs-common@0.11.11
+
 ## 0.8.15
 
 ### Patch Changes

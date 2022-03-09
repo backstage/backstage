@@ -34,3 +34,19 @@ The target is composed of three parts:
   a similar variation for catalog files stored in the root directory of each
   repository. If you want to use the repository's default branch use the `*`
   wildcard, e.g.: `/blob/*/catalog-info.yaml`
+
+Finally, you will have to add the processor in the catalog initialization code
+of your backend.
+
+```diff
+// In packages/backend/src/plugins/catalog.ts
++import { GitLabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
++  builder.addProcessor(
++    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
++  );
+```

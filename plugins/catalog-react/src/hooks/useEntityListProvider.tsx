@@ -195,7 +195,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         });
         const newParams = qs.stringify(
           { ...oldParams, filters: queryParams },
-          { addQueryPrefix: true },
+          { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
         const newUrl = `${window.location.pathname}${newParams}`;
         // We use direct history manipulation since useSearchParams and
@@ -248,20 +248,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     </EntityListContext.Provider>
   );
 };
-
-/**
- * Hook for interacting with the entity list context provided by the {@link EntityListProvider}.
- * @public
- * @deprecated use {@link useEntityList} instead.
- */
-export function useEntityListProvider<
-  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
->(): EntityListContextProps<EntityFilters> {
-  const context = useContext(EntityListContext);
-  if (!context)
-    throw new Error('useEntityList must be used within EntityListProvider');
-  return context;
-}
 
 /**
  * Hook for interacting with the entity list context provided by the {@link EntityListProvider}.

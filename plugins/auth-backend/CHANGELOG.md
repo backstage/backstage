@@ -1,5 +1,35 @@
 # @backstage/plugin-auth-backend
 
+## 0.12.1-next.0
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- bf95bb806c: Remove usages of now-removed `CatalogApi.getEntityByName`
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+  - @backstage/plugin-auth-node@0.1.5-next.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 0c8ba31d72: **BREAKING**: The `TokenFactory.issueToken` used by custom sign-in resolvers now ensures that the sub claim given is a full entity reference of the format `<kind>:<namespace>/<name>`. Any existing custom sign-in resolver functions that do not supply a full entity reference must be updated.
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-auth-node@0.1.4
+
 ## 0.11.0
 
 ### Minor Changes

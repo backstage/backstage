@@ -5,9 +5,11 @@
 ```ts
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessorParser } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
+import { UrlReader } from '@backstage/backend-common';
 
 // @public
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
@@ -15,7 +17,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
     },
   ): AwsOrganizationCloudAccountProcessor;
   // (undocumented)
@@ -25,6 +27,20 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     location: LocationSpec,
     _optional: boolean,
     emit: CatalogProcessorEmit,
+  ): Promise<boolean>;
+}
+
+// @public
+export class AwsS3DiscoveryProcessor implements CatalogProcessor {
+  constructor(reader: UrlReader);
+  // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    optional: boolean,
+    emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
   ): Promise<boolean>;
 }
 ```

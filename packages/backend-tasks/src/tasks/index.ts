@@ -17,6 +17,8 @@
 export { TaskScheduler } from './TaskScheduler';
 export type {
   PluginTaskScheduler,
-  TaskDefinition,
   TaskFunction,
+  TaskInvocationDefinition,
+  TaskRunner,
+  TaskScheduleDefinition,
 } from './types';

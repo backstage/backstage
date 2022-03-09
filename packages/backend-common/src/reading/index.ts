@@ -19,6 +19,7 @@ export { BitbucketUrlReader } from './BitbucketUrlReader';
 export { GithubUrlReader } from './GithubUrlReader';
 export { GitlabUrlReader } from './GitlabUrlReader';
 export { AwsS3UrlReader } from './AwsS3UrlReader';
+export { FetchUrlReader } from './FetchUrlReader';
 export type {
   FromReadableArrayOptions,
   ReaderFactory,

@@ -10,7 +10,7 @@ import { Config } from '@backstage/config';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
 import { RepoBuild } from '@backstage/plugin-azure-devops-common';
@@ -22,7 +22,7 @@ import { WebApi } from 'azure-devops-node-api';
 //
 // @public (undocumented)
 export class AzureDevOpsApi {
-  constructor(logger: Logger_2, webApi: WebApi);
+  constructor(logger: Logger, webApi: WebApi);
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)
@@ -96,7 +96,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
 }
 
 // (No @packageDocumentation comment for this package)

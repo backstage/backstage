@@ -15,8 +15,7 @@
  */
 
 import { JsonObject, JsonValue } from '@backstage/types';
-import { CatalogProcessor } from '../ingestion/processors';
-import { CatalogProcessorCache } from '../ingestion/processors/types';
+import { CatalogProcessor, CatalogProcessorCache } from '../api';
 import { isObject } from './util';
 
 class SingleProcessorSubCache implements CatalogProcessorCache {

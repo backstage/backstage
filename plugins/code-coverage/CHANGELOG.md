@@ -1,5 +1,25 @@
 # @backstage/plugin-code-coverage
 
+## 0.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0-next.0
+  - @backstage/core-components@0.9.1-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.1.27
 
 ### Patch Changes

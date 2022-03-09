@@ -99,7 +99,7 @@ spec:
 
 Let's dive in and pick apart what each of these sections do and what they are.
 
-### `spec.parameters` - `FormStep | FormStep[]`
+## `spec.parameters` - `FormStep | FormStep[]`
 
 These `parameters` are template variables which can be modified in the frontend
 as a sequence. It can either be one `Step` if you just want one big list of
@@ -227,7 +227,7 @@ spec:
             inputType: tel
 ```
 
-#### Hide or mask sensitive data on Review step
+### Hide or mask sensitive data on Review step
 
 Sometimes, specially in custom fields, you collect some data on Create form that
 must not be shown to the user on Review step. To hide or mask this data, you can
@@ -254,7 +254,7 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
           show: false # wont print any info about 'hidden' property on Review Step
 ```
 
-#### The Repository Picker
+### The Repository Picker
 
 In order to make working with repository providers easier, we've built a custom
 picker that can be used by overriding the `ui:field` option in the `uiSchema`
@@ -287,7 +287,7 @@ The `RepoUrlPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. You can provide your own custom fields by
 [writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
 
-##### Using the Users `oauth` token
+#### Using the Users `oauth` token
 
 There's a little bit of extra magic that you get out of the box when using the
 `RepoUrlPicker` as a field input. You can provide some additional options under
@@ -360,7 +360,7 @@ There's also the ability to pass additional scopes when requesting the `oauth`
 token from the user, which you can do on a per-provider basis, in case your
 template can be published to multiple providers.
 
-#### The Owner Picker
+### The Owner Picker
 
 When the scaffolder needs to add new components to the catalog, it needs to have
 an owner for them. Ideally, users should be able to select an owner when they go
@@ -380,7 +380,7 @@ owner:
       - Group
 ```
 
-### `spec.steps` - `Action[]`
+## `spec.steps` - `Action[]`
 
 The `steps` is an array of the things that you want to happen part of this
 template. These follow the same standard format:
@@ -400,7 +400,7 @@ By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
 [create your own custom actions](./writing-custom-actions.md).
 
-### Outputs
+## Outputs
 
 Each individual step can output some variables that can be used in the
 scaffolder frontend for after the job is finished. This is useful for things
@@ -415,7 +415,7 @@ output:
   entityRef: ${{ steps.register.output.entityRef }} # link to the entity that has been ingested to the catalog
 ```
 
-### The templating syntax
+## The templating syntax
 
 You might have noticed variables wrapped in `${{ }}` in the examples. These are
 template strings for linking and gluing the different parts of the template

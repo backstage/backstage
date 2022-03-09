@@ -109,7 +109,7 @@ export const createValidator = (
 export const TemplatePage = ({
   customFieldExtensions = [],
 }: {
-  customFieldExtensions?: FieldExtensionOptions[];
+  customFieldExtensions?: FieldExtensionOptions<any, any>[];
 }) => {
   const apiHolder = useApiHolder();
   const secretsContext = useContext(SecretsContext);

@@ -115,6 +115,7 @@ describe('DockerContainerRunner', () => {
         Env: envVarsArray,
         WorkingDir: workingDir,
         HostConfig: {
+          AutoRemove: true,
           Binds: expect.arrayContaining([
             `${path.join(rootDir, 'input')}:/input`,
             `${path.join(rootDir, 'output')}:/output`,
@@ -207,6 +208,7 @@ describe('DockerContainerRunner', () => {
       logStream,
       expect.objectContaining({
         HostConfig: {
+          AutoRemove: true,
           Binds: [],
         },
         Volumes: {},

@@ -65,7 +65,7 @@ export class WebStorage implements StorageApi {
         new Error(`Error when parsing JSON config from storage for: ${key}`),
       );
     }
-    return { key, value, newValue: value, presence };
+    return { key, value, presence };
   }
 
   forBucket(name: string): WebStorage {

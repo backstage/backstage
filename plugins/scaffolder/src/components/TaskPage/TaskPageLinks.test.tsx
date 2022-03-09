@@ -26,43 +26,6 @@ describe('TaskPageLinks', () => {
     jest.resetAllMocks();
   });
 
-  it('renders the entityRef link', async () => {
-    const output = { entityRef: 'Component:default/my-app' };
-    const { findByText } = await renderInTestApp(
-      <TaskPageLinks output={output} />,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
-      },
-    );
-
-    const element = await findByText('Open in catalog');
-
-    expect(element).toBeInTheDocument();
-    expect(element).toHaveAttribute(
-      'href',
-      '/catalog/default/Component/my-app',
-    );
-  });
-
-  it('renders the remoteUrl link', async () => {
-    const output = { remoteUrl: 'https://remote.url' };
-    const { findByText } = await renderInTestApp(
-      <TaskPageLinks output={output} />,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-        },
-      },
-    );
-
-    const element = await findByText('Repo');
-
-    expect(element).toBeInTheDocument();
-    expect(element).toHaveAttribute('href', 'https://remote.url');
-  });
-
   it('renders further links', async () => {
     const output = {
       links: [

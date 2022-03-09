@@ -37,6 +37,7 @@ function findPreviewBundlePath(): string {
     // This can be tested by running `yarn pack` and extracting the resulting tarball into a directory.
     // Within the extracted directory, run `npm install --only=prod`.
     // Once that's done you can test the CLI in any directory using `node <tmp-dir>/package <command>`.
+    // eslint-disable-next-line no-restricted-syntax
     return findPaths(__dirname).resolveOwn('dist/embedded-app');
   }
 }

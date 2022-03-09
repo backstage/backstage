@@ -17,6 +17,11 @@ import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 
+/**
+ * The status of each task in a Scaffolder Job
+ *
+ * @public
+ */
 export type ScaffolderTaskStatus =
   | 'open'
   | 'processing'
@@ -24,8 +29,11 @@ export type ScaffolderTaskStatus =
   | 'completed'
   | 'skipped';
 
-export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
-
+/**
+ * The shape of each task returned from the `scaffolder-backend`
+ *
+ * @public
+ */
 export type ScaffolderTask = {
   id: string;
   spec: TaskSpec;
@@ -34,6 +42,11 @@ export type ScaffolderTask = {
   createdAt: string;
 };
 
+/**
+ * The response shape for the `listActions` call to the `scaffolder-backend`
+ *
+ * @public
+ */
 export type ListActionsResponse = Array<{
   id: string;
   description?: string;
@@ -43,23 +56,27 @@ export type ListActionsResponse = Array<{
   };
 }>;
 
-type ScaffolderOutputLink = {
+/** @public */
+export type ScaffolderOutputLink = {
   title?: string;
   icon?: string;
   url?: string;
   entityRef?: string;
 };
 
+/** @public */
 export type ScaffolderTaskOutput = {
-  /** @deprecated use the `links` property to link out to relevant resources */
-  entityRef?: string;
-  /** @deprecated use the `links` property to link out to relevant resources */
-  remoteUrl?: string;
   links?: ScaffolderOutputLink[];
 } & {
   [key: string]: unknown;
 };
 
+/**
+ * The shape of each entry of parameters which gets rendered
+ * as a seperate step in the wizard input
+ *
+ * @public
+ */
 export type TemplateParameterSchema = {
   title: string;
   steps: Array<{
@@ -68,6 +85,11 @@ export type TemplateParameterSchema = {
   }>;
 };
 
+/**
+ * The shape of a `LogEvent` message from the `scaffolder-backend`
+ *
+ * @public
+ */
 export type LogEvent = {
   type: 'log' | 'completion';
   body: {
@@ -80,24 +102,49 @@ export type LogEvent = {
   taskId: string;
 };
 
+/**
+ * The input options to the `scaffold` method of the `ScaffolderClient`.
+ *
+ * @public
+ */
 export interface ScaffolderScaffoldOptions {
   templateRef: string;
   values: Record<string, JsonValue>;
   secrets?: Record<string, string>;
 }
 
+/**
+ * The response shape of the `scaffold` method of the `ScaffolderClient`.
+ *
+ * @public
+ */
 export interface ScaffolderScaffoldResponse {
   taskId: string;
 }
 
+/**
+ * The arguments for `getIntegrationsList`.
+ *
+ * @public
+ */
 export interface ScaffolderGetIntegrationsListOptions {
   allowedHosts: string[];
 }
 
+/**
+ * The response shape for `getIntegrationsList`.
+ *
+ * @public
+ */
 export interface ScaffolderGetIntegrationsListResponse {
   integrations: { type: string; title: string; host: string }[];
 }
 
+/**
+ * The input options to the `streamLogs` method of the `ScaffolderClient`.
+ *
+ * @public
+ */
 export interface ScaffolderStreamLogsOptions {
   taskId: string;
   after?: number;

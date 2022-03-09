@@ -99,7 +99,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   /**
    * Margin on top and bottom of whole graph
    *
-   *  @remarks
+   * @remarks
    *
    * Default: 0
    */

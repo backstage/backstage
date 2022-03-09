@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { resolvePackagePath } from '@backstage/backend-common';
-import { IndexableDocument } from '@backstage/search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import {
   DatabaseStore,
@@ -69,6 +69,10 @@ export class DatabaseDocumentStore implements DatabaseStore {
 
   async transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T> {
     return await this.db.transaction(fn);
+  }
+
+  async getTransaction(): Promise<Knex.Transaction> {
+    return this.db.transaction();
   }
 
   async prepareInsert(tx: Knex.Transaction): Promise<void> {

@@ -20,7 +20,14 @@
  * @packageDocumentation
  */
 
-export * from './components/AboutCard';
+export * from './apis';
+
+export type {
+  AboutCardProps,
+  AboutContentProps,
+  AboutFieldProps,
+} from './components/AboutCard';
+export { AboutContent, AboutField } from './components/AboutCard';
 export * from './components/CatalogKindHeader';
 export * from './components/CatalogSearchResultListItem';
 export * from './components/CatalogTable';

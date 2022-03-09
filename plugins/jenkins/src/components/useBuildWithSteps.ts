@@ -19,7 +19,7 @@ import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { getEntityName } from '@backstage/catalog-model';
+import { getCompoundEntityRef } from '@backstage/catalog-model';
 
 const INTERVAL_AMOUNT = 1500;
 
@@ -41,7 +41,7 @@ export function useBuildWithSteps({
 
   const getBuildWithSteps = useCallback(async () => {
     try {
-      const entityName = await getEntityName(entity);
+      const entityName = await getCompoundEntityRef(entity);
       return api.getBuild({ entity: entityName, jobFullName, buildNumber });
     } catch (e) {
       errorApi.post(e);

@@ -1,5 +1,21 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.21-next.0
+
+### Patch Changes
+
+- 23568dd328: chore(deps): bump `@react-hookz/web` from 12.3.0 to 13.0.0
+- Updated dependencies
+  - @backstage/core-components@0.9.1-next.0
+
+## 0.3.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.3.19
 
 ### Patch Changes

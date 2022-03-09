@@ -30,13 +30,12 @@ jest.doMock('fs-extra', () => ({
 
 import {
   DatabaseManager,
-  DockerContainerRunner,
   getVoidLogger,
   PluginDatabaseManager,
   UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { TemplateEntityV1beta2 } from '@backstage/plugin-scaffolder-common';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ConfigReader } from '@backstage/config';
 import ObservableImpl from 'zen-observable';
 import express from 'express';
@@ -53,7 +52,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const createCatalogClient = (template: any) =>
   ({
-    getEntityByName: async () => template,
+    getEntityByRef: async () => template,
   } as unknown as CatalogApi);
 
 function createDatabase(): PluginDatabaseManager {
@@ -77,8 +76,8 @@ const mockUrlReader = UrlReaders.default({
 describe('createRouter', () => {
   let app: express.Express;
   let taskBroker: TaskBroker;
-  const template: TemplateEntityV1beta2 = {
-    apiVersion: 'backstage.io/v1beta2',
+  const template: TemplateEntityV1beta3 = {
+    apiVersion: 'scaffolder.backstage.io/v1beta3',
     kind: 'Template',
     metadata: {
       description: 'Create a new CRA website project',
@@ -122,7 +121,6 @@ describe('createRouter', () => {
       config: new ConfigReader({}),
       database: createDatabase(),
       catalogClient: createCatalogClient(template),
-      containerRunner: new DockerContainerRunner({} as any),
       reader: mockUrlReader,
       taskBroker,
     });

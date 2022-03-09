@@ -26,7 +26,7 @@ import {
   getLocationForEntity,
   PreparerBuilder,
   PublisherBase,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
@@ -35,6 +35,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
+import {
+  DefaultDocsBuildStrategy,
+  DocsBuildStrategy,
+} from './DocsBuildStrategy';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -51,6 +55,7 @@ export type OutOfTheBoxDeploymentOptions = {
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
@@ -65,6 +70,7 @@ export type RecommendedDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
@@ -99,6 +105,8 @@ export async function createRouter(
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const docsBuildStrategy =
+    options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
@@ -210,10 +218,13 @@ export async function createRouter(
       responseHandler = createEventStream(res);
     }
 
-    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
-    // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
-    // of the repository) is responsible for building and publishing documentation to the storage provider
-    if (config.getString('techdocs.builder') !== 'local') {
+    // By default, techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to
+    // 'local'. If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
+    // of the repository) is responsible for building and publishing documentation to the storage provider.
+    // Altering the implementation of the injected docsBuildStrategy allows for more complex behaviours, based on
+    // either config or the properties of the entity (e.g. annotations, labels, spec fields etc.).
+    const shouldBuild = await docsBuildStrategy.shouldBuild({ entity });
+    if (!shouldBuild) {
       // However, if caching is enabled, take the opportunity to check and
       // invalidate stale cache entries.
       if (cache) {
@@ -244,7 +255,7 @@ export async function createRouter(
 
     responseHandler.error(
       new Error(
-        "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'preparer' was provided to the router initialization.",
+        "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but no 'preparer' was provided to the router initialization.",
       ),
     );
   });
@@ -336,8 +347,8 @@ export function createEventStream(
 }
 
 /**
- *  @deprecated use event-stream implementation of the sync endpoint
- * */
+ * @deprecated use event-stream implementation of the sync endpoint
+ */
 export function createHttpResponse(
   res: Response<any, any>,
 ): DocsSynchronizerSyncOpts {

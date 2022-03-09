@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.9-next.0
+
+### Patch Changes
+
+- bae72d6f4d: Tech Radar Ring names are now coloured from theme via theme.palette.text.primary (instead of a hard coded colour)
+- Updated dependencies
+  - @backstage/core-components@0.9.1-next.0
+
+## 0.5.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/core-plugin-api@0.8.0
+
 ## 0.5.7
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.23-next.0
+
+### Patch Changes
+
+- bf95bb806c: Remove usages of now-removed `CatalogApi.getEntityByName`
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+
+## 0.1.22
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+
 ## 0.1.21
 
 ### Patch Changes
