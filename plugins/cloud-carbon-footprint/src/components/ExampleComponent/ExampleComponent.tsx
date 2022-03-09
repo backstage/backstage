@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, {PropsWithChildren, SyntheticEvent, useEffect, useState} from 'react';
 import { Route } from 'react-router';
 import { Grid, ThemeProvider } from '@material-ui/core';
+import { GridRowParams } from '@material-ui/data-grid';
 import {
   CardTab,
   Content,
@@ -49,6 +50,22 @@ import { FilterResultResponse } from '@cloud-carbon-footprint/client/dist/Types'
 import useFilters from '@cloud-carbon-footprint/client/dist/common/FilterBar/utils/FilterHook';
 import { useRemoteService } from '@cloud-carbon-footprint/client/dist/utils/hooks';
 import moment from 'moment';
+import {
+  useRemoteRecommendationsService
+} from "@cloud-carbon-footprint/client/dist/utils/hooks";
+import {
+  EmissionsAndRecommendationResults,
+  RecommendationRow
+} from "@cloud-carbon-footprint/client/dist/Types";
+import {
+  useFilterDataFromRecommendations
+} from "@cloud-carbon-footprint/client/dist/utils/helpers/transformData";
+import {
+  RecommendationsFilters
+} from "@cloud-carbon-footprint/client/dist/pages/RecommendationsPage/RecommendationsFilterBar/utils/RecommendationsFilters";
+import RecommendationsFilterBar from "@cloud-carbon-footprint/client/dist/pages/RecommendationsPage/RecommendationsFilterBar";
+import RecommendationsSidePanel from "@cloud-carbon-footprint/client/dist/pages/RecommendationsPage/RecommendationsSidePanel";
+import RecommendationsTable from "@cloud-carbon-footprint/client/dist/pages/RecommendationsPage/RecommendationsTable";
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (
   <FlatRoutes>
@@ -56,28 +73,13 @@ const Wrapper = ({ children }: PropsWithChildren<{}>) => (
   </FlatRoutes>
 );
 
-export const ExampleComponent = () => {
-  // const dateRangeType: string = config().DATE_RANGE.TYPE
-  // const dateRangeValue: string = config().DATE_RANGE.VALUE
-  const endDate: moment.Moment = moment.utc();
-
-  let startDate: moment.Moment;
-  // if (config().PREVIOUS_YEAR_OF_USAGE) {
-  startDate = moment.utc(Date.UTC(endDate.year() - 2, 0, 1, 0, 0, 0, 0));
-  // } else {
-  //   startDate = moment
-  //   .utc()
-  //   .subtract(dateRangeValue, dateRangeType as unitOfTime.DurationConstructor)
-  // }
-
-  const discovery: DiscoveryApi = useApi(discoveryApiRef);
-  useEffect(() => {
-    discovery.getBaseUrl('cloud-carbon-footprint').then(url => setUrl(url));
-  }, []);
-
-  const [baseUrl, setUrl] = useState<string | undefined>(undefined);
-
-  const { data } = useRemoteService(
+const useEmissionsData = (
+  baseUrl: string | undefined,
+  startDate: moment.Moment,
+  endDate: moment.Moment,
+) => {
+  // Emission Data
+  const { data: emissionData } = useRemoteService(
     [],
     startDate,
     endDate,
@@ -86,8 +88,10 @@ export const ExampleComponent = () => {
     baseUrl,
   );
 
+  // Filters for Emission Page
+
   const filteredDataResults: FilterResultResponse =
-    useFilterDataFromEstimates(data);
+    useFilterDataFromEstimates(emissionData);
 
   const buildFilters = (filteredResponse: FilterResultResponse) => {
     const updatedConfig = EmissionsFilters.generateConfig(filteredResponse);
@@ -95,11 +99,90 @@ export const ExampleComponent = () => {
   };
 
   const { filteredData, filters, setFilters } = useFilters(
-    data,
+    emissionData,
     buildFilters,
     filteredDataResults,
   );
   const filteredEstimationData = filteredData as EstimationResult[];
+  return {
+    emissionData, filteredDataResults, filters, setFilters, filteredEstimationData
+  }
+}
+
+const useRecommendationsData = (
+  baseUrl: string | undefined,
+  emissionData: EstimationResult[],
+) => {
+// Recommendation Data
+  const {data: recommendationData, loading: recommendationsLoading} =
+    useRemoteRecommendationsService(undefined, baseUrl)
+
+  const combinedData: EmissionsAndRecommendationResults = {
+    recommendations: recommendationData,
+    emissions: emissionData.flatMap(
+      (estimationResult) => estimationResult.serviceEstimates,
+    ),
+  }
+
+// Filters for Recommendations Page
+  const isEmissionsDataLoaded = combinedData.emissions.length > 0
+  const filteredDataResults: FilterResultResponse =
+    useFilterDataFromRecommendations(combinedData)
+
+  const buildFilters = (filteredResponse: FilterResultResponse) => {
+    const updatedConfig =
+      RecommendationsFilters.generateConfig(filteredResponse)
+    return new RecommendationsFilters(updatedConfig)
+  }
+
+  const {filteredData, filters, setFilters} = useFilters(
+    combinedData,
+    buildFilters,
+    filteredDataResults,
+    isEmissionsDataLoaded,
+  )
+  const {
+    recommendations: filteredRecommendationData,
+    emissions: filteredEmissionsData,
+  } = filteredData as EmissionsAndRecommendationResults
+
+  return {filteredDataResults, filteredRecommendationData, filteredEmissionsData, recfilters: filters, setRecFilters: setFilters }
+}
+
+export const ExampleComponent = () => {
+  // const dateRangeType: string = config().DATE_RANGE.TYPE
+  // const dateRangeValue: string = config().DATE_RANGE.VALUE
+  const endDate: moment.Moment = moment.utc();
+
+  const startDate: moment.Moment  = moment.utc(Date.UTC(endDate.year() - 2, 0, 1, 0, 0, 0, 0));
+  // } else {
+  //   startDate = moment
+  //   .utc()
+  //   .subtract(dateRangeValue, dateRangeType as unitOfTime.DurationConstructor)
+  // }
+  const [baseUrl, setUrl] = useState<string | undefined>(undefined);
+
+  const discovery: DiscoveryApi = useApi(discoveryApiRef);
+  useEffect(() => {
+    discovery.getBaseUrl('cloud-carbon-footprint').then(url => setUrl(url));
+  }, []);
+  const [selectedRecommendation, setSelectedRecommendation] =
+    useState<RecommendationRow>()
+  const [useKilograms, setUseKilograms] = useState(false)
+  const handleRowClick = (
+    params: GridRowParams,
+    _event: MuiEvent<SyntheticEvent>,
+  ) => {
+    if (selectedRecommendation && params.row.id === selectedRecommendation.id) {
+      setSelectedRecommendation(undefined)
+    } else {
+      setSelectedRecommendation(params.row as RecommendationRow)
+    }
+  }
+
+  const {emissionData, filteredDataResults, filters, setFilters, filteredEstimationData} = useEmissionsData(baseUrl, startDate, endDate)
+  const {filteredDataResults: recFilteredDataResults, filteredRecommendationData, filteredEmissionsData, recfilters, setRecFilters } = useRecommendationsData(baseUrl, emissionData)
+
 
   return (
     <Page themeId="tool">
@@ -145,7 +228,28 @@ export const ExampleComponent = () => {
               </Grid>
             </TabbedLayout.Route>
             <TabbedLayout.Route path="/recommendations" title="Recommendations">
-              <div>Recommendations-page</div>
+              <Grid container spacing={3} direction="column">
+                <ThemeProvider theme={determineTheme()}>
+                  <RecommendationsFilterBar
+                    filters={recfilters}
+                    setFilters={setRecFilters}
+                    filteredDataResults={recFilteredDataResults}
+                    setUseKilograms={setUseKilograms}
+                  />
+                  {selectedRecommendation && (
+                    <RecommendationsSidePanel
+                      recommendation={selectedRecommendation}
+                      onClose={() => setSelectedRecommendation(undefined)}
+                    />
+                  )}
+                  <RecommendationsTable
+                    emissionsData={filteredEmissionsData}
+                    recommendations={filteredRecommendationData}
+                    handleRowClick={handleRowClick}
+                    useKilograms={useKilograms}
+                  />
+                </ThemeProvider>
+              </Grid>
             </TabbedLayout.Route>
           </TabbedLayout>
         </Wrapper>
