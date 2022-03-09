@@ -58,10 +58,11 @@ export const EntityTagPicker = () => {
     const facet = 'metadata.tags';
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
+      filter: filters.kind?.getCatalogFilters(),
     });
 
     return facets[facet].map(({ value }) => value);
-  }, []);
+  }, [filters.kind]);
 
   const queryParamTags = useMemo(
     () => [queryParameters.tags].flat().filter(Boolean) as string[],
