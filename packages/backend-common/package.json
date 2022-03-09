@@ -59,7 +59,7 @@
     "git-url-parse": "^11.6.0",
     "helmet": "^5.0.2",
     "isomorphic-git": "^1.8.0",
-    "jose": "^1.27.1",
+    "jose": "^4.6.0",
     "keyv": "^4.0.3",
     "keyv-memcache": "^1.2.5",
     "@keyv/redis": "^2.2.3",

@@ -15633,19 +15633,17 @@ joi@^17.4.0:
     "@sideway/formula" "^3.0.0"
     "@sideway/pinpoint" "^2.0.0"
 
-jose@^1.27.1:
-  version "1.28.1"
-  resolved "https://registry.npmjs.org/jose/-/jose-1.28.1.tgz#34a0f851a534be59ffab82a6e8845f6874e8c128"
-  integrity sha512-6JK28rFu5ENp/yxMwM+iN7YeaInnY9B9Bggjkz5fuwLiJhbVrl2O4SJr65bdNBPl9y27fdC3Mymh+FVCvozLIg==
-  dependencies:
-    "@panva/asn1.js" "^1.0.0"
-
 jose@^2.0.5:
   version "2.0.5"
   resolved "https://registry.npmjs.org/jose/-/jose-2.0.5.tgz#29746a18d9fff7dcf9d5d2a6f62cb0c7cd27abd3"
   integrity sha512-BAiDNeDKTMgk4tvD0BbxJ8xHEHBZgpeRZ1zGPPsitSyMgjoMWiLGYAE7H7NpP5h0lPppQajQs871E8NHUrzVPA==
   dependencies:
     "@panva/asn1.js" "^1.0.0"
+
+jose@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.npmjs.org/jose/-/jose-4.6.0.tgz#f3ff007ddcbce462c091d3d41b7af2e35dec348c"
+  integrity sha512-0hNAkhMBNi4soKSAX4zYOFV+aqJlEz/4j4fregvasJzEVtjDChvWqRjPvHwLqr5hx28Ayr6bsOs1Kuj87V0O8w==
 
 joycon@^3.0.1:
   version "3.1.0"
