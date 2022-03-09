@@ -31,7 +31,9 @@ export const CloudCarbonFootprintPage = cloudCarbonFootprintPlugin.provide(
   createRoutableExtension({
     name: 'CloudCarbonFootprintPage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/CloudCarbonFootprintPlugin').then(
+        m => m.CloudCarbonFootprintPlugin,
+      ),
     mountPoint: rootRouteRef,
   }),
 );
