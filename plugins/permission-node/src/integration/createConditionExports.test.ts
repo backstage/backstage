@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 import { createConditionExports } from './createConditionExports';
 
 const testIntegration = () =>
@@ -64,10 +67,15 @@ describe('createConditionExports', () => {
 
   describe('createPolicyDecisions', () => {
     it('wraps conditions in an object with resourceType and pluginId', () => {
-      const { createPolicyDecision } = testIntegration();
+      const { createConditionalDecision } = testIntegration();
+      const testPermission = createPermission({
+        name: 'test.permission',
+        attributes: {},
+        resourceType: 'test-resource',
+      });
 
       expect(
-        createPolicyDecision({
+        createConditionalDecision(testPermission, {
           allOf: [{ rule: 'testRule1', params: ['a', 1] }],
         }),
       ).toEqual({

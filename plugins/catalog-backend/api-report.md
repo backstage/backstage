@@ -25,6 +25,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -277,14 +278,15 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 }
 
 // @alpha
+export const createCatalogConditionalDecision: (
+  permission: ResourcePermission<'catalog-entity'>,
+  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
+) => ConditionalPolicyDecision;
+
+// @alpha
 export const createCatalogPermissionRule: <TParams extends unknown[]>(
   rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
 ) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
-
-// @alpha
-export const createCatalogPolicyDecision: (
-  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
-) => ConditionalPolicyDecision;
 
 // @public
 export function createRandomProcessingInterval(options: {
