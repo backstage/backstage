@@ -16,26 +16,27 @@
 
 import { Config } from '@backstage/config';
 import {
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
   GithubCredentialType,
   ScmIntegrationRegistry,
   ScmIntegrations,
-  GithubCredentialsProvider,
-  DefaultGithubCredentialsProvider,
 } from '@backstage/integration';
-import { graphql } from '@octokit/graphql';
-import { Logger } from 'winston';
-import {
-  getOrganizationTeams,
-  getOrganizationUsers,
-  parseGitHubOrgUrl,
-} from './lib';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '../../api';
-import { assignGroupsToUsers, buildOrgHierarchy } from '../util/org';
+} from '@backstage/plugin-catalog-backend';
+import { graphql } from '@octokit/graphql';
+import { Logger } from 'winston';
+import {
+  assignGroupsToUsers,
+  buildOrgHierarchy,
+  getOrganizationTeams,
+  getOrganizationUsers,
+  parseGitHubOrgUrl,
+} from './lib';
 
 type GraphQL = typeof graphql;
 

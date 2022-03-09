@@ -28,11 +28,7 @@ import {
   stringifyEntityRef,
   Validators,
 } from '@backstage/catalog-model';
-import {
-  GithubCredentialsProvider,
-  ScmIntegrations,
-  DefaultGithubCredentialsProvider,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash, { keyBy } from 'lodash';
@@ -48,8 +44,6 @@ import {
   BuiltinKindsEntityProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
-  GithubDiscoveryProcessor,
-  GithubOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   UrlReaderProcessor,
@@ -351,19 +345,9 @@ export class CatalogBuilder {
   getDefaultProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
     const integrations = ScmIntegrations.fromConfig(config);
-    const githubCredentialsProvider: GithubCredentialsProvider =
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
     return [
       new FileReaderProcessor(),
-      GithubDiscoveryProcessor.fromConfig(config, {
-        logger,
-        githubCredentialsProvider,
-      }),
-      GithubOrgReaderProcessor.fromConfig(config, {
-        logger,
-        githubCredentialsProvider,
-      }),
       new UrlReaderProcessor({ reader, logger }),
       CodeOwnersProcessor.fromConfig(config, { logger, reader }),
       new AnnotateLocationEntityProcessor({ integrations }),

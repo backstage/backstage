@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
-export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
-export { GitHubOrgEntityProvider } from './GitHubOrgEntityProvider';
-export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
-export type { GithubMultiOrgConfig } from './lib';
+export { readGithubMultiOrgConfig } from './config';
+export type { GithubMultiOrgConfig } from './config';
+export {
+  getOrganizationRepositories,
+  getOrganizationTeams,
+  getOrganizationUsers,
+} from './github';
+export { assignGroupsToUsers, buildOrgHierarchy } from './org';
+export { parseGitHubOrgUrl } from './util';

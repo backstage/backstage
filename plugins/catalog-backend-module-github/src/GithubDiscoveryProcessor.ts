@@ -21,15 +21,15 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { graphql } from '@octokit/graphql';
-import { Logger } from 'winston';
-import { getOrganizationRepositories } from './lib';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '../../api';
+} from '@backstage/plugin-catalog-backend';
+import { graphql } from '@octokit/graphql';
+import { Logger } from 'winston';
+import { getOrganizationRepositories } from './lib';
 
 /**
  * Extracts repositories out of a GitHub org.
