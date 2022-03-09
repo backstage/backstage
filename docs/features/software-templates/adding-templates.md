@@ -94,7 +94,7 @@ for example:
 catalog:
   locations:
     - type: url
-      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
 ```
