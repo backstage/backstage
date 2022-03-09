@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="node" />
 
-import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument as CatalogEntityDocument_2 } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -96,49 +95,6 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
-
-// @public (undocumented)
-export class BitbucketDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    parser?: (options: {
-      integration: BitbucketIntegration;
-      target: string;
-      presence?: 'optional' | 'required';
-      logger: Logger;
-    }) => AsyncIterable<CatalogProcessorResult>;
-    logger: Logger;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      parser?: (options: {
-        integration: BitbucketIntegration;
-        target: string;
-        presence?: 'optional' | 'required';
-        logger: Logger;
-      }) => AsyncIterable<CatalogProcessorResult>;
-      logger: Logger;
-    },
-  ): BitbucketDiscoveryProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// @public @deprecated (undocumented)
-export type BitbucketRepositoryParser = (options: {
-  integration: BitbucketIntegration;
-  target: string;
-  presence?: 'optional' | 'required';
-  logger: Logger;
-}) => AsyncIterable<CatalogProcessorResult>;
 
 // @public (undocumented)
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {

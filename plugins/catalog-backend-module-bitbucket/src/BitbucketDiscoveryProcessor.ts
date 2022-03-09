@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-
 import {
   BitbucketIntegration,
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
 import {
-  BitbucketClient,
-  defaultRepositoryParser,
-  paginated,
-  paginated20,
-  BitbucketRepository,
-  BitbucketRepository20,
-} from './lib';
-import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorResult,
   LocationSpec,
-} from '../../api';
+} from '@backstage/plugin-catalog-backend';
+import { Logger } from 'winston';
+import {
+  BitbucketClient,
+  BitbucketRepository,
+  BitbucketRepository20,
+  defaultRepositoryParser,
+  paginated,
+  paginated20,
+} from './lib';
 
 const DEFAULT_BRANCH = 'master';
 const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';

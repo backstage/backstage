@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import fetch from 'node-fetch';
 import {
   BitbucketIntegrationConfig,
   getBitbucketRequestOptions,
 } from '@backstage/integration';
+import fetch from 'node-fetch';
 import { BitbucketRepository20 } from './types';
 
 export class BitbucketClient {

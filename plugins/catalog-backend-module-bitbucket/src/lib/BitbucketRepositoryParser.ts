@@ -15,13 +15,12 @@
  */
 
 import { BitbucketIntegration } from '@backstage/integration';
+import {
+  CatalogProcessorResult,
+  processingResult,
+} from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
-import { CatalogProcessorResult, processingResult } from '../../../api';
 
-/**
- * @public
- * @deprecated type inlined.
- */
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;
