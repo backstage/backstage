@@ -18,12 +18,12 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli package build",
-    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
     "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {

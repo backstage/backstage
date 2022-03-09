@@ -27,9 +27,9 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --testPathIgnorePatterns=src/e2e.test.ts",
-    "test:e2e": "backstage-cli test src/e2e.test.ts",
-    "test:e2e:ci": "backstage-cli test --watchAll=false --ci src/e2e.test.ts",
+    "test": "backstage-cli package test",
+    "test:e2e": "backstage-cli test --config e2e-test.config.js",
+    "test:e2e:ci": "backstage-cli test --config e2e-test.config.js --watchAll=false --ci",
     "test:cypress": "cypress open",
     "prepack": "./scripts/prepack.sh"
   },

@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "bundled": true,
+  "backstage": {
+    "role": "frontend"
+  },
   "dependencies": {
     "@backstage/app-defaults": "^{{version '@backstage/app-defaults'}}",
     "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
@@ -49,13 +52,13 @@
     "start-server-and-test": "^1.10.11"
   },
   "scripts": {
-    "start": "backstage-cli app:serve",
-    "build": "backstage-cli app:build",
-    "clean": "backstage-cli clean",
-    "test": "backstage-cli test",
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint",
     "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
     "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
-    "lint": "backstage-cli lint",
     "cy:dev": "cypress open",
     "cy:run": "cypress run"
   },

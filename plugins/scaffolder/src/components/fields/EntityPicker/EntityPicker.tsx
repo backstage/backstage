@@ -25,6 +25,12 @@ import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { FieldExtensionComponentProps } from '../../../extensions';
 
+/**
+ * The input props that can be specified under `ui:options` for the
+ * `EntityPicker` field extension.
+ *
+ * @public
+ */
 export interface EntityPickerUiOptions {
   allowedKinds?: string[];
   defaultKind?: string;
@@ -32,7 +38,10 @@ export interface EntityPickerUiOptions {
 }
 
 /**
- * Entity Picker
+ * The underlying component that is rendered in the form for the `EntityPicker`
+ * field extension.
+ *
+ * @public
  */
 export const EntityPicker = (
   props: FieldExtensionComponentProps<string, EntityPickerUiOptions>,

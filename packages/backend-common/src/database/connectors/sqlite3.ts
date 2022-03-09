@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
-
-import { ensureDirSync } from 'fs-extra';
-import knexFactory, { Knex } from 'knex';
 
 import { Config } from '@backstage/config';
+import { ensureDirSync } from 'fs-extra';
+import knexFactory, { Knex } from 'knex';
+import path from 'path';
 import { mergeDatabaseConfig } from '../config';
 import { DatabaseConnector } from '../types';
 

@@ -182,7 +182,7 @@ export class DatabaseTaskStore implements TaskStore {
       .andWhere(
         'last_heartbeat_at',
         '<=',
-        this.db.client.config.client === 'sqlite3'
+        this.db.client.config.client.includes('sqlite3')
           ? this.db.raw(`datetime('now', ?)`, [`-${timeoutS} seconds`])
           : this.db.raw(`dateadd('second', ?, ?)`, [
               `-${timeoutS}`,

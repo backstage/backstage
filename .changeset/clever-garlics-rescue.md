@@ -6,7 +6,7 @@
 
 ```diff
 // In packages/backend/src/plugins/catalog.ts
-+import { GitLabDiscoveryProcessor } from '@backstage/plugin-scaffolder-backend-module-gitlab';
++import { GitLabDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-gitlab';
 
  export default async function createPlugin(
    env: PluginEnvironment,

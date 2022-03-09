@@ -43,25 +43,19 @@ export type CustomFieldValidator<TFieldReturnValue> = (
   },
 ) => void;
 
-// Warning: (ae-missing-release-tag) "EntityNamePickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const EntityNamePickerFieldExtension: FieldExtensionComponent<
   string,
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const EntityPickerFieldExtension: FieldExtensionComponent<
   string,
   EntityPickerUiOptions
 >;
 
-// Warning: (ae-missing-release-tag) "EntityPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface EntityPickerUiOptions {
   // (undocumented)
   allowArbitraryValues?: boolean;
@@ -77,9 +71,7 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent<
   EntityTagsPickerUiOptions
 >;
 
-// Warning: (ae-missing-release-tag) "EntityTagsPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface EntityTagsPickerUiOptions {
   // (undocumented)
   kinds?: string[];
@@ -111,14 +103,7 @@ export type FieldExtensionOptions<
   validation?: CustomFieldValidator<TFieldReturnValue>;
 };
 
-// Warning: (ae-missing-release-tag) "JobStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
-
-// Warning: (ae-missing-release-tag) "ListActionsResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ListActionsResponse = Array<{
   id: string;
   description?: string;
@@ -128,9 +113,7 @@ export type ListActionsResponse = Array<{
   };
 }>;
 
-// Warning: (ae-missing-release-tag) "LogEvent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type LogEvent = {
   type: 'log' | 'completion';
   body: {
@@ -143,17 +126,13 @@ export type LogEvent = {
   taskId: string;
 };
 
-// Warning: (ae-missing-release-tag) "OwnedEntityPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
   string,
   OwnedEntityPickerUiOptions
 >;
 
-// Warning: (ae-missing-release-tag) "OwnedEntityPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface OwnedEntityPickerUiOptions {
   // (undocumented)
   allowedKinds?: string[];
@@ -161,25 +140,19 @@ export interface OwnedEntityPickerUiOptions {
   defaultKind?: string;
 }
 
-// Warning: (ae-missing-release-tag) "OwnerPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const OwnerPickerFieldExtension: FieldExtensionComponent<
   string,
   OwnerPickerUiOptions
 >;
 
-// Warning: (ae-missing-release-tag) "OwnerPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface OwnerPickerUiOptions {
   // (undocumented)
   allowedKinds?: string[];
 }
 
-// Warning: (ae-missing-release-tag) "repoPickerValidation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const repoPickerValidation: (
   value: string,
   validation: FieldValidation,
@@ -188,17 +161,13 @@ export const repoPickerValidation: (
   },
 ) => void;
 
-// Warning: (ae-missing-release-tag) "RepoUrlPickerFieldExtension" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent<
   string,
   RepoUrlPickerUiOptions
 >;
 
-// Warning: (ae-missing-release-tag) "RepoUrlPickerUiOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface RepoUrlPickerUiOptions {
   // (undocumented)
   allowedHosts?: string[];
@@ -216,16 +185,8 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
-// Warning: (ae-missing-release-tag) "RouterProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type RouterProps = {
-  TemplateCardComponent?:
-    | ComponentType<{
-        template: TemplateEntityV1beta3;
-      }>
-    | undefined;
-  TaskPageComponent?: ComponentType<{}>;
   components?: {
     TemplateCardComponent?:
       | ComponentType<{
@@ -294,17 +255,13 @@ export class ScaffolderClient implements ScaffolderApi {
 // @public
 export const ScaffolderFieldExtensions: React_2.ComponentType;
 
-// Warning: (ae-missing-release-tag) "ScaffolderGetIntegrationsListOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ScaffolderGetIntegrationsListOptions {
   // (undocumented)
   allowedHosts: string[];
 }
 
-// Warning: (ae-missing-release-tag) "ScaffolderGetIntegrationsListResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ScaffolderGetIntegrationsListResponse {
   // (undocumented)
   integrations: {
@@ -322,14 +279,10 @@ export type ScaffolderOutputLink = {
   entityRef?: string;
 };
 
-// Warning: (ae-missing-release-tag) "ScaffolderPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const ScaffolderPage: (props: RouterProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "scaffolderPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const scaffolderPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
@@ -339,9 +292,7 @@ export const scaffolderPlugin: BackstagePlugin<
   }
 >;
 
-// Warning: (ae-missing-release-tag) "ScaffolderScaffoldOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ScaffolderScaffoldOptions {
   // (undocumented)
   secrets?: Record<string, string>;
@@ -351,17 +302,13 @@ export interface ScaffolderScaffoldOptions {
   values: Record<string, JsonValue>;
 }
 
-// Warning: (ae-missing-release-tag) "ScaffolderScaffoldResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ScaffolderScaffoldResponse {
   // (undocumented)
   taskId: string;
 }
 
-// Warning: (ae-missing-release-tag) "ScaffolderStreamLogsOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface ScaffolderStreamLogsOptions {
   // (undocumented)
   after?: number;
@@ -369,9 +316,7 @@ export interface ScaffolderStreamLogsOptions {
   taskId: string;
 }
 
-// Warning: (ae-missing-release-tag) "ScaffolderTask" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ScaffolderTask = {
   id: string;
   spec: TaskSpec;
@@ -387,9 +332,7 @@ export type ScaffolderTaskOutput = {
   [key: string]: unknown;
 };
 
-// Warning: (ae-missing-release-tag) "ScaffolderTaskStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type ScaffolderTaskStatus =
   | 'open'
   | 'processing'
@@ -399,8 +342,6 @@ export type ScaffolderTaskStatus =
 
 // @public
 export interface ScaffolderUseTemplateSecrets {
-  // @deprecated (undocumented)
-  setSecret: (input: Record<string, string>) => void;
   // (undocumented)
   setSecrets: (input: Record<string, string>) => void;
 }
@@ -413,33 +354,7 @@ export type TaskPageProps = {
   loadingText?: string;
 };
 
-// Warning: (ae-missing-release-tag) "TemplateList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const TemplateList: ({
-  TemplateCardComponent,
-  group,
-}: TemplateListProps) => JSX.Element | null;
-
-// Warning: (ae-missing-release-tag) "TemplateListProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export type TemplateListProps = {
-  TemplateCardComponent?:
-    | ComponentType<{
-        template: TemplateEntityV1beta3;
-      }>
-    | undefined;
-  group?: {
-    title?: React_2.ReactNode;
-    titleComponent?: React_2.ReactNode;
-    filter: (entity: Entity) => boolean;
-  };
-};
-
-// Warning: (ae-missing-release-tag) "TemplateParameterSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type TemplateParameterSchema = {
   title: string;
   steps: Array<{
@@ -448,9 +363,7 @@ export type TemplateParameterSchema = {
   }>;
 };
 
-// Warning: (ae-missing-release-tag) "TemplateTypePicker" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public

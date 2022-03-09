@@ -20,7 +20,7 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  if (knex.client.config.client !== 'sqlite3') {
+  if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities', table => {
       table.index('location_id', 'entity_location_id_idx');
     });
@@ -34,7 +34,7 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  if (knex.client.config.client !== 'sqlite3') {
+  if (!knex.client.config.client.includes('sqlite3')) {
     await knex.schema.alterTable('entities', table => {
       table.dropIndex([], 'entity_location_id_idx');
     });

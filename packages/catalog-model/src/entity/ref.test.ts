@@ -34,11 +34,24 @@ describe('ref', () => {
     it('rejects bad inputs', () => {
       expect(() => parseEntityRef(null as any)).toThrow();
       expect(() => parseEntityRef(7 as any)).toThrow();
-      expect(() => parseEntityRef('a:b:c')).toThrow();
-      expect(() => parseEntityRef('a/b/c')).toThrow();
-      expect(() => parseEntityRef('a/b:c')).toThrow();
-      expect(() => parseEntityRef('a:b/c/d')).toThrow();
-      expect(() => parseEntityRef('a:b/c:d')).toThrow();
+    });
+
+    it('allows names with : and /', () => {
+      expect(
+        parseEntityRef('a:b:c', { defaultKind: 'k', defaultNamespace: 'ns' }),
+      ).toEqual({ kind: 'a', namespace: 'ns', name: 'b:c' });
+      expect(
+        parseEntityRef('a/b/c', { defaultKind: 'k', defaultNamespace: 'ns' }),
+      ).toEqual({ kind: 'k', namespace: 'a', name: 'b/c' });
+      expect(
+        parseEntityRef('a/b:c', { defaultKind: 'k', defaultNamespace: 'ns' }),
+      ).toEqual({ kind: 'k', namespace: 'a', name: 'b:c' });
+      expect(
+        parseEntityRef('a:b/c/d', { defaultKind: 'k', defaultNamespace: 'ns' }),
+      ).toEqual({ kind: 'a', namespace: 'b', name: 'c/d' });
+      expect(
+        parseEntityRef('a:b/c:d', { defaultKind: 'k', defaultNamespace: 'ns' }),
+      ).toEqual({ kind: 'a', namespace: 'b', name: 'c:d' });
     });
 
     it('rejects empty parts in strings', () => {

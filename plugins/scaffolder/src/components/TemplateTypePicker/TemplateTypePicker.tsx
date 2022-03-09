@@ -34,6 +34,11 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+/**
+ * The component to select the `type` of `Template` that you will see in the table.
+ *
+ * @public
+ */
 export const TemplateTypePicker = () => {
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =

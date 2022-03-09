@@ -403,10 +403,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at:
-          tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
-            : tx.raw(`now() + interval '${interval} seconds'`),
+        next_update_at: tx.client.config.client.includes('sqlite3')
+          ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
+          : tx.raw(`now() + interval '${interval} seconds'`),
       });
 
     return {
@@ -589,7 +588,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       // We have to do this because the only way to detect if there was a conflict with
       // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
       // break the ongoing transaction.
-      if (tx.client.config.client !== 'sqlite3') {
+      if (!tx.client.config.client.includes('sqlite3')) {
         query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
       }
 
