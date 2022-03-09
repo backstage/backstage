@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, {PropsWithChildren, useEffect, useState} from 'react';
-import {Route} from 'react-router';
-import {Grid, ThemeProvider} from '@material-ui/core';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { Route } from 'react-router';
+import { Grid, ThemeProvider } from '@material-ui/core';
 import {
   CardTab,
   Content,
@@ -27,76 +27,79 @@ import {
   TabbedCard,
   TabbedLayout,
 } from '@backstage/core-components';
-import EmissionsOverTimeCard
-  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsOverTimeCard';
-import CarbonComparisonCard
-  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonComparisonCard';
-import EmissionsBreakdownCard
-  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsBreakdownCard';
-import CarbonIntensityMap
-  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonIntensityMap';
-import EmissionsFilterBar
-  from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsFilterBar';
-import {DiscoveryApi, discoveryApiRef, useApi} from '@backstage/core-plugin-api';
+import EmissionsOverTimeCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsOverTimeCard';
+import CarbonComparisonCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonComparisonCard';
+import EmissionsBreakdownCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsBreakdownCard';
+import CarbonIntensityMap from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonIntensityMap';
+import EmissionsFilterBar from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsFilterBar';
+import {
+  DiscoveryApi,
+  discoveryApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
-import {determineTheme} from '@cloud-carbon-footprint/client/dist/utils/themes';
+import { determineTheme } from '@cloud-carbon-footprint/client/dist/utils/themes';
 
-//@ts-ignore
-import {EstimationResult,} from '@cloud-carbon-footprint/common';
-import {FlatRoutes} from "../../../../../packages/core-app-api";
-import {useFilterDataFromEstimates} from "@cloud-carbon-footprint/client/dist/utils/helpers";
-import {EmissionsFilters} from "@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsFilterBar/utils/EmissionsFilters";
-import {FilterResultResponse} from "@cloud-carbon-footprint/client/dist/Types";
-import useFilters from "@cloud-carbon-footprint/client/dist/common/FilterBar/utils/FilterHook";
-import {useRemoteService} from "@cloud-carbon-footprint/client/dist/utils/hooks";
+// @ts-ignore
+import { EstimationResult } from '@cloud-carbon-footprint/common';
+import { FlatRoutes } from '../../../../../packages/core-app-api';
+import { useFilterDataFromEstimates } from '@cloud-carbon-footprint/client/dist/utils/helpers';
+import { EmissionsFilters } from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsFilterBar/utils/EmissionsFilters';
+import { FilterResultResponse } from '@cloud-carbon-footprint/client/dist/Types';
+import useFilters from '@cloud-carbon-footprint/client/dist/common/FilterBar/utils/FilterHook';
+import { useRemoteService } from '@cloud-carbon-footprint/client/dist/utils/hooks';
 import moment from 'moment';
 
-const Wrapper = ({children}: PropsWithChildren<{}>) => (
+const Wrapper = ({ children }: PropsWithChildren<{}>) => (
   <FlatRoutes>
-    <Route path="/*" element={<>{children}</>}/>
+    <Route path="/*" element={<>{children}</>} />
   </FlatRoutes>
 );
 
-
 export const ExampleComponent = () => {
-
   // const dateRangeType: string = config().DATE_RANGE.TYPE
   // const dateRangeValue: string = config().DATE_RANGE.VALUE
-  const endDate: moment.Moment = moment.utc()
+  const endDate: moment.Moment = moment.utc();
 
-  let startDate: moment.Moment
+  let startDate: moment.Moment;
   // if (config().PREVIOUS_YEAR_OF_USAGE) {
-    startDate = moment.utc(Date.UTC(endDate.year() - 2, 0, 1, 0, 0, 0, 0))
+  startDate = moment.utc(Date.UTC(endDate.year() - 2, 0, 1, 0, 0, 0, 0));
   // } else {
   //   startDate = moment
   //   .utc()
   //   .subtract(dateRangeValue, dateRangeType as unitOfTime.DurationConstructor)
   // }
 
-  const discovery: DiscoveryApi = useApi(discoveryApiRef)
+  const discovery: DiscoveryApi = useApi(discoveryApiRef);
   useEffect(() => {
-    discovery.getBaseUrl('cloud-carbon-footprint').then(url => setUrl(url))
-  }, [])
+    discovery.getBaseUrl('cloud-carbon-footprint').then(url => setUrl(url));
+  }, []);
 
+  const [baseUrl, setUrl] = useState<string | undefined>(undefined);
 
-  const [baseUrl, setUrl] = useState<string|undefined>(undefined)
-
-  const { data, } = useRemoteService([], startDate, endDate, false, undefined, baseUrl)
+  const { data } = useRemoteService(
+    [],
+    startDate,
+    endDate,
+    false,
+    undefined,
+    baseUrl,
+  );
 
   const filteredDataResults: FilterResultResponse =
-    useFilterDataFromEstimates(data)
+    useFilterDataFromEstimates(data);
 
   const buildFilters = (filteredResponse: FilterResultResponse) => {
-    const updatedConfig = EmissionsFilters.generateConfig(filteredResponse)
-    return new EmissionsFilters(updatedConfig)
-  }
+    const updatedConfig = EmissionsFilters.generateConfig(filteredResponse);
+    return new EmissionsFilters(updatedConfig);
+  };
 
-  const {filteredData, filters, setFilters} = useFilters(
+  const { filteredData, filters, setFilters } = useFilters(
     data,
     buildFilters,
     filteredDataResults,
-  )
-  const filteredEstimationData = filteredData as EstimationResult[]
+  );
+  const filteredEstimationData = filteredData as EstimationResult[];
 
   return (
     <Page themeId="tool">
@@ -104,8 +107,8 @@ export const ExampleComponent = () => {
         title="Welcome to cloud-carbon-footprint!"
         subtitle="Optional subtitle"
       >
-        <HeaderLabel label="Owner" value="Team X"/>
-        <HeaderLabel label="Lifecycle" value="Alpha"/>
+        <HeaderLabel label="Owner" value="Team X" />
+        <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content>
         <ContentHeader title="Cloud Carbon Footprint Plugin">
@@ -128,9 +131,7 @@ export const ExampleComponent = () => {
                       />
                     </CardTab>
                     <CardTab label="Carbon Comparison">
-                      <CarbonComparisonCard
-                        data={filteredEstimationData}
-                      />
+                      <CarbonComparisonCard data={filteredEstimationData} />
                     </CardTab>
                     <CardTab label="Emissions Breakdown">
                       <EmissionsBreakdownCard
@@ -139,7 +140,7 @@ export const ExampleComponent = () => {
                       />
                     </CardTab>
                   </TabbedCard>
-                  <CarbonIntensityMap/>
+                  <CarbonIntensityMap />
                 </ThemeProvider>
               </Grid>
             </TabbedLayout.Route>
@@ -151,4 +152,4 @@ export const ExampleComponent = () => {
       </Content>
     </Page>
   );
-}
+};

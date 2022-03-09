@@ -1941,6 +1941,154 @@
     human-id "^1.0.2"
     prettier "^1.19.1"
 
+<<<<<<< HEAD
+=======
+"@cloud-carbon-footprint/api@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/api/-/api-1.4.0.tgz#5afb9039b28f21c93e862841db944e59a0ef09c4"
+  integrity sha512-G4gLEBYM/938i0nMgyrHkYLACL3kicnBChmkDaeZsmtuuHwpM+LEmQYEHHGd4Y+PoHnCM92/9Cf6LsfFaOEMZA==
+  dependencies:
+    "@cloud-carbon-footprint/app" "^0.5.0"
+    "@cloud-carbon-footprint/common" "^1.5.0"
+    "@types/express" "^4.17.12"
+    express "^4.17.1"
+    helmet "^5.0.1"
+    module-alias "^2.2.2"
+
+"@cloud-carbon-footprint/app@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/app/-/app-0.5.0.tgz#2d555ea8f3bc2da23e56e4466da2887af2619335"
+  integrity sha512-RIUuqz2RL5s1LzcFeOcFyl9QasWG0xgbpMGIebThnrMrg0HmBDhNe2CjptTKg4PWnGwMSUCQcYnVgOxomfEfGw==
+  dependencies:
+    "@cloud-carbon-footprint/aws" "^0.10.0"
+    "@cloud-carbon-footprint/azure" "^0.9.0"
+    "@cloud-carbon-footprint/common" "^1.5.0"
+    "@cloud-carbon-footprint/gcp" "^0.9.0"
+    "@cloud-carbon-footprint/on-premise" "^0.0.1"
+    "@google-cloud/monitoring" "^2.3.5"
+    "@google-cloud/storage" "^5.16.1"
+    moment "^2.29.1"
+    ramda "^0.28.0"
+
+"@cloud-carbon-footprint/aws@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/aws/-/aws-0.10.0.tgz#04653e2d4c1c2efb096458c0c49a211e70e31853"
+  integrity sha512-eqyuo9E+LJg0UY0Z03nXUP26ae8qdGgtehD5VyjHUnz3SzGgE+XBG0nfSZ+Gg4OG5EM2fbpobO/5AYHj+Itk7g==
+  dependencies:
+    "@cloud-carbon-footprint/common" "^1.5.0"
+    "@cloud-carbon-footprint/core" "^0.16.0"
+    "@google-cloud/iam-credentials" "^1.1.1"
+    aws-sdk "^2.927.0"
+    aws-sdk-mock "^5.1.0"
+    csvtojson "^2.0.10"
+    moment "^2.29.1"
+    ramda "^0.28.0"
+
+"@cloud-carbon-footprint/azure@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/azure/-/azure-0.9.0.tgz#39aac06d43d966c0597658810a69110d8cfafd4b"
+  integrity sha512-J6KXrRA0cVLyJvPmnj/tfmWKJzSb/P+XAca3FskA4/T1nu9xyQ6/n+lj5Ttm9bmJtT9z0F7K0e8iaMp2kKt90w==
+  dependencies:
+    "@azure/arm-consumption" "^8.0.0"
+    "@azure/arm-resources-subscriptions" "^2.0.0"
+    "@azure/identity" "^2.0.1"
+    "@azure/ms-rest-js" "^2.2.3"
+    "@azure/ms-rest-nodeauth" "^3.0.7"
+    "@cloud-carbon-footprint/common" "^1.5.0"
+    "@cloud-carbon-footprint/core" "^0.16.0"
+    "@google-cloud/secret-manager" "^3.10.1"
+    moment "^2.29.1"
+
+"@cloud-carbon-footprint/client@file:../cloud-carbon-footprint/packages/client":
+  version "2.3.4"
+  dependencies:
+    "@babel/runtime" "^7.14.0"
+    "@cloud-carbon-footprint/common" "^1.4.0"
+    "@material-ui/core" "^4.11.4"
+    "@material-ui/data-grid" "^4.0.0-alpha.35"
+    "@material-ui/icons" "^4.11.2"
+    "@material-ui/lab" "^4.0.0-alpha.57"
+    apexcharts "^3.26.3"
+    axios "^0.25.0"
+    express "^4.17.1"
+    helmet "^5.0.1"
+    moment "^2.29.1"
+    ramda "^0.28.0"
+    react "^17.0.2"
+    react-apexcharts "^1.3.9"
+    react-dates "^21.8.0"
+    react-dom "^17.0.2"
+    react-is "^17.0.2"
+    react-router-dom "^6.2.1"
+    react-scripts "^5.0.0"
+    react-test-renderer "^17.0.2"
+    styled-components "^5.3.0"
+    typescript "^4.5.4"
+
+"@cloud-carbon-footprint/common@^1.4.0":
+  version "1.4.0"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@cloud-carbon-footprint/common/-/common-1.4.0.tgz#30e5daf2fc84b1bb69f053c9787bbe1c51674e5d"
+  integrity sha1-MOXa8vyEsbtp8FPJeHu+HFFnTl0=
+  dependencies:
+    "@google-cloud/logging-winston" "^4.1.1"
+    dotenv "^14.2.0"
+    moment "^2.29.1"
+    winston "^3.3.3"
+
+"@cloud-carbon-footprint/common@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/common/-/common-1.5.0.tgz#52a88fe9bcd36568dfa8dc657d7d23030150a050"
+  integrity sha512-hbX6iGW80yv7Ij6AraCW0IDiaF2RIbUhr6o5qmK5gbaN51/FlNWv6H4Ixb2hOeA58Axbt+UrsKpzKSernp0lAQ==
+  dependencies:
+    "@google-cloud/logging-winston" "^4.1.1"
+    dotenv "^14.2.0"
+    moment "^2.29.1"
+    winston "^3.3.3"
+
+"@cloud-carbon-footprint/core@^0.16.0":
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/core/-/core-0.16.0.tgz#f8d680412990f2dd15309960abbbc3c7ce1cb7b4"
+  integrity sha512-2+SQq60jZLdakna8HdbsS/4Sm7vdM+4Zzzy/l51LAz2SOOyyAU49MSbkhmRE/9+OS9OCB36h8DdcXczeIkv23w==
+  dependencies:
+    "@cloud-carbon-footprint/common" "^1.5.0"
+    "@types/ramda" "^0.27.40"
+    aws-sdk "^2.910.0"
+    moment "^2.29.1"
+    ramda "^0.28.0"
+
+"@cloud-carbon-footprint/gcp@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/gcp/-/gcp-0.9.0.tgz#15d4e02c2404e567c3b3c637337f142b85f2f7fe"
+  integrity sha512-X4ZtQBNAvw3dSdkKAETf2BMuEH6ObA6TSnUhUnQKgZsH/sb24iwsg4pNHBvZFI34uEEwe+Y3WY65jPM3wgZmZg==
+  dependencies:
+    "@cloud-carbon-footprint/common" "^1.5.0"
+    "@cloud-carbon-footprint/core" "^0.16.0"
+    "@google-cloud/bigquery" "^5.9.3"
+    "@google-cloud/monitoring" "^2.3.5"
+    "@google-cloud/recommender" "^4.2.5"
+    "@google-cloud/resource-manager" "^3.0.0"
+    google-gax "^2.29.0"
+    googleapis "^92.0.0"
+    moment "^2.29.1"
+
+"@cloud-carbon-footprint/on-premise@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/on-premise/-/on-premise-0.0.1.tgz#14bf98e2d8988ffc3c600ccde90abdf61c9abeb8"
+  integrity sha512-IiTdFUZ+5HEtA5B5dwt+guLdyc8jaNZPX8DesSaKwNj0aM4eMY8nZF2cu2MgjoWi6rAQ+XLaquig4IITF3/gxQ==
+  dependencies:
+    "@cloud-carbon-footprint/common" "^1.5.0"
+    "@cloud-carbon-footprint/core" "^0.16.0"
+    moment "^2.29.1"
+
+"@cnakazawa/watch@^1.0.3":
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
+  integrity sha512-v9kIhKwjeZThiWrLmj0y17CWoyddASLj9O2yvbZkbvw/N3rWOYy9zkV66ursAoVr0mV15bL8g0c4QZUE6cdDoQ==
+  dependencies:
+    exec-sh "^0.3.2"
+    minimist "^1.2.0"
+
+>>>>>>> 1b87019075 (Update CCF Api dependency)
 "@codemirror/autocomplete@^0.19.0":
   version "0.19.14"
   resolved "https://registry.npmjs.org/@codemirror/autocomplete/-/autocomplete-0.19.14.tgz#5f61b0fced56e7960791063d03b21d11a63f0ec5"
@@ -15178,11 +15326,6 @@ headers-utils@^3.0.2:
   resolved "https://registry.npmjs.org/headers-utils/-/headers-utils-3.0.2.tgz#dfc65feae4b0e34357308aefbcafa99c895e59ef"
   integrity sha512-xAxZkM1dRyGV2Ou5bzMxBPNLoRCjcX+ya7KSWybQD2KwLphxsapUVK6x/02o7f4VU6GPSXch9vNY2+gkU8tYWQ==
 
-helmet@^4.6.0:
-  version "4.6.0"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/helmet/-/helmet-4.6.0.tgz#579971196ba93c5978eb019e4e8ec0e50076b4df"
-  integrity sha1-V5lxGWupPFl46wGeTo7A5QB2tN8=
-
 helmet@^5.0.1, helmet@^5.0.2:
   version "5.0.2"
   resolved "https://registry.npmjs.org/helmet/-/helmet-5.0.2.tgz#3264ec6bab96c82deaf65e3403c369424cb2366c"
@@ -28257,7 +28400,11 @@ ws@7.4.5:
   resolved "https://registry.npmjs.org/ws/-/ws-7.4.5.tgz#a484dd851e9beb6fdb420027e3885e8ce48986c1"
   integrity sha512-xzyu3hFvomRfXKH8vOFMU3OguG6oOvhXMo3xsGy3xWExqaM2dxBbVxuD99O7m3ZUFMvvscsZDqxfgMaRr/Nr1g==
 
+<<<<<<< HEAD
 ws@8.5.0, ws@^8.4.2:
+=======
+ws@8.5.0, ws@^8.1.0, ws@^8.4.2:
+>>>>>>> 1b87019075 (Update CCF Api dependency)
   version "8.5.0"
   resolved "https://registry.npmjs.org/ws/-/ws-8.5.0.tgz#bfb4be96600757fe5382de12c670dab984a1ed4f"
   integrity sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==
