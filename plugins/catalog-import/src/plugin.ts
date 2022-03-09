@@ -20,7 +20,6 @@ import {
   createPlugin,
   createRoutableExtension,
   createRouteRef,
-  createSubRouteRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';

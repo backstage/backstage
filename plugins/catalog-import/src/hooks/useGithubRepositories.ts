@@ -52,7 +52,15 @@ export function useGithubRepositories({
       const response = await fetchApi.fetch(
         `plugin://catalog-import/github/repos/${host}/${org}`,
       );
-      setContext({ repositories: await response.json(), loading: false });
+      const repositories = (await response.json()) as GithubRepository[];
+      setContext({
+        repositories: repositories.sort((a, b) =>
+          a.name
+            .toLocaleLowerCase('en-US')
+            .localeCompare(b.name.toLocaleLowerCase('en-US')),
+        ),
+        loading: false,
+      });
     }
     fetchOrgs();
   }, [fetchApi, host, org]);

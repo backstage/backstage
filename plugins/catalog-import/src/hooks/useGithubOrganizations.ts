@@ -46,8 +46,13 @@ export function useGithubOrganizations({
       const response = await fetchApi.fetch(
         `plugin://catalog-import/github/orgs/${host}`,
       );
+      const organizations = (await response.json()) as GithubOrganization[];
       setContext({
-        organizations: await response.json(),
+        organizations: organizations.sort((a, b) =>
+          a.login
+            .toLocaleLowerCase('en-US')
+            .localeCompare(b.login.toLocaleLowerCase('en-US')),
+        ),
         loading: false,
       });
     }

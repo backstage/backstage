@@ -21,7 +21,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Card,
   CardActionArea,
