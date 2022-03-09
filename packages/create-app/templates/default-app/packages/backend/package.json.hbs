@@ -4,13 +4,16 @@
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "private": true,
+  "backstage": {
+    "role": "backend"
+  },
   "scripts": {
-    "build": "backstage-cli backend:bundle",
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "build-image": "docker build ../.. -f Dockerfile --tag backstage",
-    "start": "backstage-cli backend:dev",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "clean": "backstage-cli clean",
     "migrate:create": "knex migrate:make -x ts"
   },
   "dependencies": {
