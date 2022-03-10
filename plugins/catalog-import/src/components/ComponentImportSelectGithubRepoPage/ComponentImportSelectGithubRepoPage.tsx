@@ -15,14 +15,8 @@
  */
 
 import React from 'react';
-import {
-  Breadcrumbs,
-  Content,
-  Header,
-  Link,
-  Page,
-} from '@backstage/core-components';
-import { Box, Typography } from '@material-ui/core';
+import { Content, Header, Link, Page } from '@backstage/core-components';
+import { Box, Breadcrumbs, Typography } from '@material-ui/core';
 import { useParams } from 'react-router';
 import { GithubRepositoryList } from '../GithubRepositoryList';
 

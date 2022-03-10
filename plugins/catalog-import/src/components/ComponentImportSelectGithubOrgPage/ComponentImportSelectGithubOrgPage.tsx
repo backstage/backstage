@@ -15,16 +15,10 @@
  */
 
 import React from 'react';
-import {
-  Breadcrumbs,
-  Content,
-  Header,
-  Link,
-  Page,
-} from '@backstage/core-components';
+import { Content, Header, Link, Page } from '@backstage/core-components';
 import { GithubOrganizationList } from '../GithubOrganizationList';
 import { useParams } from 'react-router';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Breadcrumbs, Typography } from '@material-ui/core';
 
 export const ComponentImportSelectGithubOrgPage = () => {
   const { host } = useParams();

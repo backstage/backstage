@@ -22,6 +22,7 @@ import { DefaultImportPage } from './DefaultImportPage';
 import { ComponentImportSelectGithubOrgPage } from './ComponentImportSelectGithubOrgPage';
 import { ComponentImportSelectGithubRepoPage } from './ComponentImportSelectGithubRepoPage';
 import { ComponentImportSelectGithubMethodPage } from './ComponentImportSelectGithubMethodPage';
+import { ComponentImportGithubDiscoveryPage } from './ComponentImportGithubDiscoverPage';
 
 export type RouterProps = {};
 
@@ -43,6 +44,10 @@ export const Router = (props: RouterProps) => {
       <Route
         path="/components/github/:host/:org/repositories"
         element={<ComponentImportSelectGithubRepoPage />}
+      />
+      <Route
+        path="/components/github/:host/:org/discovery"
+        element={<ComponentImportGithubDiscoveryPage />}
       />
       <Route path="/organization" element={<OrgImportPage />} />
       {/* <Route path="/tasks/:taskId" element={<TaskPageElement />} /> */}

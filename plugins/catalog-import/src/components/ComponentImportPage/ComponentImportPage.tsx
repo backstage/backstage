@@ -15,15 +15,9 @@
  */
 
 import React from 'react';
-import {
-  Breadcrumbs,
-  Content,
-  Header,
-  Link,
-  Page,
-} from '@backstage/core-components';
+import { Content, Header, Link, Page } from '@backstage/core-components';
 import { ScmIntegrationList } from '../ScmIntegrationList';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Breadcrumbs, Typography } from '@material-ui/core';
 
 /**
  * The catalog import page for components.

@@ -17,7 +17,6 @@
 import React from 'react';
 import { Link as NavLink } from 'react-router-dom';
 import {
-  Breadcrumbs,
   Content,
   ContentHeader,
   Header,
@@ -26,6 +25,7 @@ import {
 } from '@backstage/core-components';
 import {
   Box,
+  Breadcrumbs,
   Card,
   CardActionArea,
   CardContent,

@@ -43,7 +43,9 @@ function getLabel(repo: GithubRepository) {
           <Chip
             variant="outlined"
             size="small"
-            label={`${repo.descriptor_paths.length} entity files`}
+            label={`${repo.descriptor_paths.length} entity file${
+              repo.descriptor_paths.length === 1 ? '' : 's'
+            }`}
           />
         )}
       </Typography>
