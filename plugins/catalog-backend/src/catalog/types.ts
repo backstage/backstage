@@ -131,6 +131,20 @@ export interface EntityFacetsResponse {
   facets: Record<string, Array<{ value: string; count: number }>>;
 }
 
+export interface EntityChange {
+  offset: number;
+  entityRef: string;
+  entityId?: string;
+}
+
+export interface EntityChangesRequest {
+  offset?: number;
+}
+
+export interface EntityChangesResponse {
+  items: EntityChange[];
+}
+
 /** @public */
 export type EntitiesCatalog = {
   /**
@@ -167,4 +181,6 @@ export type EntitiesCatalog = {
    * @param request - Request options
    */
   facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
+
+  changes(request: EntityChangesRequest): Promise<EntityChangesResponse>;
 };
