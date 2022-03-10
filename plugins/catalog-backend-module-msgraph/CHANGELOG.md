@@ -1,5 +1,10 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.19
+
+### Patch Changes
+- e5991f5:  Updated readme "Using the Entity Provider" example to remove deprecated runPeriodically
+
 ## 0.2.18
 
 ### Patch Changes
