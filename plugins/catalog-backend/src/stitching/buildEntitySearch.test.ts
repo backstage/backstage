@@ -62,7 +62,6 @@ describe('buildEntitySearch', () => {
           namespace: 'namespace',
           uid: 'uid',
           etag: 'etag',
-          generation: 'generation',
           c: 'c',
         },
         d: 'd',

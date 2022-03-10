@@ -165,7 +165,6 @@ export type EntityLink = {
 export type EntityMeta = JsonObject & {
   uid?: string;
   etag?: string;
-  generation?: number;
   name: string;
   namespace?: string;
   title?: string;

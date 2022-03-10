@@ -27,7 +27,6 @@ describe('entitySchemaValidator', () => {
       metadata: {
         uid: 'e01199ab-08cc-44c2-8e19-5c29ded82521',
         etag: 'lsndfkjsndfkjnsdfkjnsd==',
-        generation: 13,
         name: 'test',
         namespace: 'ns',
         title: 'My Component, Yay',
@@ -152,26 +151,6 @@ describe('entitySchemaValidator', () => {
   it('rejects empty etag', () => {
     entity.metadata.etag = '';
     expect(() => validator(entity)).toThrow(/etag/);
-  });
-
-  it('accepts missing generation', () => {
-    delete entity.metadata.generation;
-    expect(() => validator(entity)).not.toThrow();
-  });
-
-  it('rejects bad generation type', () => {
-    entity.metadata.generation = 'a';
-    expect(() => validator(entity)).toThrow(/generation/);
-  });
-
-  it('rejects zero generation', () => {
-    entity.metadata.generation = 0;
-    expect(() => validator(entity)).toThrow(/generation/);
-  });
-
-  it('rejects non-integer generation', () => {
-    entity.metadata.generation = 1.5;
-    expect(() => validator(entity)).toThrow(/generation/);
   });
 
   it('rejects missing name', () => {

@@ -26,7 +26,6 @@ const schema = /* GraphQL */ `
     label(name: String!): JSON
     uid: String!
     etag: String!
-    generation: Int!
   }
 
   type DefaultEntityMetadata implements EntityMetadata {
@@ -37,7 +36,6 @@ const schema = /* GraphQL */ `
     label(name: String!): JSON
     uid: String!
     etag: String!
-    generation: Int!
   }
 
   type ComponentMetadata implements EntityMetadata {
@@ -48,7 +46,6 @@ const schema = /* GraphQL */ `
     label(name: String!): JSON
     uid: String!
     etag: String!
-    generation: Int!
     # mock field to prove extensions working
     relationships: String
   }
@@ -61,7 +58,6 @@ const schema = /* GraphQL */ `
     label(name: String!): JSON
     uid: String!
     etag: String!
-    generation: Int!
     # mock field to prove extensions working
     updatedBy: String
   }

@@ -29,7 +29,6 @@ describe('SchemaValidEntityPolicy', () => {
       metadata:
         uid: e01199ab-08cc-44c2-8e19-5c29ded82521
         etag: lsndfkjsndfkjnsdfkjnsd==
-        generation: 13
         name: my-component-yay
         namespace: the-namespace
         labels:
@@ -125,26 +124,6 @@ describe('SchemaValidEntityPolicy', () => {
   it('rejects empty etag', async () => {
     data.metadata.etag = '';
     await expect(policy.enforce(data)).rejects.toThrow(/etag/);
-  });
-
-  it('accepts missing generation', async () => {
-    delete data.metadata.generation;
-    await expect(policy.enforce(data)).resolves.toBe(data);
-  });
-
-  it('rejects bad generation type', async () => {
-    data.metadata.generation = 'a';
-    await expect(policy.enforce(data)).rejects.toThrow(/generation/);
-  });
-
-  it('rejects zero generation', async () => {
-    data.metadata.generation = 0;
-    await expect(policy.enforce(data)).rejects.toThrow(/generation/);
-  });
-
-  it('rejects non-integer generation', async () => {
-    data.metadata.generation = 1.5;
-    await expect(policy.enforce(data)).rejects.toThrow(/generation/);
   });
 
   it('rejects missing name', async () => {

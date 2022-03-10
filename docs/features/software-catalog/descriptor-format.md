@@ -76,7 +76,6 @@ This is the same entity as returned in JSON from the software catalog API:
     },
     "description": "The place to be, for great artists",
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
-    "generation": 1,
     "labels": {
       "example.com/custom": "custom_label_value"
     },
