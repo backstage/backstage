@@ -65,13 +65,24 @@ export class Stitcher {
     // Stitching of processed entities will always take precedence over this,
     // because when the stitch ticket is added it also atomically adds the
     // entity_id back in, meaning we won't select that entity here.
-    const pendingDeletions = await this.database<DbFinalEntitiesRow>(
+    let pendingDeletions = await this.database<DbFinalEntitiesRow>(
       'final_entities',
     )
       .whereNull('entity_id')
       .whereNull('deleted_at')
       .update('stitch_ticket', ticket)
       .returning(['entity_ref']);
+
+    // Returning is not supported by sqlite3
+    if (this.database.client.config.client.includes('sqlite3')) {
+      pendingDeletions = await this.database<DbFinalEntitiesRow>(
+        'final_entities',
+      )
+        .whereNull('entity_id')
+        .whereNull('deleted_at')
+        .andWhere('stitch_ticket', ticket)
+        .select(['entity_ref']);
+    }
 
     for (const { entity_ref: entityRef } of pendingDeletions) {
       try {
@@ -82,6 +93,7 @@ export class Stitcher {
             deleted_at: this.database.fn.now(),
             final_entity: null,
             hash: '',
+            change_index: this.nextChangeIndex(),
           });
         if (count === 1) {
           this.logger.debug(`Entity ${entityRef} marked as deleted`);
@@ -264,6 +276,7 @@ export class Stitcher {
         final_entity: JSON.stringify(entity),
         hash,
         deleted_at: null,
+        change_index: this.nextChangeIndex(),
       })
       .where('entity_id', entityId)
       .where('stitch_ticket', ticket);
@@ -286,5 +299,14 @@ export class Stitcher {
       .where({ entity_id: entityId })
       .delete();
     await this.database.batchInsert('search', searchEntries, BATCH_SIZE);
+  }
+
+  private nextChangeIndex() {
+    if (this.database.client.config.client.includes('sqlite3')) {
+      return this.database.raw(
+        'COALESCE((SELECT MAX(change_index) FROM final_entities), 0) + 1',
+      );
+    }
+    return this.database.raw(`nextval('final_entities_change_index_seq')`);
   }
 }

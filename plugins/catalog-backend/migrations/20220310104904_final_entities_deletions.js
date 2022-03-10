@@ -31,6 +31,17 @@ exports.up = async function up(knex) {
       .dateTime('deleted_at')
       .nullable()
       .comment('Timestamp at which the entity was deleted');
+
+    if (knex.client.config.client.includes('sqlite3')) {
+      // SQLite forces bigIncrements to be the primary key
+      table
+        .bigInteger('change_index')
+        .comment('The index of the most recent change to the entity');
+    } else {
+      table
+        .bigIncrements('change_index', { primaryKey: false })
+        .comment('The index of the most recent change to the entity');
+    }
   });
 
   await knex('final_entities').update({
@@ -73,5 +84,6 @@ exports.down = async function down(knex) {
 
     table.dropColumn('entity_ref');
     table.dropColumn('deleted_at');
+    table.dropColumn('change_index');
   });
 };

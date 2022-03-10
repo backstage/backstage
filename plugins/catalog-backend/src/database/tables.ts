@@ -63,6 +63,7 @@ export type DbFinalEntitiesRow = {
   stitch_ticket: string;
   final_entity: string | null;
   deleted_at: string | Date | null;
+  change_index: string;
 };
 
 export type DbSearchRow = {
