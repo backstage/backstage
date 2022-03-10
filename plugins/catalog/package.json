@@ -60,7 +60,7 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.15.2",
+    "@backstage/cli": "^0.15.3",
     "@backstage/core-app-api": "^0.6.0",
     "@backstage/dev-utils": "^0.2.25",
     "@backstage/plugin-permission-react": "^0.3.3",
