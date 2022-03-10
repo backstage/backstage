@@ -17,12 +17,12 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
-  ScmIntegrations,
   GithubCredentialsProvider,
+  ScmIntegrations,
 } from '@backstage/integration';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
-import { LocationSpec } from '../../api';
 
 jest.mock('@octokit/graphql');
 

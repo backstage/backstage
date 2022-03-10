@@ -20,8 +20,8 @@ import {
   GithubCredentialsProvider,
   GitHubIntegrationConfig,
 } from '@backstage/integration';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { graphql } from '@octokit/graphql';
-import { EntityProviderConnection } from '../../api';
 import {
   GitHubOrgEntityProvider,
   withLocations,

@@ -15,12 +15,15 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 import { ConfigReader } from '@backstage/config';
+import {
+  LocationSpec,
+  processingResult,
+} from '@backstage/plugin-catalog-backend';
 import { RequestHandler, rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 import { BitbucketRepository20, PagedResponse, PagedResponse20 } from './lib';
-import { LocationSpec, processingResult } from '../../api';
 
 const server = setupServer();
 

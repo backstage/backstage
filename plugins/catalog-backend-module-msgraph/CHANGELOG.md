@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.2.19-next.0
+
+### Patch Changes
+
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.24.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+
 ## 0.2.18
 
 ### Patch Changes

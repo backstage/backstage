@@ -12,6 +12,53 @@ organization and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
 catalog.
 
+## Installation
+
+You will have to add the processors in the catalog initialization code of your
+backend. They are not installed by default, therefore you have to add a
+dependency to `@backstage/plugin-catalog-backend-module-github` to your backend
+package.
+
+```bash
+# From your Backstage root directory
+cd packages/backend
+yarn add @backstage/plugin-catalog-backend-module-github
+```
+
+And then add the processors to your catalog builder:
+
+```diff
+// In packages/backend/src/plugins/catalog.ts
++import {
++  GithubDiscoveryProcessor,
++  GithubOrgReaderProcessor,
++} from '@backstage/plugin-catalog-backend-module-github';
++import {
++  ScmIntegrations,
++  DefaultGithubCredentialsProvider
++} from '@backstage/integration';
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
++  const integrations = ScmIntegrations.fromConfig(config);
++  const githubCredentialsProvider =
++    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
++  builder.addProcessor(
++    GithubDiscoveryProcessor.fromConfig(config, {
++      logger,
++      githubCredentialsProvider,
++    }),
++    GithubOrgReaderProcessor.fromConfig(config, {
++      logger,
++      githubCredentialsProvider,
++    }),
++  );
+```
+
+## Configuration
+
 To use the discovery processor, you'll need a GitHub integration
 [set up](locations.md) with a `GITHUB_TOKEN`. Then you can add a location target
 to the catalog configuration:

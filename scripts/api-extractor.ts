@@ -224,6 +224,8 @@ const NO_WARNING_PACKAGES = [
   'plugins/catalog-backend',
   'plugins/catalog-backend-module-aws',
   'plugins/catalog-backend-module-azure',
+  'plugins/catalog-backend-module-bitbucket',
+  'plugins/catalog-backend-module-github',
   'plugins/catalog-backend-module-gitlab',
   'plugins/catalog-backend-module-ldap',
   'plugins/catalog-backend-module-msgraph',

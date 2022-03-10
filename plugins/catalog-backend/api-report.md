@@ -5,7 +5,6 @@
 ```ts
 /// <reference types="node" />
 
-import { BitbucketIntegration } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument as CatalogEntityDocument_2 } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -17,8 +16,6 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
-import { GithubCredentialsProvider } from '@backstage/integration';
-import { GitHubIntegrationConfig } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-client';
@@ -96,49 +93,6 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
   // (undocumented)
   preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
-
-// @public (undocumented)
-export class BitbucketDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    parser?: (options: {
-      integration: BitbucketIntegration;
-      target: string;
-      presence?: 'optional' | 'required';
-      logger: Logger;
-    }) => AsyncIterable<CatalogProcessorResult>;
-    logger: Logger;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      parser?: (options: {
-        integration: BitbucketIntegration;
-        target: string;
-        presence?: 'optional' | 'required';
-        logger: Logger;
-      }) => AsyncIterable<CatalogProcessorResult>;
-      logger: Logger;
-    },
-  ): BitbucketDiscoveryProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// @public @deprecated (undocumented)
-export type BitbucketRepositoryParser = (options: {
-  integration: BitbucketIntegration;
-  target: string;
-  presence?: 'optional' | 'required';
-  logger: Logger;
-}) => AsyncIterable<CatalogProcessorResult>;
 
 // @public (undocumented)
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
@@ -638,116 +592,6 @@ function generalError(
   atLocation: LocationSpec,
   message: string,
 ): CatalogProcessorResult;
-
-// @public
-export class GithubDiscoveryProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    githubCredentialsProvider?: GithubCredentialsProvider;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger;
-      githubCredentialsProvider?: GithubCredentialsProvider;
-    },
-  ): GithubDiscoveryProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// @public
-export type GithubMultiOrgConfig = Array<{
-  name: string;
-  groupNamespace: string;
-  userNamespace: string | undefined;
-}>;
-
-// @public
-export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    orgs: GithubMultiOrgConfig;
-    githubCredentialsProvider?: GithubCredentialsProvider;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger;
-      githubCredentialsProvider?: GithubCredentialsProvider;
-    },
-  ): GithubMultiOrgReaderProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
-
-// @public (undocumented)
-export class GitHubOrgEntityProvider implements EntityProvider {
-  constructor(options: {
-    id: string;
-    orgUrl: string;
-    gitHubConfig: GitHubIntegrationConfig;
-    logger: Logger;
-    githubCredentialsProvider?: GithubCredentialsProvider;
-  });
-  // (undocumented)
-  connect(connection: EntityProviderConnection): Promise<void>;
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      id: string;
-      orgUrl: string;
-      logger: Logger;
-      githubCredentialsProvider?: GithubCredentialsProvider;
-    },
-  ): GitHubOrgEntityProvider;
-  // (undocumented)
-  getProviderName(): string;
-  // (undocumented)
-  read(): Promise<void>;
-}
-
-// @public
-export class GithubOrgReaderProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    githubCredentialsProvider?: GithubCredentialsProvider;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: Logger;
-      githubCredentialsProvider?: GithubCredentialsProvider;
-    },
-  ): GithubOrgReaderProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  readLocation(
-    location: LocationSpec,
-    _optional: boolean,
-    emit: CatalogProcessorEmit,
-  ): Promise<boolean>;
-}
 
 // @public @deprecated (undocumented)
 function inputError(

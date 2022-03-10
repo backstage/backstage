@@ -18,23 +18,21 @@ import React from 'react';
 import { EntityAirbrakeWidget } from './EntityAirbrakeWidget';
 import exampleData from '../../api/mock/airbrakeGroupsApiMock.json';
 import {
-  MockErrorApi,
   renderInTestApp,
   setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { createEntity } from '../../api';
 import {
   airbrakeApiRef,
+  createEntity,
   localDiscoveryApi,
   MockAirbrakeApi,
   ProductionAirbrakeApi,
 } from '../../api';
-import { errorApiRef } from '@backstage/core-plugin-api';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-describe('EntityAirbrakeContent', () => {
+describe('EntityAirbrakeWidget', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -47,20 +45,25 @@ describe('EntityAirbrakeContent', () => {
     expect(exampleData.groups.length).toBeGreaterThan(0);
     for (const group of exampleData.groups) {
       expect(
-        await widget.getByText(group.errors[0].message),
+        await widget.findByText(group.errors[0].message),
       ).toBeInTheDocument();
     }
   });
 
-  it('states that the annotation is missing if no project ID annotation is provided', async () => {
+  it('states that the annotation is missing if no project ID annotation is provided but does not error', async () => {
     const widget = await renderInTestApp(
-      <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi()]]}>
+      <TestApiProvider
+        apis={[[airbrakeApiRef, new ProductionAirbrakeApi(localDiscoveryApi)]]}
+      >
         <EntityAirbrakeWidget entity={createEntity()} />
       </TestApiProvider>,
     );
     await expect(
       widget.findByText('Missing Annotation'),
     ).resolves.toBeInTheDocument();
+    expect(
+      widget.queryByText(/.*Failed fetching Airbrake groups.*/),
+    ).not.toBeInTheDocument();
   });
 
   it('states that an error occurred if the API call fails', async () => {
@@ -72,14 +75,10 @@ describe('EntityAirbrakeContent', () => {
         },
       ),
     );
-    const mockErrorApi = new MockErrorApi({ collect: true });
 
     const widget = await renderInTestApp(
       <TestApiProvider
-        apis={[
-          [airbrakeApiRef, new ProductionAirbrakeApi(localDiscoveryApi)],
-          [errorApiRef, mockErrorApi],
-        ]}
+        apis={[[airbrakeApiRef, new ProductionAirbrakeApi(localDiscoveryApi)]]}
       >
         <EntityAirbrakeWidget entity={createEntity(123)} />
       </TestApiProvider>,
@@ -88,9 +87,10 @@ describe('EntityAirbrakeContent', () => {
     await expect(
       widget.findByText(/.*there was an issue communicating with Airbrake.*/),
     ).resolves.toBeInTheDocument();
-    expect(mockErrorApi.getErrors().length).toBe(1);
-    expect(mockErrorApi.getErrors()[0].error.message).toStrictEqual(
-      'Failed fetching Airbrake groups',
-    );
+    expect(
+      widget.getByRole('heading', {
+        name: /.*Failed fetching Airbrake groups.*/,
+      }),
+    ).toBeInTheDocument();
   });
 });

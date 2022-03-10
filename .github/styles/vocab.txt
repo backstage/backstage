@@ -24,7 +24,7 @@ backported
 backporting
 Bigtable
 Billett
-Bitbucket
+bitbucket
 Bitrise
 Blackbox
 bool
@@ -61,6 +61,7 @@ const
 cookiecutter
 cron
 cronjobs
+crontab
 css
 Datadog
 dataflow
@@ -102,7 +103,7 @@ Firekube
 Firestore
 Fiverr
 gitbeaker
-GitHub
+github
 gitlab
 GitLab
 Gource

@@ -27,16 +27,20 @@ import {
   ScmIntegrations,
   SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
+import {
+  EntityProvider,
+  EntityProviderConnection,
+} from '@backstage/plugin-catalog-backend';
 import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
 import { Logger } from 'winston';
-import { EntityProvider, EntityProviderConnection } from '../../api';
 import {
+  assignGroupsToUsers,
+  buildOrgHierarchy,
   getOrganizationTeams,
   getOrganizationUsers,
   parseGitHubOrgUrl,
 } from './lib';
-import { assignGroupsToUsers, buildOrgHierarchy } from '../util/org';
 
 // TODO: Consider supporting an (optional) webhook that reacts on org changes
 /** @public */

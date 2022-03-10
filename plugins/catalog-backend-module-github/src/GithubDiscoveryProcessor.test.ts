@@ -20,7 +20,7 @@ import {
   DefaultGithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { LocationSpec } from '../../api';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from './lib';
 

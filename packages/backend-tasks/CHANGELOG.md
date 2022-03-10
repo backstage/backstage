@@ -1,5 +1,20 @@
 # @backstage/backend-tasks
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 9461f73643: **BREAKING**: The `TaskDefinition` type has been removed, and replaced by the equal pair `TaskScheduleDefinition` and `TaskInvocationDefinition`. The interface for `PluginTaskScheduler.scheduleTask` stays effectively unchanged, so this only affects you if you use the actual types directly.
+
+  Added the method `PluginTaskScheduler.createTaskSchedule`, which returns a `TaskSchedule` wrapper that is convenient to pass down into classes that want to control their task invocations while the caller wants to retain control of the actual schedule chosen.
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- 7290dda9d4: Relaxed the task ID requirement to now support any non-empty string
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+
 ## 0.1.10
 
 ### Patch Changes

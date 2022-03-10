@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,14 @@
  * limitations under the License.
  */
 
-export { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
-export type { BitbucketRepositoryParser } from './lib';
+/**
+ * A Backstage catalog backend module that helps integrate towards GitHub
+ *
+ * @packageDocumentation
+ */
+
+export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
+export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
+export { GitHubOrgEntityProvider } from './GitHubOrgEntityProvider';
+export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
+export type { GithubMultiOrgConfig } from './lib';

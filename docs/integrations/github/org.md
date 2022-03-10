@@ -19,8 +19,7 @@ entities that mirror your org setup.
 
 ## Installation
 
-The processor that performs the import, `GithubOrgReaderProcessor`, comes
-installed with the default setup of Backstage.
+See the [discovery](discovery.md) article for installation instructions.
 
 ## Configuration
 
