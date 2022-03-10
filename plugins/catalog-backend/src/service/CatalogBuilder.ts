@@ -45,7 +45,6 @@ import {
 } from '../api';
 import {
   AnnotateLocationEntityProcessor,
-  BitbucketDiscoveryProcessor,
   BuiltinKindsEntityProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
@@ -357,7 +356,6 @@ export class CatalogBuilder {
 
     return [
       new FileReaderProcessor(),
-      BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
       GithubDiscoveryProcessor.fromConfig(config, {
         logger,
         githubCredentialsProvider,

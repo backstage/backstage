@@ -24,7 +24,7 @@ backported
 backporting
 Bigtable
 Billett
-Bitbucket
+bitbucket
 Bitrise
 Blackbox
 bool
