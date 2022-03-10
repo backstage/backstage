@@ -10,17 +10,17 @@
     "types": "dist/index.d.ts"
   },
   "scripts": {
-    "build": "backstage-cli plugin:build",
-    "start": "backstage-cli plugin:serve",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "diff": "backstage-cli plugin:diff",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "diff": "backstage-cli plugin:diff"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.9.0",
+    "@backstage/core-components": "^0.9.1",
     "@backstage/core-plugin-api": "^0.8.0",
     "@backstage/errors": "^0.2.2",
     "@backstage/theme": "^0.2.15",
@@ -42,7 +42,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.15.2",
     "@backstage/core-app-api": "^0.6.0",
-    "@backstage/dev-utils": "^0.2.23",
+    "@backstage/dev-utils": "^0.2.25",
     "@backstage/test-utils": "^0.3.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
