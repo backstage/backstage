@@ -23,8 +23,14 @@ exports.up = async function up(knex) {
   await knex.schema.alterTable('final_entities', table => {
     table
       .text('entity_ref')
+      .unique()
       .nullable()
       .comment('The reference of the entity that is stored in this row');
+
+    table
+      .dateTime('deleted_at')
+      .nullable()
+      .comment('Timestamp at which the entity was deleted');
   });
 
   await knex('final_entities').update({
@@ -66,5 +72,6 @@ exports.down = async function down(knex) {
     table.primary(['entity_id']);
 
     table.dropColumn('entity_ref');
+    table.dropColumn('deleted_at');
   });
 };

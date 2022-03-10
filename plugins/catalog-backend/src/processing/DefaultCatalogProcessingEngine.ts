@@ -34,6 +34,7 @@ const CACHE_TTL = 5;
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private readonly tracker = progressTracker();
   private stopFunc?: () => void;
+  private pruneDeletionsTimeout?: NodeJS.Timeout;
 
   constructor(
     private readonly logger: Logger,
@@ -42,6 +43,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     private readonly stitcher: Stitcher,
     private readonly createHash: () => Hash,
     private readonly pollingIntervalMs: number = 1000,
+    private readonly pruneDeletionsDelayMs: number = 1000,
   ) {}
 
   async start() {
@@ -196,12 +198,37 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
         }
       },
     });
+
+    const pruneDeletions = () => {
+      this.stitcher
+        .pruneDeletedEntities()
+        .catch(error => {
+          this.logger.warn('Failed to prune deleted entities', error);
+        })
+        .finally(() => {
+          if (this.pruneDeletionsTimeout) {
+            this.pruneDeletionsTimeout = setTimeout(
+              pruneDeletions,
+              this.pruneDeletionsDelayMs,
+            );
+          }
+        });
+    };
+
+    this.pruneDeletionsTimeout = setTimeout(
+      pruneDeletions,
+      this.pruneDeletionsDelayMs,
+    );
   }
 
   async stop() {
     if (this.stopFunc) {
       this.stopFunc();
       this.stopFunc = undefined;
+    }
+    if (this.pruneDeletionsTimeout) {
+      clearTimeout(this.pruneDeletionsTimeout);
+      delete this.pruneDeletionsTimeout;
     }
   }
 }
