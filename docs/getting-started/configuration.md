@@ -276,7 +276,7 @@ otherwise something went terribly wrong.
 
 - Go to `create` and choose to create a website with the `React SSR Template`
 - Type in a name, let's use `tutorial`
-- Select the group `group-a` which will own this new website, and go to the next
+- Select the group `team-a` which will own this new website, and go to the next
   step
 
 <p align='center'>
