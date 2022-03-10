@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import {
-  ANNOTATION_EDIT_URL,
-  ANNOTATION_VIEW_URL,
+  Entity,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
@@ -25,22 +24,13 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import Edit from '@material-ui/icons/Edit';
-import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import React, { useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
-import {
-  CodeSnippet,
-  Table,
-  TableColumn,
-  TableProps,
-  WarningPanel,
-} from '@backstage/core-components';
-import StarBorder from '@material-ui/icons/StarBorder';
-import { withStyles } from '@material-ui/core/styles';
-import Star from '@material-ui/icons/Star';
+import { Table, TableColumn, TableProps } from '@backstage/core-components';
+import { useDefaultCatalogTableActions } from '../defaultActions';
+import { CatalogError } from '../CatalogError';
 
 /**
  * Props for {@link CatalogTable}.
@@ -52,17 +42,43 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
 }
 
-const YellowStar = withStyles({
-  root: {
-    color: '#f3ba37',
-  },
-})(Star);
+export const entityTransformer = (entity: Entity) => {
+  const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
+    kind: 'system',
+  });
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+  return {
+    entity,
+    resolved: {
+      name: humanizeEntityRef(entity, {
+        defaultKind: 'Component',
+      }),
+      ownedByRelationsTitle: ownedByRelations
+        .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
+        .join(', '),
+      ownedByRelations,
+      partOfSystemRelationTitle: partOfSystemRelations
+        .map(r =>
+          humanizeEntityRef(r, {
+            defaultKind: 'system',
+          }),
+        )
+        .join(', '),
+      partOfSystemRelations,
+    },
+  };
+};
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
+  const { defaultActions } = useDefaultCatalogTableActions<CatalogTableRow>({
+    isStarredEntity,
+    toggleStarredEntity,
+  });
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(
     () => [
@@ -82,81 +98,10 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
 
   if (error) {
-    return (
-      <div>
-        <WarningPanel
-          severity="error"
-          title="Could not fetch catalog entities."
-        >
-          <CodeSnippet language="text" text={error.toString()} />
-        </WarningPanel>
-      </div>
-    );
+    return <CatalogError error={error} />;
   }
 
-  const defaultActions: TableProps<CatalogTableRow>['actions'] = [
-    ({ entity }) => {
-      const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
-      return {
-        icon: () => <OpenInNew aria-label="View" fontSize="small" />,
-        tooltip: 'View',
-        disabled: !url,
-        onClick: () => {
-          if (!url) return;
-          window.open(url, '_blank');
-        },
-      };
-    },
-    ({ entity }) => {
-      const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
-      return {
-        icon: () => <Edit aria-label="Edit" fontSize="small" />,
-        tooltip: 'Edit',
-        disabled: !url,
-        onClick: () => {
-          if (!url) return;
-          window.open(url, '_blank');
-        },
-      };
-    },
-    ({ entity }) => {
-      const isStarred = isStarredEntity(entity);
-      return {
-        cellStyle: { paddingLeft: '1em' },
-        icon: () => (isStarred ? <YellowStar /> : <StarBorder />),
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
-        onClick: () => toggleStarredEntity(entity),
-      };
-    },
-  ];
-
-  const rows = entities.map(entity => {
-    const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
-      kind: 'system',
-    });
-    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-
-    return {
-      entity,
-      resolved: {
-        name: humanizeEntityRef(entity, {
-          defaultKind: 'Component',
-        }),
-        ownedByRelationsTitle: ownedByRelations
-          .map(r => humanizeEntityRef(r, { defaultKind: 'group' }))
-          .join(', '),
-        ownedByRelations,
-        partOfSystemRelationTitle: partOfSystemRelations
-          .map(r =>
-            humanizeEntityRef(r, {
-              defaultKind: 'system',
-            }),
-          )
-          .join(', '),
-        partOfSystemRelations,
-      },
-    };
-  });
+  const rows = entities.map(entityTransformer);
 
   const typeColumn = (columns || defaultColumns).find(c => c.title === 'Type');
   if (typeColumn) {

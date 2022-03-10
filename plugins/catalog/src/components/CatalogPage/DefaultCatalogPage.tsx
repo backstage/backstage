@@ -36,12 +36,14 @@ import {
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
+import { CatalogGrid } from '../CatalogGrid';
 import {
   FilteredEntityLayout,
   EntityListContainer,
   FilterContainer,
 } from '../FilteredEntityLayout';
 import { CatalogKindHeader } from '../CatalogKindHeader';
+import { ViewModePicker, ViewMode } from './ViewModePicker';
 
 /**
  * Props for root catalog pages.
@@ -52,13 +54,21 @@ export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  viewMode?: ViewMode;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
-  const { columns, actions, initiallySelectedFilter = 'owned' } = props;
+  const {
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+    viewMode = ViewMode.MODE_TABLE,
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
+
+  const [mode, setViewMode] = React.useState<ViewMode>(viewMode);
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
@@ -78,9 +88,16 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
+              <ViewModePicker
+                selected={mode}
+                onChange={vm => setViewMode(vm)}
+              />
             </FilterContainer>
             <EntityListContainer>
-              <CatalogTable columns={columns} actions={actions} />
+              {mode === ViewMode.MODE_TABLE && (
+                <CatalogTable columns={columns} actions={actions} />
+              )}
+              {mode === ViewMode.MODE_GRID && <CatalogGrid actions={actions} />}
             </EntityListContainer>
           </FilteredEntityLayout>
         </Content>

@@ -3,6 +3,7 @@ kind: Component
 metadata:
   name: documented-component
   title: Documented Component
+  icon: kind:component
   description: A Service with TechDocs documentation
   annotations:
     backstage.io/techdocs-ref: dir:.
