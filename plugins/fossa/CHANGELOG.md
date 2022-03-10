@@ -1,5 +1,15 @@
 # @backstage/plugin-fossa
 
+## 0.2.34
+
+### Patch Changes
+
+- bf95bb806c: Remove usages of now-removed `CatalogApi.getEntityByName`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+
 ## 0.2.34-next.0
 
 ### Patch Changes

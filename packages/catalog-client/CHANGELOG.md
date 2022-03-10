@@ -1,5 +1,17 @@
 # @backstage/catalog-client
 
+## 0.9.0
+
+### Minor Changes
+
+- bf95bb806c: **BREAKING**: Removed previously deprecated `CatalogApi.getEntityByName`, please use `getEntityByRef` instead.
+- a3eb3d2afa: **BREAKING**: Removed `CatalogClient.getLocationByEntity` and `CatalogClient.getOriginLocationByEntity` which had previously been deprecated. Please use `CatalogApi.getLocationByRef` instead. Note that this only affects you if you were using `CatalogClient` (the class) directly, rather than `CatalogApi` (the interface), since it has been removed from the interface in an earlier release.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.13.0
+
 ## 0.9.0-next.0
 
 ### Minor Changes

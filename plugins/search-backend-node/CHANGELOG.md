@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-node
 
+## 0.5.1
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.1
+
 ## 0.5.1-next.0
 
 ### Patch Changes
