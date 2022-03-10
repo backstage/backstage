@@ -41,8 +41,7 @@ export interface TaskScheduleDefinition {
    * it's considered timed out and gets "released" such that a new invocation
    * is permitted to take place (possibly, then, on a different worker).
    *
-   * If no value is given for this field then there is no timeout. This is
-   * potentially dangerous.
+   * This is a required field.
    */
   timeout: Duration;
 
@@ -58,8 +57,7 @@ export interface TaskScheduleDefinition {
    *
    * The system does its best to avoid overlapping invocations.
    *
-   * If no value is given for this field then the task will only be invoked
-   * once (on any worker) and then unscheduled automatically.
+   * This is a required field.
    */
   frequency: Duration;
 
