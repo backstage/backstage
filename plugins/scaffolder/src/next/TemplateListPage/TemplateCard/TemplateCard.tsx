@@ -15,8 +15,64 @@
  */
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { Card } from '@material-ui/core';
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Divider,
+  makeStyles,
+} from '@material-ui/core';
 import { CardHeader } from './CardHeader';
+import { MarkdownContent, UserIcon, Button } from '@backstage/core-components';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { selectedTemplateRouteRef } from '../../../routes';
+import { BackstageTheme } from '@backstage/theme';
+
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  box: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    '-webkit-line-clamp': 10,
+    '-webkit-box-orient': 'vertical',
+    /** to make the styles for React Markdown not leak into the description */
+    '& p:first-child': {
+      marginTop: 0,
+      marginBottom: theme.spacing(2),
+    },
+  },
+  label: {
+    color: theme.palette.text.secondary,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+    lineHeight: 1,
+    fontSize: '0.75rem',
+  },
+  margin: {
+    marginBottom: theme.spacing(2),
+  },
+  footer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    flex: 1,
+    alignItems: 'center',
+  },
+  ownedBy: {
+    display: 'flex',
+    alignItems: 'center',
+    flex: 1,
+    color: theme.palette.link,
+  },
+}));
+
 /**
  * The Props for the Template Card component
  * @public
@@ -32,9 +88,38 @@ export interface TemplateCardProps {
  */
 export const TemplateCard = (props: TemplateCardProps) => {
   const { template } = props;
+  const styles = useStyles();
+  const ownedByRelations = getEntityRelations(template, RELATION_OWNED_BY);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
+  const href = templateRoute({ templateName: template.metadata.name });
+
   return (
     <Card>
       <CardHeader template={template} />
+      <CardContent>
+        <Box className={styles.box}>
+          <MarkdownContent
+            content={template.metadata.description ?? 'No description'}
+          />
+        </Box>
+        <Divider className={styles.margin} />
+        <Box>
+          {template.metadata.tags?.map(tag => (
+            <Chip size="small" label={tag} key={tag} />
+          ))}
+        </Box>
+      </CardContent>
+      <CardActions>
+        <div className={styles.footer}>
+          <div className={styles.ownedBy}>
+            <UserIcon />
+            <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
+          </div>
+          <Button size="small" variant="outlined" color="primary" to={href}>
+            Choose
+          </Button>
+        </div>
+      </CardActions>
     </Card>
   );
 };

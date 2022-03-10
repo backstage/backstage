@@ -27,19 +27,20 @@ import {
 
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
+import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 
 export type RouterProps = {
-  components: {
+  components?: {
     TemplateCardComponent?: React.ComponentType<{
       template: TemplateEntityV1beta3;
     }>;
     TaskPageComponent?: React.ComponentType<{}>;
   };
+  groups?: TemplateGroupFilter[];
 };
 
 export const Router = (props: PropsWithChildren<RouterProps>) => {
-  const { components: { TaskPageComponent, TemplateCardComponent } = {} } =
-    props;
+  const { components: { TemplateCardComponent } = {} } = props;
 
   const outlet = useOutlet() || props.children;
 
@@ -68,7 +69,10 @@ export const Router = (props: PropsWithChildren<RouterProps>) => {
       <Route
         path="/"
         element={
-          <TemplateListPage TemplateCardComponent={TemplateCardComponent} />
+          <TemplateListPage
+            TemplateCardComponent={TemplateCardComponent}
+            groups={props.groups}
+          />
         }
       />
 
