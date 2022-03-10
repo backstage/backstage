@@ -34,4 +34,4 @@
 
 **BREAKING**: Removed `AzureDevOpsDiscoveryProcessor`, which now instead should be imported from `@backstage/plugin-catalog-backend-module-azure`. This processor was not part of the set of default processors. If you were using it, you should already have a reference to it in your backend code and only need to update the import.
 
-**BREAKING**: Removed the formerly deprecated type `BitbucketRepositoryParser`, which is no longer necessary since its only use was in `BitbucketDiscoveryProcessor` but is now instead inlined there.
+**BREAKING**: Removed the formerly deprecated type `BitbucketRepositoryParser`, which is instead reintroduced in `@backstage/plugin-catalog-backend-module-bitbucket`.

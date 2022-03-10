@@ -23,7 +23,6 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  CatalogProcessorResult,
   LocationSpec,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
@@ -31,6 +30,7 @@ import {
   BitbucketClient,
   BitbucketRepository,
   BitbucketRepository20,
+  BitbucketRepositoryParser,
   defaultRepositoryParser,
   paginated,
   paginated20,
@@ -42,23 +42,13 @@ const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';
 /** @public */
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly parser: (options: {
-    integration: BitbucketIntegration;
-    target: string;
-    presence?: 'optional' | 'required';
-    logger: Logger;
-  }) => AsyncIterable<CatalogProcessorResult>;
+  private readonly parser: BitbucketRepositoryParser;
   private readonly logger: Logger;
 
   static fromConfig(
     config: Config,
     options: {
-      parser?: (options: {
-        integration: BitbucketIntegration;
-        target: string;
-        presence?: 'optional' | 'required';
-        logger: Logger;
-      }) => AsyncIterable<CatalogProcessorResult>;
+      parser?: BitbucketRepositoryParser;
       logger: Logger;
     },
   ) {
@@ -72,12 +62,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    parser?: (options: {
-      integration: BitbucketIntegration;
-      target: string;
-      presence?: 'optional' | 'required';
-      logger: Logger;
-    }) => AsyncIterable<CatalogProcessorResult>;
+    parser?: BitbucketRepositoryParser;
     logger: Logger;
   }) {
     this.integrations = options.integrations;
@@ -122,7 +107,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 
     const { scanned, matches } = isBitbucketCloud
       ? await this.processCloudRepositories(processOptions)
-      : await this.processOrganisationRepositories(processOptions);
+      : await this.processOrganizationRepositories(processOptions);
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
@@ -159,7 +144,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     };
   }
 
-  private async processOrganisationRepositories(
+  private async processOrganizationRepositories(
     options: ProcessOptions,
   ): Promise<ResultSummary> {
     const { client, location, integration, emit } = options;

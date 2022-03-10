@@ -21,6 +21,12 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 
+/**
+ * A custom callback that reacts to finding a repository by yielding processing
+ * results.
+ *
+ * @public
+ */
 export type BitbucketRepositoryParser = (options: {
   integration: BitbucketIntegration;
   target: string;

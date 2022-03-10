@@ -16,24 +16,14 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    parser?: (options: {
-      integration: BitbucketIntegration;
-      target: string;
-      presence?: 'optional' | 'required';
-      logger: Logger;
-    }) => AsyncIterable<CatalogProcessorResult>;
+    parser?: BitbucketRepositoryParser;
     logger: Logger;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      parser?: (options: {
-        integration: BitbucketIntegration;
-        target: string;
-        presence?: 'optional' | 'required';
-        logger: Logger;
-      }) => AsyncIterable<CatalogProcessorResult>;
+      parser?: BitbucketRepositoryParser;
       logger: Logger;
     },
   ): BitbucketDiscoveryProcessor;
@@ -46,4 +36,12 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
 }
+
+// @public
+export type BitbucketRepositoryParser = (options: {
+  integration: BitbucketIntegration;
+  target: string;
+  presence?: 'optional' | 'required';
+  logger: Logger;
+}) => AsyncIterable<CatalogProcessorResult>;
 ```
