@@ -200,6 +200,12 @@ export interface Config {
        * @visibility backend
        */
       roleArn?: string;
+
+      /**
+       * External ID to use when assuming role
+       * @visibility backend
+       */
+      externalId?: string;
     }>;
   };
 }
