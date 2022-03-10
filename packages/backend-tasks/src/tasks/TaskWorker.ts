@@ -15,13 +15,14 @@
  */
 
 import { Knex } from 'knex';
-import { Duration } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
-import { TaskFunction, TaskSettingsV1, taskSettingsV1Schema } from './types';
+import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
+import { CronTime } from 'cron';
 
 const WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
@@ -43,7 +44,7 @@ export class TaskWorker {
     this.logger = logger;
   }
 
-  async start(settings: TaskSettingsV1, options?: { signal?: AbortSignal }) {
+  async start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
     try {
       await this.persistTask(settings);
     } catch (e) {
@@ -123,22 +124,39 @@ export class TaskWorker {
   /**
    * Perform the initial store of the task info
    */
-  async persistTask(settings: TaskSettingsV1) {
+  async persistTask(settings: TaskSettingsV2) {
     // Perform an initial parse to ensure that we will definitely be able to
     // read it back again.
-    taskSettingsV1Schema.parse(settings);
+    taskSettingsV2Schema.parse(settings);
 
-    const settingsJson = JSON.stringify(settings);
-    const startAt = settings.initialDelayDuration
-      ? nowPlus(Duration.fromISO(settings.initialDelayDuration), this.knex)
-      : this.knex.fn.now();
+    const isCron = !settings?.cadence.startsWith('P');
+
+    let startAt: Knex.Raw;
+    if (settings.initialDelayDuration) {
+      startAt = nowPlus(
+        Duration.fromISO(settings.initialDelayDuration),
+        this.knex,
+      );
+    } else if (isCron) {
+      const time = new CronTime(settings.cadence)
+        .sendAt()
+        .add({ seconds: -1 }) // immediately, if "* * * * * *"
+        .toISOString();
+      startAt = this.knex.client.config.client.includes('sqlite3')
+        ? this.knex.raw('datetime(?)', [time])
+        : this.knex.raw(`?`, [time]);
+    } else {
+      startAt = this.knex.fn.now();
+    }
+
+    this.logger.debug(`task: ${this.taskId} configured to run at: ${startAt}`);
 
     // It's OK if the task already exists; if it does, just replace its
     // settings with the new value and start the loop as usual.
     await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .insert({
         id: this.taskId,
-        settings_json: settingsJson,
+        settings_json: JSON.stringify(settings),
         next_run_start_at: startAt,
       })
       .onConflict('id')
@@ -151,15 +169,14 @@ export class TaskWorker {
   async findReadyTask(): Promise<
     | { result: 'not-ready-yet' }
     | { result: 'abort' }
-    | { result: 'ready'; settings: TaskSettingsV1 }
+    | { result: 'ready'; settings: TaskSettingsV2 }
   > {
     const [row] = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)
       .select({
         settingsJson: 'settings_json',
         ready: this.knex.raw(
-          `
-          CASE
+          `CASE
             WHEN next_run_start_at <= ? AND current_run_ticket IS NULL THEN TRUE
             ELSE FALSE
           END`,
@@ -177,7 +194,8 @@ export class TaskWorker {
     }
 
     try {
-      const settings = taskSettingsV1Schema.parse(JSON.parse(row.settingsJson));
+      const obj = JSON.parse(row.settingsJson);
+      const settings = taskSettingsV2Schema.parse(obj);
       return { result: 'ready', settings };
     } catch (e) {
       this.logger.info(
@@ -199,7 +217,7 @@ export class TaskWorker {
    */
   async tryClaimTask(
     ticket: string,
-    settings: TaskSettingsV1,
+    settings: TaskSettingsV2,
   ): Promise<boolean> {
     const startedAt = this.knex.fn.now();
     const expiresAt = settings.timeoutAfterDuration
@@ -220,27 +238,37 @@ export class TaskWorker {
 
   async tryReleaseTask(
     ticket: string,
-    settings: TaskSettingsV1,
+    settings: TaskSettingsV2,
   ): Promise<boolean> {
-    const { recurringAtMostEveryDuration } = settings;
+    const isCron = !settings?.cadence.startsWith('P');
 
-    // We make an effort to keep the datetime calculations in the database
-    // layer, making sure to not have to perform conversions back and forth and
-    // leaning on the database as a central clock source
-    const dbNull = this.knex.raw('null');
-    const dt = Duration.fromISO(recurringAtMostEveryDuration).as('seconds');
-    const nextRun = this.knex.client.config.client.includes('sqlite3')
-      ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])
-      : this.knex.raw(`next_run_start_at + interval '${dt} seconds'`);
+    let nextRun: Knex.Raw;
+    if (isCron) {
+      const time = new CronTime(settings.cadence).sendAt().toISOString();
+      this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
+      nextRun = this.knex.client.config.client.includes('sqlite3')
+        ? this.knex.raw('datetime(?)', [time])
+        : this.knex.raw(`?`, [time]);
+    } else {
+      const dt = Duration.fromISO(settings.cadence).as('seconds');
+      this.logger.debug(
+        `task: ${this.taskId} will next occur around ${DateTime.now().plus({
+          seconds: dt,
+        })}`,
+      );
+      nextRun = this.knex.client.config.client.includes('sqlite3')
+        ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])
+        : this.knex.raw(`next_run_start_at + interval '${dt} seconds'`);
+    }
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('id', '=', this.taskId)
       .where('current_run_ticket', '=', ticket)
       .update({
         next_run_start_at: nextRun,
-        current_run_ticket: dbNull,
-        current_run_started_at: dbNull,
-        current_run_expires_at: dbNull,
+        current_run_ticket: this.knex.raw('null'),
+        current_run_started_at: this.knex.raw('null'),
+        current_run_expires_at: this.knex.raw('null'),
       });
 
     return rows === 1;
