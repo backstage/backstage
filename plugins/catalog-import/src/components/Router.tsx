@@ -21,6 +21,7 @@ import { ComponentImportPage } from './ComponentImportPage';
 import { DefaultImportPage } from './DefaultImportPage';
 import { ComponentImportSelectGithubOrgPage } from './ComponentImportSelectGithubOrgPage';
 import { ComponentImportSelectGithubRepoPage } from './ComponentImportSelectGithubRepoPage';
+import { ComponentImportSelectGithubMethodPage } from './ComponentImportSelectGithubMethodPage';
 
 export type RouterProps = {};
 
@@ -36,7 +37,11 @@ export const Router = (props: RouterProps) => {
         element={<ComponentImportSelectGithubOrgPage />}
       />
       <Route
-        path="/components/github/:host/:org"
+        path="/components/github/:host/:org/method"
+        element={<ComponentImportSelectGithubMethodPage />}
+      />
+      <Route
+        path="/components/github/:host/:org/repositories"
         element={<ComponentImportSelectGithubRepoPage />}
       />
       <Route path="/organization" element={<OrgImportPage />} />

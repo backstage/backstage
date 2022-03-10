@@ -48,7 +48,7 @@ export const GithubOrganizationList = ({
           <Grid item xs={8} key={index}>
             <Card raised>
               <CardActionArea>
-                <Link to={org.login}>
+                <Link to={`${org.login}/method`}>
                   <CardHeader
                     avatar={
                       <img
