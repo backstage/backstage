@@ -18,6 +18,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import express, { Express, Router } from 'express';
 import request, { Response } from 'supertest';
 import { createPermissionIntegrationRouter } from './createPermissionIntegrationRouter';
+import { createPermissionRule } from './createPermissionRule';
 
 const mockGetResources: jest.MockedFunction<
   Parameters<typeof createPermissionIntegrationRouter>[0]['getResources']
@@ -25,21 +26,23 @@ const mockGetResources: jest.MockedFunction<
   resourceRefs.map(resourceRef => ({ id: resourceRef })),
 );
 
-const testRule1 = {
+const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
+  resourceType: 'test-resource',
   apply: jest.fn(
     (_resource: any, _firstParam: string, _secondParam: number) => true,
   ),
   toQuery: jest.fn(),
-};
+});
 
-const testRule2 = {
+const testRule2 = createPermissionRule({
   name: 'test-rule-2',
   description: 'Test rule 2',
+  resourceType: 'test-resource',
   apply: jest.fn((_resource: any, _firstParam: object) => false),
   toQuery: jest.fn(),
-};
+});
 
 describe('createPermissionIntegrationRouter', () => {
   let app: Express;
@@ -65,29 +68,57 @@ describe('createPermissionIntegrationRouter', () => {
 
   describe('POST /.well-known/backstage/permissions/apply-conditions', () => {
     it.each([
-      { rule: 'test-rule-1', params: ['abc', 123] },
+      {
+        rule: 'test-rule-1',
+        resourceType: 'test-resource',
+        params: ['abc', 123],
+      },
       {
         anyOf: [
-          { rule: 'test-rule-1', params: ['a', 1] },
-          { rule: 'test-rule-2', params: [{}] },
+          {
+            rule: 'test-rule-1',
+            resourceType: 'test-resource',
+            params: ['a', 1],
+          },
+          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
         ],
       },
       {
-        not: { rule: 'test-rule-2', params: [{}] },
+        not: {
+          rule: 'test-rule-2',
+          resourceType: 'test-resource',
+          params: [{}],
+        },
       },
       {
         allOf: [
           {
             anyOf: [
-              { rule: 'test-rule-1', params: ['a', 1] },
-              { rule: 'test-rule-2', params: [{}] },
+              {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: ['a', 1],
+              },
+              {
+                rule: 'test-rule-2',
+                resourceType: 'test-resource',
+                params: [{}],
+              },
             ],
           },
           {
             not: {
               allOf: [
-                { rule: 'test-rule-1', params: ['b', 2] },
-                { rule: 'test-rule-2', params: [{ c: 3 }] },
+                {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: ['b', 2],
+                },
+                {
+                  rule: 'test-rule-2',
+                  resourceType: 'test-resource',
+                  params: [{ c: 3 }],
+                },
               ],
             },
           },
@@ -119,26 +150,52 @@ describe('createPermissionIntegrationRouter', () => {
     });
 
     it.each([
-      { rule: 'test-rule-2', params: [{ foo: 0 }] },
+      {
+        rule: 'test-rule-2',
+        resourceType: 'test-resource',
+        params: [{ foo: 0 }],
+      },
       {
         allOf: [
-          { rule: 'test-rule-1', params: ['a', 1] },
-          { rule: 'test-rule-2', params: [{}] },
+          {
+            rule: 'test-rule-1',
+            resourceType: 'test-resource',
+            params: ['a', 1],
+          },
+          { rule: 'test-rule-2', resourceType: 'test-resource', params: [{}] },
         ],
       },
       {
         allOf: [
           {
             anyOf: [
-              { rule: 'test-rule-1', params: ['a', 1] },
-              { rule: 'test-rule-2', params: [{ b: 2 }] },
+              {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: ['a', 1],
+              },
+              {
+                rule: 'test-rule-2',
+                resourceType: 'test-resource',
+                params: [{ b: 2 }],
+              },
             ],
           },
           {
             not: {
               allOf: [
-                { rule: 'test-rule-1', params: ['c', 3] },
-                { not: { rule: 'test-rule-2', params: [{ d: 4 }] } },
+                {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: ['c', 3],
+                },
+                {
+                  not: {
+                    rule: 'test-rule-2',
+                    resourceType: 'test-resource',
+                    params: [{ d: 4 }],
+                  },
+                },
               ],
             },
           },
@@ -179,25 +236,45 @@ describe('createPermissionIntegrationRouter', () => {
                 id: '123',
                 resourceRef: 'default:test/resource-1',
                 resourceType: 'test-resource',
-                conditions: { rule: 'test-rule-1', params: [] },
+                conditions: {
+                  rule: 'test-rule-1',
+                  resourceType: 'test-resource',
+                  params: [],
+                },
               },
               {
                 id: '234',
                 resourceRef: 'default:test/resource-1',
                 resourceType: 'test-resource',
-                conditions: { rule: 'test-rule-2', params: [] },
+                conditions: {
+                  rule: 'test-rule-2',
+                  resourceType: 'test-resource',
+                  params: [],
+                },
               },
               {
                 id: '345',
                 resourceRef: 'default:test/resource-2',
                 resourceType: 'test-resource',
-                conditions: { not: { rule: 'test-rule-1', params: [] } },
+                conditions: {
+                  not: {
+                    rule: 'test-rule-1',
+                    resourceType: 'test-resource',
+                    params: [],
+                  },
+                },
               },
               {
                 id: '456',
                 resourceRef: 'default:test/resource-3',
                 resourceType: 'test-resource',
-                conditions: { not: { rule: 'test-rule-2', params: [] } },
+                conditions: {
+                  not: {
+                    rule: 'test-rule-2',
+                    resourceType: 'test-resource',
+                    params: [],
+                  },
+                },
               },
               {
                 id: '567',
@@ -205,8 +282,16 @@ describe('createPermissionIntegrationRouter', () => {
                 resourceType: 'test-resource',
                 conditions: {
                   anyOf: [
-                    { rule: 'test-rule-1', params: [] },
-                    { rule: 'test-rule-2', params: [] },
+                    {
+                      rule: 'test-rule-1',
+                      resourceType: 'test-resource',
+                      params: [],
+                    },
+                    {
+                      rule: 'test-rule-2',
+                      resourceType: 'test-resource',
+                      params: [],
+                    },
                   ],
                 },
               },
@@ -248,6 +333,7 @@ describe('createPermissionIntegrationRouter', () => {
               resourceType: 'test-incorrect-resource-1',
               conditions: {
                 rule: 'test-rule-1',
+                resourceType: 'test-incorrect-resource-1',
                 params: [{}],
               },
             },
@@ -257,6 +343,7 @@ describe('createPermissionIntegrationRouter', () => {
               resourceType: 'test-resource',
               conditions: {
                 rule: 'test-rule-1',
+                resourceType: 'test-resource',
                 params: [{}],
               },
             },
@@ -266,6 +353,7 @@ describe('createPermissionIntegrationRouter', () => {
               resourceType: 'test-incorrect-resource-2',
               conditions: {
                 rule: 'test-rule-1',
+                resourceType: 'test-incorrect-resource-2',
                 params: [{}],
               },
             },
@@ -291,7 +379,11 @@ describe('createPermissionIntegrationRouter', () => {
               id: '123',
               resourceRef: 'default:test/resource',
               resourceType: 'test-resource',
-              conditions: { rule: 'test-rule-1', params: [] },
+              conditions: {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: [],
+              },
             },
           ],
         });
@@ -324,19 +416,31 @@ describe('createPermissionIntegrationRouter', () => {
               id: '123',
               resourceRef: 'default:test/resource-1',
               resourceType: 'test-resource',
-              conditions: { rule: 'test-rule-1', params: [] },
+              conditions: {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: [],
+              },
             },
             {
               id: '234',
               resourceRef: 'default:test/missing-resource',
               resourceType: 'test-resource',
-              conditions: { rule: 'test-rule-1', params: [] },
+              conditions: {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: [],
+              },
             },
             {
               id: '345',
               resourceRef: 'default:test/resource-2',
               resourceType: 'test-resource',
-              conditions: { rule: 'test-rule-1', params: [] },
+              conditions: {
+                rule: 'test-rule-1',
+                resourceType: 'test-resource',
+                params: [],
+              },
             },
           ],
         });
@@ -377,6 +481,17 @@ describe('createPermissionIntegrationRouter', () => {
         ],
       },
       { items: [{ conditions: { anyOf: [] } }] },
+      {
+        items: [
+          { conditions: { rule: 'TEST_RULE', resourceType: 'test-resource' } },
+        ],
+      },
+      { items: [{ conditions: { rule: 'TEST_RULE', params: ['foo'] } }] },
+      {
+        items: [
+          { conditions: { resourceType: 'test-resource', params: ['foo'] } },
+        ],
+      },
     ])(`returns 400 for invalid input %#`, async input => {
       const response = await request(app)
         .post('/.well-known/backstage/permissions/apply-conditions')

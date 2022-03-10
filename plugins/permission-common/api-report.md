@@ -147,7 +147,11 @@ export class PermissionClient implements PermissionAuthorizer {
 }
 
 // @public
-export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
+export type PermissionCondition<
+  TResourceType extends string = string,
+  TParams extends unknown[] = unknown[],
+> = {
+  resourceType: TResourceType;
   rule: string;
   params: TParams;
 };

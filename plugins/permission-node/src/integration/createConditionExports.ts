@@ -33,9 +33,10 @@ import { createConditionFactory } from './createConditionFactory';
 export type Condition<TRule> = TRule extends PermissionRule<
   any,
   any,
+  infer TResourceType,
   infer TParams
 >
-  ? (...params: TParams) => PermissionCondition<TParams>
+  ? (...params: TParams) => PermissionCondition<TResourceType, TParams>
   : never;
 
 /**
@@ -45,7 +46,7 @@ export type Condition<TRule> = TRule extends PermissionRule<
  * @public
  */
 export type Conditions<
-  TRules extends Record<string, PermissionRule<any, any>>,
+  TRules extends Record<string, PermissionRule<any, any, any>>,
 > = {
   [Name in keyof TRules]: Condition<TRules[Name]>;
 };
@@ -73,7 +74,7 @@ export type Conditions<
 export const createConditionExports = <
   TResourceType extends string,
   TResource,
-  TRules extends Record<string, PermissionRule<TResource, any>>,
+  TRules extends Record<string, PermissionRule<TResource, any, TResourceType>>,
 >(options: {
   pluginId: string;
   resourceType: TResourceType;
@@ -82,7 +83,7 @@ export const createConditionExports = <
   conditions: Conditions<TRules>;
   createConditionalDecision: (
     permission: ResourcePermission<TResourceType>,
-    conditions: PermissionCriteria<PermissionCondition>,
+    conditions: PermissionCriteria<PermissionCondition<TResourceType>>,
   ) => ConditionalPolicyDecision;
 } => {
   const { pluginId, resourceType, rules } = options;

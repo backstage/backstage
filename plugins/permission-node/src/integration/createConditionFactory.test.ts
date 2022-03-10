@@ -15,14 +15,16 @@
  */
 
 import { createConditionFactory } from './createConditionFactory';
+import { createPermissionRule } from './createPermissionRule';
 
 describe('createConditionFactory', () => {
-  const testRule = {
+  const testRule = createPermissionRule({
     name: 'test-rule',
     description: 'test-description',
+    resourceType: 'test-resource',
     apply: jest.fn(),
     toQuery: jest.fn(),
-  };
+  });
 
   it('returns a function', () => {
     expect(createConditionFactory(testRule)).toEqual(expect.any(Function));
@@ -33,6 +35,7 @@ describe('createConditionFactory', () => {
       const conditionFactory = createConditionFactory(testRule);
       expect(conditionFactory('a', 'b', 1, 2)).toEqual({
         rule: 'test-rule',
+        resourceType: 'test-resource',
         params: ['a', 'b', 1, 2],
       });
     });
