@@ -23,21 +23,21 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { graphql } from '@octokit/graphql';
-import { Logger } from 'winston';
-import {
-  getOrganizationTeams,
-  getOrganizationUsers,
-  GithubMultiOrgConfig,
-  readGithubMultiOrgConfig,
-} from './lib';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
   processingResult,
-} from '../../api';
-import { buildOrgHierarchy } from '../util/org';
+} from '@backstage/plugin-catalog-backend';
+import { graphql } from '@octokit/graphql';
+import { Logger } from 'winston';
+import {
+  buildOrgHierarchy,
+  getOrganizationTeams,
+  getOrganizationUsers,
+  GithubMultiOrgConfig,
+  readGithubMultiOrgConfig,
+} from './lib';
 
 /**
  * Extracts teams and users out of a multiple GitHub orgs namespaced per org.

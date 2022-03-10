@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-export { readGithubMultiOrgConfig } from './config';
-export type { GithubMultiOrgConfig } from './config';
-export {
-  getOrganizationRepositories,
-  getOrganizationTeams,
-  getOrganizationUsers,
-} from './github';
-export { parseGitHubOrgUrl } from './util';
+/**
+ * A Backstage catalog backend module that helps integrate towards GitHub
+ *
+ * @packageDocumentation
+ */
+
+export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
+export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
+export { GitHubOrgEntityProvider } from './GitHubOrgEntityProvider';
+export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
+export type { GithubMultiOrgConfig } from './lib';

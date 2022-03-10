@@ -102,7 +102,7 @@ Firekube
 Firestore
 Fiverr
 gitbeaker
-GitHub
+github
 gitlab
 GitLab
 Gource
