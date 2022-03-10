@@ -23,12 +23,11 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { Progress } from '@backstage/core-components';
+import { ContentHeader, Progress } from '@backstage/core-components';
 import {
   GithubRepository,
   useGithubRepositories,
 } from '../../hooks/useGithubRepositories';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 type GithubRepositoryListProps = {
   host: string;
@@ -44,7 +43,7 @@ function getLabel(repo: GithubRepository) {
           <Chip
             variant="outlined"
             size="small"
-            label={`${repo.descriptor_paths.length} entities`}
+            label={`${repo.descriptor_paths.length} entity files`}
           />
         )}
       </Typography>
@@ -58,42 +57,38 @@ export const GithubRepositoryList = ({
   org,
 }: GithubRepositoryListProps) => {
   const { loading, repositories } = useGithubRepositories({ host, org });
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
 
   if (loading) {
     return <Progress />;
   }
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <Typography variant="h6">
-          Select the repositories to import into the {orgName} software catalog:
-        </Typography>
-      </Grid>
-      {repositories.map((repo, index) => (
-        <Grid item xs={8} key={index}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                name={repo.name}
-                disabled={repo.descriptor_paths.length === 0}
-              />
-            }
-            label={getLabel(repo)}
-          />
+    <>
+      <ContentHeader title="Select the repositories to import:" />
+      <Grid container>
+        {repositories.map((repo, index) => (
+          <Grid item xs={8} key={index}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name={repo.name}
+                  disabled={repo.descriptor_paths.length === 0}
+                />
+              }
+              label={getLabel(repo)}
+            />
+          </Grid>
+        ))}
+        <Grid item xs={12}>
+          {repositories.length ? (
+            <Button variant="contained" color="primary">
+              Import selected repositories
+            </Button>
+          ) : (
+            'No repositories found'
+          )}
         </Grid>
-      ))}
-      <Grid item xs={12}>
-        {repositories.length ? (
-          <Button variant="contained" color="primary">
-            Import selected repositories
-          </Button>
-        ) : (
-          'No repositories found'
-        )}
       </Grid>
-    </Grid>
+    </>
   );
 };

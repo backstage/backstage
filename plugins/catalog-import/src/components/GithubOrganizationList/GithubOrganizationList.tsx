@@ -23,7 +23,7 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { Progress } from '@backstage/core-components';
+import { ContentHeader, Progress } from '@backstage/core-components';
 import { useGithubOrganizations } from '../../hooks/useGithubOrganizations';
 import { Link } from 'react-router-dom';
 
@@ -41,38 +41,36 @@ export const GithubOrganizationList = ({
   }
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <Typography variant="h6">
-          Which GitHub organization do you want to import from?
-        </Typography>
+    <>
+      <ContentHeader title="Which GitHub organization do you want to import from?" />
+      <Grid container>
+        {organizations.map((org, index) => (
+          <Grid item xs={8} key={index}>
+            <Card raised>
+              <CardActionArea>
+                <Link to={org.login}>
+                  <CardHeader
+                    avatar={
+                      <img
+                        src={org.avatar_url}
+                        alt="avatar"
+                        height="20"
+                        width="20"
+                        style={{ verticalAlign: 'middle' }}
+                      />
+                    }
+                    title={org.login}
+                    titleTypographyProps={{ variant: 'h5' }}
+                  />
+                  <CardContent>
+                    <Typography>{org.description}</Typography>
+                  </CardContent>
+                </Link>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
-      {organizations.map((org, index) => (
-        <Grid item xs={8} key={index}>
-          <Card raised>
-            <CardActionArea>
-              <Link to={org.login}>
-                <CardHeader
-                  avatar={
-                    <img
-                      src={org.avatar_url}
-                      alt="avatar"
-                      height="20"
-                      width="20"
-                      style={{ verticalAlign: 'middle' }}
-                    />
-                  }
-                  title={org.login}
-                  titleTypographyProps={{ variant: 'h5' }}
-                />
-                <CardContent>
-                  <Typography>{org.description}</Typography>
-                </CardContent>
-              </Link>
-            </CardActionArea>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+    </>
   );
 };

@@ -15,6 +15,7 @@
  */
 
 import type { Config } from '@backstage/config';
+import { ScmIntegration } from '@backstage/integration';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 /**
@@ -45,4 +46,28 @@ export function getBranchName(config: Config): string {
     config.getOptionalString('catalog.import.pullRequestBranchName') ??
     'backstage-integration'
   );
+}
+
+export function getIntegrationTitle(integration: ScmIntegration) {
+  if (integration.type === 'github' && integration.title === 'github.com') {
+    return 'GitHub';
+  }
+
+  switch (integration.type) {
+    case 'awsS3':
+      return 'AWS S3 Bucket';
+    case 'azure':
+      return 'Azure DevOps';
+    case 'bitbucket':
+      return 'Bitbucket';
+    case 'github':
+      return 'GitHub Enterprise';
+    case 'gitlab':
+      return 'GitLab';
+    case 'googleGcs':
+      return 'Google GCS Bucket';
+
+    default:
+      return integration.title;
+  }
 }

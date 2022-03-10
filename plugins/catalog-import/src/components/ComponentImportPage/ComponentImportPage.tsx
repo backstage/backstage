@@ -16,12 +16,14 @@
 
 import React from 'react';
 import {
+  Breadcrumbs,
   Content,
-  ContentHeader,
   Header,
+  Link,
   Page,
 } from '@backstage/core-components';
 import { ScmIntegrationList } from '../ScmIntegrationList';
+import { Box, Typography } from '@material-ui/core';
 
 /**
  * The catalog import page for components.
@@ -33,7 +35,14 @@ export const ComponentImportPage = () => {
     <Page themeId="tool">
       <Header title="Catalog Import" />
       <Content>
-        <ContentHeader title="Software components" />
+        <Box mb={2}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link color="inherit" to="/catalog-import">
+              Import
+            </Link>
+            <Typography color="textPrimary">Software components</Typography>
+          </Breadcrumbs>
+        </Box>
         <ScmIntegrationList />
       </Content>
     </Page>

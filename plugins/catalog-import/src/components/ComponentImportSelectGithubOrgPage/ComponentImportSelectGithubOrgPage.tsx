@@ -16,13 +16,15 @@
 
 import React from 'react';
 import {
+  Breadcrumbs,
   Content,
-  ContentHeader,
   Header,
+  Link,
   Page,
 } from '@backstage/core-components';
 import { GithubOrganizationList } from '../GithubOrganizationList';
 import { useParams } from 'react-router';
+import { Box, Typography } from '@material-ui/core';
 
 export const ComponentImportSelectGithubOrgPage = () => {
   const { host } = useParams();
@@ -30,7 +32,17 @@ export const ComponentImportSelectGithubOrgPage = () => {
     <Page themeId="tool">
       <Header title="Catalog Import" />
       <Content>
-        <ContentHeader title="Software components" />
+        <Box mb={2}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link color="inherit" to="/catalog-import">
+              Import
+            </Link>
+            <Link color="inherit" to="/catalog-import/components">
+              Software components
+            </Link>
+            <Typography color="textPrimary">Organization</Typography>
+          </Breadcrumbs>
+        </Box>
         <GithubOrganizationList host={host} />
       </Content>
     </Page>

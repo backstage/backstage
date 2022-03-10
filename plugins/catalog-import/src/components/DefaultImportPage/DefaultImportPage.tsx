@@ -15,6 +15,7 @@
  */
 
 import {
+  Button,
   Content,
   ContentHeader,
   Header,
@@ -116,6 +117,11 @@ export const DefaultImportPage = () => {
                 </Typography>
               </CardContent>
             </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="outlined" to="/catalog">
+              Back to catalog
+            </Button>
           </Grid>
         </Grid>
       </Content>

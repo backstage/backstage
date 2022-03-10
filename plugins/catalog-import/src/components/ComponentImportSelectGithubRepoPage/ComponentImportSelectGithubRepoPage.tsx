@@ -16,11 +16,13 @@
 
 import React from 'react';
 import {
+  Breadcrumbs,
   Content,
-  ContentHeader,
   Header,
+  Link,
   Page,
 } from '@backstage/core-components';
+import { Box, Typography } from '@material-ui/core';
 import { useParams } from 'react-router';
 import { GithubRepositoryList } from '../GithubRepositoryList';
 
@@ -30,7 +32,23 @@ export const ComponentImportSelectGithubRepoPage = () => {
     <Page themeId="tool">
       <Header title="Catalog Import" />
       <Content>
-        <ContentHeader title="Software components" />
+        <Box mb={2}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link color="inherit" to="/catalog-import">
+              Import
+            </Link>
+            <Link color="inherit" to="/catalog-import/components">
+              Software components
+            </Link>
+            <Link
+              color="inherit"
+              to={`/catalog-import/components/github/${host}`}
+            >
+              Organization
+            </Link>
+            <Typography color="textPrimary">Repositories</Typography>
+          </Breadcrumbs>
+        </Box>
         <GithubRepositoryList host={host} org={org} />
       </Content>
     </Page>

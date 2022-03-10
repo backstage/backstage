@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Progress } from '@backstage/core-components';
+import { ContentHeader, Progress } from '@backstage/core-components';
 import { useApp } from '@backstage/core-plugin-api';
 import {
   Card,
@@ -29,8 +29,8 @@ import {
 } from '@material-ui/core';
 import CodeIcon from '@material-ui/icons/Code';
 import { useScmIntegrations } from '../../hooks/useIntegrations';
-import { ScmIntegration } from '@backstage/integration';
 import { Link } from 'react-router-dom';
+import { getIntegrationTitle } from '../helpers';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -49,30 +49,6 @@ const ScmIcon = ({ icon }: { icon: string }) => {
 
 const supportedTypes = ['github'];
 
-function getIntegrationTitle(integration: ScmIntegration) {
-  if (integration.type === 'github' && integration.title === 'github.com') {
-    return 'GitHub';
-  }
-
-  switch (integration.type) {
-    case 'awsS3':
-      return 'AWS S3 Bucket';
-    case 'azure':
-      return 'Azure DevOps';
-    case 'bitbucket':
-      return 'Bitbucket';
-    case 'github':
-      return 'GitHub Enterprise';
-    case 'gitlab':
-      return 'GitLab';
-    case 'googleGcs':
-      return 'Google GCS Bucket';
-
-    default:
-      return integration.title;
-  }
-}
-
 export const ScmIntegrationList = () => {
   const { integrations, loading } = useScmIntegrations();
 
@@ -81,45 +57,43 @@ export const ScmIntegrationList = () => {
   }
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <Typography variant="h6">
-          Where are the software components stored?
-        </Typography>
+    <>
+      <ContentHeader title="Where are the software components stored?" />
+      <Grid container>
+        {integrations.map((integration, index) => (
+          <Grid item xs={8} key={index}>
+            {supportedTypes.includes(integration.type) ? (
+              <Card raised>
+                <CardActionArea>
+                  <Link to={`${integration.type}/${integration.title}`}>
+                    <CardHeader
+                      avatar={<ScmIcon icon={integration.type} />}
+                      title={getIntegrationTitle(integration)}
+                      titleTypographyProps={{ variant: 'h5' }}
+                    />
+                    <CardContent>
+                      <Typography>
+                        Import software components from {integration.title}
+                      </Typography>
+                    </CardContent>
+                  </Link>
+                </CardActionArea>
+              </Card>
+            ) : (
+              <Card aria-disabled="true" style={{ opacity: 0.5 }}>
+                <CardHeader
+                  avatar={<ScmIcon icon={integration.type} />}
+                  title={getIntegrationTitle(integration)}
+                  titleTypographyProps={{ variant: 'h5' }}
+                />
+                <CardContent>
+                  <Typography>Not yet supported</Typography>
+                </CardContent>
+              </Card>
+            )}
+          </Grid>
+        ))}
       </Grid>
-      {integrations.map((integration, index) => (
-        <Grid item xs={8} key={index}>
-          {supportedTypes.includes(integration.type) ? (
-            <Card raised>
-              <CardActionArea>
-                <Link to={`${integration.type}/${integration.title}`}>
-                  <CardHeader
-                    avatar={<ScmIcon icon={integration.type} />}
-                    title={getIntegrationTitle(integration)}
-                    titleTypographyProps={{ variant: 'h5' }}
-                  />
-                  <CardContent>
-                    <Typography>
-                      Import software components from {integration.title}
-                    </Typography>
-                  </CardContent>
-                </Link>
-              </CardActionArea>
-            </Card>
-          ) : (
-            <Card aria-disabled="true" style={{ opacity: 0.5 }}>
-              <CardHeader
-                avatar={<ScmIcon icon={integration.type} />}
-                title={getIntegrationTitle(integration)}
-                titleTypographyProps={{ variant: 'h5' }}
-              />
-              <CardContent>
-                <Typography>Not yet supported</Typography>
-              </CardContent>
-            </Card>
-          )}
-        </Grid>
-      ))}
-    </Grid>
+    </>
   );
 };
