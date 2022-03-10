@@ -15,8 +15,27 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import {
+  makeCreatePermissionRule,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
 import { EntitiesSearchFilter } from '../../catalog/types';
+
+/**
+ * Convenience type for {@link @backstage/plugin-permission-node#PermissionRule}
+ * instances with the correct resource type, resource, and filter to work with
+ * the catalog.
+ *
+ * @alpha
+ */
+export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
+  PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    typeof RESOURCE_TYPE_CATALOG_ENTITY,
+    TParams
+  >;
 
 /**
  * Helper function for creating correctly-typed
@@ -27,5 +46,6 @@ import { EntitiesSearchFilter } from '../../catalog/types';
  */
 export const createCatalogPermissionRule = makeCreatePermissionRule<
   Entity,
-  EntitiesSearchFilter
+  EntitiesSearchFilter,
+  typeof RESOURCE_TYPE_CATALOG_ENTITY
 >();

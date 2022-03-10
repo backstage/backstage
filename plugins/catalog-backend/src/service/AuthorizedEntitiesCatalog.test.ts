@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import {
-  createConditionTransformer,
-  PermissionRule,
-} from '@backstage/plugin-permission-node';
-import { EntitiesSearchFilter } from '../catalog/types';
+import { createConditionTransformer } from '@backstage/plugin-permission-node';
 import { isEntityKind } from '../permissions/rules/isEntityKind';
+import { CatalogPermissionRule } from '../permissions/rules';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 
 describe('AuthorizedEntitiesCatalog', () => {
@@ -36,9 +32,7 @@ describe('AuthorizedEntitiesCatalog', () => {
     authorize: jest.fn(),
   };
 
-  const createCatalog = (
-    ...rules: PermissionRule<Entity, EntitiesSearchFilter, unknown[]>[]
-  ) =>
+  const createCatalog = (...rules: CatalogPermissionRule[]) =>
     new AuthorizedEntitiesCatalog(
       fakeCatalog,
       fakePermissionApi,
