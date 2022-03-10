@@ -218,8 +218,10 @@ for 7 days, it's a lucky number.
   <img src='../assets/getting-started/gh-pat.png' alt='Screenshot of the GitHub Personal Access Token creation page' />
 </p>
 
-Set the scope to your likings. For this tutorial, selecting "repo" should be
-enough.
+Set the scope to your likings. For this tutorial, selecting `workflow` should be
+enough. (Note: using `repo` won't suffice as the Scaffolder template contains
+a Github Action manifest defined in `.github/workflows/build.yml` during the
+initialization of the repo)
 
 In the `app-config.yaml`, search for `integrations:` and add your token, like we
 did in below example:
