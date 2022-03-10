@@ -6236,10 +6236,10 @@
   resolved "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@types/npm-packlist@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/@types/npm-packlist/-/npm-packlist-1.1.2.tgz#285978c9023ce68fa0641ca606c7c3b7b0e851c5"
-  integrity sha512-9NYoEH87t90e6dkaQOuUTY/R1xUE0a67sXzJBuAB+b+/z4FysHFD19g/O154ToGjyWqKYkezVUtuBdtfd4hyfw==
+"@types/npm-packlist@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@types/npm-packlist/-/npm-packlist-3.0.0.tgz#6297d00cca06002a091d1939b4d39b43d1924491"
+  integrity sha512-IdiQ2SAR2NZgAUhdpwICaL8CWKrhRg0R2awttMKewoALrBb9cYPW67IZjnkEGdhkSp6uimAFLfoCdERYJyMaAg==
 
 "@types/nunjucks@^3.1.4":
   version "3.2.1"
