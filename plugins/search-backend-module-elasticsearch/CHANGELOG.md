@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.1
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.1
+  - @backstage/plugin-search-backend-node@0.5.1
+
 ## 0.1.1-next.0
 
 ### Patch Changes

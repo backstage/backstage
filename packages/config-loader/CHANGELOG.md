@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 0.9.7
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+
 ## 0.9.7-next.0
 
 ### Patch Changes

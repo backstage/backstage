@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-react
 
+## 0.9.0
+
+### Minor Changes
+
+- b0af81726d: **BREAKING**: Removed `reduceCatalogFilters` and `reduceEntityFilters` due to low external utility value.
+- 7ffb2c73c9: **BREAKING**: Removed the deprecated `loadCatalogOwnerRefs` function. Usages of this function can be directly replaced with `ownershipEntityRefs` from `identityApi.getBackstageIdentity()`.
+
+  This also affects the `useEntityOwnership` hook in that it no longer uses `loadCatalogOwnerRefs`, meaning it will no longer load in additional relations and instead only rely on the `ownershipEntityRefs` from the `IdentityApi`.
+
+- dd88d1e3ac: **BREAKING**: Removed `useEntityFromUrl`.
+- 9844d4d2bd: **BREAKING**: Removed `useEntityCompoundName`, use `useRouteRefParams(entityRouteRef)` instead.
+- 2b8c986ce0: **BREAKING**: Removed `useEntityListProvider` use `useEntityList` instead.
+- f3a7a9de6d: **BREAKING**: Removed `useOwnedEntities` and moved its usage internally to the scaffolder-backend where it's used.
+
+  **BREAKING**: Removed `EntityTypeReturn` type which is now inlined.
+
+- cf1ff5b438: **BREAKING**: Removed the `useEntityKinds` hook, use `catalogApi.getEntityFacets({ facets: ['kind'] })` instead.
+- fc6290a76d: **BREAKING**: Removed the deprecated `useOwnUser` hook. Existing usage can be replaced with `identityApi.getBackstageIdentity()`, followed by a call to `catalogClient.getEntityByRef(identity.userEntityRef)`.
+
+### Patch Changes
+
+- b1aacbf96a: Applied the fix for the `/alpha` entry point resolution that was part of the `v0.70.1` release of Backstage.
+- 2986f8e09d: Fixed EntityOwnerPicker and OwnershipCard url filter issue with more than 21 owners
+- f3a7a9de6d: Internalized usage of `useOwnedEntities` hook.
+- Updated dependencies
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+  - @backstage/catalog-client@0.9.0
+
 ## 0.9.0-next.0
 
 ### Minor Changes

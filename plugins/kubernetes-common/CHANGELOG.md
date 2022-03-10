@@ -1,5 +1,12 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.13.0
+
 ## 0.2.7-next.0
 
 ### Patch Changes

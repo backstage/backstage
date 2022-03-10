@@ -1,5 +1,32 @@
 # @backstage/cli
 
+## 0.15.2
+
+### Patch Changes
+
+- 2c528506aa: Added `--since <ref>` flag for `repo build` command.`
+- 60799cc5be: build(deps-dev): bump `@types/npm-packlist` from 1.1.2 to 3.0.0
+- d3d1b82198: chore(deps): bump `minimatch` from 5.0.0 to 5.0.1
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 44cc7c3b95: Added a new ESLint configuration setup for packages, which utilizes package roles to generate the correct configuration. The new configuration is available at `@backstage/cli/config/eslint-factory`.
+
+  Introduced a new `backstage-cli migrate package-lint-configs` command, which migrates old lint configurations to use `@backstage/cli/config/eslint-factory`.
+
+- b1aacbf96a: Applied the fix from version `0.15.1` of this package, which was part of the `v0.70.1` release of Backstage.
+- d2ecde959b: Package roles are now marked as stable and migration is encouraged. Please check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+
+  The new `package`, `repo`, and `migrate` command categories are now marked as stable.
+
+  Marked all commands that are being replaced by the new `package` and `repo` commands as deprecated.
+
+  The package templates used by the `create` command have all been updated to use package roles.
+
+- f06da37290: The backend development setup now ignores the `"browser"` and `"module"` entry points in `package.json`, and instead always uses `"main"`.
+- 6a1fe077ad: Changed the logic for how modules are marked as external in the Rollup build of packages. Rather than only marking dependencies and build-in Node.js modules as external, all non-relative imports are now considered external.
+- dc6002a7b9: The `--since` flag of repo commands now silently falls back to using the provided `ref` directly if no merge base is available.
+- Updated dependencies
+  - @backstage/config-loader@0.9.7
+
 ## 0.15.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.26
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+
 ## 0.1.26-next.0
 
 ### Patch Changes
