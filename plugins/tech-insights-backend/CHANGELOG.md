@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/catalog-client@0.9.0
+  - @backstage/plugin-tech-insights-node@0.2.7
+
 ## 0.2.9-next.0
 
 ### Patch Changes

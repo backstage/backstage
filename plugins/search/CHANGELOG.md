@@ -1,5 +1,16 @@
 # @backstage/plugin-search
 
+## 0.7.3
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-search-common@0.3.1
+
 ## 0.7.3-next.0
 
 ### Patch Changes

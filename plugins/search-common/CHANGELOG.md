@@ -1,5 +1,11 @@
 # @backstage/plugin-search-common
 
+## 0.3.1
+
+### Patch Changes
+
+- d52155466a: Renamed `@backstage/search-common` to `@backstage/plugin-search-common`.
+
 ## 0.3.1-next.0
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-app-backend
 
+## 0.3.29
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/config-loader@0.9.7
+
 ## 0.3.29-next.0
 
 ### Patch Changes

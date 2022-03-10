@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog
 
+## 0.10.0
+
+### Minor Changes
+
+- 51856359bf: **BREAKING**: Removed the `AboutCard` component which has been replaced by `EntityAboutCard`.
+- 5ea9509e6a: **BREAKING**: Removed `CatalogResultListItemProps` and `CatalogResultListItem`, replaced by `CatalogSearchResultListItemProps` and `CatalogSearchResultListItem`.
+
+### Patch Changes
+
+- 9a06d18385: Added an `allowedKinds` option to `CatalogKindHeader` to limit entity kinds available in the dropdown.
+- 251688a75e: Updated `CatalogKindHeader` to respond to external changes to query parameters in the URL, such as two sidebar links that apply different catalog filters.
+- 9844d4d2bd: Removed usage of removed hook.
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-catalog-common@0.2.2
+  - @backstage/plugin-search-common@0.3.1
+  - @backstage/catalog-client@0.9.0
+  - @backstage/integration-react@0.1.25
+
 ## 0.10.0-next.0
 
 ### Minor Changes

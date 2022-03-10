@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs
 
+## 0.15.1
+
+### Patch Changes
+
+- 7a1dbe6ce9: The panels of `TechDocsCustomHome` now use the `useEntityOwnership` hook to resolve ownership when the `'ownedByUser'` filter predicate is used.
+- Updated dependencies
+  - @backstage/plugin-catalog@0.10.0
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-search@0.7.3
+  - @backstage/integration-react@0.1.25
+
 ## 0.15.1-next.0
 
 ### Patch Changes
