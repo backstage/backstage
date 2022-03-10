@@ -12,6 +12,34 @@ DevOps organization and register entities matching the configured path. This can
 be useful as an alternative to static locations or manually adding things to the
 catalog.
 
+## Installation
+
+You will have to add the processors in the catalog initialization code of your
+backend. They are not installed by default, therefore you have to add a
+dependency to `@backstage/plugin-catalog-backend-module-azure` to your backend
+package.
+
+```bash
+# From your Backstage root directory
+cd packages/backend
+yarn add @backstage/plugin-catalog-backend-module-azure
+```
+
+And then add the processors to your catalog builder:
+
+```diff
+// In packages/backend/src/plugins/catalog.ts
++import { AzureDevOpsDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-azure';
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
++  builder.addProcessor(AzureDevOpsDiscoveryProcessor.fromConfig(env.config, { logger: env.logger }));
+```
+
+## Configuration
+
 To use the discovery processor, you'll need a Azure integration
 [set up](locations.md) with a `AZURE_TOKEN`. Then you can add a location target
 to the catalog configuration:
