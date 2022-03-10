@@ -3,6 +3,7 @@
 '@backstage/core-app-api': patch
 '@backstage/core-components': patch
 '@backstage/core-plugin-api': patch
+'@backstage/create-app': patch
 '@backstage/dev-utils': patch
 '@backstage/integration-react': patch
 '@backstage/test-utils': patch
@@ -45,6 +46,7 @@
 '@backstage/plugin-newrelic': patch
 '@backstage/plugin-org': patch
 '@backstage/plugin-pagerduty': patch
+'@backstage/plugin-periskop': patch
 '@backstage/plugin-permission-react': patch
 '@backstage/plugin-rollbar': patch
 '@backstage/plugin-scaffolder': patch
