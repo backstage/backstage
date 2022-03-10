@@ -181,6 +181,7 @@ describe('publish:gitlab', () => {
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -205,6 +206,7 @@ describe('publish:gitlab', () => {
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -252,6 +254,7 @@ describe('publish:gitlab', () => {
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
       defaultBranch: 'master',
+      commitMessage: 'Test commit message',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -294,10 +297,10 @@ describe('publish:gitlab', () => {
       dir: mockContext.workspacePath,
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
-      logger: mockContext.logger,
       defaultBranch: 'master',
       commitMessage: 'Test commit message',
       gitAuthorInfo: { email: undefined, name: undefined },
+      logger: mockContext.logger,
     });
   });
 
