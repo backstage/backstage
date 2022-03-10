@@ -17,7 +17,6 @@
 import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
 import {
   AlphaEntity,
-  parseEntityRef,
   EntityRelation,
   EntityStatusItem,
 } from '@backstage/catalog-model';
@@ -186,8 +185,6 @@ export class Stitcher {
       .filter(row => row.relationType /* exclude null row, if relevant */)
       .map<EntityRelation>(row => ({
         type: row.relationType!,
-        // TODO(freben): This field is deprecated and should be removed in a future release
-        target: parseEntityRef(row.relationTarget!),
         targetRef: row.relationTarget!,
       }));
     if (statusItems.length) {

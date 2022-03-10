@@ -46,11 +46,6 @@ const entities: Entity[] = [
       {
         type: 'ownedBy',
         targetRef: 'user:default/guest',
-        target: {
-          name: 'guest',
-          namespace: 'default',
-          kind: 'User',
-        },
       },
     ],
   },

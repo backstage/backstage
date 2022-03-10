@@ -48,29 +48,14 @@ describe('<AboutContent />', () => {
           {
             type: RELATION_OWNED_BY,
             targetRef: 'user:default/o',
-            target: {
-              kind: 'user',
-              name: 'o',
-              namespace: 'default',
-            },
           },
           {
             type: RELATION_PART_OF,
             targetRef: 'system:default/s',
-            target: {
-              kind: 'system',
-              name: 's',
-              namespace: 'default',
-            },
           },
           {
             type: RELATION_PART_OF,
             targetRef: 'domain:default/d',
-            target: {
-              kind: 'domain',
-              name: 'd',
-              namespace: 'default',
-            },
           },
         ],
       };
@@ -156,20 +141,10 @@ describe('<AboutContent />', () => {
           {
             type: RELATION_OWNED_BY,
             targetRef: 'user:default/guest',
-            target: {
-              kind: 'user',
-              name: 'guest',
-              namespace: 'default',
-            },
           },
           {
             type: RELATION_PART_OF,
             targetRef: 'system:default/system',
-            target: {
-              kind: 'system',
-              name: 'system',
-              namespace: 'default',
-            },
           },
         ],
       };
@@ -263,29 +238,14 @@ describe('<AboutContent />', () => {
           {
             type: RELATION_OWNED_BY,
             targetRef: 'user:default/guest',
-            target: {
-              kind: 'user',
-              name: 'guest',
-              namespace: 'default',
-            },
           },
           {
             type: RELATION_PART_OF,
             targetRef: 'system:default/system',
-            target: {
-              kind: 'system',
-              name: 'system',
-              namespace: 'default',
-            },
           },
           {
             type: RELATION_PART_OF,
             targetRef: 'component:default/parent-software',
-            target: {
-              kind: 'component',
-              name: 'parent-software',
-              namespace: 'default',
-            },
           },
         ],
       };
@@ -378,11 +338,6 @@ describe('<AboutContent />', () => {
           {
             type: RELATION_OWNED_BY,
             targetRef: 'user:default/guest',
-            target: {
-              kind: 'user',
-              name: 'guest',
-              namespace: 'default',
-            },
           },
         ],
       };
@@ -538,20 +493,10 @@ describe('<AboutContent />', () => {
           {
             type: RELATION_OWNED_BY,
             targetRef: 'user:default/guest',
-            target: {
-              kind: 'user',
-              name: 'guest',
-              namespace: 'default',
-            },
           },
           {
             type: RELATION_PART_OF,
             targetRef: 'system:default/system',
-            target: {
-              kind: 'system',
-              name: 'system',
-              namespace: 'default',
-            },
           },
         ],
       };
@@ -637,20 +582,10 @@ describe('<AboutContent />', () => {
           {
             type: RELATION_OWNED_BY,
             targetRef: 'user:default/guest',
-            target: {
-              kind: 'user',
-              name: 'guest',
-              namespace: 'default',
-            },
           },
           {
             type: RELATION_PART_OF,
             targetRef: 'domain:default/domain',
-            target: {
-              kind: 'domain',
-              name: 'domain',
-              namespace: 'default',
-            },
           },
         ],
       };

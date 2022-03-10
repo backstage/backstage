@@ -97,11 +97,6 @@ describe('<ConsumingComponentsCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'component',
-            namespace: 'my-namespace',
-            name: 'target-name',
-          },
           targetRef: 'component:my-namespace/target-name',
           type: RELATION_API_CONSUMED_BY,
         },

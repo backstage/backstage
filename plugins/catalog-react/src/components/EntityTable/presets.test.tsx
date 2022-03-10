@@ -45,20 +45,10 @@ describe('systemEntityColumns', () => {
           {
             type: RELATION_PART_OF,
             targetRef: 'domain:my-namespace/my-domain',
-            target: {
-              kind: 'domain',
-              name: 'my-domain',
-              namespace: 'my-namespace',
-            },
           },
           {
             type: RELATION_OWNED_BY,
             targetRef: 'group:default/test',
-            target: {
-              kind: 'group',
-              name: 'test',
-              namespace: 'default',
-            },
           },
         ],
       },
@@ -107,20 +97,10 @@ describe('componentEntityColumns', () => {
           {
             type: RELATION_PART_OF,
             targetRef: 'system:my-namespace/my-system',
-            target: {
-              kind: 'system',
-              name: 'my-system',
-              namespace: 'my-namespace',
-            },
           },
           {
             type: RELATION_OWNED_BY,
             targetRef: 'group:default/test',
-            target: {
-              kind: 'group',
-              name: 'test',
-              namespace: 'default',
-            },
           },
         ],
       },

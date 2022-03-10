@@ -60,11 +60,6 @@ describe('MemberTab Test', () => {
               {
                 type: 'memberOf',
                 targetRef: 'group:default/team-d',
-                target: {
-                  kind: 'group',
-                  name: 'team-d',
-                  namespace: 'default',
-                },
               },
             ],
             spec: {

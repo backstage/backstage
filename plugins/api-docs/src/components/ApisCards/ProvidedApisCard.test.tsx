@@ -94,11 +94,6 @@ describe('<ProvidedApisCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'api',
-            namespace: 'my-namespace',
-            name: 'target-name',
-          },
           targetRef: 'api:my-namespace/target-name',
           type: RELATION_PROVIDES_API,
         },

@@ -94,11 +94,6 @@ describe('<ConsumedApisCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'api',
-            namespace: 'my-namespace',
-            name: 'target-name',
-          },
           targetRef: 'api:my-namespace/target-name',
           type: RELATION_CONSUMES_API,
         },
