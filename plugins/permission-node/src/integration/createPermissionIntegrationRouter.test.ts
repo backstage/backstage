@@ -37,7 +37,7 @@ const testRule1 = {
 const testRule2 = {
   name: 'test-rule-2',
   description: 'Test rule 2',
-  apply: jest.fn((_firstParam: object) => false),
+  apply: jest.fn((_resource: any, _firstParam: object) => false),
   toQuery: jest.fn(),
 };
 

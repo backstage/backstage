@@ -36,7 +36,7 @@ const testIntegration = () =>
       testRule2: {
         name: 'testRule2',
         description: 'Test rule 2',
-        apply: jest.fn((_firstParam: object) => false),
+        apply: jest.fn((_resource: any, _firstParam: object) => false),
         toQuery: jest.fn((firstParam: object) => ({
           query: 'testRule2',
           params: [firstParam],
