@@ -23,6 +23,7 @@ import { ComponentImportSelectGithubOrgPage } from './ComponentImportSelectGithu
 import { ComponentImportSelectGithubRepoPage } from './ComponentImportSelectGithubRepoPage';
 import { ComponentImportSelectGithubMethodPage } from './ComponentImportSelectGithubMethodPage';
 import { ComponentImportGithubDiscoveryPage } from './ComponentImportGithubDiscoverPage';
+import { ComponentImportGithubResultPage } from './ComponentImportGithubResultPage';
 
 export type RouterProps = {};
 
@@ -33,6 +34,10 @@ export const Router = (props: RouterProps) => {
     <Routes>
       <Route path="/" element={<DefaultImportPage />} />
       <Route path="/components" element={<ComponentImportPage />} />
+      <Route
+        path="/components/github/results"
+        element={<ComponentImportGithubResultPage />}
+      />
       <Route
         path="/components/github/:host"
         element={<ComponentImportSelectGithubOrgPage />}

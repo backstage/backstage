@@ -85,9 +85,8 @@ export const ComponentImportSelectGithubMethodPage = () => {
                       registration; we recommend using a{' '}
                       <Link to="https://backstage.io/docs/plugins/github-apps">
                         GitHub App integration
-                      </Link>{' '}
-                      instead of an access token, since it has higher API rate
-                      limits.
+                      </Link>
+                      , which have higher API rate limits than access tokens.
                     </Typography>
                   </CardContent>
                 </NavLink>

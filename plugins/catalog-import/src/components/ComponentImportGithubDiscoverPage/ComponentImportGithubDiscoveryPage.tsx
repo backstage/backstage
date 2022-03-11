@@ -16,7 +16,7 @@
 
 /* eslint-disable jsx-a11y/no-autofocus */
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   CodeSnippet,
   Content,
@@ -29,14 +29,36 @@ import {
   Box,
   Breadcrumbs,
   Button,
+  CircularProgress,
   Grid,
   TextField,
   Typography,
 } from '@material-ui/core';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { useApi } from '@backstage/core-plugin-api';
 
 export const ComponentImportGithubDiscoveryPage = () => {
   const { host, org } = useParams();
+  const navigate = useNavigate();
+  const catalogApi = useApi(catalogApiRef);
+  const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>();
+
+  async function handleClick() {
+    if (inputRef.current) {
+      setSaving(true);
+      const url = inputRef.current.value;
+      await catalogApi.addLocation({
+        type: 'github-discovery',
+        target: url,
+      });
+      navigate('/catalog-import/components/github/results', {
+        state: { kind: 'discovery', discoveryUrl: url },
+      });
+    }
+  }
+
   return (
     <Page themeId="tool">
       <Header title="Catalog Import" />
@@ -96,14 +118,24 @@ export const ComponentImportGithubDiscoveryPage = () => {
               </Typography>
               <TextField
                 variant="outlined"
-                defaultValue={`https://${host}/*/blob/-/catalog-info.yaml`}
+                defaultValue={`https://${host}/${org}/*/blob/-/catalog-info.yaml`}
                 color="primary"
                 style={{ width: '100%' }}
+                inputRef={inputRef}
+                disabled={saving}
                 autoFocus
               />
             </Box>
-            <Button color="primary" variant="contained">
-              Add discovery URL
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={handleClick}
+              disabled={saving}
+            >
+              {saving && (
+                <CircularProgress size={14} style={{ marginRight: 8 }} />
+              )}
+              {saving ? 'Adding...' : 'Add discovery URL'}
             </Button>
           </Grid>
         </Grid>

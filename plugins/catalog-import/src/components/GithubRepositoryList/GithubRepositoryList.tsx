@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Checkbox,
   Chip,
+  CircularProgress,
   FormControlLabel,
   Grid,
   Typography,
@@ -28,6 +29,9 @@ import {
   GithubRepository,
   useGithubRepositories,
 } from '../../hooks/useGithubRepositories';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { useNavigate } from 'react-router';
+import { useApi } from '@backstage/core-plugin-api';
 
 type GithubRepositoryListProps = {
   host: string;
@@ -58,10 +62,61 @@ export const GithubRepositoryList = ({
   host,
   org,
 }: GithubRepositoryListProps) => {
+  const catalogApi = useApi(catalogApiRef);
+  const navigate = useNavigate();
   const { loading, repositories } = useGithubRepositories({ host, org });
+  const [saving, setSaving] = useState(false);
+  const [selectedRepoNames, setSelectedRepoNames] = useState<string[]>([]);
 
   if (loading) {
     return <Progress />;
+  }
+
+  async function handleClick() {
+    setSaving(true);
+    const selectedRepos = repositories.filter(repo =>
+      selectedRepoNames.includes(repo.name),
+    );
+    // TODO(catalog-import-flow): Handle conflicts
+    await Promise.all(
+      selectedRepos
+        .map(repo =>
+          repo.descriptor_paths.map(d =>
+            catalogApi.addLocation({
+              type: 'url',
+              target: `https://${host}/${org}/${repo.name}/blob/${repo.default_branch}/${d}`,
+            }),
+          ),
+        )
+        .flat(),
+    );
+    // Adding locations to the catalog does not fetch and return the entities immediately; borrow
+    // the scaffolder's technique to add locations and then dryRun to get the actual list.
+    const responses = await Promise.all(
+      selectedRepos
+        .map(repo =>
+          repo.descriptor_paths.map(d =>
+            catalogApi.addLocation({
+              dryRun: true,
+              type: 'url',
+              target: `https://${host}/${org}/${repo.name}/blob/${repo.default_branch}/${d}`,
+            }),
+          ),
+        )
+        .flat(),
+    );
+    const entities = responses.map(r => r.entities).flat();
+    navigate('/catalog-import/components/github/results', {
+      state: { kind: 'repositories', entities },
+    });
+  }
+
+  function handleChange(repo: string) {
+    setSelectedRepoNames(prevSelected =>
+      prevSelected.includes(repo)
+        ? prevSelected.filter(s => s !== repo)
+        : [...prevSelected, repo],
+    );
   }
 
   return (
@@ -74,7 +129,8 @@ export const GithubRepositoryList = ({
               control={
                 <Checkbox
                   name={repo.name}
-                  disabled={repo.descriptor_paths.length === 0}
+                  onChange={() => handleChange(repo.name)}
+                  disabled={saving || repo.descriptor_paths.length === 0}
                 />
               }
               label={getLabel(repo)}
@@ -83,8 +139,16 @@ export const GithubRepositoryList = ({
         ))}
         <Grid item xs={12}>
           {repositories.length ? (
-            <Button variant="contained" color="primary">
-              Import selected repositories
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleClick}
+              disabled={saving}
+            >
+              {saving && (
+                <CircularProgress size={14} style={{ marginRight: 8 }} />
+              )}
+              {saving ? 'Importing...' : 'Import selected repositories'}
             </Button>
           ) : (
             'No repositories found'
