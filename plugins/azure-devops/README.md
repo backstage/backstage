@@ -94,7 +94,7 @@ To get the Azure Pipelines component working you'll need to do the following two
         </EntitySwitch>
       ```
 
-   2. If you are using the ``dev.azure.com/project` and `dev.azure.com/build-definition` annotations then you'll want to do this:
+   2. If you are using the `dev.azure.com/project` and `dev.azure.com/build-definition` annotations then you'll want to do this:
 
       ```tsx
       // In packages/app/src/components/catalog/EntityPage.tsx
