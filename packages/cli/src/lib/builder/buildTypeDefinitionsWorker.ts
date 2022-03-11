@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type ts from 'typescript';
+
+type tsNamespace = typeof ts;
 
 /**
  * NOTE: This is a worker thread function that is stringified and executed
@@ -41,9 +44,9 @@ export async function buildTypeDefinitionsWorker(
   const apiExtractor = require('@microsoft/api-extractor');
   const { Extractor, ExtractorConfig, CompilerState } = apiExtractor;
 
-  const ts = require('typescript');
+  const ts: tsNamespace = require('typescript');
   const {
-    transform: tsTransformImportPathRewrite,
+    transform: transformImportPathRewrite,
   } = require('ts-transform-import-path-rewrite');
 
   /**
@@ -72,29 +75,163 @@ export async function buildTypeDefinitionsWorker(
       return old.call(this, path);
     };
 
-  const transformImports = (definitionFile: string, suffix: string) => {
+  const transformSourceFile = (
+    fileName: string,
+    transformer: ts.TransformerFactory<ts.SourceFile>,
+  ) => {
     const sourceFile = ts.createSourceFile(
-      definitionFile,
-      readFileSync(definitionFile, 'utf-8'),
+      fileName,
+      readFileSync(fileName, 'utf-8'),
       ts.ScriptTarget.ES2019,
       /* setParentNodes */ true,
     );
 
     const {
       transformed: [transformedSourceFile],
-    } = ts.transform(sourceFile, [
-      tsTransformImportPathRewrite({
+    } = ts.transform(sourceFile, [transformer]);
+
+    writeFileSync(
+      fileName,
+      ts
+        .createPrinter({ newLine: ts.NewLineKind.LineFeed })
+        .printFile(transformedSourceFile),
+    );
+  };
+
+  const removeUnusedImports = (definitionFile: string) => {
+    const findUsedIdentifiers = (
+      sf: ts.SourceFile,
+      ctx: ts.TransformationContext,
+    ) => {
+      const result = new Set<string>();
+      const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+        if (ts.isIdentifier(node)) {
+          result.add(node.getText());
+        }
+
+        if (!ts.isImportDeclaration(node)) {
+          return ts.visitEachChild(node, visitor, ctx);
+        }
+
+        return undefined;
+      };
+
+      ts.visitNode(sf, visitor);
+      return result;
+    };
+
+    const importIdentifiers = (declaration: ts.ImportDeclaration) => {
+      if (!declaration.importClause) {
+        return [];
+      }
+
+      const result = [];
+
+      if (declaration.importClause.name) {
+        result.push(declaration.importClause.name.getText());
+      }
+
+      if (declaration.importClause.namedBindings) {
+        if (ts.isNamespaceImport(declaration.importClause.namedBindings)) {
+          result.push(declaration.importClause.namedBindings.name.getText());
+        } else {
+          result.push(
+            ...declaration.importClause.namedBindings.elements.map(el =>
+              el.name.getText(),
+            ),
+          );
+        }
+      }
+
+      return result;
+    };
+
+    const filterName = (
+      name: ts.Identifier | undefined,
+      usedIdentifiers: Set<string>,
+    ) => {
+      if (!name || usedIdentifiers.has(name.getText())) {
+        return name;
+      }
+
+      return undefined;
+    };
+
+    const filterNamedBindings = (
+      namedBindings: ts.NamedImportBindings | undefined,
+      usedIdentifiers: Set<string>,
+      ctx: ts.TransformationContext,
+    ) => {
+      if (!namedBindings) {
+        return namedBindings;
+      }
+
+      if (ts.isNamespaceImport(namedBindings)) {
+        return usedIdentifiers.has(namedBindings.name.getText())
+          ? namedBindings
+          : undefined;
+      }
+
+      return ctx.factory.createNamedImports(
+        namedBindings.elements.filter(el =>
+          usedIdentifiers.has(el.name.getText()),
+        ),
+      );
+    };
+
+    const stripImports = (
+      sf: ts.SourceFile,
+      usedIdentifiers: Set<string>,
+      ctx: ts.TransformationContext,
+    ) => {
+      const visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
+        if (ts.isImportDeclaration(node)) {
+          if (
+            !importIdentifiers(node).some(identifier =>
+              usedIdentifiers.has(identifier),
+            )
+          ) {
+            return undefined;
+          }
+        }
+
+        if (ts.isImportClause(node)) {
+          return ctx.factory.updateImportClause(
+            node,
+            node.isTypeOnly,
+            filterName(node.name, usedIdentifiers),
+            filterNamedBindings(node.namedBindings, usedIdentifiers, ctx),
+          );
+        }
+
+        return ts.visitEachChild(node, visitor, ctx);
+      };
+
+      return ts.visitNode(sf, visitor);
+    };
+
+    transformSourceFile(
+      definitionFile,
+      (ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
+        return (sf: ts.SourceFile) => {
+          const usedIdentifiers = findUsedIdentifiers(sf, ctx);
+
+          return stripImports(sf, usedIdentifiers, ctx);
+        };
+      },
+    );
+  };
+
+  const transformBackstageImports = (definitionFile: string, suffix: string) =>
+    transformSourceFile(
+      definitionFile,
+      transformImportPathRewrite({
         rewrite: (importPath: string) =>
           /@backstage\/[a-z-]+/i.test(importPath)
             ? `${importPath}/${suffix}`
             : importPath,
       }),
-    ]);
-
-    const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-
-    writeFileSync(definitionFile, printer.printFile(transformedSourceFile));
-  };
+    );
 
   let compilerState;
   for (const { extractorOptions, targetTypesDir } of workerConfigs) {
@@ -118,8 +255,9 @@ export async function buildTypeDefinitionsWorker(
       },
     });
 
-    transformImports(extractorConfig.untrimmedFilePath, 'alpha');
-    transformImports(extractorConfig.betaTrimmedFilePath, 'beta');
+    removeUnusedImports(extractorConfig.publicTrimmedFilePath);
+    transformBackstageImports(extractorConfig.untrimmedFilePath, 'alpha');
+    transformBackstageImports(extractorConfig.betaTrimmedFilePath, 'beta');
 
     if (!extractorResult.succeeded) {
       throw new Error(
