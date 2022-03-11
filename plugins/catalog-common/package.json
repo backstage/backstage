@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@backstage/plugin-permission-common": "^0.5.3",
-    "@backstage/search-common": "^0.3.2"
+    "@backstage/plugin-search-common": "^0.3.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.16.0"
