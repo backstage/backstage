@@ -31,26 +31,45 @@ export interface SearchQuery {
 /**
  * @beta
  */
-export interface SearchResult {
+export interface Result<TDocument> {
   type: string;
-  document: IndexableDocument;
+  document: TDocument;
 }
 
 /**
  * @beta
  */
-export interface SearchResultSet {
-  results: SearchResult[];
+export interface ResultSet<TDocument> {
+  results: Result<TDocument>[];
   nextPageCursor?: string;
   previousPageCursor?: string;
 }
 
 /**
- * Base properties that all indexed documents must include, as well as some
- * common properties that documents are encouraged to use where appropriate.
  * @beta
  */
-export interface IndexableDocument {
+export type SearchResult = Result<SearchDocument>;
+
+/**
+ * @beta
+ */
+export type SearchResultSet = ResultSet<SearchDocument>;
+
+/**
+ * @beta
+ */
+export type IndexableResult = Result<IndexableDocument>;
+
+/**
+ * @beta
+ */
+export type IndexableResultSet = ResultSet<IndexableDocument>;
+
+/**
+ * Base properties that all search documents must include.
+ * @beta
+ */
+export interface SearchDocument {
   /**
    * The primary name of the document (e.g. name, title, identifier, etc).
    */
@@ -66,7 +85,13 @@ export interface IndexableDocument {
    * is clicked).
    */
   location: string;
+}
 
+/**
+ * Properties related to indexing of documents.
+ * @beta
+ */
+export type IndexableDocument = SearchDocument & {
   /**
    * Optional authorization information to be used when determining whether this
    * search result should be visible to a given user.
@@ -77,7 +102,7 @@ export interface IndexableDocument {
      */
     resourceRef: string;
   };
-}
+};
 
 /**
  * Information about a specific document type. Intended to be used in the
@@ -178,5 +203,5 @@ export interface SearchEngine {
   query(
     query: SearchQuery,
     options?: QueryRequestOptions,
-  ): Promise<SearchResultSet>;
+  ): Promise<IndexableResultSet>;
 }
