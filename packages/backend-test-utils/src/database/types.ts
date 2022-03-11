@@ -66,6 +66,6 @@ export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
     },
     SQLITE_3: {
       name: 'SQLite 3.x',
-      driver: 'sqlite3',
+      driver: 'better-sqlite3',
     },
   });

@@ -56,7 +56,7 @@ export class PluginTaskSchedulerJanitor {
     // SQLite currently (Oct 1 2021) returns a number for returning()
     // statements, effectively ignoring them and instead returning the outcome
     // of the delete() - and knex also emits a warning about that fact, which
-    // is why we avoid that entirely for the sqlite3 driver.
+    // is why we avoid that entirely for the sqlite3 family of drivers.
     // https://github.com/knex/knex/issues/4370
     // https://github.com/mapbox/node-sqlite3/issues/1453
 

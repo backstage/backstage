@@ -62,7 +62,7 @@
     "@backstage/plugin-todo-backend": "^0.1.26",
     "@gitbeaker/node": "^35.1.0",
     "@octokit/rest": "^18.5.3",
-    "@vscode/sqlite3": "^5.0.7",
+    "better-sqlite3": "^7.5.0",
     "azure-devops-node-api": "^11.0.1",
     "dockerode": "^3.3.1",
     "example-app": "link:../app",

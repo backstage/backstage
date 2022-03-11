@@ -20,7 +20,7 @@ import { DateTime } from 'luxon';
 
 function createDB() {
   const knex = Knex({
-    client: 'sqlite3',
+    client: 'better-sqlite3',
     connection: ':memory:',
     useNullAsDefault: true,
   });

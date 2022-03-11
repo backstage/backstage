@@ -35,7 +35,7 @@ import {
   ListParentsResult,
 } from './types';
 import { DeferredEntity } from '../processing/types';
-import { RefreshIntervalFunction } from '../processing/refresh';
+import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {
@@ -59,7 +59,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     private readonly options: {
       database: Knex;
       logger: Logger;
-      refreshInterval: RefreshIntervalFunction;
+      refreshInterval: ProcessingIntervalFunction;
     },
   ) {
     initDatabaseMetrics(options.database);

@@ -37,7 +37,7 @@
     "@backstage/backend-common": "^0.13.0",
     "@backstage/cli": "^0.15.2",
     "@backstage/config": "^0.1.15",
-    "@vscode/sqlite3": "^5.0.7",
+    "better-sqlite3": "^7.5.0",
     "knex": "^1.0.2",
     "msw": "^0.35.0",
     "mysql2": "^2.2.5",

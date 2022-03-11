@@ -59,7 +59,7 @@ describe('database connection', () => {
       expect(
         createDatabaseClient(
           new ConfigReader({
-            client: 'sqlite3',
+            client: 'better-sqlite3',
             connection: ':memory:',
           }),
         ),
@@ -133,7 +133,7 @@ describe('database connection', () => {
     });
 
     it('returns Knex config for sqlite', () => {
-      expect(createNameOverride('sqlite3', 'testsqlite')).toHaveProperty(
+      expect(createNameOverride('better-sqlite3', 'testsqlite')).toHaveProperty(
         'connection.filename',
         'testsqlite',
       );
@@ -178,7 +178,9 @@ describe('database connection', () => {
     });
 
     it('throws error for sqlite', () => {
-      expect(createSchemaOverride('sqlite3', 'testsqlite')).toBeUndefined();
+      expect(
+        createSchemaOverride('better-sqlite3', 'testsqlite'),
+      ).toBeUndefined();
     });
 
     it('returns Knex config for mysql', () => {
@@ -218,7 +220,7 @@ describe('database connection', () => {
       return expect(
         ensureSchemaExists(
           new ConfigReader({
-            client: 'sqlite3',
+            client: 'better-sqlite3',
             schema: 'catalog',
             connection: ':memory:',
           }),

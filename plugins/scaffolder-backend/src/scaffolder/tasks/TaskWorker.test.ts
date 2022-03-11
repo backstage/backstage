@@ -33,7 +33,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
     new ConfigReader({
       backend: {
         database: {
-          client: 'sqlite3',
+          client: 'better-sqlite3',
           connection: ':memory:',
         },
       },
