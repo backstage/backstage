@@ -36,8 +36,15 @@ export async function buildTypeDefinitionsWorker(
   const { dirname } = require('path');
   const { entryPoints, workerConfigs, typescriptCompilerFolder } = workerData;
 
+  const { readFileSync, writeFileSync } = require('fs');
+
   const apiExtractor = require('@microsoft/api-extractor');
   const { Extractor, ExtractorConfig, CompilerState } = apiExtractor;
+
+  const ts = require('typescript');
+  const {
+    transform: tsTransformImportPathRewrite,
+  } = require('ts-transform-import-path-rewrite');
 
   /**
    * All of this monkey patching below is because MUI has these bare package.json file as a method
@@ -65,6 +72,30 @@ export async function buildTypeDefinitionsWorker(
       return old.call(this, path);
     };
 
+  const transformImports = (definitionFile: string, suffix: string) => {
+    const sourceFile = ts.createSourceFile(
+      definitionFile,
+      readFileSync(definitionFile, 'utf-8'),
+      ts.ScriptTarget.ES2019,
+      /* setParentNodes */ true,
+    );
+
+    const {
+      transformed: [transformedSourceFile],
+    } = ts.transform(sourceFile, [
+      tsTransformImportPathRewrite({
+        rewrite: (importPath: string) =>
+          /@backstage\/[a-z-]+/i.test(importPath)
+            ? `${importPath}/${suffix}`
+            : importPath,
+      }),
+    ]);
+
+    const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+
+    writeFileSync(definitionFile, printer.printFile(transformedSourceFile));
+  };
+
   let compilerState;
   for (const { extractorOptions, targetTypesDir } of workerConfigs) {
     const extractorConfig = ExtractorConfig.prepare(extractorOptions);
@@ -86,6 +117,9 @@ export async function buildTypeDefinitionsWorker(
         sendMessage({ message, targetTypesDir });
       },
     });
+
+    transformImports(extractorConfig.untrimmedFilePath, 'alpha');
+    transformImports(extractorConfig.betaTrimmedFilePath, 'beta');
 
     if (!extractorResult.succeeded) {
       throw new Error(

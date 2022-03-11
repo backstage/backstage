@@ -24068,6 +24068,13 @@ ts-node@^9:
     source-map-support "^0.5.17"
     yn "3.1.1"
 
+ts-transform-import-path-rewrite@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/ts-transform-import-path-rewrite/-/ts-transform-import-path-rewrite-0.3.0.tgz#447e95e63e64de43f2ecf9322364f0392f6a60d6"
+  integrity sha512-CIv9MFRi1hnlUYK9x4OknNa+uskRt/g/yf1GGFZMOK2s6PMoBKuzFF9aPPiNGLOY7g0GbnYGdIFPsmZtDpnfZQ==
+  dependencies:
+    typescript "4"
+
 tsconfig-paths@^3.12.0:
   version "3.12.0"
   resolved "https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-3.12.0.tgz#19769aca6ee8f6a1a341e38c8fa45dd9fb18899b"
@@ -24244,6 +24251,11 @@ typescript-json-schema@^0.53.0:
     ts-node "^10.2.1"
     typescript "~4.5.0"
     yargs "^17.1.1"
+
+typescript@4:
+  version "4.6.2"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
+  integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
 
 typescript@~4.5.0, typescript@~4.5.2, typescript@~4.5.4:
   version "4.5.5"

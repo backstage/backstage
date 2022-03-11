@@ -111,6 +111,8 @@
     "sucrase": "^3.20.2",
     "tar": "^6.1.2",
     "terser-webpack-plugin": "^5.1.3",
+    "ts-transform-import-path-rewrite": "^0.3.0",
+    "typescript": "~4.5.4",
     "util": "^0.12.3",
     "webpack": "^5.66.0",
     "webpack-dev-server": "^4.7.3",
