@@ -21,9 +21,9 @@ import {
 import { Config } from '@backstage/config';
 import {
   IndexableDocument,
+  IndexableResultSet,
   SearchEngine,
   SearchQuery,
-  SearchResultSet,
 } from '@backstage/plugin-search-common';
 import { Client } from '@elastic/elasticsearch';
 import esb from 'elastic-builder';
@@ -192,7 +192,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     return indexer;
   }
 
-  async query(query: SearchQuery): Promise<SearchResultSet> {
+  async query(query: SearchQuery): Promise<IndexableResultSet> {
     const { elasticSearchQuery, documentTypes, pageSize } =
       this.translator(query);
     const queryIndices = documentTypes
