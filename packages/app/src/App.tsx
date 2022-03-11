@@ -59,7 +59,7 @@ import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
 import {
   ScaffolderFieldExtensions,
-  NextScaffolderPage,
+  ScaffolderPage,
   scaffolderPlugin,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
@@ -178,7 +178,7 @@ const routes = (
     <Route
       path="/create"
       element={
-        <NextScaffolderPage
+        <ScaffolderPage
           groups={[
             {
               title: 'Recommended',
