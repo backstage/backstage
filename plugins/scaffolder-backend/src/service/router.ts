@@ -156,8 +156,10 @@ export async function createRouter(
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
             title: template.metadata.title ?? template.metadata.name,
+            description: template.metadata.description,
             steps: parameters.map(schema => ({
-              title: schema.title ?? 'Fill in template parameters',
+              title: schema.title ?? 'Please enter the following information',
+              description: schema.description,
               schema,
             })),
           });
