@@ -35,9 +35,6 @@
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.8",
-    "@backstage/core-app-api": "*",
-    "@backstage/core-components": "0.9.1",
-    "@backstage/core-plugin-api": "*",
     "chalk": "^4.0.0",
     "jscodeshift": "^0.13.0",
     "jscodeshift-add-imports": "^1.0.10"
