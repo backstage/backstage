@@ -43,6 +43,12 @@ export const selectedTemplateRouteRef = createSubRouteRef({
   path: '/templates/:namespace/:templateName',
 });
 
+export const nextSelectedTemplateRouteRef = createSubRouteRef({
+  id: 'scaffolder/next/selected-template',
+  parent: rootRouteRef,
+  path: '/templates/:namespace/:templateName',
+});
+
 export const scaffolderTaskRouteRef = createSubRouteRef({
   id: 'scaffolder/task',
   parent: rootRouteRef,

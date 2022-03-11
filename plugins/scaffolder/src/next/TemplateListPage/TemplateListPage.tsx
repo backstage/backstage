@@ -56,11 +56,11 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
 
   return (
     <EntityListProvider>
-      <Page themeId="home">
+      <Page themeId="website">
         <Header
-          pageTitleOverride="Create a New Component"
-          title="Create a New Component"
-          subtitle="Create new software components using standard templates"
+          pageTitleOverride="Create a new component"
+          title="Create a new component"
+          subtitle="Create new software components using standard templates in your organization"
         />
         <Content>
           <ContentHeader title="Available Templates">

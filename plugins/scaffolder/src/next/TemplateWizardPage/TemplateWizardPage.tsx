@@ -14,24 +14,85 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Page, Header, Lifecycle } from '@backstage/core-components';
+import {
+  Page,
+  Header,
+  Content,
+  Progress,
+  InfoCard,
+  MarkdownContent,
+} from '@backstage/core-components';
 import { FieldExtensionOptions } from '../../extensions';
+import { useParams } from 'react-router';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
+import { scaffolderApiRef } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
+import { makeStyles } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
 }
 
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  markdown: {
+    /** to make the styles for React Markdown not leak into the description */
+    '& :first-child': {
+      marginTop: 0,
+    },
+    '& :last-child': {
+      marginBottom: 0,
+    },
+  },
+}));
+
+const useTemplateParameterSchema = (templateRef: string) => {
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const { value, loading, error } = useAsync(
+    () => scaffolderApi.getTemplateParameterSchema(templateRef),
+    [scaffolderApi, templateRef],
+  );
+
+  return { manifest: value, loading, error };
+};
+
 export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
+  const styles = useStyles();
+  const { templateName, namespace } = useParams();
+  const { loading, manifest, error } = useTemplateParameterSchema(
+    stringifyEntityRef({
+      kind: 'Template',
+      namespace,
+      name: templateName,
+    }),
+  );
+
   return (
-    <Page themeId="tool">
+    <Page themeId="website">
       <Header
         pageTitleOverride="Create a new component"
-        title={
-          <>
-            Create a New Component <Lifecycle shorthand />
-          </>
-        }
+        title="Create a new component"
+        subtitle="Create new software components using standard templates in your organization"
       />
+      <Content>
+        {loading && <Progress />}
+        {manifest && (
+          <InfoCard
+            title={manifest.title}
+            subheader={
+              <MarkdownContent
+                className={styles.markdown}
+                content={manifest.description ?? 'No description'}
+              />
+            }
+            noPadding
+            titleTypographyProps={{ component: 'h2' }}
+          >
+            asd
+          </InfoCard>
+        )}
+      </Content>
     </Page>
   );
 };
