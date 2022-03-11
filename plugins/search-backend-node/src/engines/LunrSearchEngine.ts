@@ -16,8 +16,8 @@
 
 import {
   IndexableDocument,
+  IndexableResultSet,
   SearchQuery,
-  SearchResultSet,
   QueryTranslator,
   SearchEngine,
 } from '@backstage/plugin-search-common';
@@ -147,7 +147,7 @@ export class LunrSearchEngine implements SearchEngine {
     return indexer;
   }
 
-  async query(query: SearchQuery): Promise<SearchResultSet> {
+  async query(query: SearchQuery): Promise<IndexableResultSet> {
     const { lunrQueryBuilder, documentTypes, pageSize } = this.translator(
       query,
     ) as ConcreteLunrQuery;
@@ -196,8 +196,8 @@ export class LunrSearchEngine implements SearchEngine {
       ? encodePageCursor({ page: page - 1 })
       : undefined;
 
-    // Translate results into SearchResultSet
-    const realResultSet: SearchResultSet = {
+    // Translate results into IndexableResultSet
+    const realResultSet: IndexableResultSet = {
       results: results.slice(offset, offset + pageSize).map(d => {
         return { type: d.type, document: this.docStore[d.result.ref] };
       }),
