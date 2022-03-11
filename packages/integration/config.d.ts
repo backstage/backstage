@@ -68,7 +68,7 @@ export interface Config {
        */
       host: string;
       /**
-       * The base url for the Gerrit API.
+       * The base url for the Gerrit instance.
        * @visibility frontend
        */
       apiBaseUrl?: string;

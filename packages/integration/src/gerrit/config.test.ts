@@ -68,12 +68,23 @@ describe('readGerritIntegrationConfig', () => {
     });
   });
 
+  it('can create a default value if the API base URL is missing', () => {
+    const output = readGerritIntegrationConfig(
+      buildConfig({
+        host: 'a.com',
+      }),
+    );
+    expect(output).toEqual({
+      host: 'a.com',
+      apiBaseUrl: 'https://a.com',
+      username: undefined,
+      password: undefined,
+    });
+  });
+
   it('rejects funky configs', () => {
     const valid: any = {
       host: 'a.com',
-      apiBaseUrl: 'https://a.com/api',
-      username: 'u',
-      appPassword: 'p',
     };
     expect(() =>
       readGerritIntegrationConfig(buildConfig({ ...valid, host: 2 })),

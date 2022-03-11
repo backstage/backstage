@@ -136,7 +136,7 @@ export class GerritIntegration implements ScmIntegration {
 // @public
 export type GerritIntegrationConfig = {
   host: string;
-  apiBaseUrl: string;
+  apiBaseUrl?: string;
   username?: string;
   password?: string;
 };

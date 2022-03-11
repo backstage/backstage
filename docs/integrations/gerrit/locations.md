@@ -29,8 +29,9 @@ you can list the Gerrit instances you want to fetch data from. Each entry is
 a structure with up to four elements:
 
 - `host`: The host of the Gerrit instance, e.g. `gerrit.company.com`.
-- `apiBaseUrl`: The base url of the Gerrit API. This would typically be the address
-  up to but not including the authentication ("/a/") prefix.
+- `apiBaseUrl` (optional): Needed if the Gerrit instance is not reachable at
+  the base of the `host` option (e.g. `https://gerrit.company.com`). This is
+  the address that you would open in a browser.
 - `username` (optional): The Gerrit username to use in API requests. If
   neither a username nor password are supplied, anonymous access will be used.
 - `password` (optional): The password or http token for the Gerrit user.
