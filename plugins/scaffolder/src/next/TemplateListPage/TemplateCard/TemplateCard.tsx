@@ -102,18 +102,29 @@ export const TemplateCard = (props: TemplateCardProps) => {
             content={template.metadata.description ?? 'No description'}
           />
         </Box>
-        <Divider className={styles.margin} />
-        <Box>
-          {template.metadata.tags?.map(tag => (
-            <Chip size="small" label={tag} key={tag} />
-          ))}
-        </Box>
+        {template.metadata.tags?.length ? (
+          <>
+            <Divider className={styles.margin} />
+            <Box>
+              {template.metadata.tags?.map(tag => (
+                <Chip size="small" label={tag} key={tag} />
+              ))}
+            </Box>
+          </>
+        ) : null}
       </CardContent>
       <CardActions>
         <div className={styles.footer}>
           <div className={styles.ownedBy}>
-            <UserIcon />
-            <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
+            {ownedByRelations.length ? (
+              <>
+                <UserIcon />
+                <EntityRefLinks
+                  entityRefs={ownedByRelations}
+                  defaultKind="Group"
+                />
+              </>
+            ) : null}
           </div>
           <Button size="small" variant="outlined" color="primary" to={href}>
             Choose
