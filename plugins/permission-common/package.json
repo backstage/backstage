@@ -8,8 +8,7 @@
     "access": "public",
     "main": "dist/index.cjs.js",
     "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts",
-    "alphaTypes": "dist/index.alpha.d.ts"
+    "types": "dist/index.d.ts"
   },
   "backstage": {
     "role": "common-library"
@@ -27,12 +26,11 @@
   "license": "Apache-2.0",
   "files": [
     "dist",
-    "alpha",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts",
   "scripts": {
-    "build": "backstage-cli package build --experimental-type-build",
+    "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
