@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import React from 'react';
+import { Page, Header, Lifecycle } from '@backstage/core-components';
 import { FieldExtensionOptions } from '../../extensions';
 
 export interface TemplateWizardPageProps {
@@ -21,5 +22,16 @@ export interface TemplateWizardPageProps {
 }
 
 export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
-  return null;
+  return (
+    <Page themeId="tool">
+      <Header
+        pageTitleOverride="Create a new component"
+        title={
+          <>
+            Create a New Component <Lifecycle shorthand />
+          </>
+        }
+      />
+    </Page>
+  );
 };
