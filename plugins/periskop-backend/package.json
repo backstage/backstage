@@ -30,7 +30,7 @@
     "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.2.2",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },

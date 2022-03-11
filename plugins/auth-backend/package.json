@@ -58,7 +58,7 @@
     "luxon": "^2.0.2",
     "minimatch": "^5.0.0",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.2.2",
     "node-cache": "^5.1.2",
     "openid-client": "^4.2.1",
     "passport": "^0.5.2",

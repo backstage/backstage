@@ -71,7 +71,7 @@
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
     "node-abort-controller": "^3.0.1",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.2.2",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
