@@ -30,12 +30,7 @@ import { EntitiesSearchFilter } from '../../catalog/types';
  * @alpha
  */
 export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
-  PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    typeof RESOURCE_TYPE_CATALOG_ENTITY,
-    TParams
-  >;
+  PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 /**
  * Helper function for creating correctly-typed

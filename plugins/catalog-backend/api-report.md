@@ -25,7 +25,6 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
-import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -186,12 +185,7 @@ export type CatalogEnvironment = {
 
 // @alpha
 export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
-  PermissionRule<
-    Entity,
-    EntitiesSearchFilter,
-    typeof RESOURCE_TYPE_CATALOG_ENTITY,
-    TParams
-  >;
+  PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @public (undocumented)
 export interface CatalogProcessingEngine {
