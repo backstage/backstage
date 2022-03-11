@@ -2002,12 +2002,12 @@
     retry-request "^4.2.2"
     teeny-request "^7.0.0"
 
-"@google-cloud/container@^2.2.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@google-cloud/container/-/container-2.3.0.tgz#a23f046948dbaf8cced008d419580cb600334efc"
-  integrity sha512-Tv8fR7JjlZr3oh476hMsf9yqGXbb/+81n0Va1Uc3reWjAdUXCYztH3/o/HMvh6yvd06j8VLLUxyBwAIb5PtW5g==
+"@google-cloud/container@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@google-cloud/container/-/container-3.0.0.tgz#b28d086152ac19f22f2574b7e0a39774379fb885"
+  integrity sha512-Jr+QKc6kZ9eehZunvemocB4hDd1nE3OBPo8zb0VX9lv7y+PPxksJl2RPEktFRNs32mQ9/kWLsvjLdGAHYsaOug==
   dependencies:
-    google-gax "^2.12.0"
+    google-gax "^2.24.1"
 
 "@google-cloud/firestore@^5.0.2":
   version "5.0.2"
@@ -13271,7 +13271,7 @@ google-auth-library@^7.0.0, google-auth-library@^7.0.2, google-auth-library@^7.6
     jws "^4.0.0"
     lru-cache "^6.0.0"
 
-google-gax@^2.12.0, google-gax@^2.24.1:
+google-gax@^2.24.1:
   version "2.28.1"
   resolved "https://registry.npmjs.org/google-gax/-/google-gax-2.28.1.tgz#99bc234b5769d901d70959d40bd1651729eb4a34"
   integrity sha512-2Xjd3FrjlVd6Cmw2B2Aicpc/q92SwTpIOvxPUlnRg9w+Do8nu7UR+eQrgoKlo2FIUcUuDTvppvcx8toND0pK9g==
