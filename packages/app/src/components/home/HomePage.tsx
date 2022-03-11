@@ -48,7 +48,7 @@ const clockConfigs: ClockConfig[] = [
   },
 ];
 
-export const HomePage = () => (
+export const homePage = (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
       <HeaderWorldClock clockConfigs={clockConfigs} />

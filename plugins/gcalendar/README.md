@@ -4,7 +4,8 @@ Plugin displays events from google calendar
 
 ## Getting started
 
-The plugin exports a `gcalendarApiRef`. Add this to the App's `apis.ts`:
+The plugin exports `HomePageCalendar` widget for the Homepage.
+If your homepage is not static JSX add `gcalendarApiRef` to the App's `apis.ts`:
 
 ```ts
 import {
