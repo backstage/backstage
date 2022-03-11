@@ -25,7 +25,6 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 /**
  * Properties for {@link CreateButton}
  *
- * @deprecated
  * @public
  */
 export type CreateButtonProps = {
@@ -36,9 +35,6 @@ export type CreateButtonProps = {
  * Responsive Button giving consistent UX for creation of different things
  *
  * @public
- *
- * @deprecated Please use IconButton directly and have your own implementation of this component.
- * It doesn't really fit as a core-component.
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;

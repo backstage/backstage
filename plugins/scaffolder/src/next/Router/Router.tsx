@@ -29,7 +29,12 @@ import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 
-export type RouterProps = {
+/**
+ * The Props for the Scaffolder Router
+ *
+ * @public
+ */
+export type NextRouterProps = {
   components?: {
     TemplateCardComponent?: React.ComponentType<{
       template: TemplateEntityV1beta3;
@@ -39,7 +44,12 @@ export type RouterProps = {
   groups?: TemplateGroupFilter[];
 };
 
-export const Router = (props: PropsWithChildren<RouterProps>) => {
+/**
+ * The Scaffolder Router
+ *
+ * @public
+ */
+export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const { components: { TemplateCardComponent } = {} } = props;
 
   const outlet = useOutlet() || props.children;

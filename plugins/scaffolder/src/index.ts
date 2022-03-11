@@ -58,4 +58,5 @@ export {
   NextScaffolderPage,
 } from './plugin';
 export * from './components';
+export type { NextRouterProps } from './next';
 export type { TaskPageProps } from './components/TaskPage';

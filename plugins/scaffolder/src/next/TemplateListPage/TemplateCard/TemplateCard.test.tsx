@@ -166,8 +166,6 @@ describe('TemplateCard', () => {
         {
           targetRef: 'group:default/my-test-user',
           type: RELATION_OWNED_BY,
-          /** remove when target is removed as it's deprecated */
-          target: { kind: 'User', name: 'my-test-user', namespace: 'default' },
         },
       ],
     };
@@ -209,14 +207,6 @@ describe('TemplateCard', () => {
         steps: [],
         type: 'service',
       },
-      relations: [
-        {
-          targetRef: 'group:default/my-test-user',
-          type: RELATION_OWNED_BY,
-          /** remove when target is removed as it's deprecated */
-          target: { kind: 'User', name: 'my-test-user', namespace: 'default' },
-        },
-      ],
     };
 
     const { getByRole } = await renderInTestApp(

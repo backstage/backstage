@@ -13,13 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { FieldExtensionOptions } from '../../extensions';
-
-export interface TemplateWizardPageProps {
-  customFieldExtensions: FieldExtensionOptions<any, any>[];
-}
-
-export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
-  return null;
-};
+export * from './Router';
+export * from './TemplateListPage';
+export * from './TemplateWizardPage';

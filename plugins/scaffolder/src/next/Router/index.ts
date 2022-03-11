@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { Router } from './Router';
+export type { NextRouterProps } from './Router';

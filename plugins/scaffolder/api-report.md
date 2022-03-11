@@ -20,6 +20,7 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -125,6 +126,22 @@ export type LogEvent = {
   id: string;
   taskId: string;
 };
+
+// @public
+export type NextRouterProps = {
+  components?: {
+    TemplateCardComponent?: React_2.ComponentType<{
+      template: TemplateEntityV1beta3;
+    }>;
+    TaskPageComponent?: React_2.ComponentType<{}>;
+  };
+  groups?: TemplateGroupFilter[];
+};
+
+// @alpha
+export const NextScaffolderPage: (
+  props: PropsWithChildren<NextRouterProps>,
+) => JSX.Element;
 
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
@@ -368,4 +385,8 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
+
+// Warnings were encountered during analysis:
+//
+// src/next/Router/Router.d.ts:16:5 - (ae-forgotten-export) The symbol "TemplateGroupFilter" needs to be exported by the entry point index.d.ts
 ```

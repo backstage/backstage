@@ -110,6 +110,7 @@ describe('TemplateListPage', () => {
     expect(getByText('Categories')).toBeInTheDocument();
   });
 
+  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should render the EntityTag picker', async () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider
