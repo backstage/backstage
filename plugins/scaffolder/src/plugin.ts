@@ -151,6 +151,10 @@ export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
   }),
 );
 
+/**
+ * @alpha
+ * The Router and main entrypoint to the Alpha Scaffolder plugin.
+ */
 export const NextScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
     name: 'NextScaffolderPage',
