@@ -68,6 +68,8 @@ export async function cleanupBuildTree(
 
   return map(builds, { chunk: 'idle' }, build => ({
     ...build,
-    stages: build.stages.map(stage => recurseStage(stage, [])),
+    stages: build.stages
+      ? build.stages.map(stage => recurseStage(stage, []))
+      : [],
   }));
 }

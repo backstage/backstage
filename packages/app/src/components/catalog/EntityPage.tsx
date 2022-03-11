@@ -136,6 +136,7 @@ import {
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
+import {EntityCicdStatisticsContent} from "@backstage/plugin-cicd-statistics";
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
@@ -442,6 +443,10 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/ci-cd-statistics" title="CI/CD Statistics">
+      <EntityCicdStatisticsContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/lighthouse" title="Lighthouse">

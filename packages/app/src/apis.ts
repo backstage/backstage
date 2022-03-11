@@ -32,8 +32,10 @@ import {
   configApiRef,
   createApiFactory,
   errorApiRef,
-  githubAuthApiRef,
+  githubAuthApiRef, gitlabAuthApiRef,
 } from '@backstage/core-plugin-api';
+import { cicdStatisticsApiRef } from '@backstage/plugin-cicd-statistics';
+import {CicdStatisticsApiGitlab} from "@backstage/plugin-cicd-statistics-module-gitlab";
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -41,6 +43,7 @@ export const apis: AnyApiFactory[] = [
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
   }),
+
 
   ScmAuth.createDefaultApiFactory(),
 
@@ -64,4 +67,12 @@ export const apis: AnyApiFactory[] = [
   }),
 
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+  createApiFactory({
+    api: cicdStatisticsApiRef,
+    deps: {gitlabAuthApi: gitlabAuthApiRef},
+    factory({ gitlabAuthApi }) {
+      return new CicdStatisticsApiGitlab(gitlabAuthApi);
+    },
+  }),
+//  createApiFactory(cicdStatisticsApiRef, new CicdStatisticsApiGitlab()),
 ];

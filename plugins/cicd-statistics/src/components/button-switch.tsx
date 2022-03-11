@@ -78,6 +78,9 @@ export function ButtonSwitch<T extends string>(props: ButtonSwitchProps<T>) {
       );
       const value = switchValue(values[index]);
 
+      if(!value){
+        console.log(values[index]);
+      }
       if (props.multi) {
         props.onChange(
           props.selection.includes(value as T)

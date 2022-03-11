@@ -166,6 +166,8 @@ function CicdCharts(props: CicdChartsProps) {
     errorApi.post(chartableStagesState.error);
   }, [errorApi, chartableStagesState.error]);
 
+  console.log(chartableStagesState);
+
   return (
     <Grid container>
       <Grid item lg={2} className={classes.pane}>
