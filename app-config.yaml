@@ -33,7 +33,7 @@ backend:
   listen:
     port: 7007
   database:
-    client: sqlite3
+    client: better-sqlite3
     connection: ':memory:'
   cache:
     store: memory

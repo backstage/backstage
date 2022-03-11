@@ -25,7 +25,7 @@ backend:
     credentials: true
   {{#if dbTypeSqlite}}
   database:
-    client: sqlite3
+    client: better-sqlite3
     connection: ':memory:'
   {{/if}}
   {{#if dbTypePG}}

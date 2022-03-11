@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isDatabaseConflictError } from '@backstage/backend-common';
 import { ConflictError, InputError } from '@backstage/errors';
 import { DateTime } from 'luxon';
 
@@ -47,10 +48,7 @@ export function timestampToDateTime(input: Date | string): DateTime {
  * Rethrows an error, possibly translating it to a more precise error type.
  */
 export function rethrowError(e: any): never {
-  if (
-    /SQLITE_CONSTRAINT: UNIQUE/.test(e.message) ||
-    /unique constraint/.test(e.message)
-  ) {
+  if (isDatabaseConflictError(e)) {
     throw new ConflictError(`Rejected due to a conflicting entity`, e);
   }
 
