@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.15.3
+
+### Patch Changes
+
+- Fixed an issue where the CLI would try and fail to require the `package.json` of other Backstage packages, like `@backstage/dev-utils/package.json`.
+
 ## 0.15.2
 
 ### Patch Changes
