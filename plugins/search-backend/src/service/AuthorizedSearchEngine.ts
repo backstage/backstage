@@ -25,12 +25,12 @@ import {
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
+  IndexableResult,
+  IndexableResultSet,
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
   SearchQuery,
-  SearchResult,
-  SearchResultSet,
 } from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
@@ -85,7 +85,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
   async query(
     query: SearchQuery,
     options: QueryRequestOptions,
-  ): Promise<SearchResultSet> {
+  ): Promise<IndexableResultSet> {
     const queryStartTime = Date.now();
 
     const authorizer = new DataLoader(
@@ -144,7 +144,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     const { page } = decodePageCursor(query.pageCursor);
     const targetResults = (page + 1) * this.pageSize;
 
-    let filteredResults: SearchResult[] = [];
+    let filteredResults: IndexableResult[] = [];
     let nextPageCursor: string | undefined;
     let latencyBudgetExhausted = false;
 
@@ -183,7 +183,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
   }
 
   private async filterResults(
-    results: SearchResult[],
+    results: IndexableResult[],
     typeDecisions: Record<string, AuthorizeDecision>,
     authorizer: DataLoader<AuthorizeQuery, AuthorizeDecision>,
   ) {
