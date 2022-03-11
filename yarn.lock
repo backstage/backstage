@@ -12012,6 +12012,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-code-coverage" "^0.1.29"
     "@backstage/plugin-cost-insights" "^0.11.24"
     "@backstage/plugin-explore" "^0.3.33"
+    "@backstage/plugin-gcalendar" "^0.1.0"
     "@backstage/plugin-gcp-projects" "^0.3.21"
     "@backstage/plugin-github-actions" "^0.5.2"
     "@backstage/plugin-gocd" "^0.1.8"
