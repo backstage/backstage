@@ -69,17 +69,30 @@ function shouldCheckTypes(pkg) {
   return (
     !pkg.private &&
     pkg.packageJson.types &&
-    fs.existsSync(resolvePath(pkg.dir, 'dist/index.d.ts'))
+    pkg.packageJson.publishConfig &&
+    fs.existsSync(
+      resolvePath(
+        pkg.dir,
+        pkg.packageJson.publishConfig.alphaTypes ??
+          pkg.packageJson.publishConfig.types,
+      ),
+    )
   );
 }
 
 /**
- * Scan index.d.ts for imports and return errors for any dependency that's
- * missing or incorrect in package.json
+ * Scan type definition for imports and return errors for any dependency that's
+ * missing or incorrect in package.json. The alpha type definition file contains
+ * everything from the beta and public file too, so we can be more exhaustive by
+ * checking that one if it exists.
  */
 function checkTypes(pkg) {
   const typeDecl = fs.readFileSync(
-    resolvePath(pkg.dir, 'dist/index.d.ts'),
+    resolvePath(
+      pkg.dir,
+      pkg.packageJson.publishConfig.alphaTypes ??
+        pkg.packageJson.publishConfig.types,
+    ),
     'utf8',
   );
   const allDeps = (typeDecl.match(/from '.*'/g) || [])
