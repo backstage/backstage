@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 
@@ -35,13 +36,23 @@ export const ProviderSettingsItem: ({
 // Warning: (ae-missing-release-tag) "SettingsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const Router: ({ providerSettings }: Props) => JSX.Element;
+export const Router: ({ providerSettings, tabs }: Props) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SettingsProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Settings" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const Settings: (props: SettingsProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "SettingsTab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface SettingsTab {
+  // (undocumented)
+  content: React_2.ReactElement;
+  // (undocumented)
+  title: string;
+}
 
 // Warning: (ae-missing-release-tag) "UserSettingsAppearanceCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -76,8 +87,10 @@ export const UserSettingsMenu: () => JSX.Element;
 // @public (undocumented)
 export const UserSettingsPage: ({
   providerSettings,
+  tabs,
 }: {
   providerSettings?: JSX.Element | undefined;
+  tabs?: SettingsTab[] | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "UserSettingsPinToggle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
