@@ -36,7 +36,7 @@ export async function buildTypeDefinitionsWorker(
     );
   }
 
-  const { dirname } = require('path');
+  const { dirname, join } = require('path');
   const { entryPoints, workerConfigs, typescriptCompilerFolder } = workerData;
 
   const { readFileSync, writeFileSync } = require('fs');
@@ -222,14 +222,26 @@ export async function buildTypeDefinitionsWorker(
     );
   };
 
+  const shouldAddSuffix = (packageName: string) => {
+    if (!/@backstage\/[a-z-]+/i.test(packageName)) {
+      return false;
+    }
+
+    const pkg = require(join(packageName, 'package.json'));
+
+    // Suffix any package which includes "alpha" in the package
+    // output, on the assumption that this means the package is
+    // building an alpha type definition file and trimming alpha
+    // types from the main file.
+    return !!pkg.files.includes('alpha');
+  };
+
   const transformBackstageImports = (definitionFile: string, suffix: string) =>
     transformSourceFile(
       definitionFile,
       transformImportPathRewrite({
         rewrite: (importPath: string) =>
-          /@backstage\/[a-z-]+/i.test(importPath)
-            ? `${importPath}/${suffix}`
-            : importPath,
+          shouldAddSuffix(importPath) ? `${importPath}/${suffix}` : importPath,
       }),
     );
 
@@ -257,7 +269,9 @@ export async function buildTypeDefinitionsWorker(
 
     removeUnusedImports(extractorConfig.publicTrimmedFilePath);
     transformBackstageImports(extractorConfig.untrimmedFilePath, 'alpha');
-    transformBackstageImports(extractorConfig.betaTrimmedFilePath, 'beta');
+    // We don't currently package files into a beta directory, so the best thing
+    // we can do for now is import from /alpha in beta type definition files.
+    transformBackstageImports(extractorConfig.betaTrimmedFilePath, 'alpha');
 
     if (!extractorResult.succeeded) {
       throw new Error(
