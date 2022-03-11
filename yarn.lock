@@ -11991,8 +11991,8 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     react "^17.0.2"
     react-dom "^17.0.2"
     react-hot-loader "^4.13.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
+    react-router "6.2.2"
+    react-router-dom "6.2.2"
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
@@ -20955,12 +20955,27 @@ react-router-dom@6.0.0-beta.0:
     prop-types "^15.7.2"
     react-router "6.0.0-beta.0"
 
+react-router-dom@6.2.2:
+  version "6.2.2"
+  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.2.2.tgz#f1a2c88365593c76b9612ae80154a13fcb72e442"
+  integrity sha512-AtYEsAST7bDD4dLSQHDnk/qxWLJdad5t1HFa1qJyUrCeGgEuCSw0VB/27ARbF9Fi/W5598ujvJOm3ujUCVzuYQ==
+  dependencies:
+    history "^5.2.0"
+    react-router "6.2.2"
+
 react-router@6.0.0-beta.0:
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
   integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
   dependencies:
     prop-types "^15.7.2"
+
+react-router@6.2.2:
+  version "6.2.2"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-6.2.2.tgz#495e683a0c04461eeb3d705fe445d6cf42f0c249"
+  integrity sha512-/MbxyLzd7Q7amp4gDOGaYvXwhEojkJD5BtExkuKmj39VEE0m3l/zipf6h2WIB2jyAO0lI6NGETh4RDcktRm4AQ==
+  dependencies:
+    history "^5.2.0"
 
 react-router@^6.0.0-beta.0:
   version "6.2.1"
@@ -23721,8 +23736,8 @@ tdigest@^0.1.1:
     history "^5.0.0"
     react "^17.0.2"
     react-dom "^17.0.2"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
+    react-router "6.2.2"
+    react-router-dom "6.2.2"
     react-use "^17.2.4"
 
 teeny-request@^7.0.0:

@@ -44,7 +44,7 @@ export const PermissionedRoute = (
   if (permissionResult.loading) {
     shownElement = null;
   } else if (permissionResult.allowed) {
-    shownElement = props.element;
+    shownElement = props.element as ReactElement;
   }
 
   return <Route {...otherProps} element={shownElement} />;

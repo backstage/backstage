@@ -248,7 +248,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
     undefined,
   );
   const { taskId } = useParams();
-  const taskStream = useTaskEventStream(taskId);
+  const taskStream = useTaskEventStream(taskId!);
   const completed = taskStream.completed;
   const steps = useMemo(
     () =>

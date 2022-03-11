@@ -98,7 +98,7 @@ const TechDocsReaderProvider = ({
 }: PropsWithChildren<{ entityRef: CompoundEntityRef }>) => {
   const { '*': path } = useParams();
   const { kind, namespace, name } = entityRef;
-  const value = useReaderState(kind, namespace, name, path);
+  const value = useReaderState(kind, namespace, name, path!);
   return (
     <TechDocsReaderContext.Provider value={value}>
       {children}

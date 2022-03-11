@@ -57,12 +57,13 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const { namespace, kind, name } = useParams();
+  const entityRef = { kind: kind!, namespace: namespace!, name: name! };
 
   const techdocsApi = useApi(techdocsApiRef);
 
   const { value: techdocsMetadataValue } = useAsync(() => {
     if (documentReady) {
-      return techdocsApi.getTechDocsMetadata({ kind, namespace, name });
+      return techdocsApi.getTechDocsMetadata(entityRef);
     }
 
     return Promise.resolve(undefined);
@@ -70,7 +71,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
   const { value: entityMetadataValue, error: entityMetadataError } =
     useAsync(() => {
-      return techdocsApi.getEntityMetadata({ kind, namespace, name });
+      return techdocsApi.getEntityMetadata(entityRef);
     }, [kind, namespace, name, techdocsApi]);
 
   const onReady = useCallback(() => {
@@ -87,7 +88,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
         ? children({
             techdocsMetadataValue,
             entityMetadataValue,
-            entityRef: { kind, namespace, name },
+            entityRef: entityRef,
             onReady,
           })
         : children}

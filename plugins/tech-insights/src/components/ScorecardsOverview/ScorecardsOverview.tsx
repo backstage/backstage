@@ -32,8 +32,9 @@ export const ScorecardsOverview = ({
 }) => {
   const api = useApi(techInsightsApiRef);
   const { namespace, kind, name } = useParams();
+  const entityRef = { namespace: namespace!, kind: kind!, name: name! };
   const { value, loading, error } = useAsync(
-    async () => await api.runChecks({ namespace, kind, name }),
+    async () => await api.runChecks(entityRef),
   );
 
   if (loading) {

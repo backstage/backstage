@@ -30,12 +30,13 @@ import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
 export const LegacyTechDocsPage = () => {
   const [documentReady, setDocumentReady] = useState<boolean>(false);
   const { namespace, kind, name } = useParams();
+  const entityRef = { kind: kind!, namespace: namespace!, name: name! };
 
   const techdocsApi = useApi(techdocsApiRef);
 
   const { value: techdocsMetadataValue } = useAsync(() => {
     if (documentReady) {
-      return techdocsApi.getTechDocsMetadata({ kind, namespace, name });
+      return techdocsApi.getTechDocsMetadata(entityRef);
     }
 
     return Promise.resolve(undefined);
@@ -43,7 +44,7 @@ export const LegacyTechDocsPage = () => {
 
   const { value: entityMetadataValue, error: entityMetadataError } =
     useAsync(() => {
-      return techdocsApi.getEntityMetadata({ kind, namespace, name });
+      return techdocsApi.getEntityMetadata(entityRef);
     }, [kind, namespace, name, techdocsApi]);
 
   const onReady = useCallback(() => {
@@ -59,21 +60,10 @@ export const LegacyTechDocsPage = () => {
       <TechDocsReaderPageHeader
         techDocsMetadata={techdocsMetadataValue}
         entityMetadata={entityMetadataValue}
-        entityRef={{
-          kind,
-          namespace,
-          name,
-        }}
+        entityRef={entityRef}
       />
       <Content data-testid="techdocs-content">
-        <Reader
-          onReady={onReady}
-          entityRef={{
-            kind,
-            namespace,
-            name,
-          }}
-        />
+        <Reader onReady={onReady} entityRef={entityRef} />
       </Content>
     </Page>
   );

@@ -40,11 +40,10 @@ import React, {
   useState,
 } from 'react';
 import {
-  Link,
+  NavLink,
   NavLinkProps,
   resolvePath,
   useLocation,
-  useResolvedPath,
 } from 'react-router-dom';
 import {
   sidebarConfig,
@@ -270,7 +269,7 @@ type SidebarItemLinkProps = SidebarItemBaseProps & {
 type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
   to?: string;
   onClick?: (ev: React.MouseEvent) => void;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -290,57 +289,6 @@ function isButtonItem(
 }
 
 const sidebarSubmenuType = React.createElement(SidebarSubmenu).type;
-
-// TODO(Rugvip): Remove this once NavLink is updated in react-router-dom.
-//               This is needed because react-router doesn't handle the path comparison
-//               properly yet, matching for example /foobar with /foo.
-export const WorkaroundNavLink = React.forwardRef<
-  HTMLAnchorElement,
-  NavLinkProps
->(function WorkaroundNavLinkWithRef(
-  {
-    to,
-    end,
-    style,
-    className,
-    activeStyle,
-    caseSensitive,
-    activeClassName = 'active',
-    'aria-current': ariaCurrentProp = 'page',
-    ...rest
-  },
-  ref,
-) {
-  let { pathname: locationPathname } = useLocation();
-  let { pathname: toPathname } = useResolvedPath(to);
-
-  if (!caseSensitive) {
-    locationPathname = locationPathname.toLocaleLowerCase('en-US');
-    toPathname = toPathname.toLocaleLowerCase('en-US');
-  }
-
-  let isActive = locationPathname === toPathname;
-  if (!isActive && !end) {
-    // This is the behavior that is different from the original NavLink
-    isActive = locationPathname.startsWith(`${toPathname}/`);
-  }
-
-  const ariaCurrent = isActive ? ariaCurrentProp : undefined;
-
-  return (
-    <Link
-      {...rest}
-      to={to}
-      ref={ref}
-      aria-current={ariaCurrent}
-      style={{ ...style, ...(isActive ? activeStyle : undefined) }}
-      className={classnames([
-        className,
-        isActive ? activeClassName : undefined,
-      ])}
-    />
-  );
-});
 
 /**
  * Common component used by SidebarItem & SidebarItemWithSubmenu
@@ -410,16 +358,15 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   }
 
   return (
-    <WorkaroundNavLink
+    <NavLink
       {...childProps}
-      activeClassName={classes.selected}
       to={props.to ? props.to : ''}
       ref={ref}
       aria-label={text ? text : props.to}
       {...navLinkProps}
     >
       {content}
-    </WorkaroundNavLink>
+    </NavLink>
   );
 });
 

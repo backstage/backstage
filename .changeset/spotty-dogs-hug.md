@@ -2,10 +2,6 @@
 '@backstage/app-defaults': patch
 '@backstage/core-app-api': patch
 '@backstage/core-components': patch
-'@backstage/core-plugin-api': patch
-'@backstage/create-app': patch
-'@backstage/dev-utils': patch
-'techdocs-cli-embedded-app': patch
 '@backstage/test-utils': patch
 '@backstage/plugin-airbrake': patch
 '@backstage/plugin-allure': patch

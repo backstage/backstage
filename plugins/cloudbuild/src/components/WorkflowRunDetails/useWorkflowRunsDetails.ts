@@ -25,7 +25,7 @@ export const useWorkflowRunsDetails = (projectId: string) => {
     return projectId
       ? api.getWorkflowRun({
           projectId,
-          id: id,
+          id: id!,
         })
       : Promise.reject('No projectId provided');
   }, [projectId, id]);

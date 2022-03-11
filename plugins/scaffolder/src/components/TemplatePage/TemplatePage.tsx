@@ -119,7 +119,7 @@ export const TemplatePage = ({
   const navigate = useNavigate();
   const scaffolderTaskRoute = useRouteRef(scaffolderTaskRouteRef);
   const rootRoute = useRouteRef(rootRouteRef);
-  const { schema, loading, error } = useTemplateParameterSchema(templateName);
+  const { schema, loading, error } = useTemplateParameterSchema(templateName!);
   const [formState, setFormState] = useState<Record<string, any>>(() => {
     const query = qs.parse(window.location.search, {
       ignoreQueryPrefix: true,
@@ -140,7 +140,7 @@ export const TemplatePage = ({
   const handleCreate = async () => {
     const { taskId } = await scaffolderApi.scaffold({
       templateRef: stringifyEntityRef({
-        name: templateName,
+        name: templateName!,
         kind: 'template',
         namespace: 'default',
       }),
