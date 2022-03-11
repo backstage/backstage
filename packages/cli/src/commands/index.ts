@@ -386,6 +386,13 @@ export function registerCommands(program: CommanderStatic) {
     .description('Check Backstage package versioning')
     .action(lazy(() => import('./versions/lint').then(m => m.default)));
 
+  program
+    .command('add-deps', { hidden: true })
+    .description(
+      'Add missing monorepo dependencies to package.json [EXPERIMENTAL]',
+    )
+    .action(lazy(() => import('./add-deps').then(m => m.command)));
+
   // TODO(Rugvip): Deprecate in favor of package variant
   program
     .command('prepack')
