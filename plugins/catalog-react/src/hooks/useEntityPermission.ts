@@ -15,7 +15,7 @@
  */
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { CatalogEntityPermission } from '@backstage/plugin-catalog-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { useEntity } from './useEntity';
 
@@ -30,7 +30,9 @@ import { useEntity } from './useEntity';
  * `usePermission` hook directly.
  * @alpha
  */
-export function useEntityPermission(permission: CatalogEntityPermission): {
+export function useEntityPermission(
+  permission: ResourcePermission<'catalog-entity'>,
+): {
   loading: boolean;
   allowed: boolean;
   error?: Error;

@@ -8,7 +8,6 @@
 import { ApiRef } from '@backstage/core-plugin-api';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogEntityPermission } from '@backstage/plugin-catalog-common';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -20,6 +19,7 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -489,7 +489,9 @@ export function useEntityOwnership(): {
 };
 
 // @alpha
-export function useEntityPermission(permission: CatalogEntityPermission): {
+export function useEntityPermission(
+  permission: ResourcePermission<'catalog-entity'>,
+): {
   loading: boolean;
   allowed: boolean;
   error?: Error;
