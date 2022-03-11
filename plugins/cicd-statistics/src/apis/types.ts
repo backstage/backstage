@@ -117,7 +117,7 @@ export interface Build {
   duration: number;
 
   /** Top-level build stages */
-  stages?: Array<Stage>;
+  stages: Array<Stage>;
 }
 
 /**

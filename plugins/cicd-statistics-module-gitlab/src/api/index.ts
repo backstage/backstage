@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./gitlab";
+export * from './gitlab';

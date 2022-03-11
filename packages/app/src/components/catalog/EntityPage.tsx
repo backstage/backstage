@@ -136,7 +136,7 @@ import {
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
-import {EntityCicdStatisticsContent} from "@backstage/plugin-cicd-statistics";
+import { EntityCicdStatisticsContent } from '@backstage/plugin-cicd-statistics';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
