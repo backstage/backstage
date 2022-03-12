@@ -68,8 +68,15 @@ function jobsToStages(jobs: Array<Types.JobSchema>): Stage[] {
   });
 }
 
-type GitlabClient = {
+/**
+ * This type represents a initialized gitlab client with gitbeaker
+ *
+ * @public
+ */
+export type GitlabClient = {
+  /* the actual API of gitbeaker */
   api: InstanceType<typeof Gitlab>;
+  /* the owner the repository, retrieved from the entity source location  */
   owner: string;
 };
 

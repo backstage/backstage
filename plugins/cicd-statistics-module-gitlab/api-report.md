@@ -14,8 +14,6 @@ import { OAuthApi } from '@backstage/core-plugin-api';
 // @public
 export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
   constructor(gitLabAuthApi: OAuthApi);
-  // Warning: (ae-forgotten-export) The symbol "GitlabClient" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   createGitlabApi(entity: Entity, scopes: string[]): Promise<GitlabClient>;
   // (undocumented)
@@ -23,6 +21,12 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
   // (undocumented)
   getConfiguration(): Promise<Partial<CicdConfiguration>>;
 }
+
+// @public
+export type GitlabClient = {
+  api: InstanceType<typeof Gitlab>;
+  owner: string;
+};
 
 // (No @packageDocumentation comment for this package)
 ```
