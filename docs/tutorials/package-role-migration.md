@@ -33,7 +33,7 @@ the `@backstage/cli`.
 
 ### TL;DR, Step 1-4:
 
-This is a sorter version of all of the steps below, in case you're in a hurry.
+This is a shorter version of all of the steps below, in case you're in a hurry.
 
 Run the following commands:
 
