@@ -16,6 +16,9 @@ export default async function createPlugin({
   permissions,
   discovery,
   config,
+  {{#if dbTypePG}}
+  database,
+  {{/if}}
   tokenManager,
 }: PluginEnvironment) {
   // Initialize a connection to a search engine.
