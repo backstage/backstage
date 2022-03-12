@@ -73,6 +73,11 @@ type GitlabClient = {
   owner: string;
 };
 
+/**
+ * Extracts the CI/CD statistics from a Gitlab repository
+ *
+ * @public
+ */
 export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
   readonly #gitLabAuthApi: OAuthApi;
 
