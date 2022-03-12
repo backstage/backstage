@@ -65,8 +65,6 @@ export const apis: AnyApiFactory[] = [
         }),
       ]),
   }),
-
-  createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
   createApiFactory({
     api: cicdStatisticsApiRef,
     deps: { gitlabAuthApi: gitlabAuthApiRef },
@@ -74,5 +72,5 @@ export const apis: AnyApiFactory[] = [
       return new CicdStatisticsApiGitlab(gitlabAuthApi);
     },
   }),
-  //  createApiFactory(cicdStatisticsApiRef, new CicdStatisticsApiGitlab()),
+  createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
 ];

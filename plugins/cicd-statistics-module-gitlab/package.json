@@ -8,16 +8,12 @@
   "private": false,
   "publishConfig": {
     "access": "public",
-    "main": "dist/index.esm.js",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/cicd-statistics-module-gitlab"
+    "role": "common-library"
   },
   "keywords": [
     "backstage",
@@ -27,20 +23,20 @@
   "scripts": {
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test"
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.9.10",
-    "@backstage/core-plugin-api": "^0.8.0",
     "@backstage/plugin-cicd-statistics": "^0.1.0",
     "@gitbeaker/browser": "34.2.0",
     "@gitbeaker/core": "^35.4.0",
-    "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "p-limit": "^4.0.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+  "devDependencies": {
+    "@backstage/cli": "^0.15.2"
   },
   "files": [
     "dist"
