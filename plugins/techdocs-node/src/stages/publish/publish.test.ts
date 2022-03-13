@@ -31,6 +31,11 @@ const discovery: jest.Mocked<PluginEndpointDiscovery> = {
   getExternalBaseUrl: jest.fn(),
 };
 
+jest.mock('@azure/identity', () => ({
+  __esModule: true,
+  DefaultAzureCredential: class {},
+}));
+
 describe('Publisher', () => {
   beforeEach(() => {
     jest.resetModules(); // clear the cache
