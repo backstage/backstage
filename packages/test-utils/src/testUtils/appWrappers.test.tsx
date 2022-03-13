@@ -52,6 +52,9 @@ describe('wrapInTestApp', () => {
       expect.stringMatching(
         /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
       ),
+      expect.stringMatching(
+        /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
+      ),
     ]);
   });
 
