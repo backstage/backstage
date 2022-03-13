@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { Route } from 'react-router';
+import { Route } from 'react-router-dom';
 import { Grid, ThemeProvider } from '@material-ui/core';
-import { GridRowParams } from '@material-ui/data-grid';
 import {
   CardTab,
   Content,
+  ErrorPanel,
   Header,
   HeaderLabel,
   InfoCard,
@@ -27,40 +27,35 @@ import {
   TabbedCard,
   TabbedLayout,
 } from '@backstage/core-components';
-import EmissionsOverTimeCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsOverTimeCard';
-import CarbonComparisonCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonComparisonCard';
-import EmissionsBreakdownCard from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsBreakdownCard';
-import CarbonIntensityMap from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/CarbonIntensityMap';
-import EmissionsFilterBar from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsFilterBar';
-import {
-  DiscoveryApi,
-  discoveryApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { DiscoveryApi, discoveryApiRef, useApi, } from '@backstage/core-plugin-api';
 
-import { determineTheme } from '@cloud-carbon-footprint/client/dist/utils/themes';
-
-// @ts-ignore
-import { EstimationResult } from '@cloud-carbon-footprint/common';
 import { FlatRoutes } from '@backstage/core-app-api';
-import { RecommendationRow } from '@cloud-carbon-footprint/client/dist/Types';
 import moment from 'moment';
-import RecommendationsFilterBar from '@cloud-carbon-footprint/client/dist/pages/RecommendationsPage/RecommendationsFilterBar';
-import RecommendationsSidePanel from '@cloud-carbon-footprint/client/dist/pages/RecommendationsPage/RecommendationsSidePanel';
-import RecommendationsTable from '@cloud-carbon-footprint/client/dist/pages/RecommendationsPage/RecommendationsTable';
-import { Methodology } from '@cloud-carbon-footprint/client/dist/pages/EmissionsMetricsPage/EmissionsSidePanel/EmissionsSidePanel';
-import { useEmissionsData, useRecommendationsData } from './hooks';
+import {
+  CarbonComparisonCard,
+  CarbonIntensityMap,
+  determineTheme,
+  EmissionsBreakdownCard,
+  EmissionsFilterBar,
+  EmissionsOverTimeCard,
+  Methodology,
+  RecommendationsFilterBar,
+  RecommendationsTable,
+  useFootprintData,
+  useRecommendationData
+} from '@cloud-carbon-footprint/client';
 
-const Wrapper = ({ children }: PropsWithChildren<{}>) => (
+const Wrapper = ({ children, error }: PropsWithChildren<{ error: Error | null }>) => (
   <Page themeId="tool">
     <Header title="Cloud Carbon Footprint" type="tool">
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
+      <HeaderLabel label="Owner" value="Team X"/>
+      <HeaderLabel label="Lifecycle" value="Alpha"/>
     </Header>
     <Content>
+      {error && <p><ErrorPanel error={error}/></p>}
       <ThemeProvider theme={determineTheme()}>
         <FlatRoutes>
-          <Route path="/*" element={<>{children}</>} />
+          <Route path="/*" element={<>{children}</>}/>
         </FlatRoutes>
       </ThemeProvider>
     </Content>
@@ -68,54 +63,41 @@ const Wrapper = ({ children }: PropsWithChildren<{}>) => (
 );
 
 export const CloudCarbonFootprintPlugin = () => {
-  const endDate: moment.Moment = moment.utc();
-  const startDate: moment.Moment = moment.utc(
-    Date.UTC(endDate.year() - 2, 0, 1, 0, 0, 0, 0),
-  );
-  const [baseUrl, setUrl] = useState<string | undefined>(undefined);
+  const [baseUrl, setUrl] = useState<string | null>(null);
   const discovery: DiscoveryApi = useApi(discoveryApiRef);
   useEffect(() => {
     discovery.getBaseUrl('cloud-carbon-footprint').then(url => setUrl(url));
-  }, []);
-  const [selectedRecommendation, setSelectedRecommendation] =
-    useState<RecommendationRow>();
+  }, [discovery]);
   const [useKilograms, setUseKilograms] = useState(false);
 
-  const handleRowClick = (params: GridRowParams, _event: any) => {
-    if (selectedRecommendation && params.row.id === selectedRecommendation.id) {
-      setSelectedRecommendation(undefined);
-    } else {
-      setSelectedRecommendation(params.row as RecommendationRow);
-    }
-  };
+  const endDate: moment.Moment = moment.utc();
+  const startDate: moment.Moment = moment.utc().subtract(2, 'years')
+  const footprint = useFootprintData({ baseUrl, startDate, endDate });
+  const recommendations = useRecommendationData({ baseUrl });
 
-  const emissions = useEmissionsData(baseUrl, startDate, endDate);
-  const recommendations = useRecommendationsData(baseUrl, emissions.data);
-
+  const error: Error | null = footprint.error || recommendations.error
   return (
-    <Wrapper>
+    <Wrapper error={error}>
       <TabbedLayout>
         <TabbedLayout.Route path="/emissions" title="Emissions">
           <Grid container spacing={3} direction="column">
             <Grid item>
               <EmissionsFilterBar
-                filters={emissions.filters}
-                setFilters={emissions.setFilters}
-                filteredDataResults={emissions.filterOptions}
+                {...footprint.filterBarProps}
               />
             </Grid>
             <Grid item>
               <TabbedCard title="Estimated Emissions">
                 <CardTab label="Cloud Usage">
                   <EmissionsOverTimeCard
-                    filteredData={emissions.filteredData}
+                    data={footprint.filteredData}
                   />
                 </CardTab>
                 <CardTab label="Breakdown">
                   <Grid container direction="row" spacing={3}>
-                    <CarbonComparisonCard data={emissions.filteredData} />
+                    <CarbonComparisonCard data={footprint.filteredData}/>
                     <EmissionsBreakdownCard
-                      data={emissions.filteredData}
+                      data={footprint.filteredData}
                       baseUrl={baseUrl}
                     />
                   </Grid>
@@ -128,23 +110,14 @@ export const CloudCarbonFootprintPlugin = () => {
           <Grid container spacing={3} direction="column">
             <Grid item>
               <RecommendationsFilterBar
-                filters={recommendations.filters}
-                setFilters={recommendations.setFilters}
-                filteredDataResults={recommendations.filterOptions}
+                {...recommendations.filterBarProps}
                 setUseKilograms={setUseKilograms}
               />
             </Grid>
             <Grid item>
-              {selectedRecommendation && (
-                <RecommendationsSidePanel
-                  recommendation={selectedRecommendation}
-                  onClose={() => setSelectedRecommendation(undefined)}
-                />
-              )}
               <RecommendationsTable
                 emissionsData={recommendations.filteredEmissionsData}
                 recommendations={recommendations.filteredRecommendationData}
-                handleRowClick={handleRowClick}
                 useKilograms={useKilograms}
               />
             </Grid>
@@ -152,13 +125,13 @@ export const CloudCarbonFootprintPlugin = () => {
         </TabbedLayout.Route>
         <TabbedLayout.Route path="/carbon-map" title="Carbon Intensity Map">
           <Grid container spacing={3} direction="column">
-            <CarbonIntensityMap />
+            <CarbonIntensityMap/>
           </Grid>
         </TabbedLayout.Route>
         <TabbedLayout.Route path="/methodology" title="Methodology">
           <Grid container spacing={3} direction="column">
             <InfoCard title="How do we get our carbon estimates?">
-              <Methodology />
+              <Methodology/>
             </InfoCard>
           </Grid>
         </TabbedLayout.Route>
