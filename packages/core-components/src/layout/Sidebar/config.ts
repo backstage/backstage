@@ -56,7 +56,7 @@ export type SidebarContextType = {
 };
 
 /**
- * Context wether the `Sidebar` is open
+ * Context whether the `Sidebar` is open
  */
 export const SidebarContext = createContext<SidebarContextType>({
   isOpen: false,

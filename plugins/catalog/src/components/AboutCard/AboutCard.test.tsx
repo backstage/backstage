@@ -448,7 +448,7 @@ describe('<AboutCard />', () => {
     expect(getByText('View TechDocs').closest('a')).not.toHaveAttribute('href');
   });
 
-  it('renders disbaled techdocs link when route is not bound', async () => {
+  it('renders disabled techdocs link when route is not bound', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',

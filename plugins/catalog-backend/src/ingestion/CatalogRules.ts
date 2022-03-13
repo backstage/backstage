@@ -131,7 +131,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
   constructor(private readonly rules: CatalogRule[]) {}
 
   /**
-   * Checks wether a specific entity/location combination is allowed
+   * Checks whether a specific entity/location combination is allowed
    * according to the configured rules.
    */
   isAllowed(entity: Entity, location: LocationSpec) {

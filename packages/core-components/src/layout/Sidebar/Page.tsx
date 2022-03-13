@@ -151,7 +151,7 @@ export function SidebarPage(props: SidebarPageProps) {
  * This hook provides a react ref to the main content.
  * Allows to set an element as the main content and focus on that component.
  *
- * *Note: If `contentRef` is not set `focusContent` is noop. `Content` component sets this ref automaticaly*
+ * *Note: If `contentRef` is not set `focusContent` is noop. `Content` component sets this ref automatically*
  *
  * @public
  * @example

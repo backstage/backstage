@@ -104,7 +104,7 @@ export const BarChart = ({
     .slice(stepStart, stepEnd);
 
   // Pin the domain to the largest value in the series.
-  // Intentially redundant - This could simply be derived from the first element in the already sorted list,
+  // Intentionally redundant - This could simply be derived from the first element in the already sorted list,
   // but that may not be the case in the future when custom sorting is implemented.
   const globalResourcesMax = resources.reduce(
     (max, r: ResourceData) => Math.max(max, r.current, r.previous),

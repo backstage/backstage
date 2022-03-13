@@ -21,7 +21,7 @@ import {
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
 
 /**
- * This API is used by various frontend utilities that allow developers to implement authorization wihtin their frontend
+ * This API is used by various frontend utilities that allow developers to implement authorization within their frontend
  * plugins. A plugin developer will likely not have to interact with this API or its implementations directly, but
  * rather with the aforementioned utility components/hooks.
  * @public

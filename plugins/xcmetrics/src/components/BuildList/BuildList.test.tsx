@@ -53,7 +53,7 @@ describe('BuildList', () => {
     );
 
     userEvent.click(
-      (await rendered.findAllByLabelText('Detail panel visiblity toggle'))[0],
+      (await rendered.findAllByLabelText('Detail panel visibility toggle'))[0],
     );
     expect(await rendered.findByText('BuildDetails')).toBeInTheDocument();
   });

@@ -251,7 +251,7 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
       type: string
       ui:backstage:
         review:
-          show: false # wont print any info about 'hidden' property on Review Step
+          show: false # won't print any info about 'hidden' property on Review Step
 ```
 
 ### The Repository Picker

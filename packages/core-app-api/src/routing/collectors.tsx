@@ -93,7 +93,7 @@ export const routeParentCollector = createCollector(
         acc.set(routeRef, parentRouteRef.sticky);
 
         // When we encounter a mount point with an explicit path, we stop gathering
-        // mount points withing the children and remove the sticky state
+        // mount points within the children and remove the sticky state
         if (node.props?.path) {
           nextParent = routeRef;
         } else {
