@@ -31,17 +31,17 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  config,
-  discovery,
-}: PluginEnvironment): Promise<Router> {
-  const catalog = new CatalogClient({ discoveryApi: discovery });
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const catalog = new CatalogClient({
+    discoveryApi: env.discovery,
+  });
 
   return await createRouter({
-    logger,
+    logger: env.logger,
     jenkinsInfoProvider: DefaultJenkinsInfoProvider.fromConfig({
-      config,
+      config: env.config,
       catalog,
     }),
   });

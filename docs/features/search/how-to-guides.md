@@ -72,10 +72,10 @@ import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backe
 ```typescript
 indexBuilder.addCollator({
   defaultRefreshIntervalSeconds: 600,
-  factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
-    discovery,
-    logger,
-    tokenManager,
+  factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    logger: env.logger,
+    tokenManager: env.tokenManager,
   }),
 });
 ```
@@ -120,9 +120,9 @@ provided by `@backstage/plugin-catalog-backend` offers some configuration too!
 
 indexBuilder.addCollator({
   defaultRefreshIntervalSeconds: 600,
-  collator: DefaultCatalogCollator.fromConfig(config, {
-    discovery,
-    tokenManager,
+  collator: DefaultCatalogCollator.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
 +   filter: {
 +      kind: ['API', 'Component', 'Domain', 'Group', 'System', 'User'],
 +   },
@@ -167,18 +167,22 @@ provided by existing plugins, the migration process is fairly straightforward:
    +import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
    +import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
    // ...
-     const indexBuilder = new IndexBuilder({ logger, searchEngine });
+     const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
      indexBuilder.addCollator({
        defaultRefreshIntervalSeconds: 600,
-   -    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
-   +    factory: DefaultCatalogCollatorFactory.fromConfig(config, { discovery }),
+   -    collator: DefaultCatalogCollator.fromConfig(env.config, {
+          discovery: env.discovery,
+        }),
+   +    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+          discovery: env.discovery,
+        }),
      });
      indexBuilder.addCollator({
        defaultRefreshIntervalSeconds: 600,
-   -    collator: DefaultTechDocsCollator.fromConfig(config, {
-   +    factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
-         discovery,
-         logger,
+   -     collator: DefaultTechDocsCollator.fromConfig(env.config, {
+   +     factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+           discovery: env.discovery,
+           logger: env.logger,
        }),
      });
    ```

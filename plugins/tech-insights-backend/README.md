@@ -27,24 +27,21 @@ import {
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  config,
-  discovery,
-  database,
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   const builder = buildTechInsightsContext({
-    logger,
-    config,
-    database,
-    discovery,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
     factRetrievers: [], // Fact retrievers registrations you want tech insights to use
   });
 
   return await createRouter({
     ...(await builder),
-    logger,
-    config,
+    logger: env.logger,
+    config: env.config,
   });
 }
 ```
@@ -103,10 +100,10 @@ To register these fact retrievers to your application you can modify the example
 
 ```diff
 const builder = new DefaultTechInsightsBuilder({
-  logger,
-  config,
-  database,
-  discovery,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  discovery: env.discovery,
 - factRetrievers: [],
 + factRetrievers: [myFactRetrieverRegistration],
 });
@@ -118,10 +115,10 @@ Current logic on running scheduled fact retrievers is intended to be executed in
 
 ```diff
 const builder = new DefaultTechInsightsBuilder({
-  logger,
-  config,
-  database,
-  discovery,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  discovery: env.discovery,
 - factRetrievers: [],
 + factRetrievers: process.env.MAIN_FACT_RETRIEVER_INSTANCE ? [myFactRetrieverRegistration] : [],
 });
@@ -210,14 +207,14 @@ and modify the `techInsights.ts` file to contain a reference to the FactChecker 
 
 +const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
 +   checks: [],
-+   logger,
++   logger: env.logger,
 +}),
 
  const builder = new DefaultTechInsightsBuilder({
-   logger,
-   config,
-   database,
-   discovery,
+   logger: env.logger,
+   config: env.config,
+   database: env.database,
+   discovery: env.discovery,
    factRetrievers: [myFactRetrieverRegistration],
 +  factCheckerFactory: myFactCheckerFactory
  });
@@ -233,7 +230,7 @@ The default FactChecker implementation comes with an in-memory storage to store 
 const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
 const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
   checks: [],
-  logger,
+  logger: env.logger,
 + checkRegistry: myTechInsightCheckRegistry
 }),
 

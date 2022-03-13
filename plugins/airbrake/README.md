@@ -60,13 +60,12 @@ The Airbrake plugin provides connectivity between Backstage and Airbrake (https:
      extractAirbrakeConfig,
    } from '@backstage/plugin-airbrake-backend';
 
-   export default async function createPlugin({
-     logger,
-     config,
-   }: PluginEnvironment): Promise<Router> {
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
      return createRouter({
-       logger,
-       airbrakeConfig: extractAirbrakeConfig(config),
+       logger: env.logger,
+       airbrakeConfig: extractAirbrakeConfig(env.config),
      });
    }
    ```
