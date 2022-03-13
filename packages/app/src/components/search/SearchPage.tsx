@@ -39,7 +39,7 @@ import {
   useSearch,
 } from '@backstage/plugin-search';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
-import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
+import { Grid, makeStyles, Paper, Theme } from '@material-ui/core';
 import React, { useContext } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -130,35 +130,9 @@ const SearchPage = () => {
           )}
           <Grid item xs>
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document }) => {
-                    switch (type) {
-                      case 'software-catalog':
-                        return (
-                          <CatalogSearchResultListItem
-                            key={document.location}
-                            result={document}
-                          />
-                        );
-                      case 'techdocs':
-                        return (
-                          <TechDocsSearchResultListItem
-                            key={document.location}
-                            result={document}
-                          />
-                        );
-                      default:
-                        return (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                          />
-                        );
-                    }
-                  })}
-                </List>
-              )}
+              <CatalogSearchResultListItem />
+              <TechDocsSearchResultListItem />
+              <DefaultResultListItem />
             </SearchResult>
             <SearchResultPager />
           </Grid>

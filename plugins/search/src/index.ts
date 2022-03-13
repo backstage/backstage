@@ -64,3 +64,6 @@ export {
   SearchResult,
   SidebarSearchModal,
 } from './plugin';
+
+export { createSearchResultExtension } from './extensions';
+export type { SearchResultItemProps } from './extensions';

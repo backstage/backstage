@@ -15,3 +15,4 @@
  */
 
 export { DefaultResultListItem } from './DefaultResultListItem';
+export type { DefaultResultListItemProps } from './DefaultResultListItem';

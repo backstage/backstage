@@ -19,17 +19,21 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
+import { useElementFilter } from '@backstage/core-plugin-api';
 import { SearchResult } from '@backstage/plugin-search-common';
+import { List } from '@material-ui/core';
 import React from 'react';
+import { RESULT_EXTENSION_KEY } from '../../extensions';
 import { useSearch } from '../SearchContext';
 
 type Props = {
-  children: (results: { results: SearchResult[] }) => JSX.Element;
+  children: ((results: { results: SearchResult[] }) => JSX.Element) | JSX.Element | JSX.Element[];
 };
 
 export const SearchResultComponent = ({ children }: Props) => {
   const {
     result: { loading, error, value },
+    pageNumber,
   } = useSearch();
 
   if (loading) {
@@ -48,7 +52,48 @@ export const SearchResultComponent = ({ children }: Props) => {
     return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
-  return <>{children({ results: value.results })}</>;
+  if (typeof children === 'function') {
+    return <>{children({ results: value.results })}</>;
+  }
+
+  return <ComposedSearchResults configuration={children} results={value.results} page={pageNumber} />;
 };
+
+const ComposedSearchResults = ({ configuration, results, page }: { configuration: JSX.Element | JSX.Element[]; results: SearchResult[]; page: number }) => {
+  const resultExtensions = useElementFilter(configuration, elements =>
+    elements
+      .findComponentData<{ filterPredicate: Function }>({
+        key: RESULT_EXTENSION_KEY,
+      })
+  );
+  const resultExtensionElements = useElementFilter(configuration, elements =>
+    elements
+      .selectByComponentData({
+        key: RESULT_EXTENSION_KEY,
+      })
+      .getElements()
+  );
+
+  return <List>
+    {results.map((result, resultIndex) => {
+      const rank = (page * results.length) + resultIndex + 1;
+      const CandidateComponent = resultExtensions.map((extension, extIndex) => {
+        const { filterPredicate } = extension;
+        const element = resultExtensionElements[extIndex];
+
+        if (filterPredicate(result) && React.isValidElement(element)) {
+          return React.cloneElement(element, {
+            result: result.document,
+            rank: rank,
+            key: result.document.location,
+          });
+        }
+
+        return null;
+      }).filter(c => c !== null);
+      return CandidateComponent[0];
+    })}
+  </List>;
+}
 
 export { SearchResultComponent as SearchResult };

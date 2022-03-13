@@ -30,6 +30,12 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { createSearchResultExtension } from '@backstage/plugin-search';
+import {
+  TechDocsSearchResultListItemProps,
+  TechDocsSearchResultListItem as TechDocsSearchResultListItemCompoonent,
+} from './search/components/TechDocsSearchResultListItem';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 
 /**
  * The Backstage plugin that renders technical documentation for your components
@@ -149,4 +155,15 @@ export const TechDocsReaderPage = techdocsPlugin.provide(
       ),
     mountPoint: rootDocsRouteRef,
   }),
+);
+
+/**
+ * @public
+ */
+export const TechDocsSearchResultListItem = techdocsPlugin.provide(
+  createSearchResultExtension<IndexableDocument, TechDocsSearchResultListItemProps>({
+    name: 'TechDocsSearchResultListItem',
+    component: TechDocsSearchResultListItemCompoonent,
+    filterPredicate: (result) => result.type === 'techdocs',
+  })
 );

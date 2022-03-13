@@ -43,6 +43,9 @@ import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { rootRouteRef } from './routes';
+import { createSearchResultExtension } from '@backstage/plugin-search/src/extensions';
+import { CatalogSearchResultListItem as CatalogSearchResultListItemComponent } from './components/CatalogSearchResultListItem';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -93,6 +96,15 @@ export const CatalogEntityPage: () => JSX.Element = catalogPlugin.provide(
       import('./components/CatalogEntityPage').then(m => m.CatalogEntityPage),
     mountPoint: entityRouteRef,
   }),
+);
+
+/** @public */
+export const CatalogSearchResultListItem = catalogPlugin.provide(
+  createSearchResultExtension<CatalogEntityDocument>({
+    name: 'CatalogSearchResultListItem',
+    component: CatalogSearchResultListItemComponent,
+    filterPredicate: (result) => result.type === 'software-catalog',
+  })
 );
 
 /** @public */

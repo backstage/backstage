@@ -18,6 +18,9 @@ import React, { PropsWithChildren } from 'react';
 import { Divider, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import TextTruncate from 'react-text-truncate';
+import { SearchResultItemProps } from '@backstage/plugin-search';
+import { useAnalytics } from '@backstage/core-plugin-api';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -35,7 +38,6 @@ const useStyles = makeStyles({
  * @public
  */
 export type TechDocsSearchResultListItemProps = {
-  result: any;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;
@@ -48,7 +50,7 @@ export type TechDocsSearchResultListItemProps = {
  * @public
  */
 export const TechDocsSearchResultListItem = (
-  props: TechDocsSearchResultListItemProps,
+  props: SearchResultItemProps<IndexableDocument, TechDocsSearchResultListItemProps>,
 ) => {
   const {
     result,
@@ -56,8 +58,14 @@ export const TechDocsSearchResultListItem = (
     asListItem = true,
     asLink = true,
     title,
+    rank,
   } = props;
   const classes = useStyles();
+  const analytics = useAnalytics();
+  const trackClick = () => analytics.captureEvent('click', result.title, {
+    attributes: { to: result.location },
+    value: rank,
+  })
   const TextItem = () => (
     <ListItemText
       className={classes.itemText}
@@ -65,7 +73,7 @@ export const TechDocsSearchResultListItem = (
       primary={
         title
           ? title
-          : `${result.title} | ${result.entityTitle ?? result.name} docs`
+          : `${result.title} | ${(result as any).entityTitle ?? (result as any).name} docs`
       }
       secondary={
         <TextTruncate
@@ -79,7 +87,7 @@ export const TechDocsSearchResultListItem = (
   );
 
   const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
-    asLink ? <Link to={result.location}>{children}</Link> : <>{children}</>;
+    asLink ? <Link to={result.location} noTrack onClick={trackClick}>{children}</Link> : <>{children}</>;
 
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (

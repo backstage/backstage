@@ -15,7 +15,6 @@
  */
 
 import React, { ReactNode } from 'react';
-import { IndexableDocument } from '@backstage/plugin-search-common';
 import {
   ListItem,
   ListItemIcon,
@@ -24,12 +23,14 @@ import {
   Divider,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import TextTruncate from 'react-text-truncate';
+import { SearchResultItemProps } from '../../extensions';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
-type Props = {
+export type DefaultResultListItemProps = {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
-  result: IndexableDocument;
   lineClamp?: number;
 };
 
@@ -38,9 +39,15 @@ export const DefaultResultListItem = ({
   icon,
   secondaryAction,
   lineClamp = 5,
-}: Props) => {
+  rank,
+}: SearchResultItemProps<IndexableDocument, DefaultResultListItemProps>) => {
+  const analytics = useAnalytics();
+  const trackClick = () => analytics.captureEvent('click', result.title, {
+    attributes: { to: result.location },
+    value: rank,
+  });
   return (
-    <Link to={result.location}>
+    <Link to={result.location} noTrack onClick={trackClick}>
       <ListItem alignItems="center">
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText

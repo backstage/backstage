@@ -48,6 +48,7 @@ export type SearchContextState = {
   term: string;
   types: string[];
   filters: JsonObject;
+  pageNumber: number;
   pageCursor?: string;
 };
 
@@ -60,6 +61,7 @@ const searchInitialState: SearchContextState = {
   pageCursor: undefined,
   filters: {},
   types: [],
+  pageNumber: 0,
 };
 
 export const SearchContextProvider = ({
@@ -67,6 +69,7 @@ export const SearchContextProvider = ({
   children,
 }: PropsWithChildren<{ initialState?: SearchContextState }>) => {
   const searchApi = useApi(searchApiRef);
+  const [pageNumber, setPageNumber] = useState(initialState.pageNumber);
   const [pageCursor, setPageCursor] = useState<string | undefined>(
     initialState.pageCursor,
   );
@@ -75,6 +78,7 @@ export const SearchContextProvider = ({
   const [types, setTypes] = useState<string[]>(initialState.types);
 
   const prevTerm = usePrevious(term);
+  const prevTypes = usePrevious(types);
 
   const result = useAsync(
     () =>
@@ -93,17 +97,32 @@ export const SearchContextProvider = ({
     !result.loading && !result.error && result.value?.previousPageCursor;
   const fetchNextPage = useCallback(() => {
     setPageCursor(result.value?.nextPageCursor);
+    incrementPageNumber();
   }, [result.value?.nextPageCursor]);
   const fetchPreviousPage = useCallback(() => {
     setPageCursor(result.value?.previousPageCursor);
+    decrementPageNumber();
   }, [result.value?.previousPageCursor]);
+  const incrementPageNumber = useCallback(() => {
+    setPageNumber(pageNumber + 1);
+  }, [pageNumber]);
+  const decrementPageNumber = useCallback(() => {
+    setPageNumber(pageNumber - 1);
+  }, [pageNumber]);
 
   useEffect(() => {
     // Any time a term is reset, we want to start from page 0.
     if (term && prevTerm && term !== prevTerm) {
       setPageCursor(undefined);
+      setPageNumber(0);
     }
-  }, [term, prevTerm, initialState.pageCursor]);
+
+    // Any time the types are reset, start from page 0.
+    if (types && prevTypes && types !== prevTypes) {
+      setPageCursor(undefined);
+      setPageNumber(0);
+    }
+  }, [term, prevTerm, types, prevTypes, initialState.pageCursor]);
 
   const value: SearchContextValue = {
     result,
@@ -114,6 +133,7 @@ export const SearchContextProvider = ({
     types,
     setTypes,
     pageCursor,
+    pageNumber,
     setPageCursor,
     fetchNextPage: hasNextPage ? fetchNextPage : undefined,
     fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,

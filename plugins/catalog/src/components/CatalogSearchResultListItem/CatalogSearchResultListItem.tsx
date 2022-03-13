@@ -25,6 +25,9 @@ import {
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
+import { SearchResultItemProps } from '@backstage/plugin-search';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -48,13 +51,17 @@ export interface CatalogSearchResultListItemProps {
 
 /** @public */
 export function CatalogSearchResultListItem(
-  props: CatalogSearchResultListItemProps,
+  props: SearchResultItemProps<CatalogEntityDocument>,
 ) {
-  const result = props.result as any;
-
+  const { rank, result } = props;
+  const analytics = useAnalytics();
+  const trackClick = () => analytics.captureEvent('click', result.title, {
+    attributes: { to: result.location },
+    value: rank,
+  });
   const classes = useStyles();
   return (
-    <Link to={result.location}>
+    <Link to={result.location} noTrack onClick={trackClick}>
       <ListItem alignItems="flex-start" className={classes.flexContainer}>
         <ListItemText
           className={classes.itemText}

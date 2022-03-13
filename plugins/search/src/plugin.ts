@@ -24,6 +24,9 @@ import {
   createComponentExtension,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { DefaultResultListItem as DefaultResultListItemComponent, DefaultResultListItemProps } from './components/DefaultResultListItem';
+import { createSearchResultExtension } from './extensions';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 
 export const rootRouteRef = createRouteRef({
   id: 'search',
@@ -133,14 +136,10 @@ export const SidebarSearchModal = searchPlugin.provide(
 );
 
 export const DefaultResultListItem = searchPlugin.provide(
-  createComponentExtension({
+  createSearchResultExtension<IndexableDocument, DefaultResultListItemProps>({
     name: 'DefaultResultListItem',
-    component: {
-      lazy: () =>
-        import('./components/DefaultResultListItem').then(
-          m => m.DefaultResultListItem,
-        ),
-    },
+    component: DefaultResultListItemComponent,
+    filterPredicate: () => true,
   }),
 );
 

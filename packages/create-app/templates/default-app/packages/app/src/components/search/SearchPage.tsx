@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
+import { makeStyles, Theme, Grid, Paper } from '@material-ui/core';
 
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
@@ -110,35 +110,9 @@ const SearchPage = () => {
           </Grid>
           <Grid item xs={9}>
             <SearchResult>
-              {({ results }) => (
-                <List>
-                  {results.map(({ type, document }) => {
-                    switch (type) {
-                      case 'software-catalog':
-                        return (
-                          <CatalogSearchResultListItem
-                            key={document.location}
-                            result={document}
-                          />
-                        );
-                      case 'techdocs':
-                        return (
-                          <TechDocsSearchResultListItem
-                            key={document.location}
-                            result={document}
-                          />
-                        );
-                      default:
-                        return (
-                          <DefaultResultListItem
-                            key={document.location}
-                            result={document}
-                          />
-                        );
-                    }
-                  })}
-                </List>
-              )}
+              <CatalogSearchResultListItem />
+              <TechDocsSearchResultListItem />
+              <DefaultResultListItem />
             </SearchResult>
           </Grid>
         </Grid>
