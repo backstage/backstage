@@ -60,11 +60,10 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
-  const directoryPreparer = new DirectoryPreparer(
-    config,
+  const directoryPreparer = DirectoryPreparer.fromConfig(config, {
     logger,
-    mockUrlReader,
-  );
+    reader: mockUrlReader,
+  });
   preparers.register('dir', directoryPreparer);
 
   const dockerClient = new Docker();
