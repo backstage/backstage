@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import * as results from './deprecatedResult';
-
-export { results };
-
 export { processingResult } from './processingResult';
 export type { EntityRelationSpec, LocationSpec } from './common';
 export type {
