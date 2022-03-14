@@ -260,12 +260,12 @@
       "permission/writing-a-policy",
       {
         "type": "subcategory",
-        "label": "Permission framework for plugin authors",
+        "label": "Tutorial: using Permissions in your plugin",
         "ids": [
-          "permission/plugin-authors/setup-for-the-tutorial",
-          "permission/plugin-authors/authorize-the-create-endpoint",
-          "permission/plugin-authors/authorize-the-update-endpoint",
-          "permission/plugin-authors/authorize-the-read-endpoint"
+          "permission/plugin-authors/01-setup",
+          "permission/plugin-authors/02-adding-a-basic-permission-check",
+          "permission/plugin-authors/03-adding-a-resource-permission-check",
+          "permission/plugin-authors/04-authorizing-access-to-paginated-data"
         ]
       }
     ],
