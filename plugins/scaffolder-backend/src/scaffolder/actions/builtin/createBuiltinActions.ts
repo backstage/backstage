@@ -54,10 +54,26 @@ import { TemplateAction } from '../types';
  * @public
  */
 export interface CreateBuiltInActionsOptions {
+  /**
+   * The {@link @backstage/backend-common#UrlReader} interface that will be used in the default actions.
+   */
   reader: UrlReader;
+  /**
+   * The {@link @backstage/integrations#ScmIntegrations} that will be used in the default actions.
+   */
   integrations: ScmIntegrations;
+  /**
+   * The {@link @backstage/catalog-client#CatalogApi} that will be used in the default actions.
+   */
   catalogClient: CatalogApi;
+  /**
+   * The {@link @backstage/config#Config} that will be used in the default actions.
+   */
   config: Config;
+  /**
+   * Additional custom filters that will be passed to the nunjucks template engine for use in
+   * Template Manifests and also template skeleton files when using `fetch:template`.
+   */
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 }
 

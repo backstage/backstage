@@ -49,15 +49,10 @@ export const createBuiltinActions: (
 
 // @public
 export interface CreateBuiltInActionsOptions {
-  // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  // (undocumented)
   catalogClient: CatalogApi;
-  // (undocumented)
   config: Config;
-  // (undocumented)
   integrations: ScmIntegrations;
-  // (undocumented)
   reader: UrlReader;
 }
 
@@ -142,19 +137,16 @@ export function createGithubActionsDispatchAction(options: {
   token?: string | undefined;
 }>;
 
-// @public (undocumented)
+// @public
 export interface CreateGithubPullRequestActionOptions {
-  // (undocumented)
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
   ) => Promise<OctokitWithPullRequestPluginClient>;
-  // (undocumented)
   githubCredentialsProvider?: GithubCredentialsProvider;
-  // (undocumented)
   integrations: ScmIntegrationRegistry;
 }
 
-// @public (undocumented)
+// @public
 export type CreateGithubPullRequestClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
@@ -278,7 +270,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   token?: string | undefined;
 }>;
 
-// @public (undocumented)
+// @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
@@ -298,11 +290,8 @@ export type CreateWorkerOptions = {
 
 // @public
 export interface CurrentClaimedTask {
-  // (undocumented)
   secrets?: TaskSecrets;
-  // (undocumented)
   spec: TaskSpec;
-  // (undocumented)
   taskId: string;
 }
 
