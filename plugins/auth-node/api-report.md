@@ -30,9 +30,12 @@ export function getBearerTokenFromAuthorizationHeader(
 // @public
 export class IdentityClient {
   authenticate(token: string | undefined): Promise<BackstageIdentityResponse>;
-  static create(options: {
-    discovery: PluginEndpointDiscovery;
-    issuer: string;
-  }): IdentityClient;
+  static create(
+    options: {
+      discovery: PluginEndpointDiscovery;
+      issuer: string;
+    },
+    cooldownMs?: number,
+  ): IdentityClient;
 }
 ```

@@ -98,7 +98,6 @@ export class IdentityClient {
     }
 
     const user: BackstageIdentityResponse = {
-      id: decoded.payload.sub,
       token,
       identity: {
         type: 'user',
