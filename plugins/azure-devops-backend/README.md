@@ -43,11 +43,13 @@ Here's how to get the backend up and running:
    import { Router } from 'express';
    import type { PluginEnvironment } from '../types';
 
-   export default function createPlugin({
-     logger,
-     config,
-   }: PluginEnvironment): Promise<Router> {
-     return createRouter({ logger, config });
+   export default function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     return createRouter({
+       logger: env.logger,
+       config: env.config,
+     });
    }
    ```
 

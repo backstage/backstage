@@ -16,17 +16,18 @@ import {
 } from '@backstage/plugin-todo-backend';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  reader,
-  config,
-  discovery,
-}: PluginEnvironment): Promise<Router> {
-  const todoReader = TodoScmReader.fromConfig(config, {
-    logger,
-    reader,
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const todoReader = TodoScmReader.fromConfig(env.config, {
+    logger: env.logger,
+    reader: env.reader,
   });
-  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+  const catalogClient = new CatalogClient({
+    discoveryApi: discovery,
+  });
+
   const todoService = new TodoReaderService({
     todoReader,
     catalogClient,
@@ -66,9 +67,9 @@ import {
 
 // ...
 
-const todoReader = TodoScmReader.fromConfig(config, {
-  logger,
-  reader,
+const todoReader = TodoScmReader.fromConfig(env.config, {
+  logger: env.logger,
+  reader: env.reader,
   parser: createTodoParser({
     additionalTags: ['NOTE', 'XXX'],
   }),

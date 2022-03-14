@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginDatabaseManager,
-  useHotCleanup,
-} from '@backstage/backend-common';
-import { Config } from '@backstage/config';
+
+import { useHotCleanup } from '@backstage/backend-common';
 import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
@@ -28,60 +25,52 @@ import {
   SearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
-import { Logger } from 'winston';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-async function createSearchEngine({
-  logger,
-  database,
-  config,
-}: {
-  logger: Logger;
-  database: PluginDatabaseManager;
-  config: Config;
-}): Promise<SearchEngine> {
-  if (config.has('search.elasticsearch')) {
+async function createSearchEngine(
+  env: PluginEnvironment,
+): Promise<SearchEngine> {
+  if (env.config.has('search.elasticsearch')) {
     return await ElasticSearchSearchEngine.fromConfig({
-      logger,
-      config,
+      logger: env.logger,
+      config: env.config,
     });
   }
 
-  if (await PgSearchEngine.supported(database)) {
-    return await PgSearchEngine.from({ database });
+  if (await PgSearchEngine.supported(env.database)) {
+    return await PgSearchEngine.from({ database: env.database });
   }
 
-  return new LunrSearchEngine({ logger });
+  return new LunrSearchEngine({ logger: env.logger });
 }
 
-export default async function createPlugin({
-  logger,
-  permissions,
-  discovery,
-  config,
-  database,
-  tokenManager,
-}: PluginEnvironment) {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   // Initialize a connection to a search engine.
-  const searchEngine = await createSearchEngine({ config, logger, database });
-  const indexBuilder = new IndexBuilder({ logger, searchEngine });
+  const searchEngine = await createSearchEngine(env);
+  const indexBuilder = new IndexBuilder({
+    logger: env.logger,
+    searchEngine,
+  });
 
   // Collators are responsible for gathering documents known to plugins. This
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    factory: DefaultCatalogCollatorFactory.fromConfig(config, {
-      discovery,
-      tokenManager,
+    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+      discovery: env.discovery,
+      tokenManager: env.tokenManager,
     }),
   });
 
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
-    factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
-      discovery,
-      logger,
-      tokenManager,
+    factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+      discovery: env.discovery,
+      logger: env.logger,
+      tokenManager: env.tokenManager,
     }),
   });
 
@@ -97,8 +86,8 @@ export default async function createPlugin({
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
     types: indexBuilder.getDocumentTypes(),
-    permissions,
-    config,
-    logger,
+    permissions: env.permissions,
+    config: env.config,
+    logger: env.logger,
   });
 }

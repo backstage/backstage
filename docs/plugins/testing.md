@@ -192,7 +192,7 @@ returns a result or displays an error or console message, like so:
 
 **`StringUtil ellipsis`**
 
-```js
+```ts
 export function ellipsis(text, maxLength, midCharIx = 0, ellipsis = '...') {
   // Do something blackbox. We should not care about the internals,
   // only inputs and outputs.
@@ -210,7 +210,7 @@ There are four things to test for in a utility function:
 
 > Handle Invalid Input (handle thrown errors):
 
-```js
+```ts
 it('Throws an error on improper arguments', () => {
   expect(() => {
     ellipsis();
@@ -220,7 +220,7 @@ it('Throws an error on improper arguments', () => {
 
 > Verify default input arguments:
 
-```js
+```ts
 it('Works with defaults', () => {
   expect(ellipsis('Hello world', 3)).toBe('Hel...');
   expect(ellipsis('', 3)).toBe('');
@@ -233,7 +233,7 @@ it('Works with defaults', () => {
 
 This is especially true for edge cases!
 
-```js
+```ts
 it('Works with midCharIx', () => {
   expect(ellipsis('Hello world', 3, 6)).toBe('...o w...');
   expect(ellipsis('', 3, 6)).toBe('');
@@ -265,7 +265,7 @@ For example:
 
 **`./MyApi.js`**
 
-```js
+```ts
 export {
   fetchSomethingFromServer: () => {
     // Live production call to a URI. Must be avoided during testing!
@@ -276,7 +276,7 @@ export {
 
 **`./__mocks__/MyApi.js`**
 
-```js
+```ts
 export {
   fetchSomethingFromServer: () => {
     // Simulate a production call, but avoid jest and just use a promise
@@ -287,7 +287,7 @@ export {
 
 **`./MyApi.test.js`**
 
-```js
+```ts
 /* eslint-disable import/first */
 
 jest.mock('./MyApi'); // Instruct Jest to swap all future imports of './MyApi.js' to './__mocks__/MyApi.js'

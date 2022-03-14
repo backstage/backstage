@@ -6,7 +6,7 @@
 /// <reference types="node" />
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogEntityDocument as CatalogEntityDocument_2 } from '@backstage/plugin-catalog-common';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
@@ -142,10 +142,6 @@ export class CatalogBuilder {
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
-  // @deprecated
-  setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder;
-  // @deprecated
-  setRefreshIntervalSeconds(seconds: number): CatalogBuilder;
 }
 
 // @alpha
@@ -173,9 +169,6 @@ export const catalogConditions: Conditions<{
     [claims: string[]]
   >;
 }>;
-
-// @public @deprecated (undocumented)
-export type CatalogEntityDocument = CatalogEntityDocument_2;
 
 // @public (undocumented)
 export type CatalogEnvironment = {
@@ -327,12 +320,6 @@ export function createRandomProcessingInterval(options: {
   maxSeconds: number;
 }): ProcessingIntervalFunction;
 
-// @public @deprecated
-export function createRandomRefreshInterval(options: {
-  minSeconds: number;
-  maxSeconds: number;
-}): RefreshIntervalFunction;
-
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
@@ -355,7 +342,7 @@ export class DefaultCatalogCollator {
   // (undocumented)
   protected discovery: PluginEndpointDiscovery;
   // (undocumented)
-  execute(): Promise<CatalogEntityDocument_2[]>;
+  execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
   protected filter?: GetEntitiesRequest['filter'];
   // (undocumented)
@@ -813,9 +800,6 @@ export type RecursivePartial<T> = {
     ? RecursivePartial<T[P]>
     : T[P];
 };
-
-// @public @deprecated
-export type RefreshIntervalFunction = () => number;
 
 // @public
 export type RefreshOptions = {

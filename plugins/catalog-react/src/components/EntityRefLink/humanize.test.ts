@@ -16,7 +16,7 @@
 
 import { humanizeEntityRef } from './humanize';
 
-describe('formatEntityRefTitle', () => {
+describe('humanizeEntityRef', () => {
   it('formats entity in default namespace', () => {
     const entity = {
       apiVersion: 'v1',

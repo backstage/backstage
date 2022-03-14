@@ -117,8 +117,8 @@ useHotCleanup(
 ```typescript
 // packages/backend/src/plugins/catalog.ts
 builder.addProcessor(
-  MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
-    logger,
+  MicrosoftGraphOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
   }),
 );
 ```
@@ -173,8 +173,8 @@ export async function myGroupTransformer(
 
 ```ts
 builder.addProcessor(
-  MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
-    logger,
+  MicrosoftGraphOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
     groupTransformer: myGroupTransformer,
   }),
 );

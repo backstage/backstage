@@ -42,16 +42,16 @@ And then add the processors to your catalog builder:
    env: PluginEnvironment,
  ): Promise<Router> {
    const builder = await CatalogBuilder.create(env);
-+  const integrations = ScmIntegrations.fromConfig(config);
++  const integrations = ScmIntegrations.fromConfig(env.config);
 +  const githubCredentialsProvider =
 +    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 +  builder.addProcessor(
-+    GithubDiscoveryProcessor.fromConfig(config, {
-+      logger,
++    GithubDiscoveryProcessor.fromConfig(env.config, {
++      logger: env.logger,
 +      githubCredentialsProvider,
 +    }),
-+    GithubOrgReaderProcessor.fromConfig(config, {
-+      logger,
++    GithubOrgReaderProcessor.fromConfig(env.config, {
++      logger: env.logger,
 +      githubCredentialsProvider,
 +    }),
 +  );

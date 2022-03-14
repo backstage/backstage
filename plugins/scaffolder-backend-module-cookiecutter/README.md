@@ -22,7 +22,7 @@ Configure the action:
 const actions = [
   createFetchCookiecutterAction({
     integrations,
-    reader,
+    reader: env.reader,
     containerRunner,
   }),
   ...createBuiltInActions({
@@ -32,12 +32,12 @@ const actions = [
 
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
   actions,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 

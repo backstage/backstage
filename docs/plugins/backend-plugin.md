@@ -76,9 +76,12 @@ following to it
 
 ```ts
 import { createRouter } from '@internal/plugin-carmen-backend';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin(env: PluginEnvironment) {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   // Here is where you will add all of the required initialization code that
   // your backend plugin needs to be able to start!
 
@@ -124,7 +127,9 @@ function, there is a `database` field. You can use that to get a
 
 ```ts
 // in packages/backend/src/plugins/carmen.ts
-export default async function createPlugin(env: PluginEnvironment) {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   const db: Knex<any, unknown[]> = await env.database.getClient();
 
   // You will then pass this client into your actual plugin implementation

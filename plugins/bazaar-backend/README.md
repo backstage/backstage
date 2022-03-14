@@ -19,13 +19,16 @@ You'll need to add the plugin to the router in your `backend` package. You can d
 ```tsx
 import { PluginEnvironment } from '../types';
 import { createRouter } from '@backstage/plugin-bazaar-backend';
+import { Router } from 'express';
 
-export default async function createPlugin({
-  logger,
-  database,
-  config,
-}: PluginEnvironment) {
-  return await createRouter({ logger, config, database });
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+  });
 }
 ```
 

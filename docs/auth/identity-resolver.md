@@ -29,9 +29,9 @@ sign-in resolvers and set them for any of the Authentication providers inside
 ```ts
 import { DEFAULT_NAMESPACE, stringifyEntityRef } from '@backstage/catalog-model';
 
-export default async function createPlugin({
-  ...
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
     ...
     providerFactories: {
@@ -105,13 +105,13 @@ matching `google.com/email` annotation.
 
 It can be enabled like this
 
-```tsx
+```ts
 // File: packages/backend/src/plugins/auth.ts
 import { googleEmailSignInResolver, createGoogleProvider } from '@backstage/plugin-auth-backend';
 
-export default async function createPlugin({
-  ...
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
     ...
     providerFactories: {
@@ -130,9 +130,9 @@ can do this using the `CatalogIdentityClient` provided as context to Sign-In
 resolvers:
 
 ```ts
-export default async function createPlugin({
-  ...
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
     ...
     providerFactories: {
@@ -174,11 +174,11 @@ display name and profile picture.
 This is also the place where you can do authorization and validation of the user
 and throw errors if the user should not be allowed access in Backstage.
 
-```tsx
+```ts
 // File: packages/backend/src/plugins/auth.ts
-export default async function createPlugin({
-  ...
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
     ...
     providerFactories: {

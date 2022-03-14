@@ -69,6 +69,6 @@ import { GithubOrgReaderProcessor } from '@backstage/plugin-catalog-backend';
 
 builder.replaceProcessors(
   // ... other processor replacements
-  GithubOrgReaderProcessor.fromConfig(config, { logger }),
+  GithubOrgReaderProcessor.fromConfig(env.config, { logger: env.logger }),
 );
 ```

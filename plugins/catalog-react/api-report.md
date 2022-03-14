@@ -401,9 +401,6 @@ export const favoriteEntityTooltip: (
   isStarred: boolean,
 ) => 'Remove from favorites' | 'Add to favorites';
 
-// @public @deprecated (undocumented)
-export const formatEntityRefTitle: typeof humanizeEntityRef;
-
 // @public
 export function getEntityRelations(
   entity: Entity | undefined,
