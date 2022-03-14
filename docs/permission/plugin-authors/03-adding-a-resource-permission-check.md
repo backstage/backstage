@@ -4,10 +4,39 @@ title: 3. Adding a resource permission check
 description: Explains how to add a resource permission check to a Backstage plugin
 ---
 
-When performing updates (or other operations) on specific resources, the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource, and deny the operation otherwise.
+When performing updates (or other operations) on specific [resources](../concepts.md#resources-and-rules), the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource, and deny the operation otherwise.
 
 // TODO(vinzscam): remind that the plugin used in this tutorial is bringing its own types to backstage.
 // for plugins relying on external entities (like catalog entities) please follow [link] tutorial.
+
+## Creating a new permission
+
+Let's add a new permission to the file `plugins/todo-list-backend/src/service/permissions.ts` from [the previous step](./02-adding-a-basic-permission-check.md).
+
+```diff
+import { Permission } from '@backstage/plugin-permission-common';
+
++export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
++
+export const todosListCreate: Permission = {
+  name: 'todos.list.create',
+  attributes: {
+    action: 'create',
+  },
+};
++
++export const todosListUpdate: Permission = {
++  name: 'todos.list.update',
++  attributes: {
++    action: 'update',
++  },
++  resourceType: TODO_LIST_RESOURCE_TYPE,
++};
+```
+
+Notice that unlike `todosListCreate`, the `todosListUpdate` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever value you like as the resource type, as long as you use the same value consistently for each type of resource.
+
+## Authorizing using the new permission
 
 To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a similar way as in the previous step.
 
@@ -16,7 +45,6 @@ To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a
 + import { todosListCreate, todosListUpdate } from './permissions';
 
   ...
-
 
     router.put('/todos', async (req, res) => {
 +     const token = getBearerTokenFromAuthorizationHeader(
@@ -90,6 +118,8 @@ Unexpected response from plugin upstream when applying conditions. Expected 200 
 
 This happens because our plugin should have exposed a specific endpoint, used by the permission framework to apply conditional decisions. The new endpoint should also be able to support some conditions. In our case, `IS_OWNER` is the only type of condition we want to support. You can add as many built-in conditions as you like to your plugin, and you can also allow Backstage integrators to supply more conditions when starting your backend if you want.
 
+## Adding support for conditional decisions
+
 Install the missing module:
 
 ```
@@ -97,6 +127,8 @@ $ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permis
 ```
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
+
+<!-- TODO: serializable result from `toQuery` method -->
 
 ```diff
 + import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
@@ -128,7 +160,11 @@ Specifically, the `apply` function is used to understand whether the passed reso
 
 Let's skip the `toQuery` function for now.
 
-Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/service/router.ts`:
+Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/service/router.ts`. This uses the `createPermissionIntegrationRouter` helper to add the APIs needed by the permission framework to your plugin. You'll need to supply:
+
+- `getResources`: a function that accepts an array of `resourceRefs` in the same format you expect to be passed to `authorize`, and returns an array of the corresponding resources.
+- `resourceType`: the same value used in the permission rule above.
+- `rules`: an array of all the permission rules you want to support in conditional decisions.
 
 ```diff
 + import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
@@ -156,5 +192,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
     router.post('/todos', async (req, res) => {
 ```
+
+## Test the authorized update endpoint
 
 To check that everything works as expected, you should see an error in the UI whenever you try to edit an item that wasn’t created by you.
