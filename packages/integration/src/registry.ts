@@ -18,6 +18,7 @@ import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
+import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 
@@ -31,6 +32,7 @@ export interface ScmIntegrationRegistry
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  gerrit: ScmIntegrationsGroup<GerritIntegration>;
   github: ScmIntegrationsGroup<GitHubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 

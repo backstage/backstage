@@ -19,6 +19,8 @@ import { AzureIntegrationConfig } from './azure';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegrationConfig } from './bitbucket';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
+import { GerritIntegrationConfig } from './gerrit';
+import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GitHubIntegrationConfig } from './github';
 import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegrationConfig } from './gitlab';
@@ -39,6 +41,10 @@ describe('ScmIntegrations', () => {
     host: 'bitbucket.local',
   } as BitbucketIntegrationConfig);
 
+  const gerrit = new GerritIntegration({
+    host: 'gerrit.local',
+  } as GerritIntegrationConfig);
+
   const github = new GitHubIntegration({
     host: 'github.local',
   } as GitHubIntegrationConfig);
@@ -51,6 +57,7 @@ describe('ScmIntegrations', () => {
     awsS3: basicIntegrations([awsS3], item => item.config.host),
     azure: basicIntegrations([azure], item => item.config.host),
     bitbucket: basicIntegrations([bitbucket], item => item.config.host),
+    gerrit: basicIntegrations([gerrit], item => item.config.host),
     github: basicIntegrations([github], item => item.config.host),
     gitlab: basicIntegrations([gitlab], item => item.config.host),
   });
@@ -59,13 +66,14 @@ describe('ScmIntegrations', () => {
     expect(i.awsS3.byUrl('https://awss3.local')).toBe(awsS3);
     expect(i.azure.byUrl('https://azure.local')).toBe(azure);
     expect(i.bitbucket.byUrl('https://bitbucket.local')).toBe(bitbucket);
+    expect(i.gerrit.byUrl('https://gerrit.local')).toBe(gerrit);
     expect(i.github.byUrl('https://github.local')).toBe(github);
     expect(i.gitlab.byUrl('https://gitlab.local')).toBe(gitlab);
   });
 
   it('can list', () => {
     expect(i.list()).toEqual(
-      expect.arrayContaining([awsS3, azure, bitbucket, github, gitlab]),
+      expect.arrayContaining([awsS3, azure, bitbucket, gerrit, github, gitlab]),
     );
   });
 
@@ -73,12 +81,14 @@ describe('ScmIntegrations', () => {
     expect(i.byUrl('https://awss3.local')).toBe(awsS3);
     expect(i.byUrl('https://azure.local')).toBe(azure);
     expect(i.byUrl('https://bitbucket.local')).toBe(bitbucket);
+    expect(i.byUrl('https://gerrit.local')).toBe(gerrit);
     expect(i.byUrl('https://github.local')).toBe(github);
     expect(i.byUrl('https://gitlab.local')).toBe(gitlab);
 
     expect(i.byHost('awss3.local')).toBe(awsS3);
     expect(i.byHost('azure.local')).toBe(azure);
     expect(i.byHost('bitbucket.local')).toBe(bitbucket);
+    expect(i.byHost('gerrit.local')).toBe(gerrit);
     expect(i.byHost('github.local')).toBe(github);
     expect(i.byHost('gitlab.local')).toBe(gitlab);
   });

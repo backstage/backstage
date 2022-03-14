@@ -22,6 +22,7 @@
 
 export * from './azure';
 export * from './bitbucket';
+export * from './gerrit';
 export * from './github';
 export * from './gitlab';
 export * from './googleGcs';

@@ -102,6 +102,7 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
+Gerrit
 gitbeaker
 github
 gitlab
