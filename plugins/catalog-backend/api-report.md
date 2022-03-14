@@ -6,7 +6,7 @@
 /// <reference types="node" />
 
 import { CatalogApi } from '@backstage/catalog-client';
-import { CatalogEntityDocument as CatalogEntityDocument_2 } from '@backstage/plugin-catalog-common';
+import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
 import { Conditions } from '@backstage/plugin-permission-node';
@@ -173,9 +173,6 @@ export const catalogConditions: Conditions<{
     [claims: string[]]
   >;
 }>;
-
-// @public @deprecated (undocumented)
-export type CatalogEntityDocument = CatalogEntityDocument_2;
 
 // @public (undocumented)
 export type CatalogEnvironment = {
@@ -355,7 +352,7 @@ export class DefaultCatalogCollator {
   // (undocumented)
   protected discovery: PluginEndpointDiscovery;
   // (undocumented)
-  execute(): Promise<CatalogEntityDocument_2[]>;
+  execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
   protected filter?: GetEntitiesRequest['filter'];
   // (undocumented)
