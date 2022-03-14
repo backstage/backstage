@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-export {
-  favoriteEntityTooltip,
-  favoriteEntityIcon,
-  FavoriteEntity,
-} from './FavoriteEntity';
+export { FavoriteEntity } from './FavoriteEntity';
 export type { FavoriteEntityProps } from './FavoriteEntity';
