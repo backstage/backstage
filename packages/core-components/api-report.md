@@ -1001,6 +1001,8 @@ export type SidebarPinStateContextType = {
 export type SidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
+  sidebarOptions?: SidebarOptions;
+  submenuOptions?: SubmenuOptions;
   disableExpandOnHover?: boolean;
   children?: React_2.ReactNode;
 };
@@ -1450,4 +1452,6 @@ export type WarningPanelClassKey =
 // src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
+// src/layout/Sidebar/Bar.d.ts:9:5 - (ae-forgotten-export) The symbol "SidebarOptions" needs to be exported by the entry point index.d.ts
+// src/layout/Sidebar/Bar.d.ts:10:5 - (ae-forgotten-export) The symbol "SubmenuOptions" needs to be exported by the entry point index.d.ts
 ```
