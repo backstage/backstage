@@ -251,9 +251,9 @@
     ],
     "Permissions": [
       "permission/overview",
+      "permission/concepts",
       "permission/getting-started",
       "permission/writing-a-policy",
-      "permission/concepts",
       {
         "type": "subcategory",
         "label": "Permission framework for plugin authors",
