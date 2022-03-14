@@ -21,7 +21,6 @@ import {
   SignJWT,
   jwtVerify,
   exportJWK,
-  decodeProtectedHeader,
 } from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';

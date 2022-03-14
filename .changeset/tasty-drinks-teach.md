@@ -5,4 +5,4 @@
 '@backstage/plugin-permission-node': patch
 ---
 
-Update to jose 4.6.0
+Update to `jose` 4.6.0

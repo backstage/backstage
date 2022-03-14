@@ -39,6 +39,9 @@
     "supertest": "^6.1.6",
     "msw": "^0.35.0"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "files": [
     "dist",
     "config.d.ts"
