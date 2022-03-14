@@ -4,9 +4,13 @@ title: 2. Adding a basic permission check
 description: Explains how to add a basic permission check to a Backstage plugin
 ---
 
-The first step we need to do in order to authorize the create endpoint, is to create a new `permission` inside our backend plugin.
+If the outcome of a permission check doesn't need to change for different [resources](../concepts.md#resources-and-rules), you can use a _basic permission check_. For this kind of check, we simply need to define a [permission](../concepts.md#resources-and-rules), and call `authorize` with it.
 
-// TODO(vinzscam): add links to the core concepts
+For this tutorial, we'll use a basic permission check to authorize the `create` endpoint in our todo-backend. This will allow Backstage integrators to control whether each of their users is authorized to create todos by adjusting their [permission policy](../concepts.md#policy).
+
+We'll start by creating a new permission, and then we'll use the permission api to call `authorize` with it during todo creation.
+
+## Setup
 
 Install the following module:
 
@@ -14,12 +18,12 @@ Install the following module:
 $ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-common
 ```
 
-Let's create a new `permissions.ts` file under `plugins/todo-list-backend/src/service/permissions.ts` with the following content:
+## Creating a new permission
+
+Let's create a new file `plugins/todo-list-backend/src/service/permissions.ts` with the following content:
 
 ```typescript
 import { Permission } from '@backstage/plugin-permission-common';
-
-export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 
 export const todosListCreate: Permission = {
   name: 'todos.list.create',
@@ -27,29 +31,11 @@ export const todosListCreate: Permission = {
     action: 'create',
   },
 };
-
-export const todosListUpdate: Permission = {
-  name: 'todos.list.update',
-  attributes: {
-    action: 'update',
-  },
-  resourceType: TODO_LIST_RESOURCE_TYPE,
-};
-
-export const todosListRead: Permission = {
-  name: 'todos.list.read',
-  attributes: {
-    action: 'read',
-  },
-  resourceType: TODO_LIST_RESOURCE_TYPE,
-};
 ```
 
-The file contains all the permissions that we are going to use in the next steps.
+We recommend exporting all permissions from your plugin, so that Backstage integrators can import them when writing policies.
 
-Let's authorize the create endpoint.
-
-Authorizing this endpoint now means that the adopters could decide whether some users should be allowed or not allowed to perform the create operation.
+## Authorizing using the new permission
 
 Edit `plugins/todo-list-backend/src/service/router.ts`:
 
@@ -59,7 +45,6 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
   import { add, getAll, getTodo, Todo, TodoFilter, update } from './todos';
 + import { PermissionAuthorizer, AuthorizeResult } from '@backstage/plugin-permission-common';
 + import { todosListCreate } from './permissions';
-
 
   export interface RouterOptions {
     logger: Logger;
@@ -98,7 +83,6 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
       const todo = add({ title: req.body.title, author });
       res.json(todo);
   });
-
 ```
 
 Pass the `permissions` object to the plugin in `packages/backend/src/plugins/todolist.ts`:
@@ -125,15 +109,15 @@ Pass the `permissions` object to the plugin in `packages/backend/src/plugins/tod
   }
 ```
 
-That's it! Now your plugin is fully configured.
+That's it! Now your plugin is fully configured. Let's try to test the logic by denying the permission.
 
-Let's try to test the logic by denying the permission.
+## Test the authorized create endpoint
 
-### Test the authorized create endpoint
-
-In order to test the logic above, the integrators of your backstage instance need to deny change their permission policy in `packages/backend/src/plugins/permission.ts`:
+In order to test the logic above, the integrators of your backstage instance need to change their permission policy to return `DENY` for our newly-created permission:
 
 ```diff
+// packages/backend/src/plugins/permission.ts
+
 - import { IdentityClient } from '@backstage/plugin-auth-node';
 + import { BackstageIdentityResponse, IdentityClient } from '@backstage/plugin-auth-node';
   import {
@@ -154,6 +138,7 @@ In order to test the logic above, the integrators of your backstage instance nee
 +         result: AuthorizeResult.DENY,
 +       };
 +     }
++
       return {
         result: AuthorizeResult.ALLOW,
       };
@@ -182,4 +167,4 @@ Let's flip the result back to `ALLOW`:
           };
 ```
 
-now the create endpoint should be enabled again.
+Now the create endpoint should be enabled again.
