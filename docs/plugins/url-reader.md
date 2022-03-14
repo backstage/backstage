@@ -44,7 +44,7 @@ import { URLReaders } from '@backstage/backend-common';
 
 function makeCreateEnv(config: Config) {
   // ....
-  const reader = UrlReaders.default({ logger, config });
+  const reader = UrlReaders.default({ logger: root, config });
   //
 }
 ```
