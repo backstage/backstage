@@ -257,6 +257,8 @@ const NO_WARNING_PACKAGES = [
   'plugins/scaffolder-common',
   'plugins/search-backend-node',
   'plugins/search-common',
+  'plugins/techdocs',
+  'plugins/techdocs-addons',
   'plugins/techdocs-backend',
   'plugins/techdocs-node',
   'plugins/tech-insights',
@@ -264,7 +266,6 @@ const NO_WARNING_PACKAGES = [
   'plugins/tech-insights-backend-module-jsonfc',
   'plugins/tech-insights-common',
   'plugins/tech-insights-node',
-  'plugins/techdocs',
   'plugins/todo',
   'plugins/todo-backend',
 ];
