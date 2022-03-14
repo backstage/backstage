@@ -11,7 +11,7 @@ import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
+import { Logger as Logger_2 } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
@@ -19,8 +19,6 @@ import { Writable } from 'stream';
 
 // @public
 export class DirectoryPreparer implements PreparerBase {
-  // @deprecated
-  constructor(config: Config, _logger: Logger | null, reader: UrlReader);
   static fromConfig(
     config: Config,
     { logger, reader }: PreparerConfig,
@@ -45,7 +43,7 @@ export type GeneratorBuilder = {
 // @public
 export type GeneratorOptions = {
   containerRunner: ContainerRunner;
-  logger: Logger;
+  logger: Logger_2;
 };
 
 // @public
@@ -54,7 +52,7 @@ export type GeneratorRunOptions = {
   outputDir: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
-  logger: Logger;
+  logger: Logger_2;
   logStream?: Writable;
 };
 
@@ -63,7 +61,7 @@ export class Generators implements GeneratorBuilder {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: Logger_2;
       containerRunner: ContainerRunner;
     },
   ): Promise<GeneratorBuilder>;
@@ -78,7 +76,7 @@ export const getDocFilesFromRepository: (
   opts?:
     | {
         etag?: string | undefined;
-        logger?: Logger | undefined;
+        logger?: Logger_2 | undefined;
       }
     | undefined,
 ) => Promise<PreparerResponse>;
@@ -120,13 +118,13 @@ export type PreparerBuilder = {
 
 // @public
 export type PreparerConfig = {
-  logger: Logger;
+  logger: Logger_2;
   reader: UrlReader;
 };
 
 // @public
 export type PreparerOptions = {
-  logger?: Logger;
+  logger?: Logger_2;
   etag?: ETag;
 };
 
@@ -168,7 +166,7 @@ export interface PublisherBase {
 
 // @public
 export type PublisherFactory = {
-  logger: Logger;
+  logger: Logger_2;
   discovery: PluginEndpointDiscovery;
 };
 
@@ -216,7 +214,7 @@ export interface TechDocsDocument extends IndexableDocument {
 // @public
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
-    logger: Logger;
+    logger: Logger_2;
     containerRunner: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
@@ -250,8 +248,6 @@ export const transformDirLocation: (
 
 // @public
 export class UrlPreparer implements PreparerBase {
-  // @deprecated
-  constructor(reader: UrlReader, logger: Logger);
   static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }

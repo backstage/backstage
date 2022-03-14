@@ -39,12 +39,6 @@ export class DirectoryPreparer implements PreparerBase {
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly reader: UrlReader;
 
-  /**  @deprecated use static fromConfig method instead */
-  constructor(config: Config, _logger: Logger | null, reader: UrlReader) {
-    this.reader = reader;
-    this.scmIntegrations = ScmIntegrations.fromConfig(config);
-  }
-
   /**
    * Returns a directory preparer instance
    * @param config - A backstage config
@@ -55,6 +49,15 @@ export class DirectoryPreparer implements PreparerBase {
     { logger, reader }: PreparerConfig,
   ): DirectoryPreparer {
     return new DirectoryPreparer(config, logger, reader);
+  }
+
+  private constructor(
+    config: Config,
+    _logger: Logger | null,
+    reader: UrlReader,
+  ) {
+    this.reader = reader;
+    this.scmIntegrations = ScmIntegrations.fromConfig(config);
   }
 
   /** {@inheritDoc PreparerBase.prepare} */
