@@ -18,12 +18,11 @@ import { createRouter } from '@backstage/plugin-graphql-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
-    logger,
-    config,
+    logger: env.logger,
+    config: env.config,
   });
 }

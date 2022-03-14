@@ -49,17 +49,6 @@ function parseRefString(ref: string): {
  * triplet of the given entity.
  *
  * @public
- * @deprecated Use getCompoundEntityRef instead
- * @param entity - An entity
- * @returns The compound entity ref
- */
-export const getEntityName = getCompoundEntityRef;
-
-/**
- * Extracts the kind, namespace and name that form the compound entity ref
- * triplet of the given entity.
- *
- * @public
  * @param entity - An entity
  * @returns The compound entity ref
  */

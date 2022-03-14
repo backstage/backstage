@@ -108,11 +108,11 @@ should have something similar to the below in
 ```ts
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 
@@ -123,25 +123,25 @@ will set the available actions that the scaffolder has access to.
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 import { ScmIntegrations } from '@backstage/integration';
 
-const integrations = ScmIntegrations.fromConfig(config);
+const integrations = ScmIntegrations.fromConfig(env.config);
 
 const builtInActions = createBuiltinActions({
   containerRunner,
   integrations,
-  config,
   catalogClient,
-  reader,
+  config: env.config,
+  reader: env.reader,
 });
 
 const actions = [...builtInActions, createNewFileAction()];
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
   actions,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 

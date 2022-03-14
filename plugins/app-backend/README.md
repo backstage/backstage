@@ -18,7 +18,7 @@ Now add the plugin router to your app, creating it for example like this:
 
 ```ts
 const router = await createRouter({
-  logger,
+  logger: env.logger,
   appPackageName: 'example-app',
 });
 ```

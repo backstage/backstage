@@ -45,17 +45,14 @@ Add a `providerFactories` entry to the router in
 ```ts
 import { createGcpIapProvider } from '@backstage/plugin-auth-backend';
 
-export default async function createPlugin({
-  logger,
-  database,
-  config,
-  discovery,
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
-    logger,
-    config,
-    database,
-    discovery,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
     providerFactories: {
       'gcp-iap': createGcpIapProvider({
         // Replace the auth handler if you want to customize the returned user

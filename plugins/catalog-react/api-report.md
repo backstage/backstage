@@ -394,9 +394,6 @@ export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
 };
 
 // @public @deprecated (undocumented)
-export const formatEntityRefTitle: typeof humanizeEntityRef;
-
-// @public @deprecated (undocumented)
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
 
 // @public @deprecated (undocumented)

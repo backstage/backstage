@@ -18,15 +18,15 @@ import {
   createRouter,
   createDefaultBadgeFactories,
 } from '@backstage/plugin-badges-backend';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  config,
-  discovery,
-}: PluginEnvironment) {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
-    config,
-    discovery,
+    config: env.config,
+    discovery: env.discovery,
     badgeFactories: createDefaultBadgeFactories(),
   });
 }

@@ -64,7 +64,7 @@ spec:
 
 This is the same entity as returned in JSON from the software catalog API:
 
-```js
+```json
 {
   "apiVersion": "backstage.io/v1alpha1",
   "kind": "Component",
@@ -79,11 +79,13 @@ This is the same entity as returned in JSON from the software catalog API:
     "labels": {
       "example.com/custom": "custom_label_value"
     },
-    "links": [{
-      "url": "https://admin.example-org.com",
-      "title": "Admin Dashboard",
-      "icon": "dashboard"
-    }],
+    "links": [
+      {
+        "url": "https://admin.example-org.com",
+        "title": "Admin Dashboard",
+        "icon": "dashboard"
+      }
+    ],
     "tags": ["java"],
     "name": "artist-web",
     "uid": "2152f463-549d-4d8d-a94d-ce2b7676c6e2"
