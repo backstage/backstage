@@ -1,7 +1,7 @@
 ---
-id: authorize-the-read-endpoint
-title: Authorize the read endpoint
-description: Authorize the read endpoint
+id: 04-authorizing-access-to-paginated-data
+title: 4. Authorizing access to paginated data
+description: Explains how to authorize access to paginated data in a Backstage plugin
 ---
 
 Authorizing `GET /todos` is similar to the update endpoint, in that it should be possible to authorize read access to todo entries based on their characteristics. When a `GET /todos` request is received, only the items that the user is permitted to see should be returned.
