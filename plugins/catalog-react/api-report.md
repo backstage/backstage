@@ -404,12 +404,6 @@ export const favoriteEntityTooltip: (
 // @public @deprecated (undocumented)
 export const formatEntityRefTitle: typeof humanizeEntityRef;
 
-// @public @deprecated (undocumented)
-export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
-
-// @public @deprecated (undocumented)
-export function getEntityMetadataViewUrl(entity: Entity): string | undefined;
-
 // @public
 export function getEntityRelations(
   entity: Entity | undefined,
