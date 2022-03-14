@@ -1,14 +1,7 @@
 {
   "releases": {
-    "Releases": [
-      "releases/overview",
-      {
-        "type": "subcategory",
-        "label": "Release Notes",
-        "ids": [
-          "releases/v1.0.0"
-        ]
-      }
+    "Release Notes": [
+      "releases/v1.0.0"
     ]
   },
   "docs": {
