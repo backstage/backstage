@@ -143,24 +143,35 @@ ApiReportGenerator.generateReviewFileContent =
             );
           }
 
-          // NOTE: we limit the @internal functionality to only apply to types that are declared
-          //       in the same module as where they're being referenced from. This limitation makes
-          //       the implementation here simpler but could be revisited if needed.
-
           // The local name of the symbol within the file, rather than the exported name
           const localName = (sourceFile as any).identifiers?.get(symbolName);
           if (!localName) {
-            return true;
+            throw new Error(
+              `Unable to find local name of "${symbolName}" in ${sourceFile.fileName}`,
+            );
           }
+
           // The local AST node of the export that we're missing
           const local = (sourceFile as any).locals?.get(localName);
           if (!local) {
             return true;
           }
 
+          // Use the type checker to look up the actual declaration(s) rather than the one in the local file
+          const type = program.getTypeChecker().getDeclaredTypeOfSymbol(local);
+          if (!type) {
+            throw new Error(
+              `Unable to find type declaration of "${symbolName}" in ${sourceFile.fileName}`,
+            );
+          }
+          const declarations = type.aliasSymbol?.declarations;
+          if (!declarations || declarations.length === 0) {
+            return true;
+          }
+
           // If any of the TSDoc comments contain a @ignore tag, we ignore this message
-          const isIgnored = local.declarations.some(declaration => {
-            const tags = [declaration.jsDoc]
+          const isIgnored = declarations.some(declaration => {
+            const tags = [(declaration as any).jsDoc]
               .flat()
               .filter(Boolean)
               .flatMap((tagNode: any) => tagNode.tags);
