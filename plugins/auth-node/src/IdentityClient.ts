@@ -16,11 +16,14 @@
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
-import { JSONWebKey, JWK, JWKS, JWT } from 'jose';
-import fetch from 'node-fetch';
+import {
+  createRemoteJWKSet,
+  jwtVerify,
+  FlattenedJWSInput,
+  JWSHeaderParameters,
+} from 'jose';
+import { GetKeyFunction } from 'jose/dist/types/types';
 import { BackstageIdentityResponse } from './types';
-
-const CLOCK_MARGIN_S = 10;
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -32,27 +35,37 @@ const CLOCK_MARGIN_S = 10;
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
   private readonly issuer: string;
-  private keyStore: JWKS.KeyStore;
-  private keyStoreUpdated: number;
+  private keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
+  private endpoint?: URL;
 
   /**
    * Create a new {@link IdentityClient} instance.
    */
-  static create(options: {
-    discovery: PluginEndpointDiscovery;
-    issuer: string;
-  }): IdentityClient {
-    return new IdentityClient(options);
+  static create(
+    options: {
+      discovery: PluginEndpointDiscovery;
+      issuer: string;
+    },
+    cooldownMs = 30000,
+  ): IdentityClient {
+    return new IdentityClient(options, cooldownMs);
   }
 
-  private constructor(options: {
-    discovery: PluginEndpointDiscovery;
-    issuer: string;
-  }) {
+  private constructor(
+    options: {
+      discovery: PluginEndpointDiscovery;
+      issuer: string;
+    },
+    cooldownMs: number,
+  ) {
     this.discovery = options.discovery;
     this.issuer = options.issuer;
-    this.keyStore = new JWKS.KeyStore();
-    this.keyStoreUpdated = 0;
+    this.discovery.getBaseUrl('auth').then(url => {
+      this.endpoint = new URL(`${url}/.well-known/jwks.json`);
+      this.keyStore = createRemoteJWKSet(this.endpoint, {
+        cooldownDuration: cooldownMs,
+      });
+    });
   }
 
   /**
@@ -67,91 +80,34 @@ export class IdentityClient {
     if (!token) {
       throw new AuthenticationError('No token specified');
     }
-    // Get signing key matching token
-    const key = await this.getKey(token);
-    if (!key) {
-      throw new AuthenticationError('No signing key matching token found');
-    }
     // Verify token claims and signature
     // Note: Claims must match those set by TokenFactory when issuing tokens
     // Note: verify throws if verification fails
-    const decoded = JWT.IdToken.verify(token, key, {
+    if (!this.keyStore) {
+      throw new AuthenticationError('No keystore exists');
+    }
+    const decoded = await jwtVerify(token, this.keyStore, {
       algorithms: ['ES256'],
       audience: 'backstage',
       issuer: this.issuer,
-    }) as { sub: string; ent: string[] };
+    });
     // Verified, return the matching user as BackstageIdentity
     // TODO: Settle internal user format/properties
-    if (!decoded.sub) {
+    if (!decoded.payload.sub) {
       throw new AuthenticationError('No user sub found in token');
     }
 
     const user: BackstageIdentityResponse = {
+      id: decoded.payload.sub,
       token,
       identity: {
         type: 'user',
-        userEntityRef: decoded.sub,
-        ownershipEntityRefs: decoded.ent ?? [],
+        userEntityRef: decoded.payload.sub,
+        ownershipEntityRefs: decoded.payload.ent
+          ? [decoded.payload.ent as string]
+          : [],
       },
     };
     return user;
-  }
-
-  /**
-   * Returns the public signing key matching the given jwt token,
-   * or null if no matching key was found
-   */
-  private async getKey(rawJwtToken: string): Promise<JWK.Key | null> {
-    const { header, payload } = JWT.decode(rawJwtToken, {
-      complete: true,
-    }) as {
-      header: { kid: string };
-      payload: { iat: number };
-    };
-
-    // Refresh public keys if needed
-    // Add a small margin in case clocks are out of sync
-    const keyStoreHasKey = !!this.keyStore.get({ kid: header.kid });
-    const issuedAfterLastRefresh =
-      payload?.iat && payload.iat > this.keyStoreUpdated - CLOCK_MARGIN_S;
-    if (!keyStoreHasKey && issuedAfterLastRefresh) {
-      await this.refreshKeyStore();
-    }
-
-    return this.keyStore.get({ kid: header.kid });
-  }
-
-  /**
-   * Lists public part of keys used to sign Backstage Identity tokens
-   */
-  private async listPublicKeys(): Promise<{
-    keys: JSONWebKey[];
-  }> {
-    const url = `${await this.discovery.getBaseUrl(
-      'auth',
-    )}/.well-known/jwks.json`;
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
-    }
-
-    const publicKeys: { keys: JSONWebKey[] } = await response.json();
-
-    return publicKeys;
-  }
-
-  /**
-   * Fetches public keys and caches them locally
-   */
-  private async refreshKeyStore(): Promise<void> {
-    const now = Date.now() / 1000;
-    const publicKeys = await this.listPublicKeys();
-    this.keyStore = JWKS.asKeyStore({
-      keys: publicKeys.keys.map(key => key as JSONWebKey),
-    });
-    this.keyStoreUpdated = now;
   }
 }

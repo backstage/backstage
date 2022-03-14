@@ -17,16 +17,14 @@
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
 import { getVoidLogger } from '@backstage/backend-common';
-import { JWKS, JSONWebKey, JWT } from 'jose';
+import { createLocalJWKSet, decodeProtectedHeader, jwtVerify } from 'jose';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const logger = getVoidLogger();
 
 function jwtKid(jwt: string): string {
-  const { header } = JWT.decode(jwt, { complete: true }) as {
-    header: { kid: string };
-  };
-  return header.kid;
+  const header = decodeProtectedHeader(jwt);
+  return header.kid ?? '';
 }
 
 const entityRef = stringifyEntityRef({
@@ -49,22 +47,19 @@ describe('TokenFactory', () => {
     const token = await factory.issueToken({ claims: { sub: entityRef } });
 
     const { keys } = await factory.listPublicKeys();
-    const keyStore = JWKS.asKeyStore({
-      keys: keys.map(key => key as JSONWebKey),
-    });
+    const keyStore = createLocalJWKSet({ keys: keys });
 
-    const payload = JWT.verify(token, keyStore) as object & {
-      iat: number;
-      exp: number;
-    };
-    expect(payload).toEqual({
+    const verifyResult = await jwtVerify(token, keyStore);
+    expect(verifyResult.payload).toEqual({
       iss: 'my-issuer',
       aud: 'backstage',
       sub: entityRef,
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
-    expect(payload.exp).toBe(payload.iat + keyDurationSeconds);
+    expect(verifyResult.payload.exp).toBe(
+      verifyResult.payload.iat! + keyDurationSeconds,
+    );
   });
 
   it('should generate new signing keys when the current one expires', async () => {

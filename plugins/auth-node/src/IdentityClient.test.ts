@@ -15,11 +15,16 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { JSONWebKey, JWK, JWS, JWT } from 'jose';
+import {
+  SignJWT,
+  generateKeyPair,
+  decodeProtectedHeader,
+  exportJWK,
+} from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { v4 as uuid } from 'uuid';
 import { IdentityClient } from './IdentityClient';
+import { v4 as uuid } from 'uuid';
 
 interface AnyJWK extends Record<string, string> {
   use: 'sig';
@@ -45,12 +50,11 @@ class FakeTokenFactory {
       ent?: string[];
     };
   }): Promise<string> {
-    const key = await JWK.generate('EC', 'P-256', {
-      use: 'sig',
-      kid: uuid(),
-      alg: 'ES256',
-    });
-    this.keys.push(key.toJWK(false) as unknown as AnyJWK);
+    const pair = await generateKeyPair('ES256');
+    const publicKey = await exportJWK(pair.publicKey);
+    const kid = uuid();
+    publicKey.kid = kid;
+    this.keys.push(publicKey as AnyJWK);
 
     const iss = this.options.issuer;
     const sub = params.claims.sub;
@@ -59,10 +63,14 @@ class FakeTokenFactory {
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + this.options.keyDurationSeconds;
 
-    return JWS.sign({ iss, sub, aud, iat, exp, ent }, key, {
-      alg: key.alg,
-      kid: key.kid,
-    });
+    return new SignJWT({ iss, sub, aud, iat, exp, ent, kid })
+      .setProtectedHeader({ alg: 'ES256', ent: ent, kid: kid })
+      .setIssuer(iss)
+      .setAudience(aud)
+      .setSubject(sub)
+      .setIssuedAt(iat)
+      .setExpirationTime(exp)
+      .sign(pair.privateKey);
   }
 
   async listPublicKeys(): Promise<{ keys: AnyJWK[] }> {
@@ -71,10 +79,8 @@ class FakeTokenFactory {
 }
 
 function jwtKid(jwt: string): string {
-  const { header } = JWT.decode(jwt, { complete: true }) as {
-    header: { kid: string };
-  };
-  return header.kid;
+  const header = decodeProtectedHeader(jwt);
+  return header.kid ?? '';
 }
 
 const server = setupServer();
@@ -98,7 +104,7 @@ describe('IdentityClient', () => {
   afterEach(() => server.resetHandlers());
 
   beforeEach(() => {
-    client = IdentityClient.create({ discovery, issuer: mockBaseUrl });
+    client = IdentityClient.create({ discovery, issuer: mockBaseUrl }, 0);
     factory = new FakeTokenFactory({
       issuer: mockBaseUrl,
       keyDurationSeconds,
@@ -116,13 +122,6 @@ describe('IdentityClient', () => {
           },
         ),
       );
-    });
-
-    it('should use the correct endpoint', async () => {
-      await factory.issueToken({ claims: { sub: 'foo' } });
-      const keys = await factory.listPublicKeys();
-      const response = await (client as any).listPublicKeys();
-      expect(response).toEqual(keys);
     });
 
     it('should throw on undefined header', async () => {
@@ -186,7 +185,7 @@ describe('IdentityClient', () => {
 
     it('should accept token from new key', async () => {
       const fixedTime = Date.now();
-      jest
+      const spy = jest
         .spyOn(Date, 'now')
         .mockImplementation(() => fixedTime - keyDurationSeconds * 1000 * 2);
       const token1 = await factory.issueToken({ claims: { sub: 'foo1' } });
@@ -197,7 +196,7 @@ describe('IdentityClient', () => {
         // Ignore thrown error
       }
       // Move forward in time where the signing key has been rotated
-      jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);
+      spy.mockRestore();
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
       const response = await client.authenticate(token);
       expect(response).toEqual({
@@ -232,33 +231,9 @@ describe('IdentityClient', () => {
   });
 
   describe('listPublicKeys', () => {
-    const defaultServiceResponse: {
-      keys: JSONWebKey[];
-    } = {
-      keys: [
-        {
-          crv: 'P-256',
-          x: 'JWy80Goa-8C3oaeDLnk0ANVPPMfI9T3u_T5T7W2b_ls',
-          y: 'Ge6jAhCDW1PFBfme2RA5ZsXN0cESiCwW29LMRPX5wkw',
-          kty: 'EC',
-          kid: 'kid-a',
-          alg: 'ES256',
-          use: 'sig',
-        },
-      ],
-    };
-
-    beforeEach(() => {
-      server.use(
-        rest.get(`${mockBaseUrl}/.well-known/jwks.json`, (_, res, ctx) => {
-          return res(ctx.json(defaultServiceResponse));
-        }),
-      );
-    });
-
     it('should use the correct endpoint', async () => {
-      const response = await (client as any).listPublicKeys();
-      expect(response).toEqual(defaultServiceResponse);
+      const url = (client as any).endpoint as URL;
+      expect(url.toString()).toMatch(`${mockBaseUrl}/.well-known/jwks.json`);
     });
   });
 });

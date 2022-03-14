@@ -15,7 +15,7 @@
  */
 
 import express from 'express';
-import { JWT } from 'jose';
+import { jwtVerify } from 'jose';
 import {
   ALB_ACCESS_TOKEN_HEADER,
   ALB_JWT_HEADER,
@@ -25,7 +25,7 @@ import { makeProfileInfo } from '../../lib/passport';
 import { AuthResolverContext } from '../types';
 import { AuthenticationError } from '@backstage/errors';
 
-const jwtMock = JWT as jest.Mocked<any>;
+const jwtMock = jwtVerify as jest.Mocked<any>;
 
 const mockKey = async () => {
   return `-----BEGIN PUBLIC KEY-----
@@ -116,7 +116,7 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce(mockClaims);
+      jwtMock.mockReturnValueOnce(Promise.resolve({ payload: mockClaims }));
 
       await provider.refresh(mockRequest, mockResponse);
 
@@ -193,7 +193,7 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockImplementationOnce(() => {
+      jwtMock.mockImplementationOnce(() => {
         throw new Error('bad JWT');
       });
 
@@ -215,7 +215,7 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce({});
+      jwtMock.mockReturnValueOnce({});
 
       await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
         AuthenticationError,
@@ -235,7 +235,7 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce({
+      jwtMock.mockReturnValueOnce({
         iss: 'INVALID_ISSUE_URL',
       });
 
@@ -257,7 +257,7 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce(mockClaims);
+      jwtMock.mockReturnValueOnce(mockClaims);
 
       await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
         AuthenticationError,
@@ -277,7 +277,7 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce(mockClaims);
+      jwtMock.mockReturnValueOnce(mockClaims);
 
       await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
         AuthenticationError,

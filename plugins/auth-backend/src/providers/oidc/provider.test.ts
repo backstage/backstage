@@ -18,7 +18,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import express from 'express';
 import { Session } from 'express-session';
-import { JWK, JWT } from 'jose';
+import { UnsecuredJWT } from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
@@ -90,13 +90,18 @@ describe('OidcAuthProvider', () => {
   });
 
   it('OidcAuthProvider#handler successfully invokes the oidc endpoints', async () => {
-    const jwt = {
-      sub: 'alice',
-      iss: 'https://oidc.test',
-      iat: Date.now(),
-      aud: clientMetadata.clientId,
-      exp: Date.now() + 10000,
-    };
+    const sub = 'alice';
+    const iss = 'https://oidc.test';
+    const iat = Date.now();
+    const aud = clientMetadata.clientId;
+    const exp = Date.now() + 10000;
+    const jwt = await new UnsecuredJWT({ iss, sub, aud, iat, exp })
+      .setIssuer(iss)
+      .setAudience(aud)
+      .setSubject(sub)
+      .setIssuedAt(iat)
+      .setExpirationTime(exp)
+      .encode();
     const requestSequence: Array<string> = [];
 
     // The array of expected requests executed by the provider handler
@@ -114,7 +119,7 @@ describe('OidcAuthProvider', () => {
         method: 'post',
         url: 'https://oidc.test/as/token.oauth2',
         payload: {
-          id_token: JWT.sign(jwt, JWK.None),
+          id_token: jwt,
           access_token: 'test',
           authorization_signed_response_alg: 'HS256',
         },

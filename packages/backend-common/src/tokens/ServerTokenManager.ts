@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { JWKS, JWK, JWT } from 'jose';
+import {
+  base64url,
+  JWSHeaderParameters,
+  generateSecret,
+  SignJWT,
+  jwtVerify,
+  exportJWK,
+  decodeProtectedHeader,
+} from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
@@ -37,8 +45,8 @@ class NoopTokenManager implements TokenManager {
  * @public
  */
 export class ServerTokenManager implements TokenManager {
-  private readonly verificationKeys: JWKS.KeyStore;
-  private readonly signingKey: JWK.Key;
+  private verificationKeys: Uint8Array[];
+  private signingKey: Uint8Array;
 
   static noop(): TokenManager {
     return new NoopTokenManager();
@@ -56,44 +64,64 @@ export class ServerTokenManager implements TokenManager {
         'You must configure at least one key in backend.auth.keys for production.',
       );
     }
-
     // For development, if a secret has not been configured, we auto generate a secret instead of throwing.
-    const generatedDevOnlyKey = JWK.generateSync('oct', 24 * 8);
-    if (generatedDevOnlyKey.k === undefined) {
-      throw new Error('Internal error, JWK key generation returned no data');
-    }
     logger.warn(
       'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY.',
     );
-    return new ServerTokenManager([generatedDevOnlyKey.k]);
+    return new ServerTokenManager([]);
   }
 
   private constructor(secrets: string[]) {
-    if (!secrets.length) {
+    if (!secrets.length && process.env.NODE_ENV !== 'development') {
       throw new Error(
         'No secrets provided when constructing ServerTokenManager',
       );
     }
+    this.verificationKeys = new Array<Uint8Array>();
+    secrets.map(k => this.verificationKeys.push(base64url.decode(k)));
+    this.signingKey = this.verificationKeys[0];
+  }
 
-    this.verificationKeys = new JWKS.KeyStore(
-      secrets.map(k => JWK.asKey({ kty: 'oct', k })),
-    );
-    this.signingKey = this.verificationKeys.all()[0];
+  // Called when no keys have been generated yet in the dev environment
+  private async generateKeys(): Promise<void> {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error(
+        'Key generation is not supported outside of the dev environment',
+      );
+    }
+    const secret = await generateSecret('HS256');
+    const jwk = await exportJWK(secret);
+    this.verificationKeys.push(base64url.decode(jwk.k ?? ''));
+    this.signingKey = this.verificationKeys[0];
   }
 
   async getToken(): Promise<{ token: string }> {
-    const jwt = JWT.sign({ sub: 'backstage-server' }, this.signingKey, {
-      algorithm: 'HS256',
-    });
-
+    if (!this.verificationKeys.length) {
+      await this.generateKeys();
+    }
+    const sub = 'backstage-server';
+    const jwt = await new SignJWT({ alg: 'HS256' })
+      .setProtectedHeader({ alg: 'HS256', sub: sub })
+      .setSubject('backstage-server')
+      .sign(this.signingKey);
     return { token: jwt };
   }
 
   async authenticate(token: string): Promise<void> {
-    try {
-      JWT.verify(token, this.verificationKeys);
-    } catch (e) {
-      throw new AuthenticationError('Invalid server token');
+    let verifyError = undefined;
+    for (const key of this.verificationKeys) {
+      const lookup = (_protectedHeader: JWSHeaderParameters): Uint8Array => {
+        return key;
+      };
+      try {
+        await jwtVerify(token, lookup);
+        // If the verify succeeded, return
+        return;
+      } catch (e) {
+        // Catch the verify exception and continue
+        verifyError = e;
+      }
     }
+    throw new AuthenticationError(`Invalid server token: ${verifyError}`);
   }
 }
