@@ -20,7 +20,7 @@ import {
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   getLocationForEntity,
