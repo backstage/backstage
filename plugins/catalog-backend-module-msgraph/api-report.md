@@ -70,7 +70,10 @@ export class MicrosoftGraphClient {
     groupId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group>;
+  getGroups(
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.Group>;
   getOrganization(tenantId: string): Promise<MicrosoftGraph.Organization>;
   // (undocumented)
   getUserPhoto(userId: string, sizeId?: string): Promise<string | undefined>;
@@ -82,13 +85,20 @@ export class MicrosoftGraphClient {
     userId: string,
     query?: ODataQuery,
   ): Promise<MicrosoftGraph.User>;
-  getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
+  getUsers(
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.User>;
   requestApi(
     path: string,
     query?: ODataQuery,
     headers?: Record<string, string>,
   ): Promise<Response_2>;
-  requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
+  requestCollection<T>(
+    path: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<T>;
   requestRaw(
     url: string,
     headers?: Record<string, string>,
@@ -167,6 +177,7 @@ export type MicrosoftGraphProviderConfig = {
   groupExpand?: string;
   groupFilter?: string;
   groupSearch?: string;
+  queryMode?: 'basic' | 'advanced';
 };
 
 // @public
@@ -178,6 +189,7 @@ export type ODataQuery = {
   filter?: string;
   expand?: string;
   select?: string[];
+  count?: boolean;
 };
 
 // @public
@@ -202,6 +214,7 @@ export function readMicrosoftGraphOrg(
     groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
+    queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;

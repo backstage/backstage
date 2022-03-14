@@ -24,6 +24,7 @@ import { MicrosoftGraphProviderConfig } from './config';
  * OData (Open Data Protocol) Query
  *
  * {@link https://docs.microsoft.com/en-us/odata/concepts/queryoptions-overview}
+ * {@link https://docs.microsoft.com/en-us/graph/query-parameters}
  * @public
  */
 export type ODataQuery = {
@@ -43,6 +44,10 @@ export type ODataQuery = {
    * request a specific set of properties for each entity or complex type
    */
   select?: string[];
+  /**
+   * Retrieves the total count of matching resources.
+   */
+  count?: boolean;
 };
 
 /**
@@ -100,19 +105,34 @@ export class MicrosoftGraphClient {
    * @public
    * @param path - Resource in Microsoft Graph
    * @param query - OData Query {@link ODataQuery}
-   *
+   * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
    */
   async *requestCollection<T>(
     path: string,
     query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
   ): AsyncIterable<T> {
-    const headers: Record<string, string> = query?.search
-      ? {
-          // Eventual consistency is required to use $search.
-          // If a new user/group is not found, it'll eventually be imported on a subsequent read
-          ConsistencyLevel: 'eventual',
-        }
-      : {};
+    // upgrade to advanced query mode transparently when "search" is used
+    // to stay backwards compatible.
+    const appliedQueryMode = query?.search ? 'advanced' : queryMode ?? 'basic';
+
+    // not needed for "search"
+    // as of https://docs.microsoft.com/en-us/graph/aad-advanced-queries?tabs=http
+    // even though a few other places say the opposite
+    // - https://docs.microsoft.com/en-us/graph/api/user-list?view=graph-rest-1.0&tabs=http#request-headers
+    // - https://docs.microsoft.com/en-us/graph/api/resources/group?view=graph-rest-1.0#properties
+    if (appliedQueryMode === 'advanced' && (query?.filter || query?.select)) {
+      query.count = true;
+    }
+    const headers: Record<string, string> =
+      appliedQueryMode === 'advanced'
+        ? {
+            // Eventual consistency is required for advanced querying capabilities
+            // like "$search" or parts of "$filter".
+            // If a new user/group is not found, it'll eventually be imported on a subsequent read
+            ConsistencyLevel: 'eventual',
+          }
+        : {};
 
     let response = await this.requestApi(path, query, headers);
 
@@ -156,6 +176,7 @@ export class MicrosoftGraphClient {
         $filter: query?.filter,
         $select: query?.select?.join(','),
         $expand: query?.expand,
+        $count: query?.count,
       },
       {
         addQueryPrefix: true,
@@ -248,10 +269,17 @@ export class MicrosoftGraphClient {
    *
    * @public
    * @param query - OData Query {@link ODataQuery}
-   *
+   * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
    */
-  async *getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User> {
-    yield* this.requestCollection<MicrosoftGraph.User>(`users`, query);
+  async *getUsers(
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.User> {
+    yield* this.requestCollection<MicrosoftGraph.User>(
+      `users`,
+      query,
+      queryMode,
+    );
   }
 
   /**
@@ -280,12 +308,20 @@ export class MicrosoftGraphClient {
    * Get a collection of
    * {@link https://docs.microsoft.com/en-us/graph/api/resources/group | Group}
    * from Graph API and return as `AsyncIterable`
+   *
    * @public
    * @param query - OData Query {@link ODataQuery}
-   *
+   * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
    */
-  async *getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group> {
-    yield* this.requestCollection<MicrosoftGraph.Group>(`groups`, query);
+  async *getGroups(
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.Group> {
+    yield* this.requestCollection<MicrosoftGraph.Group>(
+      `groups`,
+      query,
+      queryMode,
+    );
   }
 
   /**

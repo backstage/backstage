@@ -126,6 +126,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         userGroupMemberSearch: provider.userGroupMemberSearch,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
+        queryMode: provider.queryMode,
         groupTransformer: this.options.groupTransformer,
         userTransformer: this.options.userTransformer,
         organizationTransformer: this.options.organizationTransformer,

@@ -35,6 +35,11 @@ catalog:
           # the App registration in the Microsoft Azure Portal.
           clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
           clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
+          # Optional mode for querying which defaults to "basic".
+          # By default, the Microsoft Graph API only provides the basic feature set
+          # for querying. Certain features are limited to advanced querying capabilities.
+          # (See https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+          queryMode: basic # basic | advanced
           # Optional parameter to include the expanded resource or collection referenced
           # by a single relationship (navigation property) in your results.
           # Only one relationship can be expanded in a single request.
