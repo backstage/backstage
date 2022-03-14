@@ -55,7 +55,7 @@ export function createGithubIssuesLabelAction(options: {
           number: {
             title: 'Pull Request or issue number',
             description: 'The pull request or issue number to add labels to',
-            type: 'integer',
+            type: 'number',
           },
           labels: {
             title: 'Labels',
