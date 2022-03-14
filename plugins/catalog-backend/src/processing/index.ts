@@ -23,11 +23,5 @@ export type {
 } from './types';
 export { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 
-export {
-  createRandomRefreshInterval,
-  createRandomProcessingInterval,
-} from './refresh';
-export type {
-  RefreshIntervalFunction,
-  ProcessingIntervalFunction,
-} from './refresh';
+export { createRandomProcessingInterval } from './refresh';
+export type { ProcessingIntervalFunction } from './refresh';

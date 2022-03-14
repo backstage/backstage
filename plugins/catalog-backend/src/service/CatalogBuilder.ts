@@ -68,7 +68,6 @@ import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatal
 import { Stitcher } from '../stitching/Stitcher';
 import {
   createRandomProcessingInterval,
-  RefreshIntervalFunction,
   ProcessingIntervalFunction,
 } from '../processing/refresh';
 import { createRouter } from './createRouter';
@@ -180,25 +179,6 @@ export class CatalogBuilder {
   }
 
   /**
-   * Refresh interval determines how often entities should be refreshed.
-   * Seconds provided will be multiplied by 1.5
-   * The default refresh duration is 100-150 seconds.
-   * setting this too low will potentially deplete request quotas to upstream services.
-   *
-   * @deprecated use {@link CatalogBuilder#setProcessingIntervalSeconds} instead
-   */
-  setRefreshIntervalSeconds(seconds: number): CatalogBuilder {
-    this.env.logger.warn(
-      '[DEPRECATION] - CatalogBuilder.setRefreshIntervalSeconds is deprecated. Use CatalogBuilder.setProcessingIntervalSeconds instead.',
-    );
-    this.processingInterval = createRandomProcessingInterval({
-      minSeconds: seconds,
-      maxSeconds: seconds * 1.5,
-    });
-    return this;
-  }
-
-  /**
    * Processing interval determines how often entities should be processed.
    * Seconds provided will be multiplied by 1.5
    * The default processing interval is 100-150 seconds.
@@ -209,20 +189,6 @@ export class CatalogBuilder {
       minSeconds: seconds,
       maxSeconds: seconds * 1.5,
     });
-    return this;
-  }
-
-  /**
-   * Overwrites the default refresh interval function used to spread
-   * entity updates in the catalog.
-   *
-   * @deprecated use {@link CatalogBuilder#setProcessingInterval} instead
-   */
-  setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder {
-    this.env.logger.warn(
-      '[DEPRECATION] - CatalogBuilder.setRefreshInterval is deprecated. Use CatalogBuilder.setProcessingInterval instead.',
-    );
-    this.processingInterval = refreshInterval;
     return this;
   }
 
