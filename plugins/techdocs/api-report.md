@@ -274,7 +274,7 @@ export { techdocsPlugin };
 // @public
 export const TechDocsReaderPage: (
   props: TechDocsReaderPageProps,
-) => JSX.Element | null;
+) => JSX.Element;
 
 // @public
 export const TechDocsReaderPageHeader: (
