@@ -208,6 +208,10 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       scope: c.getOptionalString('scope') as SearchOptions['scope'],
       filter: formatFilter(c.getOptionalString('filter')),
       attributes: c.getOptionalStringArray('attributes'),
+      sizeLimit: c.getOptionalNumber('sizeLimit'),
+      timeLimit: c.getOptionalNumber('timeLimit'),
+      derefAliases: c.getOptionalNumber('derefAliases'),
+      typesOnly: c.getOptionalBoolean('typesOnly'),
       ...(paged !== undefined ? { paged } : undefined),
     };
   }
