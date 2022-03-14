@@ -122,16 +122,3 @@ export const TechDocsReaderPageHeader = (
     </Header>
   );
 };
-
-/**
- * @public
- * @deprecated use {@link TechDocsReaderPageHeader} instead
- */
-export const TechDocsPageHeader = TechDocsReaderPageHeader;
-
-/**
- * @public
- * @deprecated use {@link TechDocsReaderPageHeader} instead
- */
-
-export type TechDocsPageHeaderProps = TechDocsReaderPageHeaderProps;

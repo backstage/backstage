@@ -19,7 +19,6 @@ import { useOutlet } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { techdocsApiRef } from '../../api';
-import { LegacyTechDocsPage } from './LegacyTechDocsPage';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useApi, useApp } from '@backstage/core-plugin-api';
@@ -79,7 +78,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
   if (entityMetadataError) return <NotFoundErrorPage />;
 
-  if (!children) return outlet || <LegacyTechDocsPage />;
+  if (!children) return outlet;
 
   return (
     <Page themeId="documentation">
@@ -94,16 +93,3 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     </Page>
   );
 };
-
-/**
- * @public
- * @deprecated use {@link TechDocsReaderPage} instead
- */
-export const TechDocsPage = TechDocsReaderPage;
-
-/**
- * @public
- * @deprecated use {@link TechDocsReaderPageRenderFunction} instead
- */
-
-export type TechDocsPageRenderFunction = TechDocsReaderPageRenderFunction;

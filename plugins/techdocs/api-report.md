@@ -41,11 +41,6 @@ export type DocsCardGridProps = {
   entities: Entity[] | undefined;
 };
 
-// @public @deprecated (undocumented)
-export const DocsResultListItem: (
-  props: TechDocsSearchResultListItemProps,
-) => JSX.Element;
-
 // @public
 export const DocsTable: {
   (props: DocsTableProps): JSX.Element | null;
@@ -185,6 +180,7 @@ export type TabsConfig = TabConfig[];
 
 // @public
 export interface TechDocsApi {
+  // (undocumented)
   getApiOrigin(): Promise<string>;
   // (undocumented)
   getEntityMetadata(
@@ -243,22 +239,8 @@ export type TechDocsMetadata = {
   site_description: string;
 };
 
-// @public @deprecated (undocumented)
-export const TechDocsPage: (props: TechDocsReaderPageProps) => JSX.Element;
-
 // @public
 export const TechdocsPage: () => JSX.Element;
-
-// @public @deprecated (undocumented)
-export const TechDocsPageHeader: (
-  props: TechDocsReaderPageHeaderProps,
-) => JSX.Element;
-
-// @public @deprecated (undocumented)
-export type TechDocsPageHeaderProps = TechDocsReaderPageHeaderProps;
-
-// @public @deprecated (undocumented)
-export type TechDocsPageRenderFunction = TechDocsReaderPageRenderFunction;
 
 // @public
 export const TechDocsPageWrapper: (
@@ -292,7 +274,7 @@ export { techdocsPlugin };
 // @public
 export const TechDocsReaderPage: (
   props: TechDocsReaderPageProps,
-) => JSX.Element;
+) => JSX.Element | null;
 
 // @public
 export const TechDocsReaderPageHeader: (
@@ -348,6 +330,7 @@ export type TechDocsSearchResultListItemProps = {
 
 // @public
 export interface TechDocsStorageApi {
+  // (undocumented)
   getApiOrigin(): Promise<string>;
   // (undocumented)
   getBaseUrl(
