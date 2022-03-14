@@ -121,6 +121,7 @@ export default async function createPlugin(
     logger: env.logger,
     config: env.config,
     discovery: env.discovery,
+    cache: env.cache,
   });
 }
 ```
