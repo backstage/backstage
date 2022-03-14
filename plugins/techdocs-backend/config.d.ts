@@ -47,17 +47,6 @@ export interface Config {
     };
 
     /**
-     * Techdocs generator information
-     * @deprecated Replaced with techdocs.generator
-     */
-    generators?: {
-      /**
-       * @deprecated Use techdocs.generator.runIn
-       */
-      techdocs: 'local' | 'docker';
-    };
-
-    /**
      * Techdocs publisher information
      */
     publisher?:
@@ -251,19 +240,6 @@ export interface Config {
        */
       readTimeout?: number;
     };
-
-    /**
-     * @example http://localhost:7007/api/techdocs
-     * @visibility frontend
-     * @deprecated
-     */
-    requestUrl?: string;
-
-    /**
-     * @example http://localhost:7007/api/techdocs/static/docs
-     * @deprecated
-     */
-    storageUrl?: string;
 
     /**
      * (Optional and not recommended) Prior to version [0.x.y] of TechDocs, docs
