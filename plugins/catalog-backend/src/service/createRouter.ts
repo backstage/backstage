@@ -158,7 +158,9 @@ export async function createRouter(
         async (req, res) => {
           const { kind, namespace, name } = req.params;
           const entityRef = stringifyEntityRef({ kind, namespace, name });
-          const response = await entitiesCatalog.entityAncestry(entityRef);
+          const response = await entitiesCatalog.entityAncestry(entityRef, {
+            authorizationToken: getBearerToken(req.header('authorization')),
+          });
           res.status(200).json(response);
         },
       )
