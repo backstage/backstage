@@ -1,6 +1,6 @@
 ---
 id: concepts
-title: Permission Framework Concepts
+title: Concepts
 description: A list of important permission framework concepts
 ---
 
