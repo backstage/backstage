@@ -142,10 +142,6 @@ export class CatalogBuilder {
     processingInterval: ProcessingIntervalFunction,
   ): CatalogBuilder;
   setProcessingIntervalSeconds(seconds: number): CatalogBuilder;
-  // @deprecated
-  setRefreshInterval(refreshInterval: RefreshIntervalFunction): CatalogBuilder;
-  // @deprecated
-  setRefreshIntervalSeconds(seconds: number): CatalogBuilder;
 }
 
 // @alpha
@@ -323,12 +319,6 @@ export function createRandomProcessingInterval(options: {
   minSeconds: number;
   maxSeconds: number;
 }): ProcessingIntervalFunction;
-
-// @public @deprecated
-export function createRandomRefreshInterval(options: {
-  minSeconds: number;
-  maxSeconds: number;
-}): RefreshIntervalFunction;
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -810,9 +800,6 @@ export type RecursivePartial<T> = {
     ? RecursivePartial<T[P]>
     : T[P];
 };
-
-// @public @deprecated
-export type RefreshIntervalFunction = () => number;
 
 // @public
 export type RefreshOptions = {
