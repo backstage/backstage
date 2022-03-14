@@ -53,10 +53,6 @@ const siteConfig = {
       page: 'demos',
       label: 'Demos',
     },
-    {
-      href: 'https://mailchi.mp/spotify/backstage-community',
-      label: 'Newsletter',
-    },
   ],
 
   /* path to images for header/footer */
