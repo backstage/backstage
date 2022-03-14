@@ -457,12 +457,6 @@ export type EntitiesSearchFilter = {
   values?: string[];
 };
 
-// @public @deprecated (undocumented)
-function entity(
-  atLocation: LocationSpec,
-  newEntity: Entity,
-): CatalogProcessorResult;
-
 // @public (undocumented)
 export type EntityAncestryResponse = {
   rootEntityRef: string;
@@ -574,24 +568,6 @@ export class FileReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public @deprecated (undocumented)
-function generalError(
-  atLocation: LocationSpec,
-  message: string,
-): CatalogProcessorResult;
-
-// @public @deprecated (undocumented)
-function inputError(
-  atLocation: LocationSpec,
-  message: string,
-): CatalogProcessorResult;
-
-// @public @deprecated (undocumented)
-function location_2(
-  newLocation: LocationSpec,
-  _optional?: boolean,
-): CatalogProcessorResult;
-
 // @public (undocumented)
 export type LocationAnalyzer = {
   analyzeLocation(
@@ -679,12 +655,6 @@ export interface LocationStore {
   // (undocumented)
   listLocations(): Promise<Location_2[]>;
 }
-
-// @public @deprecated (undocumented)
-function notFoundError(
-  atLocation: LocationSpec,
-  message: string,
-): CatalogProcessorResult;
 
 // @public (undocumented)
 export type PageInfo =
@@ -811,21 +781,6 @@ export type RefreshOptions = {
 export interface RefreshService {
   refresh(options: RefreshOptions): Promise<void>;
 }
-
-// @public @deprecated (undocumented)
-function relation(spec: EntityRelationSpec): CatalogProcessorResult;
-
-declare namespace results {
-  export {
-    notFoundError,
-    inputError,
-    generalError,
-    location_2 as location,
-    entity,
-    relation,
-  };
-}
-export { results };
 
 // @public
 export interface RouterOptions {
