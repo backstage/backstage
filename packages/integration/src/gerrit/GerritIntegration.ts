@@ -33,7 +33,7 @@ export class GerritIntegration implements ScmIntegration {
     );
     return basicIntegrations(
       configs.map(c => new GerritIntegration(c)),
-      i => i.config.host ?? '',
+      i => i.config.host,
     );
   };
 
@@ -59,14 +59,14 @@ export class GerritIntegration implements ScmIntegration {
     const { url, base, lineNumber } = options;
     let updated;
     if (url) {
-      updated = new URL(url, base).toString();
+      updated = new URL(url, base);
     } else {
-      updated = base;
+      updated = new URL(base);
     }
     if (lineNumber) {
-      return `${updated}#${lineNumber}`;
+      updated.hash = lineNumber.toString();
     }
-    return updated;
+    return updated.toString();
   }
 
   resolveEditUrl(url: string): string {

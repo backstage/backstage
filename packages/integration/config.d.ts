@@ -71,7 +71,7 @@ export interface Config {
        * The base url for the Gerrit instance.
        * @visibility frontend
        */
-      apiBaseUrl?: string;
+      baseUrl?: string;
       /**
        * The username to use for authenticated requests.
        * @visibility secret
@@ -80,7 +80,6 @@ export interface Config {
       /**
        * Gerrit password used to authenticate requests. This can be either a password
        * or a generated access token.
-       * .
        * @visibility secret
        */
       password?: string;

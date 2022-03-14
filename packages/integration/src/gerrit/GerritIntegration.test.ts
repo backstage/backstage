@@ -26,7 +26,7 @@ describe('GerritIntegration', () => {
             {
               host: 'gerrit-review.example.com',
               username: 'gerrituser',
-              apiBaseUrl: 'https://gerrit-review.example.com/gerrit',
+              baseUrl: 'https://gerrit-review.example.com/gerrit',
               password: '1234',
             },
           ],
@@ -37,12 +37,14 @@ describe('GerritIntegration', () => {
     expect(integrations.list()[0].config.host).toBe(
       'gerrit-review.example.com',
     );
+    expect(integrations.list()[0].config.baseUrl).toBe(
+      'https://gerrit-review.example.com/gerrit',
+    );
   });
 
   it('returns the basics', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
-      apiBaseUrl: 'https://gerrit-review.example.com/gerrit',
     } as any);
     expect(integration.type).toBe('gerrit');
     expect(integration.title).toBe('gerrit-review.example.com');
@@ -52,7 +54,6 @@ describe('GerritIntegration', () => {
     it('works for valid urls', () => {
       const integration = new GerritIntegration({
         host: 'gerrit-review.example.com',
-        apiBaseUrl: 'https://gerrit-review.example.com/gerrit',
       } as any);
 
       expect(
@@ -63,13 +64,26 @@ describe('GerritIntegration', () => {
         }),
       ).toBe('https://gerrit-review.example.com/catalog-info.yaml#9');
     });
+
+    it('handles line numbers', () => {
+      const integration = new GerritIntegration({
+        host: 'gerrit-review.example.com',
+      } as any);
+
+      expect(
+        integration.resolveUrl({
+          url: '',
+          base: 'https://gerrit-review.example.com/catalog-info.yaml#4',
+          lineNumber: 9,
+        }),
+      ).toBe('https://gerrit-review.example.com/catalog-info.yaml#9');
+    });
   });
 
   describe('resolves with a relative url', () => {
     it('works for valid urls', () => {
       const integration = new GerritIntegration({
         host: 'gerrit-review.example.com',
-        apiBaseUrl: 'https://gerrit-review.example.com/gerrit',
       } as any);
 
       expect(
@@ -86,7 +100,6 @@ describe('GerritIntegration', () => {
   it('resolve edit URL', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',
-      apiBaseUrl: 'https://gerrit-review.example.com/gerrit',
     } as any);
 
     // Resolve edit URLs is not applicable for gerrit. Return the input

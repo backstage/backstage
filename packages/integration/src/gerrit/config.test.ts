@@ -55,14 +55,14 @@ describe('readGerritIntegrationConfig', () => {
     const output = readGerritIntegrationConfig(
       buildConfig({
         host: 'a.com',
-        apiBaseUrl: 'https://a.com/api',
+        baseUrl: 'https://a.com/api',
         username: 'u',
         password: 'p',
       }),
     );
     expect(output).toEqual({
       host: 'a.com',
-      apiBaseUrl: 'https://a.com/api',
+      baseUrl: 'https://a.com/api',
       username: 'u',
       password: 'p',
     });
@@ -76,7 +76,7 @@ describe('readGerritIntegrationConfig', () => {
     );
     expect(output).toEqual({
       host: 'a.com',
-      apiBaseUrl: 'https://a.com',
+      baseUrl: 'https://a.com',
       username: undefined,
       password: undefined,
     });
@@ -90,8 +90,8 @@ describe('readGerritIntegrationConfig', () => {
       readGerritIntegrationConfig(buildConfig({ ...valid, host: 2 })),
     ).toThrow(/host/);
     expect(() =>
-      readGerritIntegrationConfig(buildConfig({ ...valid, apiBaseUrl: 2 })),
-    ).toThrow(/apiBaseUrl/);
+      readGerritIntegrationConfig(buildConfig({ ...valid, baseUrl: 2 })),
+    ).toThrow(/baseUrl/);
   });
 
   it('works on the frontend', async () => {
@@ -99,14 +99,14 @@ describe('readGerritIntegrationConfig', () => {
       readGerritIntegrationConfig(
         await buildFrontendConfig({
           host: 'a.com',
-          apiBaseUrl: 'https://a.com/gerrit',
+          baseUrl: 'https://a.com/gerrit',
           username: 'u',
           password: 'p',
         }),
       ),
     ).toEqual({
       host: 'a.com',
-      apiBaseUrl: 'https://a.com/gerrit',
+      baseUrl: 'https://a.com/gerrit',
     });
   });
 });
@@ -121,26 +121,26 @@ describe('readGerritIntegrationConfigs', () => {
       buildConfig([
         {
           host: 'a.com',
-          apiBaseUrl: 'https://a.com/api',
+          baseUrl: 'https://a.com/api',
           username: 'u',
           password: 'p',
         },
         {
           host: 'b.com',
-          apiBaseUrl: 'https://b.com/api',
+          baseUrl: 'https://b.com/api',
         },
       ]),
     );
     expect(output).toEqual([
       {
         host: 'a.com',
-        apiBaseUrl: 'https://a.com/api',
+        baseUrl: 'https://a.com/api',
         username: 'u',
         password: 'p',
       },
       {
         host: 'b.com',
-        apiBaseUrl: 'https://b.com/api',
+        baseUrl: 'https://b.com/api',
         username: undefined,
         password: undefined,
       },

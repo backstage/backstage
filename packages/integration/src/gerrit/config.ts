@@ -36,7 +36,7 @@ export type GerritIntegrationConfig = {
    * "https://gerrit-review.com/gerrit". This is the url that you would open
    * in a browser.
    */
-  apiBaseUrl?: string;
+  baseUrl?: string;
 
   /**
    * The username to use for requests to gerrit.
@@ -60,7 +60,7 @@ export function readGerritIntegrationConfig(
   config: Config,
 ): GerritIntegrationConfig {
   const host = config.getString('host');
-  let apiBaseUrl = config.getOptionalString('apiBaseUrl');
+  let baseUrl = config.getOptionalString('baseUrl');
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
 
@@ -68,20 +68,20 @@ export function readGerritIntegrationConfig(
     throw new Error(
       `Invalid Gerrit integration config, '${host}' is not a valid host`,
     );
-  } else if (apiBaseUrl && !isValidUrl(apiBaseUrl)) {
+  } else if (baseUrl && !isValidUrl(baseUrl)) {
     throw new Error(
-      `Invalid Gerrit integration config, '${apiBaseUrl}' is not a valid apiBaseUrl`,
+      `Invalid Gerrit integration config, '${baseUrl}' is not a valid baseUrl`,
     );
   }
-  if (apiBaseUrl) {
-    apiBaseUrl = trimEnd(apiBaseUrl, '/');
+  if (baseUrl) {
+    baseUrl = trimEnd(baseUrl, '/');
   } else {
-    apiBaseUrl = `https://${host}`;
+    baseUrl = `https://${host}`;
   }
 
   return {
     host,
-    apiBaseUrl,
+    baseUrl,
     username,
     password,
   };
