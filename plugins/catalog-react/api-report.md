@@ -401,12 +401,6 @@ export const favoriteEntityTooltip: (
   isStarred: boolean,
 ) => 'Remove from favorites' | 'Add to favorites';
 
-// @public @deprecated (undocumented)
-export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
-
-// @public @deprecated (undocumented)
-export function getEntityMetadataViewUrl(entity: Entity): string | undefined;
-
 // @public
 export function getEntityRelations(
   entity: Entity | undefined,
