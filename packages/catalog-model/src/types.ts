@@ -25,11 +25,3 @@ export type CompoundEntityRef = {
   namespace: string;
   name: string;
 };
-
-/**
- * A complete entity name, with the full kind-namespace-name triplet.
- *
- * @deprecated Use CompoundEntityRef instead
- * @public
- */
-export type EntityName = CompoundEntityRef;
