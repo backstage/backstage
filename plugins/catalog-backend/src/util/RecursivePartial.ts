@@ -16,7 +16,7 @@
 
 /**
  * Makes all keys of an entire hierarchy optional.
- * @public
+ * @ignore
  */
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]

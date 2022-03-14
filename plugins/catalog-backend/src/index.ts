@@ -25,7 +25,6 @@ export * from './catalog';
 export * from './ingestion';
 export * from './modules';
 export * from './search';
-export * from './util';
 export * from './processing';
 export * from './service';
 export * from './permissions';
