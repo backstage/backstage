@@ -1,7 +1,7 @@
 ---
-id: authorize-the-create-endpoint
-title: Authorize the create endpoint
-description: Authorize the create endpoint
+id: 02-adding-a-basic-permission-check
+title: 2. Adding a basic permission check
+description: Explains how to add a basic permission check to a Backstage plugin
 ---
 
 The first step we need to do in order to authorize the create endpoint, is to create a new `permission` inside our backend plugin.
