@@ -402,9 +402,6 @@ export const favoriteEntityTooltip: (
 ) => 'Remove from favorites' | 'Add to favorites';
 
 // @public @deprecated (undocumented)
-export const formatEntityRefTitle: typeof humanizeEntityRef;
-
-// @public @deprecated (undocumented)
 export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
 
 // @public @deprecated (undocumented)
