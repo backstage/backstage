@@ -595,8 +595,6 @@ export type LocationEntityProcessorOptions = {
 
 // @public
 export interface LocationInput {
-  // @deprecated (undocumented)
-  presence?: 'optional' | 'required';
   // (undocumented)
   target: string;
   // (undocumented)
