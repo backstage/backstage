@@ -15,7 +15,8 @@ We'll start by creating a new permission, and then we'll use the permission api 
 Install the following module:
 
 ```
-$ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permission-common
+$ yarn workspace @internal/plugin-todo-list-backend \
+    add @backstage/plugin-permission-common
 ```
 
 ## Creating a new permission
@@ -40,11 +41,14 @@ We recommend exporting all permissions from your plugin, so that Backstage integ
 Edit `plugins/todo-list-backend/src/service/router.ts`:
 
 ```diff
+...
+
 - import { InputError } from '@backstage/errors';
 + import { InputError, NotAllowedError } from '@backstage/errors';
-  import { add, getAll, getTodo, Todo, TodoFilter, update } from './todos';
 + import { PermissionAuthorizer, AuthorizeResult } from '@backstage/plugin-permission-common';
 + import { todosListCreate } from './permissions';
+
+...
 
   export interface RouterOptions {
     logger: Logger;
