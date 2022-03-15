@@ -22,7 +22,6 @@ import {
   sep,
 } from 'path';
 import { ConfigSchemaPackageEntry } from './types';
-import { getProgramFromFiles, generateSchema } from 'typescript-json-schema';
 import { JsonObject } from '@backstage/types';
 import { assertError } from '@backstage/errors';
 
@@ -149,7 +148,7 @@ export async function collectConfigSchemas(
     ...packagePaths.map(path => processItem({ name: path, packagePath: path })),
   ]);
 
-  const tsSchemas = compileTsSchemas(tsSchemaPaths);
+  const tsSchemas = await compileTsSchemas(tsSchemaPaths);
 
   return schemas.concat(tsSchemas);
 }
@@ -157,10 +156,16 @@ export async function collectConfigSchemas(
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all typescript schema definition and compile them all in one go.
 // This is much faster than compiling them separately.
-function compileTsSchemas(paths: string[]) {
+async function compileTsSchemas(paths: string[]) {
   if (paths.length === 0) {
     return [];
   }
+
+  // Lazy loaded, because this brings up all of TypeScript and we don't
+  // want that eagerly loaded in tests
+  const { getProgramFromFiles, generateSchema } = await import(
+    'typescript-json-schema'
+  );
 
   const program = getProgramFromFiles(paths, {
     incremental: false,
