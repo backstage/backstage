@@ -2,5 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-GitHub issues label action:'github:issues:label' for Backstage plugin Scaffolder has been added.
-'pullRequestNumber' output has been added to 'publish:github:pull-request' action.
+Added new `github:issues:label` action to apply labels to issues, and also output `pullRequestNumber` from `publish:github:pull-request`.
