@@ -39,7 +39,7 @@ export async function startStandaloneServer(
   const discovery = SingleHostDiscovery.fromConfig(config);
   const router = await createRouter({
     logger,
-    identity: new IdentityClient({
+    identity: IdentityClient.create({
       discovery,
       issuer: await discovery.getExternalBaseUrl('auth'),
     }),
