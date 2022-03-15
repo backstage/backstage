@@ -8,7 +8,7 @@
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/search-common';
 import { IndexableDocument } from '@backstage/search-common';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { Readable } from 'stream';
 
 // @public
@@ -42,7 +42,7 @@ export class StackOverflowQuestionsCollatorFactory
 export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
   requestParams: StackOverflowQuestionsRequestParams;
-  logger: Logger_2;
+  logger: Logger;
 };
 
 // @public
