@@ -32,7 +32,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'crypto';
 import { Router } from 'express';
 import lodash, { keyBy } from 'lodash';
-import { EntitiesCatalog, EntitiesSearchFilter } from '../catalog';
+import { EntitiesSearchFilter } from '../catalog';
 
 import {
   CatalogProcessor,
@@ -76,7 +76,6 @@ import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
-import { LocationService } from './types';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -355,10 +354,7 @@ export class CatalogBuilder {
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
-    entitiesCatalog: EntitiesCatalog;
-    locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
-    locationService: LocationService;
     router: Router;
   }> {
     const { config, database, logger, permissions } = this.env;
@@ -460,10 +456,7 @@ export class CatalogBuilder {
     await connectEntityProviders(processingDatabase, entityProviders);
 
     return {
-      entitiesCatalog,
-      locationAnalyzer,
       processingEngine,
-      locationService,
       router,
     };
   }

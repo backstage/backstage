@@ -14,11 +14,8 @@ import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
-import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
-import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Location as Location_2 } from '@backstage/catalog-client';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -121,10 +118,7 @@ export class CatalogBuilder {
   ): void;
   addProcessor(...processors: CatalogProcessor[]): CatalogBuilder;
   build(): Promise<{
-    entitiesCatalog: EntitiesCatalog;
-    locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
-    locationService: LocationService;
     router: Router;
   }>;
   static create(env: CatalogEnvironment): CatalogBuilder;
@@ -185,12 +179,6 @@ export interface CatalogProcessingEngine {
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
-}
-
-// @public
-export interface CatalogProcessingOrchestrator {
-  // (undocumented)
-  process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
 // @public (undocumented)
@@ -267,22 +255,6 @@ export type CatalogProcessorResult =
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult;
 
-// @public
-export type CatalogRule = {
-  allow: Array<{
-    kind: string;
-  }>;
-  locations?: Array<{
-    target?: string;
-    type: string;
-  }>;
-};
-
-// @public
-export type CatalogRulesEnforcer = {
-  isAllowed(entity: Entity, location: LocationSpec): boolean;
-};
-
 // @public (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
@@ -319,9 +291,6 @@ export function createRandomProcessingInterval(options: {
   minSeconds: number;
   maxSeconds: number;
 }): ProcessingIntervalFunction;
-
-// @public
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
@@ -389,66 +358,10 @@ export type DefaultCatalogCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
 };
 
-// @public (undocumented)
-export class DefaultCatalogProcessingOrchestrator
-  implements CatalogProcessingOrchestrator
-{
-  constructor(options: {
-    processors: CatalogProcessor[];
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    parser: CatalogProcessorParser;
-    policy: EntityPolicy;
-    rulesEnforcer: CatalogRulesEnforcer;
-  });
-  // (undocumented)
-  process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
-}
-
-// @public
-export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
-  constructor(rules: CatalogRule[]);
-  static readonly defaultRules: CatalogRule[];
-  static fromConfig(config: Config): DefaultCatalogRulesEnforcer;
-  isAllowed(entity: Entity, location: LocationSpec): boolean;
-}
-
 // @public
 export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;
-};
-
-// @public (undocumented)
-export type EntitiesCatalog = {
-  entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
-  removeEntityByUid(
-    uid: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<void>;
-  entityAncestry(
-    entityRef: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<EntityAncestryResponse>;
-  facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
-};
-
-// @public (undocumented)
-export type EntitiesRequest = {
-  filter?: EntityFilter;
-  fields?: (entity: Entity) => Entity;
-  pagination?: EntityPagination;
-  authorizationToken?: string;
-};
-
-// @public (undocumented)
-export type EntitiesResponse = {
-  entities: Entity[];
-  pageInfo: PageInfo;
 };
 
 // @public
@@ -456,33 +369,6 @@ export type EntitiesSearchFilter = {
   key: string;
   values?: string[];
 };
-
-// @public (undocumented)
-export type EntityAncestryResponse = {
-  rootEntityRef: string;
-  items: Array<{
-    entity: Entity;
-    parentEntityRefs: string[];
-  }>;
-};
-
-// @public
-export interface EntityFacetsRequest {
-  authorizationToken?: string;
-  facets: string[];
-  filter?: EntityFilter;
-}
-
-// @public
-export interface EntityFacetsResponse {
-  facets: Record<
-    string,
-    Array<{
-      value: string;
-      count: number;
-    }>
-  >;
-}
 
 // @public
 export type EntityFilter =
@@ -496,34 +382,6 @@ export type EntityFilter =
       not: EntityFilter;
     }
   | EntitiesSearchFilter;
-
-// @public
-export type EntityPagination = {
-  limit?: number;
-  offset?: number;
-  after?: string;
-};
-
-// @public
-export type EntityProcessingRequest = {
-  entity: Entity;
-  state?: JsonObject;
-};
-
-// @public
-export type EntityProcessingResult =
-  | {
-      ok: true;
-      state: JsonObject;
-      completedEntity: Entity;
-      deferredEntities: DeferredEntity[];
-      relations: EntityRelationSpec[];
-      errors: Error[];
-    }
-  | {
-      ok: false;
-      errors: Error[];
-    };
 
 // @public
 export interface EntityProvider {
@@ -594,75 +452,11 @@ export type LocationEntityProcessorOptions = {
 };
 
 // @public
-export interface LocationInput {
-  // (undocumented)
-  target: string;
-  // (undocumented)
-  type: string;
-}
-
-// @public
-export interface LocationService {
-  // (undocumented)
-  createLocation(
-    location: LocationInput,
-    dryRun: boolean,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<{
-    location: Location_2;
-    entities: Entity[];
-    exists?: boolean;
-  }>;
-  // (undocumented)
-  deleteLocation(
-    id: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<void>;
-  // (undocumented)
-  getLocation(
-    id: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<Location_2>;
-  // (undocumented)
-  listLocations(options?: {
-    authorizationToken?: string;
-  }): Promise<Location_2[]>;
-}
-
-// @public
 export type LocationSpec = {
   type: string;
   target: string;
   presence?: 'optional' | 'required';
 };
-
-// @public
-export interface LocationStore {
-  // (undocumented)
-  createLocation(location: LocationInput): Promise<Location_2>;
-  // (undocumented)
-  deleteLocation(id: string): Promise<void>;
-  // (undocumented)
-  getLocation(id: string): Promise<Location_2>;
-  // (undocumented)
-  listLocations(): Promise<Location_2[]>;
-}
-
-// @public (undocumented)
-export type PageInfo =
-  | {
-      hasNextPage: false;
-    }
-  | {
-      hasNextPage: true;
-      endCursor: string;
-    };
 
 // @public (undocumented)
 export function parseEntityYaml(
@@ -759,35 +553,6 @@ export const processingResult: Readonly<{
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
 }>;
-
-// @public
-export type RefreshOptions = {
-  entityRef: string;
-  authorizationToken?: string;
-};
-
-// @public
-export interface RefreshService {
-  refresh(options: RefreshOptions): Promise<void>;
-}
-
-// @public
-export interface RouterOptions {
-  // (undocumented)
-  config: Config;
-  // (undocumented)
-  entitiesCatalog?: EntitiesCatalog;
-  // (undocumented)
-  locationAnalyzer?: LocationAnalyzer;
-  // (undocumented)
-  locationService: LocationService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  permissionIntegrationRouter?: express.Router;
-  // (undocumented)
-  refreshService?: RefreshService;
-}
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {

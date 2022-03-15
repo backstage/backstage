@@ -22,7 +22,7 @@ import { DbLocationsRow } from '../../database/tables';
 import { getEntityLocationRef } from '../../processing/util';
 import { EntityProvider, EntityProviderConnection } from '../../api';
 import { locationSpecToLocationEntity } from '../../util/conversion';
-import { LocationInput, LocationStore } from '../../service';
+import { LocationInput, LocationStore } from '../../service/types';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
