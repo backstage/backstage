@@ -23,9 +23,40 @@ export type Todo = {
   timestamp: number;
 };
 
-export type TodoFilter = Parameters<Array<Todo>['filter']>[0];
+export type TodoFilter = {
+  property: Exclude<keyof Todo, 'timestamp'>;
+  values: Array<string | undefined>;
+};
+
+export type TodoFilters =
+  | {
+      anyOf: TodoFilters[];
+    }
+  | { allOf: TodoFilters[] }
+  | { not: TodoFilters }
+  | TodoFilter;
 
 const todos: { [key: string]: Todo } = {};
+
+const matches = (todo: Todo, filters?: TodoFilters): boolean => {
+  if (!filters) {
+    return true;
+  }
+
+  if ('allOf' in filters) {
+    return filters.allOf.every(filter => matches(todo, filter));
+  }
+
+  if ('anyOf' in filters) {
+    return filters.anyOf.some(filter => matches(todo, filter));
+  }
+
+  if ('not' in filters) {
+    return !matches(todo, filters.not);
+  }
+
+  return filters.values.includes(todo[filters.property]);
+};
 
 export function add(todo: Omit<Todo, 'id' | 'timestamp'>) {
   const id = uuid();
@@ -50,13 +81,10 @@ export function update({ id, title }: { id: string; title: string }) {
   return todo;
 }
 
-export function getAll(filter?: TodoFilter) {
-  let values = Object.values(todos);
-  if (filter) {
-    values = values.filter(filter);
-  }
-
-  return values.sort((a, b) => b.timestamp - a.timestamp);
+export function getAll(filter?: TodoFilters) {
+  return Object.values(todos)
+    .filter(value => matches(value, filter))
+    .sort((a, b) => b.timestamp - a.timestamp);
 }
 
 // prepopulate the db
