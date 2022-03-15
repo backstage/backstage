@@ -15,6 +15,8 @@
  */
 
 import {
+  DefaultLogApi,
+  DefaultLogStoreApi,
   AlertApiForwarder,
   NoOpAnalyticsApi,
   ErrorApiForwarder,
@@ -36,6 +38,8 @@ import {
 } from '@backstage/core-app-api';
 
 import {
+  logApiRef,
+  logStoreApiRef,
   createApiFactory,
   alertApiRef,
   analyticsApiRef,
@@ -61,6 +65,16 @@ import {
 } from '@backstage/plugin-permission-react';
 
 export const apis = [
+  createApiFactory({
+    api: logStoreApiRef,
+    deps: {},
+    factory: () => DefaultLogStoreApi.create(),
+  }),
+  createApiFactory({
+    api: logApiRef,
+    deps: { logStoreApi: logStoreApiRef },
+    factory: ({ logStoreApi }) => DefaultLogApi.create({ logStoreApi }),
+  }),
   createApiFactory({
     api: discoveryApiRef,
     deps: { configApi: configApiRef },
