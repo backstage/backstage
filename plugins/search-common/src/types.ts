@@ -31,7 +31,7 @@ export interface SearchQuery {
 /**
  * @beta
  */
-export interface Result<TDocument> {
+export interface Result<TDocument extends SearchDocument> {
   type: string;
   document: TDocument;
 }
@@ -39,7 +39,7 @@ export interface Result<TDocument> {
 /**
  * @beta
  */
-export interface ResultSet<TDocument> {
+export interface ResultSet<TDocument extends SearchDocument> {
   results: Result<TDocument>[];
   nextPageCursor?: string;
   previousPageCursor?: string;

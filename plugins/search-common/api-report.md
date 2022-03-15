@@ -51,7 +51,7 @@ export type QueryRequestOptions = {
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
 // @beta (undocumented)
-export interface Result<TDocument> {
+export interface Result<TDocument extends SearchDocument> {
   // (undocumented)
   document: TDocument;
   // (undocumented)
@@ -59,7 +59,7 @@ export interface Result<TDocument> {
 }
 
 // @beta (undocumented)
-export interface ResultSet<TDocument> {
+export interface ResultSet<TDocument extends SearchDocument> {
   // (undocumented)
   nextPageCursor?: string;
   // (undocumented)
