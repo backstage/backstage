@@ -40,7 +40,15 @@ export type PermissionBase<TType extends string, TFields extends object> = {
    * all by name.
    */
   attributes: PermissionAttributes;
-} & { type: TType } & TFields;
+} & {
+  /**
+   * String value indicating the type of the permission (e.g. 'basic',
+   * 'resource'). The allowed authorization flows in the permission system
+   * depend on the type. For example, a `resourceRef` should only be provided
+   * when authorizing permissions of type 'resource'.
+   */
+  type: TType;
+} & TFields;
 
 /**
  * A permission that can be checked through authorization.
