@@ -62,6 +62,7 @@ export type BackstagePlugin<
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
+  info: PluginInfo;
 };
 
 /**
@@ -73,6 +74,62 @@ export type PluginFeatureFlagConfig = {
   /** Feature flag name */
   name: string;
 };
+
+export type PluginInfoLink = {
+  /**
+   * The url to the external site, document, etc.
+   */
+  url: string;
+
+  /**
+   * An optional descriptive title for the link.
+   */
+  title?: string;
+};
+
+/**
+ * PluginInfo
+ *
+ * @public
+ */
+export type PluginInfo = {
+  packageJson?: unknown;
+
+  /**
+   * Plugin name; defaults to `backstage.name` in package.json
+   */
+  name?: string;
+
+  /**
+   * Plugin description; defaults to `description` in package.json
+   */
+  description?: string;
+
+  /**
+   * Plugin version; defaults to `version` in package.json
+   */
+  version?: string;
+
+  /**
+   * Owner of the plugin. It's a catalog entity ref, defaulting the kind to
+   * Group, so it's either a full entity ref, or just a group name
+   */
+  ownerEntityRef?: string;
+
+  /**
+   * A set of links. Will by default include the `homepage` and `repository`
+   * field in package.json
+   */
+  links: PluginInfoLink[];
+
+  /**
+   * Plugin role; will likely be frontend-plugin, frontend-plugin-module or
+   * common-library
+   */
+  role?: string;
+};
+
+export type PluginConfigInfo = Partial<PluginInfo>;
 
 /**
  * Plugin descriptor type.
@@ -88,6 +145,7 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  info?: PluginConfigInfo;
 };
 
 /**

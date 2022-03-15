@@ -38,6 +38,7 @@
     "@backstage/types": "^0.1.3",
     "@backstage/version-bridge": "^0.1.2",
     "@types/prop-types": "^15.7.3",
+    "minimatch": "5.0.1",
     "prop-types": "^15.7.2",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
