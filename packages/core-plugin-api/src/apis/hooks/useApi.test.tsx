@@ -16,7 +16,7 @@
 
 import { renderHook } from '@testing-library/react-hooks';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
-import { createApiRef } from './ApiRef';
+import { createApiRef } from '../system';
 import { useApi } from './useApi';
 
 describe('useApi', () => {
