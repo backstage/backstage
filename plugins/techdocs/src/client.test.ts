@@ -35,9 +35,7 @@ const mockEntity = {
 
 describe('TechDocsStorageClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
-  const configApi = new MockConfigApi({
-    techdocs: { requestUrl: 'http://backstage:9191/api/techdocs' },
-  });
+  const configApi = new MockConfigApi({});
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   const identityApi: jest.Mocked<IdentityApi> = {
     getCredentials: jest.fn(),

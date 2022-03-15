@@ -54,7 +54,6 @@ const createPublisherFromConfig = ({
 } = {}) => {
   const mockConfig = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'awsS3',
         awsS3: {

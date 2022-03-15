@@ -20,7 +20,7 @@ import {
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   getLocationForEntity,
@@ -208,15 +208,7 @@ export async function createRouter(
       throw new NotFoundError('Entity metadata UID missing');
     }
 
-    let responseHandler: DocsSynchronizerSyncOpts;
-    if (req.header('accept') !== 'text/event-stream') {
-      console.warn(
-        "The call to /sync/:namespace/:kind/:name wasn't done by an EventSource. This behavior is deprecated and will be removed soon. Make sure to update the @backstage/plugin-techdocs package in the frontend to the latest version.",
-      );
-      responseHandler = createHttpResponse(res);
-    } else {
-      responseHandler = createEventStream(res);
-    }
+    const responseHandler: DocsSynchronizerSyncOpts = createEventStream(res);
 
     // By default, techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to
     // 'local'. If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
@@ -342,29 +334,6 @@ export function createEventStream(
     finish: result => {
       send('finish', result);
       res.end();
-    },
-  };
-}
-
-/**
- * @deprecated use event-stream implementation of the sync endpoint
- */
-export function createHttpResponse(
-  res: Response<any, any>,
-): DocsSynchronizerSyncOpts {
-  return {
-    log: () => {},
-    error: e => {
-      throw e;
-    },
-    finish: ({ updated }) => {
-      if (!updated) {
-        throw new NotModifiedError();
-      }
-
-      res
-        .status(201)
-        .json({ message: 'Docs updated or did not need updating' });
     },
   };
 }

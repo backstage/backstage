@@ -44,18 +44,17 @@ export class Preparers implements PreparerBuilder {
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
-    const urlPreparer = new UrlPreparer(reader, logger);
+    const urlPreparer = UrlPreparer.fromConfig({ reader, logger });
     preparers.register('url', urlPreparer);
 
     /**
      * Dir preparer is a syntactic sugar for users to define techdocs-ref annotation.
      * When using dir preparer, the docs will be fetched using URL Reader.
      */
-    const directoryPreparer = new DirectoryPreparer(
-      backstageConfig,
+    const directoryPreparer = DirectoryPreparer.fromConfig(backstageConfig, {
       logger,
       reader,
-    );
+    });
     preparers.register('dir', directoryPreparer);
 
     return preparers;

@@ -34,18 +34,17 @@ export class UrlPreparer implements PreparerBase {
   private readonly logger: Logger;
   private readonly reader: UrlReader;
 
-  /**  @deprecated use static fromConfig method instead */
-  constructor(reader: UrlReader, logger: Logger) {
-    this.logger = logger;
-    this.reader = reader;
-  }
-
   /**
    * Returns a directory preparer instance
    * @param config - A URL preparer config containing the a logger and reader
    */
   static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer {
     return new UrlPreparer(reader, logger);
+  }
+
+  private constructor(reader: UrlReader, logger: Logger) {
+    this.logger = logger;
+    this.reader = reader;
   }
 
   /** {@inheritDoc PreparerBase.prepare} */

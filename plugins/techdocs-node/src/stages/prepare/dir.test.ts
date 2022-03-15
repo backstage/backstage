@@ -52,11 +52,10 @@ const mockUrlReader: jest.Mocked<UrlReader> = {
 
 describe('directory preparer', () => {
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is relative', async () => {
-    const directoryPreparer = new DirectoryPreparer(
-      mockConfig,
+    const directoryPreparer = DirectoryPreparer.fromConfig(mockConfig, {
       logger,
-      mockUrlReader,
-    );
+      reader: mockUrlReader,
+    });
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -69,11 +68,10 @@ describe('directory preparer', () => {
   });
 
   it('should reject when techdocs-ref is absolute', async () => {
-    const directoryPreparer = new DirectoryPreparer(
-      mockConfig,
+    const directoryPreparer = DirectoryPreparer.fromConfig(mockConfig, {
       logger,
-      mockUrlReader,
-    );
+      reader: mockUrlReader,
+    });
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
@@ -87,11 +85,10 @@ describe('directory preparer', () => {
   });
 
   it('should reject when managed-by-location has an unknown type', async () => {
-    const directoryPreparer = new DirectoryPreparer(
-      mockConfig,
+    const directoryPreparer = DirectoryPreparer.fromConfig(mockConfig, {
       logger,
-      mockUrlReader,
-    );
+      reader: mockUrlReader,
+    });
 
     const mockEntity = createMockEntity({
       'backstage.io/managed-by-location':
