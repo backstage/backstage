@@ -472,9 +472,6 @@ export function useAsyncEntity<
 // @public
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
-  loading: boolean;
-  error?: Error;
-  refresh?: VoidFunction;
 };
 
 // @public

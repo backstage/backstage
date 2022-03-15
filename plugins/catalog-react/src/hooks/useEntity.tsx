@@ -103,12 +103,6 @@ export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
  */
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
-  /** @deprecated use {@link useAsyncEntity} instead */
-  loading: boolean;
-  /** @deprecated use {@link useAsyncEntity} instead */
-  error?: Error;
-  /** @deprecated use {@link useAsyncEntity} instead */
-  refresh?: VoidFunction;
 } {
   const versionedHolder =
     useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
@@ -123,18 +117,12 @@ export function useEntity<TEntity extends Entity = Entity>(): {
   }
 
   if (!value.entity) {
-    // Once we have removed the additional fields from being returned we can drop this deprecation
-    // and move to the error instead.
-    // throw new Error('useEntity hook is being called outside of an EntityLayout where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead.');
-
-    // eslint-disable-next-line no-console
-    console.warn(
-      'DEPRECATION: useEntity hook is being called outside of an EntityLayout where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead. This warning will be replaced with an error in future releases.',
+    throw new Error(
+      'useEntity hook is being called outside of an EntityLayout where the entity has not been loaded. If this is intentional, please use useAsyncEntity instead.',
     );
   }
 
-  const { entity, loading, error, refresh } = value;
-  return { entity: entity as TEntity, loading, error, refresh };
+  return { entity: value.entity as TEntity };
 }
 
 /**
