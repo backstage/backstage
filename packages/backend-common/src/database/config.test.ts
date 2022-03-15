@@ -101,7 +101,7 @@ describe('config', () => {
       expect(
         mergeDatabaseConfig(
           {
-            client: 'sqlite3',
+            client: 'better-sqlite3',
             connection: ':memory:',
             useNullAsDefault: true,
           },
@@ -112,7 +112,27 @@ describe('config', () => {
           },
         ),
       ).toEqual({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
+        connection: {
+          filename: '/path/to/file',
+        },
+        useNullAsDefault: true,
+      });
+      expect(
+        mergeDatabaseConfig(
+          {
+            client: 'better-sqlite3',
+            connection: ':memory:',
+            useNullAsDefault: true,
+          },
+          {
+            connection: {
+              filename: '/path/to/file',
+            },
+          },
+        ),
+      ).toEqual({
+        client: 'better-sqlite3',
         connection: {
           filename: '/path/to/file',
         },

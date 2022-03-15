@@ -1,5 +1,15 @@
 # @backstage/plugin-code-climate
 
+## 0.1.2
+
+### Patch Changes
+
+- 4f79204c47: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+
 ## 0.1.2-next.0
 
 ### Patch Changes

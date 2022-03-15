@@ -165,7 +165,6 @@ export type EntityLink = {
 export type EntityMeta = JsonObject & {
   uid?: string;
   etag?: string;
-  generation?: number;
   name: string;
   namespace?: string;
   title?: string;
@@ -175,9 +174,6 @@ export type EntityMeta = JsonObject & {
   tags?: string[];
   links?: EntityLink[];
 };
-
-// @public @deprecated
-export type EntityName = CompoundEntityRef;
 
 // @public
 export const EntityPolicies: {
@@ -193,7 +189,6 @@ export type EntityPolicy = {
 // @public
 export type EntityRelation = {
   type: string;
-  target: CompoundEntityRef;
   targetRef: string;
 };
 
@@ -227,9 +222,6 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
 
 // @public
 export function getCompoundEntityRef(entity: Entity): CompoundEntityRef;
-
-// @public @deprecated
-export const getEntityName: typeof getCompoundEntityRef;
 
 // @public
 export function getEntitySourceLocation(entity: Entity): {
@@ -455,7 +447,7 @@ interface UserEntityV1alpha1 extends Entity {
       email?: string;
       picture?: string;
     };
-    memberOf: string[];
+    memberOf?: string[];
   };
 }
 export { UserEntityV1alpha1 as UserEntity };

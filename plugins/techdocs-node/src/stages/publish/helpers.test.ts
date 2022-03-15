@@ -216,7 +216,7 @@ describe('getCloudPathForLocalPath', () => {
     );
   });
 
-  it('should add trailing seperator to root directory', () => {
+  it('should add trailing separator to root directory', () => {
     const localPath = 'index/html';
     const rootPath = 'backstage-data/techdocs';
     const remoteBucket = getCloudPathForLocalPath(
@@ -230,7 +230,7 @@ describe('getCloudPathForLocalPath', () => {
     );
   });
 
-  it('should remove leading seperator from root directory', () => {
+  it('should remove leading separator from root directory', () => {
     const localPath = 'index/html';
     const rootPath = '/backstage-data/techdocs/';
     const remoteBucket = getCloudPathForLocalPath(
@@ -244,7 +244,7 @@ describe('getCloudPathForLocalPath', () => {
     );
   });
 
-  it('should ignore seperator if root directory is explicitly defined', () => {
+  it('should ignore separator if root directory is explicitly defined', () => {
     const localPath = 'index/html';
     const rootPath = '/';
     const remoteBucket = getCloudPathForLocalPath(

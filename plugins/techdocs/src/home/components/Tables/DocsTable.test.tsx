@@ -61,11 +61,6 @@ describe('DocsTable test', () => {
               },
               relations: [
                 {
-                  target: {
-                    kind: 'user',
-                    namespace: 'default',
-                    name: 'owned',
-                  },
                   targetRef: 'user:default/owned',
                   type: 'ownedBy',
                 },
@@ -82,11 +77,6 @@ describe('DocsTable test', () => {
               },
               relations: [
                 {
-                  target: {
-                    kind: 'user',
-                    namespace: 'default',
-                    name: 'not-owned',
-                  },
                   targetRef: 'user:default/not-owned',
                   type: 'ownedBy',
                 },
@@ -134,11 +124,6 @@ describe('DocsTable test', () => {
               },
               relations: [
                 {
-                  target: {
-                    kind: 'user',
-                    namespace: 'default',
-                    name: 'owned',
-                  },
                   targetRef: 'user:default/owned',
                   type: 'ownedBy',
                 },

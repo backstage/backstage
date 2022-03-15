@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.1.2
+
+### Patch Changes
+
+- f115a7f8fd: Added `AwsS3DiscoveryProcessor`, which was moved here from `@backstage/plugin-catalog-backend` where it previously resided.
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/plugin-catalog-backend@0.24.0
+  - @backstage/catalog-model@0.13.0
+
 ## 0.1.2-next.0
 
 ### Patch Changes

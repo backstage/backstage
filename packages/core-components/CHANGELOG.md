@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.9.1
+
+### Patch Changes
+
+- 23568dd328: chore(deps): bump `@react-hookz/web` from 12.3.0 to 13.0.0
+- 95667624c1: Add names to sidebar sub menu styles for customization
+
 ## 0.9.1-next.0
 
 ### Patch Changes

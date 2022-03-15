@@ -68,7 +68,7 @@ export class LunrSearchEngine implements SearchEngine {
       lunrQueryBuilder: q => {
         const termToken = lunr.tokenizer(term);
 
-        // Support for typeahead seach is based on https://github.com/olivernn/lunr.js/issues/256#issuecomment-295407852
+        // Support for typeahead search is based on https://github.com/olivernn/lunr.js/issues/256#issuecomment-295407852
         // look for an exact match and apply a large positive boost
         q.term(termToken, {
           usePipeline: true,

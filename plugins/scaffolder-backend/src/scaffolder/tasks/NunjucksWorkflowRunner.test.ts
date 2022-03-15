@@ -339,7 +339,7 @@ describe('DefaultWorkflowRunner', () => {
       expect(logger.error).not.toHaveBeenCalled();
     });
 
-    it('should keep the original types for the input and not parse things that arent meant to be parsed', async () => {
+    it('should keep the original types for the input and not parse things that are not meant to be parsed', async () => {
       const task = createMockTaskWithSpec({
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         steps: [

@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  EntitiesCatalog,
-  EntitiesRequest,
-  EntitiesResponse,
-  EntitiesSearchFilter,
-  EntityAncestryResponse,
-  EntityFacetsRequest,
-  EntityFacetsResponse,
-  EntityFilter,
-  EntityPagination,
-  PageInfo,
-} from './types';
+export type { EntitiesSearchFilter, EntityFilter } from './types';

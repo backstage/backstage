@@ -388,27 +388,10 @@ export interface EntityTypePickerProps {
 // @public
 export const FavoriteEntity: (props: FavoriteEntityProps) => JSX.Element;
 
-// @public @deprecated (undocumented)
-export const favoriteEntityIcon: (isStarred: boolean) => JSX.Element;
-
 // @public (undocumented)
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
   entity: Entity;
 };
-
-// @public @deprecated (undocumented)
-export const favoriteEntityTooltip: (
-  isStarred: boolean,
-) => 'Remove from favorites' | 'Add to favorites';
-
-// @public @deprecated (undocumented)
-export const formatEntityRefTitle: typeof humanizeEntityRef;
-
-// @public @deprecated (undocumented)
-export function getEntityMetadataEditUrl(entity: Entity): string | undefined;
-
-// @public @deprecated (undocumented)
-export function getEntityMetadataViewUrl(entity: Entity): string | undefined;
 
 // @public
 export function getEntityRelations(
@@ -489,9 +472,6 @@ export function useAsyncEntity<
 // @public
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
-  loading: boolean;
-  error?: Error;
-  refresh?: VoidFunction;
 };
 
 // @public

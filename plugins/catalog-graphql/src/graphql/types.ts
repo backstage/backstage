@@ -70,7 +70,6 @@ export type ComponentMetadata = EntityMetadata & {
   annotation?: Maybe<Scalars['JSON']>;
   annotations: Scalars['JSONObject'];
   etag: Scalars['String'];
-  generation: Scalars['Int'];
   label?: Maybe<Scalars['JSON']>;
   labels: Scalars['JSONObject'];
   name: Scalars['String'];
@@ -91,7 +90,6 @@ export type DefaultEntityMetadata = EntityMetadata & {
   annotation?: Maybe<Scalars['JSON']>;
   annotations: Scalars['JSONObject'];
   etag: Scalars['String'];
-  generation: Scalars['Int'];
   label?: Maybe<Scalars['JSON']>;
   labels: Scalars['JSONObject'];
   name: Scalars['String'];
@@ -115,7 +113,6 @@ export type EntityMetadata = {
   annotation?: Maybe<Scalars['JSON']>;
   annotations: Scalars['JSONObject'];
   etag: Scalars['String'];
-  generation: Scalars['Int'];
   label?: Maybe<Scalars['JSON']>;
   labels: Scalars['JSONObject'];
   name: Scalars['String'];
@@ -153,7 +150,6 @@ export type TemplateMetadata = EntityMetadata & {
   annotation?: Maybe<Scalars['JSON']>;
   annotations: Scalars['JSONObject'];
   etag: Scalars['String'];
-  generation: Scalars['Int'];
   label?: Maybe<Scalars['JSON']>;
   labels: Scalars['JSONObject'];
   name: Scalars['String'];
@@ -386,7 +382,6 @@ export type ComponentMetadataResolvers<
   >;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   etag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  generation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   label?: Resolver<
     Maybe<ResolversTypes['JSON']>,
     ParentType,
@@ -416,7 +411,6 @@ export type DefaultEntityMetadataResolvers<
   >;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   etag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  generation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   label?: Resolver<
     Maybe<ResolversTypes['JSON']>,
     ParentType,
@@ -454,7 +448,6 @@ export type EntityMetadataResolvers<
   >;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   etag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  generation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   label?: Resolver<
     Maybe<ResolversTypes['JSON']>,
     ParentType,
@@ -517,7 +510,6 @@ export type TemplateMetadataResolvers<
   >;
   annotations?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
   etag?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  generation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   label?: Resolver<
     Maybe<ResolversTypes['JSON']>,
     ParentType,

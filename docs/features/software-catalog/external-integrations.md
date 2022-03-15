@@ -368,7 +368,7 @@ The class will have this basic structure:
 ```ts
 import { UrlReader } from '@backstage/backend-common';
 import {
-  results,
+  processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
@@ -396,10 +396,10 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       // your choosing.
       const data = await this.reader.read(location.target);
       const json = JSON.parse(data.toString());
-      // Repeatedly call emit(results.entity(location, <entity>))
+      // Repeatedly call emit(processingResult.entity(location, <entity>))
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
-      emit(results.generalError(location, message));
+      emit(processingResult.generalError(location, message));
     }
 
     return true;
@@ -450,7 +450,7 @@ behavior for `system-x` that we implemented earlier.
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import {
-  results,
+  processingResult,
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorCache,
@@ -515,7 +515,7 @@ export class SystemXReaderProcessor implements CatalogProcessor {
 
       // For this example the JSON payload is a single entity.
       const entity: Entity = JSON.parse(response.buffer.toString());
-      emit(results.entity(location, entity));
+      emit(processingResult.entity(location, entity));
 
       // Update the cache with the new ETag and entity used for the next run.
       await cache.set<CacheItem>(CACHE_KEY, {
@@ -525,10 +525,10 @@ export class SystemXReaderProcessor implements CatalogProcessor {
     } catch (error) {
       if (error.name === 'NotModifiedError' && cacheItem) {
         // The ETag matches and we have a cached value from the previous run.
-        emit(results.entity(location, cacheItem.entity));
+        emit(processingResult.entity(location, cacheItem.entity));
       }
       const message = `Unable to read ${location.type}, ${error}`;
-      emit(results.generalError(location, message));
+      emit(processingResult.generalError(location, message));
     }
 
     return true;

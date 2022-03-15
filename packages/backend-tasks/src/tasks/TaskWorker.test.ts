@@ -21,7 +21,7 @@ import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
-import { TaskSettingsV1 } from './types';
+import { TaskSettingsV2 } from './types';
 
 describe('TaskWorker', () => {
   const logger = getVoidLogger();
@@ -42,11 +42,11 @@ describe('TaskWorker', () => {
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
       );
-      const settings: TaskSettingsV1 = {
-        version: 1,
-        initialDelayDuration: Duration.fromMillis(1000).toISO(),
-        recurringAtMostEveryDuration: Duration.fromMillis(2000).toISO(),
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '*/2 * * * * *',
+        initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO(),
+        timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO(),
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
@@ -62,10 +62,10 @@ describe('TaskWorker', () => {
         }),
       );
       expect(JSON.parse(row.settings_json)).toEqual({
-        version: 1,
+        version: 2,
+        cadence: '*/2 * * * * *',
         initialDelayDuration: 'PT1S',
-        recurringAtMostEveryDuration: 'PT2S',
-        timeoutAfterDuration: 'PT60S',
+        timeoutAfterDuration: 'PT1M',
       });
 
       await expect(worker.findReadyTask()).resolves.toEqual({
@@ -125,10 +125,10 @@ describe('TaskWorker', () => {
       await migrateBackendTasks(knex);
 
       const fn = jest.fn().mockRejectedValue(new Error('failed'));
-      const settings: TaskSettingsV1 = {
-        version: 1,
+      const settings: TaskSettingsV2 = {
+        version: 2,
         initialDelayDuration: undefined,
-        recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
@@ -151,18 +151,23 @@ describe('TaskWorker', () => {
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
       );
-      const settings: TaskSettingsV1 = {
-        version: 1,
-        recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
       await worker.persistTask(settings);
-      await expect(worker.findReadyTask()).resolves.toEqual({
-        result: 'ready',
-        settings,
+
+      await waitForExpect(async () => {
+        await expect(worker.findReadyTask()).resolves.toEqual({
+          result: 'ready',
+          settings,
+        });
       });
+
       await expect(worker.tryClaimTask('ticket', settings)).resolves.toBe(true);
 
       let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
@@ -203,9 +208,10 @@ describe('TaskWorker', () => {
       await migrateBackendTasks(knex);
 
       const fn = jest.fn(async () => {});
-      const settings: TaskSettingsV1 = {
-        version: 1,
-        recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
@@ -218,10 +224,14 @@ describe('TaskWorker', () => {
 
       const worker2 = new TaskWorker('task2', fn, knex, logger);
       await worker2.persistTask(settings);
-      await expect(worker2.findReadyTask()).resolves.toEqual({
-        result: 'ready',
-        settings,
+
+      await waitForExpect(async () => {
+        await expect(worker2.findReadyTask()).resolves.toEqual({
+          result: 'ready',
+          settings,
+        });
       });
+
       await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task2').delete();
       await expect(worker2.tryClaimTask('ticket', settings)).resolves.toBe(
         false,
@@ -229,10 +239,14 @@ describe('TaskWorker', () => {
 
       const worker3 = new TaskWorker('task3', fn, knex, logger);
       await worker3.persistTask(settings);
-      await expect(worker3.findReadyTask()).resolves.toEqual({
-        result: 'ready',
-        settings,
+
+      await waitForExpect(async () => {
+        await expect(worker3.findReadyTask()).resolves.toEqual({
+          result: 'ready',
+          settings,
+        });
       });
+
       await expect(worker3.tryClaimTask('ticket', settings)).resolves.toBe(
         true,
       );

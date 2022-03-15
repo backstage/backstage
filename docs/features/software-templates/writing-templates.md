@@ -251,8 +251,45 @@ use `ui:widget: password` or set some properties of `ui:backstage`:
       type: string
       ui:backstage:
         review:
-          show: false # wont print any info about 'hidden' property on Review Step
+          show: false # won't print any info about 'hidden' property on Review Step
 ```
+
+### Remove sections or fields based on feature flags
+
+Based on feature flags you can hide sections or even only fields of your
+template. This is a good use case if you want to test experimental parameters in
+a production environment. To use it let's look at the following template:
+
+```yaml
+spec:
+  type: website
+  owner: team-a
+  parameters:
+    - name: Enter some stuff
+      description: Enter some stuff
+      backstage:featureFlag: experimental-feature
+      properties:
+        inputString:
+          type: string
+          title: string input test
+        inputObject:
+          type: object
+          title: object input test
+          description: a little nested thing never hurt anyone right?
+          properties:
+            first:
+              type: string
+              title: first
+              backstage:featureFlag: nested-experimental-feature
+            second:
+              type: number
+              title: second
+```
+
+If you have a feature flag `experimental-feature` active then
+your first step would be shown. The same goes for the nested properties in the
+spec. Make sure to use the key `backstage:featureFlag` in your templates if
+you want to use this functionality.
 
 ### The Repository Picker
 

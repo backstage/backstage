@@ -73,7 +73,7 @@ export type ScaffolderTaskOutput = {
 
 /**
  * The shape of each entry of parameters which gets rendered
- * as a seperate step in the wizard input
+ * as a separate step in the wizard input
  *
  * @public
  */

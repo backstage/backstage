@@ -93,17 +93,17 @@ describe('DatabaseManager', () => {
           plugin: {
             testdbname: {
               connection: {
-                database: 'database_name_overriden',
+                database: 'database_name_overridden',
               },
             },
             differentclient: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               connection: {
                 filename: 'plugin_with_different_client',
               },
             },
             differentclientconnstring: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               connection: ':memory:',
             },
             stringoverride: {
@@ -176,7 +176,7 @@ describe('DatabaseManager', () => {
         new ConfigReader({
           backend: {
             database: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               connection: ':memory:',
             },
           },
@@ -198,7 +198,7 @@ describe('DatabaseManager', () => {
         new ConfigReader({
           backend: {
             database: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               connection: 'some-file-path',
             },
           },
@@ -215,7 +215,7 @@ describe('DatabaseManager', () => {
         new ConfigReader({
           backend: {
             database: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               connection: {
                 directory: 'sqlite-files',
               },
@@ -239,7 +239,7 @@ describe('DatabaseManager', () => {
         new ConfigReader({
           backend: {
             database: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               connection: {
                 directory: 'sqlite-files',
               },
@@ -270,7 +270,7 @@ describe('DatabaseManager', () => {
         new ConfigReader({
           backend: {
             database: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               connection: {
                 directory: 'sqlite-files',
               },
@@ -304,10 +304,10 @@ describe('DatabaseManager', () => {
       const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const [_baseConfig, overrides] = mockCalls[0];
 
-      // simple case where only database name is overriden
+      // simple case where only database name is overridden
       expect(overrides).toMatchObject({
         connection: {
-          database: 'database_name_overriden',
+          database: 'database_name_overridden',
         },
       });
     });
@@ -349,7 +349,7 @@ describe('DatabaseManager', () => {
 
       // plugin connection should be used as base config, client is different
       expect(baseConfig.get()).toMatchObject({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
         connection: config.backend.database.plugin[pluginId].connection,
       });
     });
@@ -361,10 +361,10 @@ describe('DatabaseManager', () => {
       const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const [baseConfig, overrides] = mockCalls[0];
 
-      // plugin client should be sqlite3
-      expect(baseConfig.get().client).toEqual('sqlite3');
+      // plugin client should be better-sqlite3
+      expect(baseConfig.get().client).toEqual('better-sqlite3');
 
-      // sqlite3 uses 'filename' instead of 'database'
+      // SQLite uses 'filename' instead of 'database'
       expect(overrides).toHaveProperty(
         'connection.filename',
         'plugin_with_different_client',
@@ -378,7 +378,7 @@ describe('DatabaseManager', () => {
       const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const [baseConfig, overrides] = mockCalls[0];
 
-      expect(baseConfig.get().client).toEqual('sqlite3');
+      expect(baseConfig.get().client).toEqual('better-sqlite3');
 
       expect(overrides).toHaveProperty('connection.filename', ':memory:');
     });
@@ -465,7 +465,7 @@ describe('DatabaseManager', () => {
         new ConfigReader({
           backend: {
             database: {
-              client: 'sqlite3',
+              client: 'better-sqlite3',
               pluginDivisionMode: 'schema',
               connection: {
                 host: 'localhost',
@@ -484,7 +484,7 @@ describe('DatabaseManager', () => {
       const [baseConfig, overrides] = mockCalls[0];
 
       expect(baseConfig.get()).toMatchObject({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
         connection: config.backend.database.connection,
       });
 
@@ -581,7 +581,7 @@ describe('DatabaseManager', () => {
               plugin: {
                 testdbname: {
                   connection: {
-                    database: 'database_name_overriden',
+                    database: 'database_name_overridden',
                     host: 'newhost',
                   },
                 },
@@ -599,7 +599,7 @@ describe('DatabaseManager', () => {
       expect(baseConfig.get()).toMatchObject({
         client: 'pg',
         connection: {
-          database: 'database_name_overriden',
+          database: 'database_name_overridden',
           host: 'newhost',
           user: 'foo',
           password: 'bar',
@@ -608,7 +608,7 @@ describe('DatabaseManager', () => {
       expect(overrides).toHaveProperty('searchPath', ['testdbname']);
       expect(overrides).toHaveProperty(
         'connection.database',
-        'database_name_overriden',
+        'database_name_overridden',
       );
     });
 

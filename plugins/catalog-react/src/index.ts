@@ -32,8 +32,6 @@ export * from './testUtils';
 export * from './types';
 export * from './overridableComponents';
 export {
-  getEntityMetadataEditUrl,
-  getEntityMetadataViewUrl,
   getEntityRelations,
   getEntitySourceLocation,
   isOwnerOf,

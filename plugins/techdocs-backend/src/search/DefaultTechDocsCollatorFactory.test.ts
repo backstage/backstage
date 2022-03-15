@@ -203,7 +203,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       const pipeline = TestPipeline.withSubject(collator);
       const { documents } = await pipeline.execute();
 
-      // Only 1 entity with TechDocs configured multipled by 3 pages.
+      // Only 1 entity with TechDocs configured multiplied by 3 pages.
       expect(documents).toHaveLength(3);
     });
 

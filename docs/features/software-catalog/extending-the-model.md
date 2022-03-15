@@ -471,6 +471,7 @@ We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 
 ```ts
+import { CatalogProcessor, processingResult } from '@backstage/catalog-backend';
 import { entityKindSchemaValidator } from '@backstage/catalog-model';
 
 export class FoobarEntitiesProcessor implements CatalogProcessor {
@@ -506,7 +507,7 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 
       // Here we can modify the entity or emit results related to the entity
       // Typically you will want to emit any relations associated with the entity here
-      emit(results.relation({ ... }))
+      emit(processingResult.relation({ ... }))
     }
 
     return entity;

@@ -33,17 +33,17 @@ Backstage's databases.
 ### Dependencies
 
 Please ensure the appropriate database drivers are installed in your `backend`
-package. If you intend to use both `postgres` and `sqlite3`, you can install
+package. If you intend to use both PostgreSQL and SQLite, you can install
 both of them.
 
 ```sh
 cd packages/backend
 
-# install pg if you need postgres
+# install pg if you need PostgreSQL
 yarn add pg
 
-# install sqlite3 if you intend to set it as the client
-yarn add sqlite3
+# install SQLite 3 if you intend to set it as the client
+yarn add better-sqlite3
 ```
 
 From an operational perspective, you only need to install drivers for clients
@@ -66,14 +66,14 @@ configurations below.
 
 ### Minimal In-Memory Configuration
 
-In the example below, we are using `sqlite3` in-memory databases for all
+In the example below, we are using `better-sqlite3` in-memory databases for all
 plugins. You may want to use this configuration for testing or other non-durable
 use cases.
 
 ```yaml
 backend:
   database:
-    client: sqlite3
+    client: better-sqlite3
     connection: ':memory:'
 ```
 
@@ -138,7 +138,7 @@ backend:
 ### PostgreSQL and SQLite 3
 
 The example below uses PostgreSQL (`pg`) as the database client for all plugins
-except the `auth` plugin which uses `sqlite3`. As the `auth` plugin's client
+except the `auth` plugin which uses `better-sqlite3`. As the `auth` plugin's client
 type is different from the base client type, the connection configuration for
 `auth` is used verbatim without extending the base configuration for PostgreSQL.
 
@@ -149,7 +149,7 @@ backend:
     connection: 'postgresql://foo:bar@some.example-pg-instance.tld:5432'
     plugin:
       auth:
-        client: sqlite3
+        client: better-sqlite3
         connection: ':memory:'
 ```
 

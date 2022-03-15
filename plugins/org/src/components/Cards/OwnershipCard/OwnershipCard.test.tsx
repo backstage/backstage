@@ -103,11 +103,6 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
       },
     ],
   },
@@ -140,11 +135,6 @@ describe('OwnershipCard', () => {
       {
         type: 'memberOf',
         targetRef: 'group:default/examplegroup',
-        target: {
-          kind: 'group',
-          name: 'examplegroup',
-          namespace: 'default',
-        },
       },
     ],
   };
@@ -266,11 +256,6 @@ describe('OwnershipCard', () => {
         {
           type: 'memberOf',
           targetRef: 'group:default/my-team',
-          target: {
-            kind: 'group',
-            name: 'my-team',
-            namespace: 'default',
-          },
         },
       ],
     };

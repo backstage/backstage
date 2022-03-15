@@ -62,12 +62,10 @@ describe('useEntityOwnership', () => {
       {
         type: RELATION_OWNED_BY,
         targetRef: 'user:default/user1',
-        target: { kind: 'User', namespace: 'default', name: 'user1' },
       },
       {
         type: RELATION_OWNED_BY,
         targetRef: 'group:default/group1',
-        target: { kind: 'Group', namespace: 'default', name: 'group1' },
       },
     ],
   };

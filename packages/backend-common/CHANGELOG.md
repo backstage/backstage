@@ -1,5 +1,24 @@
 # @backstage/backend-common
 
+## 0.13.0
+
+### Minor Changes
+
+- ae9d6fb3df: **BREAKING**:
+
+  - Removed the (since way back) deprecated `createDatabase` export, please use `createDatabaseClient` instead.
+  - Removed the (since way back) deprecated `SingleConnectionDatabaseManager` export, please use `DatabaseManager` instead.
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- aefca2a7e9: add support for ETag at `BitbucketUrlReader.readUrl`
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- b1aacbf96a: Applied the fix for the `/alpha` entry point resolution that was part of the `v0.70.1` release of Backstage.
+- Updated dependencies
+  - @backstage/config-loader@0.9.7
+
 ## 0.13.0-next.0
 
 ### Minor Changes

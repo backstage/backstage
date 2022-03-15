@@ -332,7 +332,7 @@ describe('JenkinsApi', () => {
         const result = await jenkinsApi.getProjects(jenkinsInfo);
 
         expect(result).toHaveLength(1);
-        // TODO: I am really just asserting the previous behaviour wth no understanding here.
+        // TODO: I am really just asserting the previous behaviour with no understanding here.
         // In my 2 Jenkins instances, 1 returns a lot of different and confusing BuildData sections and 1 returns none ☹️
         expect(result[0].lastBuild!.source).toEqual({
           branchName: 'master',

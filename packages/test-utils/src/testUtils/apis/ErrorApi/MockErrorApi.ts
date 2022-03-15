@@ -54,7 +54,7 @@ const nullObservable = {
 
 /**
  * Mock implementation of the {@link core-plugin-api#ErrorApi} to be used in tests.
- * Incudes withForError and getErrors methods for error testing.
+ * Includes withForError and getErrors methods for error testing.
  * @public
  */
 export class MockErrorApi implements ErrorApi {

@@ -43,7 +43,7 @@ export const useAsyncFilterValues = (
       // for the lifetime of the hook/component.
       if (valuesMemo.current[inputValue] === undefined) {
         valuesMemo.current[inputValue] = callback(inputValue).then(values => {
-          // Overrite the value for future immediate returns.
+          // Override the value for future immediate returns.
           valuesMemo.current[inputValue] = values;
           return values;
         });

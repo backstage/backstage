@@ -59,7 +59,6 @@ describe('Catalog Module', () => {
           metadata: {
             annotations: {},
             etag: '123',
-            generation: 1,
             labels: {},
             name: 'Ben',
             namespace: 'Blames',
@@ -118,7 +117,6 @@ describe('Catalog Module', () => {
           metadata: {
             annotations: null as any,
             etag: '123',
-            generation: 1,
             labels: {},
             name: 'Ben',
             namespace: 'Blames',
@@ -170,7 +168,6 @@ describe('Catalog Module', () => {
           metadata: {
             annotations: {},
             etag: '123',
-            generation: 1,
             labels: null as any,
             name: 'Ben',
             namespace: 'Blames',
@@ -221,7 +218,6 @@ describe('Catalog Module', () => {
           metadata: {
             annotations: { lob: 'bloben' },
             etag: '123',
-            generation: 1,
             labels: {},
             name: 'Ben',
             namespace: 'Blames',
@@ -272,7 +268,6 @@ describe('Catalog Module', () => {
           metadata: {
             annotations: {},
             etag: '123',
-            generation: 1,
             labels: { lob2: 'bloben' },
             name: 'Ben',
             namespace: 'Blames',

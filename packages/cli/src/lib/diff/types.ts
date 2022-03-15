@@ -19,7 +19,7 @@ export type WriteFileFunc = (contents: string) => Promise<void>;
 export type FileDiff = {
   // Relative path within the target directory
   path: string;
-  // Wether the target file exists in the target directory.
+  // Whether the target file exists in the target directory.
   missing: boolean;
   // Contents of the file in the target directory, or an empty string if the file is missing.
   targetContents: string;

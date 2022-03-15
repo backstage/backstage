@@ -45,7 +45,7 @@ describe('Entity Docs Card Grid', () => {
     jest.resetAllMocks();
   });
 
-  it('should render all entities passed ot it', async () => {
+  it('should render all entities passed to it', async () => {
     const { findByText, findAllByRole } = render(
       wrapInTestApp(
         <DocsCardGrid

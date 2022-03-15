@@ -108,11 +108,11 @@ should have something similar to the below in
 ```ts
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 
@@ -123,25 +123,25 @@ will set the available actions that the scaffolder has access to.
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 import { ScmIntegrations } from '@backstage/integration';
 
-const integrations = ScmIntegrations.fromConfig(config);
+const integrations = ScmIntegrations.fromConfig(env.config);
 
 const builtInActions = createBuiltinActions({
   containerRunner,
   integrations,
-  config,
   catalogClient,
-  reader,
+  config: env.config,
+  reader: env.reader,
 });
 
 const actions = [...builtInActions, createNewFileAction()];
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
   actions,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 
@@ -156,6 +156,8 @@ scaffolder backend:
 | Cookiecutter            | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter) | [Backstage](https://backstage.io)            |
 | Rails                   | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)               | [Backstage](https://backstage.io)            |
 | HTTP requests           | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                | [Roadie](https://roadie.io)                  |
+| Utility actions         | [scaffolder-backend-module-utils](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-utils)                              | [Roadie](https://roadie.io)                  |
+| AWS cli actions         | [scaffolder-backend-module-aws](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-aws)                                  | [Roadie](https://roadie.io)                  |
 | Scaffolder .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                           | [Alef Carlos](https://github.com/alefcarlos) |
 
 Have fun! 🚀

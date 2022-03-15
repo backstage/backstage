@@ -61,7 +61,7 @@ describe('Scheduler', () => {
       // Stop scheduling process
       testScheduler.stop();
 
-      // Should't throw error, as it is stopped.
+      // Shouldn't throw error, as it is stopped.
       expect(() =>
         testScheduler.addToSchedule(mockTask2, 4),
       ).not.toThrowError();

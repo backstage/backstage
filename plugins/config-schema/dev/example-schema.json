@@ -346,7 +346,7 @@
               "properties": {
                 "client": {
                   "type": "string",
-                  "enum": ["sqlite3"]
+                  "enum": ["sqlite3", "better-sqlite3"]
                 },
                 "connection": {
                   "type": "string"

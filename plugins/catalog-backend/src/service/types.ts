@@ -25,8 +25,6 @@ import { Location } from '@backstage/catalog-client';
 export interface LocationInput {
   type: string;
   target: string;
-  /** @deprecated This field is ignored and will be removed */
-  presence?: 'optional' | 'required';
 }
 
 /**

@@ -46,7 +46,9 @@ export async function startStandaloneServer(
   const database = useHotMemoize(module, () => {
     const manager = DatabaseManager.fromConfig(
       new ConfigReader({
-        backend: { database: { client: 'sqlite3', connection: ':memory:' } },
+        backend: {
+          database: { client: 'better-sqlite3', connection: ':memory:' },
+        },
       }),
     );
     return manager.forPlugin('catalog');

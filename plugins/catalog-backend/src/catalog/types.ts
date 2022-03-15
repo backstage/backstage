@@ -31,7 +31,6 @@ export type EntityFilter =
 
 /**
  * A pagination rule for entities.
- * @public
  */
 export type EntityPagination = {
   limit?: number;
@@ -60,7 +59,6 @@ export type EntitiesSearchFilter = {
   values?: string[];
 };
 
-/** @public */
 export type PageInfo =
   | {
       hasNextPage: false;
@@ -70,7 +68,6 @@ export type PageInfo =
       endCursor: string;
     };
 
-/** @public */
 export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
@@ -78,13 +75,11 @@ export type EntitiesRequest = {
   authorizationToken?: string;
 };
 
-/** @public */
 export type EntitiesResponse = {
   entities: Entity[];
   pageInfo: PageInfo;
 };
 
-/** @public */
 export type EntityAncestryResponse = {
   rootEntityRef: string;
   items: Array<{
@@ -95,8 +90,6 @@ export type EntityAncestryResponse = {
 
 /**
  * The request shape for {@link EntitiesCatalog.facets}.
- *
- * @public
  */
 export interface EntityFacetsRequest {
   /**
@@ -121,8 +114,6 @@ export interface EntityFacetsRequest {
 
 /**
  * The response shape for {@link EntitiesCatalog.facets}.
- *
- * @public
  */
 export interface EntityFacetsResponse {
   /**
@@ -131,8 +122,7 @@ export interface EntityFacetsResponse {
   facets: Record<string, Array<{ value: string; count: number }>>;
 }
 
-/** @public */
-export type EntitiesCatalog = {
+export interface EntitiesCatalog {
   /**
    * Fetch entities.
    *
@@ -167,4 +157,4 @@ export type EntitiesCatalog = {
    * @param request - Request options
    */
   facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
-};
+}

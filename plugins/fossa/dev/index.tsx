@@ -43,7 +43,6 @@ const entity = (name?: string) =>
       {
         type: RELATION_OWNED_BY,
         targetRef: `group:default/${name}`,
-        target: { kind: 'group', namespace: 'default', name },
       },
     ],
   } as Entity);

@@ -1,5 +1,15 @@
 # @backstage/plugin-rollbar
 
+## 0.4.2
+
+### Patch Changes
+
+- 9844d4d2bd: Removed usage of removed hook.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+
 ## 0.4.2-next.0
 
 ### Patch Changes

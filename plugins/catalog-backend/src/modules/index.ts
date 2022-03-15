@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export * from './bitbucket';
 export * from './codeowners';
 export * from './core';
-export * from './github';

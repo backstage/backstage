@@ -143,24 +143,35 @@ ApiReportGenerator.generateReviewFileContent =
             );
           }
 
-          // NOTE: we limit the @internal functionality to only apply to types that are declared
-          //       in the same module as where they're being referenced from. This limitation makes
-          //       the implementation here simpler but could be revisited if needed.
-
           // The local name of the symbol within the file, rather than the exported name
           const localName = (sourceFile as any).identifiers?.get(symbolName);
           if (!localName) {
-            return true;
+            throw new Error(
+              `Unable to find local name of "${symbolName}" in ${sourceFile.fileName}`,
+            );
           }
+
           // The local AST node of the export that we're missing
           const local = (sourceFile as any).locals?.get(localName);
           if (!local) {
             return true;
           }
 
+          // Use the type checker to look up the actual declaration(s) rather than the one in the local file
+          const type = program.getTypeChecker().getDeclaredTypeOfSymbol(local);
+          if (!type) {
+            throw new Error(
+              `Unable to find type declaration of "${symbolName}" in ${sourceFile.fileName}`,
+            );
+          }
+          const declarations = type.aliasSymbol?.declarations;
+          if (!declarations || declarations.length === 0) {
+            return true;
+          }
+
           // If any of the TSDoc comments contain a @ignore tag, we ignore this message
-          const isIgnored = local.declarations.some(declaration => {
-            const tags = [declaration.jsDoc]
+          const isIgnored = declarations.some(declaration => {
+            const tags = [(declaration as any).jsDoc]
               .flat()
               .filter(Boolean)
               .flatMap((tagNode: any) => tagNode.tags);
@@ -224,6 +235,8 @@ const NO_WARNING_PACKAGES = [
   'plugins/catalog-backend',
   'plugins/catalog-backend-module-aws',
   'plugins/catalog-backend-module-azure',
+  'plugins/catalog-backend-module-bitbucket',
+  'plugins/catalog-backend-module-github',
   'plugins/catalog-backend-module-gitlab',
   'plugins/catalog-backend-module-ldap',
   'plugins/catalog-backend-module-msgraph',
@@ -329,7 +342,6 @@ async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     include: [
       // These two contain global definitions that are needed for stable API report generation
       'packages/cli/asset-types/asset-types.d.ts',
-      'node_modules/handlebars/types/index.d.ts',
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
   });
@@ -587,7 +599,7 @@ async function runApiExtraction({
 WARNING: Bring a blanket if you're gonna read the code below
 
 There's some weird shit going on here, and it's because we cba
-forking rushstash to modify the api-documenter markdown generation,
+forking rushstack to modify the api-documenter markdown generation,
 which otherwise is the recommended way to do customizations.
 */
 

@@ -29,8 +29,7 @@ import { Entity } from '../Entity';
  *
  * @remarks
  *
- * This does not take into account machine generated fields such as uid, etag
- * and generation.
+ * This does not take into account machine generated fields such as uid and etag.
  *
  * @public
  */

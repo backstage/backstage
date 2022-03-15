@@ -33,13 +33,6 @@ export interface Config {
      */
     legacyUseCaseSensitiveTripletPaths?: boolean;
 
-    /**
-     * @example http://localhost:7007/api/techdocs
-     * @visibility frontend
-     * @deprecated
-     */
-    requestUrl?: string;
-
     sanitizer?: {
       /**
        * Allows iframe tag only for listed hosts

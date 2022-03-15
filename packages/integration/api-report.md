@@ -113,6 +113,35 @@ export function defaultScmResolveUrl(options: {
 }): string;
 
 // @public
+export class GerritIntegration implements ScmIntegration {
+  constructor(integrationConfig: GerritIntegrationConfig);
+  // (undocumented)
+  get config(): GerritIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<GerritIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
+export type GerritIntegrationConfig = {
+  host: string;
+  baseUrl?: string;
+  username?: string;
+  password?: string;
+};
+
+// @public
 export function getAzureCommitsUrl(url: string): string;
 
 // @public
@@ -293,6 +322,8 @@ export interface IntegrationsByType {
   // (undocumented)
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   // (undocumented)
+  gerrit: ScmIntegrationsGroup<GerritIntegration>;
+  // (undocumented)
   github: ScmIntegrationsGroup<GitHubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
@@ -327,6 +358,16 @@ export function readBitbucketIntegrationConfig(
 export function readBitbucketIntegrationConfigs(
   configs: Config[],
 ): BitbucketIntegrationConfig[];
+
+// @public
+export function readGerritIntegrationConfig(
+  config: Config,
+): GerritIntegrationConfig;
+
+// @public
+export function readGerritIntegrationConfigs(
+  configs: Config[],
+): GerritIntegrationConfig[];
 
 // @public
 export function readGitHubIntegrationConfig(
@@ -381,6 +422,8 @@ export interface ScmIntegrationRegistry
   // (undocumented)
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
   // (undocumented)
+  gerrit: ScmIntegrationsGroup<GerritIntegration>;
+  // (undocumented)
   github: ScmIntegrationsGroup<GitHubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
@@ -407,6 +450,8 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   byUrl(url: string | URL): ScmIntegration | undefined;
   // (undocumented)
   static fromConfig(config: Config): ScmIntegrations;
+  // (undocumented)
+  get gerrit(): ScmIntegrationsGroup<GerritIntegration>;
   // (undocumented)
   get github(): ScmIntegrationsGroup<GitHubIntegration>;
   // (undocumented)

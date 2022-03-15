@@ -20,7 +20,6 @@ import fetch from 'node-fetch';
 export interface ReaderEntityMeta extends EntityMeta {
   uid: string;
   etag: string;
-  generation: number;
   namespace: string;
   annotations: Record<string, string>;
   labels: Record<string, string>;

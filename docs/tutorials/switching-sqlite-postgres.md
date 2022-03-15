@@ -33,7 +33,7 @@ configuration for the backend:
 ```diff
 backend:
   database:
--    client: sqlite3
+-    client: better-sqlite3
 -    connection: ':memory:'
 +    # config options: https://node-postgres.com/api/client
 +    client: pg

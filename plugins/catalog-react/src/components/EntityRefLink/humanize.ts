@@ -20,9 +20,6 @@ import {
   DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 
-/** @public @deprecated please use {@link humanizeEntityRef} instead */
-export const formatEntityRefTitle = humanizeEntityRef;
-
 /** @public */
 export function humanizeEntityRef(
   entityRef: Entity | CompoundEntityRef,

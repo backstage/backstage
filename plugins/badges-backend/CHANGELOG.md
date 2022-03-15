@@ -1,5 +1,15 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.23
+
+### Patch Changes
+
+- bf95bb806c: Remove usages of now-removed `CatalogApi.getEntityByName`
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/catalog-client@0.9.0
+
 ## 0.1.23-next.0
 
 ### Patch Changes

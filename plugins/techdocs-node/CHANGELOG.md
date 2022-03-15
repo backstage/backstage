@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-node
 
+## 0.11.12
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- cea6f10b97: Renamed `@backstage/techdocs-common` to `@backstage/plugin-techdocs-node`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-search-common@0.3.1
+
 ## 0.11.12-next.0
 
 ### Patch Changes

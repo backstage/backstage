@@ -32,7 +32,6 @@ describe('getEntityRelations', () => {
         {
           type: RELATION_MEMBER_OF,
           targetRef: 'group:default/member',
-          target: { kind: 'group', namespace: 'default', name: 'member' },
         },
         {
           type: RELATION_CHILD_OF,
@@ -53,7 +52,6 @@ describe('getEntityRelations', () => {
         {
           type: RELATION_MEMBER_OF,
           targetRef: 'group:default/member',
-          target: { kind: 'group', namespace: 'default', name: 'member' },
         },
         {
           type: RELATION_MEMBER_OF,

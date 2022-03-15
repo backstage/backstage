@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.2
+
+### Patch Changes
+
+- 8122e27717: Updating documentation for supporting `apiVersion: scaffolder.backstage.io/v1beta3`
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@0.18.0
+
 ## 0.2.2-next.0
 
 ### Patch Changes

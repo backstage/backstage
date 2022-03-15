@@ -18,7 +18,7 @@ import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
-import { AwsS3UrlReader } from './AwsS3UrlReader';
+import { AwsS3UrlReader, parseUrl } from './AwsS3UrlReader';
 import {
   AwsS3Integration,
   readAwsS3IntegrationConfig,
@@ -31,6 +31,82 @@ import { NotModifiedError } from '@backstage/errors';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
+});
+
+describe('parseUrl', () => {
+  it('supports all aws formats', () => {
+    expect(
+      parseUrl('https://s3.us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+    expect(
+      parseUrl('https://s3-us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+    expect(
+      parseUrl('https://my.bucket-3.s3.us-west-2.amazonaws.com/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+    expect(
+      parseUrl(
+        'https://ignored.s3.us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg',
+        {
+          host: 'amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+  });
+
+  it('supports all non-aws formats', () => {
+    expect(
+      parseUrl('https://my-host.com/my.bucket-3/a/puppy.jpg', {
+        host: 'my-host.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: '',
+    });
+    expect(
+      parseUrl('https://my.bucket-3.my-host.com/a/puppy.jpg', {
+        host: 'my-host.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: '',
+    });
+    expect(
+      parseUrl('https://ignored.my-host.com/my.bucket-3/a/puppy.jpg', {
+        host: 'my-host.com',
+        s3ForcePathStyle: true,
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: '',
+    });
+  });
 });
 
 describe('AwsS3UrlReader', () => {
@@ -178,7 +254,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3; caused by Error: invalid AWS S3 URL, cannot parse region from host in https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });
@@ -234,7 +310,7 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow(
         Error(
-          `Could not retrieve file from S3; caused by Error: invalid AWS S3 URL, cannot parse region from host in https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
+          `Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml`,
         ),
       );
     });
@@ -247,7 +323,14 @@ describe('AwsS3UrlReader', () => {
       AWSMock.setSDKInstance(aws);
 
       AWSMock.mock('S3', 'getObject', (_, callback) => {
-        callback({ statusCode: 304 }, null);
+        const error: aws.AWSError = {
+          code: 'NotModified',
+          message: 'Not Modified',
+          statusCode: 304,
+          name: 'oops',
+          time: new Date('2019-01-01T00:00:00.000Z'),
+        };
+        callback(error, undefined);
       });
 
       const s3 = new aws.S3();

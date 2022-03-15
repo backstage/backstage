@@ -150,20 +150,24 @@ import {
 } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+import { Router } from 'express';
 
-export default async function createPlugin({
-  logger,
-  discovery,
-  tokenManager,
-}: PluginEnvironment) {
-  const searchEngine = new LunrSearchEngine({ logger });
-  const indexBuilder = new IndexBuilder({ logger, searchEngine });
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const searchEngine = new LunrSearchEngine({
+    logger: env.logger,
+  });
+  const indexBuilder = new IndexBuilder({
+    logger: env.logger,
+    searchEngine,
+  });
 
   indexBuilder.addCollator({
     defaultRefreshIntervalSeconds: 600,
     collator: new DefaultCatalogCollator({
-      discovery,
-      tokenManager,
+      discovery: env.discovery,
+      tokenManager: env.tokenManager,
     }),
   });
 
@@ -174,7 +178,7 @@ export default async function createPlugin({
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
-    logger,
+    logger: env.logger,
   });
 }
 ```
@@ -285,13 +289,13 @@ which are responsible for providing documents
 number of collators with the `IndexBuilder` like this:
 
 ```typescript
-const indexBuilder = new IndexBuilder({ logger, searchEngine });
+const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 
 indexBuilder.addCollator({
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({
-    discovery,
-    tokenManager,
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
   }),
 });
 
@@ -311,8 +315,8 @@ its `defaultRefreshIntervalSeconds` value, like this:
 indexBuilder.addCollator({
   defaultRefreshIntervalSeconds: 600,
   collator: new DefaultCatalogCollator({
-    discovery,
-    tokenManager,
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
   }),
 });
 ```

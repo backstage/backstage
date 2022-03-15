@@ -24,7 +24,7 @@ backported
 backporting
 Bigtable
 Billett
-Bitbucket
+bitbucket
 Bitrise
 Blackbox
 bool
@@ -61,6 +61,7 @@ const
 cookiecutter
 cron
 cronjobs
+crontab
 css
 Datadog
 dataflow
@@ -101,8 +102,9 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
+Gerrit
 gitbeaker
-GitHub
+github
 gitlab
 GitLab
 Gource
@@ -261,6 +263,7 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
+scrollbar
 seb
 semlas
 semver

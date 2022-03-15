@@ -22,7 +22,6 @@ const PRODUCTION_CONFIG = {
   },
   techdocs: {
     builder: 'external',
-    requestUrl: 'http://localhost:3000/api',
   },
 };
 
@@ -32,7 +31,6 @@ const DEVELOPMENT_CONFIG = {
   },
   techdocs: {
     builder: 'external',
-    requestUrl: 'http://localhost:7007/api',
   },
 };
 

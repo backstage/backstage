@@ -29,7 +29,6 @@ const SPECIAL_KEYS = [
   'metadata.namespace',
   'metadata.uid',
   'metadata.etag',
-  'metadata.generation',
 ];
 
 // The maximum length allowed for search values. These columns are indexed, and

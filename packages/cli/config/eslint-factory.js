@@ -37,6 +37,7 @@ function createConfig(dir, extraConfig = {}) {
     env,
     parserOptions,
     ignorePatterns,
+    overrides,
 
     rules,
     tsRules,
@@ -173,6 +174,7 @@ function createConfig(dir, extraConfig = {}) {
           ],
         },
       },
+      ...(overrides ?? []),
     ],
   };
 }

@@ -62,7 +62,10 @@ function isSupportedTemplate(entity: TemplateEntityV1beta3) {
   return entity.apiVersion === 'scaffolder.backstage.io/v1beta3';
 }
 
-/** @public */
+/**
+ * A method to create a router for the scaffolder backend plugin.
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {

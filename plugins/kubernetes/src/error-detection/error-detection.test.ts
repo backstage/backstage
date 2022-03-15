@@ -231,7 +231,7 @@ describe('detectErrors', () => {
     expect(errors).toBeDefined();
     expect(errors).toHaveLength(0);
   });
-  it('should detect in deployment which cant progress', () => {
+  it('should detect in deployment which cannot progress', () => {
     const result = detectErrors(oneDeployment(failingDeploy as any));
 
     expect(result.size).toBe(1);

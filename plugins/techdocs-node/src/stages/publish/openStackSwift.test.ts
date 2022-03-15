@@ -84,7 +84,6 @@ beforeEach(() => {
   mockFs.restore();
   const mockConfig = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'openStackSwift',
         openStackSwift: {
@@ -114,7 +113,6 @@ describe('OpenStackSwiftPublish', () => {
     it('should reject incorrect config', async () => {
       const mockConfig = new ConfigReader({
         techdocs: {
-          requestUrl: 'http://localhost:7007',
           publisher: {
             type: 'openStackSwift',
             openStackSwift: {

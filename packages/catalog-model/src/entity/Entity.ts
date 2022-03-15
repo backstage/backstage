@@ -15,7 +15,6 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { CompoundEntityRef } from '../types';
 import { EntityStatus } from './EntityStatus';
 
 /**
@@ -110,17 +109,6 @@ export type EntityMeta = JsonObject & {
   etag?: string;
 
   /**
-   * A positive nonzero number that indicates the current generation of data
-   * for this entity; the value is incremented each time the spec changes.
-   *
-   * This field can not be set by the user at creation time, and the server
-   * will reject an attempt to do so. The field will be populated in read
-   * operations.
-   * @deprecated field is not supported.
-   */
-  generation?: number;
-
-  /**
    * The name of the entity.
    *
    * Must be unique within the catalog at any given point in time, for any
@@ -195,13 +183,6 @@ export type EntityRelation = {
    * The type of the relation.
    */
   type: string;
-
-  /**
-   * The target entity of this relation.
-   *
-   * @deprecated use targetRef instead
-   */
-  target: CompoundEntityRef;
 
   /**
    * The entity ref of the target of this relation.

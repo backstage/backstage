@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 export * from './filters';
-export {
-  getEntityMetadataEditUrl,
-  getEntityMetadataViewUrl,
-} from './getEntityMetadataUrl';
 export { getEntityRelations } from './getEntityRelations';
 export { getEntitySourceLocation } from './getEntitySourceLocation';
 export type { EntitySourceLocation } from './getEntitySourceLocation';

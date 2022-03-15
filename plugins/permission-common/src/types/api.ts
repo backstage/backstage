@@ -79,7 +79,7 @@ export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
 type NonEmptyArray<T> = [T, ...T[]];
 
 /**
- * Represnts a logical AND for the provided criteria.
+ * Represents a logical AND for the provided criteria.
  * @public
  */
 export type AllOfCriteria<TQuery> = {
@@ -87,7 +87,7 @@ export type AllOfCriteria<TQuery> = {
 };
 
 /**
- * Represnts a logical OR for the provided criteria.
+ * Represents a logical OR for the provided criteria.
  * @public
  */
 export type AnyOfCriteria<TQuery> = {

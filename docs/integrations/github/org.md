@@ -19,8 +19,7 @@ entities that mirror your org setup.
 
 ## Installation
 
-The processor that performs the import, `GithubOrgReaderProcessor`, comes
-installed with the default setup of Backstage.
+See the [discovery](discovery.md) article for installation instructions.
 
 ## Configuration
 
@@ -70,6 +69,6 @@ import { GithubOrgReaderProcessor } from '@backstage/plugin-catalog-backend';
 
 builder.replaceProcessors(
   // ... other processor replacements
-  GithubOrgReaderProcessor.fromConfig(config, { logger }),
+  GithubOrgReaderProcessor.fromConfig(env.config, { logger: env.logger }),
 );
 ```

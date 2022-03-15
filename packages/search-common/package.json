@@ -1,7 +1,7 @@
 {
   "name": "@backstage/search-common",
-  "description": "Common functionalities for Search, to be shared between various search-enabled plugins",
-  "version": "0.3.1-next.0",
+  "description": "No longer maintained. Use @backstage/plugin-search-common instead.",
+  "version": "0.3.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -19,10 +19,6 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/search-common"
   },
-  "keywords": [
-    "backstage",
-    "search"
-  ],
   "license": "Apache-2.0",
   "files": [
     "dist"
@@ -39,7 +35,7 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
-    "@backstage/plugin-search-common": "^0.3.1-next.0"
+    "@backstage/plugin-search-common": "0.3.1"
   },
   "devDependencies": {},
   "jest": {

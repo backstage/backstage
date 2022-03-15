@@ -35,7 +35,6 @@ export type {
 export * from './policies';
 export {
   getCompoundEntityRef,
-  getEntityName,
   parseEntityRef,
   stringifyEntityRef,
 } from './ref';

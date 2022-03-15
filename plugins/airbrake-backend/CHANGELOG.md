@@ -1,5 +1,13 @@
 # @backstage/plugin-airbrake-backend
 
+## 0.2.2
+
+### Patch Changes
+
+- 4f79204c47: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+
 ## 0.2.2-next.0
 
 ### Patch Changes

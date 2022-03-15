@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { DefaultCatalogRulesEnforcer } from './CatalogRules';
-export type { CatalogRule, CatalogRulesEnforcer } from './CatalogRules';
 export type {
   AnalyzeLocationEntityField,
   AnalyzeLocationExistingEntity,

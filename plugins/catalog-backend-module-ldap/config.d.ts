@@ -79,6 +79,10 @@ export interface Config {
               scope?: 'base' | 'one' | 'sub';
               filter?: string;
               attributes?: string | string[];
+              sizeLimit?: number;
+              timeLimit?: number;
+              derefAliases?: number;
+              typesOnly?: boolean;
               paged?:
                 | boolean
                 | {
@@ -159,6 +163,10 @@ export interface Config {
               scope?: 'base' | 'one' | 'sub';
               filter?: string;
               attributes?: string | string[];
+              sizeLimit?: number;
+              timeLimit?: number;
+              derefAliases?: number;
+              typesOnly?: boolean;
               paged?:
                 | boolean
                 | {

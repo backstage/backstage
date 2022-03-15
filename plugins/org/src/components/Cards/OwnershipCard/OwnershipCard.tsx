@@ -118,7 +118,7 @@ const getQueryParams = (
   };
   if (owner.kind === 'User') {
     const user = owner as UserEntity;
-    filters.owners = [...filters.owners, ...user.spec.memberOf];
+    filters.owners = [...filters.owners, ...(user.spec.memberOf ?? [])];
   }
   const queryParams = qs.stringify(
     {

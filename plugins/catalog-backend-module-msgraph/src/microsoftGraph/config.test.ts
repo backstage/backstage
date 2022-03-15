@@ -93,4 +93,21 @@ describe('readMicrosoftGraphConfig', () => {
     };
     expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
   });
+
+  it('should fail if both userFilter and userGroupMemberSearch are set', () => {
+    const config = {
+      providers: [
+        {
+          target: 'target',
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          authority: 'https://login.example.com/',
+          userFilter: 'accountEnabled eq true',
+          userGroupMemberSearch: 'any',
+        },
+      ],
+    };
+    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
+  });
 });

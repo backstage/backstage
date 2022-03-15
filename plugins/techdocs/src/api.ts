@@ -49,9 +49,6 @@ export type SyncResult = 'cached' | 'updated';
  * @public
  */
 export interface TechDocsStorageApi {
-  /**
-   * Set to techdocs.requestUrl as the URL for techdocs-backend API.
-   */
   getApiOrigin(): Promise<string>;
   getStorageUrl(): Promise<string>;
   getBuilder(): Promise<string>;
@@ -73,9 +70,6 @@ export interface TechDocsStorageApi {
  * @public
  */
 export interface TechDocsApi {
-  /**
-   * Set to techdocs.requestUrl as the URL for techdocs-backend API.
-   */
   getApiOrigin(): Promise<string>;
   getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
   getEntityMetadata(

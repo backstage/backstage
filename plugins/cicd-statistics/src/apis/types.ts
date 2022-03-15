@@ -47,7 +47,7 @@ export const statusTypes: Array<FilterStatusType> = [
 /**
  * The branch enum of either 'master' or 'branch' (or possibly the meta 'all').
  *
- * The concept of what constitues a master branch is generic. It might be called
+ * The concept of what constitutes a master branch is generic. It might be called
  * something like 'release' or 'main' or 'trunk' in the underlying CI/CD system,
  * which is then up to the Api to map accordingly.
  */
