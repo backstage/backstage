@@ -63,12 +63,11 @@ To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a
 +       )
 +     )[0];
 
--     res.json(update(req.body));
-+     if (decision.result === AuthorizeResult.ALLOW) {
-+       res.json(update(req.body));
-+       return;
++     if (decision.result !== AuthorizeResult.ALLOW) {
++       throw new NotAllowedError('Unauthorized');
 +     }
-+     throw new NotAllowedError('Unauthorized');
++
+      res.json(update(req.body));
     });
 ```
 
@@ -128,29 +127,30 @@ $ yarn workspace @internal/plugin-todo-list-backend add @backstage/plugin-permis
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
 
-<!-- TODO: serializable result from `toQuery` method -->
+```typescript
+import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
+import { Todo, TodoFilter } from './todos';
 
-```diff
-+ import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
-+ import { Todo, TodoFilter } from './todos';
+const createTodoListPermissionRule = makeCreatePermissionRule<
+  Todo,
+  TodoFilter
+>();
 
-+ const createTodoListPermissionRule = makeCreatePermissionRule<
-+   Todo,
-+   TodoFilter
-+ >();
+export const isOwner = createTodoListPermissionRule({
+  name: 'IS_OWNER',
+  description: 'Should allow only if the todo belongs to the user',
+  apply: (resource: Todo, userId: string) => {
+    return resource.author === userId;
+  },
+  toQuery: (userId: string) => {
+    return {
+      property: 'author',
+      values: [userId],
+    };
+  },
+});
 
-+ export const isOwner = createTodoListPermissionRule({
-+   name: 'IS_OWNER',
-+   description: 'Should allow only if the todo belongs to the user',
-+   apply: (resource, userId) => {
-+     return resource.author === userId;
-+   },
-+   toQuery: userId => {
-+     return resource => resource.author === userId;
-+   },
-+ });
-
-+ export const rules = { isOwner };
+export const rules = { isOwner };
 ```
 
 `makeCreatePermissionRule` is a helper used to ensure that rules created for this plugin use consistent types for the resource and query.
@@ -168,9 +168,11 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
 ```diff
 + import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+- import { add, getAll, update } from './todos';
++ import { add, getAll, getTodo, update } from './todos';
 - import { todosListCreate, todosListUpdate } from './permissions';
 + import { todosListCreate, todosListUpdate, TODO_LIST_RESOURCE_TYPE } from './permissions';
-+ import { rules } from './rules;
++ import { rules } from './rules';
 
   export async function createRouter(
     options: RouterOptions,

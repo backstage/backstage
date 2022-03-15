@@ -90,7 +90,7 @@ The source code is available here:
       apiRouter.use(notFoundHandler());
     ```
 
-    Apply the following changes to `packages/app/src/App.ts`:
+    Apply the following changes to `packages/app/src/App.tsx`:
 
     ```diff
     + import { TodoListPage } from '@internal/plugin-todo-list';
