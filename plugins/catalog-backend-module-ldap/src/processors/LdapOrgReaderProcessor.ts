@@ -43,17 +43,26 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
   private readonly userTransformer?: UserTransformer;
 
   static fromConfig(
-    config: Config,
+    configRoot: Config,
     options: {
       logger: Logger;
       groupTransformer?: GroupTransformer;
       userTransformer?: UserTransformer;
     },
   ) {
-    const c = config.getOptionalConfig('catalog.processors.ldapOrg');
+    // TODO(freben): Deprecate the old catalog.processors.ldapOrg config
+    const config =
+      configRoot.getOptionalConfig('ldap') ||
+      configRoot.getOptionalConfig('catalog.processors.ldapOrg');
+    if (!config) {
+      throw new TypeError(
+        `There is no LDAP configuration. Please add it as "ldap.providers".`,
+      );
+    }
+
     return new LdapOrgReaderProcessor({
       ...options,
-      providers: c ? readLdapConfig(c) : [],
+      providers: readLdapConfig(config),
     });
   }
 
