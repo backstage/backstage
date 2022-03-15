@@ -244,8 +244,6 @@ export type Location = {
   id: string;
   type: string;
   target: string;
-  /** @deprecated This field is is ignored */
-  presence?: 'optional' | 'required';
 };
 
 /**
@@ -257,8 +255,6 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
-  /** @deprecated This field is is ignored */
-  presence?: 'optional' | 'required';
 };
 
 /**

@@ -272,7 +272,7 @@ export class CatalogClient implements CatalogApi {
    * {@inheritdoc CatalogApi.addLocation}
    */
   async addLocation(
-    { type = 'url', target, dryRun, presence }: AddLocationRequest,
+    { type = 'url', target, dryRun }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
     const response = await this.fetchApi.fetch(
@@ -285,7 +285,7 @@ export class CatalogClient implements CatalogApi {
           ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
         },
         method: 'POST',
-        body: JSON.stringify({ type, target, presence }),
+        body: JSON.stringify({ type, target }),
       },
     );
 
