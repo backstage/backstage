@@ -29,7 +29,7 @@ const mockUsePermission = usePermission as jest.MockedFunction<
 
 const permission = createPermission({
   name: 'access.something',
-  attributes: { action: 'read' as const },
+  attributes: { action: 'read' },
 });
 
 describe('PermissionedRoute', () => {
