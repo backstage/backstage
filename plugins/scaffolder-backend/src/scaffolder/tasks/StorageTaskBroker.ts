@@ -145,7 +145,7 @@ export class StorageTaskBroker implements TaskBroker {
   private deferredDispatch = defer();
 
   /**
-   * @inheritdoc
+   * {@inheritdoc TaskBroker.claim}
    */
   async claim(): Promise<TaskContext> {
     for (;;) {
@@ -167,7 +167,7 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc TaskBroker.dispatch}
    */
   async dispatch(
     options: TaskBrokerDispatchOptions,
@@ -180,14 +180,14 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc TaskBroker.get}
    */
   async get(taskId: string): Promise<SerializedTask> {
     return this.storage.getTask(taskId);
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc TaskBroker.event$}
    */
   event$(options: {
     taskId: string;
@@ -219,7 +219,7 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc TaskBroker.vacuumTasks}
    */
   async vacuumTasks(options: { timeoutS: number }): Promise<void> {
     const { tasks } = await this.storage.listStaleTasks(options);

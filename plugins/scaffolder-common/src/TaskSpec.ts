@@ -48,7 +48,7 @@ export interface TaskStep {
    */
   name: string;
   /**
-   * The underlying action ID that will be called part of running this step.
+   * The underlying action ID that will be called as part of running this step.
    */
   action: string;
   /**
@@ -56,7 +56,7 @@ export interface TaskStep {
    */
   input?: JsonObject;
   /**
-   * When this is false, or if the templated value string evaluates to something that is false the step will be skipped.
+   * When this is false, or if the templated value string evaluates to something that is falsy the step will be skipped.
    */
   if?: string | boolean;
 }
@@ -73,7 +73,7 @@ export interface TaskSpecV1beta3 {
    */
   apiVersion: 'scaffolder.backstage.io/v1beta3';
   /**
-   * This is a JSONSchema or an array of JSONSchema's which is used to render a form in the frontend
+   * This is a JSONSchema which is used to render a form in the frontend
    * to collect user input and validate it against that schema. This can then be used in the `steps` part below to template
    * variables passed from the user into each action in the template.
    */

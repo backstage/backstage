@@ -67,7 +67,7 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     output?: { [name: string]: string };
     /**
-     * The owner of the TemplateEntity
+     * The owner entityRef of the TemplateEntity
      */
     owner?: string;
   };
