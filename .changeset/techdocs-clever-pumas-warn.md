@@ -1,8 +1,8 @@
 ---
-'@backstage/plugin-techdocs-backend': patch
+'@backstage/plugin-techdocs-backend': minor
 ---
 
-Deprecations cleaned up.
+Removed deprecated exports, including:
 
 - deprecated config `generators` is now deleted and fully replaced with `techdocs.generator`
 - deprecated config `generators.techdocs` is now deleted and fully replaced with `techdocs.generator.runIn`
