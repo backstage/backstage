@@ -20,10 +20,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.10.6",
+    "@backstage/backend-common": "^0.10.7",
     "@backstage/config": "^0.1.13",
     "@backstage/errors": "^0.2.0",
-    "@backstage/plugin-auth-node": "^0.1.2",
+    "@backstage/plugin-auth-node": "^0.1.0",
     "@types/express": "*",
     "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
@@ -33,11 +33,11 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.1",
+    "@backstage/cli": "^0.13.2",
     "@types/supertest": "^2.0.8",
-    "@types/uuid": "^8.3.4",
+    "@types/uuid": "^8.0.0",
     "msw": "^0.35.0",
-    "supertest": "^4.0.2"
+    "supertest": "^6.1.6"
   },
   "files": [
     "dist"
