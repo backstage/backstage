@@ -19,6 +19,7 @@ import {
   ApiHolder,
   AnyApiRef,
   TypesToApiRefs,
+  getApiFacet,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryHolder } from './types';
 
@@ -85,7 +86,13 @@ export class ApiResolver implements ApiHolder {
     }
 
     const deps = this.loadDeps(ref, factory.deps, [...loading, factory.api]);
-    const api = factory.factory(deps);
+    const facettedDeps = Object.fromEntries(
+      Object.entries(deps).map(([name, api]) => [
+        name,
+        getApiFacet(api, { dependent: ref }),
+      ]),
+    );
+    const api = factory.factory(facettedDeps);
     this.apis.set(ref.id, api);
     return api as T;
   }

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
+import React, { PropsWithChildren, useMemo } from 'react';
 import { useVersionedContext } from '@backstage/version-bridge';
+
+import { ApiRef, ApiHolder, TypesToApiRefs } from '../system';
+import { getApiFacet } from '../facet';
+import { usePluginContextStack } from '../../plugin-context';
 
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
@@ -44,12 +47,14 @@ export function useApiHolder(): ApiHolder {
  */
 export function useApi<T>(apiRef: ApiRef<T>): T {
   const apiHolder = useApiHolder();
+  const pluginStack = usePluginContextStack();
 
   const api = apiHolder.get(apiRef);
   if (!api) {
     throw new Error(`No implementation available for ${apiRef}`);
   }
-  return api;
+
+  return useMemo(() => getApiFacet(api, { pluginStack }), [api, pluginStack]);
 }
 
 /**
@@ -64,6 +69,7 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
   ) {
     const Hoc = (props: PropsWithChildren<Omit<P, keyof T>>) => {
       const apiHolder = useApiHolder();
+      const pluginStack = usePluginContextStack();
 
       const impls = {} as T;
 
@@ -75,7 +81,7 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
           if (!api) {
             throw new Error(`No implementation available for ${ref}`);
           }
-          impls[key] = api;
+          impls[key] = getApiFacet(api, { pluginStack });
         }
       }
 
