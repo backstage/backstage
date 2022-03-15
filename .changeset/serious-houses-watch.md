@@ -1,8 +1,8 @@
 ---
-'@backstage/theme': patch
+'@backstage/theme': minor
 ---
 
-Removed the following unused properties from BackstagePaletteAdditions under the `bursts` property:
+**BREAKING**: Removed the following unused properties from BackstagePaletteAdditions under the `bursts` property:
 
 ```ts
 slackChannelText: string;
