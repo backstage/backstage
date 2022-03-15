@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage plugins
- *
- * @packageDocumentation
- */
+import { BackstagePlugin } from '../plugin/types';
 
-export * from './analytics';
-export * from './apis';
-export * from './app';
-export * from './extensions';
-export * from './icons';
-export * from './plugin';
-export * from './plugin-context';
-export * from './routing';
+/**
+ * Plugin context captured for each react extension
+ *
+ * @alpha
+ */
+export type PluginContext = {
+  /**
+   * The nearest known parent plugin
+   */
+  plugin: BackstagePlugin<any, any>;
+
+  /**
+   * The ID of the nearest routeRef
+   */
+  routeRef?: string;
+
+  /**
+   * The nearest known component
+   */
+  componentName: string;
+};
