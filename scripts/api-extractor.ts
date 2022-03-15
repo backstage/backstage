@@ -342,7 +342,6 @@ async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     include: [
       // These two contain global definitions that are needed for stable API report generation
       'packages/cli/asset-types/asset-types.d.ts',
-      'node_modules/handlebars/types/index.d.ts',
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
   });
