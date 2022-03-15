@@ -41,7 +41,10 @@ export interface OctokitWithPullRequestPluginClient {
   } | null>;
 }
 
-/** @public */
+/**
+ * The options passed to the client factory function.
+ * @public
+ */
 export type CreateGithubPullRequestClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
@@ -74,10 +77,22 @@ export const defaultClientFactory = async ({
   return new OctokitPR(octokitOptions);
 };
 
-/** @public */
+/**
+ * The options passed to {@link createPublishGithubPullRequestAction} method
+ * @public
+ */
 export interface CreateGithubPullRequestActionOptions {
+  /**
+   * An instance of {@link @backstage/integration#ScmIntegrationRegistry} that will be used in the action.
+   */
   integrations: ScmIntegrationRegistry;
+  /**
+   * An instance of {@link @backstage/integration#GithubCredentialsProvider} that will be used to get credentials for the action.
+   */
   githubCredentialsProvider?: GithubCredentialsProvider;
+  /**
+   * A method to return the Octokit client with the Pull Request Plugin.
+   */
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
   ) => Promise<OctokitWithPullRequestPluginClient>;
