@@ -14,14 +14,5 @@
  * limitations under the License.
  */
 
-export type {
-  LocationService,
-  RefreshService,
-  RefreshOptions,
-  LocationStore,
-  LocationInput,
-} from './types';
-export { createRouter } from './createRouter';
-export type { RouterOptions } from './createRouter';
 export type { CatalogEnvironment } from './CatalogBuilder';
 export { CatalogBuilder } from './CatalogBuilder';

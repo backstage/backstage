@@ -14,11 +14,8 @@ import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
-import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
-import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Location as Location_2 } from '@backstage/catalog-client';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -121,10 +118,7 @@ export class CatalogBuilder {
   ): void;
   addProcessor(...processors: CatalogProcessor[]): CatalogBuilder;
   build(): Promise<{
-    entitiesCatalog: EntitiesCatalog;
-    locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
-    locationService: LocationService;
     router: Router;
   }>;
   static create(env: CatalogEnvironment): CatalogBuilder;
@@ -185,12 +179,6 @@ export interface CatalogProcessingEngine {
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
-}
-
-// @public
-export interface CatalogProcessingOrchestrator {
-  // (undocumented)
-  process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
 // @public (undocumented)
@@ -320,9 +308,6 @@ export function createRandomProcessingInterval(options: {
   maxSeconds: number;
 }): ProcessingIntervalFunction;
 
-// @public
-export function createRouter(options: RouterOptions): Promise<express.Router>;
-
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
   constructor(options: {
@@ -388,22 +373,6 @@ export type DefaultCatalogCollatorFactoryOptions = {
   batchSize?: number;
   catalogClient?: CatalogApi;
 };
-
-// @public (undocumented)
-export class DefaultCatalogProcessingOrchestrator
-  implements CatalogProcessingOrchestrator
-{
-  constructor(options: {
-    processors: CatalogProcessor[];
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    parser: CatalogProcessorParser;
-    policy: EntityPolicy;
-    rulesEnforcer: CatalogRulesEnforcer;
-  });
-  // (undocumented)
-  process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
-}
 
 // @public
 export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
@@ -505,27 +474,6 @@ export type EntityPagination = {
 };
 
 // @public
-export type EntityProcessingRequest = {
-  entity: Entity;
-  state?: JsonObject;
-};
-
-// @public
-export type EntityProcessingResult =
-  | {
-      ok: true;
-      state: JsonObject;
-      completedEntity: Entity;
-      deferredEntities: DeferredEntity[];
-      relations: EntityRelationSpec[];
-      errors: Error[];
-    }
-  | {
-      ok: false;
-      errors: Error[];
-    };
-
-// @public
 export interface EntityProvider {
   connect(connection: EntityProviderConnection): Promise<void>;
   getProviderName(): string;
@@ -594,65 +542,11 @@ export type LocationEntityProcessorOptions = {
 };
 
 // @public
-export interface LocationInput {
-  // (undocumented)
-  target: string;
-  // (undocumented)
-  type: string;
-}
-
-// @public
-export interface LocationService {
-  // (undocumented)
-  createLocation(
-    location: LocationInput,
-    dryRun: boolean,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<{
-    location: Location_2;
-    entities: Entity[];
-    exists?: boolean;
-  }>;
-  // (undocumented)
-  deleteLocation(
-    id: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<void>;
-  // (undocumented)
-  getLocation(
-    id: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<Location_2>;
-  // (undocumented)
-  listLocations(options?: {
-    authorizationToken?: string;
-  }): Promise<Location_2[]>;
-}
-
-// @public
 export type LocationSpec = {
   type: string;
   target: string;
   presence?: 'optional' | 'required';
 };
-
-// @public
-export interface LocationStore {
-  // (undocumented)
-  createLocation(location: LocationInput): Promise<Location_2>;
-  // (undocumented)
-  deleteLocation(id: string): Promise<void>;
-  // (undocumented)
-  getLocation(id: string): Promise<Location_2>;
-  // (undocumented)
-  listLocations(): Promise<Location_2[]>;
-}
 
 // @public (undocumented)
 export type PageInfo =
@@ -759,35 +653,6 @@ export const processingResult: Readonly<{
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
 }>;
-
-// @public
-export type RefreshOptions = {
-  entityRef: string;
-  authorizationToken?: string;
-};
-
-// @public
-export interface RefreshService {
-  refresh(options: RefreshOptions): Promise<void>;
-}
-
-// @public
-export interface RouterOptions {
-  // (undocumented)
-  config: Config;
-  // (undocumented)
-  entitiesCatalog?: EntitiesCatalog;
-  // (undocumented)
-  locationAnalyzer?: LocationAnalyzer;
-  // (undocumented)
-  locationService: LocationService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  permissionIntegrationRouter?: express.Router;
-  // (undocumented)
-  refreshService?: RefreshService;
-}
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {
