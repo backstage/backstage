@@ -47,7 +47,7 @@ export type PermissionBase<TType extends string, TFields extends object> = {
    * depend on the type. For example, a `resourceRef` should only be provided
    * when authorizing permissions of type 'resource'.
    */
-  type: TType;
+  type: TType; // Property appears on separate object to prevent expansion of Permission types in api reports.
 } & TFields;
 
 /**
