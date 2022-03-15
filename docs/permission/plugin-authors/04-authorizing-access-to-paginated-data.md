@@ -77,6 +77,8 @@ export const todosListUpdate: Permission = {
 +   createConditionTransformer,
 +   ConditionTransformer,
 + } from '@backstage/plugin-permission-node';
+- import { add, getAll, getTodo, update } from './todos';
++ import { add, getAll, getTodo, TodoFilter, update } from './todos';
   import {
     todosListCreate,
     todosListUpdate,
@@ -105,10 +107,11 @@ export const todosListUpdate: Permission = {
 +       createConditionTransformer(Object.values(rules));
 +     const filter = conditionTransformer(decision.conditions) as TodoFilter;
 +     res.json(getAll(filter));
-+     return;
++   } else {
++     res.json(getAll());
 +   }
-
-   res.json(getAll());
++ }
+-   res.json(getAll());
   });
 ```
 
@@ -143,7 +146,5 @@ Let's update our permission policy's handler to return a conditional result when
 ```
 
 Once the changes to the permission policy are saved, the UI should should show only the items you have created.
-
-// TODO(vinzscam): add support for boolean operators
 
 // TODO(vinzscam): add frontend documentation
