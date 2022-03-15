@@ -333,6 +333,14 @@ This field is optional, and currently has no special semantics.
 Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
 in total.
 
+### `icon` [optional]
+
+An icon which represents this entity (e.g. a favourites icon for a website, profile picture etc.)
+
+The value should ideally be either a valid URL to an icon, or a key representing a built in icon (e.g. 'dashboard')
+
+This field is optional.
+
 ### `links` [optional]
 
 A list of external hyperlinks related to the entity. Links can provide

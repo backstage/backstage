@@ -48,7 +48,10 @@ export const CustomCatalogPage = ({
               <EntityTagPicker />
             </FilterContainer>
             <EntityListContainer>
-              <CatalogTable columns={columns} actions={actions} />
+              {mode === ViewMode.MODE_TABLE && (
+                <CatalogTable columns={columns} actions={actions} />
+              )}
+              {mode === ViewMode.MODE_GRID && <CatalogGrid actions={actions} />}
             </EntityListContainer>
           </FilteredEntityLayout>
         </Content>
@@ -160,7 +163,10 @@ export const CustomCatalogPage = ({
               <EntityTagPicker />
             <FilterContainer>
             <EntityListContainer>
-              <CatalogTable columns={columns} actions={actions} />
+              {mode === ViewMode.MODE_TABLE && (
+                <CatalogTable columns={columns} actions={actions} />
+              )}
+              {mode === ViewMode.MODE_GRID && <CatalogGrid actions={actions} />}
             </EntityListContainer>
           </FilteredEntityLayout>
         </EntityListProvider>

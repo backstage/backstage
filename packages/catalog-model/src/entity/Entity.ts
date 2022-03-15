@@ -180,6 +180,11 @@ export type EntityMeta = JsonObject & {
   tags?: string[];
 
   /**
+   * An icon (e.g. favicon) which visually represents this entity.
+   */
+  icon?: string;
+
+  /**
    * A list of external hyperlinks related to the entity.
    */
   links?: EntityLink[];
