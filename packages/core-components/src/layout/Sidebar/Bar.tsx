@@ -86,7 +86,7 @@ const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
       };
     },
     { name: 'BackstageSidebar' },
-  )
+  );
 
 enum State {
   Closed,

@@ -59,7 +59,7 @@ type OverlayMenuProps = {
   children?: React.ReactNode;
 };
 
-const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) => 
+const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
   makeStyles<BackstageTheme>(theme => {
     return {
       root: {
@@ -99,7 +99,7 @@ const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
         marginBottom: `${sidebarConfig.mobileSidebarHeight}px`,
       },
     };
-  })
+  });
 
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
   orderBy(
