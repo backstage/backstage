@@ -21,6 +21,7 @@ import {
   AnyRoutes,
   AnyExternalRoutes,
   PluginFeatureFlagConfig,
+  PluginInfo,
 } from './types';
 import { AnyApiFactory } from '../apis';
 
@@ -32,7 +33,11 @@ export class PluginImpl<
   ExternalRoutes extends AnyExternalRoutes,
 > implements BackstagePlugin<Routes, ExternalRoutes>
 {
-  constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
+  public readonly info: PluginInfo;
+
+  constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {
+    this.info = { links: [], ...config.info };
+  }
 
   getId(): string {
     return this.config.id;

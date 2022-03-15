@@ -23,4 +23,7 @@ export type {
   FeatureFlagsHooks,
   PluginConfig,
   PluginFeatureFlagConfig,
+  PluginConfigInfo,
+  PluginInfo,
+  PluginInfoLink,
 } from './types';
