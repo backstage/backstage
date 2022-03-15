@@ -15,7 +15,6 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -24,6 +23,7 @@ import {
   getBearerTokenFromAuthorizationHeader,
 } from '@backstage/plugin-auth-node';
 import { add, getAll, update } from './todos';
+import { InputError } from '@backstage/errors';
 
 export interface RouterOptions {
   logger: Logger;
