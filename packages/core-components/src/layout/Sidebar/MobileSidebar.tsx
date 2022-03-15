@@ -28,11 +28,7 @@ import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router';
 import { SidebarGroup } from './SidebarGroup';
-<<<<<<< HEAD
 import { SidebarConfigContext, SidebarContext, SidebarConfig } from './config';
-=======
-import { SidebarConfigContext, SidebarConfig } from './config';
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
 
 /**
  * Type of `MobileSidebarContext`
@@ -63,11 +59,7 @@ type OverlayMenuProps = {
   children?: React.ReactNode;
 };
 
-<<<<<<< HEAD
 const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) => 
-=======
-const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   makeStyles<BackstageTheme>(theme => {
     return {
       root: {
@@ -107,11 +99,7 @@ const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
         marginBottom: `${sidebarConfig.mobileSidebarHeight}px`,
       },
     };
-<<<<<<< HEAD
   })
-=======
-  })();
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
 
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
   orderBy(
@@ -129,11 +117,7 @@ const OverlayMenu = ({
   onClose,
 }: OverlayMenuProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-<<<<<<< HEAD
   const classes = useStyles({ sidebarConfig })();
-=======
-  const classes = useStyles({ sidebarConfig });
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
 
   return (
     <Drawer
@@ -184,12 +168,7 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
 export const MobileSidebar = (props: MobileSidebarProps) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { children } = props;
-<<<<<<< HEAD
   const classes = useStyles({ sidebarConfig })();
-=======
-  const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig });
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);

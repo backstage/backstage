@@ -67,11 +67,7 @@ const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
         display: 'none',
       },
     };
-<<<<<<< HEAD
   });
-=======
-  })();
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
 
 /**
  * Returns a MUI `BottomNavigationAction`, which is aware of the current location & the selected item in the `BottomNavigation`,
@@ -83,11 +79,7 @@ const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
 const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { to, label, icon, value } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
-<<<<<<< HEAD
   const classes = useStyles({ sidebarConfig })();
-=======
-  const classes = useStyles({ sidebarConfig });
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   const location = useLocation();
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);

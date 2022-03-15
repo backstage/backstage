@@ -83,20 +83,7 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
-<<<<<<< HEAD
 const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
-=======
-const useStyles = ({
-  sidebarConfig: {
-    drawerWidthClosed,
-    drawerWidthOpen,
-    iconContainerWidth,
-    selectedIndicatorWidth,
-  },
-}: {
-  sidebarConfig: SidebarConfig;
-}) =>
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   makeStyles<BackstageTheme>(
     theme => {
       return {
@@ -213,11 +200,7 @@ const useStyles = ({
       };
     },
     { name: 'BackstageSidebarItem' },
-<<<<<<< HEAD
   );
-=======
-  )();
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
@@ -371,11 +354,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     ...navLinkProps
   } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
-<<<<<<< HEAD
   const classes = useStyles({ sidebarConfig })();
-=======
-  const classes = useStyles({ sidebarConfig });
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
@@ -449,11 +428,7 @@ const SidebarItemWithSubmenu = ({
   children: React.ReactElement<SidebarSubmenuProps>;
 }) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-<<<<<<< HEAD
   const classes = useStyles({ sidebarConfig })();
-=======
-  const classes = useStyles({ sidebarConfig });
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
@@ -543,13 +518,8 @@ type SidebarSearchFieldProps = {
 
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-<<<<<<< HEAD
   const [input, setInput] = useState('');
   const classes = useStyles({ sidebarConfig })();
-=======
-  const classes = useStyles({ sidebarConfig });
-  const [input, setInput] = useState('');
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
@@ -678,11 +648,7 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
  */
 export const SidebarExpandButton = () => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-<<<<<<< HEAD
   const classes = useStyles({ sidebarConfig })();
-=======
-  const classes = useStyles({ sidebarConfig });
->>>>>>> Changed sidebar to accept new props sidebarOptions and submenuOptions
   const { isOpen, setOpen } = useContext(SidebarContext);
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),

@@ -25,7 +25,7 @@ import {
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = (props: { left: number, submenuConfig: SubmenuConfig }) =>
+const useStyles = (props: { left: number; submenuConfig: SubmenuConfig }) =>
   makeStyles<BackstageTheme>(
     theme => ({
       root: {
