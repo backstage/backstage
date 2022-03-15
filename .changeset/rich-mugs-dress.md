@@ -26,4 +26,4 @@
 '@techdocs/cli': major
 ---
 
-Promoted package to 1.0.0! See https://backstage.io/docs/overview/versioning-policy for how the bump to 1.0 affects these packages.
+This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
