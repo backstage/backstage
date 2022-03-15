@@ -247,7 +247,14 @@ describe('AwsS3UrlReader', () => {
       AWSMock.setSDKInstance(aws);
 
       AWSMock.mock('S3', 'getObject', (_, callback) => {
-        callback({ statusCode: 304 }, null);
+        const error: aws.AWSError = {
+          code: 'NotModified',
+          message: 'Not Modified',
+          statusCode: 304,
+          name: 'oops',
+          time: new Date('2019-01-01T00:00:00.000Z'),
+        };
+        callback(error, undefined);
       });
 
       const s3 = new aws.S3();
