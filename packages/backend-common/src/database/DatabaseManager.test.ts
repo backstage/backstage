@@ -93,7 +93,7 @@ describe('DatabaseManager', () => {
           plugin: {
             testdbname: {
               connection: {
-                database: 'database_name_overriden',
+                database: 'database_name_overridden',
               },
             },
             differentclient: {
@@ -304,10 +304,10 @@ describe('DatabaseManager', () => {
       const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const [_baseConfig, overrides] = mockCalls[0];
 
-      // simple case where only database name is overriden
+      // simple case where only database name is overridden
       expect(overrides).toMatchObject({
         connection: {
-          database: 'database_name_overriden',
+          database: 'database_name_overridden',
         },
       });
     });
@@ -581,7 +581,7 @@ describe('DatabaseManager', () => {
               plugin: {
                 testdbname: {
                   connection: {
-                    database: 'database_name_overriden',
+                    database: 'database_name_overridden',
                     host: 'newhost',
                   },
                 },
@@ -599,7 +599,7 @@ describe('DatabaseManager', () => {
       expect(baseConfig.get()).toMatchObject({
         client: 'pg',
         connection: {
-          database: 'database_name_overriden',
+          database: 'database_name_overridden',
           host: 'newhost',
           user: 'foo',
           password: 'bar',
@@ -608,7 +608,7 @@ describe('DatabaseManager', () => {
       expect(overrides).toHaveProperty('searchPath', ['testdbname']);
       expect(overrides).toHaveProperty(
         'connection.database',
-        'database_name_overriden',
+        'database_name_overridden',
       );
     });
 

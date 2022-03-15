@@ -66,7 +66,7 @@ These steps are generally kept isolated form each other, with each step focusing
 on its specific task. For example, we do not do linting or type checking
 together with the building or bundling. This is so that we can provide more
 flexibility and avoid duplicate work, improving performance. It is strongly
-recommended that as a part of developing withing Backstage you use a code editor
+recommended that as a part of developing within Backstage you use a code editor
 or IDE that has support for formatting, linting, and type checking.
 
 Let's dive into a detailed look at each of these steps and how they are

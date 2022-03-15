@@ -17,7 +17,7 @@ import React, { useEffect, useRef } from 'react';
 import { ScrollTo, useScroll } from '../hooks/useScroll';
 
 /*
-  Utility component use in conjuction with useScroll that allows scrollable components to control behavior and offset.
+  Utility component use in conjunction with useScroll that allows scrollable components to control behavior and offset.
   1. ScrollAnchor must be a direct child of a scrollable component.
   2. ScrollAnchor's parent position must be relative. 
   3. ScrollAnchor's id must be unique.

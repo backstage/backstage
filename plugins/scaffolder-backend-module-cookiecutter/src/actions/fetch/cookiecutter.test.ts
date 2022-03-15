@@ -115,7 +115,7 @@ describe('fetch:cookiecutter', () => {
       });
     });
 
-    // Mock when executeShellCommand is called it creats some new files in the mock filesystem
+    // Mock when executeShellCommand is called it creates some new files in the mock filesystem
     executeShellCommand.mockImplementation(async () => {
       mockFs({
         [`${join(mockTmpDir, 'intermediate')}`]: {

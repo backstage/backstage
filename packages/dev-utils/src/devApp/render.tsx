@@ -148,7 +148,7 @@ export class DevAppBuilder {
   }
 
   /**
-   * Adds an array of themes to overide the default theme.
+   * Adds an array of themes to override the default theme.
    */
   addThemes(themes: AppTheme[]) {
     this.themes = themes;

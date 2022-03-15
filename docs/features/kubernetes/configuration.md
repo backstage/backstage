@@ -255,7 +255,7 @@ CPU/Memory for pods returned by the API server. Defaults to `false`.
 
 ##### `exposeDashboard`
 
-This determines wether the `dashboardApp` and `dashboardParameters` should be
+This determines whether the `dashboardApp` and `dashboardParameters` should be
 automatically configured in order to expose the GKE dashboard from the
 Kubernetes plugin.
 

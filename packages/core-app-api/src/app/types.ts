@@ -190,7 +190,7 @@ export type AppOptions = {
 
   /**
    * A collection of ApiFactories to register in the application as default APIs.
-   * Theses APIs can not be overridden by plugin factories, but can be overridden
+   * These APIs cannot be overridden by plugin factories, but can be overridden
    * by plugin APIs provided through the
    * A collection of ApiFactories to register in the application to either
    * add new ones, or override factories provided by default or by plugins.

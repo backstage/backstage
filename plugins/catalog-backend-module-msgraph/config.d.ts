@@ -58,7 +58,7 @@ export interface Config {
           clientSecret: string;
 
           // TODO: Consider not making these config options and pass them in the
-          // constructor instead. They are probably not environment specifc, so
+          // constructor instead. They are probably not environment specific, so
           // they could also be configured "in code".
 
           /**

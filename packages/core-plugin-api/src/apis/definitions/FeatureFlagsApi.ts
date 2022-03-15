@@ -17,7 +17,7 @@
 import { ApiRef, createApiRef } from '../system';
 
 /**
- * Fetaure flag descriptor.
+ * Feature flag descriptor.
  *
  * @public
  */

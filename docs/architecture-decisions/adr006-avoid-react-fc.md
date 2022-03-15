@@ -45,7 +45,7 @@ const GoodComponent = ({ text, children }: GoodProps) => (
   </div>
 );
 
-/* Or as a shorthand, if no specifc child type is required */
+/* Or as a shorthand, if no specific child type is required */
 type GoodProps = PropsWithChildren<{ text: string }>;
 const GoodComponent = ({ text, children }: GoodProps) => (
   <div>
