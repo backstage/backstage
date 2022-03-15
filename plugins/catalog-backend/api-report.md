@@ -255,22 +255,6 @@ export type CatalogProcessorResult =
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult;
 
-// @public
-export type CatalogRule = {
-  allow: Array<{
-    kind: string;
-  }>;
-  locations?: Array<{
-    target?: string;
-    type: string;
-  }>;
-};
-
-// @public
-export type CatalogRulesEnforcer = {
-  isAllowed(entity: Entity, location: LocationSpec): boolean;
-};
-
 // @public (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
@@ -375,49 +359,9 @@ export type DefaultCatalogCollatorFactoryOptions = {
 };
 
 // @public
-export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
-  constructor(rules: CatalogRule[]);
-  static readonly defaultRules: CatalogRule[];
-  static fromConfig(config: Config): DefaultCatalogRulesEnforcer;
-  isAllowed(entity: Entity, location: LocationSpec): boolean;
-}
-
-// @public
 export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;
-};
-
-// @public (undocumented)
-export type EntitiesCatalog = {
-  entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
-  removeEntityByUid(
-    uid: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<void>;
-  entityAncestry(
-    entityRef: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<EntityAncestryResponse>;
-  facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
-};
-
-// @public (undocumented)
-export type EntitiesRequest = {
-  filter?: EntityFilter;
-  fields?: (entity: Entity) => Entity;
-  pagination?: EntityPagination;
-  authorizationToken?: string;
-};
-
-// @public (undocumented)
-export type EntitiesResponse = {
-  entities: Entity[];
-  pageInfo: PageInfo;
 };
 
 // @public
@@ -425,33 +369,6 @@ export type EntitiesSearchFilter = {
   key: string;
   values?: string[];
 };
-
-// @public (undocumented)
-export type EntityAncestryResponse = {
-  rootEntityRef: string;
-  items: Array<{
-    entity: Entity;
-    parentEntityRefs: string[];
-  }>;
-};
-
-// @public
-export interface EntityFacetsRequest {
-  authorizationToken?: string;
-  facets: string[];
-  filter?: EntityFilter;
-}
-
-// @public
-export interface EntityFacetsResponse {
-  facets: Record<
-    string,
-    Array<{
-      value: string;
-      count: number;
-    }>
-  >;
-}
 
 // @public
 export type EntityFilter =
@@ -465,13 +382,6 @@ export type EntityFilter =
       not: EntityFilter;
     }
   | EntitiesSearchFilter;
-
-// @public
-export type EntityPagination = {
-  limit?: number;
-  offset?: number;
-  after?: string;
-};
 
 // @public
 export interface EntityProvider {
@@ -547,16 +457,6 @@ export type LocationSpec = {
   target: string;
   presence?: 'optional' | 'required';
 };
-
-// @public (undocumented)
-export type PageInfo =
-  | {
-      hasNextPage: false;
-    }
-  | {
-      hasNextPage: true;
-      endCursor: string;
-    };
 
 // @public (undocumented)
 export function parseEntityYaml(

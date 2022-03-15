@@ -21,7 +21,7 @@ import type { Location } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
-import { EntitiesCatalog } from '../catalog';
+import { EntitiesCatalog } from '../catalog/types';
 import { LocationInput, LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createRouter } from './createRouter';
