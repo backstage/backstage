@@ -7645,9 +7645,9 @@ available-typed-arrays@^1.0.2:
     array-filter "^1.0.0"
 
 aws-sdk-mock@^5.2.1:
-  version "5.2.1"
-  resolved "https://registry.npmjs.org/aws-sdk-mock/-/aws-sdk-mock-5.2.1.tgz#126d4d5362c96b7d1d0bd87708a99d626c19ffd4"
-  integrity sha512-dY7zA1p/lX335V4/aOJ2L8ggXC3a5zokTJFZlZVW3uU+Zej7u+V7WrEcN5TVaJAnk4auT263T6EK/OHW4WjKhw==
+  version "5.6.2"
+  resolved "https://registry.npmjs.org/aws-sdk-mock/-/aws-sdk-mock-5.6.2.tgz#664771462953ca8d3806d5a50a63b4a6dbd5290f"
+  integrity sha512-GRJg8kjRJFLm2aLiPkYSqe/RreHqlqncAeFtWdAbtSxzBdct9EaV6rqSqjyWXKNJG45Rzn2Ojo3F6qVIgkQnSg==
   dependencies:
     aws-sdk "^2.928.0"
     sinon "^11.1.1"
