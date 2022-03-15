@@ -368,6 +368,7 @@ export interface OctokitWithPullRequestPluginClient {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
+      number: number;
     };
   } | null>;
 }
