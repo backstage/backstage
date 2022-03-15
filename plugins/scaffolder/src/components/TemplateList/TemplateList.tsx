@@ -30,7 +30,7 @@ import { Typography } from '@material-ui/core';
 import { TemplateCard } from '../TemplateCard';
 
 /**
- * @deprecated this type is deprecated and will be removed in a future releases, please use the TemplateCard to render your own list.
+ * @internal
  */
 export type TemplateListProps = {
   TemplateCardComponent?:
@@ -38,14 +38,12 @@ export type TemplateListProps = {
     | undefined;
   group?: {
     title?: React.ReactNode;
-    /** @deprecated use title instead, can be a string or a react component */
-    titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   };
 };
 
 /**
- * @deprecated this component is deprecated and will be removed in a future releases, please use the TemplateCard to render your own list.
+ * @internal
  */
 export const TemplateList = ({
   TemplateCardComponent,
@@ -58,13 +56,6 @@ export const TemplateList = ({
     : entities;
 
   const titleComponent: React.ReactNode = (() => {
-    if (group?.titleComponent) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'DEPRECATED: group.titleComponent is now deprecated. Use group.title instead, it can be a string or a react component',
-      );
-      return group?.titleComponent;
-    }
     if (group && group.title) {
       if (typeof group.title === 'string') {
         return <ContentHeader title={group.title} />;
