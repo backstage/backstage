@@ -21,8 +21,11 @@ import {
   AnyRoutes,
   AnyExternalRoutes,
   PluginFeatureFlagConfig,
+  PluginInfo,
+  ExtendMetadata,
 } from './types';
 import { AnyApiFactory } from '../apis';
+import { getPluginMetadata } from './plugin-metadata';
 
 /**
  * @internal
@@ -41,6 +44,8 @@ export class PluginImpl<
     >,
   ) {}
 
+  private deferredInfo: Promise<PluginInfo> | undefined = undefined;
+  private metadataExtender: ExtendMetadata | undefined = undefined;
   private options: {} | undefined = undefined;
 
   getId(): string {
@@ -53,6 +58,19 @@ export class PluginImpl<
 
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig> {
     return this.config.featureFlags?.slice() ?? [];
+  }
+
+  getInfo(): Promise<PluginInfo> {
+    this.deferredInfo ??= getPluginMetadata(
+      this.config.info,
+      this.config.id,
+      this.metadataExtender,
+    );
+    return this.deferredInfo;
+  }
+
+  setMetadataExtender(extender: ExtendMetadata) {
+    this.metadataExtender = extender;
   }
 
   get routes(): Routes {

@@ -20,8 +20,12 @@ export type {
   AnyExternalRoutes,
   AnyRoutes,
   BackstagePlugin,
+  ExtendMetadata,
   Extension,
   FeatureFlagsHooks,
   PluginConfig,
   PluginFeatureFlagConfig,
+  PluginConfigInfo,
+  PluginInfo,
+  PluginInfoLink,
 } from './types';

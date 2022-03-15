@@ -32,6 +32,7 @@ export const cicdStatisticsPlugin = createPlugin({
   routes: {
     entityContent: rootCatalogCicdStatsRouteRef,
   },
+  info: () => import('../package.json'),
 });
 
 /** @public */

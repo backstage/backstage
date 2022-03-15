@@ -24,6 +24,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
   IdentityApi,
+  PluginInfo,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 
@@ -214,6 +215,20 @@ export type AppOptions = {
   >;
 
   /**
+   * A map of plugin package names to internal groups (as entity refs defaulting
+   * to kind Group).
+   *
+   * The package name (key) can contain wildcards and will be matched using
+   * minimatch.
+   */
+  pluginOwners?: Record<string, string>[];
+
+  /**
+   * Decorate the PluginInfo part of a plugin
+   */
+  pluginInfoDecorator?: (plugin: PluginInfo, id: string) => void;
+
+  /**
    * Supply components to the app to override the default ones.
    */
   components: AppComponents;
@@ -338,3 +353,12 @@ export type AppContext = {
    */
   getComponents(): AppComponents;
 };
+
+/**
+ * @private
+ */
+export type CompatiblePlugin =
+  | BackstagePlugin<any, any>
+  | (Omit<BackstagePlugin<any, any>, 'getFeatureFlags'> & {
+      output(): Array<{ type: 'feature-flag'; name: string }>;
+    });

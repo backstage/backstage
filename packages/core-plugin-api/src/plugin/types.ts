@@ -45,6 +45,14 @@ export type AnyRoutes = { [name: string]: RouteRef | SubRouteRef };
 export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
 
 /**
+ * Extend metadata for a plugin
+ */
+export type ExtendMetadata = (
+  info: PluginInfo,
+  pluginId: string,
+) => void | Promise<void | undefined>;
+
+/**
  * Plugin type.
  *
  * @public
@@ -60,6 +68,8 @@ export type BackstagePlugin<
    * Returns all registered feature flags for this plugin.
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
+  getInfo(): Promise<PluginInfo>;
+  setMetadataExtender(extender: ExtendMetadata): void;
   provide<T>(extension: Extension<T>): T;
   routes: Routes;
   externalRoutes: ExternalRoutes;
@@ -76,6 +86,69 @@ export type PluginFeatureFlagConfig = {
   name: string;
 };
 
+export type PluginInfoLink = {
+  /**
+   * The url to the external site, document, etc.
+   */
+  url: string;
+
+  /**
+   * An optional descriptive title for the link.
+   */
+  title?: string;
+};
+
+/**
+ * PluginInfo
+ *
+ * @public
+ */
+export type PluginInfo = {
+  /**
+   * The raw package.json (or a subset thereof)
+   */
+  packageJson?: Record<string, unknown>;
+
+  /**
+   * Plugin description; defaults to `description` in package.json
+   */
+  description?: string;
+
+  /**
+   * Plugin version; defaults to `version` in package.json
+   */
+  version?: string;
+
+  /**
+   * Owner of the plugin. It's a catalog entity ref, defaulting the kind to
+   * Group, so it's either a full entity ref, or just a group name
+   */
+  ownerEntityRef?: string;
+
+  /**
+   * A set of links. Will by default include the `homepage` and `repository`
+   * field in package.json.
+   */
+  links: PluginInfoLink[];
+
+  /**
+   * Plugin role; will likely be frontend-plugin, frontend-plugin-module or
+   * common-library
+   */
+  role?: string;
+};
+
+export type LazyLoadedPackageJson = () => Promise<{
+  default: Record<string, unknown>;
+}>;
+
+export type PluginConfigInfo =
+  | Partial<PluginInfo>
+  | (Omit<Partial<PluginInfo>, 'packageJson'> & {
+      packageJson: LazyLoadedPackageJson;
+    })
+  | LazyLoadedPackageJson;
+
 /**
  * Plugin descriptor type.
  *
@@ -91,6 +164,7 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  info?: PluginConfigInfo;
   __experimentalConfigure?(options?: PluginInputOptions): {};
 };
 
