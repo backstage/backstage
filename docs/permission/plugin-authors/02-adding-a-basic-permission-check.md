@@ -10,7 +10,7 @@ For this tutorial, we'll use a basic permission check to authorize the `create` 
 
 We'll start by creating a new permission, and then we'll use the permission api to call `authorize` with it during todo creation.
 
-## Setup
+## Setup
 
 Install the following module:
 
