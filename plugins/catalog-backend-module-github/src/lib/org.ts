@@ -58,7 +58,10 @@ export function assignGroupsToUsers(
   for (const [groupName, userNames] of groupMemberUsers.entries()) {
     for (const userName of userNames) {
       const user = usersByName.get(userName);
-      if (user && !user.spec.memberOf.includes(groupName)) {
+      if (user && !user.spec.memberOf?.includes(groupName)) {
+        if (!user.spec.memberOf) {
+          user.spec.memberOf = [];
+        }
         user.spec.memberOf.push(groupName);
       }
     }
@@ -74,7 +77,7 @@ export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {
     const transitiveMemberOf = new Set<string>();
 
     const todo = [
-      ...user.spec.memberOf,
+      ...(user.spec.memberOf ?? []),
       ...groups
         .filter(g => g.spec.members?.includes(user.metadata.name))
         .map(g => g.metadata.name),
