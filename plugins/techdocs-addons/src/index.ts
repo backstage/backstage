@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
+export { createTechDocsAddon, TechDocsAddons } from './addons';
 export type { TechDocsAddonLocations, TechDocsAddonOptions } from './types';

@@ -4,6 +4,13 @@
 
 ```ts
 import { ComponentType } from 'react';
+import { Extension } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
+
+// @public
+export function createTechDocsAddon<TComponentProps>(
+  options: TechDocsAddonOptions<TComponentProps>,
+): Extension<ComponentType<TComponentProps>>;
 
 // @public
 export enum TechDocsAddonLocations {
@@ -21,4 +28,7 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
   location: TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
+
+// @public
+export const TechDocsAddons: React_2.ComponentType;
 ```

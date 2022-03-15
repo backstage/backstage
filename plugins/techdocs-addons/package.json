@@ -21,7 +21,10 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@backstage/core-plugin-api": "^0.8.0",
+    "react-router-dom": "6.0.0-beta.0"
+  },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0"
