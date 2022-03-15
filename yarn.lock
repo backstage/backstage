@@ -4665,10 +4665,10 @@
     prop-types "^15.7.2"
     react-is "^16.9.0"
 
-"@rjsf/material-ui@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-3.2.1.tgz#84fbf322485aee3a84101e189161f0687779ec8d"
-  integrity sha512-8UiDeDbjCImFSfOegGu13otQ7OdP9FOYpcLjeouppnhs+MPeIEAtYS+jCcBKmi3reyTagC15/KVSRhde1wS1vg==
+"@rjsf/material-ui@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-4.1.0.tgz#e9ffc98a4d5543715d6d78171c73b49648ad36c6"
+  integrity sha512-R5mPkcMngjDYhFnFVUUuvotcohvNMWGsuJeVCtChQo/GiS4GHsypfEydBxl91rHA1iiapgYTeh5m77oBiaGkwg==
 
 "@roadiehq/backstage-plugin-buildkite@^1.4.0":
   version "1.4.0"
