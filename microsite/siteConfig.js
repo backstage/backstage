@@ -9,17 +9,21 @@
 // site configuration options.
 
 // This figures out what the most recent release version is, so that we can link to it in the header
-const [{name: latestRelease}] = require('fs').readdirSync(require('path').resolve(__dirname, '../docs/releases')).map(file => {
-  const match = file.match(/^v(\d+)\.(\d+)\.(\d+)\.md$/)
-  if (!match) {
-    return undefined
-  }
-  const parts = match.slice(1).map(v => parseInt(v, 10))
-  return {
-    name: file.slice(0, file.length - '.md'.length),
-    weight: parts[0]*1000000 + parts[1]*1000 + parts[2],
-  }
-}).filter(Boolean).sort((a, b) => b.weight - a.weight);
+const [{ name: latestRelease }] = require('fs')
+  .readdirSync(require('path').resolve(__dirname, '../docs/releases'))
+  .map(file => {
+    const match = file.match(/^v(\d+)\.(\d+)\.(\d+)\.md$/);
+    if (!match) {
+      return undefined;
+    }
+    const parts = match.slice(1).map(v => parseInt(v, 10));
+    return {
+      name: file.slice(0, file.length - '.md'.length),
+      weight: parts[0] * 1000000 + parts[1] * 1000 + parts[2],
+    };
+  })
+  .filter(Boolean)
+  .sort((a, b) => b.weight - a.weight);
 
 const siteConfig = {
   title: 'Backstage Software Catalog and Developer Platform', // Title for your website.
