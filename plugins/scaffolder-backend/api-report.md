@@ -138,6 +138,18 @@ export function createGithubActionsDispatchAction(options: {
 }>;
 
 // @public
+export function createGithubIssuesLabelAction(options: {
+  integrations: ScmIntegrationRegistry;
+  defaultWebhookSecret?: string;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<{
+  repoUrl: string;
+  number: number;
+  labels: string[];
+  token?: string | undefined;
+}>;
+
+// @public
 export interface CreateGithubPullRequestActionOptions {
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
