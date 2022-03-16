@@ -15,6 +15,7 @@
  */
 
 import { ComponentType } from 'react';
+import { AsyncState } from 'react-use/lib/useAsyncFn';
 
 /**
  * Locations for which TechDocs addons may be declared and rendered.
@@ -70,3 +71,9 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
   location: TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
+
+/**
+ * Common response envelope for addon-related hooks.
+ * @public
+ */
+export type TechDocsAddonAsyncMetadata<TValue> = AsyncState<TValue | undefined>;
