@@ -100,7 +100,7 @@ export const useTechDocsAddons = () => {
     [collection],
   );
 
-  const renderComponentWithName = useCallback(
+  const renderComponentByName = useCallback(
     (name: string) => {
       const data = options.find(option => option.name === name);
       return data ? findAddonByData(data) : null;
@@ -108,7 +108,7 @@ export const useTechDocsAddons = () => {
     [options, findAddonByData],
   );
 
-  const renderComponentsWithLocation = useCallback(
+  const renderComponentsByLocation = useCallback(
     (location: TechDocsAddonLocations) => {
       const data = options.filter(option => option.location === location);
       return data.length ? data.map(findAddonByData) : null;
@@ -116,5 +116,5 @@ export const useTechDocsAddons = () => {
     [options, findAddonByData],
   );
 
-  return { renderComponentWithName, renderComponentsWithLocation };
+  return { renderComponentByName, renderComponentsByLocation };
 };
