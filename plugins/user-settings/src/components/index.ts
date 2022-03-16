@@ -15,7 +15,6 @@
  */
 export { Settings } from './Settings';
 export { SettingsPage as Router } from './SettingsPage';
-export type { SettingsTab } from './SettingsPage';
 export * from './AuthProviders';
 export * from './General';
 export * from './FeatureFlags';
