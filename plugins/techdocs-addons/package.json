@@ -22,8 +22,17 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/catalog-model": "^0.13.0",
+    "@backstage/core-components": "^0.9.1",
     "@backstage/core-plugin-api": "^0.8.0",
-    "react-router-dom": "6.0.0-beta.0"
+    "@backstage/plugin-techdocs": "^0.15.1",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/styles": "^4.11.0",
+    "jss": "~10.8.2",
+    "react-helmet": "6.1.0",
+    "react-router-dom": "6.0.0-beta.0",
+    "react-use": "^17.2.4"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
