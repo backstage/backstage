@@ -21,4 +21,12 @@
  */
 
 export { createTechDocsAddon, TechDocsAddons } from './addons';
+export {
+  useEntityMetadata,
+  useMetadata,
+  useShadowRoot,
+  useShadowRootElements,
+} from './context';
+export { TechDocsReaderPage } from './reader';
+export type { TechDocsReaderPageProps } from './reader';
 export type { TechDocsAddonLocations, TechDocsAddonOptions } from './types';
