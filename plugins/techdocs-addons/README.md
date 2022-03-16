@@ -18,7 +18,10 @@ then be composed within a Backstage app.
 When you create a new Addon, it requires three things.
 
 1. A `name` for debugging and analytics purposes)
-2. A `location`, indicating where/how the addon will be rendered
+2. A `location`, indicating where/how the addon will be rendered. Valid
+   locations include: `header`, `subheader`, `primary sidebar`,
+   `secondary sidebar`, `content`, and `component`. Values are available on an
+   enumerable `TechDocsAddonLocations` and are type-hinted.
 3. A `component`, encapsulating the addon's logic and functionality
 
 ```tsx
@@ -31,7 +34,7 @@ import { StackOverflowSecondarySidebarAddon } from './components';
 export const StackOverflowSecondarySidebar = yourBackstagePlugin.provide(
   createTechDocsAddon({
     name: 'StackOverflowSecondarySidebar',
-    type: TechDocsAddonLocations.SECONDARY_SIDEBAR,
+    location: TechDocsAddonLocations.SECONDARY_SIDEBAR,
     component: StackOverflowSecondarySidebarAddon,
   }),
 );
