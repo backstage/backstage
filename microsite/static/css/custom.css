@@ -1073,11 +1073,13 @@ code {
 .Banner {
   position: relative;
   padding: 14px;
+  padding-right: 50px; /* space for the dismiss button */
   margin: 14px 20px;
   border-radius: 4px;
   background-color: $primaryColor;
   font-family: Helvetica Neue, sans-serif;
   color: #000;
+  display: inline-block;
 }
 
 .Banner--hidden {
