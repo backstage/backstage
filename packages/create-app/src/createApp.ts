@@ -34,7 +34,20 @@ export default async (cmd: Command): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
-  const answers: Answers = await inquirer.prompt([
+  const validateName = (value: string): boolean => {
+    return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(value);
+  };
+
+  const dbTypes = ['SQLite', 'PostgreSQL']
+
+  let answers: Answers = {}
+  if (cmd.appName && validateName(cmd.appName)) {
+    answers.name = cmd.appName
+  }
+  if (cmd.dbType && dbTypes.includes(cmd.dbType)) {
+    answers.dbType = cmd.dbType
+  }
+  answers = await inquirer.prompt([
     {
       type: 'input',
       name: 'name',
@@ -42,7 +55,7 @@ export default async (cmd: Command): Promise<void> => {
       validate: (value: any) => {
         if (!value) {
           return chalk.red('Please enter a name for the app');
-        } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+        } else if (!validateName(value)) {
           return chalk.red(
             'App name must be lowercase and contain only letters, digits, and dashes.',
           );
@@ -54,14 +67,16 @@ export default async (cmd: Command): Promise<void> => {
       type: 'list',
       name: 'dbType',
       message: chalk.blue('Select database for the backend [required]'),
-      choices: ['SQLite', 'PostgreSQL'],
+      choices: dbTypes,
     },
-  ]);
+  ], answers);
+
   answers.dbTypePG = answers.dbType === 'PostgreSQL';
   answers.dbTypeSqlite = answers.dbType === 'SQLite';
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);
+  answers
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`

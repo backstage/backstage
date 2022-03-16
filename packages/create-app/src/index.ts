@@ -38,6 +38,14 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
+    .option(
+      '--app-name [string]',
+      'Name of the generated app',
+    )
+    .option(
+      '--db-type [SQLite/PostgreSQL]',
+      'The database to use when running backstage',
+    )
     .action(cmd => createApp(cmd));
 
   program.parse(argv);
