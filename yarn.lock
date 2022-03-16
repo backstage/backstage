@@ -21884,12 +21884,19 @@ seq-queue@^0.0.5:
   resolved "https://registry.npmjs.org/seq-queue/-/seq-queue-0.0.5.tgz#d56812e1c017a6e4e7c3e3a37a1da6d78dd3c93e"
   integrity sha1-1WgS4cAXpuTnw+Ojeh2m143TyT4=
 
-serialize-error@^8.0.1, serialize-error@^8.1.0:
+serialize-error@^8.1.0:
   version "8.1.0"
   resolved "https://registry.npmjs.org/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
   integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
   dependencies:
     type-fest "^0.20.2"
+
+serialize-error@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.npmjs.org/serialize-error/-/serialize-error-9.1.0.tgz#cb3ebd0af124b3055c38be758da036914f967662"
+  integrity sha512-mqSMI2maV+Hb4/+DTpz4EzAPoDENirBx3eirEAhIUM00Ms1ZQ84fGempf2ZeYHbW3YLmYfkdGq9Ap3KnZthf+g==
+  dependencies:
+    type-fest "^2.5.3"
 
 serialize-javascript@^6.0.0:
   version "6.0.0"
@@ -23884,6 +23891,11 @@ type-fest@^1.2.1, type-fest@^1.2.2:
   version "1.4.0"
   resolved "https://registry.npmjs.org/type-fest/-/type-fest-1.4.0.tgz#e9fb813fe3bf1744ec359d55d1affefa76f14be1"
   integrity sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==
+
+type-fest@^2.5.3:
+  version "2.12.0"
+  resolved "https://registry.npmjs.org/type-fest/-/type-fest-2.12.0.tgz#ce342f58cab9114912f54b493d60ab39c3fc82b6"
+  integrity sha512-Qe5GRT+n/4GoqCNGGVp5Snapg1Omq3V7irBJB3EaKsp7HWDo5Gv2d/67gfNyV+d5EXD+x/RF5l1h4yJ7qNkcGA==
 
 type-is@~1.6.18:
   version "1.6.18"
