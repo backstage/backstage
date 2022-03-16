@@ -29,7 +29,6 @@ import { parseRepoUrl } from '../publish/util';
  */
 export function createGithubIssuesLabelAction(options: {
   integrations: ScmIntegrationRegistry;
-  defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, githubCredentialsProvider } = options;
