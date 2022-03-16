@@ -25,6 +25,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -553,6 +554,9 @@ export const processingResult: Readonly<{
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
 }>;
+
+// @alpha
+export type TestType = Record<string, typeof RESOURCE_TYPE_CATALOG_ENTITY>;
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {
