@@ -60,6 +60,7 @@ configmaps
 configs
 const
 cookiecutter
+Corti
 cron
 cronjobs
 crontab
@@ -103,6 +104,7 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
+Francesco
 Gerrit
 gitbeaker
 github
