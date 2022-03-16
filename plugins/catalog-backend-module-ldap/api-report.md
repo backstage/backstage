@@ -134,7 +134,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
   });
   // (undocumented)
   static fromConfig(
-    config: Config,
+    configRoot: Config,
     options: {
       logger: Logger;
       groupTransformer?: GroupTransformer;
