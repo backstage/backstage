@@ -20,23 +20,30 @@ import {
   SidebarPinStateContext,
   TabbedLayout,
 } from '@backstage/core-components';
-import React, { useContext } from 'react';
+import React, { useContext, ReactElement } from 'react';
+import { useOutlet } from 'react-router';
 import { UserSettingsAuthProviders } from './AuthProviders';
 import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
 
-export interface SettingsTab {
-  title: string;
-  content: React.ReactElement;
-}
-
 type Props = {
   providerSettings?: JSX.Element;
-  tabs?: SettingsTab[];
 };
 
-export const SettingsPage = ({ providerSettings, tabs }: Props) => {
+export const SettingsPage = ({ providerSettings }: Props) => {
   const { isMobile } = useContext(SidebarPinStateContext);
+  const outlet = useOutlet();
+
+  const extraTabs = (React.Children.toArray(outlet?.props?.children) ||
+    []) as Array<ReactElement>;
+  const notCompliantTab = Array.from(extraTabs).some(
+    child => (child.type as any)?.displayName !== 'Route',
+  );
+  if (notCompliantTab) {
+    throw new Error(
+      'Invalid element passed to SettingsPage Outlet. You may only pass children of type Route.',
+    );
+  }
 
   return (
     <Page themeId="home">
@@ -54,12 +61,14 @@ export const SettingsPage = ({ providerSettings, tabs }: Props) => {
         <TabbedLayout.Route path="feature-flags" title="Feature Flags">
           <UserSettingsFeatureFlags />
         </TabbedLayout.Route>
-        {tabs?.map(({ title, content }) => {
-          // Hyphenated the title
-          const path = title.toLocaleLowerCase().replace(/\s/, '-');
+
+        {extraTabs.map((child, i) => {
+          const path: string = child.props.path;
+          const title: string = child.props.children;
+
           return (
-            <TabbedLayout.Route key={path} path={path} title={title}>
-              {content}
+            <TabbedLayout.Route key={i} path={path} title={title}>
+              {child}
             </TabbedLayout.Route>
           );
         })}

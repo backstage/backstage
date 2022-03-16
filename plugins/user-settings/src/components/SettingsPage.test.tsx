@@ -16,7 +16,14 @@
 
 import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
-import { SettingsPage, SettingsTab } from './SettingsPage';
+import { SettingsPage } from './SettingsPage';
+
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useOutlet: jest.fn().mockReturnValue(undefined),
+}));
+
+import { useOutlet, Route } from 'react-router';
 
 describe('<SettingsPage />', () => {
   it('should render the settings page with 3 tabs', async () => {
@@ -29,15 +36,41 @@ describe('<SettingsPage />', () => {
   });
 
   it('should render the settings page with 4 tabs when extra tabs are provided', async () => {
-    const extraTabs: SettingsTab[] = [
-      { title: 'Advanced', content: <div>advanced content</div> },
-    ];
+    const advancedTabRoute = (
+      <>
+        <Route path="/advanced" element={<div>Advanced settings</div>}>
+          Advanced
+        </Route>
+      </>
+    );
+    (useOutlet as jest.Mock).mockReturnValueOnce(advancedTabRoute);
     const { container } = await renderWithEffects(
-      wrapInTestApp(<SettingsPage tabs={extraTabs} />),
+      wrapInTestApp(<SettingsPage />),
     );
 
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(4);
-    expect(tabs[3].textContent).toEqual(extraTabs[0].title);
+    expect(tabs[3].textContent).toEqual('Advanced');
+  });
+
+  it('should throw error if non compliant route is passed to settings routes', async () => {
+    const advancedTabRoute = (
+      <>
+        <Route path="/advanced" element={<div>Advanced settings</div>}>
+          Advanced
+        </Route>
+        <div>Non compliant element</div>
+      </>
+    );
+    (useOutlet as jest.Mock).mockReturnValueOnce(advancedTabRoute);
+    let error: Error;
+    try {
+      await renderWithEffects(wrapInTestApp(<SettingsPage />));
+    } catch (err) {
+      error = err;
+    }
+    expect(error!.message).toEqual(
+      expect.stringContaining('Invalid element passed'),
+    );
   });
 });

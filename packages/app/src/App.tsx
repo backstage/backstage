@@ -69,7 +69,8 @@ import {
   techdocsPlugin,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
-import { UserSettingsPage, SettingsTab } from '@backstage/plugin-user-settings';
+import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
@@ -82,7 +83,6 @@ import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/cust
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
-import { AdvancedSettings } from './components/advancedSettings';
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
@@ -126,10 +126,6 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-
-const extraSettingTabs: SettingsTab[] = [
-  { title: 'Advanced', content: <AdvancedSettings /> },
-];
 
 const routes = (
   <FlatRoutes>
@@ -219,10 +215,11 @@ const routes = (
       path="/cost-insights/labeling-jobs"
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
-    <Route
-      path="/settings"
-      element={<UserSettingsPage tabs={extraSettingTabs} />}
-    />
+    <Route path="/settings" element={<UserSettingsPage />}>
+      <Route path="/advanced" element={<AdvancedSettings />}>
+        Advanced
+      </Route>
+    </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
   </FlatRoutes>
