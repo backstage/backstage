@@ -109,15 +109,7 @@ class Index extends React.Component {
                 className="Block__GIF"
                 src={`${baseUrl}animations/backstage-software-catalog-icon-1.gif`}
               />
-              <Block.Subtitle>
-                Backstage Software Catalog{' '}
-                <a
-                  title="Submit feedback for this feature. Click to learn more about this release."
-                  href="https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha"
-                >
-                  (alpha)
-                </a>
-              </Block.Subtitle>
+              <Block.Subtitle>Backstage Software Catalog</Block.Subtitle>
               <Block.Title half>
                 Build an ecosystem, not a wilderness
               </Block.Title>
@@ -200,7 +192,7 @@ class Index extends React.Component {
             Learn more about the software catalog
           </ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha`}
+            href={`https://backstage.io/docs/features/software-catalog/software-catalog-overview`}
           >
             Read
           </ActionBlock.Link>
@@ -213,15 +205,7 @@ class Index extends React.Component {
                 className="Block__GIF"
                 src={`${baseUrl}animations/backstage-software-templates-icon-5.gif`}
               />
-              <Block.Subtitle>
-                Backstage Software Templates{' '}
-                <a
-                  title="Submit feedback for this feature. Click to learn more about this release."
-                  href="https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta"
-                >
-                  (beta)
-                </a>
-              </Block.Subtitle>
+              <Block.Subtitle>Backstage Software Templates</Block.Subtitle>
               <Block.Title small>Standards can set you free</Block.Title>
             </Block.TextBox>
             <Breakpoint
@@ -311,15 +295,7 @@ class Index extends React.Component {
                 src={`${baseUrl}animations/backstage-techdocs-icon-1.gif`}
               />
 
-              <Block.Subtitle>
-                Backstage TechDocs{' '}
-                <a
-                  title="Submit feedback for this feature. Click to learn more about this release."
-                  href="https://backstage.io/blog/2021/09/16/the-techdocs-beta-has-landed"
-                >
-                  (beta)
-                </a>
-              </Block.Subtitle>
+              <Block.Subtitle>Backstage TechDocs</Block.Subtitle>
               <Block.Title small>Docs like code</Block.Title>
             </Block.TextBox>
             <Breakpoint
