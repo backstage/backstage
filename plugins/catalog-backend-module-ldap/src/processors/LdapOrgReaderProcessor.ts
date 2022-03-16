@@ -54,15 +54,9 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     const config =
       configRoot.getOptionalConfig('ldap') ||
       configRoot.getOptionalConfig('catalog.processors.ldapOrg');
-    if (!config) {
-      throw new TypeError(
-        `There is no LDAP configuration. Please add it as "ldap.providers".`,
-      );
-    }
-
     return new LdapOrgReaderProcessor({
       ...options,
-      providers: readLdapConfig(config),
+      providers: config ? readLdapConfig(config) : [],
     });
   }
 
@@ -94,7 +88,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
     const provider = this.providers.find(p => location.target === p.target);
     if (!provider) {
       throw new Error(
-        `There is no LDAP Org provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.ldapOrg.providers.`,
+        `There is no LDAP configuration that matches "${location.target}". Please add a configuration entry for it under "ldap.providers".`,
       );
     }
 
