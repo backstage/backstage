@@ -105,38 +105,5 @@ export interface Config {
         allow: Array<string>;
       }>;
     }>;
-
-    /**
-     * List of processor-specific options and attributes
-     */
-    processors?: {
-      /**
-       * GithubMultiOrgReaderProcessor configuration
-       */
-      githubMultiOrg?: {
-        /**
-         * The configuration parameters for each GitHub org to process.
-         */
-        orgs: Array<{
-          /**
-           * The name of the GitHub org to process.
-           */
-          name: string;
-          /**
-           * The namespace of the group created for this org.
-           *
-           * Defaults to org name if omitted.
-           */
-          groupNamespace?: string;
-
-          /**
-           * The namespace of the users created from this org.
-           *
-           * Defaults to empty string if omitted.
-           */
-          userNamespace?: string;
-        }>;
-      };
-    };
   };
 }

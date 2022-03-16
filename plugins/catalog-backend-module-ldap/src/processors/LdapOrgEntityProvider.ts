@@ -114,17 +114,11 @@ export class LdapOrgEntityProvider implements EntityProvider {
     const config =
       configRoot.getOptionalConfig('ldap') ||
       configRoot.getOptionalConfig('catalog.processors.ldapOrg');
-    if (!config) {
-      throw new TypeError(
-        `There is no LDAP configuration. Please add it as "ldap.providers".`,
-      );
-    }
-
-    const providers = readLdapConfig(config);
+    const providers = config ? readLdapConfig(config) : [];
     const provider = providers.find(p => options.target === p.target);
     if (!provider) {
       throw new TypeError(
-        `There is no LDAP configuration that matches ${options.target}. Please add a configuration entry for it under "ldap.providers".`,
+        `There is no LDAP configuration that matches "${options.target}". Please add a configuration entry for it under "ldap.providers".`,
       );
     }
 
