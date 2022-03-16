@@ -65,6 +65,7 @@ const AppRoutes = () => (
 > **Note that the list of providers expects to be rendered within a MUI [`<List>`](https://material-ui.com/components/lists/)**
 
 **Tabs**
+
 By default, the plugin renders 3 tabs of settings; GENERAL, AUTHENTICATION PROVIDERS, and FEATURE FLAGS.
 
 If you want to add more options for your users, use the `tabs` prop:
