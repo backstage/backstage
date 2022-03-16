@@ -15,8 +15,6 @@
  */
 import type ts from 'typescript';
 
-type tsNamespace = typeof ts;
-
 /**
  * NOTE: This is a worker thread function that is stringified and executed
  *       within a `worker_threads.Worker`. Everything in this function must
@@ -44,7 +42,7 @@ export async function buildTypeDefinitionsWorker(
   const apiExtractor = require('@microsoft/api-extractor');
   const { Extractor, ExtractorConfig, CompilerState } = apiExtractor;
 
-  const ts: tsNamespace = require('typescript');
+  const ts: typeof import('typescript') = require('typescript');
   const {
     transform: transformImportPathRewrite,
   } = require('ts-transform-import-path-rewrite');
