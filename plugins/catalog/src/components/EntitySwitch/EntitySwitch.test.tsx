@@ -15,7 +15,10 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+import {
+  AsyncEntityProvider,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { isKind } from './conditions';
@@ -70,6 +73,18 @@ describe('EntitySwitch', () => {
         <EntityProvider entity={{ kind: 'derp' } as Entity}>
           {content}
         </EntityProvider>
+      </Wrapper>,
+    );
+
+    expect(rendered.queryByText('A')).not.toBeInTheDocument();
+    expect(rendered.queryByText('B')).not.toBeInTheDocument();
+    expect(rendered.queryByText('C')).toBeInTheDocument();
+
+    rendered.rerender(
+      <Wrapper>
+        <AsyncEntityProvider entity={undefined} loading={false}>
+          {content}
+        </AsyncEntityProvider>
       </Wrapper>,
     );
 
