@@ -140,7 +140,6 @@ export function createGithubActionsDispatchAction(options: {
 // @public
 export function createGithubIssuesLabelAction(options: {
   integrations: ScmIntegrationRegistry;
-  defaultWebhookSecret?: string;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<{
   repoUrl: string;
