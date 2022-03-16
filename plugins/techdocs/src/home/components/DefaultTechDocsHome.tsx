@@ -23,11 +23,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import {
-  EntityListContainer,
-  FilterContainer,
-  FilteredEntityLayout,
-} from '@backstage/plugin-catalog';
-import {
+  CatalogFilterLayout,
   EntityListProvider,
   EntityOwnerPicker,
   EntityTagPicker,
@@ -65,17 +61,17 @@ export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
           </SupportButton>
         </ContentHeader>
         <EntityListProvider>
-          <FilteredEntityLayout>
-            <FilterContainer>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
               <TechDocsPicker />
               <UserListPicker initialFilter={initialFilter} />
               <EntityOwnerPicker />
               <EntityTagPicker />
-            </FilterContainer>
-            <EntityListContainer>
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
               <EntityListDocsTable actions={actions} columns={columns} />
-            </EntityListContainer>
-          </FilteredEntityLayout>
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
         </EntityListProvider>
       </Content>
     </TechDocsPageWrapper>
