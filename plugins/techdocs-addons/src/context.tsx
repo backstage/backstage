@@ -15,7 +15,7 @@
  */
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useApi, useApp } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import {
   techdocsApiRef,
   TechDocsEntityMetadata,
@@ -30,30 +30,33 @@ import React, {
   useState,
 } from 'react';
 import useAsync from 'react-use/lib/useAsync';
+import { TechDocsAddonAsyncMetadata } from './types';
 
 type PropsWithEntityName = PropsWithChildren<{ entityName: CompoundEntityRef }>;
 
-const TechDocsMetadataContext = createContext<TechDocsMetadata | undefined>(
-  undefined,
-);
+const initialContextValue = {
+  loading: true,
+  error: undefined,
+  value: undefined,
+};
+
+const TechDocsMetadataContext =
+  createContext<TechDocsAddonAsyncMetadata<TechDocsMetadata>>(
+    initialContextValue,
+  );
 
 export const TechDocsMetadataProvider = ({
   entityName,
   children,
 }: PropsWithEntityName) => {
-  const { NotFoundErrorPage } = useApp().getComponents();
   const techdocsApi = useApi(techdocsApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
+  const metadataResponse = useAsync(async () => {
     return await techdocsApi.getTechDocsMetadata(entityName);
   }, []);
 
-  if (!loading && error) {
-    return <NotFoundErrorPage />;
-  }
-
   return (
-    <TechDocsMetadataContext.Provider value={value}>
+    <TechDocsMetadataContext.Provider value={metadataResponse}>
       {children}
     </TechDocsMetadataContext.Provider>
   );
@@ -64,31 +67,27 @@ export const TechDocsMetadataProvider = ({
  * current TechDocs site.
  * @public
  */
-export const useMetadata = () => {
+export const useTechDocsMetadata = () => {
   return useContext(TechDocsMetadataContext);
 };
 
-const TechDocsEntityContext = createContext<TechDocsEntityMetadata | undefined>(
-  undefined,
-);
+const TechDocsEntityContext =
+  createContext<TechDocsAddonAsyncMetadata<TechDocsEntityMetadata>>(
+    initialContextValue,
+  );
 
 export const TechDocsEntityProvider = ({
   entityName,
   children,
 }: PropsWithEntityName) => {
-  const { NotFoundErrorPage } = useApp().getComponents();
   const techdocsApi = useApi(techdocsApiRef);
 
-  const { value, loading, error } = useAsync(async () => {
+  const metadataResponse = useAsync(async () => {
     return await techdocsApi.getEntityMetadata(entityName);
   }, []);
 
-  if (!loading && error) {
-    return <NotFoundErrorPage />;
-  }
-
   return (
-    <TechDocsEntityContext.Provider value={value}>
+    <TechDocsEntityContext.Provider value={metadataResponse}>
       {children}
     </TechDocsEntityContext.Provider>
   );
@@ -180,13 +179,15 @@ export const useShadowRoot = () => {
  *
  * @public
  */
-export const useShadowRootElements = <T extends HTMLElement = HTMLElement>(
+export const useShadowRootElements = <
+  TReturnedElement extends HTMLElement = HTMLElement,
+>(
   selectors: string[],
-): T[] => {
+): TReturnedElement[] => {
   const shadowRoot = useShadowRoot();
   if (!shadowRoot) return [];
   return selectors
-    .map(selector => shadowRoot?.querySelectorAll<T>(selector))
+    .map(selector => shadowRoot?.querySelectorAll<TReturnedElement>(selector))
     .filter(nodeList => nodeList.length)
     .map(nodeList => Array.from(nodeList))
     .flat();
