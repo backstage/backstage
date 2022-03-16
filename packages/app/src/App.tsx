@@ -79,6 +79,7 @@ import { entityPage } from './components/catalog/EntityPage';
 import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
 import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
@@ -179,6 +180,7 @@ const routes = (
       path="/create"
       element={
         <ScaffolderPage
+          defaultPreviewTemplate={defaultPreviewTemplate}
           groups={[
             {
               title: 'Recommended',
