@@ -15,6 +15,7 @@
  */
 
 import { ComponentType } from 'react';
+import { AsyncState } from 'react-use/lib/useAsyncFn';
 
 /**
  * Locations for which TechDocs addons may be declared and rendered.
@@ -54,6 +55,9 @@ export enum TechDocsAddonLocations {
    * every HTML node with the same tag name as the addon name in the markdown
    * content. If no reference is made, no instance will be rendered. Works like
    * regular React components, just being accessible from markdown.
+   *
+   * todo(backstage/techdocs-core): Keep and implement or remove before
+   * releasing this package!
    */
   COMPONENT = 'component',
 }
@@ -67,3 +71,9 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
   location: TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
+
+/**
+ * Common response envelope for addon-related hooks.
+ * @public
+ */
+export type TechDocsAddonAsyncMetadata<TValue> = AsyncState<TValue | undefined>;

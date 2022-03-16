@@ -14,22 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * Package encapsulating the TechDocs Addon framework.
- *
- * @packageDocumentation
- */
-
-export { createTechDocsAddon, TechDocsAddons } from './addons';
-export * from './components';
-export {
-  useEntityMetadata,
-  useTechDocsMetadata,
-  useShadowRoot,
-  useShadowRootElements,
-} from './context';
-export type {
-  TechDocsAddonAsyncMetadata,
-  TechDocsAddonLocations,
-  TechDocsAddonOptions,
-} from './types';
+export { TechDocsReaderPage } from './TechDocsReaderPage';
+export type { TechDocsReaderPageProps } from './TechDocsReaderPage';
