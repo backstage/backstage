@@ -92,26 +92,31 @@ yarn add @backstage/plugin-catalog-backend-module-msgraph
 
 4. The `MicrosoftGraphOrgEntityProvider` is not registered by default, so you
    have to register it in the catalog plugin. Pass the target to reference a
-   provider from the configuration. As entity providers are not part of the
-   entity refresh loop, you have to run them manually.
+   provider from the configuration.
 
-```typescript
-// packages/backend/src/plugins/catalog.ts
-const msGraphOrgEntityProvider = MicrosoftGraphOrgEntityProvider.fromConfig(
-  env.config,
-  {
-    id: 'https://graph.microsoft.com/v1.0',
-    target: 'https://graph.microsoft.com/v1.0',
-    logger: env.logger,
-  },
-);
-builder.addEntityProvider(msGraphOrgEntityProvider);
+```diff
+ // packages/backend/src/plugins/catalog.ts
++import { Duration } from 'luxon';
++import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
 
-// Trigger a read every 5 minutes
-useHotCleanup(
-  module,
-  runPeriodically(() => msGraphOrgEntityProvider.read(), 5 * 60 * 1000),
-);
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
+
++  // The target parameter below needs to match one of the providers' target
++  // value specified in your app-config (see above).
++  builder.addEntityProvider(
++    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
++      id: 'production',
++      target: 'https://graph.microsoft.com/v1.0',
++      logger: env.logger,
++      schedule: env.scheduler.createScheduledTaskRunner({
++        frequency: Duration.fromObject({ minutes: 5 }),
++        timeout: Duration.fromObject({ minutes: 3 }),
++      }),
++    }),
++  );
 ```
 
 ### Using the Processor
