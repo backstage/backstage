@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { AsyncState } from 'react-use/lib/useAsyncFn';
 import { ComponentType } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
@@ -16,6 +17,9 @@ import { TechDocsMetadata } from '@backstage/plugin-techdocs';
 export function createTechDocsAddon<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<ComponentType<TComponentProps>>;
+
+// @public
+export type TechDocsAddonAsyncMetadata<TValue> = AsyncState<TValue | undefined>;
 
 // @public
 export enum TechDocsAddonLocations {
@@ -48,16 +52,18 @@ export type TechDocsReaderPageProps = {
 };
 
 // @public
-export const useEntityMetadata: () => TechDocsEntityMetadata | undefined;
-
-// @public
-export const useMetadata: () => TechDocsMetadata | undefined;
+export const useEntityMetadata: () => TechDocsAddonAsyncMetadata<TechDocsEntityMetadata>;
 
 // @public
 export const useShadowRoot: () => ShadowRoot | undefined;
 
 // @public
-export const useShadowRootElements: <T extends HTMLElement = HTMLElement>(
+export const useShadowRootElements: <
+  TReturnedElement extends HTMLElement = HTMLElement,
+>(
   selectors: string[],
-) => T[];
+) => TReturnedElement[];
+
+// @public
+export const useTechDocsMetadata: () => TechDocsAddonAsyncMetadata<TechDocsMetadata>;
 ```

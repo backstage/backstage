@@ -22,7 +22,7 @@ import React, { useEffect } from 'react';
 import Helmet from 'react-helmet';
 
 import { useTechDocsAddons } from '../../addons';
-import { useMetadata, useTechDocsReaderPage } from '../../context';
+import { useTechDocsMetadata, useTechDocsReaderPage } from '../../context';
 import { TechDocsAddonLocations as locations } from '../../types';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
@@ -31,7 +31,7 @@ export const TechDocsReaderPageHeader = () => {
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
 
-  const metadata = useMetadata();
+  const { value: metadata } = useTechDocsMetadata();
 
   const { title, setTitle, subtitle, setSubtitle } = useTechDocsReaderPage();
 
