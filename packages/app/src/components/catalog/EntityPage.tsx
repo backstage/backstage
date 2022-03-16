@@ -15,6 +15,7 @@
  */
 
 import {
+  Entity,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CONSUMES_API,
@@ -179,7 +180,7 @@ export const cicdContent = (
       <EntityJenkinsContent />
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isBuildkiteAvailable}>
+    <EntitySwitch.Case if={isBuildkiteAvailable as (e: Entity) => boolean}>
       <EntityBuildkiteContent />
     </EntitySwitch.Case>
 
@@ -191,7 +192,7 @@ export const cicdContent = (
       <EntityCloudbuildContent />
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isTravisciAvailable}>
+    <EntitySwitch.Case if={isTravisciAvailable as (e: Entity) => boolean}>
       <EntityTravisCIContent />
     </EntitySwitch.Case>
 
@@ -234,7 +235,7 @@ const cicdCard = (
       </Grid>
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isTravisciAvailable}>
+    <EntitySwitch.Case if={isTravisciAvailable as (e: Entity) => boolean}>
       <Grid item sm={6}>
         <EntityTravisCIOverviewCard />
       </Grid>
@@ -326,7 +327,9 @@ const overviewContent = (
     {cicdCard}
 
     <EntitySwitch>
-      <EntitySwitch.Case if={e => Boolean(isGithubInsightsAvailable(e))}>
+      <EntitySwitch.Case
+        if={isGithubInsightsAvailable as (e: Entity) => boolean}
+      >
         <Grid item md={6}>
           <EntityGithubInsightsLanguagesCard />
           <EntityGithubInsightsReleasesCard />
@@ -346,7 +349,9 @@ const overviewContent = (
     </EntitySwitch>
 
     <EntitySwitch>
-      <EntitySwitch.Case if={e => Boolean(isGithubPullRequestsAvailable(e))}>
+      <EntitySwitch.Case
+        if={isGithubPullRequestsAvailable as (e: Entity) => boolean}
+      >
         <Grid item sm={4}>
           <EntityGithubPullRequestsOverviewCard />
         </Grid>
