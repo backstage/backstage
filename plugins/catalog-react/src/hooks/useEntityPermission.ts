@@ -46,10 +46,10 @@ export function useEntityPermission(
     allowed,
     loading: loadingPermission,
     error: permissionError,
-  } = usePermission(
+  } = usePermission({
     permission,
-    entity ? stringifyEntityRef(entity) : undefined,
-  );
+    resourceRef: entity ? stringifyEntityRef(entity) : undefined,
+  });
 
   if (loadingEntity || loadingPermission) {
     return { loading: true, allowed: false };

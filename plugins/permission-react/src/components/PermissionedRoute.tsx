@@ -47,9 +47,9 @@ export const PermissionedRoute = (
   const { permission, resourceRef, errorComponent, ...otherProps } = props;
 
   const permissionResult = usePermission(
-    ...(isResourcePermission(permission)
-      ? [permission, resourceRef]
-      : [permission]),
+    isResourcePermission(permission)
+      ? { permission, resourceRef }
+      : { permission },
   );
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
