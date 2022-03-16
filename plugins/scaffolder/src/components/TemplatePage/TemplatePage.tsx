@@ -27,13 +27,7 @@ import { SecretsContext } from '../secrets/SecretsContext';
 import { rootRouteRef, scaffolderTaskRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
-import {
-  Content,
-  Header,
-  InfoCard,
-  Lifecycle,
-  Page,
-} from '@backstage/core-components';
+import { Content, Header, InfoCard, Page } from '@backstage/core-components';
 import {
   ApiHolder,
   errorApiRef,

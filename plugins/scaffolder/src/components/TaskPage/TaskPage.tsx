@@ -19,7 +19,6 @@ import {
   Content,
   ErrorPage,
   Header,
-  Lifecycle,
   Page,
   LogViewer,
   Progress,
