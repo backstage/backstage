@@ -45,6 +45,7 @@ import {
 import {
   createGithubActionsDispatchAction,
   createGithubWebhookAction,
+  createGithubIssuesLabelAction,
 } from './github';
 import { TemplateFilter } from '../../../lib';
 import { TemplateAction } from '../types';
@@ -142,6 +143,10 @@ export const createBuiltinActions = (
       githubCredentialsProvider,
     }),
     createGithubWebhookAction({
+      integrations,
+      githubCredentialsProvider,
+    }),
+    createGithubIssuesLabelAction({
       integrations,
       githubCredentialsProvider,
     }),

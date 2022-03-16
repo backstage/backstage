@@ -37,7 +37,10 @@ class GithubResponseError extends CustomErrorBase {}
 /** @public */
 export interface OctokitWithPullRequestPluginClient {
   createPullRequest(options: createPullRequest.Options): Promise<{
-    data: { html_url: string };
+    data: {
+      html_url: string;
+      number: number;
+    };
   } | null>;
 }
 
@@ -169,6 +172,11 @@ export const createPublishGithubPullRequestAction = ({
             title: 'Pull Request URL',
             description: 'Link to the pull request in Github',
           },
+          pullRequestNumber: {
+            type: 'number',
+            title: 'Pull Request Number',
+            description: 'The pull request number',
+          },
         },
       },
     },
@@ -263,6 +271,7 @@ export const createPublishGithubPullRequestAction = ({
         }
 
         ctx.output('remoteUrl', response.data.html_url);
+        ctx.output('pullRequestNumber', response.data.number);
       } catch (e) {
         throw new GithubResponseError('Pull request creation failed', e);
       }
