@@ -76,7 +76,9 @@ export const ScaffolderPageContents = ({
     },
   };
 
-  const { allowed } = usePermission(catalogEntityCreatePermission);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
 
   return (
     <Page themeId="home">
