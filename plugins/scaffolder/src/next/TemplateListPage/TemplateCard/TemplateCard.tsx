@@ -102,7 +102,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
             content={template.metadata.description ?? 'No description'}
           />
         </Box>
-        {template.metadata.tags?.length > 0 && (
+        {(template.metadata.tags?.length ?? 0) > 0 && (
           <>
             <Divider className={styles.margin} />
             <Box>
