@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useAsyncEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   Button,
@@ -44,7 +44,7 @@ type Props = {
 
 export const EntityBadgesDialog = ({ open, onClose }: Props) => {
   const theme = useTheme();
-  const { entity } = useEntity();
+  const { entity } = useAsyncEntity();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const badgesApi = useApi(badgesApiRef);
 

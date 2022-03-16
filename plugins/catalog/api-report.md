@@ -283,10 +283,10 @@ export interface EntityLinksCardProps {
 // @public (undocumented)
 export type EntityLinksEmptyStateClassKey = 'code';
 
-// @public (undocumented)
-export function EntityListContainer(props: {
-  children: React_2.ReactNode;
-}): JSX.Element;
+// @public @deprecated (undocumented)
+export const EntityListContainer: (props: {
+  children: ReactNode;
+}) => JSX.Element;
 
 // @public
 export function EntityOrphanWarning(): JSX.Element;
@@ -319,15 +319,13 @@ export interface EntitySwitchProps {
   children: ReactNode;
 }
 
-// @public (undocumented)
-export function FilterContainer(props: {
-  children: React_2.ReactNode;
-}): JSX.Element;
+// @public @deprecated (undocumented)
+export const FilterContainer: (props: { children: ReactNode }) => JSX.Element;
 
-// @public (undocumented)
-export function FilteredEntityLayout(props: {
-  children: React_2.ReactNode;
-}): JSX.Element;
+// @public @deprecated (undocumented)
+export const FilteredEntityLayout: (props: {
+  children: React.ReactNode;
+}) => JSX.Element;
 
 // @public
 export function hasCatalogProcessingErrors(

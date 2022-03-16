@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-import { Grid } from '@material-ui/core';
-import React from 'react';
-
-/** @public */
-export function FilteredEntityLayout(props: { children: React.ReactNode }) {
-  return (
-    <Grid container style={{ position: 'relative' }}>
-      {props.children}
-    </Grid>
-  );
-}
+export { CatalogFilterLayout } from './CatalogFilterLayout';

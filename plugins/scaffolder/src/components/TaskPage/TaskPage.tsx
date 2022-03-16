@@ -19,7 +19,6 @@ import {
   Content,
   ErrorPage,
   Header,
-  Lifecycle,
   Page,
   LogViewer,
   Progress,
@@ -315,11 +314,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
     <Page themeId="home">
       <Header
         pageTitleOverride={`Task ${taskId}`}
-        title={
-          <>
-            Task Activity <Lifecycle alpha shorthand />
-          </>
-        }
+        title="Task Activity"
         subtitle={`Activity for task: ${taskId}`}
       />
       <Content>

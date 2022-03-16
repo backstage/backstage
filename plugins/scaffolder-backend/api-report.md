@@ -138,6 +138,17 @@ export function createGithubActionsDispatchAction(options: {
 }>;
 
 // @public
+export function createGithubIssuesLabelAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<{
+  repoUrl: string;
+  number: number;
+  labels: string[];
+  token?: string | undefined;
+}>;
+
+// @public
 export interface CreateGithubPullRequestActionOptions {
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
@@ -368,6 +379,7 @@ export interface OctokitWithPullRequestPluginClient {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
+      number: number;
     };
   } | null>;
 }

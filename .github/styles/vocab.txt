@@ -27,6 +27,7 @@ Billett
 bitbucket
 Bitrise
 Blackbox
+Brex
 bool
 boolean
 builtins
@@ -151,6 +152,7 @@ Leasot
 lerna
 Lerna
 LocalStack
+lockdown
 lockfile
 lunr
 Luxon
@@ -268,6 +270,7 @@ seb
 semlas
 semver
 Serverless
+shoutout
 siloed
 Sinon
 Snyk

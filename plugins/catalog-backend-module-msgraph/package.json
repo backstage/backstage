@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@azure/msal-node": "^1.1.0",
+    "@backstage/backend-tasks": "^0.2.0",
     "@backstage/catalog-model": "^0.13.0",
     "@backstage/config": "^0.1.15",
     "@backstage/plugin-catalog-backend": "^0.24.0",
@@ -42,6 +43,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "p-limit": "^3.0.2",
+    "uuid": "^8.0.0",
     "winston": "^3.2.1",
     "qs": "^6.9.4"
   },
