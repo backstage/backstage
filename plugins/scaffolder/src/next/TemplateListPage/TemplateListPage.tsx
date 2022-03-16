@@ -17,7 +17,6 @@
 import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
-import { makeStyles } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
@@ -30,6 +29,7 @@ import {
   EntityListProvider,
   EntitySearchBar,
   EntityTagPicker,
+  CatalogFilterLayout,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { CategoryPicker } from './CategoryPicker';
@@ -75,8 +75,8 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
             </SupportButton>
           </ContentHeader>
 
-          <div className={styles.contentWrapper}>
-            <div>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
               <EntitySearchBar />
               <EntityKindPicker initialFilter="template" hidden />
               <UserListPicker
@@ -85,14 +85,14 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
               />
               <CategoryPicker />
               <EntityTagPicker />
-            </div>
-            <div>
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
               <TemplateGroups
                 groups={groups}
                 TemplateCardComponent={TemplateCardComponent}
               />
-            </div>
-          </div>
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
         </Content>
       </Page>
     </EntityListProvider>
