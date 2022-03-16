@@ -75,7 +75,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 /**
  * The Props for the Template Card component
- * @public
+ * @alpha
  */
 export interface TemplateCardProps {
   template: TemplateEntityV1beta3;
@@ -84,7 +84,7 @@ export interface TemplateCardProps {
 
 /**
  * The Template Card component that is rendered in a list for each template
- * @public
+ * @alpha
  */
 export const TemplateCard = (props: TemplateCardProps) => {
   const { template } = props;
@@ -102,7 +102,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
             content={template.metadata.description ?? 'No description'}
           />
         </Box>
-        {template.metadata.tags?.length ? (
+        {template.metadata.tags?.length > 0 && (
           <>
             <Divider className={styles.margin} />
             <Box>
@@ -111,12 +111,12 @@ export const TemplateCard = (props: TemplateCardProps) => {
               ))}
             </Box>
           </>
-        ) : null}
+        )}
       </CardContent>
       <CardActions>
         <div className={styles.footer}>
           <div className={styles.ownedBy}>
-            {ownedByRelations.length ? (
+            {ownedByRelations.length > 0 && (
               <>
                 <UserIcon />
                 <EntityRefLinks
@@ -124,7 +124,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
                   defaultKind="Group"
                 />
               </>
-            ) : null}
+            )}
           </div>
           <Button size="small" variant="outlined" color="primary" to={href}>
             Choose

@@ -22,6 +22,9 @@ import { Progress, Link } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
+/**
+ * @alpha
+ */
 export type TemplateGroupFilter = {
   title?: React.ReactNode;
   filter: (entity: Entity) => boolean;

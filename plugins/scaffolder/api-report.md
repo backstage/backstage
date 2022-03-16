@@ -127,7 +127,7 @@ export type LogEvent = {
   taskId: string;
 };
 
-// @public
+// @alpha
 export type NextRouterProps = {
   components?: {
     TemplateCardComponent?: React_2.ComponentType<{

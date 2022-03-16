@@ -27,7 +27,7 @@ import { usePermission } from '@backstage/plugin-permission-react';
 /**
  * Properties for {@link RegisterExistingButton}
  *
- * @public
+ * @alpha
  */
 export type RegisterExistingButtonProps = {
   title: string;
@@ -35,7 +35,7 @@ export type RegisterExistingButtonProps = {
 
 /**
  * A button that helps users to register an existing component.
- * @public
+ * @alpha
  */
 export const RegisterExistingButton = (props: RegisterExistingButtonProps) => {
   const { title, to } = props;

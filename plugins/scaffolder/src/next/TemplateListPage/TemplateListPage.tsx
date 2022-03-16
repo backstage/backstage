@@ -45,22 +45,12 @@ export type TemplateListPageProps = {
   groups?: TemplateGroupFilter[];
 };
 
-const useStyles = makeStyles(theme => ({
-  contentWrapper: {
-    display: 'grid',
-    gridTemplateAreas: "'filters' 'grid'",
-    gridTemplateColumns: '250px 1fr',
-    gridColumnGap: theme.spacing(2),
-  },
-}));
-
 const defaultGroup: TemplateGroupFilter = {
   title: 'All Templates',
   filter: () => true,
 };
 
 export const TemplateListPage = (props: TemplateListPageProps) => {
-  const styles = useStyles();
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const { TemplateCardComponent, groups = [defaultGroup] } = props;
 

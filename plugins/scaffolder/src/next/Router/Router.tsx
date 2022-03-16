@@ -32,7 +32,7 @@ import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
 /**
  * The Props for the Scaffolder Router
  *
- * @public
+ * @alpha
  */
 export type NextRouterProps = {
   components?: {
@@ -47,7 +47,7 @@ export type NextRouterProps = {
 /**
  * The Scaffolder Router
  *
- * @public
+ * @alpha
  */
 export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   const { components: { TemplateCardComponent } = {} } = props;

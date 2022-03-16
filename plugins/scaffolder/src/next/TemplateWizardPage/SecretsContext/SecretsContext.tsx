@@ -36,7 +36,7 @@ export const SecretsContext = createContext<SecretsContextContents | undefined>(
 /**
  * The Context Provider that holds the state for the secrets.
  *
- * @public
+ * @alpha
  */
 export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
   const [secrets, setSecrets] = useState<Record<string, string>>({});
@@ -50,7 +50,7 @@ export const SecretsContextProvider = ({ children }: PropsWithChildren<{}>) => {
 
 /**
  * Hook to access the secrets context.
- * @public
+ * @alpha
  */
 export const useTemplateSecrets = () => {
   const value = useContext(SecretsContext);
