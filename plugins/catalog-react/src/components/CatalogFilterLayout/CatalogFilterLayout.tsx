@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstageTheme } from '@backstage/theme';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -25,10 +25,10 @@ import {
   useTheme,
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import React, { useState } from 'react';
+import { BackstageTheme } from '@backstage/theme';
 
 /** @public */
-export function FilterContainer(props: { children: React.ReactNode }) {
+export const Filters = (props: { children: React.ReactNode }) => {
   const isMidSizeScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('md'),
   );
@@ -69,4 +69,25 @@ export function FilterContainer(props: { children: React.ReactNode }) {
       {props.children}
     </Grid>
   );
-}
+};
+
+/** @public */
+export const Content = (props: { children: React.ReactNode }) => {
+  return (
+    <Grid item xs={12} lg={10}>
+      {props.children}
+    </Grid>
+  );
+};
+
+/** @public */
+export const CatalogFilterLayout = (props: { children: React.ReactNode }) => {
+  return (
+    <Grid container style={{ position: 'relative' }}>
+      {props.children}
+    </Grid>
+  );
+};
+
+CatalogFilterLayout.Filters = Filters;
+CatalogFilterLayout.Content = Content;

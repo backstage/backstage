@@ -64,6 +64,13 @@ export { CatalogApi };
 export const catalogApiRef: ApiRef<CatalogApi>;
 
 // @public (undocumented)
+export const CatalogFilterLayout: {
+  (props: { children: React_2.ReactNode }): JSX.Element;
+  Filters: (props: { children: React_2.ReactNode }) => JSX.Element;
+  Content: (props: { children: React_2.ReactNode }) => JSX.Element;
+};
+
+// @public (undocumented)
 export type CatalogReactComponentsNameToClassKey = {
   CatalogReactUserListPicker: CatalogReactUserListPickerClassKey;
   CatalogReactEntityLifecyclePicker: CatalogReactEntityLifecyclePickerClassKey;

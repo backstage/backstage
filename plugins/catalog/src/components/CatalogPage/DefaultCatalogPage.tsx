@@ -25,6 +25,7 @@ import {
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  CatalogFilterLayout,
   EntityLifecyclePicker,
   EntityListProvider,
   EntityOwnerPicker,
@@ -36,11 +37,6 @@ import {
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
-import {
-  FilteredEntityLayout,
-  EntityListContainer,
-  FilterContainer,
-} from '../FilteredEntityLayout';
 import { CatalogKindHeader } from '../CatalogKindHeader';
 
 /**
@@ -71,18 +67,18 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
             />
             <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
-          <FilteredEntityLayout>
-            <FilterContainer>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
-            </FilterContainer>
-            <EntityListContainer>
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
               <CatalogTable columns={columns} actions={actions} />
-            </EntityListContainer>
-          </FilteredEntityLayout>
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
         </Content>
       </EntityListProvider>
     </PageWithHeader>
