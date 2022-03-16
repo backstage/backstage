@@ -315,7 +315,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
     <Page themeId="home">
       <Header
         pageTitleOverride={`Task ${taskId}`}
-        title={<>Task Activity</>}
+        title="Task Activity"
         subtitle={`Activity for task: ${taskId}`}
       />
       <Content>

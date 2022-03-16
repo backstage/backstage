@@ -183,7 +183,7 @@ export const TemplatePage = ({
     <Page themeId="home">
       <Header
         pageTitleOverride="Create a New Component"
-        title={<>Create a New Component</>}
+        title="Create a New Component"
         subtitle="Create new software components using standard templates"
       />
       <Content>
