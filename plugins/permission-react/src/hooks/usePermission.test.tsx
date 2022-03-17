@@ -31,7 +31,7 @@ const permission = createPermission({
 });
 
 const TestComponent: FC = () => {
-  const { loading, allowed, error } = usePermission(permission);
+  const { loading, allowed, error } = usePermission({ permission });
   return (
     <div>
       {loading && 'loading'}
