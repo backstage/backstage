@@ -62,6 +62,35 @@ export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   logger: Logger;
 };
 
+export const gitlabUsernameEntityNameSignInResolver: SignInResolver<
+  OAuthResult
+> = async (info, ctx) => {
+  const { result } = info;
+
+  const id = result.fullProfile.username;
+  if (!id) {
+    throw new Error(`GitLab user profile does not contain a username`);
+  }
+
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: id,
+  });
+  const ownershipEntityRefs =
+    await ctx.catalogIdentityClient.resolveCatalogMembership({
+      entityRefs: [entityRef],
+    });
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: entityRef,
+      ent: ownershipEntityRefs,
+    },
+  });
+
+  return { id, token };
+};
+
 export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
   fullProfile,
   params,
