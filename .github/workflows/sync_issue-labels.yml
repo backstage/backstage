@@ -28,7 +28,7 @@ jobs:
             if(!labels.length) {
               return;
             }
-            
+
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
               owner: context.repo.owner,
