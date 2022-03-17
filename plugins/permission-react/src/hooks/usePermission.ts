@@ -32,17 +32,6 @@ export type AsyncPermissionResult = {
   error?: Error;
 };
 
-/** @public */
-export type UsePermissionProps =
-  | {
-      permission: Exclude<Permission, ResourcePermission>;
-      resourceRef?: never;
-    }
-  | {
-      permission: ResourcePermission;
-      resourceRef: string | undefined;
-    };
-
 /**
  * React hook utility for authorization. Given either a non-resource
  * {@link @backstage/plugin-permission-common#Permission} or a
@@ -62,10 +51,18 @@ export type UsePermissionProps =
  * @public
  */
 export function usePermission(
-  props: UsePermissionProps,
+  input:
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      },
 ): AsyncPermissionResult {
   const permissionApi = useApi(permissionApiRef);
-  const { data, error } = useSWR(props, async (args: UsePermissionProps) => {
+  const { data, error } = useSWR(input, async (args: typeof input) => {
     // We could make the resourceRef parameter required to avoid this check, but
     // it would make using this hook difficult in situations where the entity
     // must be asynchronously loaded, so instead we short-circuit to a deny when
