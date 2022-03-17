@@ -53,7 +53,8 @@ export type Options = {
   cookieDomain: string;
   cookiePath: string;
   appOrigin: string;
-  tokenIssuer: TokenIssuer;
+  /** @deprecated This option is no longer needed */
+  tokenIssuer?: TokenIssuer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
