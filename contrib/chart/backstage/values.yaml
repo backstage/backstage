@@ -35,6 +35,25 @@ backend:
     limits:
       memory: 1024Mi
 
+  # `existingSecret` is a reference to an existing secret containing the sensitive information for the app-config. Make sure the secrets define the required information. EXAMPLE: 
+  #     AUTH_GOOGLE_CLIENT_SECRET:
+  #     AUTH_GITHUB_CLIENT_SECRET: 
+  #     AUTH_GITLAB_CLIENT_SECRET: 
+  #     AUTH_OKTA_CLIENT_SECRET: 
+  #     AUTH_OAUTH2_CLIENT_SECRET: 
+  #     AUTH_AUTH0_CLIENT_SECRET: 
+  #     AUTH_MICROSOFT_CLIENT_SECRET: 
+  #     SENTRY_TOKEN: 
+  #     ROLLBAR_ACCOUNT_TOKEN: 
+  #     CIRCLECI_AUTH_TOKEN: 
+  #     GITHUB_TOKEN: 
+  #     GITLAB_TOKEN: 
+  #     AZURE_TOKEN: 
+  #     NEW_RELIC_REST_API_KEY: 
+  #     TRAVISCI_AUTH_TOKEN: 
+  #     PAGERDUTY_TOKEN:
+  # existingSecret:
+
 lighthouse:
   enabled: true
   replicaCount: 1

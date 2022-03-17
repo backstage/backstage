@@ -42,7 +42,7 @@ spec:
 
           envFrom:
             - secretRef:
-                name: {{ include "backstage.fullname" . }}-backend
+                name: {{ .Values.admin.existingSecret | default ( include "backstage.fullname" .) }}
             - configMapRef:
                 name: {{ include "backstage.fullname" . }}-app-env
             - configMapRef:
