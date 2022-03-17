@@ -371,6 +371,12 @@ export type TaskPageProps = {
   loadingText?: string;
 };
 
+// @alpha (undocumented)
+export type TemplateGroupFilter = {
+  title?: React_2.ReactNode;
+  filter: (entity: Entity) => boolean;
+};
+
 // @public
 export type TemplateParameterSchema = {
   title: string;
@@ -385,8 +391,4 @@ export const TemplateTypePicker: () => JSX.Element | null;
 
 // @public
 export const useTemplateSecrets: () => ScaffolderUseTemplateSecrets;
-
-// Warnings were encountered during analysis:
-//
-// src/next/Router/Router.d.ts:16:5 - (ae-forgotten-export) The symbol "TemplateGroupFilter" needs to be exported by the entry point index.d.ts
 ```

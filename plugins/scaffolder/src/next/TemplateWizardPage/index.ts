@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export { TemplateWizardPage } from './TemplateWizardPage';
-export { useTemplateSecrets } from './SecretsContext';
