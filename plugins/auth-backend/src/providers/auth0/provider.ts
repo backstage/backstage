@@ -180,18 +180,6 @@ export class Auth0AuthProvider implements OAuthHandlers {
   }
 }
 
-const defaultSignInResolver: SignInResolver<OAuthResult> = async info => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile does not contain an email');
-  }
-
-  const id = profile.email.split('@')[0];
-
-  return { id, token: '' };
-};
-
 /** @public */
 export type Auth0ProviderOptions = {
   /**
@@ -244,7 +232,7 @@ export const createAuth0Provider = (
             profile: makeProfileInfo(fullProfile, params.id_token),
           });
 
-      const signInResolver = options?.signIn?.resolver ?? defaultSignInResolver;
+      const signInResolver = options?.signIn?.resolver;
 
       const provider = new Auth0AuthProvider({
         clientId,

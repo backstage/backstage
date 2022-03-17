@@ -62,34 +62,6 @@ export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   logger: Logger;
 };
 
-export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile, result } = info;
-
-  let id = result.fullProfile.id;
-
-  if (profile.email) {
-    id = profile.email.split('@')[0];
-  }
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: id,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id, token };
-};
-
 export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
   fullProfile,
   params,
@@ -261,23 +233,13 @@ export const createGitlabProvider = (
       const authHandler: AuthHandler<OAuthResult> =
         options?.authHandler ?? gitlabDefaultAuthHandler;
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? gitlabDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new GitlabAuthProvider({
         clientId,
         clientSecret,
         callbackUrl,
         baseUrl,
         authHandler,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         catalogIdentityClient,
         logger,
         tokenIssuer,

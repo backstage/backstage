@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import {
   OAuthAdapter,
@@ -227,35 +223,6 @@ export const oktaEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-export const oktaDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Okta profile contained no email');
-  }
-
-  // TODO(Rugvip): Hardcoded to the local part of the email for now
-  const userId = profile.email.split('@')[0];
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
 export type OktaProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -313,23 +280,13 @@ export const createOktaProvider = (
             profile: makeProfileInfo(fullProfile, params.id_token),
           });
 
-      const signInResolverFn =
-        _options?.signIn?.resolver ?? oktaDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new OktaAuthProvider({
         audience,
         clientId,
         clientSecret,
         callbackUrl,
         authHandler,
-        signInResolver,
+        signInResolver: _options?.signIn?.resolver,
         tokenIssuer,
         catalogIdentityClient,
         logger,

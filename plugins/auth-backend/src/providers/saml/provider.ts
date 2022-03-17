@@ -148,28 +148,6 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-const samlDefaultSignInResolver: SignInResolver<SamlAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const id = info.result.fullProfile.nameID;
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: id,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id, token };
-};
-
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
 /** @public */
@@ -218,16 +196,6 @@ export const createSamlProvider = (
           },
         });
 
-    const signInResolverFn =
-      options?.signIn?.resolver ?? samlDefaultSignInResolver;
-
-    const signInResolver: SignInResolver<SamlAuthResult> = info =>
-      signInResolverFn(info, {
-        catalogIdentityClient,
-        tokenIssuer,
-        logger,
-      });
-
     return new SamlAuthProvider({
       callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
       entryPoint: config.getString('entryPoint'),
@@ -248,7 +216,7 @@ export const createSamlProvider = (
       tokenIssuer,
       appUrl: globalConfig.appUrl,
       authHandler,
-      signInResolver,
+      signInResolver: options?.signIn?.resolver,
       logger,
       catalogIdentityClient,
     });

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
@@ -205,47 +201,6 @@ export const googleEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Google profile contained no email');
-  }
-
-  let userId: string;
-  try {
-    const entity = await ctx.catalogIdentityClient.findUser({
-      annotations: {
-        'google.com/email': profile.email,
-      },
-    });
-    userId = entity.metadata.name;
-  } catch (error) {
-    ctx.logger.warn(
-      `Failed to look up user, ${error}, falling back to allowing login based on email pattern, this will probably break in the future`,
-    );
-    userId = profile.email.split('@')[0];
-  }
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
 export type GoogleProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -295,21 +250,11 @@ export const createGoogleProvider = (
             profile: makeProfileInfo(fullProfile, params.id_token),
           });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? googleDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new GoogleAuthProvider({
         clientId,
         clientSecret,
         callbackUrl,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         authHandler,
         tokenIssuer,
         catalogIdentityClient,

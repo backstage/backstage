@@ -179,18 +179,6 @@ export class OneLoginProvider implements OAuthHandlers {
   }
 }
 
-const defaultSignInResolver: SignInResolver<OAuthResult> = async info => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('OIDC profile contained no email');
-  }
-
-  const id = profile.email.split('@')[0];
-
-  return { id, token: '' };
-};
-
 /** @public */
 export type OneLoginProviderOptions = {
   /**
@@ -243,15 +231,13 @@ export const createOneLoginProvider = (
             profile: makeProfileInfo(fullProfile, params.id_token),
           });
 
-      const signInResolver = options?.signIn?.resolver ?? defaultSignInResolver;
-
       const provider = new OneLoginProvider({
         clientId,
         clientSecret,
         callbackUrl,
         issuer,
         authHandler,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         tokenIssuer,
         catalogIdentityClient,
         logger,

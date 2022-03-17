@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as OAuth2Strategy } from 'passport-oauth2';
@@ -202,34 +198,6 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   }
 }
 
-export const oAuth2DefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-
-  const userId = profile.email.split('@')[0];
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
 export type OAuth2ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
 
@@ -275,23 +243,13 @@ export const createOAuth2Provider = (
             profile: makeProfileInfo(fullProfile, params.id_token),
           });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? oAuth2DefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new OAuth2AuthProvider({
         clientId,
         clientSecret,
         tokenIssuer,
         catalogIdentityClient,
         callbackUrl,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         authHandler,
         authorizationUrl,
         tokenUrl,
