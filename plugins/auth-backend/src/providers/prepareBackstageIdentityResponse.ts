@@ -15,11 +15,6 @@
  */
 
 import {
-  DEFAULT_NAMESPACE,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import {
   BackstageIdentityResponse,
   BackstageSignInResult,
 } from '@backstage/plugin-auth-node';
@@ -41,21 +36,11 @@ export function prepareBackstageIdentityResponse(
 ): BackstageIdentityResponse {
   const { sub, ent } = parseJwtPayload(result.token);
 
-  const userEntityRef = stringifyEntityRef(
-    parseEntityRef(sub, {
-      defaultKind: 'user',
-      defaultNamespace: DEFAULT_NAMESPACE,
-    }),
-  );
   return {
-    ...{
-      // TODO: idToken is for backwards compatibility and can be removed in the future
-      idToken: result.token,
-      ...result,
-    },
+    ...result,
     identity: {
       type: 'user',
-      userEntityRef,
+      userEntityRef: sub,
       ownershipEntityRefs: ent ?? [],
     },
   };
