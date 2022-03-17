@@ -1,5 +1,21 @@
 # @backstage/plugin-search
 
+## 0.7.4
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-search-common@0.3.2
+
 ## 0.7.3
 
 ### Patch Changes

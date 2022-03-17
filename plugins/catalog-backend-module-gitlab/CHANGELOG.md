@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.0.0
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.1.0
 
 ### Minor Changes

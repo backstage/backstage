@@ -1,5 +1,50 @@
 # @backstage/plugin-catalog-react
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- f7fb7295e6: **BREAKING**: Removed the deprecated `favoriteEntityTooltip` and `favoriteEntityIcon` functions.
+- 4cd92028b8: **BREAKING**: The following deprecated annotation reading helper functions were removed:
+
+  - `getEntityMetadataViewUrl`, use `entity.metadata.annotations?.[ANNOTATION_VIEW_URL]` instead.
+  - `getEntityMetadataEditUrl`, use `entity.metadata.annotations?.[ANNOTATION_EDIT_URL]` instead.
+
+- 1f2757bb07: **BREAKING**: The `useEntity` hook no longer returns loading or error states, and will throw an error if the entity is not immediately available. In practice this means that `useEntity` can only be used in contexts where the entity is guaranteed to have been loaded, for example inside an `EntityLayout`. To access the loading state of the entity, use `useAsyncEntity` instead.
+- 0f3520d499: **BREAKING**: Removed the deprecated `formatEntityRefTitle`, use `humanizeEntityRef` instead.
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- c689d7a94c: Added `CatalogFilterLayout`, which replaces `FilteredEntityLayout` from `@backstage/plugin-catalog`, as well as `FilterContainer` and `EntityListContainer`. It is used like this:
+
+  ```tsx
+  <CatalogFilterLayout>
+    <CatalogFilterLayout.Filters>
+      {/* filter drawer, for example <EntityTypePicker /> and friends */}
+    </CatalogFilterLayout.Filters>
+    <CatalogFilterLayout.Content>
+      {/* content view, for example a <CatalogTable /> */}
+    </CatalogFilterLayout.Content>
+  </CatalogFilterLayout>
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/version-bridge@1.0.0
+  - @backstage/plugin-permission-react@0.3.4
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-common@0.5.3
+
 ## 0.9.0
 
 ### Minor Changes

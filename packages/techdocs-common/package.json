@@ -1,7 +1,7 @@
 {
   "name": "@backstage/techdocs-common",
   "description": "No longer maintained. Use @backstage/plugin-techdocs-node instead.",
-  "version": "0.11.12",
+  "version": "0.11.13",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -36,7 +36,7 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
-    "@backstage/plugin-techdocs-node": "0.11.12"
+    "@backstage/plugin-techdocs-node": "1.0.0"
   },
   "devDependencies": {},
   "jest": {

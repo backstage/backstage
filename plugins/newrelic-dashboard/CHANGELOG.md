@@ -1,5 +1,17 @@
 # @backstage/plugin-newrelic-dashboard
 
+## 0.1.11
+
+### Patch Changes
+
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/catalog-model@1.0.0
+  - @backstage/errors@1.0.0
+
 ## 0.1.10
 
 ### Patch Changes

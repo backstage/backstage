@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.4.1
+
+### Patch Changes
+
+- 132189e466: Updated the code to handle User kind `spec.memberOf` now being optional.
+- a6c367d937: Add config support for LDAP search options.
+- 74375be2c6: Updated to no longer rely on the `RecursivePartial` export from `@backstage/plugin-catalog-backend`.
+- e949d68059: Made sure to move the catalog-related github and ldap config into their right places
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.0.0
+  - @backstage/backend-tasks@0.2.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,25 @@
 # @backstage/dev-utils
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/app-defaults@1.0.0
+  - @backstage/core-app-api@1.0.0
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/integration-react@1.0.0
+  - @backstage/test-utils@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/catalog-model@1.0.0
+
 ## 0.2.25
 
 ### Patch Changes

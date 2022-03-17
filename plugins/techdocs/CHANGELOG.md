@@ -1,5 +1,39 @@
 # @backstage/plugin-techdocs
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 700d93ff41: Removed deprecated exports, including:
+
+  - deprecated `DocsResultListItem` is now deleted and fully replaced with `TechDocsSearchResultListItem`
+  - deprecated `TechDocsPage` is now deleted and fully replaced with `TechDocsReaderPage`
+  - deprecated `TechDocsPageHeader` is now deleted and fully replaced with `TechDocsReaderPageHeader`
+  - deprecated `TechDocsPageHeaderProps` is now deleted and fully replaced with `TechDocsReaderPageHeaderProps`
+  - deprecated `TechDocsPageRenderFunction` is now deleted and fully replaced with `TechDocsReaderPageRenderFunction`
+  - deprecated config `techdocs.requestUrl` is now deleted and fully replaced with the discoveryApi
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- c689d7a94c: Switched to using `CatalogFilterLayout` from `@backstage/plugin-catalog-react`.
+- f24ef7864e: Minor typo fixes
+- 06af9e8d17: Long sidebars will no longer overflow the footer and will properly show a scrollbar when needed.
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/integration-react@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/plugin-search@0.7.4
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+
 ## 0.15.1
 
 ### Patch Changes

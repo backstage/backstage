@@ -1,5 +1,19 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.10
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.4
+  - @backstage/plugin-tech-insights-node@0.2.8
+
 ## 0.2.9
 
 ### Patch Changes
