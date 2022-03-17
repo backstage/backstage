@@ -199,7 +199,7 @@ export type GitlabProviderOptions = {
    * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
    */
   signIn?: {
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
