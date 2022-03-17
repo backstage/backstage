@@ -17,8 +17,7 @@
 import express from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
+import { getEntityClaims } from '../../lib/catalog';
 import {
   encodeState,
   OAuthAdapter,
@@ -38,8 +37,12 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { AuthHandler, RedirectInfo, SignInResolver } from '../types';
-import { Logger } from 'winston';
+import {
+  AuthHandler,
+  AuthResolverContext,
+  RedirectInfo,
+  SignInResolver,
+} from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { commonByEmailLocalPartResolver } from '../resolvers';
 
@@ -50,26 +53,20 @@ type PrivateInfo = {
 type Options = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class GoogleAuthProvider implements OAuthHandlers {
-  private readonly _strategy: GoogleStrategy;
+  private readonly strategy: GoogleStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {
-    this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
-    this._strategy = new GoogleStrategy(
+    this.signInResolver = options.signInResolver;
+    this.resolverContext = options.resolverContext;
+    this.strategy = new GoogleStrategy(
       {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
@@ -102,7 +99,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
-    return await executeRedirectStrategy(req, this._strategy, {
+    return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',
       scope: req.scope,
@@ -114,7 +111,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
-    >(req, this._strategy);
+    >(req, this.strategy);
 
     return {
       response: await this.handleResult(result),
@@ -125,12 +122,12 @@ export class GoogleAuthProvider implements OAuthHandlers {
   async refresh(req: OAuthRefreshRequest) {
     const { accessToken, refreshToken, params } =
       await executeRefreshTokenStrategy(
-        this._strategy,
+        this.strategy,
         req.refreshToken,
         req.scope,
       );
     const fullProfile = await executeFetchUserProfileStrategy(
-      this._strategy,
+      this.strategy,
       accessToken,
     );
 
@@ -145,12 +142,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -168,7 +160,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -215,15 +207,7 @@ export const google = createAuthProviderIntegration({
       resolver: SignInResolver<OAuthResult>;
     };
   }) {
-    return ({
-      providerId,
-      globalConfig,
-      config,
-      tokenIssuer,
-      tokenManager,
-      catalogApi,
-      logger,
-    }) =>
+    return ({ providerId, globalConfig, config, resolverContext }) =>
       OAuthEnvironmentHandler.mapConfig(config, envConfig => {
         const clientId = envConfig.getString('clientId');
         const clientSecret = envConfig.getString('clientSecret');
@@ -231,11 +215,6 @@ export const google = createAuthProviderIntegration({
         const callbackUrl =
           customCallbackUrl ||
           `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-        const catalogIdentityClient = new CatalogIdentityClient({
-          catalogApi,
-          tokenManager,
-        });
 
         const authHandler: AuthHandler<OAuthResult> = options?.authHandler
           ? options.authHandler
@@ -249,15 +228,12 @@ export const google = createAuthProviderIntegration({
           callbackUrl,
           signInResolver: options?.signIn?.resolver,
           authHandler,
-          tokenIssuer,
-          catalogIdentityClient,
-          logger,
+          resolverContext,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
           disableRefresh: false,
           providerId,
-          tokenIssuer,
           callbackUrl,
         });
       });

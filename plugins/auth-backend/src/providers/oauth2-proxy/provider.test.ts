@@ -24,11 +24,7 @@ jest.mock('@backstage/catalog-client');
 import express from 'express';
 import { JWT } from 'jose';
 import { Logger } from 'winston';
-import {
-  AuthHandler,
-  SignInResolver,
-  AuthProviderFactoryOptions,
-} from '../types';
+import { AuthHandler, SignInResolver } from '../types';
 
 import { CatalogIdentityClient } from '../../lib/catalog';
 import { TokenIssuer } from '../../identity/types';
@@ -191,14 +187,13 @@ describe('Oauth2ProxyAuthProvider', () => {
         authHandler,
         signIn: { resolver: signInResolver },
       } as Oauth2ProxyProviderOptions<any>;
-      const factoryOptions = {
+
+      const factory = createOauth2ProxyProvider(providerOptions);
+      const handler = factory({
         logger,
         catalogApi: {},
         tokenIssuer: {},
-      } as unknown as AuthProviderFactoryOptions;
-
-      const factory = createOauth2ProxyProvider(providerOptions);
-      const handler = factory(factoryOptions);
+      } as any);
       await handler.refresh!(mockRequest, mockResponse);
 
       expect(mockRequest.header).toBeCalledWith(OAUTH2_PROXY_JWT_HEADER);
