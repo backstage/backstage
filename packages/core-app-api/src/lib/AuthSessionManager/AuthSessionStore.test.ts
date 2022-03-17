@@ -185,7 +185,7 @@ describe('GheAuth AuthSessionStore', () => {
 
     await expect(
       withLogCollector(async () => {
-        await secondStore.setSession('no' as any);
+        secondStore.setSession('no' as any);
       }),
     ).resolves.toMatchObject({
       warn: [

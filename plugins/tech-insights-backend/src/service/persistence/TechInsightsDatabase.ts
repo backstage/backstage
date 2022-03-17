@@ -62,7 +62,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
     return Object.values(groupedSchemas)
       .map(schemas => {
         const sorted = rsort(schemas.map(it => it.version));
-        return schemas.find(it => it.version === sorted[0])!!;
+        return schemas.find(it => it.version === sorted[0])!;
       })
       .map((it: RawDbFactSchemaRow) => ({
         ...omit(it, 'schema'),
@@ -188,7 +188,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
       throw new Error(`No schema found for ${id}. `);
     }
     const sorted = rsort(existingSchemas.map(it => it.version));
-    return existingSchemas.find(it => it.version === sorted[0])!!;
+    return existingSchemas.find(it => it.version === sorted[0])!;
   }
 
   private async deleteExpiredFactsByDate(

@@ -63,7 +63,7 @@ export default async (cmd: Command) => {
   const data = await readPluginData();
   const templateFiles = await diffTemplateFiles('default-plugin', data);
   await handleAllFiles(fileHandlers, templateFiles, promptFunc);
-  await finalize();
+  finalize();
 };
 
 // Reads templating data from the existing plugin
