@@ -241,10 +241,15 @@ export const microsoftDefaultSignInResolver: SignInResolver<
     name: userId,
   });
 
+  const fullEnt = await ctx.catalogIdentityClient.resolveCatalogMembership({
+    entityRefs: [entityRef],
+    logger: ctx.logger
+  });
+
   const token = await ctx.tokenIssuer.issueToken({
     claims: {
       sub: entityRef,
-      ent: [entityRef],
+      ent: fullEnt,
     },
   });
 
