@@ -26,6 +26,7 @@ import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-no
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
+  IndexableResultSet,
   SearchResultSet,
 } from '@backstage/plugin-search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
@@ -89,6 +90,17 @@ export async function createRouter(
     }),
   });
 
+  const toSearchResults = (resultSet: IndexableResultSet): SearchResultSet => ({
+    ...resultSet,
+    results: resultSet.results.map(result => ({
+      ...result,
+      document: {
+        ...result.document,
+        authorization: undefined,
+      },
+    })),
+  });
+
   const router = Router();
   router.get(
     '/query',
@@ -116,7 +128,7 @@ export async function createRouter(
       try {
         const resultSet = await engine?.query(query, { token });
 
-        res.send(filterResultSet(resultSet));
+        res.send(filterResultSet(toSearchResults(resultSet)));
       } catch (err) {
         throw new Error(
           `There was a problem performing the search query. ${err}`,

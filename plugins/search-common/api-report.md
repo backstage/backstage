@@ -30,14 +30,17 @@ export type DocumentTypeInfo = {
 };
 
 // @beta
-export interface IndexableDocument {
+export type IndexableDocument = SearchDocument & {
   authorization?: {
     resourceRef: string;
   };
-  location: string;
-  text: string;
-  title: string;
-}
+};
+
+// @beta (undocumented)
+export type IndexableResult = Result<IndexableDocument>;
+
+// @beta (undocumented)
+export type IndexableResultSet = ResultSet<IndexableDocument>;
 
 // @beta
 export type QueryRequestOptions = {
@@ -47,13 +50,38 @@ export type QueryRequestOptions = {
 // @beta
 export type QueryTranslator = (query: SearchQuery) => unknown;
 
+// @beta (undocumented)
+export interface Result<TDocument extends SearchDocument> {
+  // (undocumented)
+  document: TDocument;
+  // (undocumented)
+  type: string;
+}
+
+// @beta (undocumented)
+export interface ResultSet<TDocument extends SearchDocument> {
+  // (undocumented)
+  nextPageCursor?: string;
+  // (undocumented)
+  previousPageCursor?: string;
+  // (undocumented)
+  results: Result<TDocument>[];
+}
+
+// @beta
+export interface SearchDocument {
+  location: string;
+  text: string;
+  title: string;
+}
+
 // @beta
 export interface SearchEngine {
   getIndexer(type: string): Promise<Writable>;
   query(
     query: SearchQuery,
     options?: QueryRequestOptions,
-  ): Promise<SearchResultSet>;
+  ): Promise<IndexableResultSet>;
   setTranslator(translator: QueryTranslator): void;
 }
 
@@ -70,20 +98,8 @@ export interface SearchQuery {
 }
 
 // @beta (undocumented)
-export interface SearchResult {
-  // (undocumented)
-  document: IndexableDocument;
-  // (undocumented)
-  type: string;
-}
+export type SearchResult = Result<SearchDocument>;
 
 // @beta (undocumented)
-export interface SearchResultSet {
-  // (undocumented)
-  nextPageCursor?: string;
-  // (undocumented)
-  previousPageCursor?: string;
-  // (undocumented)
-  results: SearchResult[];
-}
+export type SearchResultSet = ResultSet<SearchDocument>;
 ```
