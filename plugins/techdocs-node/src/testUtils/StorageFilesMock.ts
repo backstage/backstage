@@ -19,12 +19,13 @@ import path from 'path';
 import fs from 'fs-extra';
 import { IStorageFilesMock } from './types';
 
-const rootDir: string = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+export const storageRootDir: string =
+  os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 const encoding = 'utf8';
 
 export class StorageFilesMock implements IStorageFilesMock {
-  static rootDir = rootDir;
+  static rootDir = storageRootDir;
 
   private files: Record<string, string>;
 
@@ -37,20 +38,20 @@ export class StorageFilesMock implements IStorageFilesMock {
   }
 
   public fileExists(targetPath: string): boolean {
-    const filePath = path.join(rootDir, targetPath);
+    const filePath = path.join(storageRootDir, targetPath);
     const posixPath = filePath.split(path.posix.sep).join(path.sep);
     return this.files[posixPath] !== undefined;
   }
 
   public readFile(targetPath: string): Buffer {
-    const filePath = path.join(rootDir, targetPath);
+    const filePath = path.join(storageRootDir, targetPath);
     return Buffer.from(this.files[filePath] ?? '', encoding);
   }
 
   public writeFile(targetPath: string, sourcePath: string): void;
   public writeFile(targetPath: string, sourceBuffer: Buffer): void;
   public writeFile(targetPath: string, source: string | Buffer): void {
-    const filePath = path.join(rootDir, targetPath);
+    const filePath = path.join(storageRootDir, targetPath);
     if (typeof source === 'string') {
       this.files[filePath] = fs.readFileSync(source).toString(encoding);
     } else {

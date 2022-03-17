@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 jest.mock('../helpers');
-jest.mock('@gitbeaker/node');
 
 import { createPublishGitlabAction } from './gitlab';
 import { ScmIntegrations } from '@backstage/integration';
@@ -22,6 +21,25 @@ import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../helpers';
+
+const mockGitlabClient = {
+  Namespaces: {
+    show: jest.fn(),
+  },
+  Projects: {
+    create: jest.fn(),
+  },
+  Users: {
+    current: jest.fn(),
+  },
+};
+jest.mock('@gitbeaker/node', () => ({
+  Gitlab: class {
+    constructor() {
+      return mockGitlabClient;
+    }
+  },
+}));
 
 describe('publish:gitlab', () => {
   const config = new ConfigReader({
@@ -53,8 +71,6 @@ describe('publish:gitlab', () => {
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
-
-  const { mockGitlabClient } = require('@gitbeaker/node');
 
   beforeEach(() => {
     jest.resetAllMocks();
