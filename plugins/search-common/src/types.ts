@@ -88,7 +88,10 @@ export interface SearchDocument {
 }
 
 /**
- * Properties related to indexing of documents.
+ * Properties related to indexing of documents. This type is only useful for
+ * backends working directly with documents being inserted or retrieved from
+ * search indexes. When dealing with documents in the frontend, use
+ * {@link SearchDocument}.
  * @beta
  */
 export type IndexableDocument = SearchDocument & {
