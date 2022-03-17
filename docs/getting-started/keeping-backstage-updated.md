@@ -22,6 +22,12 @@ yarn backstage-cli versions:bump
 The reason for bumping all `@backstage` packages at once is to maintain the
 dependencies that they have between each other.
 
+By default the bump command will upgrade `@backstage` packages to the latest `main` release line which is released monthly. For those in a hurry that want to track the `next` release line which releases weekly can do so using the `--release next` option.
+
+```bash
+yarn backstage-cli versions:bump --release next
+```
+
 If you are using other plugins you can pass in the `--pattern` option to update
 more than just the `@backstage/*` dependencies.
 
