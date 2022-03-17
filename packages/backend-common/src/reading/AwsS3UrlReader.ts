@@ -172,15 +172,12 @@ export class AwsS3UrlReader implements UrlReader {
 
     const roleArn = integration.config.roleArn;
     if (roleArn) {
-      const externalIdParam = integration.config.externalId
-        ? { ExternalId: integration.config.externalId }
-        : {};
       return new aws.ChainableTemporaryCredentials({
         masterCredentials: explicitCredentials,
         params: {
           RoleSessionName: 'backstage-aws-s3-url-reader',
           RoleArn: roleArn,
-          ...externalIdParam,
+          ExternalId: integration.config.externalId,
         },
       });
     }

@@ -61,7 +61,7 @@ export type AwsS3IntegrationConfig = {
   roleArn?: string;
 
   /**
-   * (optional) External ID to use when assuming role
+   * (Optional) External ID to use when assuming role
    */
   externalId?: string;
 };
