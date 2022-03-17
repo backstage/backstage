@@ -196,8 +196,7 @@ export type RouterProps = {
     TaskPageComponent?: ComponentType<{}>;
   };
   groups?: Array<{
-    title?: string;
-    titleComponent?: React_2.ReactNode;
+    title?: React_2.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
