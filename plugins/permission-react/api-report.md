@@ -60,9 +60,15 @@ export const PermissionedRoute: (
 
 // @public
 export function usePermission(
-  ...[permission, resourceRef]:
-    | [ResourcePermission, string | undefined]
-    | [Exclude<Permission, ResourcePermission>]
+  input:
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      },
 ): AsyncPermissionResult;
 
 // (No @packageDocumentation comment for this package)
