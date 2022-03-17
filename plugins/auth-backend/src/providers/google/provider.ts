@@ -38,13 +38,10 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
-import {
-  AuthProviderFactory,
-  AuthHandler,
-  RedirectInfo,
-  SignInResolver,
-} from '../types';
+import { AuthHandler, RedirectInfo, SignInResolver } from '../types';
 import { Logger } from 'winston';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { commonByEmailLocalPartResolver } from '../resolvers';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -179,28 +176,9 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 }
 
-export const googleEmailSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Google profile contained no email');
-  }
-
-  const entity = await ctx.catalogIdentityClient.findUser({
-    annotations: {
-      'google.com/email': profile.email,
-    },
-  });
-
-  const claims = getEntityClaims(entity);
-  const token = await ctx.tokenIssuer.issueToken({ claims });
-
-  return { id: entity.metadata.name, entity, token };
-};
-
+/**
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type GoogleProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -219,53 +197,102 @@ export type GoogleProviderOptions = {
   };
 };
 
-export const createGoogleProvider = (
-  options?: GoogleProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export const google = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({
+      providerId,
+      globalConfig,
+      config,
+      tokenIssuer,
+      tokenManager,
+      catalogApi,
+      logger,
+    }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+
+        const catalogIdentityClient = new CatalogIdentityClient({
+          catalogApi,
+          tokenManager,
+        });
+
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
+
+        const provider = new GoogleAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          tokenIssuer,
+          catalogIdentityClient,
+          logger,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          tokenIssuer,
+          callbackUrl,
+        });
       });
+  },
+  resolvers: {
+    byEmailLocalPart: () => commonByEmailLocalPartResolver,
+    lookupEmailAnnotation(): SignInResolver<OAuthResult> {
+      return async (info, ctx) => {
+        const { profile } = info;
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+        if (!profile.email) {
+          throw new Error('Google profile contained no email');
+        }
 
-      const provider = new GoogleAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        signInResolver: options?.signIn?.resolver,
-        authHandler,
-        tokenIssuer,
-        catalogIdentityClient,
-        logger,
-      });
+        const entity = await ctx.catalogIdentityClient.findUser({
+          annotations: {
+            'google.com/email': profile.email,
+          },
+        });
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+        const claims = getEntityClaims(entity);
+        const token = await ctx.tokenIssuer.issueToken({ claims });
+
+        return { id: entity.metadata.name, entity, token };
+      };
+    },
+  },
+});
+
+/**
+ * @deprecated Use `providers.google.create` instead.
+ */
+export const createGoogleProvider = google.create;
+
+/**
+ * @deprecated Use `google.resolvers.lookupEmailAnnotation` instead.
+ */
+export const googleEmailSignInResolver = google.resolvers.lookupEmailAnnotation;

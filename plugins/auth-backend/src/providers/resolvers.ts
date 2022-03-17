@@ -20,9 +20,10 @@ import {
 } from '@backstage/catalog-model';
 import { SignInResolver } from './types';
 
-export const commonEmailLocalPartEntityNameSignInResolver: SignInResolver<
-  unknown
-> = async (info, ctx) => {
+export const commonByEmailLocalPartResolver: SignInResolver<unknown> = async (
+  info,
+  ctx,
+) => {
   const { profile } = info;
 
   if (!profile.email) {
