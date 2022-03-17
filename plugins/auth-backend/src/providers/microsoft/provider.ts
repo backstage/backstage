@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
@@ -224,33 +220,6 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
-export const microsoftDefaultSignInResolver: SignInResolver<
-  OAuthResult
-> = async (info, ctx) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-
-  const userId = profile.email.split('@')[0];
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
 export type MicrosoftProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -304,16 +273,6 @@ export const createMicrosoftProvider = (
             profile: makeProfileInfo(fullProfile, params.id_token),
           });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? microsoftDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const provider = new MicrosoftAuthProvider({
         clientId,
         clientSecret,
@@ -321,7 +280,7 @@ export const createMicrosoftProvider = (
         authorizationUrl,
         tokenUrl,
         authHandler,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         catalogIdentityClient,
         logger,
         tokenIssuer,

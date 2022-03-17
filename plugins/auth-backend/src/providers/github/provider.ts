@@ -244,29 +244,6 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 }
 
-export const githubDefaultSignInResolver: SignInResolver<
-  GithubOAuthResult
-> = async (info, ctx) => {
-  const { fullProfile } = info.result;
-
-  const userId = fullProfile.username || fullProfile.id;
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
 export type GithubProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -346,16 +323,6 @@ export const createGithubProvider = (
             profile: makeProfileInfo(fullProfile),
           });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? githubDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<GithubOAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
-
       const stateEncoder: StateEncoder =
         options?.stateEncoder ??
         (async (req: OAuthStartRequest): Promise<{ encodedState: string }> => {
@@ -369,7 +336,7 @@ export const createGithubProvider = (
         tokenUrl,
         userProfileUrl,
         authorizationUrl,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         authHandler,
         tokenIssuer,
         catalogIdentityClient,

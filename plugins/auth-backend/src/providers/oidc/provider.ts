@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import {
   Client,
@@ -215,34 +211,6 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oidcDefaultSignInResolver: SignInResolver<OidcAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-
-  const userId = profile.email.split('@')[0];
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
 /**
  * OIDC provider callback options. An auth handler and a sign in resolver
  * can be passed while creating a OIDC provider.
@@ -302,14 +270,6 @@ export const createOidcProvider = (
               picture: userinfo.picture,
             },
           });
-      const signInResolverFn =
-        options?.signIn?.resolver ?? oidcDefaultSignInResolver;
-      const signInResolver: SignInResolver<OidcAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
-        });
 
       const provider = new OidcAuthProvider({
         clientId,
@@ -319,7 +279,7 @@ export const createOidcProvider = (
         metadataUrl,
         scope,
         prompt,
-        signInResolver,
+        signInResolver: options?.signIn?.resolver,
         authHandler,
         logger,
         tokenIssuer,
