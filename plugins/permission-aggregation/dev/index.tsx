@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { createDevApp } from '@backstage/dev-utils';
+import {
+  permissionAggregationPlugin,
+  PermissionAggregationPage,
+} from '../src/plugin';
 
-/**
- * Isomorphic types and client for Backstage permissions and authorization
- *
- * @packageDocumentation
- */
-export * from './types';
-export * from './permissions';
-export * from './PermissionClient';
-export * from './aggregation';
+createDevApp()
+  .registerPlugin(permissionAggregationPlugin)
+  .addPage({
+    element: <PermissionAggregationPage />,
+    title: 'Root Page',
+    path: '/permission-aggregation',
+  })
+  .render();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
+import { Header, Page, Content, HeaderLabel } from '@backstage/core-components';
+import { Aggregation } from '../Aggregation';
 
-/**
- * Isomorphic types and client for Backstage permissions and authorization
- *
- * @packageDocumentation
- */
-export * from './types';
-export * from './permissions';
-export * from './PermissionClient';
-export * from './aggregation';
+export const ExampleComponent = () => (
+  <Page themeId="tool">
+    <Header title="Welcome to permission-aggregation!">
+      <HeaderLabel label="Owner" value="Team X" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
+    </Header>
+    <Content>
+      <Aggregation />
+    </Content>
+  </Page>
+);

@@ -44,6 +44,7 @@
     "@backstage/plugin-newrelic-dashboard": "^0.1.12",
     "@backstage/plugin-org": "^0.5.4",
     "@backstage/plugin-pagerduty": "0.3.31",
+    "@backstage/plugin-permission-aggregation": "^0.0.0",
     "@backstage/plugin-permission-react": "^0.4.0",
     "@backstage/plugin-rollbar": "^0.4.4",
     "@backstage/plugin-scaffolder": "^1.1.0",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-/**
- * Isomorphic types and client for Backstage permissions and authorization
- *
- * @packageDocumentation
- */
-export * from './types';
-export * from './permissions';
-export * from './PermissionClient';
-export * from './aggregation';
+import { useApi } from '@backstage/core-plugin-api';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
+import React from 'react';
+import { useAsync } from 'react-use';
+
+export function Aggregation() {
+  const permissionApi = useApi(permissionApiRef);
+  const { value, loading } = useAsync(() => permissionApi.getAllPermissions());
+
+  if (loading) return null;
+  return (
+    <ul>
+      {value?.map(permission => (
+        <li key={permission.name}>{permission.name}</li>
+      ))}
+    </ul>
+  );
+}

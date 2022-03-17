@@ -23,6 +23,7 @@ import {
   AuthorizeResult,
   DefinitivePolicyDecision,
   IdentifiedPermissionMessage,
+  Permission,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
@@ -182,8 +183,9 @@ export const createPermissionIntegrationRouter = <
   getResources: (
     resourceRefs: string[],
   ) => Promise<Array<TResource | undefined>>;
+  permissions: Array<Permission>;
 }): express.Router => {
-  const { resourceType, rules, getResources } = options;
+  const { resourceType, rules, getResources, permissions } = options;
   const router = Router();
 
   const getRule = createGetRule(rules);
@@ -241,6 +243,10 @@ export const createPermissionIntegrationRouter = <
       });
     },
   );
+
+  router.get('/.well-known/backstage/permissions/permission-list', (_, res) => {
+    return res.status(200).json({ permissions });
+  });
 
   router.use(errorHandler());
 

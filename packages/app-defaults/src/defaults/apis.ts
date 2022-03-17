@@ -242,6 +242,10 @@ export const apis = [
       config: configApiRef,
     },
     factory: ({ config, discovery, identity }) =>
-      IdentityPermissionApi.create({ config, discovery, identity }),
+      IdentityPermissionApi.create({
+        config,
+        discovery,
+        identity,
+      }),
   }),
 ];

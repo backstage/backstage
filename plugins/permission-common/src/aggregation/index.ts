@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Isomorphic types and client for Backstage permissions and authorization
- *
- * @packageDocumentation
- */
-export * from './types';
-export * from './permissions';
-export * from './PermissionClient';
-export * from './aggregation';
+export { PermissionAggregator } from './PermissionAggregator';
