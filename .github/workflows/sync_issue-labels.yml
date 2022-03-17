@@ -11,10 +11,10 @@ jobs:
         with:
           script: |
             const keywords = {
-              'techdocs*|tech-docs|tech docs': 'docs-like-code',
-              'search*': 'search',
-              'catalog*': 'catalog',
-              'scaffolder*': 'scaffolder',
+              'techdocs|tech-docs|tech docs': 'docs-like-code',
+              'search': 'search',
+              'catalog': 'catalog',
+              'scaffolder': 'scaffolder',
             };
 
             const labels = Object.entries(keywords)
