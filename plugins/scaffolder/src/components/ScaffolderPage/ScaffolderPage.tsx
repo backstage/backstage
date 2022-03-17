@@ -46,8 +46,6 @@ export type ScaffolderPageProps = {
     | undefined;
   groups?: Array<{
     title?: React.ReactNode;
-    /** @deprcated use title instead as it accepts a string and react component */
-    titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
 };
