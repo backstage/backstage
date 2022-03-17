@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { GitlabAuthProvider, gitlabDefaultSignInResolver } from './provider';
+import {
+  GitlabAuthProvider,
+  gitlabUsernameEntityNameSignInResolver,
+} from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { PassportProfile } from '../../lib/passport/types';
 import { OAuthResult } from '../../lib/oauth';
@@ -34,15 +37,19 @@ describe('GitlabAuthProvider', () => {
   };
   const catalogIdentityClient = {
     findUser: jest.fn(),
-  };
+    resolveCatalogMembership: async ({
+      entityRefs,
+    }: {
+      entityRefs: string[];
+    }) => entityRefs,
+  } as unknown as CatalogIdentityClient;
 
   const provider = new GitlabAuthProvider({
     clientId: 'mock',
     clientSecret: 'mock',
     callbackUrl: 'mock',
     baseUrl: 'mock',
-    catalogIdentityClient:
-      catalogIdentityClient as unknown as CatalogIdentityClient,
+    catalogIdentityClient,
     tokenIssuer: tokenIssuer as unknown as TokenIssuer,
     authHandler: async ({ fullProfile }) => ({
       profile: {
@@ -51,7 +58,7 @@ describe('GitlabAuthProvider', () => {
         picture: 'http://gitlab.com/lols',
       },
     }),
-    signInResolver: gitlabDefaultSignInResolver,
+    signInResolver: gitlabUsernameEntityNameSignInResolver,
     logger: getVoidLogger(),
   });
 

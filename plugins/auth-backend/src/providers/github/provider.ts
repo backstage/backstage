@@ -244,6 +244,35 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 }
 
+export const githubUsernameEntityNameSignInResolver: SignInResolver<
+  GithubOAuthResult
+> = async (info, ctx) => {
+  const { fullProfile } = info.result;
+
+  const userId = fullProfile.username;
+  if (!userId) {
+    throw new Error(`GitHub user profile does not contain a username`);
+  }
+
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: userId,
+  });
+  const ownershipEntityRefs =
+    await ctx.catalogIdentityClient.resolveCatalogMembership({
+      entityRefs: [entityRef],
+    });
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: entityRef,
+      ent: ownershipEntityRefs,
+    },
+  });
+
+  return { id: userId, token };
+};
+
 export type GithubProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response

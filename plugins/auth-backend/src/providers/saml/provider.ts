@@ -148,6 +148,30 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
+export const samlNameIdEntityNameSignInResolver: SignInResolver<
+  SamlAuthResult
+> = async (info, ctx) => {
+  const id = info.result.fullProfile.nameID;
+
+  const entityRef = stringifyEntityRef({
+    kind: 'User',
+    namespace: DEFAULT_NAMESPACE,
+    name: id,
+  });
+  const ownershipEntityRefs =
+    await ctx.catalogIdentityClient.resolveCatalogMembership({
+      entityRefs: [entityRef],
+    });
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: {
+      sub: entityRef,
+      ent: ownershipEntityRefs,
+    },
+  });
+
+  return { id, token };
+};
+
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
 /** @public */

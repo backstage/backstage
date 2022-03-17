@@ -21,7 +21,7 @@ import { CatalogIdentityClient } from '../../lib/catalog';
 import {
   GithubAuthProvider,
   GithubOAuthResult,
-  githubDefaultSignInResolver,
+  githubUsernameEntityNameSignInResolver,
 } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
@@ -46,14 +46,18 @@ describe('GithubAuthProvider', () => {
   };
   const catalogIdentityClient = {
     findUser: jest.fn(),
-  };
+    resolveCatalogMembership: async ({
+      entityRefs,
+    }: {
+      entityRefs: string[];
+    }) => entityRefs,
+  } as unknown as CatalogIdentityClient;
 
   const provider = new GithubAuthProvider({
     logger: getVoidLogger(),
-    catalogIdentityClient:
-      catalogIdentityClient as unknown as CatalogIdentityClient,
+    catalogIdentityClient: catalogIdentityClient,
     tokenIssuer: tokenIssuer as unknown as TokenIssuer,
-    signInResolver: githubDefaultSignInResolver,
+    signInResolver: githubUsernameEntityNameSignInResolver,
     authHandler: async ({ fullProfile }) => ({
       profile: makeProfileInfo(fullProfile),
     }),
@@ -254,6 +258,7 @@ describe('GithubAuthProvider', () => {
         result: {
           fullProfile: {
             id: 'ipd12039',
+            username: 'daveboyle',
             provider: 'github',
             displayName: 'Dave Boyle',
           },
@@ -271,8 +276,8 @@ describe('GithubAuthProvider', () => {
       expect(response).toEqual({
         response: {
           backstageIdentity: {
-            id: 'ipd12039',
-            token: 'token-for-user:default/ipd12039',
+            id: 'daveboyle',
+            token: 'token-for-user:default/daveboyle',
           },
           providerInfo: {
             accessToken: 'a.b.c',
@@ -285,6 +290,28 @@ describe('GithubAuthProvider', () => {
         },
         refreshToken: 'refresh-me',
       });
+    });
+
+    it('should fail if username is not available', async () => {
+      mockFrameHandler.mockResolvedValueOnce({
+        result: {
+          fullProfile: {
+            id: 'ipd12039',
+            provider: 'github',
+            displayName: 'Dave Boyle',
+          },
+          accessToken: 'a.b.c',
+          params: {
+            scope: 'read:user',
+            expires_in: '123',
+          },
+        },
+        privateInfo: { refreshToken: 'refresh-me' },
+      });
+
+      await expect(provider.handler({} as any)).rejects.toThrow(
+        'GitHub user profile does not contain a username',
+      );
     });
 
     it('should forward a new refresh token on refresh', async () => {
