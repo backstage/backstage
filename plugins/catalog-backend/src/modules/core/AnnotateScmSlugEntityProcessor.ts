@@ -24,6 +24,7 @@ import { identity, merge, pickBy } from 'lodash';
 import { CatalogProcessor, LocationSpec } from '../../api';
 
 const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
+const GITLAB_ACTIONS_ANNOTATION = 'gitlab.com/project-slug';
 
 /** @public */
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
@@ -53,16 +54,26 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
       location.target,
     );
 
-    if (!scmIntegration || scmIntegration.type !== 'github') {
+    if (!scmIntegration) {
       return entity;
     }
 
-    const gitUrl = parseGitUrl(location.target);
-    let githubProjectSlug =
-      entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION];
+    let annotation;
+    switch (scmIntegration.type) {
+      case 'github':
+        annotation = GITHUB_ACTIONS_ANNOTATION;
+        break;
+      case 'gitlab':
+        annotation = GITLAB_ACTIONS_ANNOTATION;
+        break;
+      default:
+        return entity;
+    }
 
-    if (!githubProjectSlug) {
-      githubProjectSlug = `${gitUrl.owner}/${gitUrl.name}`;
+    let projectSlug = entity.metadata.annotations?.[annotation];
+    if (!projectSlug) {
+      const gitUrl = parseGitUrl(location.target);
+      projectSlug = `${gitUrl.owner}/${gitUrl.name}`;
     }
 
     return merge(
@@ -70,7 +81,7 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
         metadata: {
           annotations: pickBy(
             {
-              [GITHUB_ACTIONS_ANNOTATION]: githubProjectSlug,
+              [annotation]: projectSlug,
             },
             identity,
           ),
