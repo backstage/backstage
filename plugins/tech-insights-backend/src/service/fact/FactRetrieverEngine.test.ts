@@ -144,7 +144,7 @@ describe('FactRetrieverEngine', () => {
     engine.schedule();
     const job: any = engine.getJob('test-factretriever');
     job.triggerScheduledJobNow();
-    expect(job.cadence!!).toEqual(cadence);
+    expect(job.cadence!).toEqual(cadence);
     expect(testFactRetriever.handler).toHaveBeenCalledWith(
       expect.objectContaining({ entityFilter: testFactRetriever.entityFilter }),
     );

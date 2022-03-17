@@ -259,7 +259,7 @@ async function updateBackstageReleaseVersion(repo, type) {
     }
   } else if (type === 'patch') {
     if (preMode) {
-      throw new Error(`Unexpected pre mode ${preMode} on branch ${branchName}`);
+      throw new Error(`Unexpected pre mode ${preMode} on current branch`);
     }
     nextVersion = semver.inc(currentVersion, 'patch');
   }
