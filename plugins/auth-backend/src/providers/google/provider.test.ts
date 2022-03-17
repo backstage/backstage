@@ -39,10 +39,12 @@ describe('createGoogleProvider', () => {
     };
 
     const provider = new GoogleAuthProvider({
-      logger: getVoidLogger(),
-      catalogIdentityClient:
-        catalogIdentityClient as unknown as CatalogIdentityClient,
-      tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+      resolverContext: {
+        logger: getVoidLogger(),
+        catalogIdentityClient:
+          catalogIdentityClient as unknown as CatalogIdentityClient,
+        tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+      },
       authHandler: async ({ fullProfile }) => ({
         profile: {
           email: fullProfile.emails![0]!.value,

@@ -143,6 +143,9 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
+/**
+ * @deprecated This type is deprecated and will be removed in a future release.
+ */
 export type AuthProviderFactoryOptions = {
   providerId: string;
   globalConfig: AuthProviderConfig;
@@ -154,9 +157,23 @@ export type AuthProviderFactoryOptions = {
   catalogApi: CatalogApi;
 };
 
-export type AuthProviderFactory = (
-  options: AuthProviderFactoryOptions,
-) => AuthProviderRouteHandlers;
+export type AuthProviderFactory = (options: {
+  providerId: string;
+  globalConfig: AuthProviderConfig;
+  config: Config;
+  resolverContext: AuthResolverContext;
+
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  logger: Logger;
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  tokenManager: TokenManager;
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  tokenIssuer: TokenIssuer;
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  discovery: PluginEndpointDiscovery;
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  catalogApi: CatalogApi;
+}) => AuthProviderRouteHandlers;
 
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;

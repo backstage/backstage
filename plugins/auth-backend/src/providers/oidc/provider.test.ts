@@ -23,7 +23,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { OAuthAdapter } from '../../lib/oauth';
-import { AuthProviderFactoryOptions } from '../types';
 import { createOidcProvider, OidcAuthProvider, Options } from './provider';
 import { getVoidLogger } from '@backstage/backend-common';
 
@@ -178,14 +177,13 @@ describe('OidcAuthProvider', () => {
         metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
       },
     } as any);
-    const options = {
+    const provider = createOidcProvider()({
       globalConfig: {
         appUrl: 'https://oidc.test',
         baseUrl: 'https://oidc.test',
       },
       config,
-    } as AuthProviderFactoryOptions;
-    const provider = createOidcProvider()(options) as OAuthAdapter;
+    } as any) as OAuthAdapter;
     expect(provider.start).toBeDefined();
     // Cast provider as any here to be able to inspect private members
     await (provider as any).handlers.get('testEnv').handlers.implementation;
