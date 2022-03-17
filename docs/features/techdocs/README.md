@@ -74,32 +74,26 @@ providers are used.
   storage solutions, source control systems).
 - [Instructions for upgrading from Alpha to Beta](how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
 
+**v1** ✅
+
+TechDocs packages
+
+- '@backstage/plugin-techdocs'
+- '@backstage/plugin-techdocs-backend'
+- '@backstage/plugin-techdocs-node'
+- '@techdocs/cli'
+
+promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
 ### **Future work 🔮**
 
-**General Availability (GA) release** -
-[Milestone](https://github.com/backstage/backstage/milestone/30)
-
-- Bugs are rare, TechDocs APIs are stable and scales easily in large
-  organizations.
 - Better integration with
   [Scaffolder V2](https://github.com/backstage/backstage/issues/2771) (e.g. easy
   to choose and plug documentation template with Software Templates).
+- Static site generator agnostic
 - Possible to configure several aspects about TechDocs (e.g. URL, homepage,
   theme).
-
-**Implement Feedback loop** -
-[Milestone](https://github.com/backstage/backstage/milestone/31)
-
-- A feedback loop between documentation reader and writer using TechDocs
-- The `+` in `docs-like-code+` experience
-
-**TechDocs widget framework**
-
-Platformize TechDocs with a widget framework so that it is easy for TechDocs
-contributors to add pieces of functionality and for users to choose which
-functionalities they want to adopt. As a pre-requisite, the re-architecture of
-TechDocs frontend [RFC](https://github.com/backstage/backstage/issues/3998)
-needs to be addressed.
+- [TechDocs Addon Framework](https://github.com/backstage/backstage/issues/9636)
 
 ## Tech stack
 
