@@ -8,6 +8,7 @@
   ],
   "compilerOptions": {
     "outDir": "dist-types",
+    "sourceMap": true,
     "rootDir": ".",
     "useUnknownInCatchVariables": false
   }
