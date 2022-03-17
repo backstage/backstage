@@ -1,5 +1,6 @@
 ---
-title: 'New Backstage feature: Kubernetes for Service owners'
+# prettier-ignore
+title: "New Backstage feature: Kubernetes for Service owners"
 author: Matthew Clarke, Spotify
 authorURL: https://github.com/mclarke47
 ---

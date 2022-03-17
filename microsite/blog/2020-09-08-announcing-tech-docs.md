@@ -1,5 +1,6 @@
 ---
-title: 'Announcing TechDocs: Spotify’s docs-like-code plugin for Backstage'
+# prettier-ignore
+title: "Announcing TechDocs: Spotify’s docs-like-code plugin for Backstage"
 author: Gary Niemen, Spotify
 authorURL: https://github.com/garyniemen
 ---
