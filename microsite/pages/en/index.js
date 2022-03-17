@@ -21,16 +21,12 @@ class Index extends React.Component {
     return (
       <main className="MainContent">
         <Banner.Container>
-          <Banner.Dismissable storageKey="2021-10-07-software-templates-techdocs-beta">
-            🚀 Feature updates!{' '}
-            <a href="https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta">
-              Software Templates
-            </a>{' '}
-            and{' '}
-            <a href="https://backstage.io/blog/2021/09/16/the-techdocs-beta-has-landed">
-              TechDocs
-            </a>{' '}
-            are now in beta.
+          <Banner.Dismissable storageKey="2022-03-16-newsletter-cta">
+            🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
+            <a href="https://mailchi.mp/spotify/backstage-community">
+              Newsletter
+            </a>
+            !
           </Banner.Dismissable>
         </Banner.Container>
 
