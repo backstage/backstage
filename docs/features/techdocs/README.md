@@ -76,14 +76,14 @@ providers are used.
 
 **v1** ✅
 
-TechDocs packages
+TechDocs packages:
 
 - '@backstage/plugin-techdocs'
 - '@backstage/plugin-techdocs-backend'
 - '@backstage/plugin-techdocs-node'
 - '@techdocs/cli'
 
-promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+was promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
 
 ### **Future work 🔮**
 
