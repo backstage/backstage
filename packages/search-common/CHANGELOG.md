@@ -1,5 +1,13 @@
 # @backstage/search-common
 
+## 0.3.2
+
+### Patch Changes
+
+- 82b0190155: This package is no longer maintained. Use `@backstage/plugin-search-common`, going forward.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

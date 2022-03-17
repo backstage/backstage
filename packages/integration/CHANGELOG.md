@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- 403837cbac: Added an integration for Gerrit
+- Updated dependencies
+  - @backstage/config@1.0.0
+
 ## 0.8.0
 
 ### Minor Changes

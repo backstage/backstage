@@ -32,7 +32,7 @@
     "clean": "backstage-cli package clean"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.15.2-next.0"
+    "@backstage/cli": "^0.16.0"
   },
   "files": [
     "dist"

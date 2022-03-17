@@ -1,5 +1,15 @@
 # @backstage/version-bridge
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+
 ## 0.1.2
 
 ### Patch Changes

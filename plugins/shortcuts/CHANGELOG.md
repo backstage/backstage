@@ -1,5 +1,15 @@
 # @backstage/plugin-shortcuts
 
+## 0.2.4
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.2.3
 
 ### Patch Changes

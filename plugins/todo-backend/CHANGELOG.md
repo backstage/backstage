@@ -1,5 +1,18 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.27
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+
 ## 0.1.26
 
 ### Patch Changes

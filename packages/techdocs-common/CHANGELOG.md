@@ -1,5 +1,13 @@
 # @backstage/techdocs-common
 
+## 0.11.13
+
+### Patch Changes
+
+- 82b0190155: This package is no longer maintained. Use `@backstage/plugin-techdocs-node`, going forward.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.0.0
+
 ## 0.11.12
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend
 
+## 0.12.2
+
+### Patch Changes
+
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-auth-node@0.1.6
+
 ## 0.12.1
 
 ### Patch Changes

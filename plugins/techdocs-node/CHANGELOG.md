@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs-node
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 700d93ff41: - `DirectoryPreparer` now uses private constructor. Use static fromConfig method to instantiate.
+  - `UrlPreparer` now uses private constructor. Use static fromConfig method to instantiate.
+
+### Patch Changes
+
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-search-common@0.3.2
+
 ## 0.11.12
 
 ### Patch Changes

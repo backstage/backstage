@@ -1,5 +1,42 @@
 # @backstage/catalog-model
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 02ad19d189: **BREAKING**: Removed the deprecated `metadata.generation` field entirely. It is no longer present in TS types, nor in the REST API output. Entities that have not yet been re-stitched may still have the field present for some time, but it will get phased out gradually by your catalog instance.
+- a04dbc22d7: **BREAKING**: Removed `EntityName`, use `CompoundEntityRef` type instead.
+
+  **BREAKING**: Removed `getEntityName`, use `getCompoundEntityRef` instead.
+
+- 132189e466: **BREAKING**: The User kind has an updated TypeScript type where `spec.memberOf`
+  is optional.
+
+  **NOTE HOWEVER**, that this only applies to the TypeScript types `UserEntity`
+  and `UserEntityV1alpha1`. The catalog validation still requires the field to be
+  set, even if it's in the form of an empty array. If you try to ingest data that
+  stops producing this field, those entities _will be rejected_ by the catalog.
+  The reason for these choices is that consumers will get a long grace period
+  where old code still can rely on the underlying data being present, giving users
+  ample time to update before actual breakages could happen.
+
+- d3e9ec43b7: **BREAKING**: Removed the `target` property from `EntityRelation`. This field has been replaced by `targetRef`.
+  This means that `target: { name: 'team-a', kind: 'group', namespace: 'default' }` is now replaced with `targetRef: 'group:default/team-a'` in entity relations.
+
+  The entities API endpoint still return the old `target` field for to ease transitions, however the future removal of this field will be considered non breaking.
+
+### Patch Changes
+
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.13.0
 
 ### Minor Changes

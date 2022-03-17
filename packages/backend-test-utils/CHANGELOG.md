@@ -1,5 +1,16 @@
 # @backstage/backend-test-utils
 
+## 0.1.22
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- Updated dependencies
+  - @backstage/cli@0.16.0
+  - @backstage/backend-common@0.13.1
+  - @backstage/config@1.0.0
+
 ## 0.1.21
 
 ### Patch Changes

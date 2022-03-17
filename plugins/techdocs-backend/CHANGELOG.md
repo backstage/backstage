@@ -1,5 +1,35 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 700d93ff41: Removed deprecated exports, including:
+
+  - deprecated config `generators` is now deleted and fully replaced with `techdocs.generator`
+  - deprecated config `generators.techdocs` is now deleted and fully replaced with `techdocs.generator.runIn`
+  - deprecated config `techdocs.requestUrl` is now deleted
+  - deprecated config `techdocs.storageUrl` is now deleted
+  - deprecated `createHttpResponse` is now deleted and calls to `/sync/:namespace/:kind/:name` needs to be done by an EventSource.
+
+### Patch Changes
+
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-catalog-common@1.0.0
+  - @backstage/plugin-techdocs-node@1.0.0
+  - @backstage/plugin-search-common@0.3.2
+
 ## 0.14.2
 
 ### Patch Changes
