@@ -227,7 +227,7 @@ export type OidcProviderOptions = {
   authHandler?: AuthHandler<OidcAuthResult>;
 
   signIn?: {
-    resolver?: SignInResolver<OidcAuthResult>;
+    resolver: SignInResolver<OidcAuthResult>;
   };
 };
 

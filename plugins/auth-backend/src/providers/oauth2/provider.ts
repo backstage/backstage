@@ -202,7 +202,7 @@ export type OAuth2ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
 
   signIn?: {
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 

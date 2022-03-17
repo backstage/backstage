@@ -258,7 +258,7 @@ export type GithubProviderOptions = {
     /**
      * Maps an auth result to a Backstage identity for the user.
      */
-    resolver?: SignInResolver<GithubOAuthResult>;
+    resolver: SignInResolver<GithubOAuthResult>;
   };
 
   /**
