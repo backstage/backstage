@@ -416,33 +416,35 @@ export class CatalogBuilder {
       permissionEvaluator,
       createConditionTransformer(this.permissionRules),
     );
-    const permissionIntegrationRouter = createPermissionIntegrationRouter({
-      resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-      getResources: async (resourceRefs: string[]) => {
-        const { entities } = await unauthorizedEntitiesCatalog.entities({
-          filter: {
-            anyOf: resourceRefs.map(resourceRef => {
-              const { kind, namespace, name } = parseEntityRef(resourceRef);
+    const permissionIntegrationRouter = createPermissionIntegrationRouter(
+      catalogPermissions,
+      {
+        resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+        getResources: async (resourceRefs: string[]) => {
+          const { entities } = await unauthorizedEntitiesCatalog.entities({
+            filter: {
+              anyOf: resourceRefs.map(resourceRef => {
+                const { kind, namespace, name } = parseEntityRef(resourceRef);
 
-              return basicEntityFilter({
-                kind,
-                'metadata.namespace': namespace,
-                'metadata.name': name,
-              });
-            }),
-          },
-        });
+                return basicEntityFilter({
+                  kind,
+                  'metadata.namespace': namespace,
+                  'metadata.name': name,
+                });
+              }),
+            },
+          });
 
-        const entitiesByRef = keyBy(entities, stringifyEntityRef);
+          const entitiesByRef = keyBy(entities, stringifyEntityRef);
 
-        return resourceRefs.map(
-          resourceRef =>
-            entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
-        );
+          return resourceRefs.map(
+            resourceRef =>
+              entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
+          );
+        },
+        rules: this.permissionRules,
       },
-      rules: this.permissionRules,
-      permissions: catalogPermissions,
-    });
+    );
     const stitcher = new Stitcher(dbClient, logger);
 
     const locationStore = new DefaultLocationStore(dbClient);
