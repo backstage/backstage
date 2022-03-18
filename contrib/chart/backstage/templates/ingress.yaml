@@ -74,7 +74,7 @@ spec:
             backend:
               {{- if  .Capabilities.APIVersions.Has "networking.k8s.io/v1" }}
               service:
-                name: {{ include "frontend.serviceName" . }}
+                name: {{ include "backend.serviceName" . }}
                 port:
                   number: 80
               {{- else -}}

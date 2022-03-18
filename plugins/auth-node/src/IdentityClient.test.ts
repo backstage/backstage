@@ -135,12 +135,11 @@ describe('IdentityClient', () => {
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
       const response = await client.authenticate(token);
       expect(response).toEqual({
-        id: 'foo',
         token: token,
         identity: {
-          ownershipEntityRefs: [],
           type: 'user',
           userEntityRef: 'foo',
+          ownershipEntityRefs: [],
         },
       });
     });
@@ -202,12 +201,11 @@ describe('IdentityClient', () => {
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
       const response = await client.authenticate(token);
       expect(response).toEqual({
-        id: 'foo',
         token: token,
         identity: {
-          ownershipEntityRefs: [],
           type: 'user',
           userEntityRef: 'foo',
+          ownershipEntityRefs: [],
         },
       });
     });

@@ -27,79 +27,13 @@ describe('prepareBackstageIdentityResponse', () => {
     const token = mkToken({ sub: 'k:ns/n', ent: ['k:ns/o'] });
     expect(
       prepareBackstageIdentityResponse({
-        id: 'x',
         token,
       }),
     ).toEqual({
-      id: 'x',
       token,
-      idToken: token,
       identity: {
         type: 'user',
         userEntityRef: 'k:ns/n',
-        ownershipEntityRefs: ['k:ns/o'],
-      },
-    });
-  });
-
-  it('populates incomplete identities', () => {
-    expect(
-      prepareBackstageIdentityResponse({
-        id: 'x',
-        token: mkToken({ sub: 'n' }),
-      }),
-    ).toEqual({
-      id: 'x',
-      token: expect.any(String),
-      idToken: expect.any(String),
-      identity: {
-        type: 'user',
-        userEntityRef: 'user:default/n',
-        ownershipEntityRefs: [],
-      },
-    });
-    expect(
-      prepareBackstageIdentityResponse({
-        id: 'x',
-        token: mkToken({ sub: 'k:n' }),
-      }),
-    ).toEqual({
-      id: 'x',
-      token: expect.any(String),
-      idToken: expect.any(String),
-      identity: {
-        type: 'user',
-        userEntityRef: 'k:default/n',
-        ownershipEntityRefs: [],
-      },
-    });
-    expect(
-      prepareBackstageIdentityResponse({
-        id: 'x',
-        token: mkToken({ sub: 'ns/n' }),
-      }),
-    ).toEqual({
-      id: 'x',
-      token: expect.any(String),
-      idToken: expect.any(String),
-      identity: {
-        type: 'user',
-        userEntityRef: 'user:ns/n',
-        ownershipEntityRefs: [],
-      },
-    });
-    expect(
-      prepareBackstageIdentityResponse({
-        id: 'x',
-        token: mkToken({ sub: 'n', ent: ['k:ns/o'] }),
-      }),
-    ).toEqual({
-      id: 'x',
-      token: expect.any(String),
-      idToken: expect.any(String),
-      identity: {
-        type: 'user',
-        userEntityRef: 'user:default/n',
         ownershipEntityRefs: ['k:ns/o'],
       },
     });

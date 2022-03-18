@@ -118,6 +118,8 @@ export const currentToDeclaredResourceToPerc = (
   current: number | string,
   resource: number | string,
 ): string => {
+  if (Number(resource) === 0) return `0%`;
+
   if (typeof current === 'number' && typeof resource === 'number') {
     return `${Math.round((current / resource) * 100)}%`;
   }

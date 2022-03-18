@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { IndexableDocument } from '@backstage/plugin-search-common';
+import { SearchDocument } from '@backstage/plugin-search-common';
 import {
   ListItem,
   ListItemIcon,
@@ -29,7 +29,7 @@ import TextTruncate from 'react-text-truncate';
 type Props = {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
-  result: IndexableDocument;
+  result: SearchDocument;
   lineClamp?: number;
 };
 

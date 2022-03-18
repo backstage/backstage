@@ -5,11 +5,11 @@
 ```ts
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
-import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "ConcretePgSearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -88,7 +88,7 @@ export class PgSearchEngine implements SearchEngine {
   // (undocumented)
   getIndexer(type: string): Promise<PgSearchEngineIndexer>;
   // (undocumented)
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(query: SearchQuery): Promise<IndexableResultSet>;
   // (undocumented)
   setTranslator(
     translator: (query: SearchQuery) => ConcretePgSearchQuery,

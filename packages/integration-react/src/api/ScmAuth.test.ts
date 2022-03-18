@@ -153,11 +153,11 @@ describe('ScmAuth', () => {
       githubAuth.getCredentials({
         url: 'http://example.com',
         additionalScope: {
-          customScopes: { github: ['org:read', 'workflow:write'] },
+          customScopes: { github: ['org:read', 'workflow'] },
         },
       }),
     ).resolves.toMatchObject({
-      token: 'repo read:org read:user org:read workflow:write',
+      token: 'repo read:org read:user org:read workflow',
     });
 
     const gitlabAuth = ScmAuth.forGitlab(mockAuthApi);

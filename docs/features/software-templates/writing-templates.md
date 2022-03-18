@@ -364,7 +364,7 @@ spec:
               secretsKey: USER_OAUTH_TOKEN
               additionalScopes:
                 github:
-                  - workflow:write
+                  - workflow
             allowedHosts:
               - github.com
     ...

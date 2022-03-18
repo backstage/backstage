@@ -45,7 +45,7 @@ describe('GcpIapProvider', () => {
     const iapToken = { sub: 's', email: 'e@mail.com' };
 
     authHandler.mockResolvedValueOnce({ email: 'e@mail.com' });
-    signInResolver.mockResolvedValueOnce({ id: 'i', token: backstageToken });
+    signInResolver.mockResolvedValueOnce({ token: backstageToken });
     tokenValidator.mockResolvedValueOnce(iapToken);
 
     const app = express();
@@ -61,8 +61,6 @@ describe('GcpIapProvider', () => {
     );
     expect(response.body).toEqual({
       backstageIdentity: {
-        id: 'i',
-        idToken: backstageToken,
         token: backstageToken,
         identity: {
           type: 'user',

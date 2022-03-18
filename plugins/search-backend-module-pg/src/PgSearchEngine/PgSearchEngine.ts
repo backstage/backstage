@@ -15,7 +15,10 @@
  */
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
-import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
+import {
+  SearchQuery,
+  IndexableResultSet,
+} from '@backstage/plugin-search-common';
 import { PgSearchEngineIndexer } from './PgSearchEngineIndexer';
 import {
   DatabaseDocumentStore,
@@ -81,7 +84,7 @@ export class PgSearchEngine implements SearchEngine {
     });
   }
 
-  async query(query: SearchQuery): Promise<SearchResultSet> {
+  async query(query: SearchQuery): Promise<IndexableResultSet> {
     const { pgQuery, pageSize } = this.translator(query);
 
     const rows = await this.databaseStore.transaction(async tx =>
