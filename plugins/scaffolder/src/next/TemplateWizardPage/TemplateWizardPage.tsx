@@ -29,6 +29,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
+import { Stepper } from './Stepper';
 import { BackstageTheme } from '@backstage/theme';
 
 export interface TemplateWizardPageProps {
@@ -89,7 +90,7 @@ export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
             noPadding
             titleTypographyProps={{ component: 'h2' }}
           >
-            asd
+            <Stepper manifest={manifest} />
           </InfoCard>
         )}
       </Content>
