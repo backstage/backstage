@@ -180,7 +180,7 @@ export const cicdContent = (
       <EntityJenkinsContent />
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isBuildkiteAvailable as (e: Entity) => boolean}>
+    <EntitySwitch.Case if={isBuildkiteAvailable}>
       <EntityBuildkiteContent />
     </EntitySwitch.Case>
 
@@ -192,7 +192,7 @@ export const cicdContent = (
       <EntityCloudbuildContent />
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isTravisciAvailable as (e: Entity) => boolean}>
+    <EntitySwitch.Case if={isTravisciAvailable}>
       <EntityTravisCIContent />
     </EntitySwitch.Case>
 
@@ -327,9 +327,7 @@ const overviewContent = (
     {cicdCard}
 
     <EntitySwitch>
-      <EntitySwitch.Case
-        if={isGithubInsightsAvailable as (e: Entity) => boolean}
-      >
+      <EntitySwitch.Case if={isGithubInsightsAvailable}>
         <Grid item md={6}>
           <EntityGithubInsightsLanguagesCard />
           <EntityGithubInsightsReleasesCard />
@@ -349,9 +347,7 @@ const overviewContent = (
     </EntitySwitch>
 
     <EntitySwitch>
-      <EntitySwitch.Case
-        if={isGithubPullRequestsAvailable as (e: Entity) => boolean}
-      >
+      <EntitySwitch.Case if={isGithubPullRequestsAvailable}>
         <Grid item sm={4}>
           <EntityGithubPullRequestsOverviewCard />
         </Grid>
