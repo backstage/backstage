@@ -19,11 +19,12 @@ import { run } from '../../lib/run';
 
 export default async (cmd: Command) => {
   const args = ['test'];
+  const cmdOptions = cmd.opts();
 
-  if (cmd.watch) {
+  if (cmdOptions.watch) {
     args.push('--watch');
   }
-  if (cmd.coverage) {
+  if (cmdOptions.coverage) {
     args.push('--coverage');
   }
 

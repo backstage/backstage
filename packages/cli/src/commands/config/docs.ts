@@ -24,9 +24,11 @@ import { loadCliConfig } from '../../lib/config';
 const DOCS_URL = 'https://config.backstage.io';
 
 export default async (cmd: Command) => {
+  const cmdOptions = cmd.opts();
+
   const { schema: appSchemas } = await loadCliConfig({
     args: [],
-    fromPackage: cmd.package,
+    fromPackage: cmdOptions.package,
     mockEnv: true,
   });
 

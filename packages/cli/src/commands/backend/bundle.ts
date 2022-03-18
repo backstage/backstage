@@ -33,12 +33,13 @@ export default async (cmd: Command) => {
 
   // We build the target package without generating type declarations.
   await buildPackage({ outputs: new Set([Output.cjs]) });
+  const cmdOptions = cmd.opts();
 
   const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-bundle'));
   try {
     await createDistWorkspace([pkg.name], {
       targetDir: tmpDir,
-      buildDependencies: Boolean(cmd.buildDependencies),
+      buildDependencies: Boolean(cmdOptions.buildDependencies),
       buildExcludes: [pkg.name],
       parallelism: getEnvironmentParallelism(),
       skeleton: SKELETON_FILE,

@@ -15,7 +15,7 @@
  */
 
 import { assertError } from '@backstage/errors';
-import { CommanderStatic } from 'commander';
+import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
 const configOption = [
@@ -25,7 +25,7 @@ const configOption = [
   Array<string>(),
 ] as const;
 
-export function registerRepoCommand(program: CommanderStatic) {
+export function registerRepoCommand(program: Command) {
   const command = program
     .command('repo [command]')
     .description('Command that run across an entire Backstage project');
@@ -61,7 +61,7 @@ export function registerRepoCommand(program: CommanderStatic) {
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
 }
 
-export function registerScriptCommand(program: CommanderStatic) {
+export function registerScriptCommand(program: Command) {
   const command = program
     .command('package [command]')
     .description('Lifecycle scripts for individual packages');
@@ -141,7 +141,7 @@ export function registerScriptCommand(program: CommanderStatic) {
     .action(lazy(() => import('./pack').then(m => m.post)));
 }
 
-export function registerMigrateCommand(program: CommanderStatic) {
+export function registerMigrateCommand(program: Command) {
   const command = program
     .command('migrate [command]')
     .description('Migration utilities');
@@ -168,7 +168,7 @@ export function registerMigrateCommand(program: CommanderStatic) {
     );
 }
 
-export function registerCommands(program: CommanderStatic) {
+export function registerCommands(program: Command) {
   // TODO(Rugvip): Deprecate in favor of package variant
   program
     .command('app:build')

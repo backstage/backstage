@@ -29,11 +29,13 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
 
 export default async (cmd: Command) => {
   // all args are forwarded to jest
-  let parent = cmd;
-  while (parent.parent) {
+  let parent = cmd.parent;
+  const cmdOptions = cmd.opts();
+
+  while (parent) {
     parent = parent.parent;
   }
-  const rawArgs = parent.rawArgs as string[];
+  const rawArgs = cmdOptions.rawArgs as string[];
   const args = rawArgs.slice(rawArgs.indexOf('test') + 1);
 
   // Only include our config if caller isn't passing their own config

@@ -53,10 +53,11 @@ const fileHandlers = [
 export default async (cmd: Command) => {
   let promptFunc = inquirerPromptFunc;
   let finalize = () => {};
+  const cmdOptions = cmd.opts();
 
-  if (cmd.check) {
+  if (cmdOptions.check) {
     [promptFunc, finalize] = makeCheckPromptFunc();
-  } else if (cmd.yes) {
+  } else if (cmdOptions.yes) {
     promptFunc = yesPromptFunc;
   }
 

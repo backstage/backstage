@@ -21,12 +21,13 @@ import { findRoleFromCommand } from '../../lib/role';
 
 export async function command(cmd: Command): Promise<void> {
   const role = await findRoleFromCommand(cmd);
+  const cmdOptions = cmd.opts();
 
   const options = {
-    configPaths: cmd.config as string[],
-    checksEnabled: Boolean(cmd.check),
-    inspectEnabled: Boolean(cmd.inspect),
-    inspectBrkEnabled: Boolean(cmd.inspectBrk),
+    configPaths: cmdOptions.config as string[],
+    checksEnabled: Boolean(cmdOptions.check),
+    inspectEnabled: Boolean(cmdOptions.inspect),
+    inspectBrkEnabled: Boolean(cmdOptions.inspectBrk),
   };
 
   switch (role) {

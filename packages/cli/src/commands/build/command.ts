@@ -23,18 +23,19 @@ import { buildBackend } from './buildBackend';
 
 export async function command(cmd: Command): Promise<void> {
   const role = await findRoleFromCommand(cmd);
+  const cmdOptions = cmd.opts();
 
   if (role === 'frontend') {
     return buildFrontend({
       targetDir: paths.targetDir,
-      configPaths: cmd.config as string[],
-      writeStats: Boolean(cmd.stats),
+      configPaths: cmdOptions.config as string[],
+      writeStats: Boolean(cmdOptions.stats),
     });
   }
   if (role === 'backend') {
     return buildBackend({
       targetDir: paths.targetDir,
-      skipBuildDependencies: Boolean(cmd.skipBuildDependencies),
+      skipBuildDependencies: Boolean(cmdOptions.skipBuildDependencies),
     });
   }
 
@@ -54,7 +55,7 @@ export async function command(cmd: Command): Promise<void> {
 
   return buildPackage({
     outputs,
-    minify: Boolean(cmd.minify),
-    useApiExtractor: Boolean(cmd.experimentalTypeBuild),
+    minify: Boolean(cmdOptions.minify),
+    useApiExtractor: Boolean(cmdOptions.experimentalTypeBuild),
   });
 }

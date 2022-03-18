@@ -239,24 +239,26 @@ export default async (cmd: Command) => {
       },
     });
   }
+  const cmdOptions = cmd.opts();
 
   const answers: Answers = await inquirer.prompt(questions);
   const pluginId =
-    cmd.backend && !answers.id.endsWith('-backend')
+    cmdOptions.backend && !answers.id.endsWith('-backend')
       ? `${answers.id}-backend`
       : answers.id;
 
-  const name = cmd.scope
-    ? `@${cmd.scope.replace(/^@/, '')}/plugin-${pluginId}`
+  const name = cmdOptions.scope
+    ? `@${cmdOptions.scope.replace(/^@/, '')}/plugin-${pluginId}`
     : `plugin-${pluginId}`;
   const pluginVar = `${camelCase(answers.id)}Plugin`;
   const extensionName = `${upperFirst(camelCase(answers.id))}Page`;
-  const npmRegistry = cmd.npmRegistry && cmd.scope ? cmd.npmRegistry : '';
-  const privatePackage = cmd.private === false ? false : true;
+  const npmRegistry =
+    cmdOptions.npmRegistry && cmdOptions.scope ? cmdOptions.npmRegistry : '';
+  const privatePackage = cmdOptions.private === false ? false : true;
   const isMonoRepo = await fs.pathExists(paths.resolveTargetRoot('lerna.json'));
   const appPackage = paths.resolveTargetRoot('packages/app');
   const templateDir = paths.resolveOwn(
-    cmd.backend
+    cmdOptions.backend
       ? 'templates/default-backend-plugin'
       : 'templates/default-plugin',
   );
@@ -309,7 +311,7 @@ export default async (cmd: Command) => {
     Task.section('Building the plugin');
     await buildPlugin(pluginDir);
 
-    if ((await fs.pathExists(appPackage)) && !cmd.backend) {
+    if ((await fs.pathExists(appPackage)) && !cmdOptions.backend) {
       Task.section('Adding plugin as dependency in app');
       await addPluginDependencyToApp(paths.targetRoot, name, pluginVersion);
 

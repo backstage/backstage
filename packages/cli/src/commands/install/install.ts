@@ -155,7 +155,9 @@ async function loadPeerPluginDeps(
 }
 
 export default async (pluginId?: string, cmd?: Command) => {
-  const from = pluginId || cmd?.from;
+  const cmdOptions = cmd?.opts();
+
+  const from = pluginId || cmdOptions?.from;
   // TODO(himanshu): If no plugin id is provided, it should list all plugins available. Maybe in some other command?
   if (!from) {
     throw new Error(

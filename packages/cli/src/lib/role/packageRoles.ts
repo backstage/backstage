@@ -109,8 +109,10 @@ export function getRoleFromPackage(pkgJson: unknown): PackageRole | undefined {
 }
 
 export async function findRoleFromCommand(cmd: Command): Promise<PackageRole> {
-  if (cmd.role) {
-    return getRoleInfo(cmd.role)?.role;
+  const cmdOptions = cmd.opts();
+
+  if (cmdOptions.role) {
+    return getRoleInfo(cmdOptions.role)?.role;
   }
 
   const pkg = await fs.readJson(paths.resolveTarget('package.json'));

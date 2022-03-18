@@ -23,12 +23,13 @@ import { paths } from '../../lib/paths';
 
 export default async (cmd: Command) => {
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
+  const cmdOptions = cmd.opts();
   await buildBundle({
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
-    statsJsonEnabled: cmd.stats,
+    statsJsonEnabled: cmdOptions.stats,
     ...(await loadCliConfig({
-      args: cmd.config,
+      args: cmdOptions.config,
       fromPackage: name,
     })),
   });

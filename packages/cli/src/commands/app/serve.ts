@@ -77,12 +77,13 @@ export default async (cmd: Command) => {
     );
   }
 
+  const cmdOptions = cmd.opts();
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   const waitForExit = await serveBundle({
     entry: 'src/index',
-    checksEnabled: cmd.check,
+    checksEnabled: cmdOptions.check,
     ...(await loadCliConfig({
-      args: cmd.config,
+      args: cmdOptions.config,
       fromPackage: name,
       withFilteredKeys: true,
     })),

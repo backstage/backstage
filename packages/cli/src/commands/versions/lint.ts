@@ -44,7 +44,8 @@ export const forbiddenDuplicatesFilter = (name: string) =>
   !ALLOW_DUPLICATES.some(pattern => pattern.test(name));
 
 export default async (cmd: Command) => {
-  const fix = Boolean(cmd.fix);
+  const cmdOptions = cmd.opts();
+  const fix = Boolean(cmdOptions.fix);
 
   let success = true;
 

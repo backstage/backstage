@@ -18,11 +18,13 @@ import { Command } from 'commander';
 import { loadCliConfig } from '../../lib/config';
 
 export default async (cmd: Command) => {
+  const cmdOptions = cmd.opts();
+
   await loadCliConfig({
-    args: cmd.config,
-    fromPackage: cmd.package,
-    mockEnv: cmd.lax,
-    fullVisibility: !cmd.frontend,
-    withDeprecatedKeys: cmd.deprecated,
+    args: cmdOptions.config,
+    fromPackage: cmdOptions.package,
+    mockEnv: cmdOptions.lax,
+    fullVisibility: !cmdOptions.frontend,
+    withDeprecatedKeys: cmdOptions.deprecated,
   });
 };

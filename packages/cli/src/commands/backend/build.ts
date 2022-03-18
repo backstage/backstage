@@ -18,9 +18,11 @@ import { Command } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
 
 export default async (cmd: Command) => {
+  const cmdOptions = cmd.opts();
+
   await buildPackage({
     outputs: new Set([Output.cjs, Output.types]),
-    minify: cmd.minify,
-    useApiExtractor: cmd.experimentalTypeBuild,
+    minify: cmdOptions.minify,
+    useApiExtractor: cmdOptions.experimentalTypeBuild,
   });
 };

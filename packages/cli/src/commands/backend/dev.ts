@@ -24,12 +24,13 @@ export default async (cmd: Command) => {
   // where we end up with the entrypoint executing multiple times, causing
   // a port bind conflict among other things.
   await fs.remove(paths.resolveTarget('dist'));
+  const cmdOptions = cmd.opts();
 
   const waitForExit = await serveBackend({
     entry: 'src/index',
-    checksEnabled: cmd.check,
-    inspectEnabled: cmd.inspect,
-    inspectBrkEnabled: cmd.inspectBrk,
+    checksEnabled: cmdOptions.check,
+    inspectEnabled: cmdOptions.inspect,
+    inspectBrkEnabled: cmdOptions.inspectBrk,
   });
 
   await waitForExit();

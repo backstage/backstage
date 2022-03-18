@@ -22,11 +22,13 @@ import { paths } from '../../lib/paths';
 
 export default async (cmd: Command) => {
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
+  const cmdOptions = cmd.opts();
+
   const waitForExit = await serveBundle({
     entry: 'dev/index',
-    checksEnabled: cmd.check,
+    checksEnabled: cmdOptions.check,
     ...(await loadCliConfig({
-      args: cmd.config,
+      args: cmdOptions.config,
       fromPackage: name,
       withFilteredKeys: true,
     })),

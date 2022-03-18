@@ -22,9 +22,11 @@ import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
+  const cmdOptions = cmd.opts();
+
   const { schema } = await loadCliConfig({
     args: [],
-    fromPackage: cmd.package,
+    fromPackage: cmdOptions.package,
     mockEnv: true,
   });
 
@@ -38,7 +40,7 @@ export default async (cmd: Command) => {
   merged.description =
     'This is the schema describing the structure of the app-config.yaml configuration file.';
 
-  if (cmd.format === 'json') {
+  if (cmdOptions.format === 'json') {
     process.stdout.write(`${JSON.stringify(merged, null, 2)}\n`);
   } else {
     process.stdout.write(`${stringifyYaml(merged)}\n`);

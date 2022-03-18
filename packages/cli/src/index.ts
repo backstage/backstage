@@ -27,19 +27,20 @@ import { version } from './lib/version';
 import { registerCommands } from './commands';
 
 const main = (argv: string[]) => {
-  program.name('backstage-cli').version(version);
+  const cmd = new program.Command();
+  cmd.name('backstage-cli').version(version);
 
-  registerCommands(program);
+  registerCommands(cmd);
 
-  program.on('command:*', () => {
+  cmd.on('command:*', () => {
     console.log();
-    console.log(chalk.red(`Invalid command: ${program.args.join(' ')}`));
+    console.log(chalk.red(`Invalid command: ${cmd.args.join(' ')}`));
     console.log();
-    program.outputHelp();
+    cmd.outputHelp();
     process.exit(1);
   });
 
-  program.parse(argv);
+  cmd.parse(argv);
 };
 
 process.on('unhandledRejection', rejection => {

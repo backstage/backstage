@@ -30,7 +30,8 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
   // Regardless of what command instance is passed in we want to find
   // the root command and resolve the path from there
   let rootCmd = anyCmd;
-  while (rootCmd.parent) {
+
+  while (rootCmd?.parent) {
     rootCmd = rootCmd.parent;
   }
 
@@ -60,18 +61,18 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
 
     // Can't clone or copy or even use commands as prototype, so we mutate
     // the necessary members instead, and then reset them once we're done
-    const currentOpts = cmd._optionValues;
-    const currentStore = cmd._storeOptionsAsProperties;
+    const currentOpts = cmd.opts();
+    const currentStore = cmd.opts()._storeOptionsAsProperties;
 
     const result: Record<string, any> = {};
-    cmd._storeOptionsAsProperties = false;
-    cmd._optionValues = result;
+    cmd.storeOptionsAsProperties(false);
+    cmd.opts()._optionValues = result;
 
     // Triggers the writing of options to the result object
     cmd.parseOptions(argsStr.split(' '));
 
-    cmd._storeOptionsAsProperties = currentOpts;
-    cmd._optionValues = currentStore;
+    cmd.opts()._storeOptionsAsProperties = currentOpts;
+    cmd.opts()._optionValues = currentStore;
 
     return result;
   };
@@ -79,10 +80,13 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
 
 export async function command(cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
+  const cmdOptions = cmd.opts();
 
-  if (cmd.since) {
+  if (cmdOptions.since) {
     const graph = PackageGraph.fromPackages(packages);
-    const changedPackages = await graph.listChangedPackages({ ref: cmd.since });
+    const changedPackages = await graph.listChangedPackages({
+      ref: cmdOptions.since,
+    });
     const withDevDependents = graph.collectPackageNames(
       changedPackages.map(pkg => pkg.name),
       pkg => pkg.localDevDependents.keys(),
@@ -137,7 +141,7 @@ export async function command(cmd: Command): Promise<void> {
   console.log('Building packages');
   await buildPackages(options);
 
-  if (cmd.all) {
+  if (cmdOptions.all) {
     console.log('Building apps');
     await runParallelWorkers({
       items: apps,
