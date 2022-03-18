@@ -36,6 +36,7 @@ export const createCacheMiddleware = ({
   cacheMiddleware.use(async (req, res, next) => {
     const socket = res.socket;
     const isCacheable = req.path.startsWith('/static/docs/');
+    const isGetRequest = req.method === 'GET';
 
     // Continue early if this is non-cacheable, or there's no socket.
     if (!isCacheable || !socket) {
@@ -69,7 +70,12 @@ export const createCacheMiddleware = ({
     socket.on('close', async hadError => {
       const content = Buffer.concat(chunks);
       const head = content.toString('utf8', 0, 12);
-      if (writeToCache && !hadError && head.match(/HTTP\/\d\.\d 200/)) {
+      if (
+        isGetRequest &&
+        writeToCache &&
+        !hadError &&
+        head.match(/HTTP\/\d\.\d 200/)
+      ) {
         await cache.set(reqPath, content);
       }
     });
