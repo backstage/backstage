@@ -261,15 +261,11 @@ export type EntityRefLinkProps = {
 } & Omit<LinkProps, 'to'>;
 
 // @public
-export const EntityRefLinks: ({
-  entityRefs,
-  defaultKind,
-  ...linkProps
-}: EntityRefLinksProps) => JSX.Element;
+export function EntityRefLinks(props: EntityRefLinksProps): JSX.Element;
 
 // @public
 export type EntityRefLinksProps = {
-  entityRefs: (Entity | CompoundEntityRef)[];
+  entityRefs: (string | Entity | CompoundEntityRef)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
 

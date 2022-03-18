@@ -43,7 +43,7 @@ import {
 
 describe('Oauth2ProxyAuthProvider', () => {
   const mockToken =
-    'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob';
+    'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob';
 
   let provider: Oauth2ProxyAuthProvider<any>;
   let logger: jest.Mocked<Logger>;
@@ -122,7 +122,6 @@ describe('Oauth2ProxyAuthProvider', () => {
         profile: {},
       });
       signInResolver.mockResolvedValue({
-        id: 'some-id',
         token: mockToken,
       });
 
@@ -142,7 +141,6 @@ describe('Oauth2ProxyAuthProvider', () => {
       const profile = { displayName: 'some value' };
       mockRequest.header.mockReturnValue(`Bearer token`);
       signInResolver.mockResolvedValue({
-        id: 'some-id',
         token: mockToken,
       });
       authHandler.mockResolvedValue({ profile: profile });
@@ -162,12 +160,10 @@ describe('Oauth2ProxyAuthProvider', () => {
       );
       expect(mockResponse.json).toHaveBeenCalledWith({
         backstageIdentity: {
-          id: 'some-id',
-          idToken: mockToken,
           identity: {
-            ownershipEntityRefs: ['user:default/jimmymarkum'],
             type: 'user',
             userEntityRef: 'user:default/jimmymarkum',
+            ownershipEntityRefs: ['user:default/jimmymarkum'],
           },
           token: mockToken,
         },
@@ -186,7 +182,6 @@ describe('Oauth2ProxyAuthProvider', () => {
         profile: {},
       });
       signInResolver.mockResolvedValue({
-        id: 'some-id',
         token: mockToken,
       });
     });

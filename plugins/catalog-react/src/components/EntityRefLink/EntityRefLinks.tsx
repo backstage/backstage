@@ -25,7 +25,7 @@ import { LinkProps } from '@backstage/core-components';
  * @public
  */
 export type EntityRefLinksProps = {
-  entityRefs: (Entity | CompoundEntityRef)[];
+  entityRefs: (string | Entity | CompoundEntityRef)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
 
@@ -34,17 +34,20 @@ export type EntityRefLinksProps = {
  *
  * @public
  */
-export const EntityRefLinks = ({
-  entityRefs,
-  defaultKind,
-  ...linkProps
-}: EntityRefLinksProps) => (
-  <>
-    {entityRefs.map((r, i) => (
-      <React.Fragment key={i}>
-        {i > 0 && ', '}
-        <EntityRefLink {...linkProps} entityRef={r} defaultKind={defaultKind} />
-      </React.Fragment>
-    ))}
-  </>
-);
+export function EntityRefLinks(props: EntityRefLinksProps) {
+  const { entityRefs, defaultKind, ...linkProps } = props;
+  return (
+    <>
+      {entityRefs.map((r, i) => (
+        <React.Fragment key={i}>
+          {i > 0 && ', '}
+          <EntityRefLink
+            {...linkProps}
+            entityRef={r}
+            defaultKind={defaultKind}
+          />
+        </React.Fragment>
+      ))}
+    </>
+  );
+}

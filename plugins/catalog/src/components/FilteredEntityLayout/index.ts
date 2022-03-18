@@ -18,7 +18,7 @@ import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 
 /**
  * @public
- * @deprecated Use `FilteredCatalogLayout` from `@backstage/plugin-catalog-react` instead.
+ * @deprecated Use `CatalogFilterLayout` from `@backstage/plugin-catalog-react` instead.
  */
 export const FilteredEntityLayout = CatalogFilterLayout as (props: {
   children: React.ReactNode;
@@ -26,12 +26,12 @@ export const FilteredEntityLayout = CatalogFilterLayout as (props: {
 
 /**
  * @public
- * @deprecated Use `FilteredCatalogLayout.Filters` from `@backstage/plugin-catalog-react` instead.
+ * @deprecated Use `CatalogFilterLayout.Filters` from `@backstage/plugin-catalog-react` instead.
  */
 export const FilterContainer = CatalogFilterLayout.Filters;
 
 /**
  * @public
- * @deprecated Use `FilteredCatalogLayout.Content` from `@backstage/plugin-catalog-react` instead.
+ * @deprecated Use `CatalogFilterLayout.Content` from `@backstage/plugin-catalog-react` instead.
  */
 export const EntityListContainer = CatalogFilterLayout.Content;

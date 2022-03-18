@@ -19,7 +19,6 @@ import { ConfigReader } from '@backstage/config';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import {
   IndexBuilder,
-  LunrSearchEngine,
   SearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import express from 'express';
@@ -39,8 +38,19 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const logger = getVoidLogger();
-    const searchEngine = new LunrSearchEngine({ logger });
-    const indexBuilder = new IndexBuilder({ logger, searchEngine });
+    mockSearchEngine = {
+      getIndexer: jest.fn(),
+      setTranslator: jest.fn(),
+      query: jest.fn().mockResolvedValue({
+        results: [],
+        nextPageCursor: '',
+        previousPageCursor: '',
+      }),
+    };
+    const indexBuilder = new IndexBuilder({
+      logger,
+      searchEngine: mockSearchEngine,
+    });
 
     const router = await createRouter({
       engine: indexBuilder.getSearchEngine(),
@@ -56,7 +66,7 @@ describe('createRouter', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('GET /query', () => {
@@ -98,6 +108,42 @@ describe('createRouter', () => {
       expect(response.status).toEqual(400);
       expect(response.body).toMatchObject({
         error: { message: /invalid query string/i },
+      });
+    });
+
+    it('removes backend-only properties from search documents', async () => {
+      mockSearchEngine.query.mockResolvedValue({
+        results: [
+          {
+            type: 'software-catalog',
+            document: {
+              text: 'foo',
+              title: 'bar baz',
+              location: '/catalog/default/component/example',
+              authorization: {
+                resourceRef: 'component:default/example',
+              },
+            },
+          },
+        ],
+        nextPageCursor: '',
+        previousPageCursor: '',
+      });
+
+      const response = await request(app).get('/query');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        results: [
+          {
+            type: 'software-catalog',
+            document: {
+              text: 'foo',
+              title: 'bar baz',
+              location: '/catalog/default/component/example',
+            },
+          },
+        ],
       });
     });
 
