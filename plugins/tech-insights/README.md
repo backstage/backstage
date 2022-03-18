@@ -47,12 +47,8 @@ const serviceEntityPage = (
 
 It is not obligatory to pass title and description props to `EntityTechInsightsScorecardContent`. If those are left out, default values from `defaultCheckResultRenderers` in `CheckResultRenderer` will be taken, hence `Boolean scorecard` and `This card represents an overview of default boolean Backstage checks`.
 
-### Customize scorecards overview title and description:
+## Boolean Scorecard Example
 
-```tsx
-// packages/app/src/components/catalog/EntityPage.tsx
+If you follow the [Backend Example](https://github.com/backstage/backstage/tree/master/plugins/tech-insights-backend#backend-example), once the needed facts have been generated the boolean scorecard will look like this:
 
-## Links
-
-- [The Backstage homepage](https://backstage.io)
-```
+![Boolean Scorecard Example](./docs/boolean-scorecard-example.png)
