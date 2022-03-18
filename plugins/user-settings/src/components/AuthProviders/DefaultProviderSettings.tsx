@@ -24,6 +24,7 @@ import {
   microsoftAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  oneloginAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 type Props = {
@@ -77,6 +78,14 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
         title="Bitbucket"
         description="Provides authentication towards Bitbucket APIs"
         apiRef={bitbucketAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('onelogin') && (
+      <ProviderSettingsItem
+        title="OneLogin"
+        description="Provides authentication towards OneLogin APIs"
+        apiRef={oneloginAuthApiRef}
         icon={Star}
       />
     )}
