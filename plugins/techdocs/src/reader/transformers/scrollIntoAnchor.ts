@@ -22,7 +22,8 @@ export const scrollIntoAnchor = (): Transformer => {
       // Scroll to the desired anchor on initial navigation
       if (window.location.hash) {
         const hash = window.location.hash.slice(1);
-        dom?.querySelector(`#${hash}`)?.scrollIntoView();
+        // fix invalid selector error for anchor starting with number
+        dom?.querySelector(`[id="${hash}"]`)?.scrollIntoView();
       }
     }, 200);
     return dom;
