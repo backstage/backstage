@@ -246,7 +246,7 @@ There are three FactRetrievers that come out of the box with Tech Insights:
 
 ## Backend Example
 
-Here's an example backend setup that will use the three included fact retrievers so you can get an idea of how this all works. This will the the entire contents of your `techInsights.ts` file found at `\packages\backend\src\plugins` as per [Adding the plugin to your `packages/backend`](#adding-the-plugin-to-your-packagesbackend)
+Here's an example backend setup that will use the three included fact retrievers so you can get an idea of how this all works. This will be the entire contents of your `techInsights.ts` file found at `\packages\backend\src\plugins` as per [Adding the plugin to your `packages/backend`](#adding-the-plugin-to-your-packagesbackend)
 
 ```ts
 import {
