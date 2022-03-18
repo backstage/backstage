@@ -15,4 +15,4 @@
  */
 
 export * from './Cards';
-export { MySquads } from './MySquads';
+export { MyGroups } from './MyGroups';

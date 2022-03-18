@@ -28,7 +28,7 @@ import {
 import useAsync from 'react-use/lib/useAsync';
 import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 
-export const MySquads = ({
+export const MyGroups = ({
   singularTitle,
   pluralTitle,
   icon,

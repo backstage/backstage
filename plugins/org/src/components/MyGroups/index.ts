@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { MySquads } from './MySquads';
+export { MyGroups } from './MyGroups';

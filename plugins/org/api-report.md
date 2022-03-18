@@ -64,10 +64,10 @@ export const MembersListCard: (_props: {
   pageSize?: number;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "MySquads" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "MyGroups" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const MySquads: ({
+export const MyGroups: ({
   singularTitle,
   pluralTitle,
   icon,

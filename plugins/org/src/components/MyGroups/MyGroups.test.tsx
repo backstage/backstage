@@ -16,16 +16,16 @@
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import React from 'react';
-import { MySquads } from '.';
+import { MyGroups } from '.';
 import GroupIcon from '@material-ui/icons/People';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
-describe('MySquads Test', () => {
+describe('MyGroups Test', () => {
   describe('For guests or users with no groups', () => {
-    it('MySquads should be empty', async () => {
+    it('MyGroups should be empty', async () => {
       const identityApi: Partial<IdentityApi> = {
         getBackstageIdentity: async () => ({
           type: 'user',
@@ -46,7 +46,7 @@ describe('MySquads Test', () => {
             [catalogApiRef, catalogApi],
           ]}
         >
-          <MySquads
+          <MyGroups
             singularTitle="My Squad"
             pluralTitle="My Squads"
             icon={GroupIcon}
@@ -59,7 +59,7 @@ describe('MySquads Test', () => {
   });
 
   describe('For users that are members of a single group', () => {
-    it('MySquads should display a single item that links to their group', async () => {
+    it('MyGroups should display a single item that links to their group', async () => {
       const identityApi: Partial<IdentityApi> = {
         getBackstageIdentity: async () => ({
           type: 'user',
@@ -94,7 +94,7 @@ describe('MySquads Test', () => {
             [catalogApiRef, catalogApi],
           ]}
         >
-          <MySquads
+          <MyGroups
             singularTitle="My Squad"
             pluralTitle="My Squads"
             icon={GroupIcon}
@@ -110,7 +110,7 @@ describe('MySquads Test', () => {
   });
 
   describe('For users that are members of multiple groups', () => {
-    it('MySquads should display a sub-menu with all their groups and a link to each group', async () => {
+    it('MyGroups should display a sub-menu with all their groups and a link to each group', async () => {
       const identityApi: Partial<IdentityApi> = {
         getBackstageIdentity: async () => ({
           type: 'user',
@@ -171,7 +171,7 @@ describe('MySquads Test', () => {
             [catalogApiRef, catalogApi],
           ]}
         >
-          <MySquads
+          <MyGroups
             singularTitle="My Squad"
             pluralTitle="My Squads"
             icon={GroupIcon}
