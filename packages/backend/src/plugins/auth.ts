@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-auth-backend';
+import {
+  createRouter,
+  providers,
+  defaultAuthProviderFactories,
+} from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -27,5 +31,13 @@ export default async function createPlugin(
     database: env.database,
     discovery: env.discovery,
     tokenManager: env.tokenManager,
+    providerFactories: {
+      ...defaultAuthProviderFactories,
+      google: providers.google.create({
+        signIn: {
+          resolver: providers.google.resolvers.byEmailLocalPart(),
+        },
+      }),
+    },
   });
 }
