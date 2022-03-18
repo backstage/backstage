@@ -36,7 +36,7 @@
   "devDependencies": {
     "@backstage/backend-common": "^0.13.1",
     "@backstage/cli": "^0.16.0",
-    "@elastic/elasticsearch-mock": "^1.0.0"
+    "@elastic/elasticsearch-mock": "^2.0.0"
   },
   "files": [
     "dist",

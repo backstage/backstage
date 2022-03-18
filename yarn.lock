@@ -1996,13 +1996,13 @@
   dependencies:
     "@date-io/core" "^1.3.13"
 
-"@elastic/elasticsearch-mock@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@elastic/elasticsearch-mock/-/elasticsearch-mock-1.0.0.tgz#1fbaf6bf220cd74a34494ff3a8673551d9dfc66f"
-  integrity sha512-MajkXUZ1xMYJilZc4f6KxZ9fbOp3VkUgjshZOm3Z4dbzEpRz7FinOfo6/Om7qdFyzhCJ9GgPQz4b0zp+3QMeqQ==
+"@elastic/elasticsearch-mock@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@elastic/elasticsearch-mock/-/elasticsearch-mock-2.0.0.tgz#35110dd3ff13140a7065034f8e20f41445ab001b"
+  integrity sha512-VACQF7GStt8DetY91aJhXCYog6zXM0Vyb62k592EEt3aB4plrOLot+JvlLMC4URjh2jt9qYfER9hn4AI+ULTSw==
   dependencies:
     fast-deep-equal "^3.1.3"
-    find-my-way "^4.3.3"
+    find-my-way "^5.2.0"
     into-stream "^6.0.0"
 
 "@elastic/elasticsearch@7.13.0":
@@ -12629,10 +12629,10 @@ find-cache-dir@^2.0.0:
     make-dir "^2.0.0"
     pkg-dir "^3.0.0"
 
-find-my-way@^4.3.3:
-  version "4.5.1"
-  resolved "https://registry.npmjs.org/find-my-way/-/find-my-way-4.5.1.tgz#758e959194b90aea0270db18fff75e2fceb2239f"
-  integrity sha512-kE0u7sGoUFbMXcOG/xpkmz4sRLCklERnBcg7Ftuu1iAxsfEt2S46RLJ3Sq7vshsEy2wJT2hZxE58XZK27qa8kg==
+find-my-way@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.npmjs.org/find-my-way/-/find-my-way-5.2.0.tgz#3e8b6d55471c9eac52164d268db108ff64849ae0"
+  integrity sha512-YLocRSSJJ1PCnrupBmaw2pUcFkU125QTWfFfpdLq11h7bQ+r+Ke4D1/4v7UkERlw0037VkYMd+1RMGTbhFCbPw==
   dependencies:
     fast-decode-uri-component "^1.0.1"
     fast-deep-equal "^3.1.3"
