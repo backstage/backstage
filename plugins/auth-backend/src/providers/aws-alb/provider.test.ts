@@ -123,9 +123,8 @@ describe('AwsAlbAuthProvider', () => {
         }),
         signInResolver: async () => {
           return {
-            id: 'user.name',
             token:
-              'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+              'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
           };
         },
       });
@@ -136,11 +135,8 @@ describe('AwsAlbAuthProvider', () => {
 
       expect(mockResponse.json).toHaveBeenCalledWith({
         backstageIdentity: {
-          id: 'user.name',
           token:
-            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
-          idToken:
-            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+            'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
           identity: {
             ownershipEntityRefs: ['user:default/jimmymarkum'],
             type: 'user',

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-
 /**
  * A representation of a successful Backstage sign-in.
  *
@@ -25,25 +23,6 @@ import { Entity } from '@backstage/catalog-model';
  * @public
  */
 export interface BackstageSignInResult {
-  /**
-   * An opaque ID that uniquely identifies the user within Backstage.
-   *
-   * This is typically the same as the user entity `metadata.name`.
-   *
-   * @deprecated Use the `identity` field instead
-   */
-  id: string;
-
-  /**
-   * The entity that the user is represented by within Backstage.
-   *
-   * This entity may or may not exist within the Catalog, and it can be used
-   * to read and store additional metadata about the user.
-   *
-   * @deprecated Use the `identity` field instead.
-   */
-  entity?: Entity;
-
   /**
    * The token used to authenticate the user within Backstage.
    */

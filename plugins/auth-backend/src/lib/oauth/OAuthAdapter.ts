@@ -18,11 +18,6 @@ import express, { CookieOptions } from 'express';
 import crypto from 'crypto';
 import { URL } from 'url';
 import {
-  DEFAULT_NAMESPACE,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import {
   BackstageIdentityResponse,
   BackstageSignInResult,
 } from '@backstage/plugin-auth-node';
@@ -58,7 +53,8 @@ export type Options = {
   cookieDomain: string;
   cookiePath: string;
   appOrigin: string;
-  tokenIssuer: TokenIssuer;
+  /** @deprecated This option is no longer needed */
+  tokenIssuer?: TokenIssuer;
   isOriginAllowed: (origin: string) => boolean;
   callbackUrl: string;
 };
@@ -263,22 +259,11 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     if (!identity) {
       return undefined;
     }
-
-    if (identity.token) {
-      return prepareBackstageIdentityResponse(identity);
+    if (!identity.token) {
+      throw new InputError(`Identity response must return a token`);
     }
 
-    const userEntityRef = stringifyEntityRef(
-      parseEntityRef(identity.id, {
-        defaultKind: 'user',
-        defaultNamespace: DEFAULT_NAMESPACE,
-      }),
-    );
-    const token = await this.options.tokenIssuer.issueToken({
-      claims: { sub: userEntityRef },
-    });
-
-    return prepareBackstageIdentityResponse({ ...identity, token });
+    return prepareBackstageIdentityResponse(identity);
   }
 
   private setNonceCookie = (res: express.Response, nonce: string) => {
