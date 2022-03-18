@@ -97,15 +97,15 @@ const Background = props => {
               The official monthly Backstage newsletter. Containing the latest
               news from your favorite project.
             </Block.Paragraph>
-            <Block.LinkButton href="https://roadie.io/backstage-weekly/">
+            <Block.LinkButton href="https://mailchi.mp/spotify/backstage-community">
               Subscribe
             </Block.LinkButton>
           </Block.TextBox>
           <Block.Graphic
             x={45}
             y={12}
-            width={40}
-            src={`${baseUrl}img/roadie-newsletter.png`}
+            width={30}
+            src={`${baseUrl}img/news-fpo.png`}
           />
         </Block.Container>
       </Block>
