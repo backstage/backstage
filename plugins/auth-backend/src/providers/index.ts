@@ -41,6 +41,7 @@ export type {
   AuthProviderFactoryOptions,
   AuthProviderFactory,
   AuthHandler,
+  AuthResolverCatalogUserQuery,
   AuthResolverContext,
   AuthHandlerResult,
   SignInResolver,

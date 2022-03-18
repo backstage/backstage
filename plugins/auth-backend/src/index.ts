@@ -32,3 +32,5 @@ export * from './lib/flow';
 export * from './lib/oauth';
 
 export * from './lib/catalog';
+
+export { getDefaultOwnershipEntityRefs } from './lib/resolvers';

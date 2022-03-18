@@ -9,7 +9,9 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
 import express from 'express';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -110,11 +112,40 @@ export interface AuthProviderRouteHandlers {
   start(req: express.Request, res: express.Response): Promise<void>;
 }
 
+// Warning: (ae-missing-release-tag) "AuthResolverCatalogUserQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type AuthResolverCatalogUserQuery =
+  | {
+      entityRef:
+        | string
+        | {
+            kind?: string;
+            namespace?: string;
+            name: string;
+          };
+    }
+  | {
+      annotations: Record<string, string>;
+    }
+  | {
+      filter: Exclude<GetEntitiesRequest['filter'], undefined>;
+    };
+
 // @public
 export type AuthResolverContext = {
+  logger: Logger;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  issueToken(params: TokenParams): Promise<{
+    token: string;
+  }>;
+  findCatalogUser(query: AuthResolverCatalogUserQuery): Promise<{
+    entity: Entity;
+  }>;
+  signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+  ): Promise<BackstageSignInResult>;
 };
 
 // Warning: (ae-missing-release-tag) "AuthResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -360,10 +391,12 @@ export type GcpIapTokenInfo = {
   [key: string]: JsonValue;
 };
 
-// Warning: (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
+// @public
+export function getDefaultOwnershipEntityRefs(entity: Entity): string[];
+
 // Warning: (ae-missing-release-tag) "getEntityClaims" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function getEntityClaims(entity: UserEntity): TokenParams['claims'];
 
 // Warning: (ae-missing-release-tag) "GithubOAuthResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -760,5 +793,6 @@ export type WebMessageResponse =
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
 // src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
 // src/providers/github/provider.d.ts:97:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:131:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:50:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
+// src/providers/types.d.ts:180:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
 ```
