@@ -35,7 +35,18 @@ export default async function createPlugin(
       ...defaultAuthProviderFactories,
       google: providers.google.create({
         signIn: {
-          resolver: providers.google.resolvers.byEmailLocalPart(),
+          resolver({ profile }, ctx) {
+            if (!profile.email) {
+              throw new Error(
+                'Login failed, user profile does not contain an email',
+              );
+            }
+            return ctx.signInWithCatalogUser({
+              entityRef: {
+                name: profile.email.split('@')[0],
+              },
+            });
+          },
         },
       }),
     },
