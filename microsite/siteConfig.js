@@ -70,6 +70,10 @@ const siteConfig = {
       page: 'demos',
       label: 'Demos',
     },
+    {
+      page: 'community',
+      label: 'Community',
+    },
   ],
 
   /* path to images for header/footer */
