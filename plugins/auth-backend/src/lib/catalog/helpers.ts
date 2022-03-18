@@ -21,6 +21,9 @@ import {
 } from '@backstage/catalog-model';
 import { TokenParams } from '../../identity';
 
+/**
+ * @deprecated use {@link getDefaultOwnershipEntityRefs} instead
+ */
 export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
   const userRef = stringifyEntityRef(entity);
 
