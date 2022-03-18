@@ -14,29 +14,29 @@ const Background = props => {
   const { baseUrl } = siteConfig;
   return (
     <main className="MainContent">
-
-
       <Block small className="stripe-bottom bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.Title>Contributor Spotlight nomination</Block.Title>
           <Block.TextBox>
-          <Block.Paragraph>
- 
-            </Block.Paragraph>
-          </Block.TextBox>          
+            <Block.Paragraph></Block.Paragraph>
+          </Block.TextBox>
         </Block.Container>
-        
       </Block>
 
-      <Block  className="stripe bg-black">
-
+      <Block className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
-
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdiZ28O7vwHo6NrwirEzGSbuVyBANSv7ItHqRlgVvSz3Z5xqQ/viewform?embedded=true" width="800" height="1262" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSdiZ28O7vwHo6NrwirEzGSbuVyBANSv7ItHqRlgVvSz3Z5xqQ/viewform?embedded=true"
+            width="800"
+            height="1262"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+          >
+            Loading…
+          </iframe>
         </Block.Container>
       </Block>
-
-   
     </main>
   );
 };
