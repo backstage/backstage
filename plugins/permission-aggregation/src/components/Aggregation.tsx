@@ -15,13 +15,15 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
-import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { permissionAggregationApiRef } from '@backstage/plugin-permission-react';
 import React from 'react';
 import { useAsync } from 'react-use';
 
 export function Aggregation() {
-  const permissionApi = useApi(permissionApiRef);
-  const { value, loading } = useAsync(() => permissionApi.getAllPermissions());
+  const permissionAggregationApi = useApi(permissionAggregationApiRef);
+  const { value, loading } = useAsync(() =>
+    permissionAggregationApi.getAllPermissions(),
+  );
 
   if (loading) return null;
   return (

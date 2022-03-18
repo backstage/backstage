@@ -58,6 +58,8 @@ import {
 import {
   permissionApiRef,
   IdentityPermissionApi,
+  PermissionAggregationApi,
+  permissionAggregationApiRef,
 } from '@backstage/plugin-permission-react';
 
 export const apis = [
@@ -247,5 +249,14 @@ export const apis = [
         discovery,
         identity,
       }),
+  }),
+  createApiFactory({
+    api: permissionAggregationApiRef,
+    deps: {
+      discovery: discoveryApiRef,
+      config: configApiRef,
+    },
+    factory: ({ config, discovery }) =>
+      PermissionAggregationApi.create({ config, discovery }),
   }),
 ];
