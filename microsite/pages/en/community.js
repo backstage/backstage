@@ -120,7 +120,7 @@ const Background = props => {
               their efforts! We'll put them in the spotlight ❤️.
               <br />
             </Block.Paragraph>
-            <Block.LinkButton href="https://bit.ly/backstage-nominate ">
+            <Block.LinkButton href="nominate ">
               Nominate now
             </Block.LinkButton>
           </Block.TextBox>
@@ -148,7 +148,7 @@ const Background = props => {
           </Block.TextBox>
         </Block.Container>
       </Block>
-
+      
       <Block small className="bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.Graphic
