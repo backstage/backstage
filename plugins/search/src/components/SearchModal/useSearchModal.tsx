@@ -32,19 +32,21 @@ export function useSearchModal(initialState = false) {
     open: initialState,
   });
 
+  // Toggle the current state
   const toggleModal = useCallback(
     () =>
       setState(prevState => ({
-        open: true,
+        open: !prevState.open,
         hidden: !prevState.hidden,
       })),
     [],
   );
 
+  // Manually set the current state
   const setOpen = useCallback(
-    (open: boolean) =>
-      setState(prevState => ({
-        open: prevState.open || open,
+    (open: boolean = true) =>
+      setState(() => ({
+        open: open,
         hidden: !open,
       })),
     [],
