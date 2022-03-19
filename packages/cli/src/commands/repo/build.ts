@@ -15,7 +15,7 @@
  */
 
 import chalk from 'chalk';
-import { Command } from 'commander';
+import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { PackageGraph } from '../../lib/monorepo';
@@ -48,10 +48,10 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
       `Could not find package command '${commandPath.join(' ')}'`,
     );
   }
+
   const cmd = targetCmd;
 
   const expectedScript = `backstage-cli ${commandPath.join(' ')}`;
-
   return (scriptStr?: string) => {
     if (!scriptStr || !scriptStr.startsWith(expectedScript)) {
       return undefined;
@@ -65,7 +65,8 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
     const currentStore = cmd.opts()._storeOptionsAsProperties;
 
     const result: Record<string, any> = {};
-    cmd.storeOptionsAsProperties(false);
+    // cmd.storeOptionsAsProperties(true);
+
     cmd.opts()._optionValues = result;
 
     // Triggers the writing of options to the result object
@@ -78,9 +79,11 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
   };
 }
 
-export async function command(cmd: Command): Promise<void> {
+export async function command(
+  cmdOptions: OptionValues,
+  cmd: Command,
+): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
-  const cmdOptions = cmd.opts();
 
   if (cmdOptions.since) {
     const graph = PackageGraph.fromPackages(packages);

@@ -28,8 +28,9 @@ import { registerCommands } from './commands';
 
 const main = (argv: string[]) => {
   const cmd = new program.Command();
+  cmd.storeOptionsAsProperties(true);
   cmd.name('backstage-cli').version(version);
-
+  cmd.allowExcessArguments(true);
   registerCommands(cmd);
 
   cmd.on('command:*', () => {

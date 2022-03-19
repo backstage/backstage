@@ -19,11 +19,12 @@ import { registerCommands } from './commands';
 import { version } from '../package.json';
 
 const main = (argv: string[]) => {
-  program.name('techdocs-cli').version(version);
+  const cmd = new program.Command();
+  cmd.name('techdocs-cli').version(version);
 
-  registerCommands(program);
+  registerCommands(cmd);
 
-  program.parse(argv);
+  cmd.parse(argv);
 };
 
 main(process.argv);

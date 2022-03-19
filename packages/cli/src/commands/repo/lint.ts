@@ -15,7 +15,7 @@
  */
 
 import chalk from 'chalk';
-import { Command } from 'commander';
+import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { PackageGraph, ExtendedPackageJSON } from '../../lib/monorepo';
 import { runWorkerQueueThreads } from '../../lib/parallel';
@@ -29,9 +29,11 @@ function depCount(pkg: ExtendedPackageJSON) {
   return deps + devDeps;
 }
 
-export async function command(cmd: Command): Promise<void> {
+export async function command(
+  cmdOptions: OptionValues,
+  _cmd: Command,
+): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
-  const cmdOptions = cmd.opts();
 
   if (cmdOptions.since) {
     const graph = PackageGraph.fromPackages(packages);

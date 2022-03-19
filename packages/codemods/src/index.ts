@@ -28,9 +28,10 @@ import { createCodemodAction } from './action';
 import { version } from '../package.json';
 
 async function main(argv: string[]) {
-  program.name('backstage-codemods').version(version);
+  const cmd = new program.Command();
+  cmd.name('backstage-codemods').version(version);
 
-  const applyCommand = program
+  const applyCommand = cmd
     .command('apply <codemod> [<target-dirs...>]')
     .description(
       'Apply a codemod to target directories, defaulting to the current directory',
@@ -44,7 +45,7 @@ async function main(argv: string[]) {
       .action(createCodemodAction(codemod.name));
   }
 
-  program
+  cmd
     .command('list')
     .description('List available codemods')
     .action(() => {
@@ -55,15 +56,15 @@ async function main(argv: string[]) {
       }
     });
 
-  program.on('command:*', () => {
+  cmd.on('command:*', () => {
     console.log();
-    console.log(chalk.red(`Invalid command: ${program.args.join(' ')}`));
+    console.log(chalk.red(`Invalid command: ${cmd.args.join(' ')}`));
     console.log();
-    program.outputHelp();
+    cmd.outputHelp();
     process.exit(1);
   });
 
-  program.parse(argv);
+  cmd.parse(argv);
 }
 
 process.on('unhandledRejection', (rejection: unknown) => {

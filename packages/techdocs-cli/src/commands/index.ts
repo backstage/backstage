@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { CommanderStatic } from 'commander';
+import { Command } from 'commander';
 import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
 
-export function registerCommands(program: CommanderStatic) {
+export function registerCommands(program: Command) {
   program
     .command('generate')
     .description('Generate TechDocs documentation site using MkDocs.')

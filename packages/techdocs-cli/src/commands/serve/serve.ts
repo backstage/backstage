@@ -43,7 +43,8 @@ function findPreviewBundlePath(): string {
 }
 
 export default async function serve(cmd: Command) {
-  const logger = createLogger({ verbose: cmd.verbose });
+  const cmdOptions = cmd.opts();
+  const logger = createLogger({ verbose: cmdOptions.verbose });
 
   // Determine if we want to run in local dev mode or not
   // This will run the backstage http server on a different port and only used
@@ -58,15 +59,17 @@ export default async function serve(cmd: Command) {
   const backstagePort = 3000;
   const backstageBackendPort = 7007;
 
-  const mkdocsDockerAddr = `http://0.0.0.0:${cmd.mkdocsPort}`;
-  const mkdocsLocalAddr = `http://127.0.0.1:${cmd.mkdocsPort}`;
-  const mkdocsExpectedDevAddr = cmd.docker ? mkdocsDockerAddr : mkdocsLocalAddr;
+  const mkdocsDockerAddr = `http://0.0.0.0:${cmdOptions.mkdocsPort}`;
+  const mkdocsLocalAddr = `http://127.0.0.1:${cmdOptions.mkdocsPort}`;
+  const mkdocsExpectedDevAddr = cmdOptions.docker
+    ? mkdocsDockerAddr
+    : mkdocsLocalAddr;
 
   let mkdocsServerHasStarted = false;
   const mkdocsLogFunc: LogFunc = data => {
     // Sometimes the lines contain an unnecessary extra new line
     const logLines = data.toString().split('\n');
-    const logPrefix = cmd.docker ? '[docker/mkdocs]' : '[mkdocs]';
+    const logPrefix = cmdOptions.docker ? '[docker/mkdocs]' : '[mkdocs]';
     logLines.forEach(line => {
       if (line === '') {
         return;
@@ -88,9 +91,9 @@ export default async function serve(cmd: Command) {
   // Had me questioning this whole implementation for half an hour.
   logger.info('Starting mkdocs server.');
   const mkdocsChildProcess = await runMkdocsServer({
-    port: cmd.mkdocsPort,
-    dockerImage: cmd.dockerImage,
-    useDocker: cmd.docker,
+    port: cmdOptions.mkdocsPort,
+    dockerImage: cmdOptions.dockerImage,
+    useDocker: cmdOptions.docker,
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,
   });
@@ -115,8 +118,8 @@ export default async function serve(cmd: Command) {
   const httpServer = new HTTPServer(
     findPreviewBundlePath(),
     port,
-    cmd.mkdocsPort,
-    cmd.verbose,
+    cmdOptions.mkdocsPort,
+    cmdOptions.verbose,
   );
 
   httpServer

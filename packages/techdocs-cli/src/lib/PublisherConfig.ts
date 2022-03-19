@@ -46,10 +46,12 @@ export class PublisherConfig {
    * variables for the respective GCS/AWS clients to work.
    */
   static getValidConfig(cmd: Command): ConfigReader {
-    const publisherType = cmd.publisherType;
+    const cmdOptions = cmd.opts();
+
+    const publisherType = cmdOptions.publisherType;
 
     if (!PublisherConfig.isKnownPublisher(publisherType)) {
-      throw new Error(`Unknown publisher type ${cmd.publisherType}`);
+      throw new Error(`Unknown publisher type ${cmdOptions.publisherType}`);
     }
 
     return new ConfigReader({
@@ -63,7 +65,7 @@ export class PublisherConfig {
       techdocs: {
         publisher: PublisherConfig.configFactories[publisherType](cmd),
         legacyUseCaseSensitiveTripletPaths:
-          cmd.legacyUseCaseSensitiveTripletPaths,
+          cmdOptions.legacyUseCaseSensitiveTripletPaths,
       },
     });
   }
@@ -81,15 +83,21 @@ export class PublisherConfig {
    * Retrieve valid AWS S3 configuration based on the command.
    */
   private static getValidAwsS3Config(cmd: Command): PublisherConfiguration {
+    const cmdOptions = cmd.opts();
+
     return {
       type: 'awsS3',
       awsS3: {
-        bucketName: cmd.storageName,
-        ...(cmd.awsBucketRootPath && { bucketRootPath: cmd.awsBucketRootPath }),
-        ...(cmd.awsRoleArn && { credentials: { roleArn: cmd.awsRoleArn } }),
-        ...(cmd.awsEndpoint && { endpoint: cmd.awsEndpoint }),
-        ...(cmd.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
-        ...(cmd.awsS3sse && { sse: cmd.awsS3sse }),
+        bucketName: cmdOptions.storageName,
+        ...(cmdOptions.awsBucketRootPath && {
+          bucketRootPath: cmdOptions.awsBucketRootPath,
+        }),
+        ...(cmdOptions.awsRoleArn && {
+          credentials: { roleArn: cmdOptions.awsRoleArn },
+        }),
+        ...(cmdOptions.awsEndpoint && { endpoint: cmdOptions.awsEndpoint }),
+        ...(cmdOptions.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
+        ...(cmdOptions.awsS3sse && { sse: cmdOptions.awsS3sse }),
       },
     };
   }
@@ -98,7 +106,9 @@ export class PublisherConfig {
    * Retrieve valid Azure Blob Storage configuration based on the command.
    */
   private static getValidAzureConfig(cmd: Command): PublisherConfiguration {
-    if (!cmd.azureAccountName) {
+    const cmdOptions = cmd.opts();
+
+    if (!cmdOptions.azureAccountName) {
       throw new Error(
         `azureBlobStorage requires --azureAccountName to be specified`,
       );
@@ -107,10 +117,10 @@ export class PublisherConfig {
     return {
       type: 'azureBlobStorage',
       azureBlobStorage: {
-        containerName: cmd.storageName,
+        containerName: cmdOptions.storageName,
         credentials: {
-          accountName: cmd.azureAccountName,
-          accountKey: cmd.azureAccountKey,
+          accountName: cmdOptions.azureAccountName,
+          accountKey: cmdOptions.azureAccountKey,
         },
       },
     };
@@ -120,11 +130,14 @@ export class PublisherConfig {
    * Retrieve valid GCS configuration based on the command.
    */
   private static getValidGoogleGcsConfig(cmd: Command): PublisherConfiguration {
+    const cmdOptions = cmd.opts();
     return {
       type: 'googleGcs',
       googleGcs: {
-        bucketName: cmd.storageName,
-        ...(cmd.gcsBucketRootPath && { bucketRootPath: cmd.gcsBucketRootPath }),
+        bucketName: cmdOptions.storageName,
+        ...(cmdOptions.gcsBucketRootPath && {
+          bucketRootPath: cmdOptions.gcsBucketRootPath,
+        }),
       },
     };
   }
@@ -135,12 +148,13 @@ export class PublisherConfig {
   private static getValidOpenStackSwiftConfig(
     cmd: Command,
   ): PublisherConfiguration {
+    const cmdOptions = cmd.opts();
     const missingParams = [
       'osCredentialId',
       'osSecret',
       'osAuthUrl',
       'osSwiftUrl',
-    ].filter((param: string) => !cmd[param]);
+    ].filter((param: string) => !cmdOptions[param]);
 
     if (missingParams.length) {
       throw new Error(
@@ -153,13 +167,13 @@ export class PublisherConfig {
     return {
       type: 'openStackSwift',
       openStackSwift: {
-        containerName: cmd.storageName,
+        containerName: cmdOptions.storageName,
         credentials: {
-          id: cmd.osCredentialId,
-          secret: cmd.osSecret,
+          id: cmdOptions.osCredentialId,
+          secret: cmdOptions.osSecret,
         },
-        authUrl: cmd.osAuthUrl,
-        swiftUrl: cmd.osSwiftUrl,
+        authUrl: cmdOptions.osAuthUrl,
+        swiftUrl: cmdOptions.osSwiftUrl,
       },
     };
   }

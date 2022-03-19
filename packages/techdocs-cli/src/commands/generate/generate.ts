@@ -34,14 +34,15 @@ export default async function generate(cmd: Command) {
   // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
   // Docs can be prepared using actions/checkout or git clone, or similar paradigms on CI. The TechDocs CI workflow
   // will run on the CI pipeline containing the documentation files.
+  const cmdOptions = cmd.opts();
 
-  const logger = createLogger({ verbose: cmd.verbose });
+  const logger = createLogger({ verbose: cmdOptions.verbose });
 
-  const sourceDir = resolve(cmd.sourceDir);
-  const outputDir = resolve(cmd.outputDir);
-  const omitTechdocsCorePlugin = cmd.omitTechdocsCoreMkdocsPlugin;
-  const dockerImage = cmd.dockerImage;
-  const pullImage = cmd.pull;
+  const sourceDir = resolve(cmdOptions.sourceDir);
+  const outputDir = resolve(cmdOptions.outputDir);
+  const omitTechdocsCorePlugin = cmdOptions.omitTechdocsCoreMkdocsPlugin;
+  const dockerImage = cmdOptions.dockerImage;
+  const pullImage = cmdOptions.pull;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -53,7 +54,7 @@ export default async function generate(cmd: Command) {
   const config = new ConfigReader({
     techdocs: {
       generator: {
-        runIn: cmd.docker ? 'docker' : 'local',
+        runIn: cmdOptions.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
         mkdocs: {
@@ -68,10 +69,10 @@ export default async function generate(cmd: Command) {
   const containerRunner = new DockerContainerRunner({ dockerClient });
 
   let parsedLocationAnnotation = {} as ParsedLocationAnnotation;
-  if (cmd.techdocsRef) {
+  if (cmdOptions.techdocsRef) {
     try {
       parsedLocationAnnotation = convertTechDocsRefToLocationAnnotation(
-        cmd.techdocsRef,
+        cmdOptions.techdocsRef,
       );
     } catch (err) {
       logger.error(err.message);
@@ -89,13 +90,13 @@ export default async function generate(cmd: Command) {
   await techdocsGenerator.run({
     inputDir: sourceDir,
     outputDir,
-    ...(cmd.techdocsRef
+    ...(cmdOptions.techdocsRef
       ? {
           parsedLocationAnnotation,
         }
       : {}),
     logger,
-    etag: cmd.etag,
+    etag: cmdOptions.etag,
     ...(process.env.LOG_LEVEL === 'debug' ? { logStream: stdout } : {}),
   });
 

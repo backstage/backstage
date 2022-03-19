@@ -21,14 +21,18 @@ import { createLogger } from '../../lib/utility';
 import { PublisherConfig } from '../../lib/PublisherConfig';
 
 export default async function migrate(cmd: Command) {
-  const logger = createLogger({ verbose: cmd.verbose });
+  const cmdOptions = cmd.opts();
+
+  const logger = createLogger({ verbose: cmdOptions.verbose });
 
   const config = PublisherConfig.getValidConfig(cmd);
   const discovery = SingleHostDiscovery.fromConfig(config);
   const publisher = await Publisher.fromConfig(config, { logger, discovery });
 
   if (!publisher.migrateDocsCase) {
-    throw new Error(`Migration not implemented for ${cmd.publisherType}`);
+    throw new Error(
+      `Migration not implemented for ${cmdOptions.publisherType}`,
+    );
   }
 
   // Check that the publisher's underlying storage is ready and available.
@@ -39,12 +43,12 @@ export default async function migrate(cmd: Command) {
   }
 
   // Validate and parse migration arguments.
-  const removeOriginal = cmd.removeOriginal;
-  const numericConcurrency = parseInt(cmd.concurrency, 10);
+  const removeOriginal = cmdOptions.removeOriginal;
+  const numericConcurrency = parseInt(cmdOptions.concurrency, 10);
 
   if (!Number.isInteger(numericConcurrency) || numericConcurrency <= 0) {
     throw new Error(
-      `Concurrency must be a number greater than 1. ${cmd.concurrency} provided.`,
+      `Concurrency must be a number greater than 1. ${cmdOptions.concurrency} provided.`,
     );
   }
 

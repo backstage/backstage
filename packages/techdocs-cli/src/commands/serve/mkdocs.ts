@@ -21,18 +21,19 @@ import { runMkdocsServer } from '../../lib/mkdocsServer';
 import { LogFunc, waitForSignal } from '../../lib/run';
 
 export default async function serveMkdocs(cmd: Command) {
-  const logger = createLogger({ verbose: cmd.verbose });
+  const cmdOptions = cmd.opts();
+  const logger = createLogger({ verbose: cmdOptions.verbose });
 
-  const dockerAddr = `http://0.0.0.0:${cmd.port}`;
-  const localAddr = `http://127.0.0.1:${cmd.port}`;
-  const expectedDevAddr = cmd.docker ? dockerAddr : localAddr;
+  const dockerAddr = `http://0.0.0.0:${cmdOptions.port}`;
+  const localAddr = `http://127.0.0.1:${cmdOptions.port}`;
+  const expectedDevAddr = cmdOptions.docker ? dockerAddr : localAddr;
   // We want to open browser only once based on a log.
   let boolOpenBrowserTriggered = false;
 
   const logFunc: LogFunc = data => {
     // Sometimes the lines contain an unnecessary extra new line in between
     const logLines = data.toString().split('\n');
-    const logPrefix = cmd.docker ? '[docker/mkdocs]' : '[mkdocs]';
+    const logPrefix = cmdOptions.docker ? '[docker/mkdocs]' : '[mkdocs]';
     logLines.forEach(line => {
       if (line === '') {
         return;
@@ -59,9 +60,9 @@ export default async function serveMkdocs(cmd: Command) {
 
   // Commander stores --no-docker in cmd.docker variable
   const childProcess = await runMkdocsServer({
-    port: cmd.port,
-    dockerImage: cmd.dockerImage,
-    useDocker: cmd.docker,
+    port: cmdOptions.port,
+    dockerImage: cmdOptions.dockerImage,
+    useDocker: cmdOptions.docker,
     stdoutLogFunc: logFunc,
     stderrLogFunc: logFunc,
   });

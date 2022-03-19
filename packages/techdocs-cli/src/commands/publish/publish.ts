@@ -23,7 +23,8 @@ import { Entity } from '@backstage/catalog-model';
 import { PublisherConfig } from '../../lib/PublisherConfig';
 
 export default async function publish(cmd: Command): Promise<any> {
-  const logger = createLogger({ verbose: cmd.verbose });
+  const cmdOptions = cmd.opts();
+  const logger = createLogger({ verbose: cmdOptions.verbose });
 
   const config = PublisherConfig.getValidConfig(cmd);
   const discovery = SingleHostDiscovery.fromConfig(config);
@@ -36,7 +37,7 @@ export default async function publish(cmd: Command): Promise<any> {
     return Promise.reject(new Error(''));
   }
 
-  const [namespace, kind, name] = cmd.entity.split('/');
+  const [namespace, kind, name] = cmdOptions.entity.split('/');
   const entity = {
     kind,
     metadata: {
@@ -45,7 +46,7 @@ export default async function publish(cmd: Command): Promise<any> {
     },
   } as Entity;
 
-  const directory = resolve(cmd.directory);
+  const directory = resolve(cmdOptions.directory);
   await publisher.publish({ entity, directory });
 
   return true;

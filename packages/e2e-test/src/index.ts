@@ -21,19 +21,20 @@ import { version } from '../package.json';
 import { exitWithError } from './lib/helpers';
 
 async function main(argv: string[]) {
-  program.name('e2e-test').version(version);
+  const cmd = new program.Command();
+  cmd.name('e2e-test').version(version);
 
-  registerCommands(program);
+  registerCommands(cmd);
 
-  program.on('command:*', () => {
+  cmd.on('command:*', () => {
     console.log();
-    console.log(chalk.red(`Invalid command: ${program.args.join(' ')}`));
+    console.log(chalk.red(`Invalid command: ${cmd.args.join(' ')}`));
     console.log();
-    program.outputHelp();
+    cmd.outputHelp();
     process.exit(1);
   });
 
-  program.parse(argv);
+  cmd.parse(argv);
 }
 
 process.on('unhandledRejection', (rejection: unknown) => {

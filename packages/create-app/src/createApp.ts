@@ -33,6 +33,7 @@ import {
 export default async (cmd: Command): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
+  const cmdOptions = cmd.opts();
 
   const answers: Answers = await inquirer.prompt([
     {
@@ -65,22 +66,22 @@ export default async (cmd: Command): Promise<void> => {
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`
-  const appDir = cmd.path
-    ? resolvePath(paths.targetDir, cmd.path)
+  const appDir = cmdOptions.path
+    ? resolvePath(paths.targetDir, cmdOptions.path)
     : resolvePath(paths.targetDir, answers.name);
 
   Task.log();
   Task.log('Creating the app...');
 
   try {
-    if (cmd.path) {
+    if (cmdOptions.path) {
       // Template directly to specified path
 
       Task.section('Checking that supplied path exists');
       await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, cmd.path, answers);
+      await templatingTask(templateDir, cmdOptions.path, answers);
     } else {
       // Template to temporary location, and then move files
 
@@ -97,7 +98,7 @@ export default async (cmd: Command): Promise<void> => {
       await moveAppTask(tempDir, appDir, answers.name);
     }
 
-    if (!cmd.skipInstall) {
+    if (!cmdOptions.skipInstall) {
       Task.section('Building the app');
       await buildAppTask(appDir);
     }

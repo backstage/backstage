@@ -26,7 +26,8 @@ import { version } from '../package.json';
 import createApp from './createApp';
 
 const main = (argv: string[]) => {
-  program
+  const command = new program.Command();
+  command
     .name('backstage-create-app')
     .version(version)
     .description('Creates a new app in a new directory or specified path')
@@ -40,7 +41,7 @@ const main = (argv: string[]) => {
     )
     .action(cmd => createApp(cmd));
 
-  program.parse(argv);
+  command.parse(argv);
 };
 
 process.on('unhandledRejection', rejection => {

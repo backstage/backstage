@@ -19,34 +19,32 @@ import { PublisherConfig } from './PublisherConfig';
 
 describe('getValidPublisherConfig', () => {
   it('should not allow unknown publisher types', () => {
-    const invalidConfig = {
-      publisherType: 'unknown publisher',
-    } as unknown as Command;
+    const cmdWithInvalidConfig = new Command();
+    cmdWithInvalidConfig.setOptionValue('publisherType', 'unknown publisher');
+    const cmdOptions = cmdWithInvalidConfig.opts();
 
-    expect(() => PublisherConfig.getValidConfig(invalidConfig)).toThrowError(
-      `Unknown publisher type ${invalidConfig.publisherType}`,
-    );
+    expect(() =>
+      PublisherConfig.getValidConfig(cmdWithInvalidConfig),
+    ).toThrowError(`Unknown publisher type ${cmdOptions.publisherType}`);
   });
 
   describe('for azureBlobStorage', () => {
     it('should require --azureAccountName', () => {
-      const config = {
-        publisherType: 'azureBlobStorage',
-      } as unknown as Command;
+      const cmd = new Command();
+      cmd.setOptionValue('publisherType', 'azureBlobStorage');
 
-      expect(() => PublisherConfig.getValidConfig(config)).toThrowError(
+      expect(() => PublisherConfig.getValidConfig(cmd)).toThrowError(
         'azureBlobStorage requires --azureAccountName to be specified',
       );
     });
 
     it('should return valid ConfigReader', () => {
-      const config = {
-        publisherType: 'azureBlobStorage',
-        azureAccountName: 'someAccountName',
-        storageName: 'someContainer',
-      } as unknown as Command;
+      const cmd = new Command();
+      cmd.setOptionValue('publisherType', 'azureBlobStorage');
+      cmd.setOptionValue('azureAccountName', 'someAccountName');
+      cmd.setOptionValue('storageName', 'someContainer');
 
-      const actualConfig = PublisherConfig.getValidConfig(config);
+      const actualConfig = PublisherConfig.getValidConfig(cmd);
       expect(actualConfig.getString('techdocs.publisher.type')).toBe(
         'azureBlobStorage',
       );
@@ -65,13 +63,12 @@ describe('getValidPublisherConfig', () => {
 
   describe('for awsS3', () => {
     it('should return valid ConfigReader', () => {
-      const config = {
-        publisherType: 'awsS3',
-        storageName: 'someStorageName',
-        awsBucketRootPath: 'backstage-data/techdocs',
-      } as unknown as Command;
+      const cmd = new Command();
+      cmd.setOptionValue('publisherType', 'awsS3');
+      cmd.setOptionValue('storageName', 'someStorageName');
+      cmd.setOptionValue('awsBucketRootPath', 'backstage-data/techdocs');
 
-      const actualConfig = PublisherConfig.getValidConfig(config);
+      const actualConfig = PublisherConfig.getValidConfig(cmd);
       expect(actualConfig.getString('techdocs.publisher.type')).toBe('awsS3');
       expect(
         actualConfig.getString('techdocs.publisher.awsS3.bucketName'),
@@ -82,13 +79,12 @@ describe('getValidPublisherConfig', () => {
     });
 
     it('should return valid ConfigReader with SSE option', () => {
-      const config = {
-        publisherType: 'awsS3',
-        storageName: 'someStorageName',
-        awsS3sse: 'aws:kms',
-      } as unknown as Command;
+      const cmd = new Command();
+      cmd.setOptionValue('publisherType', 'awsS3');
+      cmd.setOptionValue('storageName', 'someStorageName');
+      cmd.setOptionValue('awsS3sse', 'aws:kms');
 
-      const actualConfig = PublisherConfig.getValidConfig(config);
+      const actualConfig = PublisherConfig.getValidConfig(cmd);
       expect(actualConfig.getString('techdocs.publisher.type')).toBe('awsS3');
       expect(actualConfig.getString('techdocs.publisher.awsS3.sse')).toBe(
         'aws:kms',
@@ -98,13 +94,12 @@ describe('getValidPublisherConfig', () => {
 
   describe('for openStackSwift', () => {
     it('should throw error on missing parameters', () => {
-      const config = {
-        publisherType: 'openStackSwift',
-        osCredentialId: 'someCredentialId',
-        osSecret: 'someSecret',
-      } as unknown as Command;
+      const cmd = new Command();
+      cmd.setOptionValue('publisherType', 'openStackSwift');
+      cmd.setOptionValue('osCredentialId', 'someCredentialId');
+      cmd.setOptionValue('osSecret', 'someSecret');
 
-      expect(() => PublisherConfig.getValidConfig(config)).toThrowError(
+      expect(() => PublisherConfig.getValidConfig(cmd)).toThrowError(
         `openStackSwift requires the following params to be specified: ${[
           'osAuthUrl',
           'osSwiftUrl',
@@ -113,16 +108,15 @@ describe('getValidPublisherConfig', () => {
     });
 
     it('should return valid ConfigReader', () => {
-      const config = {
-        publisherType: 'openStackSwift',
-        storageName: 'someStorageName',
-        osCredentialId: 'someCredentialId',
-        osSecret: 'someSecret',
-        osAuthUrl: 'someAuthUrl',
-        osSwiftUrl: 'someSwiftUrl',
-      } as unknown as Command;
+      const cmd = new Command();
+      cmd.setOptionValue('publisherType', 'openStackSwift');
+      cmd.setOptionValue('storageName', 'someStorageName');
+      cmd.setOptionValue('osCredentialId', 'someCredentialId');
+      cmd.setOptionValue('osSecret', 'someSecret');
+      cmd.setOptionValue('osAuthUrl', 'someAuthUrl');
+      cmd.setOptionValue('osSwiftUrl', 'someSwiftUrl');
 
-      const actualConfig = PublisherConfig.getValidConfig(config);
+      const actualConfig = PublisherConfig.getValidConfig(cmd);
       expect(actualConfig.getString('techdocs.publisher.type')).toBe(
         'openStackSwift',
       );
@@ -142,13 +136,12 @@ describe('getValidPublisherConfig', () => {
 
   describe('for googleGcs', () => {
     it('should return valid ConfigReader', () => {
-      const config = {
-        publisherType: 'googleGcs',
-        storageName: 'someStorageName',
-        gcsBucketRootPath: 'backstage-data/techdocs',
-      } as unknown as Command;
+      const cmd = new Command();
+      cmd.setOptionValue('publisherType', 'googleGcs');
+      cmd.setOptionValue('storageName', 'someStorageName');
+      cmd.setOptionValue('gcsBucketRootPath', 'backstage-data/techdocs');
 
-      const actualConfig = PublisherConfig.getValidConfig(config);
+      const actualConfig = PublisherConfig.getValidConfig(cmd);
       expect(actualConfig.getString('techdocs.publisher.type')).toBe(
         'googleGcs',
       );

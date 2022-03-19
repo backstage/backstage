@@ -39,7 +39,9 @@ export function createCodemodAction(name: string) {
       '--ignore-pattern=**/node_modules/**',
     ];
 
-    if (cmd.dry) {
+    const cmdOptions = cmd.opts();
+
+    if (cmdOptions.dry) {
       args.push('--dry');
     }
 
