@@ -32,6 +32,7 @@ export {
   ComponentTab,
   WelcomeTitle,
   HeaderWorldClock,
+  Banner,
 } from './plugin';
 export { SettingsModal } from './components';
 export * from './assets';

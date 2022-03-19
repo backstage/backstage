@@ -88,6 +88,20 @@ export const WelcomeTitle = homePlugin.provide(
 );
 
 /**
+ * A component to display a playful greeting for the user.
+ *
+ * @public
+ */
+export const Banner = homePlugin.provide(
+  createComponentExtension({
+    name: 'Banner',
+    component: {
+      lazy: () => import('./homePageComponents/Banner').then(m => m.Banner),
+    },
+  }),
+);
+
+/**
  * A component to display a company logo for the user.
  *
  * @public
