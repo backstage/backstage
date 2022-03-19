@@ -37,6 +37,10 @@ export const legacySelectedTemplateRouteRef = createSubRouteRef({
   path: '/templates/:templateName',
 });
 
+const nextRouteRef = createRouteRef({
+  id: 'scaffolder/next',
+});
+
 export const selectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/selected-template',
   parent: rootRouteRef,
@@ -45,7 +49,7 @@ export const selectedTemplateRouteRef = createSubRouteRef({
 
 export const nextSelectedTemplateRouteRef = createSubRouteRef({
   id: 'scaffolder/next/selected-template',
-  parent: rootRouteRef,
+  parent: nextRouteRef,
   path: '/templates/:namespace/:templateName',
 });
 

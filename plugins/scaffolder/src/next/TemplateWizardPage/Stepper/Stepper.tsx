@@ -48,7 +48,7 @@ export const Stepper = (props: StepperProps) => {
   const handleNext = () => {};
 
   return (
-    <Box>
+    <>
       <MuiStepper activeStep={0} alternativeLabel>
         {steps.map((step, index) => (
           <MuiStep key={index}>
@@ -56,6 +56,7 @@ export const Stepper = (props: StepperProps) => {
           </MuiStep>
         ))}
       </MuiStepper>
+
       <div className={styles.footer}>
         <Button onClick={handleBack} className={styles.backButton}>
           Back
@@ -64,6 +65,6 @@ export const Stepper = (props: StepperProps) => {
           {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
         </Button>
       </div>
-    </Box>
+    </>
   );
 };
