@@ -125,6 +125,11 @@ successful impact on your software development process:
   therefore deliver more consistently. Backstage makes it easier to be T-shaped
   since tools and infrastructure are consistent between domains, and information
   is available centrally.
+  
+- **Build Minutes** making your tools and CI more accessible should account for
+  an increase in automation, especially when teams there are less mature teams
+  looking to improve how they build their Products at a click of a template. 
+  Check the trend of your GitHub Actions minutes at an Enterprise or Org level.
 
 - **eNPS** Surveys asking about how productive people feel, how easy it is to
   find information and overall satisfaction with internal tools.
@@ -148,6 +153,9 @@ Backstage as _the_ platform:
 - % of contributions coming from outside the central Backstage team (currently
   85% inside Spotify)
 
+- Reuse of templates will show whether the templates you have are what the consumers
+  need in order to save time and build better.
+  
 - Traditional metrics such as visits (MAU, DAU, etc) and page views. Currently
   ~50% of all Spotifiers use Backstage on a monthly basis, even though the
   percentage of engineers is below 50%. Most engineers actually use Backstage on
