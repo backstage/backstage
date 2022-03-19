@@ -127,7 +127,7 @@ successful impact on your software development process:
   is available centrally.
   
 - **Build Minutes** making your tools and CI more accessible should account for
-  an increase in automation, especially when teams there are less mature teams
+  an increase in automation, especially when there are less mature teams
   looking to improve how they build their Products at a click of a template. 
   Check the trend of your GitHub Actions minutes at an Enterprise or Org level.
 
