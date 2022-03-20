@@ -59,6 +59,14 @@ export function registerRepoCommand(program: CommanderStatic) {
     )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
+
+  command
+    .command('list-deprecations', { hidden: true })
+    .description('List deprecations. [EXPERIMENTAL]')
+    .option('--json', 'Output as JSON')
+    .action(
+      lazy(() => import('./repo/list-deprecations').then(m => m.command)),
+    );
 }
 
 export function registerScriptCommand(program: CommanderStatic) {
