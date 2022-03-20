@@ -83,4 +83,8 @@ export async function command(cmd: Command) {
       console.log(`${location} - ${chalk.yellow(wrappedMessage)}`);
     }
   }
+
+  if (deprecations.length > 0) {
+    process.exit(1);
+  }
 }
