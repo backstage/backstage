@@ -154,16 +154,16 @@ export default async function createPlugin({
             const [id] = email?.split('@') ?? '';
             // Fetch from an external system that returns entity claims like:
             // ['user:default/breanna.davison', ...]
-            const ent = [`user:default/${id}`];
+            const userEntityRef = `user:default/${id}`;
 
             // Resolve group membership from the Backstage catalog
             const fullEnt =
               await ctx.catalogIdentityClient.resolveCatalogMembership({
-                entityRefs: [id].concat(ent),
+                entityRefs: [id].concat([userEntityRef]),
                 logger: ctx.logger,
               });
             const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: id, ent: fullEnt },
+              claims: { sub: userEntityRef, ent: fullEnt },
             });
             return { id, token };
           },
