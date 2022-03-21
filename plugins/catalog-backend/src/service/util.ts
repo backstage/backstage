@@ -53,17 +53,20 @@ export const locationInput = z
   })
   .strict(); // no unknown keys;
 
-export function setRequiredEntityLocationAnnotations(entity: Entity): Entity {
+export function setRequiredEntityLocationAnnotations(
+  entity: Entity,
+  location: string,
+): Entity {
   const clonedEntity = lodash.cloneDeep(entity);
   lodash.set(
     clonedEntity,
     `metadata.annotations.['${ANNOTATION_SOURCE_LOCATION}']`,
-    'validate:entity',
+    location,
   );
   lodash.set(
     clonedEntity,
     `metadata.annotations.['${ANNOTATION_ORIGIN_LOCATION}']`,
-    'validate:entity',
+    location,
   );
 
   return clonedEntity;

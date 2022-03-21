@@ -17,7 +17,7 @@
 import { errorHandler } from '@backstage/backend-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -34,7 +34,6 @@ import {
   disallowReadonlyMode,
   locationInput,
   validateRequestBody,
-  requireRequestBody,
   setRequiredEntityLocationAnnotations,
 } from './util';
 import { z } from 'zod';
@@ -234,15 +233,22 @@ export async function createRouter(
 
   if (orchestrator) {
     router.post('/validate-entity', async (req, res) => {
-      const input = (await requireRequestBody(req)) as Entity;
-      const entity = setRequiredEntityLocationAnnotations(input);
+      const bodySchema = z.object({
+        entity: z.unknown(),
+        location: z.string(),
+      });
+
+      const body = await validateRequestBody(req, bodySchema);
+
+      const entity = setRequiredEntityLocationAnnotations(
+        body.entity as Entity,
+        body.location,
+      );
       const processingResult = await orchestrator.process({
         entity,
       });
       if (!processingResult.ok)
-        return res
-          .status(422)
-          .json(processingResult.errors.map(e => e.message));
+        throw new InputError(processingResult.errors[0].message);
       return res.status(200).send();
     });
   }

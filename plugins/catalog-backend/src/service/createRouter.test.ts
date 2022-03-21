@@ -415,7 +415,7 @@ describe('createRouter readonly disabled', () => {
 
         const response = await request(app)
           .post('/validate-entity')
-          .send(entity);
+          .send({ entity, location: 'validate:entity' });
 
         expect(response.status).toEqual(200);
         expect(orchestrator.process).toHaveBeenCalledTimes(1);
@@ -436,7 +436,7 @@ describe('createRouter readonly disabled', () => {
     });
 
     describe('invalid entity', () => {
-      it('returns 422', async () => {
+      it('returns 400', async () => {
         const entity: Entity = {
           apiVersion: 'a',
           kind: 'b',
@@ -450,10 +450,10 @@ describe('createRouter readonly disabled', () => {
 
         const response = await request(app)
           .post('/validate-entity')
-          .send(entity);
+          .send({ entity, location: 'validate:entity' });
 
-        expect(response.status).toEqual(422);
-        expect(response.body).toEqual(['Invalid entity name']);
+        expect(response.status).toEqual(400);
+        expect(response.body.error.message).toContain('Invalid entity name');
         expect(orchestrator.process).toHaveBeenCalledTimes(1);
         expect(orchestrator.process).toHaveBeenCalledWith({
           entity: {
@@ -468,6 +468,48 @@ describe('createRouter readonly disabled', () => {
             },
           },
         });
+      });
+    });
+
+    describe('no location', () => {
+      it('returns 400', async () => {
+        const entity: Entity = {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'n' },
+        };
+
+        const response = await request(app)
+          .post('/validate-entity')
+          .send({ entity, location: null });
+
+        expect(response.status).toEqual(400);
+        expect(response.body.error.message).toContain('Malformed request:');
+        expect(orchestrator.process).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe('no entity', () => {
+      it('returns 400', async () => {
+        orchestrator.process.mockResolvedValueOnce({
+          ok: false,
+          errors: [
+            new Error(
+              'Entity envelope failed validation before processing; caused by TypeError: <root> must be object - type: object',
+            ),
+          ],
+        });
+
+        const response = await request(app)
+          .post('/validate-entity')
+          .send({ entity: null, location: 'validate:entity' });
+
+        expect(response.status).toEqual(400);
+        expect(response.body.error.message).toContain(
+          'Entity envelope failed validation',
+        );
+        // We expect this to be called because of an open issue with zod where unknown values are optional https://github.com/colinhacks/zod/issues/493
+        expect(orchestrator.process).toHaveBeenCalledTimes(1);
       });
     });
   });
