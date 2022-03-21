@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.12.3
+
+### Patch Changes
+
+- Fix migrations to do the right thing on sqlite databases, and reapply the column type fix for those who are _not_ on sqlite databases.
+
+  Reconstruction of #10317 in the form of a patch release instead.
+
 ## 0.12.2
 
 ### Patch Changes
