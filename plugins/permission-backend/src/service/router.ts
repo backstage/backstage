@@ -33,12 +33,12 @@ import {
   AuthorizeResult,
   AuthorizeDecision,
   AuthorizeQuery,
-  Identified,
+  IdentifiedPermissionMessage,
   isResourcePermission,
   PermissionAttributes,
   ResourcePermission,
   BasicPermission,
-  Batch,
+  PermissionMessageBatch,
   PolicyQuery,
   DefinitivePolicyDecision,
   PolicyDecision,
@@ -79,29 +79,30 @@ const resourcePermissionSchema: z.ZodSchema<ResourcePermission> = z.object({
 
 const requestSchema = <T extends z.ZodSchema<any>>(
   itemSchema: T,
-): z.ZodSchema<Batch<Identified<z.infer<T>>>> =>
+): z.ZodSchema<PermissionMessageBatch<z.infer<T>>> =>
   z.object({
     items: z.array(itemSchema),
   });
 
-const authorizeRequestSchema: z.ZodSchema<Batch<Identified<AuthorizeQuery>>> =
-  requestSchema(
-    z.union([
-      z.object({
-        id: z.string(),
-        permission: resourcePermissionSchema,
-        resourceRef: z.string(),
-      }),
-      z.object({
-        id: z.string(),
-        permission: basicPermissionSchema,
-        resourceRef: z.never().optional(),
-      }),
-    ]),
-  );
+const authorizeRequestSchema: z.ZodSchema<
+  PermissionMessageBatch<AuthorizeQuery>
+> = requestSchema(
+  z.union([
+    z.object({
+      id: z.string(),
+      permission: resourcePermissionSchema,
+      resourceRef: z.string(),
+    }),
+    z.object({
+      id: z.string(),
+      permission: basicPermissionSchema,
+      resourceRef: z.never().optional(),
+    }),
+  ]),
+);
 
 const policyDecisionRequestSchema: z.ZodSchema<
-  Batch<Identified<PolicyQuery<ResourcePermission>>>
+  PermissionMessageBatch<PolicyQuery<ResourcePermission>>
 > = requestSchema(
   z.object({
     id: z.string(),
@@ -152,10 +153,10 @@ const validateDecision = (query: PolicyQuery, decision: PolicyDecision) => {
 };
 
 const runPolicy = async (
-  queries: Identified<PolicyQuery>[],
+  queries: IdentifiedPermissionMessage<PolicyQuery>[],
   user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
-): Promise<Identified<PolicyDecision>[]> => {
+): Promise<IdentifiedPermissionMessage<PolicyDecision>[]> => {
   return Promise.all(
     queries.map(query =>
       policy.handle(omit(query, 'id', 'resourceRef'), user).then(decision => {
@@ -167,11 +168,11 @@ const runPolicy = async (
 };
 
 const applyConditions = async (
-  queries: Identified<AuthorizeQuery>[],
-  decisions: Identified<PolicyDecision>[],
+  queries: IdentifiedPermissionMessage<AuthorizeQuery>[],
+  decisions: IdentifiedPermissionMessage<PolicyDecision>[],
   authHeader: string | undefined,
   permissionIntegrationClient: PermissionIntegrationClient,
-): Promise<Identified<DefinitivePolicyDecision>[]> => {
+): Promise<IdentifiedPermissionMessage<DefinitivePolicyDecision>[]> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -183,7 +184,7 @@ const applyConditions = async (
 
   return Promise.all(
     decisions.map((decision, index) => {
-      const query: Identified<AuthorizeQuery> = queries[index];
+      const query: IdentifiedPermissionMessage<AuthorizeQuery> = queries[index];
 
       if (decision.result !== AuthorizeResult.CONDITIONAL) {
         return decision;
@@ -237,8 +238,8 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<Batch<Identified<AuthorizeQuery>>>,
-      res: Response<Batch<Identified<AuthorizeDecision>>>,
+      req: Request<PermissionMessageBatch<AuthorizeQuery>>,
+      res: Response<PermissionMessageBatch<AuthorizeDecision>>,
     ) => {
       const user = await authenticate(req, identity);
       const parseResult = authorizeRequestSchema.safeParse(req.body);
@@ -269,8 +270,8 @@ export async function createRouter(
   router.post(
     '/policy-decision',
     async (
-      req: Request<Batch<Identified<PolicyQuery>>>,
-      res: Response<Batch<Identified<PolicyDecision>>>,
+      req: Request<PermissionMessageBatch<PolicyQuery>>,
+      res: Response<PermissionMessageBatch<PolicyDecision>>,
     ) => {
       const user = await authenticate(req, identity);
       const parseResult = policyDecisionRequestSchema.safeParse(req.body);

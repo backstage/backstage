@@ -18,7 +18,11 @@ import { RestContext, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
-import { AuthorizeQuery, AuthorizeResult, Identified } from './types/api';
+import {
+  AuthorizeQuery,
+  AuthorizeResult,
+  IdentifiedPermissionMessage,
+} from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { createPermission } from './permissions';
 
@@ -54,10 +58,12 @@ describe('PermissionClient', () => {
     };
 
     const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-      const responses = req.body.items.map((a: Identified<AuthorizeQuery>) => ({
-        id: a.id,
-        result: AuthorizeResult.ALLOW,
-      }));
+      const responses = req.body.items.map(
+        (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+          id: a.id,
+          result: AuthorizeResult.ALLOW,
+        }),
+      );
 
       return res(json({ items: responses }));
     });
@@ -141,7 +147,7 @@ describe('PermissionClient', () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.items.map(
-            (a: Identified<AuthorizeQuery>) => ({
+            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
               id: a.id,
               outcome: AuthorizeResult.ALLOW,
             }),
@@ -158,10 +164,12 @@ describe('PermissionClient', () => {
     it('should allow all when permission.enabled is false', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
-            id: a.id,
-            result: AuthorizeResult.DENY,
-          }));
+          const responses = req.body.map(
+            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+              id: a.id,
+              result: AuthorizeResult.DENY,
+            }),
+          );
 
           return res(json({ items: responses }));
         },
@@ -180,10 +188,12 @@ describe('PermissionClient', () => {
     it('should allow all when permission.enabled is not configured', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
-            id: a.id,
-            outcome: AuthorizeResult.DENY,
-          }));
+          const responses = req.body.map(
+            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+              id: a.id,
+              outcome: AuthorizeResult.DENY,
+            }),
+          );
 
           return res(json(responses));
         },
@@ -208,7 +218,7 @@ describe('PermissionClient', () => {
     const mockPolicyDecisionHandler = jest.fn(
       (req, res, { json }: RestContext) => {
         const responses = req.body.items.map(
-          (a: Identified<AuthorizeQuery>) => ({
+          (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
             id: a.id,
             pluginId: 'test-plugin',
             resourceType: 'test-resource',
@@ -318,7 +328,7 @@ describe('PermissionClient', () => {
       mockPolicyDecisionHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.items.map(
-            (a: Identified<AuthorizeQuery>) => ({
+            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
               id: a.id,
               outcome: AuthorizeResult.ALLOW,
             }),
@@ -337,10 +347,12 @@ describe('PermissionClient', () => {
     it('should allow all when permission.enabled is false', async () => {
       mockPolicyDecisionHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
-            id: a.id,
-            result: AuthorizeResult.DENY,
-          }));
+          const responses = req.body.map(
+            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+              id: a.id,
+              result: AuthorizeResult.DENY,
+            }),
+          );
 
           return res(json({ items: responses }));
         },
@@ -364,10 +376,12 @@ describe('PermissionClient', () => {
     it('should allow all when permission.enabled is not configured', async () => {
       mockPolicyDecisionHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
-            id: a.id,
-            outcome: AuthorizeResult.DENY,
-          }));
+          const responses = req.body.map(
+            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+              id: a.id,
+              outcome: AuthorizeResult.DENY,
+            }),
+          );
 
           return res(json(responses));
         },

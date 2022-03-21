@@ -16,7 +16,7 @@
 
 import { ServerPermissionClient } from './ServerPermissionClient';
 import {
-  Identified,
+  IdentifiedPermissionMessage,
   AuthorizeQuery,
   AuthorizeResult,
   createPermission,
@@ -72,7 +72,7 @@ describe('ServerPermissionClient', () => {
     beforeEach(() => {
       mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
         const responses = req.body.items.map(
-          (r: Identified<AuthorizeQuery>) => ({
+          (r: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
             id: r.id,
             result: AuthorizeResult.ALLOW,
           }),
@@ -142,7 +142,7 @@ describe('ServerPermissionClient', () => {
     beforeEach(() => {
       mockPolicyDecisionHandler = jest.fn((req, res, { json }: RestContext) => {
         const responses = req.body.items.map(
-          (r: Identified<AuthorizeQuery>) => ({
+          (r: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
             id: r.id,
             result: AuthorizeResult.ALLOW,
           }),

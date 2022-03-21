@@ -23,10 +23,10 @@ import {
   AuthorizeResult,
   AuthorizeQuery,
   AuthorizeDecision,
-  Identified,
+  IdentifiedPermissionMessage,
   PermissionCriteria,
   PermissionCondition,
-  Batch,
+  PermissionMessageBatch,
   PolicyQuery,
   PolicyDecision,
 } from './types/api';
@@ -80,7 +80,7 @@ const policyDecisionSchema: z.ZodSchema<PolicyDecision> = z.union([
 const responseSchema = <T>(
   itemSchema: z.ZodSchema<T>,
   ids: Set<string>,
-): z.ZodSchema<Batch<T>> =>
+): z.ZodSchema<PermissionMessageBatch<T>> =>
   z.object({
     items: z
       .array(
@@ -181,7 +181,7 @@ export class PermissionClient implements PermissionAuthorizer {
       return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
     }
 
-    const request: Batch<Identified<TQuery>> = {
+    const request: PermissionMessageBatch<TQuery> = {
       items: queries.map(query => ({
         id: uuid.v4(),
         ...query,
@@ -211,7 +211,7 @@ export class PermissionClient implements PermissionAuthorizer {
     const responsesById = parsedResponse.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
-    }, {} as Record<string, Identified<TResult>>);
+    }, {} as Record<string, IdentifiedPermissionMessage<TResult>>);
 
     return request.items.map(query => responsesById[query.id]);
   }

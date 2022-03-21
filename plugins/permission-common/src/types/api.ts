@@ -21,14 +21,14 @@ import { Permission, ResourcePermission } from './permission';
  * requests.
  * @public
  */
-export type Identified<T> = T & { id: string };
+export type IdentifiedPermissionMessage<T> = T & { id: string };
 
 /**
  * A batch of query or decision items used in {@link PermissionClient} methods.
  * @public
  */
-export type Batch<T> = {
-  items: Identified<T>[];
+export type PermissionMessageBatch<T> = {
+  items: IdentifiedPermissionMessage<T>[];
 };
 
 /**
