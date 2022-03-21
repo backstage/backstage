@@ -37,6 +37,7 @@ integrations:
     - accessKeyId: ${AWS_ACCESS_KEY_ID}
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
       roleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/example-role'
+      externalId: 'some-id' # optional
 ```
 
 Configuration allows specifying custom S3 endpoint, along with

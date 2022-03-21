@@ -177,6 +177,7 @@ export class AwsS3UrlReader implements UrlReader {
         params: {
           RoleSessionName: 'backstage-aws-s3-url-reader',
           RoleArn: roleArn,
+          ExternalId: integration.config.externalId,
         },
       });
     }
