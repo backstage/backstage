@@ -41,30 +41,22 @@ export class IdentityClient {
   /**
    * Create a new {@link IdentityClient} instance.
    */
-  static create(
-    options: {
-      discovery: PluginEndpointDiscovery;
-      issuer: string;
-    },
-    cooldownMs = 30000,
-  ): IdentityClient {
-    return new IdentityClient(options, cooldownMs);
+  static create(options: {
+    discovery: PluginEndpointDiscovery;
+    issuer: string;
+  }): IdentityClient {
+    return new IdentityClient(options);
   }
 
-  private constructor(
-    options: {
-      discovery: PluginEndpointDiscovery;
-      issuer: string;
-    },
-    cooldownMs: number,
-  ) {
+  private constructor(options: {
+    discovery: PluginEndpointDiscovery;
+    issuer: string;
+  }) {
     this.discovery = options.discovery;
     this.issuer = options.issuer;
     this.discovery.getBaseUrl('auth').then(url => {
       this.endpoint = new URL(`${url}/.well-known/jwks.json`);
-      this.keyStore = createRemoteJWKSet(this.endpoint, {
-        cooldownDuration: cooldownMs,
-      });
+      this.keyStore = createRemoteJWKSet(this.endpoint);
     });
   }
 

@@ -185,7 +185,7 @@ describe('IdentityClient', () => {
 
     it('should accept token from new key', async () => {
       const fixedTime = Date.now();
-      const spy = jest
+      jest
         .spyOn(Date, 'now')
         .mockImplementation(() => fixedTime - keyDurationSeconds * 1000 * 2);
       const token1 = await factory.issueToken({ claims: { sub: 'foo1' } });
@@ -195,8 +195,13 @@ describe('IdentityClient', () => {
       } catch (_err) {
         // Ignore thrown error
       }
-      // Move forward in time where the signing key has been rotated
-      spy.mockRestore();
+      // Move forward in time where the signing key has been rotated and the
+      // cooldown period to look up a new public key has elapsed.
+      jest
+        .spyOn(Date, 'now')
+        .mockImplementation(
+          () => fixedTime + 30 * keyDurationSeconds * 1000 + 2,
+        );
       const token = await factory.issueToken({ claims: { sub: 'foo' } });
       const response = await client.authenticate(token);
       expect(response).toEqual({
