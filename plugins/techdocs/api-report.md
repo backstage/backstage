@@ -16,6 +16,7 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -94,7 +95,7 @@ export type DocsTableRow = {
 };
 
 // @public
-export const EmbeddedDocsRouter: () => JSX.Element;
+export const EmbeddedDocsRouter: (props: PropsWithChildren<{}>) => JSX.Element;
 
 // @public
 export const EntityListDocsGrid: () => JSX.Element;
@@ -134,7 +135,9 @@ export type EntityListDocsTableProps = {
 };
 
 // @public
-export const EntityTechdocsContent: () => JSX.Element;
+export const EntityTechdocsContent: (props: {
+  children?: ReactNode;
+}) => JSX.Element;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;
