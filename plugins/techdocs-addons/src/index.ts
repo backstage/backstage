@@ -20,7 +20,11 @@
  * @packageDocumentation
  */
 
-export { createTechDocsAddon, TechDocsAddons } from './addons';
+export {
+  createTechDocsAddon,
+  TechDocsAddons,
+  TECHDOCS_ADDONS_WRAPPER_KEY,
+} from './addons';
 export * from './components';
 export {
   useEntityMetadata,
@@ -28,8 +32,10 @@ export {
   useShadowRoot,
   useShadowRootElements,
 } from './context';
+export { TechDocsAddonLocations } from './types';
 export type {
   TechDocsAddonAsyncMetadata,
-  TechDocsAddonLocations,
   TechDocsAddonOptions,
+  TechDocsMetadata,
+  TechDocsEntityMetadata,
 } from './types';
