@@ -24,8 +24,6 @@ import {
   useEntityMetadata,
   useTechDocsMetadata,
   useTechDocsReaderPage,
-  useShadowRoot,
-  useShadowRootElements,
   TechDocsEntityProvider,
   TechDocsMetadataProvider,
   TechDocsReaderPageProvider,
