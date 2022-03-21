@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
@@ -55,7 +55,8 @@ export const Router = () => {
  *
  * @public
  */
-export const EmbeddedDocsRouter = () => {
+export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
+  const { children } = props;
   const { entity } = useEntity();
 
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
@@ -66,7 +67,10 @@ export const EmbeddedDocsRouter = () => {
 
   return (
     <Routes>
-      <Route path="/*" element={<EntityPageDocs entity={entity} />} />
+      <Route
+        path="/*"
+        element={<EntityPageDocs entity={entity}>{children}</EntityPageDocs>}
+      />
     </Routes>
   );
 };

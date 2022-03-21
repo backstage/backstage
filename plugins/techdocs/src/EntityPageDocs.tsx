@@ -14,22 +14,90 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Entity } from '@backstage/catalog-model';
-import { Reader } from './reader';
+import React, { PropsWithChildren } from 'react';
+import {
+  CompoundEntityRef,
+  DEFAULT_NAMESPACE,
+  Entity,
+} from '@backstage/catalog-model';
+import {
+  Reader,
+  useTechDocsReaderDom,
+  withTechDocsReaderProvider,
+} from './reader';
 import { toLowerMaybe } from './helpers';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  getComponentData,
+  useApi,
+} from '@backstage/core-plugin-api';
+import {
+  TechDocsReaderPage as AddonAwareReaderPage,
+  TECHDOCS_ADDONS_WRAPPER_KEY,
+} from '@backstage/plugin-techdocs-addons';
+import { AsyncState } from 'react-use/lib/useAsyncFn';
+import { TechDocsEntityMetadata } from './types';
+import { techdocsApiRef } from '.';
+import useAsync from 'react-use/lib/useAsync';
 
-export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
-  const config = useApi(configApiRef);
+type SpecialReaderPageProps = {
+  entityName: CompoundEntityRef;
+  asyncEntityMetadata: AsyncState<TechDocsEntityMetadata>;
+  addonConfig?: React.ReactNode;
+};
+
+// todo(backstage/techdocs-core): Combine with <SpecialReaderPage> and simplify
+// with the version in TechDocsReaderPage.tsx
+const SpecialReaderPage = (props: SpecialReaderPageProps) => {
+  const techdocsApi = useApi(techdocsApiRef);
+  const dom = useTechDocsReaderDom(props.entityName);
+  const { kind, namespace, name } = props.entityName;
+
+  const asyncTechDocsMetadata = useAsync(() => {
+    return techdocsApi.getTechDocsMetadata({ kind, namespace, name });
+  }, [kind, namespace, name, techdocsApi]);
+
   return (
-    <Reader
-      withSearch={false}
-      entityRef={{
-        namespace: toLowerMaybe(entity.metadata.namespace ?? 'default', config),
-        kind: toLowerMaybe(entity.kind, config),
-        name: toLowerMaybe(entity.metadata.name, config),
-      }}
+    <AddonAwareReaderPage
+      asyncEntityMetadata={props.asyncEntityMetadata}
+      asyncTechDocsMetadata={asyncTechDocsMetadata}
+      addonConfig={props.addonConfig}
+      dom={dom}
+      hideHeader
     />
   );
+};
+
+export const EntityPageDocs = ({
+  children,
+  entity,
+}: PropsWithChildren<{ entity: Entity }>) => {
+  const config = useApi(configApiRef);
+  const entityName = {
+    namespace: toLowerMaybe(
+      entity.metadata.namespace ?? DEFAULT_NAMESPACE,
+      config,
+    ),
+    kind: toLowerMaybe(entity.kind, config),
+    name: toLowerMaybe(entity.metadata.name, config),
+  };
+
+  // Check if we were given a set of TechDocs addons.
+  if (children && getComponentData(children, TECHDOCS_ADDONS_WRAPPER_KEY)) {
+    const Component = withTechDocsReaderProvider(SpecialReaderPage, entityName);
+    return (
+      <Component
+        entityName={entityName}
+        asyncEntityMetadata={{
+          loading: false,
+          error: undefined,
+          value: entity,
+        }}
+        addonConfig={children}
+      />
+    );
+  }
+
+  // Otherwise, return a version of the reader that is not addon-aware.
+  return <Reader withSearch={false} entityRef={entityName} />;
 };
