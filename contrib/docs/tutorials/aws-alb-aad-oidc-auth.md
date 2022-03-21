@@ -158,7 +158,11 @@ export default async function createPlugin({
             const [id] = email?.split('@') ?? '';
             // Fetch from an external system that returns entity claims like:
             // ['user:default/breanna.davison', ...]
-            const userEntityRef = stringifyEntityRef({ kind: 'User', namespace: DEFAULT_NAMESPACE, name: id });
+            const userEntityRef = stringifyEntityRef({
+              kind: 'User',
+              namespace: DEFAULT_NAMESPACE,
+              name: id,
+            });
 
             // Resolve group membership from the Backstage catalog
             const fullEnt =
