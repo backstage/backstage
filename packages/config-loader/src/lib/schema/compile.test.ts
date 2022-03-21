@@ -32,9 +32,9 @@ describe('compileConfigSchemas', () => {
       errors: [
         {
           keyword: 'type',
-          dataPath: '/a',
+          instancePath: '/a',
           schemaPath: '#/properties/a/type',
-          message: 'should be string',
+          message: 'must be string',
           params: { type: 'string' },
         },
       ],
@@ -46,9 +46,9 @@ describe('compileConfigSchemas', () => {
       errors: [
         {
           keyword: 'type',
-          dataPath: '/b',
+          instancePath: '/b',
           schemaPath: '#/properties/b/type',
-          message: 'should be number',
+          message: 'must be number',
           params: { type: 'number' },
         },
       ],

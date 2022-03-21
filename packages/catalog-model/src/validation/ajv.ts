@@ -41,7 +41,7 @@ export function throwAjvError(
 
   const error = errors[0];
   throw new TypeError(
-    `${error.dataPath || '<root>'} ${error.message}${
+    `${error.instancePath || '<root>'} ${error.message}${
       error.params
         ? ` - ${Object.entries(error.params)
             .map(([key, val]) => `${key}: ${val}`)
