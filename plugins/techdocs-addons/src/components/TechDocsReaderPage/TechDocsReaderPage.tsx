@@ -18,6 +18,7 @@ import { Page } from '@backstage/core-components';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { AsyncState } from 'react-use/lib/useAsyncFn';
+import { TechDocsAddonConfigProvider } from '../../addons';
 
 import {
   TechDocsMetadataProvider,
@@ -33,6 +34,8 @@ import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
  * @public
  */
 export type TechDocsReaderPageProps = {
+  hideHeader?: boolean;
+  addonConfig?: React.ReactNode;
   dom: Element | null;
   asyncEntityMetadata: AsyncState<TechDocsEntityMetadata>;
   asyncTechDocsMetadata: AsyncState<TechDocsMetadata>;
@@ -43,21 +46,29 @@ export type TechDocsReaderPageProps = {
  * @public
  */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
-  const { asyncEntityMetadata, asyncTechDocsMetadata, dom } = props;
+  const {
+    addonConfig,
+    asyncEntityMetadata,
+    asyncTechDocsMetadata,
+    dom,
+    hideHeader = false,
+  } = props;
   const { namespace, kind, name } = useParams();
   const entityName = { namespace, kind, name };
   return (
     <TechDocsMetadataProvider asyncValue={asyncTechDocsMetadata}>
       <TechDocsEntityProvider asyncValue={asyncEntityMetadata}>
-        <TechDocsReaderPageProvider entityName={entityName}>
-          <Page themeId="documentation">
-            <TechDocsReaderPageHeader />
-            <TechDocsReaderPageSubheader />
-            {/* todo(backstage/techdocs-core): handle state indicator */}
-            {/* <TechDocReaderPageIndicator /> */}
-            <TechDocsReaderPageContent dom={dom} />
-          </Page>
-        </TechDocsReaderPageProvider>
+        <TechDocsAddonConfigProvider config={addonConfig}>
+          <TechDocsReaderPageProvider entityName={entityName}>
+            <Page themeId="documentation">
+              {!hideHeader && <TechDocsReaderPageHeader />}
+              <TechDocsReaderPageSubheader />
+              {/* todo(backstage/techdocs-core): handle state indicator */}
+              {/* <TechDocReaderPageIndicator /> */}
+              <TechDocsReaderPageContent dom={dom} />
+            </Page>
+          </TechDocsReaderPageProvider>
+        </TechDocsAddonConfigProvider>
       </TechDocsEntityProvider>
     </TechDocsMetadataProvider>
   );

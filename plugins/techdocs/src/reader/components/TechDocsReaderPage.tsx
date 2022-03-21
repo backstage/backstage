@@ -48,8 +48,8 @@ export type TechDocsReaderPageRenderFunction = ({
 
 type SpecialReaderPageProps = {
   entityName: CompoundEntityRef;
-  asyncEntityMetadata: AsyncState<any>;
-  asyncTechDocsMetadata: AsyncState<any>;
+  asyncEntityMetadata: AsyncState<TechDocsEntityMetadata>;
+  asyncTechDocsMetadata: AsyncState<TechDocsMetadata>;
 };
 
 const SpecialReaderPage = (props: SpecialReaderPageProps) => {

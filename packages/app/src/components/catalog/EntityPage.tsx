@@ -118,6 +118,14 @@ import {
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-addons';
+import {
+  ExampleContent,
+  ExampleHeader,
+  ExamplePrimarySidebar,
+  ExampleSecondarySidebar,
+  ExampleSubHeader,
+} from '../techdocs/ExampleAddons';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -343,7 +351,15 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      <EntityTechdocsContent>
+        <TechDocsAddons>
+          <ExampleHeader />
+          <ExampleSubHeader />
+          <ExamplePrimarySidebar />
+          <ExampleSecondarySidebar />
+          <ExampleContent />
+        </TechDocsAddons>
+      </EntityTechdocsContent>
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -410,7 +426,15 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      <EntityTechdocsContent>
+        <TechDocsAddons>
+          <ExampleHeader />
+          <ExampleSubHeader />
+          <ExamplePrimarySidebar />
+          <ExampleSecondarySidebar />
+          <ExampleContent />
+        </TechDocsAddons>
+      </EntityTechdocsContent>
     </EntityLayout.Route>
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
@@ -449,7 +473,15 @@ const defaultEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      <EntityTechdocsContent>
+        <TechDocsAddons>
+          <ExampleHeader />
+          <ExampleSubHeader />
+          <ExamplePrimarySidebar />
+          <ExampleSecondarySidebar />
+          <ExampleContent />
+        </TechDocsAddons>
+      </EntityTechdocsContent>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">
