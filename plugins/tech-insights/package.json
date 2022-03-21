@@ -12,6 +12,11 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/tech-insights"
+  },
   "scripts": {
     "build": "backstage-cli package build",
     "start": "backstage-cli package start",
