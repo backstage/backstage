@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { ComponentType } from 'react';
 import { AsyncState } from 'react-use/lib/useAsyncFn';
 
@@ -77,3 +78,22 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
  * @public
  */
 export type TechDocsAddonAsyncMetadata<TValue> = AsyncState<TValue | undefined>;
+
+/**
+ * Metadata for TechDocs page
+ *
+ * @public
+ */
+export type TechDocsMetadata = {
+  site_name: string;
+  site_description: string;
+};
+
+/**
+ * Metadata for TechDocs Entity
+ *
+ * @public
+ */
+export type TechDocsEntityMetadata = Entity & {
+  locationMetadata?: { type: string; target: string };
+};

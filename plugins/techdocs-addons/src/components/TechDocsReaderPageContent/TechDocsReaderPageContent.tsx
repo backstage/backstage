@@ -15,9 +15,6 @@
  */
 
 import { Content, Progress } from '@backstage/core-components';
-// todo(backstage/techdocs-core): Export these from @backstage/plugin-techdocs
-// @ts-ignore
-import { useTechDocsReaderDom } from '@backstage/plugin-techdocs';
 import { Portal } from '@material-ui/core';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import React, { useEffect, useRef, useState } from 'react';
@@ -27,7 +24,7 @@ import { useTechDocsAddons } from '../../addons';
 import { useTechDocsReaderPage } from '../../context';
 import { TechDocsAddonLocations as locations } from '../../types';
 
-export const TechDocsReaderPageContent = () => {
+export const TechDocsReaderPageContent = ({ dom }: { dom: Element | null }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [jss, setJss] = useState(
     create({
@@ -37,8 +34,7 @@ export const TechDocsReaderPageContent = () => {
   );
 
   const addons = useTechDocsAddons();
-  const { entityName, setShadowRoot } = useTechDocsReaderPage();
-  const dom = useTechDocsReaderDom(entityName);
+  const { setShadowRoot } = useTechDocsReaderPage();
 
   useEffect(() => {
     const shadowHost = ref.current;
@@ -61,10 +57,10 @@ export const TechDocsReaderPageContent = () => {
     '[data-md-component="container"]',
   );
   const primarySidebarElement = ref.current?.shadowRoot?.querySelector(
-    '[data-md-component="navigation"]',
+    'div[data-md-component="sidebar"][data-md-type="navigation"], div[data-md-component="navigation"]',
   );
   const secondarySidebarElement = ref.current?.shadowRoot?.querySelector(
-    '[data-md-component="toc"]',
+    'div[data-md-component="sidebar"][data-md-type="toc"], div[data-md-component="toc"]',
   );
 
   const primarySidebarAddonLocation = document.createElement('div');

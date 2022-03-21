@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Page } from '@backstage/core-components';
-// todo(backstage/techdocs-core): Export these from @backstage/plugin-techdocs
-import {
-  withTechDocsReaderProvider,
-  // @ts-ignore
-  TechDocsStateIndicator as TechDocReaderPageIndicator,
-} from '@backstage/plugin-techdocs';
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { AsyncState } from 'react-use/lib/useAsyncFn';
 
 import {
   TechDocsMetadataProvider,
   TechDocsEntityProvider,
   TechDocsReaderPageProvider,
 } from '../../context';
+import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
 import { TechDocsReaderPageContent } from '../TechDocsReaderPageContent';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
 import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
@@ -36,29 +32,33 @@ import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
 /**
  * @public
  */
-export type TechDocsReaderPageProps = { entityName: CompoundEntityRef };
+export type TechDocsReaderPageProps = {
+  dom: Element | null;
+  asyncEntityMetadata: AsyncState<TechDocsEntityMetadata>;
+  asyncTechDocsMetadata: AsyncState<TechDocsMetadata>;
+};
 
 /**
  * An addon-aware implementation of the TechDocsReaderPage.
  * @public
  */
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
-  const { entityName } = props;
-  const Component = withTechDocsReaderProvider(() => {
-    return (
-      <TechDocsMetadataProvider entityName={entityName}>
-        <TechDocsEntityProvider entityName={entityName}>
-          <TechDocsReaderPageProvider entityName={entityName}>
-            <Page themeId="documentation">
-              <TechDocsReaderPageHeader />
-              <TechDocsReaderPageSubheader />
-              <TechDocReaderPageIndicator />
-              <TechDocsReaderPageContent />
-            </Page>
-          </TechDocsReaderPageProvider>
-        </TechDocsEntityProvider>
-      </TechDocsMetadataProvider>
-    );
-  }, entityName);
-  return <Component />;
+  const { asyncEntityMetadata, asyncTechDocsMetadata, dom } = props;
+  const { namespace, kind, name } = useParams();
+  const entityName = { namespace, kind, name };
+  return (
+    <TechDocsMetadataProvider asyncValue={asyncTechDocsMetadata}>
+      <TechDocsEntityProvider asyncValue={asyncEntityMetadata}>
+        <TechDocsReaderPageProvider entityName={entityName}>
+          <Page themeId="documentation">
+            <TechDocsReaderPageHeader />
+            <TechDocsReaderPageSubheader />
+            {/* todo(backstage/techdocs-core): handle state indicator */}
+            {/* <TechDocReaderPageIndicator /> */}
+            <TechDocsReaderPageContent dom={dom} />
+          </Page>
+        </TechDocsReaderPageProvider>
+      </TechDocsEntityProvider>
+    </TechDocsMetadataProvider>
+  );
 };

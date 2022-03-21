@@ -7,16 +7,17 @@
 
 import { AsyncState } from 'react-use/lib/useAsyncFn';
 import { ComponentType } from 'react';
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
-import { TechDocsEntityMetadata } from '@backstage/plugin-techdocs';
-import { TechDocsMetadata } from '@backstage/plugin-techdocs';
 
 // @public
 export function createTechDocsAddon<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<ComponentType<TComponentProps>>;
+
+// @public
+export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 
 // @public
 export type TechDocsAddonAsyncMetadata<TValue> = AsyncState<TValue | undefined>;
@@ -42,13 +43,29 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
 export const TechDocsAddons: React_2.ComponentType;
 
 // @public
+export type TechDocsEntityMetadata = Entity & {
+  locationMetadata?: {
+    type: string;
+    target: string;
+  };
+};
+
+// @public
+export type TechDocsMetadata = {
+  site_name: string;
+  site_description: string;
+};
+
+// @public
 export const TechDocsReaderPage: (
   props: TechDocsReaderPageProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export type TechDocsReaderPageProps = {
-  entityName: CompoundEntityRef;
+  dom: Element | null;
+  asyncEntityMetadata: AsyncState<TechDocsEntityMetadata>;
+  asyncTechDocsMetadata: AsyncState<TechDocsMetadata>;
 };
 
 // @public
