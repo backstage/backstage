@@ -16,6 +16,13 @@
 
 // @ts-check
 
+// NOTE: This may look like a plain duplicate of the previous one, but that
+// file had a bug added when improving sqlite driver support:
+// https://github.com/backstage/backstage/pull/10053/files#diff-30bb343265e71ca2f1cdcccd5ac8fdbb2a597507c5531bf26945059783377b15R24
+// Since the old file was released to end users, those who created a new
+// Backstage app specifically for PostgreSQL since the release will be missing
+// this fix on their table. So we re-apply it.
+
 /**
  * @param {import('knex').Knex} knex
  */
