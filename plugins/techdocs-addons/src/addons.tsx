@@ -21,7 +21,13 @@ import {
   Extension,
   useElementFilter,
 } from '@backstage/core-plugin-api';
-import React, { ComponentType, useCallback } from 'react';
+import React, {
+  ComponentType,
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+} from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import { TechDocsAddonLocations, TechDocsAddonOptions } from './types';
@@ -90,8 +96,30 @@ const getAllTechDocsAddonsData = (collection: ElementCollection) => {
     });
 };
 
+type TechDocsAddonConfig = {
+  config?: React.ReactNode | null;
+};
+
+const TechDocsAddonConfigContext = createContext<TechDocsAddonConfig>({});
+
+export const TechDocsAddonConfigProvider = (
+  props: PropsWithChildren<{ config?: React.ReactNode }>,
+) => {
+  const fromOutlet = useOutlet();
+  const config = props.config ?? fromOutlet;
+  return (
+    <TechDocsAddonConfigContext.Provider value={{ config }}>
+      {props.children}
+    </TechDocsAddonConfigContext.Provider>
+  );
+};
+
+const useTechDocsAddonsConfig = (): React.ReactNode | null => {
+  return useContext(TechDocsAddonConfigContext).config || null;
+};
+
 export const useTechDocsAddons = () => {
-  const node = useOutlet();
+  const node = useTechDocsAddonsConfig();
 
   const collection = useElementFilter(node, getAllTechDocsAddons);
   const options = useElementFilter(node, getAllTechDocsAddonsData);
