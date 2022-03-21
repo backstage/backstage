@@ -39,21 +39,14 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
   async triggerTask(id: string): Promise<void> {
     const knex = await this.databaseFactory();
 
-    // get the task definition
+    // check if task exists
     const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
-      .select({
-        currentRun: 'current_run_ticket',
-        id: 'id',
-      })
+      .count({ count: '*' })
       .where('id', '=', id);
 
     // validate the task exists
-    if (rows.length <= 0 || rows[0].id !== id) {
+    if (rows[0].count !== 1) {
       throw new NotFoundError(`Task ${id} does not exist`);
-    }
-
-    if (rows[0].currentRun) {
-      throw new ConflictError(`task ${id} is currently running`);
     }
 
     const updatedRows = await knex<DbTasksRow>(DB_TASKS_TABLE)

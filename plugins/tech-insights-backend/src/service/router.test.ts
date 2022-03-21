@@ -15,7 +15,11 @@
  */
 import { buildTechInsightsContext } from './techInsightsContextBuilder';
 import { createRouter } from './router';
-import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  getVoidLogger,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import request from 'supertest';
 import express from 'express';
@@ -45,28 +49,21 @@ describe('Tech Insights router tests', () => {
   });
 
   beforeAll(async () => {
+    const pluginDatabase: PluginDatabaseManager = {
+      getClient: () => {
+        return Promise.resolve({
+          migrate: {
+            latest: () => {},
+          },
+        }) as unknown as Promise<Knex>;
+      },
+    };
     const databaseManager: Partial<DatabaseManager> = {
-      forPlugin: () => ({
-        getClient: () => {
-          return Promise.resolve({
-            migrate: {
-              latest: () => {},
-            },
-          }) as unknown as Promise<Knex>;
-        },
-      }),
+      forPlugin: () => pluginDatabase,
     };
     const manager = databaseManager as DatabaseManager;
     const techInsightsContext = await buildTechInsightsContext({
-      database: {
-        getClient: () => {
-          return Promise.resolve({
-            migrate: {
-              latest: () => {},
-            },
-          }) as unknown as Promise<Knex>;
-        },
-      },
+      database: pluginDatabase,
       logger: getVoidLogger(),
       factRetrievers: [],
       scheduler: new TaskScheduler(manager, getVoidLogger()).forPlugin(
