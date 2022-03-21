@@ -27,6 +27,11 @@ import { useOutlet } from 'react-router-dom';
 import { TechDocsAddonLocations, TechDocsAddonOptions } from './types';
 
 export const TECHDOCS_ADDONS_KEY = 'techdocs.addons.addon.v1';
+
+/**
+ * Marks the <TechDocsAddons> registry component.
+ * @public
+ */
 export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 
 /**
