@@ -17,10 +17,11 @@ import {
   Stepper as MuiStepper,
   Step as MuiStep,
   StepLabel as MuiStepLabel,
-  Box,
   Button,
   makeStyles,
 } from '@material-ui/core';
+import { withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 import { TemplateParameterSchema } from '../../../types';
 
@@ -34,11 +35,16 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'right',
   },
+  formWrapper: {
+    padding: theme.spacing(2),
+  },
 }));
 
 export interface StepperProps {
   manifest: TemplateParameterSchema;
 }
+
+const Form = withTheme(MuiTheme);
 
 export const Stepper = (props: StepperProps) => {
   const { steps } = props.manifest;
@@ -56,7 +62,9 @@ export const Stepper = (props: StepperProps) => {
           </MuiStep>
         ))}
       </MuiStepper>
-
+      <div className={styles.formWrapper}>
+        <Form schema={steps[activeStep].schema} />
+      </div>
       <div className={styles.footer}>
         <Button onClick={handleBack} className={styles.backButton}>
           Back
