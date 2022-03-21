@@ -45,11 +45,6 @@ export enum AuthorizeResult {
 export type BasicPermission = PermissionBase<'basic', {}>;
 
 // @public
-export type Batch<T> = {
-  items: Identified<T>[];
-};
-
-// @public
 export type ConditionalPolicyDecision = {
   result: AuthorizeResult.CONDITIONAL;
   pluginId: string;
@@ -81,7 +76,7 @@ export type DiscoveryApi = {
 };
 
 // @public
-export type Identified<T> = T & {
+export type IdentifiedPermissionMessage<T> = T & {
   id: string;
 };
 
@@ -163,6 +158,11 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
+
+// @public
+export type PermissionMessageBatch<T> = {
+  items: IdentifiedPermissionMessage<T>[];
+};
 
 // @public
 export type PolicyDecision =
