@@ -54,7 +54,7 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
     }
 
     throw new Error(
-      `Malformed envelope, ${error.dataPath || '<root>'} ${error.message}`,
+      `Malformed envelope, ${error.instancePath || '<root>'} ${error.message}`,
     );
   }
 }

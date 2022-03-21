@@ -53,7 +53,7 @@ export const DEFAULT_CONFIG_VISIBILITY: ConfigVisibility = 'backend';
  */
 export type ValidationError = {
   keyword: string;
-  dataPath: string;
+  instancePath: string;
   schemaPath: string;
   params: Record<string, any>;
   propertyName?: string;

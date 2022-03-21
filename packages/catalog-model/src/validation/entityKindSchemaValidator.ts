@@ -74,7 +74,7 @@ export function entityKindSchemaValidator<T extends Entity>(
     // Only in the case where kind and/or apiVersion have enum mismatches AND
     // have NO other errors, we call it a soft error.
     const softCandidates = validate.errors?.filter(e =>
-      ['/kind', '/apiVersion'].includes(e.dataPath),
+      ['/kind', '/apiVersion'].includes(e.instancePath),
     );
     if (
       softCandidates?.length &&
