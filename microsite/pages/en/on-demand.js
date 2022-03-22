@@ -21,7 +21,7 @@ const ondemandMetadata = fs
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
 
-const addVideoDocsLink = '/docs/community/add-content';
+const addVideoDocsLink = '/docs/overview/support';
 const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
 
 const Ondemand = () => (
@@ -78,7 +78,7 @@ const Ondemand = () => (
             ),
           )}
       </Container>
-      <BulletLine style={{ width: '100% ' }} />
+      <BulletLine style={{ width: '100%' }} />
       <div className="VideoPageHeader">
         <h2>Community on demand</h2>
       </div>
