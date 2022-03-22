@@ -160,10 +160,4 @@ techdocs:
     # object was not found (e.g. when the cache sercice is unavailable). The
     # default value is 1000
     readTimeout: 500
-
-  # (Optional and Legacy) Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
-  # to serve files from either a local directory or an External storage provider.
-  # You don't have to specify this anymore.
-
-  storageUrl: http://localhost:7007/api/techdocs/static/docs
 ```

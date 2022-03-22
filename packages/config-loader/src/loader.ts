@@ -226,7 +226,7 @@ export async function loadConfig(
     }
   }
 
-  const envConfigs = await readEnvConfig(process.env);
+  const envConfigs = readEnvConfig(process.env);
 
   const watchConfigFile = (watchProp: LoadConfigOptionsWatch) => {
     let watchedFiles = Array.from(loadedPaths);

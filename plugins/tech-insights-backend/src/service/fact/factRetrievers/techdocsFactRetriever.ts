@@ -49,7 +49,7 @@ export const techdocsFactRetriever: FactRetriever = {
     return entities.items.map((entity: Entity) => {
       return {
         entity: {
-          namespace: entity.metadata.namespace!!,
+          namespace: entity.metadata.namespace!,
           kind: entity.kind,
           name: entity.metadata.name,
         },

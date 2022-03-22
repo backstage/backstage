@@ -180,6 +180,35 @@ These should be moved to `links` under the `output` object instead.
 
 ```
 
+## Watch out for `dash-case`
+
+The nunjucks compiler can run into issues if the `id` fields in your template steps use dash characters, since these IDs translate directly to JavaScript object properties when accessed as output. One possible migration path is to use `camelCase` for your action IDs.
+
+```diff
+  steps:
+-   id: my-custom-action
+-   ...
+-
+-   id: publish-pull-request
+-   input:
+-     repoUrl: {{ steps.my-custom-action.output.repoUrl }} # Will not recognize 'my-custom-action' as a JS property since it contains dashes!
+
+  steps:
++   id: myCustomAction
++   ...
++
++   id: publishPullRequest
++   input:
++     repoUrl: ${{ steps.myCustomAction.output.repoUrl }}
+```
+
+Alternatively, it's possible to keep the `dash-case` syntax and use brackets for property access as you would in JavaScript:
+
+```yaml
+input:
+  repoUrl: ${{ steps['my-custom-action'].output.repoUrl }}
+```
+
 ### Summary
 
 Of course, we're always available on [discord](https://discord.gg/MUpMjP2) if

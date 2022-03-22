@@ -164,8 +164,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
-      // TODO(freben): Batch split, to not hit variable limits?
-      /*
+      let removedCount = 0;
+      for (const refs of lodash.chunk(toRemove, 1000)) {
+        /*
       WITH RECURSIVE
         -- All the nodes that can be reached downwards from our root
         descendants(root_id, entity_ref) AS (
@@ -200,78 +201,79 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       -- Exclude all lines that had such a foreign ancestor
       WHERE ancestors.root_id IS NULL;
       */
-      const removedCount = await tx<DbRefreshStateRow>('refresh_state')
-        .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
-          return (
-            orphans
-              // All the nodes that can be reached downwards from our root
-              .withRecursive('descendants', function descendants(outer) {
-                return outer
-                  .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
-                  .from('refresh_state_references')
-                  .where('source_key', options.sourceKey)
-                  .whereIn('target_entity_ref', toRemove)
-                  .union(function recursive(inner) {
-                    return inner
-                      .select({
-                        root_id: 'descendants.root_id',
-                        entity_ref:
-                          'refresh_state_references.target_entity_ref',
-                      })
-                      .from('descendants')
-                      .join('refresh_state_references', {
-                        'descendants.entity_ref':
-                          'refresh_state_references.source_entity_ref',
-                      });
-                  });
-              })
-              // All the nodes that can be reached upwards from the descendants
-              .withRecursive('ancestors', function ancestors(outer) {
-                return outer
-                  .select({
-                    root_id: tx.raw('CAST(NULL as INT)', []),
-                    via_entity_ref: 'entity_ref',
-                    to_entity_ref: 'entity_ref',
-                  })
-                  .from('descendants')
-                  .union(function recursive(inner) {
-                    return inner
-                      .select({
-                        root_id: tx.raw(
-                          'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
-                          [],
-                        ),
-                        via_entity_ref: 'source_entity_ref',
-                        to_entity_ref: 'ancestors.to_entity_ref',
-                      })
-                      .from('ancestors')
-                      .join('refresh_state_references', {
-                        target_entity_ref: 'ancestors.via_entity_ref',
-                      });
-                  });
-              })
-              // Start out with all of the descendants
-              .select('descendants.entity_ref')
-              .from('descendants')
-              // Expand with all ancestors that point to those, but aren't the current root
-              .leftOuterJoin('ancestors', function keepaliveRoots() {
-                this.on(
-                  'ancestors.to_entity_ref',
-                  '=',
-                  'descendants.entity_ref',
-                );
-                this.andOnNotNull('ancestors.root_id');
-                this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
-              })
-              .whereNull('ancestors.root_id')
-          );
-        })
-        .delete();
+        removedCount += await tx<DbRefreshStateRow>('refresh_state')
+          .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
+            return (
+              orphans
+                // All the nodes that can be reached downwards from our root
+                .withRecursive('descendants', function descendants(outer) {
+                  return outer
+                    .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
+                    .from('refresh_state_references')
+                    .where('source_key', options.sourceKey)
+                    .whereIn('target_entity_ref', refs)
+                    .union(function recursive(inner) {
+                      return inner
+                        .select({
+                          root_id: 'descendants.root_id',
+                          entity_ref:
+                            'refresh_state_references.target_entity_ref',
+                        })
+                        .from('descendants')
+                        .join('refresh_state_references', {
+                          'descendants.entity_ref':
+                            'refresh_state_references.source_entity_ref',
+                        });
+                    });
+                })
+                // All the nodes that can be reached upwards from the descendants
+                .withRecursive('ancestors', function ancestors(outer) {
+                  return outer
+                    .select({
+                      root_id: tx.raw('CAST(NULL as INT)', []),
+                      via_entity_ref: 'entity_ref',
+                      to_entity_ref: 'entity_ref',
+                    })
+                    .from('descendants')
+                    .union(function recursive(inner) {
+                      return inner
+                        .select({
+                          root_id: tx.raw(
+                            'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
+                            [],
+                          ),
+                          via_entity_ref: 'source_entity_ref',
+                          to_entity_ref: 'ancestors.to_entity_ref',
+                        })
+                        .from('ancestors')
+                        .join('refresh_state_references', {
+                          target_entity_ref: 'ancestors.via_entity_ref',
+                        });
+                    });
+                })
+                // Start out with all of the descendants
+                .select('descendants.entity_ref')
+                .from('descendants')
+                // Expand with all ancestors that point to those, but aren't the current root
+                .leftOuterJoin('ancestors', function keepaliveRoots() {
+                  this.on(
+                    'ancestors.to_entity_ref',
+                    '=',
+                    'descendants.entity_ref',
+                  );
+                  this.andOnNotNull('ancestors.root_id');
+                  this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
+                })
+                .whereNull('ancestors.root_id')
+            );
+          })
+          .delete();
 
-      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-        .where('source_key', '=', options.sourceKey)
-        .whereIn('target_entity_ref', toRemove)
-        .delete();
+        await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+          .where('source_key', '=', options.sourceKey)
+          .whereIn('target_entity_ref', refs)
+          .delete();
+      }
 
       this.options.logger.debug(
         `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
