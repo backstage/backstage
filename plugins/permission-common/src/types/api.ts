@@ -21,7 +21,15 @@ import { Permission } from './permission';
  * requests.
  * @public
  */
-export type Identified<T> = T & { id: string };
+export type IdentifiedPermissionMessage<T> = T & { id: string };
+
+/**
+ * A batch of request or response items.
+ * @public
+ */
+export type PermissionMessageBatch<T> = {
+  items: IdentifiedPermissionMessage<T>[];
+};
 
 /**
  * The result of an authorization request.
@@ -55,9 +63,7 @@ export type AuthorizeQuery = {
  * A batch of authorization requests from {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeRequest = {
-  items: Identified<AuthorizeQuery>[];
-};
+export type AuthorizeRequest = PermissionMessageBatch<AuthorizeQuery>;
 
 /**
  * A condition returned with a CONDITIONAL authorization response.
@@ -127,6 +133,4 @@ export type AuthorizeDecision =
  * A batch of authorization responses from {@link PermissionClient#authorize}.
  * @public
  */
-export type AuthorizeResponse = {
-  items: Identified<AuthorizeDecision>[];
-};
+export type AuthorizeResponse = PermissionMessageBatch<AuthorizeDecision>;

@@ -23,7 +23,7 @@ import {
   AuthorizeResult,
   AuthorizeQuery,
   AuthorizeDecision,
-  Identified,
+  IdentifiedPermissionMessage,
   PermissionCriteria,
   PermissionCondition,
   AuthorizeResponse,
@@ -145,7 +145,7 @@ export class PermissionClient implements PermissionAuthorizer {
     const responsesById = responseBody.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
-    }, {} as Record<string, Identified<AuthorizeDecision>>);
+    }, {} as Record<string, IdentifiedPermissionMessage<AuthorizeDecision>>);
 
     return request.items.map(query => responsesById[query.id]);
   }

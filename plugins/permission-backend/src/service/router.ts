@@ -32,7 +32,7 @@ import {
   AuthorizeResult,
   AuthorizeDecision,
   AuthorizeQuery,
-  Identified,
+  IdentifiedPermissionMessage,
   AuthorizeRequest,
   AuthorizeResponse,
   isResourcePermission,
@@ -73,11 +73,12 @@ const permissionSchema = z.union([
   }),
 ]);
 
-const querySchema: z.ZodSchema<Identified<AuthorizeQuery>> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: permissionSchema,
-});
+const querySchema: z.ZodSchema<IdentifiedPermissionMessage<AuthorizeQuery>> =
+  z.object({
+    id: z.string(),
+    resourceRef: z.string().optional(),
+    permission: permissionSchema,
+  });
 
 const requestSchema: z.ZodSchema<AuthorizeRequest> = z.object({
   items: z.array(querySchema),
@@ -98,12 +99,12 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  requests: Identified<AuthorizeQuery>[],
+  requests: IdentifiedPermissionMessage<AuthorizeQuery>[],
   user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
-): Promise<Identified<AuthorizeDecision>[]> => {
+): Promise<IdentifiedPermissionMessage<AuthorizeDecision>[]> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,

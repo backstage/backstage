@@ -21,7 +21,7 @@ import { InputError } from '@backstage/errors';
 import { errorHandler } from '@backstage/backend-common';
 import {
   AuthorizeResult,
-  Identified,
+  IdentifiedPermissionMessage,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
@@ -67,7 +67,7 @@ const applyConditionsRequestSchema = z.object({
  *
  * @public
  */
-export type ApplyConditionsRequestEntry = Identified<{
+export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
   resourceRef: string;
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
@@ -88,7 +88,8 @@ export type ApplyConditionsRequest = {
  *
  * @public
  */
-export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry =
+  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
 
 /**
  * A batch of {@link ApplyConditionsResponseEntry} objects.
