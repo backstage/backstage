@@ -15,7 +15,7 @@
  */
 
 import {
-  AuthorizeQuery,
+  EvaluatePermissionRequest,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
@@ -31,7 +31,10 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
  *
  * @public
  */
-export type PolicyAuthorizeQuery = Omit<AuthorizeQuery, 'resourceRef'>;
+export type PolicyAuthorizeQuery = Omit<
+  EvaluatePermissionRequest,
+  'resourceRef'
+>;
 
 /**
  * A policy to evaluate authorization requests for any permissioned action performed in Backstage.

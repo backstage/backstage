@@ -17,7 +17,7 @@
 import { ServerPermissionClient } from './ServerPermissionClient';
 import {
   IdentifiedPermissionMessage,
-  AuthorizeQuery,
+  EvaluatePermissionRequest,
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
@@ -33,7 +33,7 @@ import { RestContext, rest } from 'msw';
 const server = setupServer();
 const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
   const responses = req.body.items.map(
-    (r: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+    (r: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
       id: r.id,
       result: AuthorizeResult.ALLOW,
     }),

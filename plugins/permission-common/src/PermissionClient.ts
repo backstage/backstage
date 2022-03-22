@@ -21,13 +21,13 @@ import * as uuid from 'uuid';
 import { z } from 'zod';
 import {
   AuthorizeResult,
-  AuthorizeQuery,
-  AuthorizeDecision,
+  EvaluatePermissionRequest,
+  EvaluatePermissionResponse,
   IdentifiedPermissionMessage,
   PermissionCriteria,
   PermissionCondition,
-  AuthorizeResponse,
-  AuthorizeRequest,
+  EvaluatePermissionResponseBatch,
+  EvaluatePermissionRequestBatch,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import {
@@ -107,9 +107,9 @@ export class PermissionClient implements PermissionAuthorizer {
    * @public
    */
   async authorize(
-    queries: AuthorizeQuery[],
+    queries: EvaluatePermissionRequest[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeDecision[]> {
+  ): Promise<EvaluatePermissionResponse[]> {
     // TODO(permissions): it would be great to provide some kind of typing guarantee that
     // conditional responses will only ever be returned for requests containing a resourceType
     // but no resourceRef. That way clients who aren't prepared to handle filtering according
@@ -119,7 +119,7 @@ export class PermissionClient implements PermissionAuthorizer {
       return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
-    const request: AuthorizeRequest = {
+    const request: EvaluatePermissionRequestBatch = {
       items: queries.map(query => ({
         id: uuid.v4(),
         ...query,
@@ -145,7 +145,7 @@ export class PermissionClient implements PermissionAuthorizer {
     const responsesById = responseBody.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
-    }, {} as Record<string, IdentifiedPermissionMessage<AuthorizeDecision>>);
+    }, {} as Record<string, IdentifiedPermissionMessage<EvaluatePermissionResponse>>);
 
     return request.items.map(query => responsesById[query.id]);
   }
@@ -155,9 +155,9 @@ export class PermissionClient implements PermissionAuthorizer {
   }
 
   private assertValidResponse(
-    request: AuthorizeRequest,
+    request: EvaluatePermissionRequestBatch,
     json: any,
-  ): asserts json is AuthorizeResponse {
+  ): asserts json is EvaluatePermissionResponseBatch {
     const authorizedResponses = responseSchema.parse(json);
     const responseIds = authorizedResponses.items.map(r => r.id);
     const hasAllRequestIds = request.items.every(r =>
