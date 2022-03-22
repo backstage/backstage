@@ -16,34 +16,8 @@ export type AnyOfCriteria<TQuery> = {
 };
 
 // @public
-export type AuthorizeDecision =
-  | {
-      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-    }
-  | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
-    };
-
-// @public
-export type AuthorizeQuery = {
-  permission: Permission;
-  resourceRef?: string;
-};
-
-// @public
-export type AuthorizeRequest = {
-  items: Identified<AuthorizeQuery>[];
-};
-
-// @public
 export type AuthorizeRequestOptions = {
   token?: string;
-};
-
-// @public
-export type AuthorizeResponse = {
-  items: Identified<AuthorizeDecision>[];
 };
 
 // @public
@@ -55,6 +29,14 @@ export enum AuthorizeResult {
 
 // @public
 export type BasicPermission = PermissionBase<'basic', {}>;
+
+// @public
+export type ConditionalPolicyDecision = {
+  result: AuthorizeResult.CONDITIONAL;
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+};
 
 // @public
 export function createPermission<TResourceType extends string>(input: {
@@ -70,12 +52,41 @@ export function createPermission(input: {
 }): BasicPermission;
 
 // @public
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
+
+// @public
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
 
 // @public
-export type Identified<T> = T & {
+export type EvaluatePermissionRequest = {
+  permission: Permission;
+  resourceRef?: string;
+};
+
+// @public
+export type EvaluatePermissionRequestBatch =
+  PermissionMessageBatch<EvaluatePermissionRequest>;
+
+// @public
+export type EvaluatePermissionResponse =
+  | {
+      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    }
+  | {
+      result: AuthorizeResult.CONDITIONAL;
+      conditions: PermissionCriteria<PermissionCondition>;
+    };
+
+// @public
+export type EvaluatePermissionResponseBatch =
+  PermissionMessageBatch<EvaluatePermissionResponse>;
+
+// @public
+export type IdentifiedPermissionMessage<T> = T & {
   id: string;
 };
 
@@ -114,9 +125,9 @@ export type PermissionAttributes = {
 export interface PermissionAuthorizer {
   // (undocumented)
   authorize(
-    queries: AuthorizeQuery[],
+    requests: EvaluatePermissionRequest[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeDecision[]>;
+  ): Promise<EvaluatePermissionResponse[]>;
 }
 
 // @public
@@ -131,9 +142,9 @@ export type PermissionBase<TType extends string, TFields extends object> = {
 export class PermissionClient implements PermissionAuthorizer {
   constructor(options: { discovery: DiscoveryApi; config: Config });
   authorize(
-    queries: AuthorizeQuery[],
+    queries: EvaluatePermissionRequest[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeDecision[]>;
+  ): Promise<EvaluatePermissionResponse[]>;
 }
 
 // @public
@@ -148,6 +159,16 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
+
+// @public
+export type PermissionMessageBatch<T> = {
+  items: IdentifiedPermissionMessage<T>[];
+};
+
+// @public
+export type PolicyDecision =
+  | DefinitivePolicyDecision
+  | ConditionalPolicyDecision;
 
 // @public
 export type ResourcePermission<TResourceType extends string = string> =
