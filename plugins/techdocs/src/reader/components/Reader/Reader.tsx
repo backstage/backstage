@@ -20,7 +20,7 @@ import { Grid, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useApp } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { TechDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs';
+import { TechDocsReaderContent } from '@backstage/plugin-techdocs-module-mkdocs';
 
 import { TechDocsSearch } from '../../../search';
 

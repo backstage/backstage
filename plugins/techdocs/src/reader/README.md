@@ -6,7 +6,7 @@ The TechDocs reader is a component that fetches a remote page, runs transformers
 
 You can create your own Reader implementation by following this steps:
 
-1. Create a plugin prefixed with `@backstage/plugin-techdocs-{NAME}` (e.g. `@backstage/plugin-techdocs-mkdocs`).
+1. Create a plugin prefixed with `@backstage/plugin-techdocs-{NAME}` (e.g. `@backstage/plugin-techdocs-module-mkdocs`).
 
 2. Your new plugin has to export at least two things: A default `techDocsReaderPage` element and a `TechDocsReaderContent` component.
 
@@ -23,7 +23,7 @@ export { techDocsReaderPage, TechDocsReaderContent } from './components';
 ```tsx
 // Default
 import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
-import { techDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs';
+import { techDocsReaderPage } from '@backstage/plugin-techdocs-module-mkdocs';
 
 <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
   {techDocsReaderPage} 👈
@@ -33,7 +33,7 @@ import { techDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs';
 ```tsx
 // Custom
 import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
-import { TechDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs';
+import { TechDocsReaderContent } from '@backstage/plugin-techdocs-module-mkdocs';
 
 <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
   <TechDocsReaderPage>

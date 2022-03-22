@@ -1,4 +1,4 @@
-# techdocs-mkdocs
+# techdocs-module-mkdocs
 
 A front-end implementation for TechDocs reader page using [mkdocs](https://www.mkdocs.org/).
 
@@ -27,7 +27,7 @@ We recommend that you explicitly use the mkdocs implementation instead of the de
 
 ```tsx
 import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
-import { techDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs';
+import { techDocsReaderPage } from '@backstage/plugin-techdocs-module-mkdocs';
 
 <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
   {techDocsReaderPage} 👈
@@ -55,7 +55,7 @@ This is for you who want to have a different layout than the default reader, if 
 
 ```tsx
 import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
-import { TechDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs';
+import { TechDocsReaderContent } from '@backstage/plugin-techdocs-module-mkdocs';
 
 <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
   <TechDocsReaderPage>
@@ -83,7 +83,7 @@ To use the default reader do as shown below, but again remember that the default
 
 ```tsx
 import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
-import { TechDocsReaderContent } from '@backstage/plugin-techdocs-mkdocs';
+import { TechDocsReaderContent } from '@backstage/plugin-techdocs-module-mkdocs';
 
 <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
   <TechDocsReaderPage>

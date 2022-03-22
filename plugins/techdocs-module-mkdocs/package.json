@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-techdocs-mkdocs",
+  "name": "@backstage/plugin-techdocs-module-mkdocs",
   "description": "The Backstage plugin that renders technical documentation using mkdocs for your components",
   "version": "0.0.1",
   "main": "src/index.ts",
@@ -10,6 +10,9 @@
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "web-library"
   },
   "homepage": "https://backstage.io",
   "repository": {

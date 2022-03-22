@@ -19,7 +19,7 @@ import { useOutlet, useParams } from 'react-router';
 
 import { Page, Content } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { techDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs';
+import { techDocsReaderPage } from '@backstage/plugin-techdocs-module-mkdocs';
 
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';

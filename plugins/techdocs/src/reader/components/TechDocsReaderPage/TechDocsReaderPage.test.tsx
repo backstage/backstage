@@ -44,8 +44,8 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-jest.mock('@backstage/plugin-techdocs-mkdocs', () => {
-  const actual = jest.requireActual('@backstage/plugin-techdocs-mkdocs');
+jest.mock('@backstage/plugin-techdocs-module-mkdocs', () => {
+  const actual = jest.requireActual('@backstage/plugin-techdocs-module-mkdocs');
   return {
     ...actual,
     techDocsReaderPage: <div data-testid="techdocs-content" />,

@@ -8,7 +8,7 @@ The `mkdocs` is now a replaceable option on your `TechDocsReaderPage` so you can
 
 ```tsx
 import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
-import { techDocsReaderPage } from '@backstage/plugin-techdocs-mkdocs'; 👈
+import { techDocsReaderPage } from '@backstage/plugin-techdocs-module-mkdocs'; 👈
  ...
 <Route path="/:kind/:namespace/:name" element={<TechDocsReaderPage />}>
   {techDocsReaderPage}
