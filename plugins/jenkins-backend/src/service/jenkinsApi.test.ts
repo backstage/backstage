@@ -34,6 +34,7 @@ const mockedJenkinsClient = {
 const mockedJenkins = jenkins as jest.Mocked<any>;
 mockedJenkins.mockReturnValue(mockedJenkinsClient);
 
+const resourceRef = 'component:default/example-component';
 const jobFullName = 'example-jobName/foo';
 const buildNumber = 19;
 const jenkinsInfo: JenkinsInfo = {
@@ -413,7 +414,7 @@ describe('JenkinsApi', () => {
     );
   });
   it('buildProject', async () => {
-    await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
+    await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef);
 
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,
@@ -431,7 +432,7 @@ describe('JenkinsApi', () => {
     ]);
 
     await expect(() =>
-      jenkinsApi.buildProject(jenkinsInfo, jobFullName),
+      jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef),
     ).rejects.toThrow(NotAllowedError);
   });
 
@@ -442,7 +443,7 @@ describe('JenkinsApi', () => {
       },
     ]);
 
-    await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
+    await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef);
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
@@ -453,7 +454,7 @@ describe('JenkinsApi', () => {
 
   it('buildProject with crumbIssuer option', async () => {
     const info: JenkinsInfo = { ...jenkinsInfo, crumbIssuer: true };
-    await jenkinsApi.buildProject(info, jobFullName);
+    await jenkinsApi.buildProject(info, jobFullName, resourceRef);
 
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,

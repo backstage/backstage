@@ -20,6 +20,7 @@ import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -125,6 +126,22 @@ export type LogEvent = {
   id: string;
   taskId: string;
 };
+
+// @alpha
+export type NextRouterProps = {
+  components?: {
+    TemplateCardComponent?: React_2.ComponentType<{
+      template: TemplateEntityV1beta3;
+    }>;
+    TaskPageComponent?: React_2.ComponentType<{}>;
+  };
+  groups?: TemplateGroupFilter[];
+};
+
+// @alpha
+export const NextScaffolderPage: (
+  props: PropsWithChildren<NextRouterProps>,
+) => JSX.Element;
 
 // @public
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent<
@@ -352,6 +369,12 @@ export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 // @public
 export type TaskPageProps = {
   loadingText?: string;
+};
+
+// @alpha (undocumented)
+export type TemplateGroupFilter = {
+  title?: React_2.ReactNode;
+  filter: (entity: Entity) => boolean;
 };
 
 // @public

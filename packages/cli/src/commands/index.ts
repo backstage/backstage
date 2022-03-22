@@ -59,6 +59,14 @@ export function registerRepoCommand(program: CommanderStatic) {
     )
     .option('--fix', 'Attempt to automatically fix violations')
     .action(lazy(() => import('./repo/lint').then(m => m.command)));
+
+  command
+    .command('list-deprecations', { hidden: true })
+    .description('List deprecations. [EXPERIMENTAL]')
+    .option('--json', 'Output as JSON')
+    .action(
+      lazy(() => import('./repo/list-deprecations').then(m => m.command)),
+    );
 }
 
 export function registerScriptCommand(program: CommanderStatic) {
@@ -124,6 +132,12 @@ export function registerScriptCommand(program: CommanderStatic) {
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
     .action(lazy(() => import('./testCommand').then(m => m.default)));
+
+  command
+    .command('fix', { hidden: true })
+    .description('Applies automated fixes to the package. [EXPERIMENTAL]')
+    .option('--deps', 'Only fix monorepo dependencies in package.json')
+    .action(lazy(() => import('./fix').then(m => m.command)));
 
   command
     .command('clean')

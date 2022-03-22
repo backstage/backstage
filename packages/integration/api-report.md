@@ -35,6 +35,7 @@ export type AwsS3IntegrationConfig = {
   accessKeyId?: string;
   secretAccessKey?: string;
   roleArn?: string;
+  externalId?: string;
 };
 
 // @public

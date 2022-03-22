@@ -30,7 +30,7 @@ describe('BitbucketRepositoryParser', () => {
           presence: 'optional',
         }),
       ];
-      const actual = await defaultRepositoryParser({
+      const actual = defaultRepositoryParser({
         target: `${browseUrl}${path}`,
       });
 

@@ -41,11 +41,11 @@ export type LoadConfigSchemaOptions =
     };
 
 function errorsToError(errors: ValidationError[]): Error {
-  const messages = errors.map(({ dataPath, message, params }) => {
+  const messages = errors.map(({ instancePath, message, params }) => {
     const paramStr = Object.entries(params)
       .map(([name, value]) => `${name}=${value}`)
       .join(' ');
-    return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
+    return `Config ${message || ''} { ${paramStr} } at ${instancePath}`;
   });
   const error = new Error(`Config validation failed, ${messages.join('; ')}`);
   (error as any).messages = messages;

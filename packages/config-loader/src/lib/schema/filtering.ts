@@ -173,7 +173,7 @@ export function filterErrorsByVisibility(
     }
 
     const vis =
-      visibilityByDataPath.get(error.dataPath) ?? DEFAULT_CONFIG_VISIBILITY;
+      visibilityByDataPath.get(error.instancePath) ?? DEFAULT_CONFIG_VISIBILITY;
     return vis && includeVisibilities.includes(vis);
   });
 }

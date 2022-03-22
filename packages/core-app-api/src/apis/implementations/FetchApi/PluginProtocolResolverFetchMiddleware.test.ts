@@ -90,4 +90,32 @@ describe('PluginProtocolResolverFetchMiddleware', () => {
       expect(resolve).toHaveBeenLastCalledWith(host);
     },
   );
+
+  it('properly supports transferring request bodies too', async () => {
+    const resolve = jest.fn();
+    const discoveryApi = { getBaseUrl: resolve } as unknown as DiscoveryApi;
+    const middleware = new PluginProtocolResolverFetchMiddleware(discoveryApi);
+    const inner = jest.fn();
+    const outer = middleware.apply(inner);
+
+    resolve.mockResolvedValue('https://elsewhere.com');
+
+    await outer('plugin://a', {
+      method: 'POST',
+      body: '123',
+    });
+
+    expect(inner.mock.calls[0][0]).toBe('https://elsewhere.com');
+    expect(inner.mock.calls[0][1].body).toBe('123');
+
+    await outer(
+      new Request('plugin://a', {
+        method: 'POST',
+        body: '123',
+      }),
+    );
+
+    expect(inner.mock.calls[1][0]).toBe('https://elsewhere.com');
+    expect(inner.mock.calls[1][1].body).toEqual(Buffer.from('123', 'utf8'));
+  });
 });

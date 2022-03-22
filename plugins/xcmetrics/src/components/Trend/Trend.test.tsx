@@ -24,7 +24,7 @@ describe('Trend', () => {
     const rendered = await renderInTestApp(
       <Trend data={data} title={title} color="#000" />,
     );
-    expect(rendered.findAllByText('testTitle')).toBeTruthy();
+    expect(await rendered.findAllByText('testTitle')).toBeTruthy();
   });
 
   it('should render empty state', async () => {
@@ -32,6 +32,6 @@ describe('Trend', () => {
     const rendered = await renderInTestApp(
       <Trend title={title} color="#000" />,
     );
-    expect(rendered.findAllByText('testTitle')).toBeTruthy();
+    expect(await rendered.findAllByText('testTitle')).toBeTruthy();
   });
 });

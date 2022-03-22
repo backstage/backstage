@@ -100,6 +100,15 @@ This section describes guidelines for designing public APIs. It can also be appl
    }
    ```
 
+1. Prefer common prefixes over suffixes when naming constants.
+
+   ```ts
+   // May be tempting to use `GITHUB_WIDGET_LABEL` instead.
+   const WIDGET_LABEL_GITHUB = 'github';
+   const WIDGET_LABEL_GITLAB = 'gitlab';
+   const WIDGET_LABEL_BITBUCKET = 'bitbucket';
+   ```
+
 1. When a type relates directly to other symbols, use the name of those as prefix for the type.
 
    ```ts
