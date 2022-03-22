@@ -334,7 +334,3 @@ export type AppContext = {
    */
   getComponents(): AppComponents;
 };
-
-export type NotificationContext = {
-  getNotifications(): Notification[];
-};

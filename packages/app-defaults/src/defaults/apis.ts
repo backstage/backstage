@@ -85,8 +85,8 @@ export const apis = [
   }),
   createApiFactory({
     api: notificationApiRef,
-    deps: { storageApi: storageApiRef },
-    factory: ({ storageApi }) => new NotificationApiForwarder(storageApi),
+    deps: {},
+    factory: () => new NotificationApiForwarder(),
   }),
   createApiFactory({
     api: analyticsApiRef,

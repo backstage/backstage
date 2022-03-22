@@ -14,36 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import {
-  notificationApiRef,
-  Notification,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import React from 'react';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { notificationsRouteRef } from '../../routes';
 import { SidebarItem } from '@backstage/core-components';
+import { useNotifications } from '@backstage/core-app-api';
 
 export const SidebarNotifications = () => {
-  const notificationApi = useApi(notificationApiRef);
-  const [notifications, setNotifications] = useState<Array<Notification>>([]);
-
-  useEffect(() => {
-    const subscription = notificationApi
-      .notification$()
-      .subscribe(notification => {
-        if (notification.spec?.targetEntityRefs?.length) {
-          setNotifications(n => n.concat(notification));
-        }
-      });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [notificationApi]);
-
-  // TODO(mob/notapi): setNotifications([]) when NotificationPage is visited (useLocation hook?)
+  const { notifications, acknowledged } = useNotifications();
+  const userNotifications = notifications.filter(
+    n => n.spec?.targetEntityRefs && n.metadata.timestamp > (acknowledged ?? 0),
+  );
 
   const routePath = useRouteRef(notificationsRouteRef);
   return (
@@ -51,7 +33,7 @@ export const SidebarNotifications = () => {
       text="Notifications"
       to={routePath()}
       icon={NotificationsIcon}
-      hasNotifications={!!notifications.length}
+      hasNotifications={!!userNotifications.length}
     />
   );
 };

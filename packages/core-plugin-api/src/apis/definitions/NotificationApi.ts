@@ -63,13 +63,6 @@ export type NotificationApi = {
    * Observe notifications posted by other parts of the application.
    */
   notification$(): Observable<Notification>;
-
-  /**
-   * Acknowledge last notifaction seen by user
-   */
-  acknowledge(notification: Notification): void;
-
-  getLastAcknowledge(): number | undefined;
 };
 
 /**

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { githubActionsApiRef, GithubActionsClient } from './api';
 import { rootRouteRef } from './routes';
 import {
@@ -25,6 +26,7 @@ import {
   createComponentExtension,
   NotificationApi,
 } from '@backstage/core-plugin-api';
+import ErrorIcon from '@material-ui/icons/Error';
 import { v4 as uuid } from 'uuid';
 
 export const githubActionsPlugin = createPlugin({
@@ -61,7 +63,7 @@ export const githubActionsPlugin = createPlugin({
             },
           ]);
           alerts.forEach(a => notificationApi.post(a));
-        }, 10 * 1000);
+        }, 30 * 1000);
       },
     },
     {
@@ -72,18 +74,24 @@ export const githubActionsPlugin = createPlugin({
             {
               kind: 'tingle',
               metadata: {
-                message: 'sample user notification',
-                title: 'sample user title',
+                message:
+                  'The queued build on component sample-component-name has failed with status: Error 500',
+                title: 'Build failed',
                 uuid: uuid(),
                 timestamp: Date.now(),
               },
               spec: {
+                icon: Math.random() > 0.5 ? <ErrorIcon /> : undefined,
+                links: [
+                  { url: '', title: 'View alert' },
+                  { url: '', title: 'Go to entity' },
+                ],
                 targetEntityRefs: ['user:default/guest'],
               },
             },
           ]);
           notifications.forEach(n => notificationApi.post(n));
-        }, 5 * 1000);
+        }, 10 * 1000);
       },
     },
   ],

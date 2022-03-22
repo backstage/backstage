@@ -78,8 +78,7 @@ export type PluginFeatureFlagConfig = {
 
 export type PluginNotificationChannel = {
   id: string;
-  // The `since` argument tracks the last time a user visited the notifications page
-  initialize: (notificationApi: NotificationApi, since?: number) => void;
+  initialize: (notificationApi: NotificationApi) => void;
 };
 
 /**

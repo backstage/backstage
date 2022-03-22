@@ -20,25 +20,65 @@ import {
   Page,
   SidebarPinStateContext,
 } from '@backstage/core-components';
-import { List, ListItem, ListItemText } from '@material-ui/core';
+import { BackstageTheme } from '@backstage/theme';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  createStyles,
+  makeStyles,
+} from '@material-ui/core';
+import ChatIcon from '@material-ui/icons/Chat';
 import React, { useContext } from 'react';
 
+const useStyles = makeStyles(
+  (theme: BackstageTheme) =>
+    createStyles({
+      card: {
+        marginBottom: theme.spacing(1),
+        maxWidth: 800,
+      },
+      actions: {
+        justifyContent: 'flex-start',
+      },
+    }),
+  { name: 'BackstageNotifications' },
+);
+
 export const NotificationsPage = () => {
+  const classes = useStyles();
   const { isMobile } = useContext(SidebarPinStateContext);
-  const notifications = useNotifications();
+
+  const { notifications, acknowledge } = useNotifications();
+  const userNotifications = notifications.filter(n => n.spec?.targetEntityRefs);
+  if (userNotifications.length) {
+    acknowledge(notifications[0].metadata.timestamp);
+  }
 
   return (
     <Page themeId="home">
       {!isMobile && <Header title="Notifications" />}
       <Content>
-        {notifications.length ? (
-          <List>
-            {notifications.map(notification => (
-              <ListItem key={notification.metadata.uuid}>
-                <ListItemText>{notification.metadata.title}</ListItemText>
-              </ListItem>
-            ))}
-          </List>
+        {userNotifications.length ? (
+          userNotifications.map(notification => (
+            <Card key={notification.metadata.uuid} className={classes.card}>
+              <CardHeader
+                title={notification.metadata.title}
+                avatar={notification.spec?.icon ?? <ChatIcon />}
+                titleTypographyProps={{ variant: 'h6' }}
+              />
+              <CardContent>{notification.metadata.message}</CardContent>
+              <CardActions className={classes.actions}>
+                {(notification.spec?.links ?? []).map(link => (
+                  <Button size="small" color="primary">
+                    {link.title}
+                  </Button>
+                ))}
+              </CardActions>
+            </Card>
+          ))
         ) : (
           <div>Such empty notifications, wow.</div>
         )}

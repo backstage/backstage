@@ -305,10 +305,7 @@ export class AppManager implements BackstageApp {
             for (const source of plugin.getNotificationChannels()) {
               // Multiple plugins can attempt to register the same notification source; first wins
               if (!this.notificationChannels.some(s => s.id === source.id)) {
-                source.initialize(
-                  notificationApi,
-                  notificationApi.getLastAcknowledge(),
-                );
+                source.initialize(notificationApi);
                 this.notificationChannels.push(source);
               }
             }
