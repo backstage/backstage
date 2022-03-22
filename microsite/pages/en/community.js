@@ -14,8 +14,6 @@ const Background = props => {
   const { baseUrl } = siteConfig;
   return (
     <main className="MainContent">
-      {new Date('2022-03-17') > new Date() ? <Component /> : null}
-
       <Block small className="stripe-bottom bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.Title>Backstage Community</Block.Title>
@@ -23,7 +21,7 @@ const Background = props => {
             <Block.Paragraph>
               What's the use of having fun if you can't share it? Exactly. Join
               the vibrant community around the Backstage project. Be it on
-              GitHub, social media, Discord.. You'll find a welcoming
+              GitHub, social media, Discord... You'll find a welcoming
               environment, to ensure this we follow the{' '}
               <a href="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
                 {' '}
@@ -64,8 +62,8 @@ const Background = props => {
               <br />
               Backstage Community Sessions is the monthly meetup where we all
               come together to listen to the latest maintainer updates, learn
-              from eachother about adopting, share exciting new demo's or
-              discuss any relevat topic like developer effectiveness, developer
+              from eachother about adopting, share exciting new demos or discuss
+              any relevat topic like developer effectiveness, developer
               experience, developer portals, etc.
             </Block.Paragraph>
 
@@ -126,8 +124,9 @@ const Background = props => {
             <Block.Title>Open Mic Meetup</Block.Title>
             <Block.Paragraph>
               A monthly casual get together of Backstage users sharing their
-              experiences and helping each other. Hosted by Roadie.io and
-              Frontside Software.
+              experiences and helping each other. Hosted by{' '}
+              <a href="https://roadie.io/">Roadie.io</a> and
+              <a href="https://frontside.com/">Frontside Software</a>.
               <br />
             </Block.Paragraph>
             <Block.LinkButton href="https://backstage-openmic.com/">
@@ -138,7 +137,7 @@ const Background = props => {
             <Block.Title>Backstage Weekly</Block.Title>
             <Block.Paragraph>
               A weekly newsletter with news, updates and things community from
-              your friends at Roadie.io
+              your friends at <a href="https://roadie.io/">Roadie.io</a>.
             </Block.Paragraph>
             <Block.LinkButton href="https://roadie.io/backstage-weekly/">
               Learn more
