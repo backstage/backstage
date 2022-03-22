@@ -124,7 +124,7 @@ export const buildTechInsightsContext = async <
     },
   });
 
-  factRetrieverEngine.schedule();
+  await factRetrieverEngine.schedule();
 
   if (factCheckerFactory) {
     const factChecker = factCheckerFactory.construct(

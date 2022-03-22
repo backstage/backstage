@@ -27,11 +27,9 @@ export const buildTechInsightsContext: <
 ) => Promise<TechInsightsContext<CheckType, CheckResultType>>;
 
 // @public
-export function createFactRetrieverRegistration({
-  cadence,
-  factRetriever,
-  lifecycle,
-}: FactRetrieverRegistrationOptions): FactRetrieverRegistration;
+export function createFactRetrieverRegistration(
+  options: FactRetrieverRegistrationOptions,
+): FactRetrieverRegistration;
 
 // @public
 export function createRouter<

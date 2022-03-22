@@ -41,11 +41,9 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
 
     // check if task exists
     const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
-      .count({ count: '*' })
+      .select(knex.raw(1))
       .where('id', '=', id);
-
-    // validate the task exists
-    if (rows[0].count !== 1) {
+    if (rows.length !== 1) {
       throw new NotFoundError(`Task ${id} does not exist`);
     }
 
@@ -56,7 +54,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
         next_run_start_at: knex.fn.now(),
       });
     if (updatedRows < 1) {
-      throw new ConflictError(`task ${id} is currently running`);
+      throw new ConflictError(`Task ${id} is currently running`);
     }
   }
 

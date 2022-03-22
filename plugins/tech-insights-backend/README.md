@@ -35,6 +35,7 @@ export default async function createPlugin(
     config: env.config,
     database: env.database,
     discovery: env.discovery,
+    scheduler: env.scheduler,
     factRetrievers: [], // Fact retrievers registrations you want tech insights to use
   });
 
