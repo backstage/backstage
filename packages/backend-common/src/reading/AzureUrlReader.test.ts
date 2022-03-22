@@ -130,7 +130,7 @@ describe('AzureUrlReader', () => {
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
-        error: 'Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+        error: 'Invalid URL',
       },
       {
         url: '',
