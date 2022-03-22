@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
+import { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
+import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
 type Transforms = {
   loaders: ModuleOptions['rules'];
@@ -29,9 +30,7 @@ type TransformOptions = {
 };
 
 export const transforms = (options: TransformOptions): Transforms => {
-  const { isDev, isBackend } = options;
-
-  const extraTransforms = isDev && !isBackend ? ['react-hot-loader'] : [];
+  const { isDev } = options;
 
   // This ensures that styles inserted from the style-loader and any
   // async style chunks are always given lower priority than JSS styles.
@@ -54,22 +53,52 @@ export const transforms = (options: TransformOptions): Transforms => {
     {
       test: /\.(tsx?)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
-      options: {
-        transforms: ['typescript', 'jsx', ...extraTransforms],
-        disableESTransforms: true,
-        production: !isDev,
-      },
+      use: [
+        {
+          loader: 'swc-loader',
+          options: {
+            env: { mode: 'usage' },
+            jsc: {
+              parser: {
+                syntax: 'typescript',
+                tsx: true,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                  refresh: isDev,
+                },
+              },
+            },
+          },
+        },
+      ],
     },
     {
       test: /\.(jsx?|mjs|cjs)$/,
       exclude: /node_modules/,
-      loader: require.resolve('@sucrase/webpack-loader'),
-      options: {
-        transforms: ['jsx', ...extraTransforms],
-        disableESTransforms: true,
-        production: !isDev,
-      },
+      use: [
+        {
+          loader: 'swc-loader',
+          options: {
+            env: { mode: 'usage' },
+            jsc: {
+              parser: {
+                syntax: 'ecmascript',
+                jsx: true,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                  refresh: isDev,
+                },
+              },
+            },
+          },
+        },
+      ],
     },
     {
       test: /\.(js|mjs|cjs)/,
@@ -83,7 +112,7 @@ export const transforms = (options: TransformOptions): Transforms => {
         {
           loader: require.resolve('@sucrase/webpack-loader'),
           options: {
-            transforms: ['jsx', ...extraTransforms],
+            transforms: ['jsx'],
             disableESTransforms: true,
             production: !isDev,
           },
@@ -151,7 +180,7 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(new webpack.HotModuleReplacementPlugin());
+    plugins.push(new ReactRefreshPlugin());
   } else {
     plugins.push(
       new MiniCssExtractPlugin({
