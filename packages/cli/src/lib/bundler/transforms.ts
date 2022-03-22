@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ModuleOptions, WebpackPluginInstance } from 'webpack';
+import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
@@ -181,6 +181,7 @@ export const transforms = (options: TransformOptions): Transforms => {
 
   if (isDev) {
     plugins.push(new ReactRefreshPlugin());
+    // plugins.push(new webpack.HotModuleReplacementPlugin());
   } else {
     plugins.push(
       new MiniCssExtractPlugin({

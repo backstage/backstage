@@ -121,7 +121,7 @@
     "tar": "^6.1.2",
     "terser-webpack-plugin": "^5.1.3",
     "util": "^0.12.3",
-    "webpack": "^5.66.0",
+    "webpack": "^5.70.0",
     "webpack-dev-server": "^4.7.3",
     "webpack-node-externals": "^3.0.0",
     "yaml": "^2.0.0",
