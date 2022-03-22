@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- e0a51384ac: build(deps): bump `ajv` from 7.0.3 to 8.10.0
+
 ## 1.0.0
 
 ### Major Changes

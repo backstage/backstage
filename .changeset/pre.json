@@ -139,5 +139,34 @@
     "@backstage/plugin-user-settings": "0.4.2",
     "@backstage/plugin-xcmetrics": "0.2.23"
   },
-  "changesets": []
+  "changesets": [
+    "dependabot-2b68456",
+    "eleven-pens-collect",
+    "empty-pens-invent",
+    "fair-lamps-leave",
+    "fast-cheetahs-grow",
+    "happy-foxes-arrive",
+    "happy-mugs-camp",
+    "khaki-pears-march",
+    "large-coins-arrive",
+    "light-drinks-rule",
+    "mean-pumas-search",
+    "modern-pumas-join",
+    "moody-pigs-rush",
+    "ninety-fishes-vanish",
+    "olive-geese-chew",
+    "purple-boats-punch",
+    "red-snakes-float",
+    "rich-maps-hear",
+    "silent-bobcats-matter",
+    "silver-pots-call",
+    "smart-phones-exist",
+    "techdocs-coats-obey",
+    "techdocs-head-shoulders-knees-toes",
+    "thick-comics-fold",
+    "tidy-emus-stare",
+    "wicked-beds-return",
+    "wicked-feet-clap",
+    "yellow-hats-remember"
+  ]
 }

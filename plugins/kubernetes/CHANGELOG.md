@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.4-next.0
+
+### Patch Changes
+
+- f616d99f6f: Fix division by zero in currentToDeclaredResourceToPerc when pod resources weren't set
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+  - @backstage/plugin-kubernetes-common@0.2.9-next.0
+
 ## 0.6.3
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 6ad0c45648: Added an experimental `package fix` command which applies automated fixes to the target package. The initial fix that is available is to add missing monorepo dependencies to the target package.
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 948a56f401: Added a new experimental `repo list-deprecations` command, which scans the entire project for usage of deprecated APIs.
+- Updated dependencies
+  - @backstage/config-loader@1.0.1-next.0
+
 ## 0.16.0
 
 ### Minor Changes

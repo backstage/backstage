@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.9.3-next.0
+
+### Patch Changes
+
+- 19648d5cf5: fix support config ref to use backstage/backstage
+
 ## 0.9.2
 
 ### Patch Changes

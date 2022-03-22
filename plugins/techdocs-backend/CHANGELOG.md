@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 7762d54200: Fixed a bug affecting those with cache enabled that would result in empty content being cached if the first attempt to load a static asset from storage were made via a `HEAD` request, rather than a `GET` request.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-search-common@0.3.3-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-techdocs-node@1.0.1-next.0
+  - @backstage/plugin-catalog-common@1.0.1-next.0
+
 ## 1.0.0
 
 ### Major Changes

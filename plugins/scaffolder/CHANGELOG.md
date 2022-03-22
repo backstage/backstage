@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- d34900af81: Added a new `NextScaffolderRouter` which will eventually replace the exiting router
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-scaffolder-common@1.0.1-next.0
+  - @backstage/integration-react@1.0.1-next.0
+  - @backstage/plugin-catalog-common@1.0.1-next.0
+
 ## 1.0.0
 
 ### Major Changes
