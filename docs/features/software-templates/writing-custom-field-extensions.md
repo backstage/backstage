@@ -68,7 +68,7 @@ export const myCustomValidation = (
 ```
 
 ```tsx
-// packages/app/src/scaffolder/MyCustomExtension/extensions.ts
+// packages/app/src/scaffolder/MyCustomExtension/extension.ts
 
 /*
   This is where the magic happens and creates the custom field extension.
@@ -118,6 +118,7 @@ const routes = (
 Should look something like this instead:
 
 ```tsx
+import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder';
 import { MyCustomFieldExtension } from './scaffolder/MyCustomExtension';
 const routes = (
   <FlatRoutes>
