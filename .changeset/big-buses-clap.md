@@ -2,4 +2,4 @@
 '@backstage/plugin-bazaar': patch
 ---
 
-using identity token as authz header in bazaar for api calls to backend
+Pass authorization header with Backstage token to backend requests.
