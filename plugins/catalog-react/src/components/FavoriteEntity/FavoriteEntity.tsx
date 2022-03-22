@@ -43,6 +43,7 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
   );
   return (
     <IconButton
+      aria-label="favorite"
       color="inherit"
       {...props}
       onClick={() => toggleStarredEntity()}

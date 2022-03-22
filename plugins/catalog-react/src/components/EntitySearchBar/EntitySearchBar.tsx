@@ -69,6 +69,7 @@ export const EntitySearchBar = () => {
     <Toolbar className={classes.searchToolbar}>
       <FormControl>
         <Input
+          aria-label="search"
           id="input-with-icon-adornment"
           className={classes.input}
           placeholder="Search"
