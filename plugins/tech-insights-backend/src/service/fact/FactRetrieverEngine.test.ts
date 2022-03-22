@@ -194,7 +194,7 @@ describe('FactRetrieverEngine', () => {
       }
 
       engine = await createEngine(databaseId, insertCallback, () => {});
-      engine.schedule();
+      await engine.schedule();
       const job: FactRetrieverRegistration = engine.getJobRegistration(
         testFactRetriever.id,
       );

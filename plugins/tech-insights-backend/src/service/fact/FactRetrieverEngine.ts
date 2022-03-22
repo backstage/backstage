@@ -39,7 +39,7 @@ function duration(startTimestamp: [number, number]): string {
 }
 
 export class FactRetrieverEngine {
-  constructor(
+  private constructor(
     private readonly repository: TechInsightsStore,
     private readonly factRetrieverRegistry: FactRetrieverRegistry,
     private readonly factRetrieverContext: FactRetrieverContext,
@@ -49,14 +49,7 @@ export class FactRetrieverEngine {
     private readonly defaultTimeout?: Duration,
   ) {}
 
-  static async create({
-    repository,
-    factRetrieverRegistry,
-    factRetrieverContext,
-    scheduler,
-    defaultCadence,
-    defaultTimeout,
-  }: {
+  static async create(options: {
     repository: TechInsightsStore;
     factRetrieverRegistry: FactRetrieverRegistry;
     factRetrieverContext: FactRetrieverContext;
@@ -64,6 +57,15 @@ export class FactRetrieverEngine {
     defaultCadence?: string;
     defaultTimeout?: Duration;
   }) {
+    const {
+      repository,
+      factRetrieverRegistry,
+      factRetrieverContext,
+      scheduler,
+      defaultCadence,
+      defaultTimeout,
+    } = options;
+
     await Promise.all(
       factRetrieverRegistry
         .listRetrievers()
@@ -81,31 +83,35 @@ export class FactRetrieverEngine {
     );
   }
 
-  schedule() {
+  async schedule() {
     const registrations = this.factRetrieverRegistry.listRegistrations();
     const newRegs: string[] = [];
-    registrations.forEach(async registration => {
-      const { factRetriever, cadence, lifecycle, timeout } = registration;
-      const cronExpression =
-        cadence || this.defaultCadence || randomDailyCron();
-      const timeLimit =
-        timeout || this.defaultTimeout || Duration.fromObject({ minutes: 5 });
-      try {
-        await this.scheduler.scheduleTask({
-          id: factRetriever.id,
-          frequency: { cron: cronExpression },
-          fn: this.createFactRetrieverHandler(factRetriever, lifecycle),
-          timeout: timeLimit,
-        });
-      } catch (e) {
-        throw new Error(
-          `Failed to schedule fact retriever ${factRetriever.id}, ${e}`,
-        );
-      }
-      newRegs.push(factRetriever.id);
-    });
+
+    await Promise.all(
+      registrations.map(async registration => {
+        const { factRetriever, cadence, lifecycle, timeout } = registration;
+        const cronExpression =
+          cadence || this.defaultCadence || randomDailyCron();
+        const timeLimit =
+          timeout || this.defaultTimeout || Duration.fromObject({ minutes: 5 });
+        try {
+          await this.scheduler.scheduleTask({
+            id: factRetriever.id,
+            frequency: { cron: cronExpression },
+            fn: this.createFactRetrieverHandler(factRetriever, lifecycle),
+            timeout: timeLimit,
+          });
+          newRegs.push(factRetriever.id);
+        } catch (e) {
+          this.logger.warn(
+            `Failed to schedule fact retriever ${factRetriever.id}, ${e}`,
+          );
+        }
+      }),
+    );
+
     this.logger.info(
-      `Scheduled ${newRegs.length} fact retrievers to Fact Retriever Engine through Backend Tasks`,
+      `Scheduled ${newRegs.length}/${registrations.length} fact retrievers into the tech-insights engine`,
     );
   }
 
@@ -114,7 +120,7 @@ export class FactRetrieverEngine {
   }
 
   async triggerJob(ref: string): Promise<void> {
-    return this.scheduler.triggerTask(ref);
+    await this.scheduler.triggerTask(ref);
   }
 
   private createFactRetrieverHandler(
