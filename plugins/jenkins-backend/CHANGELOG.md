@@ -1,5 +1,17 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.20-next.0
+
+### Patch Changes
+
+- 71f8708f00: Make `resourceRef` required in `JenkinsApi` to match usage.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-auth-node@0.2.0-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-jenkins-common@0.1.3-next.0
+
 ## 0.1.19
 
 ### Patch Changes

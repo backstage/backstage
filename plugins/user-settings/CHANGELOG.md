@@ -1,5 +1,16 @@
 # @backstage/plugin-user-settings
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- cf647f6a72: Wired up the OneLogin provider to be visible in the Settings UI when configured correctly.
+
+  Previously it wasn't visible at all.
+
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.0
+
 ## 0.4.2
 
 ### Patch Changes

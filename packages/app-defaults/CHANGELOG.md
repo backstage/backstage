@@ -1,5 +1,13 @@
 # @backstage/app-defaults
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+
 ## 1.0.0
 
 ### Major Changes

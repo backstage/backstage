@@ -1,5 +1,12 @@
 # @backstage/core-app-api
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- a7bb762dab: fixed empty body issue for POST requests using FetchAPI with 'plugin://' prefix
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+
 ## 1.0.0
 
 ### Major Changes

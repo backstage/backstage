@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- fe53fe97d7: Fix permalink scrolling for anchors where the id starts with a number.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-search@0.7.5-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+  - @backstage/integration-react@1.0.1-next.0
+
 ## 1.0.0
 
 ### Major Changes
