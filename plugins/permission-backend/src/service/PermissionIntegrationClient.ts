@@ -17,11 +17,13 @@
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  ConditionalPolicyDecision,
+} from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
-  ConditionalPolicyDecision,
 } from '@backstage/plugin-permission-node';
 
 const responseSchema = z.object({

@@ -51,6 +51,46 @@ export enum AuthorizeResult {
 }
 
 /**
+ * A definitive decision returned by the {@link @backstage/plugin-permission-node#PermissionPolicy}.
+ *
+ * @remarks
+ *
+ * This indicates that the policy unconditionally allows (or denies) the request.
+ *
+ * @public
+ */
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
+
+/**
+ * A conditional decision returned by the {@link @backstage/plugin-permission-node#PermissionPolicy}.
+ *
+ * @remarks
+ *
+ * This indicates that the policy allows authorization for the request, given that the returned
+ * conditions hold when evaluated. The conditions will be evaluated by the corresponding plugin
+ * which knows about the referenced permission rules.
+ *
+ * @public
+ */
+export type ConditionalPolicyDecision = {
+  result: AuthorizeResult.CONDITIONAL;
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+};
+
+/**
+ * A decision returned by the {@link @backstage/plugin-permission-node#PermissionPolicy}.
+ *
+ * @public
+ */
+export type PolicyDecision =
+  | DefinitivePolicyDecision
+  | ConditionalPolicyDecision;
+
+/**
  * An individual authorization request for {@link PermissionClient#authorize}.
  * @public
  */
