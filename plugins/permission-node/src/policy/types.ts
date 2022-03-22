@@ -15,26 +15,24 @@
  */
 
 import {
-  EvaluatePermissionRequest,
+  Permission,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 
 /**
- * An authorization request to be evaluated by the {@link PermissionPolicy}.
+ * A query to be evaluated by the {@link PermissionPolicy}.
  *
  * @remarks
  *
- * This differs from {@link @backstage/permission-common#AuthorizeQuery} in that `resourceRef`
- * should never be provided. This forces policies to be written in a way that's compatible with
- * filtering collections of resources at data load time.
+ * Unlike other parts of the permission API, the policy does not accept a resource ref. This keeps
+ * the policy decoupled from the resource loading and condition applying logic.
  *
  * @public
  */
-export type PolicyAuthorizeQuery = Omit<
-  EvaluatePermissionRequest,
-  'resourceRef'
->;
+export type PolicyQuery = {
+  permission: Permission;
+};
 
 /**
  * A policy to evaluate authorization requests for any permissioned action performed in Backstage.
@@ -54,7 +52,7 @@ export type PolicyAuthorizeQuery = Omit<
  */
 export interface PermissionPolicy {
   handle(
-    request: PolicyAuthorizeQuery,
+    request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }
