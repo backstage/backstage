@@ -7,8 +7,6 @@ import { AnalyticsApi } from '@backstage/core-plugin-api';
 import { AnalyticsEvent } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AuthorizeDecision } from '@backstage/plugin-permission-common';
-import { AuthorizeQuery } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
@@ -18,6 +16,8 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/core-plugin-api';
 import { ErrorApiError } from '@backstage/core-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
+import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -150,11 +150,13 @@ export interface MockFetchApiOptions {
 export class MockPermissionApi implements PermissionApi {
   constructor(
     requestHandler?: (
-      request: AuthorizeQuery,
+      request: EvaluatePermissionRequest,
     ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY,
   );
   // (undocumented)
-  authorize(request: AuthorizeQuery): Promise<AuthorizeDecision>;
+  authorize(
+    request: EvaluatePermissionRequest,
+  ): Promise<EvaluatePermissionResponse>;
 }
 
 // @public

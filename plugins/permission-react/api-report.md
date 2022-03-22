@@ -4,11 +4,11 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AuthorizeDecision } from '@backstage/plugin-permission-common';
-import { AuthorizeQuery } from '@backstage/plugin-permission-common';
 import { ComponentProps } from 'react';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ReactElement } from 'react';
@@ -25,7 +25,9 @@ export type AsyncPermissionResult = {
 // @public
 export class IdentityPermissionApi implements PermissionApi {
   // (undocumented)
-  authorize(request: AuthorizeQuery): Promise<AuthorizeDecision>;
+  authorize(
+    request: EvaluatePermissionRequest,
+  ): Promise<EvaluatePermissionResponse>;
   // (undocumented)
   static create(options: {
     config: Config;
@@ -36,7 +38,9 @@ export class IdentityPermissionApi implements PermissionApi {
 
 // @public
 export type PermissionApi = {
-  authorize(request: AuthorizeQuery): Promise<AuthorizeDecision>;
+  authorize(
+    request: EvaluatePermissionRequest,
+  ): Promise<EvaluatePermissionResponse>;
 };
 
 // @public
