@@ -96,6 +96,7 @@ export class DocsSynchronizer {
     });
 
     taskLogger.add(new winston.transports.Stream({ stream: logStream }));
+    taskLogger.add(this.logger);
 
     // check if the last update check was too recent
     if (!shouldCheckForUpdate(entity.metadata.uid!)) {
