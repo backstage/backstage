@@ -79,6 +79,8 @@ export const EntityRelationsGraph = ({
   relationPairs = ALL_RELATION_PAIRS,
   className,
   zoom = 'enabled',
+  renderNode,
+  renderLabel,
 }: {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number;
@@ -91,6 +93,8 @@ export const EntityRelationsGraph = ({
   relationPairs?: RelationPairs;
   className?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
+  renderNode?: any;
+  renderLabel?: any;
 }) => {
   const theme = useTheme();
   const classes = useStyles();
@@ -127,8 +131,8 @@ export const EntityRelationsGraph = ({
         <DependencyGraph
           nodes={nodes}
           edges={edges}
-          renderNode={CustomNode}
-          renderLabel={CustomLabel}
+          renderNode={renderNode || CustomNode}
+          renderLabel={renderLabel || CustomLabel}
           direction={direction}
           className={classes.graph}
           paddingX={theme.spacing(4)}
