@@ -16,10 +16,10 @@
 
 import {
   AuthorizeResult,
+  ConditionalPolicyDecision,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { ConditionalPolicyDecision } from '../policy';
 import { PermissionRule } from '../types';
 import { createConditionFactory } from './createConditionFactory';
 

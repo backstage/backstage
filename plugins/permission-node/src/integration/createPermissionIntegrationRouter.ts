@@ -21,6 +21,7 @@ import { InputError } from '@backstage/errors';
 import { errorHandler } from '@backstage/backend-common';
 import {
   AuthorizeResult,
+  DefinitivePolicyDecision,
   IdentifiedPermissionMessage,
   PermissionCondition,
   PermissionCriteria,
@@ -32,7 +33,6 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
-import { DefinitivePolicyDecision } from '../policy/types';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
