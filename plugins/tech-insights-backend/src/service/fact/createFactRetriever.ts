@@ -61,11 +61,10 @@ export type FactRetrieverRegistrationOptions = {
  * \{ maxItems: 7 \} -- This fact retriever will leave 7 newest items in the database when it is run
  *
  */
-export function createFactRetrieverRegistration({
-  cadence,
-  factRetriever,
-  lifecycle,
-}: FactRetrieverRegistrationOptions): FactRetrieverRegistration {
+export function createFactRetrieverRegistration(
+  options: FactRetrieverRegistrationOptions,
+): FactRetrieverRegistration {
+  const { cadence, factRetriever, lifecycle } = options;
   return {
     cadence,
     factRetriever,
