@@ -19,7 +19,7 @@ import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
 import {
-  AuthorizeQuery,
+  EvaluatePermissionRequest,
   AuthorizeResult,
   IdentifiedPermissionMessage,
 } from './types/api';
@@ -59,7 +59,7 @@ describe('PermissionClient', () => {
 
     const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
       const responses = req.body.items.map(
-        (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+        (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
           id: a.id,
           result: AuthorizeResult.ALLOW,
         }),
@@ -147,7 +147,7 @@ describe('PermissionClient', () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.items.map(
-            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
               id: a.id,
               outcome: AuthorizeResult.ALLOW,
             }),
@@ -165,7 +165,7 @@ describe('PermissionClient', () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.map(
-            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
               id: a.id,
               result: AuthorizeResult.DENY,
             }),
@@ -189,7 +189,7 @@ describe('PermissionClient', () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.map(
-            (a: IdentifiedPermissionMessage<AuthorizeQuery>) => ({
+            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
               id: a.id,
               outcome: AuthorizeResult.DENY,
             }),

@@ -91,21 +91,6 @@ export type PolicyDecision =
   | ConditionalPolicyDecision;
 
 /**
- * An individual authorization request for {@link PermissionClient#authorize}.
- * @public
- */
-export type AuthorizeQuery = {
-  permission: Permission;
-  resourceRef?: string;
-};
-
-/**
- * A batch of authorization requests from {@link PermissionClient#authorize}.
- * @public
- */
-export type AuthorizeRequest = PermissionMessageBatch<AuthorizeQuery>;
-
-/**
  * A condition returned with a CONDITIONAL authorization response.
  *
  * Conditions are a reference to a rule defined by a plugin, and parameters to apply the rule. For
@@ -159,10 +144,26 @@ export type PermissionCriteria<TQuery> =
   | TQuery;
 
 /**
- * An individual authorization response from {@link PermissionClient#authorize}.
+ * An individual request sent to the permission backend.
  * @public
  */
-export type AuthorizeDecision =
+export type EvaluatePermissionRequest = {
+  permission: Permission;
+  resourceRef?: string;
+};
+
+/**
+ * A batch of requests sent to the permission backend.
+ * @public
+ */
+export type EvaluatePermissionRequestBatch =
+  PermissionMessageBatch<EvaluatePermissionRequest>;
+
+/**
+ * An individual response from the permission backend.
+ * @public
+ */
+export type EvaluatePermissionResponse =
   | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
   | {
       result: AuthorizeResult.CONDITIONAL;
@@ -170,7 +171,8 @@ export type AuthorizeDecision =
     };
 
 /**
- * A batch of authorization responses from {@link PermissionClient#authorize}.
+ * A batch of responses the permission backend.
  * @public
  */
-export type AuthorizeResponse = PermissionMessageBatch<AuthorizeDecision>;
+export type EvaluatePermissionResponseBatch =
+  PermissionMessageBatch<EvaluatePermissionResponse>;

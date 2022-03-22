@@ -18,8 +18,8 @@ import { compact, zipObject } from 'lodash';
 import qs from 'qs';
 import DataLoader from 'dataloader';
 import {
-  AuthorizeDecision,
-  AuthorizeQuery,
+  EvaluatePermissionResponse,
+  EvaluatePermissionRequest,
   AuthorizeResult,
   isResourcePermission,
   PermissionAuthorizer,
@@ -90,7 +90,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     const queryStartTime = Date.now();
 
     const authorizer = new DataLoader(
-      (requests: readonly AuthorizeQuery[]) =>
+      (requests: readonly EvaluatePermissionRequest[]) =>
         this.permissions.authorize(requests.slice(), options),
       {
         // Serialize the permission name and resourceRef as
@@ -185,8 +185,11 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
   private async filterResults(
     results: IndexableResult[],
-    typeDecisions: Record<string, AuthorizeDecision>,
-    authorizer: DataLoader<AuthorizeQuery, AuthorizeDecision>,
+    typeDecisions: Record<string, EvaluatePermissionResponse>,
+    authorizer: DataLoader<
+      EvaluatePermissionRequest,
+      EvaluatePermissionResponse
+    >,
   ) {
     return compact(
       await Promise.all(

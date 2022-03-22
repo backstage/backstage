@@ -30,11 +30,11 @@ import {
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  AuthorizeDecision,
-  AuthorizeQuery,
+  EvaluatePermissionResponse,
+  EvaluatePermissionRequest,
   IdentifiedPermissionMessage,
-  AuthorizeRequest,
-  AuthorizeResponse,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponseBatch,
   isResourcePermission,
   PermissionAttributes,
 } from '@backstage/plugin-permission-common';
@@ -73,16 +73,18 @@ const permissionSchema = z.union([
   }),
 ]);
 
-const querySchema: z.ZodSchema<IdentifiedPermissionMessage<AuthorizeQuery>> =
-  z.object({
-    id: z.string(),
-    resourceRef: z.string().optional(),
-    permission: permissionSchema,
-  });
-
-const requestSchema: z.ZodSchema<AuthorizeRequest> = z.object({
-  items: z.array(querySchema),
+const evaluatePermissionRequestSchema: z.ZodSchema<
+  IdentifiedPermissionMessage<EvaluatePermissionRequest>
+> = z.object({
+  id: z.string(),
+  resourceRef: z.string().optional(),
+  permission: permissionSchema,
 });
+
+const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
+  z.object({
+    items: z.array(evaluatePermissionRequestSchema),
+  });
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -99,12 +101,12 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  requests: IdentifiedPermissionMessage<AuthorizeQuery>[],
+  requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[],
   user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
-): Promise<IdentifiedPermissionMessage<AuthorizeDecision>[]> => {
+): Promise<IdentifiedPermissionMessage<EvaluatePermissionResponse>[]> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -184,15 +186,17 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<AuthorizeRequest>,
-      res: Response<AuthorizeResponse>,
+      req: Request<EvaluatePermissionRequestBatch>,
+      res: Response<EvaluatePermissionResponseBatch>,
     ) => {
       const token = getBearerTokenFromAuthorizationHeader(
         req.header('authorization'),
       );
       const user = token ? await identity.authenticate(token) : undefined;
 
-      const parseResult = requestSchema.safeParse(req.body);
+      const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
+        req.body,
+      );
 
       if (!parseResult.success) {
         throw new InputError(parseResult.error.toString());
