@@ -152,7 +152,6 @@ describe('detectRoleFromPackage', () => {
           lint: 'backstage-cli lint',
           test: 'backstage-cli test',
           clean: 'backstage-cli clean',
-          'migrate:create': 'knex migrate:make -x ts',
         },
       }),
     ).toEqual('backend');
