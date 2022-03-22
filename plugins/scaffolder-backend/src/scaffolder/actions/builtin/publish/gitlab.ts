@@ -40,7 +40,7 @@ export function createPublishGitlabAction(options: {
     repoVisibility?: 'private' | 'internal' | 'public';
     sourcePath?: string;
     token?: string;
-    defaultCommitMessage?: string;
+    gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
   }>({
@@ -66,10 +66,10 @@ export function createPublishGitlabAction(options: {
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
           },
-          defaultCommitMessage: {
-            title: 'Default Commit Message',
+          gitCommitMessage: {
+            title: 'Git Commit Message',
             type: 'string',
-            description: `Sets the default commit message on the repository. The default value is 'initial commit'`,
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
           },
           gitAuthorName: {
             title: 'Default Author Name',
@@ -113,7 +113,7 @@ export function createPublishGitlabAction(options: {
         repoUrl,
         repoVisibility = 'private',
         defaultBranch = 'master',
-        defaultCommitMessage = 'initial commit',
+        gitCommitMessage = 'initial commit',
         gitAuthorName,
         gitAuthorEmail,
       } = ctx.input;
@@ -182,8 +182,8 @@ export function createPublishGitlabAction(options: {
           password: token,
         },
         logger: ctx.logger,
-        commitMessage: defaultCommitMessage
-          ? defaultCommitMessage
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
           : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
