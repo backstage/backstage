@@ -30,7 +30,6 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
   },
   footer: {
-    padding: theme.spacing(1, 1),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'right',
@@ -50,12 +49,15 @@ export const Stepper = (props: StepperProps) => {
   const { steps } = props.manifest;
   const [activeStep, setActiveStep] = useState(0);
   const styles = useStyles();
-  const handleBack = () => {};
-  const handleNext = () => {};
-
+  const handleBack = () => {
+    setActiveStep(prevActiveStep => prevActiveStep - 1);
+  };
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  };
   return (
     <>
-      <MuiStepper activeStep={0} alternativeLabel>
+      <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">
         {steps.map((step, index) => (
           <MuiStep key={index}>
             <MuiStepLabel>{step.title}</MuiStepLabel>
@@ -63,15 +65,24 @@ export const Stepper = (props: StepperProps) => {
         ))}
       </MuiStepper>
       <div className={styles.formWrapper}>
-        <Form schema={steps[activeStep].schema} />
-      </div>
-      <div className={styles.footer}>
-        <Button onClick={handleBack} className={styles.backButton}>
-          Back
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleNext}>
-          {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-        </Button>
+        <Form
+          schema={steps[activeStep].schema}
+          onSubmit={handleNext}
+          showErrorList={false}
+        >
+          <div className={styles.footer}>
+            <Button
+              onClick={handleBack}
+              className={styles.backButton}
+              disabled={activeStep < 1}
+            >
+              Back
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              {activeStep === steps.length - 1 ? 'Review' : 'Next'}
+            </Button>
+          </div>
+        </Form>
       </div>
     </>
   );
