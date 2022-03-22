@@ -15,12 +15,6 @@
  */
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
-import {
-  techdocsApiRef,
-  TechDocsEntityMetadata,
-  TechDocsMetadata,
-} from '@backstage/plugin-techdocs';
 import React, {
   createContext,
   Dispatch,
@@ -29,9 +23,16 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import { TechDocsAddonAsyncMetadata } from './types';
+import { AsyncState } from 'react-use/lib/useAsync';
+import {
+  TechDocsAddonAsyncMetadata,
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+} from './types';
 
+type PropsWithAsyncMetadata<TMetadata> = PropsWithChildren<{
+  asyncValue: AsyncState<TMetadata>;
+}>;
 type PropsWithEntityName = PropsWithChildren<{ entityName: CompoundEntityRef }>;
 
 const initialContextValue = {
@@ -46,17 +47,11 @@ const TechDocsMetadataContext =
   );
 
 export const TechDocsMetadataProvider = ({
-  entityName,
+  asyncValue,
   children,
-}: PropsWithEntityName) => {
-  const techdocsApi = useApi(techdocsApiRef);
-
-  const metadataResponse = useAsync(async () => {
-    return await techdocsApi.getTechDocsMetadata(entityName);
-  }, []);
-
+}: PropsWithAsyncMetadata<TechDocsMetadata>) => {
   return (
-    <TechDocsMetadataContext.Provider value={metadataResponse}>
+    <TechDocsMetadataContext.Provider value={asyncValue}>
       {children}
     </TechDocsMetadataContext.Provider>
   );
@@ -77,17 +72,11 @@ const TechDocsEntityContext =
   );
 
 export const TechDocsEntityProvider = ({
-  entityName,
+  asyncValue,
   children,
-}: PropsWithEntityName) => {
-  const techdocsApi = useApi(techdocsApiRef);
-
-  const metadataResponse = useAsync(async () => {
-    return await techdocsApi.getEntityMetadata(entityName);
-  }, []);
-
+}: PropsWithAsyncMetadata<TechDocsEntityMetadata>) => {
   return (
-    <TechDocsEntityContext.Provider value={metadataResponse}>
+    <TechDocsEntityContext.Provider value={asyncValue}>
       {children}
     </TechDocsEntityContext.Provider>
   );
