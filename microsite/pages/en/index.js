@@ -19,14 +19,16 @@ class Index extends React.Component {
     const { baseUrl } = siteConfig;
 
     return (
-      <main className="MainContent">
+      <main className="MainContent MainContent--gradient">
         <Banner.Container>
           <Banner.Dismissable storageKey="2022-03-16-newsletter-cta">
-            🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
-            <a href="https://mailchi.mp/spotify/backstage-community">
-              Newsletter
-            </a>
-            !
+            <div>
+              🗞️ Want to stay up to date with Backstage? Sign up for our{' '}
+              <a href="https://mailchi.mp/spotify/backstage-community">
+                Newsletter
+              </a>
+              !
+            </div>
           </Banner.Dismissable>
         </Banner.Container>
 
