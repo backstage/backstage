@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   feedback:
+    if: github.repository == 'backstage/backstage' # prevent running on forks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,6 +20,7 @@ jobs:
       - name: fetch base
         run: git fetch origin ${{ github.base_ref }}
 
+        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
       - name: Generate Feedback
         id: generate-feedback
         run: |
