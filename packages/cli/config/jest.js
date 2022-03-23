@@ -37,6 +37,7 @@ const transformIgnorePattern = [
   'react-dom',
   'highlight\\.js',
   'prismjs',
+  'json-schema',
   'react-use',
   'typescript',
 ].join('|');
