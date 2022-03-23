@@ -1,0 +1,84 @@
+name: Automate Changeset Feedback
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+permissions:
+  issues: write
+
+jobs:
+  feedback:
+    if: github.repository == 'backstage/backstage' # prevent running on forks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: fetch base
+        run: git fetch origin ${{ github.base_ref }}
+
+        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
+      - name: Generate Feedback
+        id: generate-feedback
+        run: |
+          wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-changeset-feedback.js 1>&2
+          node generate.js origin/${{ github.base_ref }} > feedback.txt
+
+      - name: Post Feedback
+        uses: actions/github-script@v5
+        env:
+          ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const owner = "backstage";
+            const repo = "backstage";
+            const marker = "<!-- changeset-feedback -->";
+            const feedback = require('fs').readFileSync('feedback.txt', 'utf8');
+            const issue_number = Number(process.env.ISSUE_NUMBER);
+            const body = feedback.trim() ? feedback + marker : undefined
+
+            const existingComments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+            });
+
+            const existingComment = existingComments.find((c) =>
+              c.user.login === "github-actions[bot]" &&
+              c.body.includes(marker)
+            );
+
+            if (existingComment) {
+              if (body) {
+                if (existingComment.body !== body) {
+                  console.log(`updating existing comment in #${issue_number}`);
+                  await github.rest.issues.updateComment({
+                    repo,
+                    owner,
+                    comment_id: existingComment.id,
+                    body,
+                  });
+                } else {
+                  console.log(`skipped update of identical comment in #${issue_number}`);
+                }
+              } else {
+                console.log(`removing comment from #${issue_number}`);
+                await github.rest.issues.deleteComment({
+                  repo,
+                  owner,
+                  comment_id: existingComment.id,
+                  body,
+                });
+              }
+            } else if (body) {
+              console.log(`creating comment for #${issue_number}`);
+              await github.rest.issues.createComment({
+                repo,
+                owner,
+                issue_number,
+                body,
+              });
+            }
