@@ -32,7 +32,7 @@ maintain, and find the documentation for all that software in Backstage.
 One place for everything. Accessible to everyone.
 
 Backstage was originally built by Spotify and then donated to the CNCF.
-Backstage is currently in the Sandbox phase. Read the announcement
-[here](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox).
+Backstage is currently in the Incubation phase. Read the announcement
+[here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
 
 <img src="https://backstage.io/img/cncf-white.svg" width="400" />

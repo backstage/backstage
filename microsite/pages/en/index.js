@@ -533,7 +533,7 @@ class Index extends React.Component {
               <a href="https://www.cncf.io">
                 Cloud Native Computing Foundation
               </a>{' '}
-              sandbox project
+              incubation project
               <div className="cncf-logo" />
             </Block.SmallTitle>
           </Block.Container>
