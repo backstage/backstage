@@ -16,17 +16,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.head_ref }}
+          # Fetch the commit that's merged into the base rather than the target ref
+          # This will let us diff only the contents of the PR, without fetching more history
+          ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
 
       - name: fetch base
-        run: git fetch origin ${{ github.base_ref }}
+        run: git fetch --depth 1 origin ${{ github.base_ref }}
 
         # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
       - name: Generate Feedback
         id: generate-feedback
         run: |
           wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-changeset-feedback.js 1>&2
-          node generate.js origin/${{ github.base_ref }} > feedback.txt
+          node generate.js FETCH_HEAD > feedback.txt
 
       - name: Post Feedback
         uses: actions/github-script@v5
