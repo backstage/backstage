@@ -16,8 +16,9 @@ const {
 const ondemandDirectory = require('path').join(process.cwd(), 'data/on-demand');
 const ondemandMetadata = fs
   .readdirSync(ondemandDirectory)
-  .map(file => yaml.load(fs.readFileSync(`./data/on-demand/${file}`, 'utf8')))
-  .reverse();
+  .sort()
+  .reverse()
+  .map(file => yaml.load(fs.readFileSync(`./data/on-demand/${file}`, 'utf8')));
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
 

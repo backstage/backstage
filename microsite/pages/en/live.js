@@ -36,7 +36,7 @@ const Background = props => {
             <iframe
               width="1280"
               height="720"
-              src="https://www.youtube.com/embed/OmXi6iwq5qo"
+              src="https://www.youtube.com/embed/mFi_X58igzk"
               title="YouTube video player"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -45,7 +45,7 @@ const Background = props => {
           </Block.Paragraph>
           <Block.TextBox>
             <iframe
-              src="https://www.youtube.com/live_chat?v=OmXi6iwq5qo&embed_domain=localhost&dark_theme=1"
+              src="https://www.youtube.com/live_chat?v=mFi_X58igzk&embed_domain=backstage.io&dark_theme=1"
               width="400px"
               height="680px"
             ></iframe>

@@ -62,8 +62,8 @@ const Background = props => {
               <br />
               Backstage Community Sessions is the monthly meetup where we all
               come together to listen to the latest maintainer updates, learn
-              from eachother about adopting, share exciting new demos or discuss
-              any relevat topic like developer effectiveness, developer
+              from each other about adopting, share exciting new demos or
+              discuss any relevant topic like developer effectiveness, developer
               experience, developer portals, etc.
             </Block.Paragraph>
 
