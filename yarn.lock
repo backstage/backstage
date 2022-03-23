@@ -4494,7 +4494,7 @@
     "@octokit/types" "^6.27.1"
     "@octokit/webhooks" "^9.0.1"
 
-"@octokit/auth-app@^3.3.0":
+"@octokit/auth-app@^3.3.0", "@octokit/auth-app@^3.4.0":
   version "3.6.1"
   resolved "https://registry.npmjs.org/@octokit/auth-app/-/auth-app-3.6.1.tgz#aa5b02cc211175cbc28ce6c03c73373c1206d632"
   integrity sha512-6oa6CFphIYI7NxxHrdVOzhG7hkcKyGyYocg7lNDSJVauVOLtylg8hNJzoUyPAYKKK0yUeoZamE/lMs2tG+S+JA==
@@ -4503,22 +4503,6 @@
     "@octokit/auth-oauth-user" "^1.2.3"
     "@octokit/request" "^5.6.0"
     "@octokit/request-error" "^2.1.0"
-    "@octokit/types" "^6.0.3"
-    "@types/lru-cache" "^5.1.0"
-    deprecation "^2.3.1"
-    lru-cache "^6.0.0"
-    universal-github-app-jwt "^1.0.1"
-    universal-user-agent "^6.0.0"
-
-"@octokit/auth-app@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.npmjs.org/@octokit/auth-app/-/auth-app-3.4.0.tgz#af9f68512e7b8dd071b49e1470a1ddf88ff6a3a3"
-  integrity sha512-zBVgTnLJb0uoNMGCpcDkkAbPeavHX7oAjJkaDv2nqMmsXSsCw4AbUhjl99EtJQG/JqFY/kLFHM9330Wn0k70+g==
-  dependencies:
-    "@octokit/auth-oauth-app" "^4.1.0"
-    "@octokit/auth-oauth-user" "^1.2.3"
-    "@octokit/request" "^5.4.11"
-    "@octokit/request-error" "^2.0.0"
     "@octokit/types" "^6.0.3"
     "@types/lru-cache" "^5.1.0"
     deprecation "^2.3.1"
@@ -4539,19 +4523,6 @@
     btoa-lite "^1.0.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/auth-oauth-app@^4.1.0":
-  version "4.1.2"
-  resolved "https://registry.npmjs.org/@octokit/auth-oauth-app/-/auth-oauth-app-4.1.2.tgz#bf3ff30c260e6e9f10b950386f279befb8fe907d"
-  integrity sha512-bdNGNRmuDJjKoHla3mUGtkk/xcxKngnQfBEnyk+7VwMqrABKvQB1wQRSrwSWkPPUX7Lcj2ttkPAPG7+iBkMRnw==
-  dependencies:
-    "@octokit/auth-oauth-device" "^3.1.1"
-    "@octokit/auth-oauth-user" "^1.2.1"
-    "@octokit/request" "^5.3.0"
-    "@octokit/types" "^6.0.3"
-    "@types/btoa-lite" "^1.0.0"
-    btoa-lite "^1.0.0"
-    universal-user-agent "^6.0.0"
-
 "@octokit/auth-oauth-device@^3.1.1":
   version "3.1.1"
   resolved "https://registry.npmjs.org/@octokit/auth-oauth-device/-/auth-oauth-device-3.1.1.tgz#380499f9a850425e2c7bdeb62afc070181c536a9"
@@ -4562,19 +4533,7 @@
     "@octokit/types" "^6.10.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/auth-oauth-user@^1.2.1", "@octokit/auth-oauth-user@^1.2.3":
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/@octokit/auth-oauth-user/-/auth-oauth-user-1.2.4.tgz#3594eb7d40cb462240e7e90849781dfa0045aed5"
-  integrity sha512-efOajupCZBP1veqx5w59Qey0lIud1rDUgxTRjjkQDU3eOBmkAasY1pXemDsQwW0I85jb1P/gn2dMejedVxf9kw==
-  dependencies:
-    "@octokit/auth-oauth-device" "^3.1.1"
-    "@octokit/oauth-methods" "^1.1.0"
-    "@octokit/request" "^5.4.14"
-    "@octokit/types" "^6.12.2"
-    btoa-lite "^1.0.0"
-    universal-user-agent "^6.0.0"
-
-"@octokit/auth-oauth-user@^1.3.0":
+"@octokit/auth-oauth-user@^1.2.1", "@octokit/auth-oauth-user@^1.2.3", "@octokit/auth-oauth-user@^1.3.0":
   version "1.3.0"
   resolved "https://registry.npmjs.org/@octokit/auth-oauth-user/-/auth-oauth-user-1.3.0.tgz#da4e4529145181a6aa717ae858afb76ebd6e3360"
   integrity sha512-3QC/TAdk7onnxfyZ24BnJRfZv8TRzQK7SEFUS9vLng4Vv6Hv6I64ujdk/CUkREec8lhrwU764SZ/d+yrjjqhaQ==
@@ -4696,11 +4655,6 @@
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-11.2.0.tgz#b38d7fc3736d52a1e96b230c1ccd4a58a2f400a6"
   integrity sha512-PBsVO+15KSlGmiI8QAzaqvsNlZlrDlyAJYcrXBCvVUxCp7VnXjkwPoFHgjEJXx3WF9BAwkA6nfCUA7i9sODzKA==
 
-"@octokit/openapi-types@^7.3.2":
-  version "7.3.2"
-  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-7.3.2.tgz#065ce49b338043ec7f741316ce06afd4d459d944"
-  integrity sha512-oJhK/yhl9Gt430OrZOzAl2wJqR0No9445vmZ9Ey8GjUZUpwuu/vmEFP0TDhDXdpGDoxD6/EIFHJEcY8nHXpDTA==
-
 "@octokit/plugin-enterprise-rest@^6.0.1":
   version "6.0.1"
   resolved "https://registry.npmjs.org/@octokit/plugin-enterprise-rest/-/plugin-enterprise-rest-6.0.1.tgz#e07896739618dab8da7d4077c658003775f95437"
@@ -4762,7 +4716,7 @@
     "@octokit/types" "^6.0.1"
     bottleneck "^2.15.3"
 
-"@octokit/request-error@^2.0.0", "@octokit/request-error@^2.0.2", "@octokit/request-error@^2.0.5", "@octokit/request-error@^2.1.0":
+"@octokit/request-error@^2.0.2", "@octokit/request-error@^2.0.5", "@octokit/request-error@^2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@octokit/request-error/-/request-error-2.1.0.tgz#9e150357831bfc788d13a4fd4b1913d60c74d677"
   integrity sha512-1VIvgXxs9WHSjicsRwq8PlR2LR2x6DwsJAaFgzdi0JfJoGSO8mYI/cHJQ+9FbN21aa+DrgNLnwObmyeSC8Rmpg==
@@ -4771,7 +4725,7 @@
     deprecation "^2.0.0"
     once "^1.4.0"
 
-"@octokit/request@^5.3.0", "@octokit/request@^5.4.11", "@octokit/request@^5.4.12", "@octokit/request@^5.4.14", "@octokit/request@^5.6.0":
+"@octokit/request@^5.3.0", "@octokit/request@^5.4.12", "@octokit/request@^5.4.14", "@octokit/request@^5.6.0":
   version "5.6.0"
   resolved "https://registry.npmjs.org/@octokit/request/-/request-5.6.0.tgz#6084861b6e4fa21dc40c8e2a739ec5eff597e672"
   integrity sha512-4cPp/N+NqmaGQwbh3vUsYqokQIzt7VjsgTYVXiwpUP2pxd5YiZB2XuTedbb0SPtv9XS7nzAKjAuQxmY8/aZkiA==
@@ -4810,14 +4764,7 @@
   dependencies:
     "@types/node" ">= 8"
 
-"@octokit/types@^6.0.0", "@octokit/types@^6.0.1", "@octokit/types@^6.0.3", "@octokit/types@^6.10.0", "@octokit/types@^6.12.2", "@octokit/types@^6.14.2", "@octokit/types@^6.16.1", "@octokit/types@^6.16.2", "@octokit/types@^6.8.2":
-  version "6.16.4"
-  resolved "https://registry.npmjs.org/@octokit/types/-/types-6.16.4.tgz#d24f5e1bacd2fe96d61854b5bda0e88cf8288dfe"
-  integrity sha512-UxhWCdSzloULfUyamfOg4dJxV9B+XjgrIZscI0VCbp4eNrjmorGEw+4qdwcpTsu6DIrm9tQsFQS2pK5QkqQ04A==
-  dependencies:
-    "@octokit/openapi-types" "^7.3.2"
-
-"@octokit/types@^6.26.0", "@octokit/types@^6.27.1", "@octokit/types@^6.34.0":
+"@octokit/types@^6.0.0", "@octokit/types@^6.0.1", "@octokit/types@^6.0.3", "@octokit/types@^6.10.0", "@octokit/types@^6.12.2", "@octokit/types@^6.14.2", "@octokit/types@^6.16.1", "@octokit/types@^6.16.2", "@octokit/types@^6.26.0", "@octokit/types@^6.27.1", "@octokit/types@^6.34.0", "@octokit/types@^6.8.2":
   version "6.34.0"
   resolved "https://registry.npmjs.org/@octokit/types/-/types-6.34.0.tgz#c6021333334d1ecfb5d370a8798162ddf1ae8218"
   integrity sha512-s1zLBjWhdEI2zwaoSgyOFoKSl109CUcVBCc7biPJ3aAf6LGLU6szDvi31JPU7bxfla2lqfhjbbg/5DdFNxOwHw==
