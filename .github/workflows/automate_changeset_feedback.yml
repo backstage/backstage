@@ -7,6 +7,7 @@ on:
 
 permissions:
   issues: write
+  pull-requests: write
 
 jobs:
   feedback:
@@ -33,7 +34,6 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:
-          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const owner = "backstage";
             const repo = "backstage";
