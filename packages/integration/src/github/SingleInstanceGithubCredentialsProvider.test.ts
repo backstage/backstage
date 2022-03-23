@@ -25,7 +25,7 @@ const octokit = {
   },
 };
 
-jest.doMock('@octokit/rest', () => {
+jest.mock('@octokit/rest', () => {
   class Octokit {
     constructor() {
       return octokit;
