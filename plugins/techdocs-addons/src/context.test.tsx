@@ -15,11 +15,7 @@
  */
 
 import React from 'react';
-import {
-  techdocsApiRef,
-  TechDocsApi,
-  TechDocsMetadata,
-} from '@backstage/plugin-techdocs';
+import { TechDocsMetadata } from './types';
 import {
   useEntityMetadata,
   useTechDocsMetadata,
@@ -31,7 +27,6 @@ import {
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { TestApiProvider } from '@backstage/test-utils';
 
 const mockEntity: Entity = {
   apiVersion: 'v1',
@@ -51,11 +46,6 @@ const mockShadowRoot = () => {
   return shadowRoot;
 };
 
-const techdocsApi: Partial<TechDocsApi> = {
-  getEntityMetadata: () => Promise.resolve(mockEntity),
-  getTechDocsMetadata: () => Promise.resolve(mockTechDocsMetadata),
-};
-
 const wrapper = ({
   entityName = {
     namespace: mockEntity.metadata.namespace!!,
@@ -67,15 +57,25 @@ const wrapper = ({
   entityName: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
-  <TestApiProvider apis={[[techdocsApiRef, techdocsApi]]}>
-    <TechDocsMetadataProvider entityName={entityName}>
-      <TechDocsEntityProvider entityName={entityName}>
-        <TechDocsReaderPageProvider entityName={entityName}>
-          {children}
-        </TechDocsReaderPageProvider>
-      </TechDocsEntityProvider>
-    </TechDocsMetadataProvider>
-  </TestApiProvider>
+  <TechDocsMetadataProvider
+    asyncValue={{
+      loading: false,
+      error: undefined,
+      value: mockTechDocsMetadata,
+    }}
+  >
+    <TechDocsEntityProvider
+      asyncValue={{
+        loading: false,
+        error: undefined,
+        value: mockEntity,
+      }}
+    >
+      <TechDocsReaderPageProvider entityName={entityName}>
+        {children}
+      </TechDocsReaderPageProvider>
+    </TechDocsEntityProvider>
+  </TechDocsMetadataProvider>
 );
 
 describe('context', () => {
@@ -87,12 +87,7 @@ describe('context', () => {
     });
 
     it('should return expected entity values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useEntityMetadata(),
-        { wrapper },
-      );
-
-      await waitForNextUpdate();
+      const { result } = renderHook(() => useEntityMetadata(), { wrapper });
 
       expect(result.current.value).toBeDefined();
       expect(result.current.error).toBeUndefined();
@@ -108,12 +103,8 @@ describe('context', () => {
     });
 
     it('should return expected techdocs metadata values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsMetadata(),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useTechDocsMetadata(), { wrapper });
 
-      await waitForNextUpdate();
       expect(result.current.value).toBeDefined();
       expect(result.current.error).toBeUndefined();
       expect(result.current.value).toMatchObject(mockTechDocsMetadata);

@@ -28,12 +28,6 @@ export {
 export * from './components';
 export { useEntityMetadata, useTechDocsMetadata } from './context';
 export { useShadowRoot, useShadowRootElements } from './hooks';
-export {
-  useEntityMetadata,
-  useTechDocsMetadata,
-  useShadowRoot,
-  useShadowRootElements,
-} from './context';
 export { TechDocsAddonLocations } from './types';
 export type {
   TechDocsAddonAsyncMetadata,
