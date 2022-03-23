@@ -2082,12 +2082,12 @@
     query-string "^7.0.0"
     xcase "^2.0.1"
 
-"@gitbeaker/core@^35.4.0":
-  version "35.4.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.4.0.tgz#ebc3e46f9d8e17f85f81ccfe163cffdcd429545a"
-  integrity sha512-VjRmC/j1umhn0+f+DbrbxXDAc0uvGd32tJ4MCFQYkxw9ndr/0Rlg8iYvYN/zWyqtgr3SeTxMyS3Z9MtbWWhjBA==
+"@gitbeaker/core@^35.5.0":
+  version "35.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.5.0.tgz#e744ca9115133f8070a40b3bbfedf5a11801d341"
+  integrity sha512-ExAIDoUWmaY/QBNoUNkxEvvg79kF9ccFkEoFnHdKYvrqX2517OJCSoWoslGt9/XaSEcE9sTm7lYZrCmqExXsWg==
   dependencies:
-    "@gitbeaker/requester-utils" "^35.4.0"
+    "@gitbeaker/requester-utils" "^35.5.0"
     form-data "^4.0.0"
     li "^1.3.0"
     mime "^3.0.0"
@@ -2095,12 +2095,12 @@
     xcase "^2.0.1"
 
 "@gitbeaker/node@^35.1.0":
-  version "35.4.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-35.4.0.tgz#096a28fd936dad9220625a917502063adf566acf"
-  integrity sha512-5isY4/ePtjIs7uFwVW8U5oNNwntyCa3eTs3+tb6CywtLGdlnenk0eNJjZ2Srn8xJOKsOCCpQkT5hP1AOKSAlAQ==
+  version "35.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-35.5.0.tgz#9cb38c6532cf8cb32e0de7fa8dac6327adaca471"
+  integrity sha512-gjGSqnNLNz4aP28dX8Cy97n7MtGUaSewoc+oJAkPDgpA0y4gWhgxpzEEwXrhhPsQA4Cxig0CLpPHMTi1Q1fVvg==
   dependencies:
-    "@gitbeaker/core" "^35.4.0"
-    "@gitbeaker/requester-utils" "^35.4.0"
+    "@gitbeaker/core" "^35.5.0"
+    "@gitbeaker/requester-utils" "^35.5.0"
     delay "^5.0.0"
     got "11.8.3"
     xcase "^2.0.1"
@@ -2114,10 +2114,10 @@
     qs "^6.10.1"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^35.4.0":
-  version "35.4.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-35.4.0.tgz#918be27441024c841d3f9e09c498e6b24de291e2"
-  integrity sha512-NkJ55oMM7TNMWUNnzeYLdLOIUFv1LBBN/PCM2u7J5+67gpck03YfWAkgrODIqBePFyrfm19pdka3SUlNBP0G2g==
+"@gitbeaker/requester-utils@^35.5.0":
+  version "35.5.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-35.5.0.tgz#22fb09698da018607c9ce70a62114747bd92752e"
+  integrity sha512-5weE7X7kfIuUHGWl0XfSt68kFMVXUg3SrUZW7MOS2Y0w2tj/H+6eomzJ7mYcJmI7ttNGIDGYhqxftPh8zLpi0w==
   dependencies:
     form-data "^4.0.0"
     qs "^6.10.1"
