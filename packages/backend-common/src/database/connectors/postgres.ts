@@ -32,7 +32,7 @@ import defaultSchemaOverride from './defaultSchemaOverride';
 export function createPgDatabaseClient(
   dbConfig: Config,
   overrides?: Knex.Config,
-) {
+): Knex {
   const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
   return database;

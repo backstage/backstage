@@ -32,7 +32,7 @@ import defaultNameOverride from './defaultNameOverride';
 export function createMysqlDatabaseClient(
   dbConfig: Config,
   overrides?: Knex.Config,
-) {
+): Knex {
   const knexConfig = buildMysqlDatabaseConfig(dbConfig, overrides);
   const database = knexFactory(knexConfig);
   return database;

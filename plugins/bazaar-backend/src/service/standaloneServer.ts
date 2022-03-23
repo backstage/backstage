@@ -22,7 +22,7 @@ import {
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import knexFactory from 'knex';
+import knexFactory, { Knex } from 'knex';
 
 export interface ServerOptions {
   port: number;
@@ -36,7 +36,7 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'bazaar-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
 
-  const db = useHotMemoize(module, () => {
+  const db = useHotMemoize(module, (): Knex => {
     const knex = knexFactory({
       client: 'better-sqlite3',
       connection: ':memory:',

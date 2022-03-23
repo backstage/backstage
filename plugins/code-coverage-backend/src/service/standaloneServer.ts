@@ -22,7 +22,7 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Server } from 'http';
-import knexFactory from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 
@@ -38,7 +38,7 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'code-coverage-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
 
-  const db = useHotMemoize(module, () => {
+  const db = useHotMemoize(module, (): Knex => {
     const knex = knexFactory({
       client: 'better-sqlite3',
       connection: ':memory:',

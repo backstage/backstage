@@ -30,7 +30,7 @@ import { DatabaseConnector } from '../types';
 export function createSqliteDatabaseClient(
   dbConfig: Config,
   overrides?: Knex.Config,
-) {
+): Knex {
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
 
   // If storage on disk is used, ensure that the directory exists
