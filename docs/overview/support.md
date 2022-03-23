@@ -32,7 +32,6 @@ with your recording's information. Example:
 
 ```yaml
 ---
----
 title: # name of the meetup
 date: February 23, 2022 # date, format: Month day, year. This is the index field.
 category: Meetup # Can be Event, Meetup, Webinar
@@ -49,7 +48,6 @@ create a file in
 with your meetup's information. Example:
 
 ```yaml
----
 ---
 title: # name of the meetup
 date: February 23, 2022 # date, format: Month day, year. This is the index field.
