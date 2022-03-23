@@ -150,7 +150,6 @@ async function getProjectConfig(targetPath, displayName) {
       : undefined,
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
-
     ...getRoleConfig(closestPkgJson?.backstage?.role),
   };
 
