@@ -45,7 +45,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-yaml": "^3.1.0",
-    "@spotify/eslint-config-base": "^12.0.0",
+    "@spotify/eslint-config-base": "^13.0.0",
     "@spotify/eslint-config-react": "^12.0.0",
     "@spotify/eslint-config-typescript": "^12.0.0",
     "@sucrase/jest-plugin": "^2.1.1",
