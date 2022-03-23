@@ -17,7 +17,8 @@ permissions:
 
 jobs:
   feedback:
-    if: github.repository == 'backstage/backstage' # prevent running on forks
+    # prevent running towards forks and version packages
+    if: github.repository == 'backstage/backstage' && github.event.pull_request.user.login != 'backstage-service'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +39,6 @@ jobs:
 
       - name: Post Feedback
         uses: actions/github-script@v5
-        if: github.event.pull_request.user.login != 'backstage-service'
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:
