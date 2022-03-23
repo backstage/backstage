@@ -207,6 +207,10 @@ export function registerCommands(program: CommanderStatic) {
       defaultDockerImage,
     )
     .option(
+      '--docker-entrypoint <DOCKER_ENTRYPOINT>',
+      'Override the image entrypoint',
+    )
+    .option(
       '--no-docker',
       'Do not use Docker, run `mkdocs serve` in current user environment.',
     )
@@ -223,6 +227,10 @@ export function registerCommands(program: CommanderStatic) {
       '-i, --docker-image <DOCKER_IMAGE>',
       'The mkdocs docker container to use',
       defaultDockerImage,
+    )
+    .option(
+      '--docker-entrypoint <DOCKER_ENTRYPOINT>',
+      'Override the image entrypoint',
     )
     .option(
       '--no-docker',
