@@ -31,6 +31,8 @@ import { useAsyncEntity } from './useEntity';
  * @alpha
  */
 export function useEntityPermission(
+  // TODO(joeporpeglia) Replace with `CatalogEntityPermission` when the issue described in
+  // https://github.com/backstage/backstage/pull/10128 is fixed.
   permission: ResourcePermission<'catalog-entity'>,
 ): {
   loading: boolean;
