@@ -150,6 +150,18 @@ export async function createConfig(
     console.warn(`WARNING: Failed to read react-dom version, ${error}`);
   }
 
+  const resolvePlugins: webpack.ResolvePluginInstance[] = [
+    new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+  ];
+
+  if (!isDev) {
+    resolvePlugins.push(
+      new ModuleScopePlugin(
+        [paths.targetSrc, paths.targetDev],
+        [paths.targetPackageJson],
+      ),
+    );
+  }
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
@@ -181,14 +193,7 @@ export async function createConfig(
         http: false,
         util: require.resolve('util/'),
       },
-      plugins: [
-        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-        !isDev &&
-          new ModuleScopePlugin(
-            [paths.targetSrc, paths.targetDev],
-            [paths.targetPackageJson],
-          ),
-      ].filter(Boolean),
+      plugins: resolvePlugins,
       alias: resolveAliases,
     },
     module: {
@@ -237,6 +242,19 @@ export async function createBackendConfig(
     runScriptNodeArgs.push('--inspect-brk');
   }
 
+  const resolvePlugins: webpack.ResolvePluginInstance[] = [
+    new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
+  ];
+
+  if (!isDev) {
+    resolvePlugins.push(
+      new ModuleScopePlugin(
+        [paths.targetSrc, paths.targetDev],
+        [paths.targetPackageJson],
+      ),
+    );
+  }
+
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
@@ -276,14 +294,7 @@ export async function createBackendConfig(
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
       mainFields: ['main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
-      plugins: [
-        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-        !isDev &&
-          new ModuleScopePlugin(
-            [paths.targetSrc, paths.targetDev],
-            [paths.targetPackageJson],
-          ),
-      ].filter(Boolean),
+      plugins: resolvePlugins,
     },
     module: {
       rules: loaders,

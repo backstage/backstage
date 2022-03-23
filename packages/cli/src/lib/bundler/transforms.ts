@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
+import { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
@@ -110,11 +110,10 @@ export const transforms = (options: TransformOptions): Transforms => {
       test: [/\.icon\.svg$/],
       use: [
         {
-          loader: require.resolve('@sucrase/webpack-loader'),
+          loader: require.resolve('esbuild-loader'),
           options: {
-            transforms: ['jsx'],
-            disableESTransforms: true,
-            production: !isDev,
+            loader: 'jsx',
+            target: 'es2015',
           },
         },
         {
@@ -180,8 +179,12 @@ export const transforms = (options: TransformOptions): Transforms => {
   const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
-    plugins.push(new ReactRefreshPlugin());
-    // plugins.push(new webpack.HotModuleReplacementPlugin());
+    plugins.push(
+      new ReactRefreshPlugin({
+        esModule: true,
+        overlay: { sockProtocol: 'ws' },
+      }),
+    );
   } else {
     plugins.push(
       new MiniCssExtractPlugin({
