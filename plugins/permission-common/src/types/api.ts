@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ResourcePermission } from '.';
 import { Permission } from './permission';
 
 /**
@@ -182,3 +183,72 @@ export type EvaluatePermissionResponse = PolicyDecision;
  */
 export type EvaluatePermissionResponseBatch =
   PermissionMessageBatch<EvaluatePermissionResponse>;
+
+/**
+ * Request object for {@link PermissionEvaluator.authorize}. If a {@link ResourcePermission}
+ * is provided, it must include a corresponding `resourceRef`.
+ * @public
+ */
+export type AuthorizePermissionRequest =
+  | {
+      permission: Exclude<Permission, ResourcePermission>;
+      resourceRef?: never;
+    }
+  | { permission: ResourcePermission; resourceRef: string };
+
+/**
+ * Response object for {@link PermissionEvaluator.authorize}.
+ * @public
+ */
+export type AuthorizePermissionResponse = DefinitivePolicyDecision;
+
+/**
+ * Request object for {@link PermissionEvaluator.query}.
+ * @public
+ */
+export type QueryPermissionRequest = {
+  permission: ResourcePermission;
+  resourceRef?: never;
+};
+
+/**
+ * Response object for {@link PermissionEvaluator.query}.
+ * @public
+ */
+export type QueryPermissionResponse = PolicyDecision;
+
+/**
+ * A client interacting with the permission backend can implement this evaluator interface.
+ *
+ * @public
+ */
+export interface PermissionEvaluator {
+  /**
+   * Evaluates {@link Permission | Permissions} and returns a definitive decision.
+   */
+  authorize(
+    requests: AuthorizePermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]>;
+
+  /**
+   * Evaluates {@link ResourcePermission | ResourcePermissions} and returns both definitive and
+   * conditional decisions, depending on the configured
+   * {@link @backstage/plugin-permission-node#PermissionPolicy}. This method is useful when the
+   * caller needs more control over the processing of conditional decisions. For example, a plugin
+   * backend may want to use {@link PermissionCriteria | conditions} in a database query instead of
+   * evaluating each resource in memory.
+   */
+  query(
+    requests: QueryPermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<QueryPermissionResponse[]>;
+}
+
+/**
+ * Options for {@link PermissionEvaluator} requests.
+ * @public
+ */
+export type EvaluatorRequestOptions = {
+  token?: string;
+};
