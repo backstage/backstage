@@ -80,35 +80,41 @@ async function listPackages() {
   }));
 }
 
-async function parseChangesets(filePaths) {
+async function loadChangesets(filePaths) {
   const changesets = [];
   for (const filePath of filePaths) {
     if (!filePath.startsWith('.changeset/') || !filePath.endsWith('.md')) {
       continue;
     }
-    const content = await fs.promises.readFile(filePath, 'utf8');
-    let lines = content.split(/\r?\n/);
+    try {
+      const content = await fs.promises.readFile(filePath, 'utf8');
+      let lines = content.split(/\r?\n/);
 
-    lines = lines.slice(lines.findIndex(line => line === '---') + 1);
-    lines = lines.slice(
-      0,
-      lines.findIndex(line => line === '---'),
-    );
+      lines = lines.slice(lines.findIndex(line => line === '---') + 1);
+      lines = lines.slice(
+        0,
+        lines.findIndex(line => line === '---'),
+      );
 
-    const bumps = new Map();
-    for (const line of lines) {
-      const match = line.match(/^'(.*)': (patch|minor|major)$/);
-      if (!match) {
-        throw new Error(`Invalid changeset line: ${line}`);
+      const bumps = new Map();
+      for (const line of lines) {
+        const match = line.match(/^'(.*)': (patch|minor|major)$/);
+        if (!match) {
+          throw new Error(`Invalid changeset line: ${line}`);
+        }
+
+        bumps.set(match[1], match[2]);
       }
 
-      bumps.set(match[1], match[2]);
+      changesets.push({
+        filePath,
+        bumps,
+      });
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
     }
-
-    changesets.push({
-      filePath,
-      bumps,
-    });
   }
 
   return changesets;
@@ -247,7 +253,7 @@ async function main() {
   const changedFiles = await listChangedFiles(diffRef);
   const packages = await listPackages();
 
-  const changesets = await parseChangesets(changedFiles);
+  const changesets = await loadChangesets(changedFiles);
   const changedPackages = await listChangedPackages(changedFiles, packages);
 
   process.stderr.write(
