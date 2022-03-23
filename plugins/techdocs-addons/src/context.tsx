@@ -146,38 +146,3 @@ export const TechDocsReaderPageProvider = ({
     </TechDocsReaderPageContext.Provider>
   );
 };
-
-/**
- * Hook for use within TechDocs addons that provides access to the underlying
- * shadow root of the current page, allowing the DOM within to be mutated.
- * @public
- */
-export const useShadowRoot = () => {
-  const { shadowRoot } = useTechDocsReaderPage();
-  return shadowRoot;
-};
-
-/**
- * Convenience hook for use within TechDocs addons that provides access to
- * elements that match a given selector within the shadow root.
- *
- * todo(backstage/techdocs-core): Consider extending `selectors` from string[]
- * to some kind of typed object array, so users have more control over the
- * shape of the result. e.g. a flag to indicate querySelector vs.
- * querySelectorAll.
- *
- * @public
- */
-export const useShadowRootElements = <
-  TReturnedElement extends HTMLElement = HTMLElement,
->(
-  selectors: string[],
-): TReturnedElement[] => {
-  const shadowRoot = useShadowRoot();
-  if (!shadowRoot) return [];
-  return selectors
-    .map(selector => shadowRoot?.querySelectorAll<TReturnedElement>(selector))
-    .filter(nodeList => nodeList.length)
-    .map(nodeList => Array.from(nodeList))
-    .flat();
-};

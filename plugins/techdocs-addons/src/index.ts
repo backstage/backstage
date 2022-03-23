@@ -26,12 +26,8 @@ export {
   TECHDOCS_ADDONS_WRAPPER_KEY,
 } from './addons';
 export * from './components';
-export {
-  useEntityMetadata,
-  useTechDocsMetadata,
-  useShadowRoot,
-  useShadowRootElements,
-} from './context';
+export { useEntityMetadata, useTechDocsMetadata } from './context';
+export { useShadowRoot, useShadowRootElements } from './hooks';
 export { TechDocsAddonLocations } from './types';
 export type {
   TechDocsAddonAsyncMetadata,
