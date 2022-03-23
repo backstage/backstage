@@ -1,4 +1,4 @@
-name: Automate Changeset Feedback
+name: Automate changeset feedback
 on:
   pull_request:
     types:
@@ -29,9 +29,11 @@ jobs:
 
       - name: Post Feedback
         uses: actions/github-script@v5
+        if: github.event.pull_request.user.login != 'backstage-service'
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const owner = "backstage";
             const repo = "backstage";
@@ -56,8 +58,8 @@ jobs:
                 if (existingComment.body !== body) {
                   console.log(`updating existing comment in #${issue_number}`);
                   await github.rest.issues.updateComment({
-                    repo,
                     owner,
+                    repo,
                     comment_id: existingComment.id,
                     body,
                   });
@@ -67,8 +69,8 @@ jobs:
               } else {
                 console.log(`removing comment from #${issue_number}`);
                 await github.rest.issues.deleteComment({
-                  repo,
                   owner,
+                  repo,
                   comment_id: existingComment.id,
                   body,
                 });
@@ -76,8 +78,8 @@ jobs:
             } else if (body) {
               console.log(`creating comment for #${issue_number}`);
               await github.rest.issues.createComment({
-                repo,
                 owner,
+                repo,
                 issue_number,
                 body,
               });
