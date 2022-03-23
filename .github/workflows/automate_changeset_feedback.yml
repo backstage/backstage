@@ -34,6 +34,7 @@ jobs:
       - name: Generate Feedback
         id: generate-feedback
         run: |
+          rm -f generate.js
           wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-changeset-feedback.js 1>&2
           node generate.js FETCH_HEAD > feedback.txt
 
