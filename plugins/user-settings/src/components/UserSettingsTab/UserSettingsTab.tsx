@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { Settings } from './Settings';
-export { SettingsPage as Router } from './SettingsPage';
-export * from './AuthProviders';
-export * from './General';
-export * from './FeatureFlags';
-export { useUserProfile } from './useUserProfileInfo';
-export * from './UserSettingsTab';
+import React from 'react';
+
+interface Props {
+  path: string;
+  title: React.ReactNode;
+}
+
+export const UserSettingsTab: React.FC<Props> = ({ children }) => {
+  return <>{children}</>;
+};
+
+UserSettingsTab.displayName = 'UserSettingsTab';

@@ -69,7 +69,10 @@ import {
   techdocsPlugin,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
-import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import {
+  UserSettingsPage,
+  UserSettingsTab,
+} from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
@@ -216,9 +219,9 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />}>
-      <Route path="/advanced" element={<AdvancedSettings />}>
-        Advanced
-      </Route>
+      <UserSettingsTab path="/advanced" title="Advanced">
+        <AdvancedSettings />
+      </UserSettingsTab>
     </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />

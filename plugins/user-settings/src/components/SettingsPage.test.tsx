@@ -17,13 +17,14 @@
 import React from 'react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { SettingsPage } from './SettingsPage';
+import { UserSettingsTab } from './UserSettingsTab';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useOutlet: jest.fn().mockReturnValue(undefined),
 }));
 
-import { useOutlet, Route } from 'react-router';
+import { useOutlet } from 'react-router';
 
 describe('<SettingsPage />', () => {
   it('should render the settings page with 3 tabs', async () => {
@@ -38,9 +39,9 @@ describe('<SettingsPage />', () => {
   it('should render the settings page with 4 tabs when extra tabs are provided', async () => {
     const advancedTabRoute = (
       <>
-        <Route path="/advanced" element={<div>Advanced settings</div>}>
-          Advanced
-        </Route>
+        <UserSettingsTab path="/advanced" title="Advanced">
+          <div>Advanced settings</div>
+        </UserSettingsTab>
       </>
     );
     (useOutlet as jest.Mock).mockReturnValueOnce(advancedTabRoute);
@@ -56,9 +57,9 @@ describe('<SettingsPage />', () => {
   it('should throw error if non compliant route is passed to settings routes', async () => {
     const advancedTabRoute = (
       <>
-        <Route path="/advanced" element={<div>Advanced settings</div>}>
-          Advanced
-        </Route>
+        <UserSettingsTab path="/advanced" title="Advanced">
+          <div>Advanced settings</div>
+        </UserSettingsTab>
         <div>Non compliant element</div>
       </>
     );

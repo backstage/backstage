@@ -37,11 +37,11 @@ export const SettingsPage = ({ providerSettings }: Props) => {
   const extraTabs = (React.Children.toArray(outlet?.props?.children) ||
     []) as Array<ReactElement>;
   const notCompliantTab = Array.from(extraTabs).some(
-    child => (child.type as any)?.displayName !== 'Route',
+    child => (child.type as any)?.displayName !== 'UserSettingsTab',
   );
   if (notCompliantTab) {
     throw new Error(
-      'Invalid element passed to SettingsPage Outlet. You may only pass children of type Route.',
+      'Invalid element passed to SettingsPage Outlet. You may only pass children of type UserSettingsTab.',
     );
   }
 
@@ -64,7 +64,7 @@ export const SettingsPage = ({ providerSettings }: Props) => {
 
         {extraTabs.map((child, i) => {
           const path: string = child.props.path;
-          const title: string = child.props.children;
+          const title: string = child.props.title;
 
           return (
             <TabbedLayout.Route key={i} path={path} title={title}>
