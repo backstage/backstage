@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 
@@ -107,6 +108,12 @@ export const UserSettingsProfileCard: () => JSX.Element;
 //
 // @public (undocumented)
 export const UserSettingsSignInAvatar: ({ size }: Props_5) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "UserSettingsTab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const UserSettingsTab: React_2.FC<Props_6>;
 
 // Warning: (ae-missing-release-tag) "UserSettingsThemeToggle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
