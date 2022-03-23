@@ -5,10 +5,6 @@ on:
       - opened
       - synchronize
 
-permissions:
-  issues: write
-  pull-requests: write
-
 jobs:
   feedback:
     if: github.repository == 'backstage/backstage' # prevent running on forks
@@ -23,7 +19,7 @@ jobs:
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
 
-        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
+        # We avoid using the in-source script just in case
       - name: Generate Feedback
         id: generate-feedback
         run: |
@@ -36,6 +32,7 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const owner = "backstage";
             const repo = "backstage";
