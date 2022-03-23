@@ -69,17 +69,21 @@ const AppRoutes = () => (
 By default, the plugin renders 3 tabs of settings; GENERAL, AUTHENTICATION PROVIDERS, and FEATURE FLAGS.
 
 If you want to add more options for your users,
-just pass the extra tabs as children of the `UserSettingsPage` route
-where the children of that route represents the title of the tab.
+just pass the extra tabs using `UserSettingsTab` components as children of the `UserSettingsPage` route.
 The path is in this case a child of the settings path,
 in the example below it would be `/settings/advanced` so that you can easily link to it.
 
 ```tsx
+import {
+  UserSettingsPage,
+  UserSettingsTab,
+} from '@backstage/plugin-user-settings';
+
 <Route path="/settings" element={<UserSettingsPage />}>
-  <Route path="/advanced" element={<AdvancedSettings />}>
-    Advanced
-  </Route>
-</Route>
+  <UserSettingsTab path="/advanced" title="Advanced">
+    <AdvancedSettings />
+  </UserSettingsTab>
+</Route>;
 ```
 
 To standardize the UI of all setting tabs,
