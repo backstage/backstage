@@ -28,7 +28,7 @@ import React, { MouseEvent, useEffect, useMemo } from 'react';
 import { CustomLabel } from './CustomLabel';
 import { CustomNode } from './CustomNode';
 import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
-import { Direction, EntityNode } from './types';
+import { Direction, EntityEdge, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
 const useStyles = makeStyles(theme => ({
@@ -93,8 +93,8 @@ export const EntityRelationsGraph = ({
   relationPairs?: RelationPairs;
   className?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
-  renderNode?: any;
-  renderLabel?: any;
+  renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
+  renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
 }) => {
   const theme = useTheme();
   const classes = useStyles();
