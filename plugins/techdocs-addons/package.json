@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.2",
-    "@backstage/test-utils": "^1.0.0"
+    "@backstage/test-utils": "^0.3.0"
   },
   "files": [
     "dist"
