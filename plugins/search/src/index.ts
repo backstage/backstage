@@ -40,7 +40,10 @@ export type {
   SearchFilterWrapperProps,
 } from './components/SearchFilter';
 export { SearchModal, useSearchModal } from './components/SearchModal';
-export type { SearchModalProps } from './components/SearchModal';
+export type {
+  SearchModalChildrenProps,
+  SearchModalProps,
+} from './components/SearchModal';
 export { SearchPage as Router } from './components/SearchPage';
 export { SearchResultPager } from './components/SearchResultPager';
 export { SearchType } from './components/SearchType';

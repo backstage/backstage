@@ -15,11 +15,25 @@
  */
 
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Button } from '@material-ui/core';
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  List,
+  Paper,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
+import { DefaultResultListItem } from '../DefaultResultListItem';
+import { SearchBar } from '../SearchBar';
 import { SearchApiProvider } from '../SearchContext/SearchContextForStorybook.stories';
 import { SearchModal } from './SearchModal';
+import { SearchResult } from '../SearchResult';
+import { SearchResultPager } from '../SearchResultPager';
+import { SearchType } from '../SearchType';
 import { useSearchModal } from './useSearchModal';
 
 const mockResults = {
@@ -74,6 +88,90 @@ export const Default = () => {
         Toggle Search Modal
       </Button>
       <SearchModal {...state} toggleModal={toggleModal} />
+    </>
+  );
+};
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    borderRadius: 30,
+    display: 'flex',
+    height: '2.4em',
+  },
+  input: {
+    flex: 1,
+  },
+  dialogActionsContainer: { padding: theme.spacing(1, 3) },
+}));
+
+export const CustomModal = () => {
+  const classes = useStyles();
+  const { state, toggleModal } = useSearchModal();
+
+  return (
+    <>
+      <Button variant="contained" color="primary" onClick={toggleModal}>
+        Toggle Custom Search Modal
+      </Button>
+      <SearchModal {...state} toggleModal={toggleModal}>
+        {() => (
+          <>
+            <DialogTitle>
+              <Paper className={classes.container}>
+                <SearchBar className={classes.input} />
+              </Paper>
+            </DialogTitle>
+            <DialogContent>
+              <Grid container direction="column">
+                <Grid item>
+                  <SearchType.Tabs
+                    defaultValue=""
+                    types={[
+                      {
+                        value: 'custom-result-item',
+                        name: 'Custom Item',
+                      },
+                      {
+                        value: 'no-custom-result-item',
+                        name: 'No Custom Item',
+                      },
+                    ]}
+                  />
+                </Grid>
+                <Grid item>
+                  <SearchResult>
+                    {({ results }) => (
+                      <List>
+                        {results.map(({ document }) => (
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            key={`${document.location}-btn`}
+                            onClick={toggleModal}
+                            onKeyPress={toggleModal}
+                          >
+                            <DefaultResultListItem
+                              key={document.location}
+                              result={document}
+                            />
+                          </div>
+                        ))}
+                      </List>
+                    )}
+                  </SearchResult>
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions className={classes.dialogActionsContainer}>
+              <Grid container direction="row">
+                <Grid item xs={12}>
+                  <SearchResultPager />
+                </Grid>
+              </Grid>
+            </DialogActions>
+          </>
+        )}
+      </SearchModal>
     </>
   );
 };

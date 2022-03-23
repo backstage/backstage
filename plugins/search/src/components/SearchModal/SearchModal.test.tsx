@@ -55,6 +55,23 @@ describe('SearchModal', () => {
     expect(query).toHaveBeenCalledTimes(1);
   });
 
+  it('Should render a custom Modal correctly', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden={false} toggleModal={toggleModal}>
+          {() => <div>Custom Search Modal</div>}
+        </SearchModal>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('Custom Search Modal')).toBeInTheDocument();
+  });
+
   it('Calls toggleModal handler', async () => {
     await renderInTestApp(
       <ApiProvider apis={apiRegistry}>
