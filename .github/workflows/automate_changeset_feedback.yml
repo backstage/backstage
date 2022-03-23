@@ -1,9 +1,19 @@
 name: Automate changeset feedback
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  pull_request_target:
+
+permissions:
+  pull-requests: write
+  actions: none
+  checks: none
+  contents: none
+  deployments: none
+  issues: none
+  packages: none
+  pages: none
+  repository-projects: none
+  security-events: none
+  statuses: none
 
 jobs:
   feedback:
@@ -19,7 +29,7 @@ jobs:
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
 
-        # We avoid using the in-source script just in case
+        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
       - name: Generate Feedback
         id: generate-feedback
         run: |
@@ -32,7 +42,6 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:
-          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const owner = "backstage";
             const repo = "backstage";
