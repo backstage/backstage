@@ -114,8 +114,8 @@ export const createPublishGithubPullRequestAction = ({
     title: string;
     branchName: string;
     description: string;
-    draft?: boolean;
     repoUrl: string;
+    draft?: boolean;
     targetPath?: string;
     sourcePath?: string;
     token?: string;
