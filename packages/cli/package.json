@@ -72,7 +72,7 @@
     "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-deprecation": "^1.3.2",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jest": "^25.3.4",
+    "eslint-plugin-jest": "^26.1.2",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-monorepo": "^0.3.2",
     "eslint-plugin-react": "^7.28.0",
