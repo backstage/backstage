@@ -161,6 +161,8 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
   // (undocumented)
+  initialKind?: string;
+  // (undocumented)
   initiallySelectedFilter?: UserListFilterKind;
 }
 
