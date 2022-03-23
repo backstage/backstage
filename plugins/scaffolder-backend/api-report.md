@@ -266,6 +266,9 @@ export function createPublishGitlabAction(options: {
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
 }>;
 
 // @public
