@@ -27,6 +27,7 @@ export {
 } from './addons';
 export * from './components';
 export { useEntityMetadata, useTechDocsMetadata } from './context';
+export { useShadowRoot, useShadowRootElements } from './hooks';
 export { TechDocsAddonLocations } from './types';
 export type {
   TechDocsAddonAsyncMetadata,
