@@ -40,6 +40,9 @@ export function createPublishGitlabAction(options: {
     repoVisibility?: 'private' | 'internal' | 'public';
     sourcePath?: string;
     token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:gitlab',
     description:
@@ -62,6 +65,21 @@ export function createPublishGitlabAction(options: {
             title: 'Default Branch',
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
+          },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
           },
           sourcePath: {
             title: 'Source Path',
@@ -95,8 +113,10 @@ export function createPublishGitlabAction(options: {
         repoUrl,
         repoVisibility = 'private',
         defaultBranch = 'master',
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
       } = ctx.input;
-
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 
       if (!owner) {
@@ -146,10 +166,13 @@ export function createPublishGitlabAction(options: {
       const repoContentsUrl = `${remoteUrl}/-/blob/${defaultBranch}`;
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
-
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl: http_url_to_repo as string,
@@ -159,9 +182,9 @@ export function createPublishGitlabAction(options: {
           password: token,
         },
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 
