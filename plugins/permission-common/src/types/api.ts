@@ -92,6 +92,20 @@ export type PolicyDecision =
   | ConditionalPolicyDecision;
 
 /**
+ * A query to be evaluated by the {@link PermissionPolicy}.
+ *
+ * @remarks
+ *
+ * Unlike other parts of the permission API, the policy does not accept a resource ref. This keeps
+ * the policy decoupled from the resource loading and condition applying logic.
+ *
+ * @public
+ */
+export type PolicyQuery = {
+  permission: Permission;
+};
+
+/**
  * A condition returned with a CONDITIONAL authorization response.
  *
  * Conditions are a reference to a rule defined by a plugin, and parameters to apply the rule. For

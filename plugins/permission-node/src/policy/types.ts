@@ -15,24 +15,10 @@
  */
 
 import {
-  Permission,
   PolicyDecision,
+  PolicyQuery,
 } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
-
-/**
- * A query to be evaluated by the {@link PermissionPolicy}.
- *
- * @remarks
- *
- * Unlike other parts of the permission API, the policy does not accept a resource ref. This keeps
- * the policy decoupled from the resource loading and condition applying logic.
- *
- * @public
- */
-export type PolicyQuery = {
-  permission: Permission;
-};
 
 /**
  * A policy to evaluate authorization requests for any permissioned action performed in Backstage.
