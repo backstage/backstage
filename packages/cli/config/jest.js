@@ -44,13 +44,13 @@ function getRoleConfig(role) {
     case 'common-library':
     case 'frontend-plugin':
     case 'frontend-plugin-module':
-    default:
       return { testEnvironment: 'jsdom' };
     case 'cli':
     case 'backend':
     case 'node-library':
     case 'backend-plugin':
     case 'backend-plugin-module':
+    default:
       return { testEnvironment: 'node' };
   }
 }
