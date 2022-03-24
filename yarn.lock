@@ -4913,10 +4913,10 @@
   dependencies:
     "@react-hookz/deep-equal" "^1.0.1"
 
-"@rjsf/core@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.2.1.tgz#8a7b24c9a6f01f0ecb093fdfc777172c12b1b009"
-  integrity sha512-dk8ihvxFbcuIwU7G+HiJbFgwyIvaumPt5g5zfnuC26mwTUPlaDGFXKK2yITp8tJ3+hcwS5zEXtAN9wUkfuM4jA==
+"@rjsf/core@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-4.1.0.tgz#43714518b339b26f9a2b11223625069642cb3397"
+  integrity sha512-rLtBJzqqFUUYx3c0bycqBYiQePug9keKrwISAd6bZ5xghHNgbXGI8rMtDbwpYoF4sQPiPCO+zlfpUOusK5vsVw==
   dependencies:
     "@types/json-schema" "^7.0.7"
     ajv "^6.7.0"
