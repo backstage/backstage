@@ -36,7 +36,6 @@ export type {
   AllOfCriteria,
   AnyOfCriteria,
   NotCriteria,
-  PolicyQuery,
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export type {
