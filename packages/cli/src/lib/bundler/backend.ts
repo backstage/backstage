@@ -35,9 +35,8 @@ export async function serveBackend(options: BackendServeOptions) {
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        compiler.close(() => console.log('Stopped watcher'));
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
-        process.exit();
+        compiler.close(() => process.exit());
       });
     }
 
