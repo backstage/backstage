@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -27,8 +26,7 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import React, { useState } from 'react';
-import { DirectRelationsGrid } from './DirectRelationsGrid';
-import { AggregatedRelationsGrid } from './AggregatedRelationsGrid';
+import { ComponentsGrid } from './ComponentsGrid';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -53,24 +51,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const directRelationsGrid = (entity: Entity, entityFilterKind?: string[]) => {
-  return (
-    <DirectRelationsGrid entity={entity} entityFilterKind={entityFilterKind} />
-  );
-};
-
-const aggregatedRelationsGrid = (
-  entity: Entity,
-  entityFilterKind?: string[],
-) => {
-  return (
-    <AggregatedRelationsGrid
-      entity={entity}
-      entityFilterKind={entityFilterKind}
-    />
-  );
-};
-
 export const OwnershipCard = ({
   variant,
   entityFilterKind,
@@ -82,10 +62,6 @@ export const OwnershipCard = ({
   const { entity } = useEntity();
   const isGroup = entity.kind === 'Group';
   const [relationsType, setRelationsType] = useState('direct');
-  const renderedGrid =
-    relationsType !== 'direct' && isGroup
-      ? aggregatedRelationsGrid(entity, entityFilterKind)
-      : directRelationsGrid(entity, entityFilterKind);
 
   return (
     <InfoCard title="Ownership" variant={variant}>
@@ -118,7 +94,11 @@ export const OwnershipCard = ({
           </ListItemSecondaryAction>
         </ListItem>
       </List>
-      {renderedGrid}
+      <ComponentsGrid
+        entity={entity}
+        relationsType={relationsType}
+        entityFilterKind={entityFilterKind}
+      />
     </InfoCard>
   );
 };
