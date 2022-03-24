@@ -161,14 +161,16 @@ export type EvaluatePermissionRequestBatch =
 
 /**
  * An individual response from the permission backend.
+ *
+ * @remarks
+ *
+ * This response type is an alias of {@link PolicyDecision} to maintain separation between the
+ * {@link @backstage/plugin-permission-node#PermissionPolicy} interface and the permission backend
+ * api. They may diverge at some point in the future. The response
+ *
  * @public
  */
-export type EvaluatePermissionResponse =
-  | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
-  | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
-    };
+export type EvaluatePermissionResponse = PolicyDecision;
 
 /**
  * A batch of responses from the permission backend.

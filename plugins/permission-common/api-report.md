@@ -72,14 +72,7 @@ export type EvaluatePermissionRequestBatch =
   PermissionMessageBatch<EvaluatePermissionRequest>;
 
 // @public
-export type EvaluatePermissionResponse =
-  | {
-      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-    }
-  | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
-    };
+export type EvaluatePermissionResponse = PolicyDecision;
 
 // @public
 export type EvaluatePermissionResponseBatch =
