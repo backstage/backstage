@@ -22,6 +22,7 @@ import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2 } from './types';
+import { AbortSignal } from 'node-abort-controller';
 
 describe('TaskWorker', () => {
   const logger = getVoidLogger();
@@ -124,7 +125,15 @@ describe('TaskWorker', () => {
       const knex = await databases.init(databaseId);
       await migrateBackendTasks(knex);
 
-      const fn = jest.fn().mockRejectedValue(new Error('failed'));
+      const fn = jest.fn();
+      const promise = new Promise<void>(resolve => {
+        fn.mockImplementation(() => {
+          if (fn.mock.calls.length === 3) {
+            resolve();
+          }
+          throw new Error('failed');
+        });
+      });
       const settings: TaskSettingsV2 = {
         version: 2,
         initialDelayDuration: undefined,
@@ -135,9 +144,9 @@ describe('TaskWorker', () => {
       const worker = new TaskWorker('task1', fn, knex, logger);
       worker.start(settings);
 
-      waitForExpect(() => {
-        expect(fn).toBeCalledTimes(3);
-      });
+      await promise;
+      expect(fn).toBeCalledTimes(3);
+      expect(fn).toBeCalledWith(expect.any(AbortSignal));
     },
     60_000,
   );
