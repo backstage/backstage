@@ -39,18 +39,18 @@ const transformIgnorePattern = [
 // Provides additional config that's based on the role of the target package
 function getRoleConfig(role) {
   switch (role) {
-    case 'app':
+    case 'frontend':
     case 'web-library':
     case 'common-library':
-    case 'plugin-frontend':
-    case 'plugin-frontend-module':
+    case 'frontend-plugin':
+    case 'frontend-plugin-module':
     default:
       return { testEnvironment: 'jsdom' };
     case 'cli':
     case 'backend':
     case 'node-library':
-    case 'plugin-backend':
-    case 'plugin-backend-module':
+    case 'backend-plugin':
+    case 'backend-plugin-module':
       return { testEnvironment: 'node' };
   }
 }
