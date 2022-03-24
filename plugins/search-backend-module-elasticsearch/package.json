@@ -42,8 +42,5 @@
     "dist",
     "config.d.ts"
   ],
-  "jest": {
-    "testEnvironment": "node"
-  },
   "configSchema": "config.d.ts"
 }
