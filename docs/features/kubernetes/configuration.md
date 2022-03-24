@@ -261,6 +261,12 @@ Kubernetes plugin.
 
 Defaults to `false`.
 
+#### Custom `KubernetesClustersSupplier`
+
+If the configuration-based cluster locators do not work for your use-case,
+it is also possible to implement a
+[custom `KubernetesClustersSupplier`](installation.md#custom-cluster-discovery).
+
 ### `customResources` (optional)
 
 Configures which [custom resources][3] to look for when returning an entity's

@@ -92,11 +92,11 @@ export class KubernetesBuilder {
   protected buildFetcher(): KubernetesFetcher;
   // (undocumented)
   protected buildHttpServiceLocator(
-    _clusterDetails: ClusterDetails[],
+    _clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   protected buildMultiTenantServiceLocator(
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   protected buildObjectsProvider(
@@ -105,12 +105,12 @@ export class KubernetesBuilder {
   // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
     method: ServiceLocatorMethod,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   static createBuilder(env: KubernetesEnvironment): KubernetesBuilder;
@@ -137,7 +137,6 @@ export class KubernetesBuilder {
 // @public
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
-  clusterDetails: ClusterDetails[];
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;

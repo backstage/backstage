@@ -90,6 +90,65 @@ async function main() {
 That's it! The Kubernetes frontend and backend have now been added to your
 Backstage app.
 
+### Custom cluster discovery
+
+If either existing
+[cluster locators](https://backstage.io/docs/features/kubernetes/configuration#clusterlocatormethods)
+don't work for your use-case, it is possible to implement a custom
+[KubernetesClustersSupplier](https://backstage.io/docs/reference/plugin-kubernetes-backend.kubernetesclusterssupplier).
+
+Change the following in `packages/backend/src/plugin/kubernetes.ts`:
+
+```diff
+-import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
++import {
++  ClusterDetails,
++  KubernetesBuilder,
++  KubernetesClustersSupplier,
++} from '@backstage/plugin-kubernetes-backend';
+ import { Router } from 'express';
+ import { PluginEnvironment } from '../types';
++import { Duration } from 'luxon';
++
++export class CustomClustersSupplier implements KubernetesClustersSupplier {
++  private clusterDetails: ClusterDetails[] = [];
++
++  async retrieveClusters() {
++    this.clusterDetails = []; // fetch from somewhere
++  }
++
++  async getClusters(): Promise<ClusterDetails[]> {
++    return this.clusterDetails;
++  }
++}
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+-  const { router } = await KubernetesBuilder.createBuilder({
++  const builder = await KubernetesBuilder.createBuilder({
+     logger: env.logger,
+     config: env.config,
+-  }).build();
++  });
++
++  const clusterSupplier = new CustomClustersSupplier();
++  env.scheduler
++    .createScheduledTaskRunner({
++      frequency: Duration.fromObject({ minutes: 60 }),
++      timeout: Duration.fromObject({ minutes: 15 }),
++    })
++    .run({
++      id: 'refresh-kubernetes-clusters',
++      fn: clusterSupplier.retrieveClusters,
++    });
++  builder.setClusterSupplier(clusterSupplier);
++
++  const { router } = await builder.build();
+   return router;
+ }
+```
+
 ## Running Backstage locally
 
 Start the frontend and the backend app by
