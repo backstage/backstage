@@ -28,12 +28,12 @@ Check out the Backstage.io [Backstage Community Hub](https://backstage.io/commun
 To add a new recording to the [meetup page](https://backstage.io/on-demand)
 create a file in
 [`microsite/data/on-demand`](https://github.com/backstage/backstage/tree/master/microsite/data/on-demand)
-with your recording's information. Example:
+with your recording's information. Filenames should be in the format `yyyymmdd-xx.yaml`. The page will sort using the filename. Example file content:
 
 ```yaml
 ---
 title: # name of the meetup
-date: February 23, 2022 # date, format: Month day, year. This is the index field.
+date: February 23, 2022 # date, format: Month day, year.
 category: Meetup # Can be Event, Meetup, Webinar
 description: # description, summary
 youtubeUrl: # Url to youtube video
@@ -45,12 +45,12 @@ youtubeImgUrl: # Url to the preview image, for Youtube this is the format: https
 To add an upcoming meetup to the [meetup page](https://backstage.io/on-demand)
 create a file in
 [`microsite/data/on-demand`](https://github.com/backstage/backstage/tree/master/microsite/data/on-demand)
-with your meetup's information. Example:
+with your meetup's information. Filenames should be in the format `yyyymmdd-xx.yaml`, the page will sort using the filename. Example file content:
 
 ```yaml
 ---
 title: # name of the meetup
-date: February 23, 2022 # date, format: Month day, year. This is the index field.
+date: February 23, 2022 # date, format: Month day, year.
 category: Upcoming # Should be "Upcoming"
 description: # description, summary
 youtubeUrl: # Url to youtube video
