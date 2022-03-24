@@ -85,7 +85,6 @@ const EntityCountTile = ({
   );
 };
 
-// can only be used for group entity
 export const ComponentsGrid = ({
   entity,
   relationsType,
