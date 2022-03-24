@@ -68,7 +68,7 @@ export const myCustomValidation = (
 ```
 
 ```tsx
-// packages/app/src/scaffolder/MyCustomExtension/extension.ts
+// packages/app/src/scaffolder/MyCustomExtension/extensions.ts
 
 /*
   This is where the magic happens and creates the custom field extension.
@@ -96,7 +96,7 @@ export const MyCustomFieldExtension = plugin.provide(
 ```tsx
 // packages/app/src/scaffolder/MyCustomExtension/index.ts
 
-export { MyCustomFieldExtension } from './extension';
+export { MyCustomFieldExtension } from './extensions';
 ```
 
 Once all these files are in place, you then need to provide your custom
