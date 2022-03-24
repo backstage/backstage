@@ -82,24 +82,28 @@ describe('AuthorizedSearchEngine', () => {
       visibilityPermission: createPermission({
         name: 'search.users.read',
         attributes: { action: 'read' },
+        resourceType: 'test-user',
       }),
     },
     [typeTemplates]: {
       visibilityPermission: createPermission({
         name: 'search.templates.read',
         attributes: { action: 'read' },
+        resourceType: 'test-template',
       }),
     },
     [typeServices]: {
       visibilityPermission: createPermission({
         name: 'search.services.read',
         attributes: { action: 'read' },
+        resourceType: 'test-service',
       }),
     },
     [typeGroups]: {
       visibilityPermission: createPermission({
         name: 'search.groups.read',
         attributes: { action: 'read' },
+        resourceType: 'test-group',
       }),
     },
   };

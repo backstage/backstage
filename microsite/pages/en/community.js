@@ -22,7 +22,7 @@ const Background = props => {
               What's the use of having fun if you can't share it? Exactly. Join
               the vibrant community around the Backstage project. Be it on
               GitHub, social media, Discord... You'll find a welcoming
-              environment, to ensure this we follow the{' '}
+              environment. To ensure this, we follow the{' '}
               <a href="https://github.com/cncf/foundation/blob/master/code-of-conduct.md">
                 {' '}
                 CNCF Code of Conduct
@@ -62,8 +62,8 @@ const Background = props => {
               <br />
               Backstage Community Sessions is the monthly meetup where we all
               come together to listen to the latest maintainer updates, learn
-              from eachother about adopting, share exciting new demos or discuss
-              any relevat topic like developer effectiveness, developer
+              from each other about adopting, share exciting new demos or
+              discuss any relevant topic like developer effectiveness, developer
               experience, developer portals, etc.
             </Block.Paragraph>
 
@@ -74,7 +74,7 @@ const Background = props => {
               Backstage (Backstage of Backstage? Backerstage?). An open
               discussion with maintainers and contributors of Backstage.
             </Block.Paragraph>
-            <Block.LinkButton href="/on-demand">Watch now</Block.LinkButton>
+            <Block.LinkButton href="/on-demand">Meetups</Block.LinkButton>
           </Block.TextBox>
           <Block.TextBox>
             <Block.Graphic

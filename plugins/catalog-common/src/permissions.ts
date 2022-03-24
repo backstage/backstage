@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createPermission } from '@backstage/plugin-permission-common';
+import {
+  createPermission,
+  ResourcePermission,
+} from '@backstage/plugin-permission-common';
 
 /**
  * Permission resource type which corresponds to catalog entities.
@@ -23,6 +26,15 @@ import { createPermission } from '@backstage/plugin-permission-common';
  * @alpha
  */
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
+
+/**
+ * Convenience type for catalog entity
+ * {@link @backstage/plugin-permission-common#ResourcePermission}s.
+ * @alpha
+ */
+export type CatalogEntityPermission = ResourcePermission<
+  typeof RESOURCE_TYPE_CATALOG_ENTITY
+>;
 
 /**
  * This permission is used to authorize actions that involve reading one or more

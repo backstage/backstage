@@ -48,10 +48,16 @@ export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  initialKind?: string;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
-  const { columns, actions, initiallySelectedFilter = 'owned' } = props;
+  const {
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+    initialKind = 'component',
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -60,7 +66,9 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
         <Content>
-          <ContentHeader titleComponent={<CatalogKindHeader />}>
+          <ContentHeader
+            titleComponent={<CatalogKindHeader initialFilter={initialKind} />}
+          >
             <CreateButton
               title="Create Component"
               to={createComponentLink && createComponentLink()}
