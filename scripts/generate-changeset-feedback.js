@@ -181,7 +181,7 @@ The following package(s) are changed by this PR but do not have a changeset:
       }
     },
     `
-See [CONTRIBUTION.md](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets) for more information about how to add changesets.
+See [CONTRIBUTING.md](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#creating-changesets) for more information about how to add changesets.
 `,
   );
 
