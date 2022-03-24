@@ -21,6 +21,7 @@ import {
   createRoutableExtension,
   identityApiRef,
   discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { bazaarApiRef, BazaarClient } from './api';
 
@@ -35,9 +36,10 @@ export const bazaarPlugin = createPlugin({
       deps: {
         identityApi: identityApiRef,
         discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ identityApi, discoveryApi }) =>
-        new BazaarClient({ identityApi, discoveryApi }),
+      factory: ({ identityApi, discoveryApi, fetchApi }) =>
+        new BazaarClient({ identityApi, discoveryApi, fetchApi }),
     }),
   ],
 });
