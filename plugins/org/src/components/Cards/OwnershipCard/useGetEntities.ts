@@ -128,6 +128,7 @@ const getAggregatedOwnersEntityRef = async (
 export function useGetEntities(
   entity: Entity,
   relationsType: string,
+  isGroup: boolean,
   entityFilterKind?: string[],
 ): {
   componentsWithCounters:
@@ -143,7 +144,6 @@ export function useGetEntities(
 } {
   const catalogApi = useApi(catalogApiRef);
   const kinds = entityFilterKind ?? ['Component', 'API', 'System'];
-  const isGroup = entity.kind === 'Group';
 
   const {
     loading,

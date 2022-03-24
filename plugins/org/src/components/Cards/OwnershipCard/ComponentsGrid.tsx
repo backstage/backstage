@@ -89,16 +89,19 @@ const EntityCountTile = ({
 export const ComponentsGrid = ({
   entity,
   relationsType,
+  isGroup,
   entityFilterKind,
 }: {
   entity: Entity;
   relationsType: string;
+  isGroup: boolean;
   entityFilterKind?: string[];
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
   const { componentsWithCounters, loading, error } = useGetEntities(
     entity,
     relationsType,
+    isGroup,
     entityFilterKind,
   );
 

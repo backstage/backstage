@@ -97,6 +97,7 @@ export const OwnershipCard = ({
       <ComponentsGrid
         entity={entity}
         relationsType={relationsType}
+        isGroup={isGroup}
         entityFilterKind={entityFilterKind}
       />
     </InfoCard>
