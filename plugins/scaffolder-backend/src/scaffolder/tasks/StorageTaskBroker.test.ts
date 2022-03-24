@@ -187,7 +187,7 @@ describe('StorageTaskBroker', () => {
       .mockRejectedValue(new Error('nah m8'));
 
     const intervalId = setInterval(() => {
-      broker.vacuumTasks({ timeoutS: 2 }).catch(fail);
+      broker.vacuumTasks({ timeoutS: 2 });
     }, 500);
 
     for (;;) {
