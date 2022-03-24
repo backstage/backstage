@@ -56,7 +56,7 @@
     "@microsoft/tsdoc": "^0.13.2"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.14.0",
+    "@changesets/cli": "2.21.1",
     "@octokit/rest": "^18.12.0",
     "@spotify/prettier-config": "^12.0.0",
     "@types/node": "^14.14.32",
