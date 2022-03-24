@@ -221,7 +221,7 @@ describe('TechDocsStorageClient', () => {
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop
-      await new Promise(setImmediate);
+      await new Promise(r => setTimeout(r));
 
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;
@@ -248,7 +248,7 @@ describe('TechDocsStorageClient', () => {
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop
-      await new Promise(setImmediate);
+      await new Promise(r => setTimeout(r));
 
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;
