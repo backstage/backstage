@@ -36,12 +36,12 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.16.1-next.0",
-    "@types/fs-extra": "^9.0.1",
-    "@types/mock-fs": "^4.13.0",
-    "@types/jest": "^26.0.7",
-    "@types/command-exists": "^1.2.0",
-    "mock-fs": "^5.1.0",
-    "msw": "^0.35.0"
+    "@types/fs-extra": "9.0.13",
+    "@types/mock-fs": "4.13.1",
+    "@types/jest": "26.0.22",
+    "@types/command-exists": "1.2.0",
+    "mock-fs": "5.1.2",
+    "msw": "0.35.0"
   },
   "files": [
     "dist"

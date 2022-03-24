@@ -36,9 +36,9 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.16.1-next.0",
-    "@types/supertest": "^2.0.8",
-    "msw": "^0.35.0",
-    "supertest": "^6.1.6"
+    "@types/supertest": "2.0.11",
+    "msw": "0.35.0",
+    "supertest": "6.2.2"
   },
   "files": [
     "dist"

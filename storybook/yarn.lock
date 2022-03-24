@@ -1310,7 +1310,7 @@
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.2.tgz#830beaec4b4091a9e9398ac50f865ddea52186b9"
   integrity sha512-92FRmppjjqz29VMJ2dn+xdyXZBrMlE42AV6Kq6BwjWV7CNUW1hs2FtxSNLQE+gJhaZ6AAmYuO9y8dshhcBl7vA==
 
-"@storybook/addon-a11y@^6.4.19":
+"@storybook/addon-a11y@6.4.19":
   version "6.4.19"
   resolved "https://registry.npmjs.org/@storybook/addon-a11y/-/addon-a11y-6.4.19.tgz#fb92840b5559b429afe2f28211440a5b5d1b6fcb"
   integrity sha512-dG6easap6W4AqyggVZPq8lBrhza8StA8J4eYz/GVdoXINSGtq/casV0rkmY3+SUXhPYux5oGavHo86j5I4Q/0Q==
@@ -1332,7 +1332,7 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/addon-actions@^6.4.19":
+"@storybook/addon-actions@6.4.19":
   version "6.4.19"
   resolved "https://registry.npmjs.org/@storybook/addon-actions/-/addon-actions-6.4.19.tgz#10631d9c0a6669810264ea7fac3bff7201553084"
   integrity sha512-GpSvP8xV8GfNkmtGJjfCgaOx6mbjtyTK0aT9FqX9pU0s+KVMmoCTrBh43b7dWrwxxas01yleBK9VpYggzhi/Fw==
@@ -1356,7 +1356,7 @@
     util-deprecate "^1.0.2"
     uuid-browser "^3.1.0"
 
-"@storybook/addon-links@^6.4.19":
+"@storybook/addon-links@6.4.19":
   version "6.4.19"
   resolved "https://registry.npmjs.org/@storybook/addon-links/-/addon-links-6.4.19.tgz#001f26c4ffc7d36fd6018b8a137449948b337869"
   integrity sha512-ebFHYlGDQkHSmI5QEJb1NxGNToVOLgjKkxXUe+JXX7AfHvrWiXVrN/57aOtBPZzj4h2jRPRTZgwR5glhPIlfEQ==
@@ -1374,7 +1374,7 @@
     regenerator-runtime "^0.13.7"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-storysource@^6.4.19":
+"@storybook/addon-storysource@6.4.19":
   version "6.4.19"
   resolved "https://registry.npmjs.org/@storybook/addon-storysource/-/addon-storysource-6.4.19.tgz#09ec47b0c9f68ba9590edfcc7bd72984c048d272"
   integrity sha512-WcjPgd0/m9rGMQbf6H2/wvXUhW5lSELWdXeCCK1taQHQUjhs8tq83fa7OkI9kE25drPiUJuPzObbCoYr94hftQ==
@@ -1394,7 +1394,7 @@
     react-syntax-highlighter "^13.5.3"
     regenerator-runtime "^0.13.7"
 
-"@storybook/addons@6.4.19", "@storybook/addons@^6.4.19":
+"@storybook/addons@6.4.19":
   version "6.4.19"
   resolved "https://registry.npmjs.org/@storybook/addons/-/addons-6.4.19.tgz#797d912b8b5a86cd6e0d31fa4c42d1f80808a432"
   integrity sha512-QNyRYhpqmHV8oJxxTBdkRlLSbDFhpBvfvMfIrIT1UXb/eemdBZTaCGVvXZ9UixoEEI7f8VwAQ44IvkU5B1509w==
@@ -1868,7 +1868,7 @@
     react-docgen-typescript "^2.0.0"
     tslib "^2.0.0"
 
-"@storybook/react@^6.4.19":
+"@storybook/react@6.4.19":
   version "6.4.19"
   resolved "https://registry.npmjs.org/@storybook/react/-/react-6.4.19.tgz#1707b785b5a65c867e291ede12113e7fd55f8998"
   integrity sha512-5b3i8jkVrjQGmcxxxXwCduHPIh+cluWkfeweKeQOe+lW4BR8fuUICo3AMLrYPAtB/UcaJyYkIYmTvF2mkfepFA==
@@ -2012,7 +2012,7 @@
     resolve-from "^5.0.0"
     store2 "^2.12.0"
 
-"@sucrase/webpack-loader@^2.0.0":
+"@sucrase/webpack-loader@2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@sucrase/webpack-loader/-/webpack-loader-2.0.0.tgz#b8a70b8d3df3eeb570e6a3315e1a9c6b723e4a37"
   integrity sha512-KUfWr83g70Qm+ZqjGL+M4tX01taDP3BldQcI6NSMlDf7WTDfuo0RvLlS0ekF6dPVslNyZhbFFBy2OBTB6Sa6+Q==
@@ -7032,7 +7032,7 @@ react-docgen@^5.0.0:
     node-dir "^0.1.10"
     strip-indent "^3.0.0"
 
-react-dom@^17.0.2:
+react-dom@17.0.2:
   version "17.0.2"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz#ecffb6845e3ad8dbfcdc498f0d0a939736502c23"
   integrity sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==
@@ -7065,7 +7065,7 @@ react-helmet-async@^1.0.7:
     react-fast-compare "^3.2.0"
     shallowequal "^1.1.0"
 
-react-hot-loader@^4.13.0:
+react-hot-loader@4.13.0:
   version "4.13.0"
   resolved "https://registry.npmjs.org/react-hot-loader/-/react-hot-loader-4.13.0.tgz#c27e9408581c2a678f5316e69c061b226dc6a202"
   integrity sha512-JrLlvUPqh6wIkrK2hZDfOyq/Uh/WeVEr8nc7hkn2/3Ul0sx1Kr5y4kOGNacNRoj7RhwLNcQ3Udf1KJXrqc0ZtA==
@@ -7170,7 +7170,7 @@ react-textarea-autosize@^8.3.0:
     use-composed-ref "^1.0.0"
     use-latest "^1.0.0"
 
-react@^17.0.2:
+react@17.0.2:
   version "17.0.2"
   resolved "https://registry.npmjs.org/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
   integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
@@ -7854,7 +7854,7 @@ store2@^2.12.0:
   resolved "https://registry.npmjs.org/store2/-/store2-2.13.1.tgz#fae7b5bb9d35fc53dc61cd262df3abb2f6e59022"
   integrity sha512-iJtHSGmNgAUx0b/MCS6ASGxb//hGrHHRgzvN+K5bvkBTN7A9RTpPSf1WSp+nPGvWCJ1jRnvY7MKnuqfoi3OEqg==
 
-storybook-dark-mode@^1.0.9:
+storybook-dark-mode@1.0.9:
   version "1.0.9"
   resolved "https://registry.npmjs.org/storybook-dark-mode/-/storybook-dark-mode-1.0.9.tgz#40c15aa340bc700df2fb4f1345250e6fdace0b3a"
   integrity sha512-ITPXM2OSaga1zM5blpZy5HxMWAhrAqYi9aJtLgRtSdgoRrxVNAInDRD14TjmObdgLHNWxINoNbnEB+sKETa+iw==
@@ -8001,7 +8001,7 @@ style-to-object@0.3.0, style-to-object@^0.3.0:
   dependencies:
     inline-style-parser "0.1.1"
 
-sucrase@^3.20.3:
+sucrase@3.20.3:
   version "3.20.3"
   resolved "https://registry.npmjs.org/sucrase/-/sucrase-3.20.3.tgz#424f1e75b77f955724b06060f1ae708f5f0935cf"
   integrity sha512-azqwq0/Bs6RzLAdb4dXxsCgMtAaD2hzmUr4UhSfsxO46JFPAwMnnb441B/qsudZiS6Ylea3JXZe3Q497lsgXzQ==

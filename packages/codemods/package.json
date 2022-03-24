@@ -40,10 +40,10 @@
     "jscodeshift-add-imports": "^1.0.10"
   },
   "devDependencies": {
-    "@types/jscodeshift": "^0.11.0",
-    "@types/node": "^14.14.32",
-    "commander": "^6.1.0",
-    "ts-node": "^10.0.0"
+    "@types/jscodeshift": "0.11.3",
+    "@types/node": "14.17.8",
+    "commander": "6.2.1",
+    "ts-node": "10.7.0"
   },
   "nodemonConfig": {
     "watch": "./src",

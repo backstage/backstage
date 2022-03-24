@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@backstage/backend-common": "^0.13.2-next.0",
-    "@types/jest": "^26.0.7"
+    "@types/jest": "26.0.22"
   },
   "files": [
     "dist"

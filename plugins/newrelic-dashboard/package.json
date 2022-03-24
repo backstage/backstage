@@ -36,9 +36,9 @@
   "devDependencies": {
     "@backstage/cli": "^0.16.1-next.0",
     "@backstage/dev-utils": "^1.0.1-next.0",
-    "@testing-library/jest-dom": "^5.10.1",
-    "@types/react": "^16.13.1 || ^17.0.0",
-    "cross-fetch": "^3.1.5"
+    "@testing-library/jest-dom": "5.16.2",
+    "@types/react": "17.0.39",
+    "cross-fetch": "3.1.5"
   },
   "files": [
     "dist"

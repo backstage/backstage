@@ -59,25 +59,25 @@
     "@backstage/plugin-tech-insights-node": "^0.2.9-next.0",
     "@backstage/plugin-tech-insights-backend-module-jsonfc": "^0.1.15-next.0",
     "@backstage/plugin-todo-backend": "^0.1.28-next.0",
-    "@gitbeaker/node": "^35.1.0",
-    "@octokit/rest": "^18.5.3",
-    "better-sqlite3": "^7.5.0",
-    "azure-devops-node-api": "^11.0.1",
-    "dockerode": "^3.3.1",
+    "@gitbeaker/node": "35.5.0",
+    "@octokit/rest": "18.5.6",
+    "better-sqlite3": "7.5.0",
+    "azure-devops-node-api": "11.1.1",
+    "dockerode": "3.3.1",
     "example-app": "link:../app",
-    "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
-    "express-prom-bundle": "^6.3.6",
-    "pg": "^8.3.0",
-    "pg-connection-string": "^2.3.0",
-    "prom-client": "^14.0.1",
-    "winston": "^3.2.1"
+    "express": "4.17.3",
+    "express-promise-router": "4.1.1",
+    "express-prom-bundle": "6.4.1",
+    "pg": "8.7.3",
+    "pg-connection-string": "2.5.0",
+    "prom-client": "14.0.1",
+    "winston": "3.5.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.16.1-next.0",
-    "@types/dockerode": "^3.3.0",
-    "@types/express": "^4.17.6",
-    "@types/express-serve-static-core": "^4.17.5"
+    "@types/dockerode": "3.3.3",
+    "@types/express": "4.17.13",
+    "@types/express-serve-static-core": "4.17.28"
   },
   "files": [
     "dist"

@@ -60,8 +60,8 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.16.1-next.0",
-    "@types/jest": "^26.0.7",
-    "@types/node": "^14.14.32"
+    "@types/jest": "26.0.22",
+    "@types/node": "14.17.8"
   },
   "files": [
     "dist"

@@ -35,8 +35,8 @@
   "dependencies": {},
   "devDependencies": {
     "@backstage/cli": "^0.16.1-next.0",
-    "@types/zen-observable": "^0.8.0",
-    "zen-observable": "^0.8.15"
+    "@types/zen-observable": "0.8.3",
+    "zen-observable": "0.8.15"
   },
   "files": [
     "dist"

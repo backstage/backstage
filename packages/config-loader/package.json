@@ -51,13 +51,13 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.7",
-    "@types/json-schema-merge-allof": "^0.6.0",
-    "@types/mock-fs": "^4.10.0",
-    "@types/node": "^14.14.32",
-    "@types/yup": "^0.29.13",
-    "mock-fs": "^5.1.0",
-    "msw": "^0.35.0"
+    "@types/jest": "26.0.22",
+    "@types/json-schema-merge-allof": "0.6.1",
+    "@types/mock-fs": "4.13.1",
+    "@types/node": "14.17.8",
+    "@types/yup": "0.29.13",
+    "mock-fs": "5.1.2",
+    "msw": "0.35.0"
   },
   "files": [
     "dist"

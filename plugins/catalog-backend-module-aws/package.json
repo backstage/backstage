@@ -46,9 +46,9 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.16.1-next.0",
-    "@types/lodash": "^4.14.151",
-    "aws-sdk-mock": "^5.2.1",
-    "yaml": "^1.9.2"
+    "@types/lodash": "4.14.178",
+    "aws-sdk-mock": "5.6.2",
+    "yaml": "1.10.2"
   },
   "files": [
     "dist",
