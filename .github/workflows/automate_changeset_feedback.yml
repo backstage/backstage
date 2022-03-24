@@ -1,13 +1,24 @@
 name: Automate changeset feedback
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  pull_request_target:
+
+permissions:
+  pull-requests: write
+  actions: none
+  checks: none
+  contents: none
+  deployments: none
+  issues: none
+  packages: none
+  pages: none
+  repository-projects: none
+  security-events: none
+  statuses: none
 
 jobs:
   feedback:
-    if: github.repository == 'backstage/backstage' # prevent running on forks
+    # prevent running towards forks and version packages
+    if: github.repository == 'backstage/backstage' && github.event.pull_request.user.login != 'backstage-service'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,20 +30,19 @@ jobs:
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
 
-        # We avoid using the in-source script just in case
+        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
       - name: Generate Feedback
         id: generate-feedback
         run: |
+          rm -f generate.js
           wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-changeset-feedback.js 1>&2
           node generate.js FETCH_HEAD > feedback.txt
 
       - name: Post Feedback
         uses: actions/github-script@v5
-        if: github.event.pull_request.user.login != 'backstage-service'
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:
-          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
             const owner = "backstage";
             const repo = "backstage";
