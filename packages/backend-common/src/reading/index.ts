@@ -16,6 +16,7 @@
 
 export { AzureUrlReader } from './AzureUrlReader';
 export { BitbucketUrlReader } from './BitbucketUrlReader';
+export { GerritUrlReader } from './GerritUrlReader';
 export { GithubUrlReader } from './GithubUrlReader';
 export { GitlabUrlReader } from './GitlabUrlReader';
 export { AwsS3UrlReader } from './AwsS3UrlReader';

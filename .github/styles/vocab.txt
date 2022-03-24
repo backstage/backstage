@@ -108,6 +108,7 @@ Francesco
 Gerrit
 gitbeaker
 github
+Gitiles
 gitlab
 GitLab
 Gource

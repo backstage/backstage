@@ -17,6 +17,7 @@ import Docker from 'dockerode';
 import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
+import { GerritIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
@@ -251,6 +252,23 @@ export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;
 }>;
+
+// @public
+export class GerritUrlReader implements UrlReader {
+  constructor(integration: GerritIntegration);
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
 
 // @public
 export function getRootLogger(): winston.Logger;
