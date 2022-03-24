@@ -90,7 +90,7 @@ export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
             noPadding
             titleTypographyProps={{ component: 'h2' }}
           >
-            <Stepper manifest={manifest} />
+            <Stepper manifest={manifest} fields={{}} widgets={{}} />
           </InfoCard>
         )}
       </Content>
