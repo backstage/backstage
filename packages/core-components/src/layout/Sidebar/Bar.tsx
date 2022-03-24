@@ -37,56 +37,52 @@ import { MobileSidebar } from './MobileSidebar';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
-
-const useStyles = ({ sidebarConfig }: { sidebarConfig: SidebarConfig }) =>
-  makeStyles<BackstageTheme>(
-    theme => {
-      return {
-        drawer: {
-          display: 'flex',
-          flexFlow: 'column nowrap',
-          alignItems: 'flex-start',
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          zIndex: theme.zIndex.appBar,
-          background: theme.palette.navigation.background,
-          overflowX: 'hidden',
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
-          width: sidebarConfig.drawerWidthClosed,
-          transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.shortest,
-          }),
-          '& > *': {
-            flexShrink: 0,
-          },
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-        },
-        drawerOpen: {
-          width: sidebarConfig.drawerWidthOpen,
-          transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.shorter,
-          }),
-        },
-        visuallyHidden: {
-          top: 0,
-          position: 'absolute',
-          zIndex: 1000,
-          transform: 'translateY(-200%)',
-          '&:focus': {
-            transform: 'translateY(5px)',
-          },
-        },
-      };
+const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
+  theme => ({
+    drawer: props => ({
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      alignItems: 'flex-start',
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      zIndex: theme.zIndex.appBar,
+      background: theme.palette.navigation.background,
+      overflowX: 'hidden',
+      msOverflowStyle: 'none',
+      scrollbarWidth: 'none',
+      width: props.sidebarConfig.drawerWidthClosed,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shortest,
+      }),
+      '& > *': {
+        flexShrink: 0,
+      },
+      '&::-webkit-scrollbar': {
+        display: 'none',
+      },
+    }),
+    drawerOpen: props => ({
+      width: props.sidebarConfig.drawerWidthOpen,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shorter,
+      }),
+    }),
+    visuallyHidden: {
+      top: 0,
+      position: 'absolute',
+      zIndex: 1000,
+      transform: 'translateY(-200%)',
+      '&:focus': {
+        transform: 'translateY(5px)',
+      },
     },
-    { name: 'BackstageSidebar' },
-  );
+  }),
+  { name: 'BackstageSidebar' },
+);
 
 enum State {
   Closed,
@@ -130,7 +126,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
     children,
   } = props;
 
-  const classes = useStyles({ sidebarConfig })();
+  const classes = useStyles({ sidebarConfig });
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
@@ -250,7 +246,7 @@ export const Sidebar = (props: SidebarProps) => {
 function A11ySkipSidebar() {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { focusContent, contentRef } = useContent();
-  const classes = useStyles({ sidebarConfig })();
+  const classes = useStyles({ sidebarConfig });
 
   if (!contentRef?.current) {
     return null;

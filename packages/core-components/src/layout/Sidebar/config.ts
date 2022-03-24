@@ -20,16 +20,19 @@ const drawerWidthClosed = 72;
 const iconPadding = 24;
 const userBadgePadding = 18;
 
+/** @public **/
 export type SidebarOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
 };
 
+/** @public **/
 export type SubmenuOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
 };
 
+/** @internal **/
 export type SidebarConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
@@ -75,6 +78,7 @@ export const makeSidebarConfig = (
     sidebarConfig.drawerWidthClosed - sidebarConfig.userBadgePadding * 2,
 });
 
+/** @internal **/
 export type SubmenuConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
