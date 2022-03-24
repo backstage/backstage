@@ -17,10 +17,10 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
-import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { ConflictError, NotFoundError } from '@backstage/errors';
+import { AbortSignal } from 'node-abort-controller';
 
 jest.useFakeTimers();
 
@@ -48,6 +48,7 @@ describe('PluginTaskManagerImpl', () => {
         const { manager } = await init(databaseId);
 
         const fn = jest.fn();
+        const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
@@ -55,9 +56,8 @@ describe('PluginTaskManagerImpl', () => {
           fn,
         });
 
-        await waitForExpect(() => {
-          expect(fn).toBeCalled();
-        });
+        await promise;
+        expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
       60_000,
     );
@@ -68,6 +68,7 @@ describe('PluginTaskManagerImpl', () => {
         const { manager } = await init(databaseId);
 
         const fn = jest.fn();
+        const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager.scheduleTask({
           id: 'task2',
           timeout: Duration.fromMillis(5000),
@@ -75,9 +76,8 @@ describe('PluginTaskManagerImpl', () => {
           fn,
         });
 
-        await waitForExpect(() => {
-          expect(fn).toBeCalled();
-        });
+        await promise;
+        expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
       60_000,
     );
@@ -90,6 +90,7 @@ describe('PluginTaskManagerImpl', () => {
         const { manager } = await init(databaseId);
 
         const fn = jest.fn();
+        const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
@@ -101,9 +102,8 @@ describe('PluginTaskManagerImpl', () => {
         await manager.triggerTask('task1');
         jest.advanceTimersByTime(5000);
 
-        await waitForExpect(() => {
-          expect(fn).toBeCalled();
-        });
+        await promise;
+        expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
       60_000,
     );
@@ -158,6 +158,7 @@ describe('PluginTaskManagerImpl', () => {
         const { manager } = await init(databaseId);
 
         const fn = jest.fn();
+        const promise = new Promise(resolve => fn.mockImplementation(resolve));
         await manager
           .createScheduledTaskRunner({
             timeout: Duration.fromMillis(5000),
@@ -168,9 +169,8 @@ describe('PluginTaskManagerImpl', () => {
             fn,
           });
 
-        await waitForExpect(() => {
-          expect(fn).toBeCalled();
-        });
+        await promise;
+        expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
       },
       60_000,
     );
