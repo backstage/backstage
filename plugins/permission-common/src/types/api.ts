@@ -171,7 +171,7 @@ export type EvaluatePermissionResponse =
     };
 
 /**
- * A batch of responses the permission backend.
+ * A batch of responses from the permission backend.
  * @public
  */
 export type EvaluatePermissionResponseBatch =
