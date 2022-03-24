@@ -24,6 +24,14 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 
 jest.useFakeTimers();
 
+function defer() {
+  let resolve = () => {};
+  const promise = new Promise<void>(_resolve => {
+    resolve = _resolve;
+  });
+  return { promise, resolve };
+}
+
 describe('PluginTaskManagerImpl', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
@@ -133,14 +141,19 @@ describe('PluginTaskManagerImpl', () => {
       async databaseId => {
         const { manager } = await init(databaseId);
 
-        const fn = jest.fn();
+        const { promise, resolve } = defer();
+
         await manager.scheduleTask({
           id: 'task1',
           timeout: Duration.fromMillis(5000),
           frequency: Duration.fromObject({ years: 1 }),
-          fn,
+          fn: async () => {
+            resolve();
+            await new Promise(r => setTimeout(r, 20000));
+          },
         });
 
+        await promise;
         await expect(() => manager.triggerTask('task1')).rejects.toThrow(
           ConflictError,
         );
