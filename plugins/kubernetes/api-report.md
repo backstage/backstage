@@ -7,6 +7,9 @@
 
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
+import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
+import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -14,18 +17,118 @@ import type { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { V1ConfigMap } from '@kubernetes/client-node';
+import { V1CronJob } from '@kubernetes/client-node';
+import { V1Deployment } from '@kubernetes/client-node';
+import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { V1Ingress } from '@kubernetes/client-node';
+import { V1Job } from '@kubernetes/client-node';
+import { V1ObjectMeta } from '@kubernetes/client-node';
+import { V1Pod } from '@kubernetes/client-node';
+import { V1ReplicaSet } from '@kubernetes/client-node';
+import { V1Service } from '@kubernetes/client-node';
 
-// Warning: (ae-forgotten-export) The symbol "ClusterLinksFormatter" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "AwsKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class AwsKubernetesAuthProvider implements KubernetesAuthProvider {
+  // (undocumented)
+  decorateRequestBodyForAuth(
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+}
+
+// Warning: (ae-forgotten-export) The symbol "ClusterProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "Cluster" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const Cluster: ({
+  clusterObjects,
+  podsWithErrors,
+}: ClusterProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ClusterContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ClusterContext: React_2.Context<ClusterAttributes>;
+
+// Warning: (ae-missing-release-tag) "ClusterLinksFormatter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type ClusterLinksFormatter = (
+  options: ClusterLinksFormatterOptions,
+) => URL;
+
+// Warning: (ae-missing-release-tag) "ClusterLinksFormatterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface ClusterLinksFormatterOptions {
+  // (undocumented)
+  dashboardParameters?: JsonObject;
+  // (undocumented)
+  dashboardUrl?: URL;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  object: any;
+}
+
 // Warning: (ae-missing-release-tag) "clusterLinksFormatters" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const clusterLinksFormatters: Record<string, ClusterLinksFormatter>;
 
+// Warning: (ae-forgotten-export) The symbol "CronJobsAccordionsProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CronJobsAccordions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CronJobsAccordions: ({}: CronJobsAccordionsProps) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "CustomResourcesProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CustomResources" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CustomResources: ({}: CustomResourcesProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "DeploymentResources" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DeploymentResources {
+  // (undocumented)
+  deployments: V1Deployment[];
+  // (undocumented)
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+  // (undocumented)
+  pods: V1Pod[];
+  // (undocumented)
+  replicaSets: V1ReplicaSet[];
+}
+
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const EntityKubernetesContent: (_props: {}) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "ErrorPanelProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ErrorPanel" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ErrorPanel: ({
+  entityName,
+  errorMessage,
+  clustersWithErrors,
+}: ErrorPanelProps) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "ErrorReportingProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ErrorReporting" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ErrorReporting: ({
+  detectedErrors,
+}: ErrorReportingProps) => JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "FormatClusterLinkOptions" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "formatClusterLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -35,10 +138,83 @@ export function formatClusterLink(
   options: FormatClusterLinkOptions,
 ): string | undefined;
 
+// Warning: (ae-missing-release-tag) "GoogleKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
+  constructor(authProvider: OAuthApi);
+  // (undocumented)
+  authProvider: OAuthApi;
+  // (undocumented)
+  decorateRequestBodyForAuth(
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+}
+
+// Warning: (ae-missing-release-tag) "GoogleServiceAccountAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class GoogleServiceAccountAuthProvider
+  implements KubernetesAuthProvider
+{
+  // (undocumented)
+  decorateRequestBodyForAuth(
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+}
+
+// Warning: (ae-missing-release-tag) "GroupedResponses" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface GroupedResponses extends DeploymentResources {
+  // (undocumented)
+  configMaps: V1ConfigMap[];
+  // (undocumented)
+  cronJobs: V1CronJob[];
+  // (undocumented)
+  customResources: any[];
+  // (undocumented)
+  ingresses: V1Ingress[];
+  // (undocumented)
+  jobs: V1Job[];
+  // (undocumented)
+  services: V1Service[];
+}
+
+// Warning: (ae-missing-release-tag) "GroupedResponsesContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const GroupedResponsesContext: React_2.Context<GroupedResponses>;
+
+// Warning: (ae-missing-release-tag) "HorizontalPodAutoscalerDrawer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const HorizontalPodAutoscalerDrawer: ({
+  hpa,
+  expanded,
+  children,
+}: {
+  hpa: V1HorizontalPodAutoscaler;
+  expanded?: boolean | undefined;
+  children?: React_2.ReactNode;
+}) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "IngressesAccordionsProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "IngressesAccordions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const IngressesAccordions: ({}: IngressesAccordionsProps) => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "isKubernetesAvailable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const isKubernetesAvailable: (entity: Entity) => boolean;
+
+// Warning: (ae-forgotten-export) The symbol "JobsAccordionsProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "JobsAccordions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const JobsAccordions: ({ jobs }: JobsAccordionsProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "KubernetesApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -111,6 +287,38 @@ export class KubernetesBackendClient implements KubernetesApi {
   ): Promise<ObjectsByEntityResponse>;
 }
 
+// Warning: (ae-forgotten-export) The symbol "KubernetesContentProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "KubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const KubernetesContent: ({
+  entity,
+}: KubernetesContentProps) => JSX.Element;
+
+// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerable" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "KubernetesDrawerProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "KubernetesDrawer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const KubernetesDrawer: <T extends KubernetesDrawerable>({
+  object,
+  renderObject,
+  kind,
+  buttonVariant,
+  expanded,
+  children,
+}: KubernetesDrawerProps<T>) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "KubernetesObjects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface KubernetesObjects {
+  // (undocumented)
+  error: string | undefined;
+  // (undocumented)
+  kubernetesObjects: ObjectsByEntityResponse | undefined;
+}
+
 // Warning: (ae-missing-release-tag) "kubernetesPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -123,9 +331,67 @@ const kubernetesPlugin: BackstagePlugin<
 export { kubernetesPlugin };
 export { kubernetesPlugin as plugin };
 
+// Warning: (ae-missing-release-tag) "PodDrawer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const PodDrawer: ({
+  pod,
+  expanded,
+}: {
+  pod: V1Pod;
+  expanded?: boolean | undefined;
+}) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "PodNamesWithErrorsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const PodNamesWithErrorsContext: React_2.Context<Set<string>>;
+
+// Warning: (ae-missing-release-tag) "PodNamesWithMetricsContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const PodNamesWithMetricsContext: React_2.Context<
+  Map<string, ClientPodStatus>
+>;
+
+// Warning: (ae-forgotten-export) The symbol "PodsTablesProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "PodsTable" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const PodsTable: ({
+  pods,
+  extraColumns,
+}: PodsTablesProps) => JSX.Element;
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Router" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const Router: (_props: Props) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "ServiceAccountKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class ServiceAccountKubernetesAuthProvider
+  implements KubernetesAuthProvider
+{
+  // (undocumented)
+  decorateRequestBodyForAuth(
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody>;
+}
+
+// Warning: (ae-forgotten-export) The symbol "ServicesAccordionsProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "ServicesAccordions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const ServicesAccordions: ({}: ServicesAccordionsProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "useKubernetesObjects" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const useKubernetesObjects: (
+  entity: Entity,
+  intervalMs?: number,
+) => KubernetesObjects;
 ```
