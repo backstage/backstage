@@ -17,7 +17,6 @@
 import { useApi } from '@backstage/core-plugin-api';
 import { permissionApiRef } from '../apis';
 import {
-  AuthorizeQuery,
   AuthorizeResult,
   isResourcePermission,
   Permission,
@@ -72,7 +71,7 @@ export function usePermission(
       return AuthorizeResult.DENY;
     }
 
-    const { result } = await permissionApi.authorize(args as AuthorizeQuery);
+    const { result } = await permissionApi.authorize(args);
     return result;
   });
 
