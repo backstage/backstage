@@ -96,7 +96,7 @@ export const MyCustomFieldExtension = plugin.provide(
 ```tsx
 // packages/app/src/scaffolder/MyCustomExtension/index.ts
 
-export { MyCustomFieldExtension } from './extension';
+export { MyCustomFieldExtension } from './extensions';
 ```
 
 Once all these files are in place, you then need to provide your custom
@@ -119,6 +119,8 @@ Should look something like this instead:
 
 ```tsx
 import { MyCustomFieldExtension } from './scaffolder/MyCustomExtension';
+import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder';
+
 const routes = (
   <FlatRoutes>
     ...
