@@ -28,7 +28,7 @@ import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import waitForExpect from 'wait-for-expect';
 
-jest.useFakeTimers();
+jest.useFakeTimers('legacy');
 
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
@@ -145,7 +145,7 @@ describe('FactRetrieverEngine', () => {
   }
 
   it.each(databases.eachSupportedId())(
-    'Should update fact retriever schemas on initialization',
+    'Should update fact retriever schemas on initialization with %s',
     async databaseId => {
       const schemaAssertionCallback = jest.fn((def: FactSchemaDefinition) => {
         expect(def.id).toEqual('test_factretriever');
@@ -170,7 +170,7 @@ describe('FactRetrieverEngine', () => {
   );
 
   it.each(databases.eachSupportedId())(
-    'Should insert facts when scheduled step is run',
+    'Should insert facts when scheduled step is run with %s',
     async databaseId => {
       function insertCallback({
         facts,
