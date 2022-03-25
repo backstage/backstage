@@ -97,6 +97,7 @@ async function loadChangesets(filePaths) {
       );
 
       const bumps = new Map();
+      bumps.toJSON = () => Object.fromEntries(bumps);
       for (const line of lines) {
         const match = line.match(/^'(.*)': (patch|minor|major)$/);
         if (!match) {
@@ -124,7 +125,7 @@ async function listChangedPackages(changedFiles, packages) {
   const changedPackageMap = new Map();
   for (const filePath of changedFiles) {
     for (const pkg of packages) {
-      if (filePath.startsWith(pkg.path)) {
+      if (filePath.startsWith(`${pkg.path}/`)) {
         const pkgPath = relativePath(pkg.path, filePath);
         if (!isPublishedPath(pkgPath)) {
           break;
