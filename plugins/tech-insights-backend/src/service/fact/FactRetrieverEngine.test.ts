@@ -26,9 +26,8 @@ import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
-import waitForExpect from 'wait-for-expect';
 
-jest.useFakeTimers('legacy');
+jest.useFakeTimers();
 
 const testFactRetriever: FactRetriever = {
   id: 'test_factretriever',
@@ -193,7 +192,14 @@ describe('FactRetrieverEngine', () => {
         });
       }
 
-      engine = await createEngine(databaseId, insertCallback, () => {});
+      const handler = jest.fn();
+      engine = await createEngine(
+        databaseId,
+        insertCallback,
+        () => {},
+        undefined,
+        { ...testFactRetriever, handler },
+      );
       await engine.schedule();
       const job: FactRetrieverRegistration = engine.getJobRegistration(
         testFactRetriever.id,
@@ -203,13 +209,15 @@ describe('FactRetrieverEngine', () => {
       await engine.triggerJob(job.factRetriever.id);
       jest.advanceTimersByTime(5000);
 
-      await waitForExpect(() => {
-        expect(testFactRetriever.handler).toHaveBeenCalledWith(
-          expect.objectContaining({
-            entityFilter: testFactRetriever.entityFilter,
-          }),
-        );
-      });
+      const handlerParam = await new Promise(resolve =>
+        handler.mockImplementation(resolve),
+      );
+
+      await expect(handlerParam).toEqual(
+        expect.objectContaining({
+          entityFilter: testFactRetriever.entityFilter,
+        }),
+      );
     },
     60_000,
   );
