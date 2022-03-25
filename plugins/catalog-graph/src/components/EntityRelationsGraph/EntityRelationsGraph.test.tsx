@@ -21,6 +21,7 @@ import {
   RELATION_OWNER_OF,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import { DependencyGraphTypes } from '@backstage/core-components';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
@@ -30,6 +31,7 @@ import { EntityRelationsGraph } from './EntityRelationsGraph';
 describe('<EntityRelationsGraph/>', () => {
   let Wrapper: FunctionComponent;
   let catalog: jest.Mocked<CatalogApi>;
+  const CUSTOM_TEST_ID = 'custom-test-id';
 
   beforeAll(() => {
     Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
@@ -377,5 +379,50 @@ describe('<EntityRelationsGraph/>', () => {
 
     userEvent.click(await findByText('k:d/a1'));
     expect(onNodeClick).toBeCalledTimes(1);
+  });
+
+  test('render custom node', async () => {
+    const renderNode = (props: DependencyGraphTypes.RenderNodeProps) => (
+      <g>
+        <text>{props.node.id}</text>
+        <circle data-testid={CUSTOM_TEST_ID} r={100} />
+      </g>
+    );
+
+    const { findAllByTestId, container } = await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+          renderNode={renderNode}
+        />
+      </Wrapper>,
+    );
+
+    const node = await findAllByTestId(CUSTOM_TEST_ID);
+    expect(node[0]).toBeInTheDocument();
+    expect(container.querySelector('circle')).toBeInTheDocument();
+  });
+
+  test('render custom label', async () => {
+    const renderLabel = (props: DependencyGraphTypes.RenderLabelProps) => (
+      <g>
+        <text>{`Test-Label${props.edge.label}`}</text>
+        <circle data-testid={CUSTOM_TEST_ID} r={100} />
+      </g>
+    );
+
+    const { findAllByTestId, findAllByText, container } = await renderInTestApp(
+      <Wrapper>
+        <EntityRelationsGraph
+          rootEntityNames={{ kind: 'b', namespace: 'd', name: 'c' }}
+          renderLabel={renderLabel}
+        />
+      </Wrapper>,
+    );
+    const node = await findAllByTestId(CUSTOM_TEST_ID);
+    expect(node[0]).toBeInTheDocument();
+    expect(container.querySelector('circle')).toBeInTheDocument();
+    const labels = await findAllByText('Test-Labelvisible');
+    expect(labels[0]).toBeInTheDocument();
   });
 });

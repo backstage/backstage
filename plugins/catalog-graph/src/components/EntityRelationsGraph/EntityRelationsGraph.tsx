@@ -28,7 +28,7 @@ import React, { MouseEvent, useEffect, useMemo } from 'react';
 import { CustomLabel } from './CustomLabel';
 import { CustomNode } from './CustomNode';
 import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
-import { Direction, EntityNode } from './types';
+import { Direction, EntityEdge, EntityNode } from './types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
 const useStyles = makeStyles(theme => ({
@@ -79,6 +79,8 @@ export const EntityRelationsGraph = ({
   relationPairs = ALL_RELATION_PAIRS,
   className,
   zoom = 'enabled',
+  renderNode,
+  renderLabel,
 }: {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number;
@@ -91,6 +93,8 @@ export const EntityRelationsGraph = ({
   relationPairs?: RelationPairs;
   className?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
+  renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
+  renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
 }) => {
   const theme = useTheme();
   const classes = useStyles();
@@ -127,8 +131,8 @@ export const EntityRelationsGraph = ({
         <DependencyGraph
           nodes={nodes}
           edges={edges}
-          renderNode={CustomNode}
-          renderLabel={CustomLabel}
+          renderNode={renderNode || CustomNode}
+          renderLabel={renderLabel || CustomLabel}
           direction={direction}
           className={classes.graph}
           paddingX={theme.spacing(4)}
