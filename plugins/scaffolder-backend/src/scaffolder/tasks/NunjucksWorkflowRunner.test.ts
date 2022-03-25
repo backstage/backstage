@@ -25,6 +25,9 @@ import { ConfigReader } from '@backstage/config';
 import { TaskContext, TaskSecrets } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
+// The Stream module is lazy loaded, so make sure it's in the module cache before mocking fs
+void winston.transports.Stream;
+
 const realFiles = Object.fromEntries(
   [
     resolvePackagePath(

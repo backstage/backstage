@@ -26,7 +26,6 @@ import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
-import waitForExpect from 'wait-for-expect';
 
 jest.useFakeTimers();
 
@@ -145,7 +144,7 @@ describe('FactRetrieverEngine', () => {
   }
 
   it.each(databases.eachSupportedId())(
-    'Should update fact retriever schemas on initialization',
+    'Should update fact retriever schemas on initialization with %s',
     async databaseId => {
       const schemaAssertionCallback = jest.fn((def: FactSchemaDefinition) => {
         expect(def.id).toEqual('test_factretriever');
@@ -170,7 +169,7 @@ describe('FactRetrieverEngine', () => {
   );
 
   it.each(databases.eachSupportedId())(
-    'Should insert facts when scheduled step is run',
+    'Should insert facts when scheduled step is run with %s',
     async databaseId => {
       function insertCallback({
         facts,
@@ -193,7 +192,14 @@ describe('FactRetrieverEngine', () => {
         });
       }
 
-      engine = await createEngine(databaseId, insertCallback, () => {});
+      const handler = jest.fn();
+      engine = await createEngine(
+        databaseId,
+        insertCallback,
+        () => {},
+        undefined,
+        { ...testFactRetriever, handler },
+      );
       await engine.schedule();
       const job: FactRetrieverRegistration = engine.getJobRegistration(
         testFactRetriever.id,
@@ -203,13 +209,15 @@ describe('FactRetrieverEngine', () => {
       await engine.triggerJob(job.factRetriever.id);
       jest.advanceTimersByTime(5000);
 
-      await waitForExpect(() => {
-        expect(testFactRetriever.handler).toHaveBeenCalledWith(
-          expect.objectContaining({
-            entityFilter: testFactRetriever.entityFilter,
-          }),
-        );
-      });
+      const handlerParam = await new Promise(resolve =>
+        handler.mockImplementation(resolve),
+      );
+
+      await expect(handlerParam).toEqual(
+        expect.objectContaining({
+          entityFilter: testFactRetriever.entityFilter,
+        }),
+      );
     },
     60_000,
   );

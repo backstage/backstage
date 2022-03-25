@@ -131,11 +131,11 @@ describe('TaskWorker', () => {
         cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
-
-      const worker = new TaskWorker('task1', fn, knex, logger);
+      const checkFrequency = Duration.fromObject({ milliseconds: 100 });
+      const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
       worker.start(settings);
 
-      waitForExpect(() => {
+      await waitForExpect(() => {
         expect(fn).toBeCalledTimes(3);
       });
     },

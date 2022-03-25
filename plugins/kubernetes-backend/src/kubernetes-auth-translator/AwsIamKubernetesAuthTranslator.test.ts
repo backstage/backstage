@@ -16,7 +16,6 @@
 import AWS from 'aws-sdk';
 import AWSMock from 'aws-sdk-mock';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
-import { get, def } from 'bdd-lazy-var';
 
 describe('AwsIamKubernetesAuthTranslator tests', () => {
   let role: any = undefined;
@@ -48,7 +47,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
     jest.resetAllMocks();
   });
 
-  def('subject', () => {
+  function executeTranslation() {
     AWSMock.mock('STS', 'assumeRole', (_params: any, callback: Function) => {
       callback(null, assumeResponse);
     });
@@ -71,7 +70,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
     mockedCredentials = undefined;
 
     return response;
-  });
+  }
 
   it('returns a signed url for AWS credentials', async () => {
     // These credentials are not real.
@@ -81,8 +80,8 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
     );
 
-    const subject = await get('subject');
-    expect(subject.serviceAccountToken).toBeDefined();
+    const response = await executeTranslation();
+    expect(response.serviceAccountToken).toBeDefined();
   });
 
   describe('When the role is assumed', () => {
@@ -96,15 +95,17 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
 
     describe('When the role is valid', () => {
       it('returns a signed url for AWS credentials', async () => {
-        const subject = await get('subject');
-        expect(subject.serviceAccountToken).toBeDefined();
+        const response = await executeTranslation();
+        expect(response.serviceAccountToken).toBeDefined();
       });
     });
 
     describe('When the role is invalid', () => {
       it('returns the original AWS credentials', async () => {
         assumeResponse = undefined;
-        await expect(get('subject')).rejects.toThrow(/Unable to assume role:/);
+        await expect(executeTranslation()).rejects.toThrow(
+          /Unable to assume role:/,
+        );
       });
     });
   });
@@ -112,7 +113,9 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
   describe('When no AWS creds are available', () => {
     it('throws unable to get AWS credentials', async () => {
       mockedCredentials = new Error();
-      await expect(get('subject')).rejects.toThrow('No AWS credentials found.');
+      await expect(executeTranslation()).rejects.toThrow(
+        'No AWS credentials found.',
+      );
     });
   });
 
@@ -123,7 +126,7 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
         'AKIAIOSFODNN7EXAMPLE',
         undefinedSecret,
       );
-      await expect(get('subject')).rejects.toThrow(
+      await expect(executeTranslation()).rejects.toThrow(
         'Invalid AWS credentials found.',
       );
     });

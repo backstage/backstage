@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
 import * as winston from 'winston';
 
 /**
@@ -24,6 +23,6 @@ import * as winston from 'winston';
  */
 export function getVoidLogger(): winston.Logger {
   return winston.createLogger({
-    transports: [new winston.transports.Stream({ stream: new PassThrough() })],
+    transports: [new winston.transports.Console({ silent: true })],
   });
 }
