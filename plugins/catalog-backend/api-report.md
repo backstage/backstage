@@ -16,6 +16,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
+import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -457,6 +458,12 @@ export type LocationSpec = {
   target: string;
   presence?: 'optional' | 'required';
 };
+
+// @public (undocumented)
+export function locationSpecToLocationEntity(opts: {
+  location: LocationSpec;
+  parentEntity?: Entity;
+}): LocationEntityV1alpha1;
 
 // @public (undocumented)
 export function parseEntityYaml(
