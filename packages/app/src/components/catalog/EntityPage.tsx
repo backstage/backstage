@@ -362,19 +362,19 @@ const overviewContent = (
 
 const serviceEntityPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       {overviewContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/ci-cd" title="CI/CD">
+    <EntityLayout.Route path="ci-cd" title="CI/CD">
       {cicdContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/errors" title="Errors">
+    <EntityLayout.Route path="errors" title="Errors">
       {errorsContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/api" title="API">
+    <EntityLayout.Route path="api" title="API">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item xs={12} md={6}>
           <EntityProvidedApisCard />
@@ -385,7 +385,7 @@ const serviceEntityPage = (
       </Grid>
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/dependencies" title="Dependencies">
+    <EntityLayout.Route path="dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item xs={12} md={6}>
           <EntityDependsOnComponentsCard variant="gridItem" />
@@ -396,39 +396,39 @@ const serviceEntityPage = (
       </Grid>
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/docs" title="Docs">
+    <EntityLayout.Route path="docs" title="Docs">
       <EntityTechdocsContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
-      path="/newrelic-dashboard"
+      path="newrelic-dashboard"
       title="New Relic Dashboard"
     >
       <EntityNewRelicDashboardContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
+    <EntityLayout.Route path="kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
+    <EntityLayout.Route path="pull-requests" title="Pull Requests">
       {pullRequestsContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/code-insights" title="Code Insights">
+    <EntityLayout.Route path="code-insights" title="Code Insights">
       <EntityGithubInsightsContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
+    <EntityLayout.Route path="code-coverage" title="Code Coverage">
       <EntityCodeCoverageContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/kafka" title="Kafka">
+    <EntityLayout.Route path="kafka" title="Kafka">
       <EntityKafkaContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/todos" title="TODOs">
+    <EntityLayout.Route path="todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
@@ -436,23 +436,23 @@ const serviceEntityPage = (
 
 const websiteEntityPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       {overviewContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/ci-cd" title="CI/CD">
+    <EntityLayout.Route path="ci-cd" title="CI/CD">
       {cicdContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/lighthouse" title="Lighthouse">
+    <EntityLayout.Route path="lighthouse" title="Lighthouse">
       <EntityLighthouseContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/errors" title="Errors">
+    <EntityLayout.Route path="errors" title="Errors">
       {errorsContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/dependencies" title="Dependencies">
+    <EntityLayout.Route path="dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
           <EntityDependsOnComponentsCard variant="gridItem" />
@@ -463,34 +463,34 @@ const websiteEntityPage = (
       </Grid>
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/docs" title="Docs">
+    <EntityLayout.Route path="docs" title="Docs">
       <EntityTechdocsContent />
     </EntityLayout.Route>
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
-      path="/newrelic-dashboard"
+      path="newrelic-dashboard"
       title="New Relic Dashboard"
     >
       <EntityNewRelicDashboardContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
+    <EntityLayout.Route path="kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
+    <EntityLayout.Route path="pull-requests" title="Pull Requests">
       {pullRequestsContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/code-insights" title="Code Insights">
+    <EntityLayout.Route path="code-insights" title="Code Insights">
       <EntityGithubInsightsContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
+    <EntityLayout.Route path="code-coverage" title="Code Coverage">
       <EntityCodeCoverageContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/todos" title="TODOs">
+    <EntityLayout.Route path="todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
@@ -498,15 +498,15 @@ const websiteEntityPage = (
 
 const defaultEntityPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       {overviewContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/docs" title="Docs">
+    <EntityLayout.Route path="docs" title="Docs">
       <EntityTechdocsContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/todos" title="TODOs">
+    <EntityLayout.Route path="todos" title="TODOs">
       <EntityTodoContent />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
@@ -528,7 +528,7 @@ const componentPage = (
 
 const apiPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item md={6} xs={12}>
@@ -550,7 +550,7 @@ const apiPage = (
       </Grid>
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/definition" title="Definition">
+    <EntityLayout.Route path="definition" title="Definition">
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <EntityApiDefinitionCard />
@@ -562,7 +562,7 @@ const apiPage = (
 
 const userPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item xs={12} md={6}>
@@ -581,7 +581,7 @@ const userPage = (
 
 const groupPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item xs={12} md={6}>
@@ -603,7 +603,7 @@ const groupPage = (
 
 const systemPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       <Grid container spacing={3} alignItems="stretch">
         {entityWarningContent}
         <Grid item md={6}>
@@ -623,7 +623,7 @@ const systemPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
-    <EntityLayout.Route path="/diagram" title="Diagram">
+    <EntityLayout.Route path="diagram" title="Diagram">
       <EntityCatalogGraphCard
         variant="gridItem"
         direction={Direction.TOP_BOTTOM}
@@ -647,7 +647,7 @@ const systemPage = (
 
 const domainPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="/" title="Overview">
+    <EntityLayout.Route path="." title="Overview">
       <Grid container spacing={3} alignItems="stretch">
         {entityWarningContent}
         <Grid item md={6}>
