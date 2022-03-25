@@ -55,6 +55,7 @@ export const Stepper = (props: StepperProps) => {
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
+
   return (
     <>
       <MuiStepper activeStep={activeStep} alternativeLabel variant="elevation">

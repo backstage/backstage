@@ -17,8 +17,6 @@ import { JsonObject } from '@backstage/types';
 import { UiSchema } from '@rjsf/core';
 import { JSONSchema7 } from 'json-schema';
 
-import { TemplateParameterSchema } from '../../../types';
-
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -101,6 +99,10 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
   }
 }
 
+/**
+ * @alpha
+ * Takes a step from a Backstage Template Manifest and converts it to a JSON Schema and UI Schema for rjsf
+ */
 export const extractSchemaFromStep = (
   inputStep: JSONSchema7,
 ): { uiSchema: UiSchema; schema: JSONSchema7 } => {

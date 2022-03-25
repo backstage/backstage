@@ -15,7 +15,6 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { TemplateParameterSchema } from '../../../types';
 import { extractSchemaFromStep } from './schema';
 
 describe('extractSchemaFromStep', () => {
