@@ -64,7 +64,7 @@ describe('EntityPage Test', () => {
         >
           <EntityProvider entity={entity}>
             <EntityLayout>
-              <EntityLayout.Route path="/ci-cd" title="CI-CD">
+              <EntityLayout.Route path="ci-cd" title="CI-CD">
                 {cicdContent}
               </EntityLayout.Route>
             </EntityLayout>
