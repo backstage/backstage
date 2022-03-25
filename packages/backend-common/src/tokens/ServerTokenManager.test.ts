@@ -134,7 +134,7 @@ describe('ServerTokenManager', () => {
 
     it('should throw for server tokens created using a noop TokenManager', async () => {
       const noopTokenManager = ServerTokenManager.noop();
-      const tokenManager = await ServerTokenManager.fromConfig(
+      const tokenManager = ServerTokenManager.fromConfig(
         new ConfigReader({
           backend: { auth: { keys: [{ secret: 'a1b2c3' }] } },
         }),
