@@ -4,5 +4,5 @@ metadata:
   name: podcast
   description: Podcast playback
 spec:
-  owner: team-b
+  owner: user:team-b
   domain: playback
