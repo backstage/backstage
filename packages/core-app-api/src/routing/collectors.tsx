@@ -120,7 +120,7 @@ export const routeParentCollector = createCollector(
 // mount points that are as deep in the routing tree as possible.
 export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   caseSensitive: false,
-  path: '/*',
+  path: '*',
   element: 'match-all', // These elements aren't used, so we add in a bit of debug information
   routeRefs: new Set(),
 };
