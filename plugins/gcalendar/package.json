@@ -34,7 +34,7 @@
     "dompurify": "^2.3.6",
     "lodash": "^4.17.21",
     "luxon": "^2.3.0",
-    "material-ui-popup-state": "^1.9.3",
+    "material-ui-popup-state": "^2.0.0",
     "react-query": "^3.34.16",
     "react-use": "^17.2.4"
   },
