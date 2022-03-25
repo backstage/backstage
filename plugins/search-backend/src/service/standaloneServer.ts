@@ -43,7 +43,7 @@ export async function startStandaloneServer(
   const searchEngine = new LunrSearchEngine({ logger });
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const tokenManager = await ServerTokenManager.fromConfig(config, {
+  const tokenManager = ServerTokenManager.fromConfig(config, {
     logger,
   });
   const permissions = ServerPermissionClient.fromConfig(config, {

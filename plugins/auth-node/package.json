@@ -36,9 +36,6 @@
     "msw": "^0.35.0",
     "uuid": "^8.0.0"
   },
-  "jest": {
-    "testEnvironment": "node"
-  },
   "files": [
     "dist"
   ]
