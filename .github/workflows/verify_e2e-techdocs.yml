@@ -1,6 +1,10 @@
 name: E2E Test Techdocs
 on:
   pull_request:
+    paths:
+      - 'packages/techdocs-cli/**'
+      - 'packages/techdocs-cli-embedded-app/**'
+      - 'plugins/techdocs/**'
     paths-ignore:
       - '.changeset/**'
       - 'contrib/**'
