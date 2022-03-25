@@ -41,7 +41,15 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const element = useRoutes(sortedRoutes) ?? subRoutes[0].children;
 
-  const [matchedRoute] = matchRoutes(sortedRoutes, `/${params['*']}`) ?? [];
+  // TODO(Rugvip): Once we only support v6 stable we can always prefix
+  // This avoids having a double / prefix for react-router v6 beta, which in turn breaks
+  // the tab highlighting when using relative paths for the tabs.
+  let currentRoute = params['*'] ?? '';
+  if (!currentRoute.startsWith('/')) {
+    currentRoute = `/${currentRoute}`;
+  }
+
+  const [matchedRoute] = matchRoutes(sortedRoutes, currentRoute) ?? [];
   const foundIndex = matchedRoute
     ? subRoutes.findIndex(t => `${t.path}/*` === matchedRoute.route.path)
     : 0;
