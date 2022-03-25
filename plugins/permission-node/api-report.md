@@ -20,7 +20,8 @@ import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PolicyDecision, ResourcePermission } from '@backstage/plugin-permission-common';
+import { PolicyDecision } from '@backstage/plugin-permission-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
