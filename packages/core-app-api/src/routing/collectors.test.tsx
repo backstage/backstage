@@ -109,7 +109,7 @@ function routeObj(
     routeRefs: new Set(refs),
     children: [
       {
-        path: '/*',
+        path: '*',
         caseSensitive: false,
         element: 'match-all',
         routeRefs: new Set(),
