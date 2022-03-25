@@ -211,7 +211,7 @@ export class JenkinsApiImpl {
       build.actions
         .filter(
           (action: any) =>
-            action._class === 'hudson.plugins.git.util.BuildData',
+            action?._class === 'hudson.plugins.git.util.BuildData',
         )
         .map((action: any) => {
           const [first]: any = Object.values(action.buildsByBranchName);
@@ -253,7 +253,7 @@ export class JenkinsApiImpl {
     const scmInfo: ScmDetails | undefined = project.actions
       .filter(
         (action: any) =>
-          action._class === 'jenkins.scm.api.metadata.ObjectMetadataAction',
+          action?._class === 'jenkins.scm.api.metadata.ObjectMetadataAction',
       )
       .map((action: any) => {
         return {
@@ -272,7 +272,7 @@ export class JenkinsApiImpl {
     const author = project.actions
       .filter(
         (action: any) =>
-          action._class ===
+          action?._class ===
           'jenkins.scm.api.metadata.ContributorMetadataAction',
       )
       .map((action: any) => {
@@ -297,7 +297,7 @@ export class JenkinsApiImpl {
     return build.actions
       .filter(
         (action: any) =>
-          action._class === 'hudson.tasks.junit.TestResultAction',
+          action?._class === 'hudson.tasks.junit.TestResultAction',
       )
       .map((action: any) => {
         return {
