@@ -6,8 +6,8 @@
 /// <reference types="node" />
 
 import { Config } from '@backstage/config';
-import { DocumentCollatorFactory } from '@backstage/search-common';
-import { IndexableDocument } from '@backstage/search-common';
+import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { Readable } from 'stream';
 

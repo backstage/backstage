@@ -29,8 +29,8 @@ When you have your `packages/app/src/components/search/SearchPage.tsx` file read
  case 'stack-overflow':
   return (
     <StackOverflowSearchResultListItem
-      key={result.document.location}
-      result={result.document}
+      key={document.location}
+      result={document}
     />
   );
 ```

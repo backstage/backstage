@@ -33,13 +33,14 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/search-common": "^0.3.1",
-    "@backstage/config": "^0.1.15",
-    "qs": "^6.10.3",
+    "@backstage/plugin-search-common": "^0.3.3-next.0",
+    "@backstage/config": "^1.0.0",
+    "qs": "^6.9.4",
     "cross-fetch": "^3.1.5",
-    "winston": "^3.6.0"
+    "winston": "^3.2.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "config"
   ]
 }

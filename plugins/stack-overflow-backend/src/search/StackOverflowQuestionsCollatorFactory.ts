@@ -17,7 +17,7 @@
 import {
   IndexableDocument,
   DocumentCollatorFactory,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import fetch from 'cross-fetch';
@@ -77,7 +77,9 @@ export class StackOverflowQuestionsCollatorFactory
     config: Config,
     options: StackOverflowQuestionsCollatorFactoryOptions,
   ) {
-    const baseUrl = config.getString('stackoverflow.baseUrl');
+    const baseUrl =
+      config.getOptionalString('stackoverflow.baseUrl') ||
+      'https://api.stackexchange.com/2.2';
     return new StackOverflowQuestionsCollatorFactory({ ...options, baseUrl });
   }
 
@@ -91,9 +93,11 @@ export class StackOverflowQuestionsCollatorFactory
         `No stackoverflow.baseUrl configured in your app-config.yaml`,
       );
     }
-    const params = this.requestParams
-      ? `?${qs.stringify(this.requestParams, { arrayFormat: 'comma' })}`
-      : '';
+    const params = qs.stringify(this.requestParams, {
+      arrayFormat: 'comma',
+      addQueryPrefix: true,
+    });
+
     const res = await fetch(`${this.baseUrl}/questions${params}`);
     const data = await res.json();
 

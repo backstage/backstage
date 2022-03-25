@@ -41,12 +41,14 @@ import {
 export const Content = (props: StackOverflowQuestionsContentProps) => {
   const { requestParams } = props;
   const configApi = useApi(configApiRef);
-  const baseUrl = configApi.getOptionalString('stackoverflow.baseUrl');
+  const baseUrl =
+    configApi.getOptionalString('stackoverflow.baseUrl') ||
+    'https://api.stackexchange.com/2.2';
 
   const { value, loading, error } = useAsync(async (): Promise<
     StackOverflowQuestion[]
   > => {
-    const params = requestParams ? `?${qs.stringify(requestParams)}` : '';
+    const params = qs.stringify(requestParams, { addQueryPrefix: true });
     const response = await fetch(`${baseUrl}/questions${params}`);
     const data = await response.json();
     return data.items;
