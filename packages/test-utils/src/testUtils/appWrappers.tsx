@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, ReactNode, ReactElement } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, Routes } from 'react-router';
 import { Route } from 'react-router-dom';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -69,6 +69,8 @@ const BootErrorPage = ({ step, error }: BootErrorPageProps) => {
   throw new Error(`Reached BootError Page at step ${step} with error ${error}`);
 };
 const Progress = () => <div data-testid="progress" />;
+
+const NoRender = (_props: { children: ReactNode }) => null;
 
 /**
  * Options to customize the behavior of the test app wrapper.
@@ -190,10 +192,12 @@ export function wrapInTestApp(
   return (
     <AppProvider>
       <AppRouter>
-        {routeElements}
+        <NoRender>{routeElements}</NoRender>
         {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
          *  and work with nested routes if they exist too */}
-        <Route path="*" element={wrappedElement} />
+        <Routes>
+          <Route path="/*" element={wrappedElement} />
+        </Routes>
       </AppRouter>
     </AppProvider>
   );
