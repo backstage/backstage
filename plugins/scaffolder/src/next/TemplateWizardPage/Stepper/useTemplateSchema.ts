@@ -13,15 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { UiSchema } from '@rjsf/core';
-import { JSONSchema7 } from 'json-schema';
 import { TemplateParameterSchema } from '../../../types';
 import { extractSchemaFromStep } from './schema';
 
 export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
-): { steps: { uiSchema: UiSchema; schema: JSONSchema7 }[] } => {
+): { steps: { uiSchema: UiSchema; schema: JsonObject }[] } => {
+  const featureFlags = useApi(featureFlagsApiRef);
+  const steps = manifest.steps.map(({ schema }) =>
+    extractSchemaFromStep(schema),
+  );
+
+  const returningSteps = steps
+    .filter(step => {
+      const stepFeatureFlag = step.uiSchema['ui:backstage']?.featureFlag;
+      return stepFeatureFlag ? featureFlags.isActive(stepFeatureFlag) : true;
+    })
+    .map(step => ({
+      uiSchema: step.uiSchema,
+      schema: {
+        ...step.schema,
+        properties: Object.fromEntries(
+          Object.entries(step.schema.properties as JsonObject).filter(
+            ([key]) => {
+              const stepFeatureFlag =
+                step.uiSchema[key]?.['ui:backstage']?.featureFlag;
+              return stepFeatureFlag
+                ? featureFlags.isActive(stepFeatureFlag)
+                : true;
+            },
+          ),
+        ),
+      },
+    }));
+
   return {
-    steps: manifest.steps.map(({ schema }) => extractSchemaFromStep(schema)),
+    steps: returningSteps,
   };
 };

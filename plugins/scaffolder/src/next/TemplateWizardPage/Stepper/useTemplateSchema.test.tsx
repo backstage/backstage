@@ -49,9 +49,17 @@ describe('useTemplateSchema', () => {
       ],
     };
 
-    const {
-      steps: [first, second],
-    } = useTemplateSchema(manifest);
+    const { result } = renderHook(() => useTemplateSchema(manifest), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+        >
+          {children}
+        </TestApiProvider>
+      ),
+    });
+
+    const [first, second] = result.current.steps;
 
     expect(first.uiSchema).toEqual({
       field1: { 'ui:field': 'MyCoolComponent' },
@@ -76,45 +84,153 @@ describe('useTemplateSchema', () => {
     });
   });
 
-  it('should use featureFlags property to skip a step if the whole step is disabled', () => {
-    const manifest: TemplateParameterSchema = {
-      title: 'Test Template',
-      description: 'Test Template Description',
-      steps: [
-        {
-          title: 'Step 1',
-          description: 'Step 1 Description',
-          schema: {
-            type: 'object',
-            'ui:backstage': {
-              featureFlag: 'my-feature-flag',
-            },
-            properties: {
-              field1: { type: 'string', 'ui:field': 'MyCoolComponent' },
-            },
-          },
-        },
-        {
-          title: 'Step 2',
-          description: 'Step 2 Description',
-          schema: {
-            type: 'object',
-            properties: {
-              field2: { type: 'string', 'ui:field': 'MyCoolerComponent' },
+  describe('FeatureFlags', () => {
+    it('should use featureFlags property to skip a step if the whole step is disabled', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Test Template',
+        description: 'Test Template Description',
+        steps: [
+          {
+            title: 'Step 1',
+            description: 'Step 1 Description',
+            schema: {
+              type: 'object',
+              'ui:backstage': {
+                featureFlag: 'my-feature-flag',
+              },
+              properties: {
+                field1: { type: 'string', 'ui:field': 'MyCoolComponent' },
+              },
             },
           },
-        },
-      ],
-    };
+          {
+            title: 'Step 2',
+            description: 'Step 2 Description',
+            schema: {
+              type: 'object',
+              properties: {
+                field2: { type: 'string', 'ui:field': 'MyCoolerComponent' },
+              },
+            },
+          },
+        ],
+      };
 
-    const result = renderHook(() => useTemplateSchema(manifest), {
-      wrapper: ({ children }) => (
-        <TestApiProvider
-          apis={[[featureFlagsApiRef, { isActive: () => false }]]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      expect(result.current.steps).toHaveLength(1);
+    });
+
+    it('should use featureFlags property to enable a step if the whole step is enabled', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Test Template',
+        description: 'Test Template Description',
+        steps: [
+          {
+            title: 'Step 1',
+            description: 'Step 1 Description',
+            schema: {
+              type: 'object',
+              'ui:backstage': {
+                featureFlag: 'my-feature-flag',
+              },
+              properties: {
+                field1: { type: 'string', 'ui:field': 'MyCoolComponent' },
+              },
+            },
+          },
+          {
+            title: 'Step 2',
+            description: 'Step 2 Description',
+            schema: {
+              type: 'object',
+              properties: {
+                field2: { type: 'string', 'ui:field': 'MyCoolerComponent' },
+              },
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[[featureFlagsApiRef, { isActive: () => true }]]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      expect(result.current.steps).toHaveLength(2);
+    });
+
+    it('should filter out the particular property if the featureFlag is disabled', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Test Template',
+        description: 'Test Template Description',
+        steps: [
+          {
+            title: 'Step 1',
+            description: 'Step 1 Description',
+            schema: {
+              type: 'object',
+              properties: {
+                field1: {
+                  type: 'string',
+                  'ui:field': 'MyCoolComponent',
+                  'ui:backstage': {
+                    featureFlag: 'my-feature-flag',
+                  },
+                },
+                visibleField: {
+                  type: 'string',
+                  'ui:field': 'MyCoolComponent',
+                },
+              },
+            },
+          },
+          {
+            title: 'Step 2',
+            description: 'Step 2 Description',
+            schema: {
+              type: 'object',
+              properties: {
+                field2: { type: 'string', 'ui:field': 'MyCoolerComponent' },
+              },
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[[featureFlagsApiRef, { isActive: () => false }]]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      const [first] = result.current.steps;
+
+      expect(first.schema).toEqual({
+        type: 'object',
+        properties: {
+          visibleField: {
+            type: 'string',
+          },
+        },
+      });
     });
   });
 });
