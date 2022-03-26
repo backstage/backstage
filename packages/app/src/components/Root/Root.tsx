@@ -47,7 +47,7 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
 } from '@backstage/core-components';
-import { MyGroups } from '@backstage/plugin-org';
+import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
 
 const useSidebarLogoStyles = makeStyles({
@@ -94,10 +94,12 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
         <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-        <MyGroups
-          singularTitle="My Squad"
-          pluralTitle="My Squads"
-          icon={GroupIcon}
+        <MyGroupsSidebarItem
+          props={{
+            singularTitle: 'My Squad',
+            pluralTitle: 'My Squads',
+            icon: GroupIcon,
+          }}
         />
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />

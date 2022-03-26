@@ -24,21 +24,30 @@ import {
   IconComponent,
   identityApiRef,
   useApi,
+  useRouteRef,
 } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
-import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  CatalogApi,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { getCompoundEntityRef } from '@backstage/catalog-model';
 
-export const MyGroups = ({
-  singularTitle,
-  pluralTitle,
-  icon,
+/**
+ * MyGroupsSidebarItem can be added to your sidebar providing quick access to groups the logged in user is a member of
+ *
+ * @public
+ */
+export const MyGroupsSidebarItem = ({
+  props,
 }: {
-  singularTitle: string;
-  pluralTitle: string;
-  icon: IconComponent;
+  props: { singularTitle: string; pluralTitle: string; icon: IconComponent };
 }) => {
+  const { singularTitle, pluralTitle, icon } = props;
   const identityApi = useApi(identityApiRef);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
 
   const { value: groups } = useAsync(async () => {
     const profile = await identityApi.getBackstageIdentity();
@@ -47,31 +56,36 @@ export const MyGroups = ({
       filter: [{ kind: 'group', 'relations.hasMember': profile.userEntityRef }],
       fields: ['metadata', 'kind'],
     });
+
     return response.items;
   }, []);
 
-  if (groups && groups.length === 1) {
-    // Only member of one group
+  // Not a member of any groups
+  if (!groups?.length) {
+    return <></>;
+  }
+
+  // Only member of one group
+  if (groups.length === 1) {
     const group = groups[0];
     return (
       <SidebarItem
         text={singularTitle}
-        to={`/catalog/${group.metadata.namespace}/${group.kind}/${group.metadata.name}`}
+        to={catalogEntityRoute(getCompoundEntityRef(group))}
         icon={icon}
       />
     );
   }
 
   // Member of more than one group
-  // or not a member of any groups
-  return groups && groups.length > 1 ? (
+  return (
     <SidebarItem icon={icon} to="catalog" text={pluralTitle}>
       <SidebarSubmenu title={pluralTitle}>
         {groups?.map(function groupsMap(group) {
           return (
             <SidebarSubmenuItem
               title={group.metadata.title || group.metadata.name}
-              to={`/catalog/${group.metadata.namespace}/${group.kind}/${group.metadata.name}`}
+              to={catalogEntityRoute(getCompoundEntityRef(group))}
               icon={icon}
               key={group.metadata.name}
             />
@@ -79,7 +93,5 @@ export const MyGroups = ({
         })}
       </SidebarSubmenu>
     </SidebarItem>
-  ) : (
-    <></>
   );
 };

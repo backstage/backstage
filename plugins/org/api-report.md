@@ -64,17 +64,15 @@ export const MembersListCard: (_props: {
   pageSize?: number;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "MyGroups" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const MyGroups: ({
-  singularTitle,
-  pluralTitle,
-  icon,
+// @public
+export const MyGroupsSidebarItem: ({
+  props,
 }: {
-  singularTitle: string;
-  pluralTitle: string;
-  icon: IconComponent;
+  props: {
+    singularTitle: string;
+    pluralTitle: string;
+    icon: IconComponent;
+  };
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "orgPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

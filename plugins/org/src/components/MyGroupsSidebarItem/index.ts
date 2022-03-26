@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { MyGroups } from './MyGroups';
+export { MyGroupsSidebarItem } from './MyGroupsSidebarItem';

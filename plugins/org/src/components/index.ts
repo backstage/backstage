@@ -15,4 +15,4 @@
  */
 
 export * from './Cards';
-export { MyGroups } from './MyGroups';
+export { MyGroupsSidebarItem } from './MyGroupsSidebarItem';
