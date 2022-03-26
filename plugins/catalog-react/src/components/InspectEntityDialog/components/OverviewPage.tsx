@@ -107,15 +107,7 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
             </List>
           )}
           {!!Object.keys(metadata.labels || {}).length && (
-            <List
-              dense
-              subheader={
-                <ListSubheader>
-                  Labels
-                  <HelpIcon to="https://backstage.io/docs/features/software-catalog/well-known-labels" />
-                </ListSubheader>
-              }
-            >
+            <List dense subheader={<ListSubheader>Labels</ListSubheader>}>
               {Object.entries(metadata.labels!).map(entry => (
                 <KeyValueListItem key={entry[0]} indent entry={entry} />
               ))}
