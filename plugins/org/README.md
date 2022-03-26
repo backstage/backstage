@@ -53,6 +53,6 @@ Once added MyGroupsSidebarItem will work in three ways:
 
    ![MyGroupsSidebarItem single example](./docs/mygroupssidebaritem-single.png)
 
-3. The user is logged in and a member of more than one group: the MyGroupsSidebarItem will display a single items with a flyout menu with all the related groups like this:
+3. The user is logged in and a member of more than one group: the MyGroupsSidebarItem will display a single items with a submenu with all the related groups like this:
 
    ![MyGroupsSidebarItem multiple example](./docs/mygroupssidebaritem-multiple.png)
