@@ -368,7 +368,7 @@ describe('JenkinsApi', () => {
         actions: [
           {},
           {},
-          null,
+          {},
           {},
           {
             _class: 'jenkins.scm.api.metadata.ContributorMetadataAction',
