@@ -64,6 +64,13 @@ export class GitLabIntegration implements ScmIntegration {
   }
 }
 
+/**
+ * Takes a Gitlab URL and replaces the type part (blob, tree etc).
+ *
+ * @param url - The original URL
+ * @param type - The desired type, e.g. "blob"
+ * @public
+ */
 export function replaceUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',

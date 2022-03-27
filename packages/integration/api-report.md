@@ -401,6 +401,12 @@ export function replaceGitHubUrlType(
 ): string;
 
 // @public
+export function replaceUrlType(
+  url: string,
+  type: 'blob' | 'tree' | 'edit',
+): string;
+
+// @public
 export interface ScmIntegration {
   resolveEditUrl(url: string): string;
   resolveUrl(options: {
