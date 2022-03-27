@@ -69,7 +69,10 @@ import {
   TechDocsReaderPage,
   techdocsPlugin,
 } from '@backstage/plugin-techdocs';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-addons';
+import {
+  TechDocsAddons,
+  GiveFeedback,
+} from '@backstage/plugin-techdocs-addons';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
@@ -187,6 +190,7 @@ const routes = (
         <ExamplePrimarySidebar />
         <ExampleSecondarySidebar />
         <ExampleContent />
+        <GiveFeedback />
       </TechDocsAddons>
     </Route>
     <Route

@@ -27,7 +27,12 @@ export {
 } from './addons';
 export * from './components';
 export { useEntityMetadata, useTechDocsMetadata } from './context';
-export { useShadowRoot, useShadowRootElements } from './hooks';
+export {
+  useShadowRoot,
+  useShadowRootElements,
+  useShadowRootSelection,
+} from './hooks';
+export { GiveFeedback } from './plugin';
 export { TechDocsAddonLocations } from './types';
 export type {
   TechDocsAddonAsyncMetadata,
@@ -35,3 +40,5 @@ export type {
   TechDocsMetadata,
   TechDocsEntityMetadata,
 } from './types';
+export type { GiveFeedbackAddonProps } from './addons/GiveFeedback';
+export type { Template, TemplateBuilder } from './addons/GiveFeedback/types';

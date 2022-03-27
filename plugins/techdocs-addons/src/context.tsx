@@ -16,12 +16,12 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import React, {
-  createContext,
   Dispatch,
-  PropsWithChildren,
   SetStateAction,
-  useContext,
+  createContext,
   useState,
+  useContext,
+  PropsWithChildren,
 } from 'react';
 import { AsyncState } from 'react-use/lib/useAsync';
 import {

@@ -17,6 +17,15 @@ export function createTechDocsAddon<TComponentProps>(
 ): Extension<ComponentType<TComponentProps>>;
 
 // @public
+export const GiveFeedback: ComponentType<GiveFeedbackAddonProps>;
+
+// @public (undocumented)
+export type GiveFeedbackAddonProps = {
+  debounceTime?: number;
+  templateBuilder?: TemplateBuilder;
+};
+
+// @public
 export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 
 // @public
@@ -68,6 +77,15 @@ export type TechDocsReaderPageProps = {
   asyncTechDocsMetadata: AsyncState<TechDocsMetadata>;
 };
 
+// @public (undocumented)
+export type Template = {
+  title: string;
+  body: string;
+};
+
+// @public (undocumented)
+export type TemplateBuilder = (selection: Selection) => Template;
+
 // @public
 export const useEntityMetadata: () => TechDocsAddonAsyncMetadata<TechDocsEntityMetadata>;
 
@@ -80,6 +98,9 @@ export const useShadowRootElements: <
 >(
   selectors: string[],
 ) => TReturnedElement[];
+
+// @public
+export const useShadowRootSelection: (wait?: number) => Selection | null;
 
 // @public
 export const useTechDocsMetadata: () => TechDocsAddonAsyncMetadata<TechDocsMetadata>;
