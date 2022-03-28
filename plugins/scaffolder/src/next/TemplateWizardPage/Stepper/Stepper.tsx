@@ -24,6 +24,7 @@ import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
 import { TemplateParameterSchema } from '../../../types';
+import { useTemplateSchema } from './useTemplateSchema';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -46,7 +47,7 @@ export interface StepperProps {
 const Form = withTheme(MuiTheme);
 
 export const Stepper = (props: StepperProps) => {
-  const { steps } = props.manifest;
+  const { steps } = useTemplateSchema(props.manifest);
   const [activeStep, setActiveStep] = useState(0);
   const styles = useStyles();
   const handleBack = () => {

@@ -21,21 +21,34 @@ import { extractSchemaFromStep } from './schema';
 
 export const useTemplateSchema = (
   manifest: TemplateParameterSchema,
-): { steps: { uiSchema: UiSchema; schema: JsonObject }[] } => {
+): {
+  steps: {
+    uiSchema: UiSchema;
+    schema: JsonObject;
+    title: string;
+    description?: string;
+  }[];
+} => {
   const featureFlags = useApi(featureFlagsApiRef);
-  const steps = manifest.steps.map(({ schema }) =>
-    extractSchemaFromStep(schema),
-  );
+  const steps = manifest.steps.map(({ title, description, schema }) => ({
+    title,
+    description,
+    ...extractSchemaFromStep(schema),
+  }));
 
   const returningSteps = steps
+    // Filter out steps that are not enabled with the feature flags
     .filter(step => {
       const stepFeatureFlag = step.uiSchema['ui:backstage']?.featureFlag;
       return stepFeatureFlag ? featureFlags.isActive(stepFeatureFlag) : true;
     })
+    // Then filter out the properties that are not enabled with feature flag
     .map(step => ({
-      uiSchema: step.uiSchema,
+      ...step,
       schema: {
         ...step.schema,
+        // Title is rendered at the top of the page, so let's ignore this from jsonschemaform
+        title: undefined,
         properties: Object.fromEntries(
           Object.entries(step.schema.properties as JsonObject).filter(
             ([key]) => {
