@@ -70,7 +70,7 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
     }
   }
 
-  private getMarkdownCode(params: Badge, badgeUrl: string): string {
+  protected getMarkdownCode(params: Badge, badgeUrl: string): string {
     let altText = `${params.label}: ${params.message}`;
     if (params.description && params.description !== params.label) {
       altText = `${params.description}, ${altText}`;
