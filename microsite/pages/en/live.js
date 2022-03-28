@@ -30,26 +30,24 @@ const Background = props => {
         </Block.Container>
       </Block>
 
-      <Block className="stripe bg-black">
+      <Block className="stripe bg-black" >
         <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.Paragraph>
+          <Block.MediaFrame >
             <iframe
-              width="1280"
-              height="720"
               src="https://www.youtube.com/embed/mFi_X58igzk"
               title="YouTube video player"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             ></iframe>
-          </Block.Paragraph>
-          <Block.TextBox>
+          </Block.MediaFrame>
+          <Block.MediaFrame >
             <iframe
+              width="300"
+              height="500"
               src="https://www.youtube.com/live_chat?v=mFi_X58igzk&embed_domain=backstage.io&dark_theme=1"
-              width="400px"
-              height="680px"
             ></iframe>
-          </Block.TextBox>
+          </Block.MediaFrame>
         </Block.Container>
       </Block>
 
