@@ -52,6 +52,7 @@ export const colorVariants: Record<string, string[]> = {
   eveningSea: ['#00FFF2', '#035355'],
   teal: ['#005B4B'],
   pinkSea: ['#C8077A', '#C2297D'],
+  greens: ['#4BB8A5', '#187656'],
 };
 
 /**
@@ -86,4 +87,5 @@ export const pageTheme: Record<string, PageTheme> = {
   other: genPageTheme(colorVariants.darkGrey, shapes.wave),
   app: genPageTheme(colorVariants.toastyOrange, shapes.wave),
   apis: genPageTheme(colorVariants.teal, shapes.wave2),
+  card: genPageTheme(colorVariants.greens, shapes.wave),
 };

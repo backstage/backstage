@@ -63,8 +63,15 @@ export type BackstagePaletteAdditions = {
   tabbar: {
     indicator: string;
   };
+  /**
+   * @deprecated The entire `bursts` section will be removed in a future release
+   */
   bursts: {
     fontColor: string;
+    slackChannelText: string;
+    backgroundColor: {
+      default: string;
+    };
     gradient: {
       linear: string;
     };

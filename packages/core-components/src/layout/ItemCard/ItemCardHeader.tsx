@@ -27,7 +27,7 @@ const styles = (theme: BackstageTheme) =>
     root: {
       color: theme.palette.common.white,
       padding: theme.spacing(2, 2, 3),
-      backgroundImage: theme.palette.bursts.gradient.linear,
+      backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
       backgroundPosition: 0,
       backgroundSize: 'inherit',
     },
