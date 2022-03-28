@@ -38,7 +38,10 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarPinStateContext } from '@backstage/core-components';
+import {
+  sidebarConfig,
+  SidebarPinStateContext,
+} from '@backstage/core-components';
 
 import { techdocsStorageApiRef } from '../../api';
 
@@ -450,12 +453,6 @@ export const useTechDocsReaderDom = (
               scrollbar-color: rgb(193, 193, 193) #eee;
               scrollbar-width: thin;
             }
-            .md-sidebar .md-sidebar__scrollwrap {
-              width: calc(16rem - 10px);
-            }
-            .md-sidebar--secondary {
-              right: ${theme.spacing(3)}px;
-            }
             .md-sidebar::-webkit-scrollbar {
               width: 5px;
             }
@@ -478,6 +475,12 @@ export const useTechDocsReaderDom = (
             .md-sidebar::-webkit-scrollbar-thumb:hover {
               background: rgb(125, 125, 125);
             }
+            .md-sidebar--secondary {
+              right: ${theme.spacing(3)}px;
+            }
+            .md-sidebar__scrollwrap {
+              overflow: unset !important;
+            }
 
             .md-content {
               max-width: calc(100% - 16rem * 2);
@@ -492,7 +495,7 @@ export const useTechDocsReaderDom = (
             .md-footer__title {
               background-color: unset;
             }
-            .md-footer-nav__link {
+            .md-footer__link, .md-footer-nav__link {
               width: 16rem;
             }
 
@@ -556,19 +559,31 @@ export const useTechDocsReaderDom = (
                 height: 100%;
               }
               .md-sidebar--primary {
-                width: 12.1rem !important;
+                width: 16rem !important;
                 z-index: 200;
                 left: ${
-                  isPinned ? 'calc(-12.1rem + 242px)' : 'calc(-12.1rem + 72px)'
+                  isPinned
+                    ? `calc(-16rem + ${sidebarConfig.drawerWidthOpen}px)`
+                    : `calc(-16rem + ${sidebarConfig.drawerWidthClosed}px)`
                 } !important;
               }
               .md-sidebar--secondary:not([hidden]) {
                 display: none;
               }
+              [data-md-toggle=drawer]:checked~.md-container .md-sidebar--primary {
+                transform: translateX(16rem);
+              }
 
               .md-content {
                 max-width: 100%;
                 margin-left: 0;
+              }
+              .md-content__inner {
+                margin: 0;
+              }
+              .md-content__inner .highlighttable {
+                max-width: 100%;
+                margin: 1em 0;
               }
 
               .md-header__button {
@@ -585,7 +600,7 @@ export const useTechDocsReaderDom = (
                 position: static;
                 padding-left: 0;
               }
-              .md-footer-nav__link {
+              .md-footer__link, .md-footer-nav__link {
                 /* footer links begin to overlap at small sizes without setting width */
                 width: 50%;
               }
@@ -593,8 +608,11 @@ export const useTechDocsReaderDom = (
 
             @media screen and (max-width: 600px) {
               .md-sidebar--primary {
-                left: -12.1rem !important;
-                width: 12.1rem;
+                left: -16rem !important;
+                width: 16rem;
+              }
+              .md-sidebar--primary .md-sidebar__scrollwrap {
+                bottom: ${sidebarConfig.mobileSidebarHeight}px;
               }
             }
           `,
@@ -701,7 +719,7 @@ export const useTechDocsReaderDom = (
             .highlight .md-clipboard:after {
               content: unset;
             }
-
+            
             .highlight .nx {
               color: ${isDarkTheme ? '#ff53a3' : '#ec407a'};
             }
