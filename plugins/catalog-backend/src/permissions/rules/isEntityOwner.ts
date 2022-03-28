@@ -15,6 +15,7 @@
  */
 
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { createCatalogPermissionRule } from './util';
 
 /**
@@ -26,6 +27,7 @@ import { createCatalogPermissionRule } from './util';
 export const isEntityOwner = createCatalogPermissionRule({
   name: 'IS_ENTITY_OWNER',
   description: 'Allow entities owned by the current user',
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   apply: (resource: Entity, claims: string[]) => {
     if (!resource.relations) {
       return false;

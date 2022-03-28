@@ -35,10 +35,12 @@ import type { PermissionCriteria } from '@backstage/plugin-permission-common';
 export type PermissionRule<
   TResource,
   TQuery,
+  TResourceType extends string,
   TParams extends unknown[] = unknown[],
 > = {
   name: string;
   description: string;
+  resourceType: TResourceType;
 
   /**
    * Apply this rule to a resource already loaded from a backing data source. The params are

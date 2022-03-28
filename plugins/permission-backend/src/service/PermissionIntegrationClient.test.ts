@@ -25,7 +25,10 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  createPermissionIntegrationRouter,
+  createPermissionRule,
+} from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
 
 describe('PermissionIntegrationClient', () => {
@@ -35,8 +38,8 @@ describe('PermissionIntegrationClient', () => {
     const mockConditions: PermissionCriteria<PermissionCondition> = {
       not: {
         allOf: [
-          { rule: 'RULE_1', params: [] },
-          { rule: 'RULE_2', params: ['abc'] },
+          { rule: 'RULE_1', resourceType: 'test-resource', params: [] },
+          { rule: 'RULE_2', resourceType: 'test-resource', params: ['abc'] },
         ],
       },
     };
@@ -272,22 +275,24 @@ describe('PermissionIntegrationClient', () => {
               id: resourceRef,
             })),
           rules: [
-            {
+            createPermissionRule({
               name: 'RULE_1',
               description: 'Test rule 1',
+              resourceType: 'test-resource',
               apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
-            },
-            {
+            }),
+            createPermissionRule({
               name: 'RULE_2',
               description: 'Test rule 2',
+              resourceType: 'test-resource',
               apply: (_resource: any, input: 'yes' | 'no') => input === 'yes',
               toQuery: () => {
                 throw new Error('Not implemented');
               },
-            },
+            }),
           ],
         }),
       );
@@ -336,7 +341,11 @@ describe('PermissionIntegrationClient', () => {
             id: '123',
             resourceRef: 'testResource1',
             resourceType: 'test-resource',
-            conditions: { rule: 'RULE_1', params: ['no'] },
+            conditions: {
+              rule: 'RULE_1',
+              resourceType: 'test-resource',
+              params: ['no'],
+            },
           },
         ]),
       ).resolves.toEqual([{ id: '123', result: AuthorizeResult.DENY }]);
@@ -353,15 +362,33 @@ describe('PermissionIntegrationClient', () => {
               allOf: [
                 {
                   allOf: [
-                    { rule: 'RULE_1', params: ['yes'] },
-                    { not: { rule: 'RULE_2', params: ['no'] } },
+                    {
+                      rule: 'RULE_1',
+                      resourceType: 'test-resource',
+                      params: ['yes'],
+                    },
+                    {
+                      not: {
+                        rule: 'RULE_2',
+                        resourceType: 'test-resource',
+                        params: ['no'],
+                      },
+                    },
                   ],
                 },
                 {
                   not: {
                     allOf: [
-                      { rule: 'RULE_1', params: ['no'] },
-                      { rule: 'RULE_2', params: ['yes'] },
+                      {
+                        rule: 'RULE_1',
+                        resourceType: 'test-resource',
+                        params: ['no'],
+                      },
+                      {
+                        rule: 'RULE_2',
+                        resourceType: 'test-resource',
+                        params: ['yes'],
+                      },
                     ],
                   },
                 },
