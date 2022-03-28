@@ -21,12 +21,10 @@ import * as uuid from 'uuid';
 import { z } from 'zod';
 import {
   AuthorizeResult,
-  DefinitivePolicyDecision,
   PermissionMessageBatch,
   PermissionCriteria,
   PermissionCondition,
   PermissionEvaluator,
-  PolicyDecision,
   QueryPermissionRequest,
   AuthorizePermissionRequest,
   EvaluatorRequestOptions,
@@ -59,15 +57,14 @@ const permissionCriteriaSchema: z.ZodSchema<
     .or(z.object({ not: permissionCriteriaSchema }).strict()),
 );
 
-const authorizeDecisionSchema: z.ZodSchema<DefinitivePolicyDecision> = z.object(
-  {
+const authorizeDecisionSchema: z.ZodSchema<AuthorizePermissionResponse> =
+  z.object({
     result: z
       .literal(AuthorizeResult.ALLOW)
       .or(z.literal(AuthorizeResult.DENY)),
-  },
-);
+  });
 
-const policyDecisionSchema: z.ZodSchema<PolicyDecision> = z.union([
+const policyDecisionSchema: z.ZodSchema<QueryPermissionResponse> = z.union([
   z.object({
     result: z
       .literal(AuthorizeResult.ALLOW)
@@ -119,49 +116,17 @@ export class PermissionClient implements PermissionEvaluator {
   }
 
   /**
-   * Request authorization from the permission-backend for the given set of
-   * permissions.
-   *
-   * @remarks
-   *
-   * Checks that a given Backstage user can perform a protected operation. When
-   * authorization is for a {@link ResourcePermission}s, a resourceRef
-   * corresponding to the resource should always be supplied along with the
-   * permission. The Backstage identity token should be included in the
-   * `options` if available.
-   *
-   * Permissions can be imported from plugins exposing them, such as
-   * `catalogEntityReadPermission`.
-   *
-   * For each query, the response will be either ALLOW or DENY.
-   *
-   * @public
+   * {@inheritdoc PermissionEvaluator.authorize}
    */
   async authorize(
     requests: AuthorizePermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
-    // TODO(permissions): it would be great to provide some kind of typing guarantee that
-    // conditional responses will only ever be returned for requests containing a resourceType
-    // but no resourceRef. That way clients who aren't prepared to handle filtering according
-    // to conditions can be guaranteed that they won't unexpectedly get a CONDITIONAL response.
-
     return this.makeRequest(requests, authorizeDecisionSchema, options);
   }
 
   /**
-   * Fetch the conditional authorization decisions for the given set of
-   * {@link ResourcePermission}s in order to apply the conditions to an upstream
-   * data source.
-   *
-   * @remarks
-   *
-   * For each query, the response will be either ALLOW, DENY, or CONDITIONAL.
-   * Conditional responses are intended only for backends which have access to
-   * the data source for permissioned resources, so that filters can be applied
-   * when loading collections of resources.
-   *
-   * @public
+   * {@inheritdoc PermissionEvaluator.query}
    */
   async query(
     queries: QueryPermissionRequest[],
@@ -179,7 +144,7 @@ export class PermissionClient implements PermissionEvaluator {
       return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
     }
 
-    const request = {
+    const request: PermissionMessageBatch<TQuery> = {
       items: queries.map(query => ({
         id: uuid.v4(),
         ...query,
@@ -209,7 +174,7 @@ export class PermissionClient implements PermissionEvaluator {
     const responsesById = parsedResponse.items.reduce((acc, r) => {
       acc[r.id] = r;
       return acc;
-    }, {} as Record<string, typeof itemSchema._type>);
+    }, {} as Record<string, z.infer<typeof itemSchema>>);
 
     return request.items.map(query => responsesById[query.id]);
   }

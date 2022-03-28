@@ -247,6 +247,7 @@ export interface PermissionEvaluator {
 
 /**
  * Options for {@link PermissionEvaluator} requests.
+ * The Backstage identity token should be defined if available.
  * @public
  */
 export type EvaluatorRequestOptions = {
