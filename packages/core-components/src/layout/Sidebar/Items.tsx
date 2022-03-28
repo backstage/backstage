@@ -352,7 +352,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     ...navLinkProps
   } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig })();
+  const classes = useStyles({ sidebarConfig });
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
@@ -426,7 +426,7 @@ const SidebarItemWithSubmenu = ({
   children: React.ReactElement<SidebarSubmenuProps>;
 }) => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
-  const classes = useStyles({ sidebarConfig })();
+  const classes = useStyles({ sidebarConfig });
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
@@ -517,7 +517,7 @@ type SidebarSearchFieldProps = {
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const [input, setInput] = useState('');
-  const classes = useStyles({ sidebarConfig })();
+  const classes = useStyles({ sidebarConfig });
   const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
