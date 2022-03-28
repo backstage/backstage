@@ -32,6 +32,7 @@
 /plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/explore-react                              @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/fossa                                      @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/gcalendar                                  @backstage/reviewers @szubster @ptychu @kielosz @alexrybch
 /plugins/git-release-manager                        @backstage/reviewers @erikengervall
 /plugins/home                                       @backstage/reviewers @backstage/techdocs-core
 /plugins/ilert                                      @backstage/reviewers @yacut
