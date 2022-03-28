@@ -9045,6 +9045,11 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
+chalk@^5.0.0, chalk@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npmjs.org/chalk/-/chalk-5.0.1.tgz#ca57d71e82bb534a296df63bbacc4a1c22b2a4b6"
+  integrity sha512-Fo07WOYGqMfCWHOzSXOt2CxDbC6skS/jO9ynEcmpANMoPrD+W1r1K6Vx7iNm+AQmETU1Xr2t+n8nzkV9t6xh3w==
+
 change-case-all@1.0.14:
   version "1.0.14"
   resolved "https://registry.npmjs.org/change-case-all/-/change-case-all-1.0.14.tgz#bac04da08ad143278d0ac3dda7eccd39280bfba1"
@@ -9560,10 +9565,10 @@ command-exists@^1.2.9:
   resolved "https://registry.npmjs.org/command-exists/-/command-exists-1.2.9.tgz#c50725af3808c8ab0260fd60b01fbfa25b954f69"
   integrity sha512-LTQ/SGc+s0Xc0Fu5WaKnR0YiygZkm9eKFvyS+fRsU7/ZWFF8ykFM6Pc9aCVf1+xasOOZpO3BAVgVrKvsqKHV7w==
 
-commander@*, commander@^8.3.0:
-  version "8.3.0"
-  resolved "https://registry.npmjs.org/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
-  integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
+commander@*, commander@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.npmjs.org/commander/-/commander-9.1.0.tgz#a6b263b2327f2e188c6402c42623327909f2dbec"
+  integrity sha512-i0/MaqBtdbnJ4XQs4Pmyb+oFQl+q0lsAmokVUH92SlSw4fkeAcG3bVon+Qt7hmtF+u3Het6o4VgrcY3qAoEB6w==
 
 commander@7.1.0:
   version "7.1.0"
@@ -9594,6 +9599,11 @@ commander@^7.2.0:
   version "7.2.0"
   resolved "https://registry.npmjs.org/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
+
+commander@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.npmjs.org/commander/-/commander-8.3.0.tgz#4837ea1b2da67b9c616a67afbb0fafee567bca66"
+  integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
 
 common-ancestor-path@^1.0.1:
   version "1.0.1"
@@ -12515,6 +12525,17 @@ fast-glob@^3.1.1:
     micromatch "^4.0.2"
     picomatch "^2.2.1"
 
+fast-glob@^3.2.11:
+  version "3.2.11"
+  resolved "https://registry.npmjs.org/fast-glob/-/fast-glob-3.2.11.tgz#a1172ad95ceb8a16e20caa5c5e56480e5129c1d9"
+  integrity sha512-xrO3+1bxSo3ZVHAnqzyuewYT6aMFHRAd4Kcs92MAonjwQZLsK9d0SF1IyQ3k5PoirxTW0Oe/RqFgMQ6TcNE5Ew==
+  dependencies:
+    "@nodelib/fs.stat" "^2.0.2"
+    "@nodelib/fs.walk" "^1.2.3"
+    glob-parent "^5.1.2"
+    merge2 "^1.3.0"
+    micromatch "^4.0.4"
+
 fast-json-parse@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/fast-json-parse/-/fast-json-parse-1.0.3.tgz#43e5c61ee4efa9265633046b770fb682a7577c4d"
@@ -13225,10 +13246,10 @@ get-port@^5.1.1:
   resolved "https://registry.npmjs.org/get-port/-/get-port-5.1.1.tgz#0469ed07563479de6efb986baf053dcd7d4e3193"
   integrity sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ==
 
-get-stdin@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/get-stdin/-/get-stdin-8.0.0.tgz#cbad6a73feb75f6eeb22ba9e01f89aa28aa97a53"
-  integrity sha512-sY22aA6xchAzprjyqmSEQv4UbAAzRN0L2dQB0NlN5acTTK9Don6nhoc3eAbUnpZiCANAMfd/+40kVdKfFygohg==
+get-stdin@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/get-stdin/-/get-stdin-9.0.0.tgz#3983ff82e03d56f1b2ea0d3e60325f39d703a575"
+  integrity sha512-dVKBjfWisLAicarI2Sf+JuBE/DghV4UzNAVe9yhEJuzeREd3JhOTE9cUaJTeSa77fsbQUK3pcOpJfM59+VKZaA==
 
 get-stream@^4.0.0, get-stream@^4.1.0:
   version "4.1.0"
@@ -13335,7 +13356,7 @@ github-from-package@0.0.0:
   resolved "https://registry.npmjs.org/github-from-package/-/github-from-package-0.0.0.tgz#97fb5d96bfde8973313f20e8288ef9a167fa64ce"
   integrity sha1-l/tdlr/eiXMxPyDoKI75oWf6ZM4=
 
-glob-parent@^5.1.0, glob-parent@^5.1.1, glob-parent@~5.1.2:
+glob-parent@^5.1.0, glob-parent@^5.1.1, glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
   resolved "https://registry.npmjs.org/glob-parent/-/glob-parent-5.1.2.tgz#869832c58034fe68a4093c17dc15e8340d8401c4"
   integrity sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==
@@ -13444,6 +13465,17 @@ globby@^11.0.0, globby@^11.0.1, globby@^11.0.2, globby@^11.0.3, globby@^11.0.4:
     ignore "^5.1.4"
     merge2 "^1.3.0"
     slash "^3.0.0"
+
+globby@^13.1.1:
+  version "13.1.1"
+  resolved "https://registry.npmjs.org/globby/-/globby-13.1.1.tgz#7c44a93869b0b7612e38f22ed532bfe37b25ea6f"
+  integrity sha512-XMzoDZbGZ37tufiv7g0N4F/zp3zkwdFtVbV3EHsVl1KQr4RPLfNoT068/97RPshz2J5xYNEjLKKBKaGHifBd3Q==
+  dependencies:
+    dir-glob "^3.0.1"
+    fast-glob "^3.2.11"
+    ignore "^5.2.0"
+    merge2 "^1.4.1"
+    slash "^4.0.0"
 
 globby@^7.1.1:
   version "7.1.1"
@@ -15068,6 +15100,11 @@ is-unicode-supported@^0.1.0:
   resolved "https://registry.npmjs.org/is-unicode-supported/-/is-unicode-supported-0.1.0.tgz#3f26c76a809593b52bfa2ecb5710ed2779b522a7"
   integrity sha512-knxG2q4UC3u8stRGyAVJCOdxFmv5DZiRcdlIaAQXAbSfJya+OhopNotLQrstBhququ4ZpuKbDc/8S6mgXgPFPw==
 
+is-unicode-supported@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/is-unicode-supported/-/is-unicode-supported-1.2.0.tgz#f4f54f34d8ebc84a46b93559a036763b6d3e1014"
+  integrity sha512-wH+U77omcRzevfIG8dDhTS0V9zZyweakfD01FULl97+0EHiJTTZtJqxPSkIIo/SDPv/i07k/C9jAPY+jwLLeUQ==
+
 is-upper-case@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/is-upper-case/-/is-upper-case-2.0.2.tgz#f1105ced1fe4de906a5f39553e7d3803fd804649"
@@ -16437,21 +16474,21 @@ ldapjs@^2.2.0:
     vasync "^2.2.0"
     verror "^1.8.1"
 
-leasot@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/leasot/-/leasot-12.0.0.tgz#78c5df2c941c7285374c8d992866e22163241b22"
-  integrity sha512-TMe3cJTRUMpXsOFNXCig5U84wM44y84vawkl2fC7iAJif88l/b7BtTt49VrkMsivlxlqHYVu5PjuxB9sRQf39w==
+leasot@^13.0.0:
+  version "13.0.0"
+  resolved "https://registry.npmjs.org/leasot/-/leasot-13.0.0.tgz#61d7509c9331767e37e9f53bd1d667ae43c45cbb"
+  integrity sha512-my3ah7IG0NPY5n5mMdd1HWSYvJN7fcVNsNtENtm5jDPuLCVh7+kpkVnvkTA6h8WG/SP8BSaTxIGZx1aO7aywcQ==
   dependencies:
-    async "^3.2.0"
-    chalk "^4.1.0"
-    commander "^7.2.0"
+    async "^3.2.3"
+    chalk "^5.0.1"
+    commander "^9.1.0"
     eol "^0.9.1"
-    get-stdin "^8.0.0"
-    globby "^11.0.3"
+    get-stdin "^9.0.0"
+    globby "^13.1.1"
     json2xml "^0.1.3"
     lodash "^4.17.21"
-    log-symbols "^4.1.0"
-    strip-ansi "^6.0.0"
+    log-symbols "^5.1.0"
+    strip-ansi "^7.0.1"
     text-table "^0.2.0"
 
 lerna@^4.0.0:
@@ -16975,6 +17012,14 @@ log-symbols@^4.0.0, log-symbols@^4.1.0:
   dependencies:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
+
+log-symbols@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.npmjs.org/log-symbols/-/log-symbols-5.1.0.tgz#a20e3b9a5f53fac6aeb8e2bb22c07cf2c8f16d93"
+  integrity sha512-l0x2DvrW294C9uDCoQe1VSU4gf529FkSZ6leBl4TiqZH/e+0R7hSfHQBNut2mNygDgHwvYHfFLn6Oxb3VWj2rA==
+  dependencies:
+    chalk "^5.0.0"
+    is-unicode-supported "^1.1.0"
 
 log-update@^2.3.0:
   version "2.3.0"
@@ -17531,6 +17576,11 @@ merge2@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/merge2/-/merge2-1.3.0.tgz#5b366ee83b2f1582c48f87e47cf1a9352103ca81"
   integrity sha512-2j4DAdlBOkiSZIsaXk4mTE3sRS02yBHAtfy127xRV3bQUFqXkjHCHLW6Scv7DwNRbIWNHH8zpnz9zMaKXIdvYw==
+
+merge2@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
+  integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
 merge@^1.2.1:
   version "1.2.1"
@@ -22547,6 +22597,11 @@ slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
+
+slash@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
+  integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
 
 slice-ansi@0.0.4:
   version "0.0.4"
