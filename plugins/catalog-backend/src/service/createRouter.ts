@@ -15,9 +15,15 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  Entity,
+  parseLocationRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { InputError, NotFoundError } from '@backstage/errors';
+import { NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -34,12 +40,12 @@ import {
   disallowReadonlyMode,
   locationInput,
   validateRequestBody,
-  setRequiredEntityLocationAnnotations,
 } from './util';
 import { z } from 'zod';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { RefreshOptions, LocationService, RefreshService } from './types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
+import { validateEntityEnvelope } from '../processing/util';
 
 /**
  * Options used by {@link createRouter}.
@@ -238,18 +244,42 @@ export async function createRouter(
         location: z.string(),
       });
 
-      const body = await validateRequestBody(req, bodySchema);
+      let body: z.infer<typeof bodySchema>;
+      let entity: Entity;
+      let location: { type: string; target: string };
+      try {
+        body = await validateRequestBody(req, bodySchema);
+        entity = validateEntityEnvelope(body.entity);
+        location = parseLocationRef(body.location);
+        if (location.type !== 'url')
+          throw new TypeError(
+            `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
+          );
+      } catch (err) {
+        return res.status(400).json({
+          errors: [serializeError(err)],
+        });
+      }
 
-      const entity = setRequiredEntityLocationAnnotations(
-        body.entity as Entity,
-        body.location,
-      );
       const processingResult = await orchestrator.process({
-        entity,
+        entity: {
+          ...entity,
+          metadata: {
+            ...entity.metadata,
+            annotations: {
+              [ANNOTATION_LOCATION]: body.location,
+              [ANNOTATION_ORIGIN_LOCATION]: body.location,
+              ...entity.metadata.annotations,
+            },
+          },
+        },
       });
+
       if (!processingResult.ok)
-        throw new InputError(processingResult.errors[0].message);
-      return res.status(200).send();
+        res.status(400).json({
+          errors: processingResult.errors.map(e => serializeError(e)),
+        });
+      return res.status(200).end();
     });
   }
 

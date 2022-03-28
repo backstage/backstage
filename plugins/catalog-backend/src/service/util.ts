@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  ANNOTATION_SOURCE_LOCATION,
-  ANNOTATION_ORIGIN_LOCATION,
-} from '@backstage/catalog-model';
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { Request } from 'express';
 import lodash from 'lodash';
@@ -52,25 +47,6 @@ export const locationInput = z
     presence: z.literal('required').or(z.literal('optional')).optional(),
   })
   .strict(); // no unknown keys;
-
-export function setRequiredEntityLocationAnnotations(
-  entity: Entity,
-  location: string,
-): Entity {
-  const clonedEntity = lodash.cloneDeep(entity);
-  lodash.set(
-    clonedEntity,
-    `metadata.annotations.['${ANNOTATION_SOURCE_LOCATION}']`,
-    location,
-  );
-  lodash.set(
-    clonedEntity,
-    `metadata.annotations.['${ANNOTATION_ORIGIN_LOCATION}']`,
-    location,
-  );
-
-  return clonedEntity;
-}
 
 export async function validateRequestBody<T>(
   req: Request,

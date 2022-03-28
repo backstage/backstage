@@ -19,8 +19,8 @@ import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import type { Location } from '@backstage/catalog-client';
 import {
+  ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
-  ANNOTATION_SOURCE_LOCATION,
   Entity,
 } from '@backstage/catalog-model';
 import express from 'express';
@@ -415,7 +415,7 @@ describe('createRouter readonly disabled', () => {
 
         const response = await request(app)
           .post('/validate-entity')
-          .send({ entity, location: 'validate:entity' });
+          .send({ entity, location: 'url:validate-entity' });
 
         expect(response.status).toEqual(200);
         expect(orchestrator.process).toHaveBeenCalledTimes(1);
@@ -426,8 +426,8 @@ describe('createRouter readonly disabled', () => {
             metadata: {
               name: 'n',
               annotations: {
-                [ANNOTATION_SOURCE_LOCATION]: 'validate:entity',
-                [ANNOTATION_ORIGIN_LOCATION]: 'validate:entity',
+                [ANNOTATION_LOCATION]: 'url:validate-entity',
+                [ANNOTATION_ORIGIN_LOCATION]: 'url:validate-entity',
               },
             },
           },
@@ -450,10 +450,11 @@ describe('createRouter readonly disabled', () => {
 
         const response = await request(app)
           .post('/validate-entity')
-          .send({ entity, location: 'validate:entity' });
+          .send({ entity, location: 'url:validate-entity' });
 
         expect(response.status).toEqual(400);
-        expect(response.body.error.message).toContain('Invalid entity name');
+        expect(response.body.errors.length).toEqual(1);
+        expect(response.body.errors[0].message).toEqual('Invalid entity name');
         expect(orchestrator.process).toHaveBeenCalledTimes(1);
         expect(orchestrator.process).toHaveBeenCalledWith({
           entity: {
@@ -462,8 +463,8 @@ describe('createRouter readonly disabled', () => {
             metadata: {
               name: 'invalid*name',
               annotations: {
-                [ANNOTATION_SOURCE_LOCATION]: 'validate:entity',
-                [ANNOTATION_ORIGIN_LOCATION]: 'validate:entity',
+                [ANNOTATION_LOCATION]: 'url:validate-entity',
+                [ANNOTATION_ORIGIN_LOCATION]: 'url:validate-entity',
               },
             },
           },
@@ -484,32 +485,23 @@ describe('createRouter readonly disabled', () => {
           .send({ entity, location: null });
 
         expect(response.status).toEqual(400);
-        expect(response.body.error.message).toContain('Malformed request:');
+        expect(response.body.errors.length).toEqual(1);
+        expect(response.body.errors[0].message).toContain('Malformed request:');
         expect(orchestrator.process).toHaveBeenCalledTimes(0);
       });
     });
 
     describe('no entity', () => {
       it('returns 400', async () => {
-        orchestrator.process.mockResolvedValueOnce({
-          ok: false,
-          errors: [
-            new Error(
-              'Entity envelope failed validation before processing; caused by TypeError: <root> must be object - type: object',
-            ),
-          ],
-        });
-
         const response = await request(app)
           .post('/validate-entity')
-          .send({ entity: null, location: 'validate:entity' });
+          .send({ entity: null, location: 'url:entity' });
 
         expect(response.status).toEqual(400);
-        expect(response.body.error.message).toContain(
-          'Entity envelope failed validation',
+        expect(response.body.errors.length).toEqual(1);
+        expect(response.body.errors[0].message).toContain(
+          '<root> must be object - type: object',
         );
-        // We expect this to be called because of an open issue with zod where unknown values are optional https://github.com/colinhacks/zod/issues/493
-        expect(orchestrator.process).toHaveBeenCalledTimes(1);
       });
     });
   });
