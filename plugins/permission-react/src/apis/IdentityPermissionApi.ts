@@ -17,9 +17,8 @@
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { PermissionApi } from './PermissionApi';
 import {
-  EvaluatePermissionRequest,
-  EvaluatePermissionResponse,
-  isResourcePermission,
+  AuthorizePermissionRequest,
+  AuthorizePermissionResponse,
   PermissionClient,
 } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
@@ -46,23 +45,10 @@ export class IdentityPermissionApi implements PermissionApi {
   }
 
   async authorize(
-    request: EvaluatePermissionRequest,
-  ): Promise<EvaluatePermissionResponse> {
-    const { permission, resourceRef } = request;
-    if (isResourcePermission(permission)) {
-      if (!resourceRef) {
-        throw new Error(
-          'A resourceRef should be provided when a ResourcePermission is used.',
-        );
-      }
-      const response = await this.permissionClient.authorize(
-        [{ permission, resourceRef }],
-        await this.identityApi.getCredentials(),
-      );
-      return response[0];
-    }
+    request: AuthorizePermissionRequest,
+  ): Promise<AuthorizePermissionResponse> {
     const response = await this.permissionClient.authorize(
-      [{ permission }],
+      [request],
       await this.identityApi.getCredentials(),
     );
     return response[0];
