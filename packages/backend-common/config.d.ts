@@ -73,7 +73,7 @@ export interface Config {
       client: 'better-sqlite3' | 'sqlite3' | 'pg';
       /**
        * Base database connection string or Knex object
-       * @secret
+       * @visibility secret
        */
       connection: string | object;
       /** Database name prefix override */
@@ -109,7 +109,7 @@ export interface Config {
           client?: 'better-sqlite3' | 'sqlite3' | 'pg';
           /**
            * Database connection string or Knex object override
-           * @secret
+           * @visibility secret
            */
           connection?: string | object;
           /**
@@ -138,7 +138,7 @@ export interface Config {
           store: 'redis';
           /**
            * A redis connection string in the form `redis://user:pass@host:port`.
-           * @secret
+           * @visibility secret
            */
           connection: string;
         }
@@ -146,7 +146,7 @@ export interface Config {
           store: 'memcache';
           /**
            * A memcache connection string in the form `user:pass@host:port`.
-           * @secret
+           * @visibility secret
            */
           connection: string;
         };

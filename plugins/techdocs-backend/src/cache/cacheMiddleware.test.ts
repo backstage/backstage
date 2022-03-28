@@ -85,6 +85,15 @@ describe('createCacheMiddleware', () => {
       expect(cache.set).not.toHaveBeenCalled();
     });
 
+    it('checks cache for head requests', async () => {
+      cache.get.mockResolvedValueOnce(getMockHttpResponseFor('xyz'));
+
+      await request(app).head('/static/docs/foo.html').expect(200);
+
+      await waitForSocketClose();
+      expect(cache.set).not.toHaveBeenCalled();
+    });
+
     it('sets cache when content is cacheable', async () => {
       const expectedPath = 'default/api/xyz/index.html';
       await request(app)
@@ -101,6 +110,14 @@ describe('createCacheMiddleware', () => {
 
     it('does not set cache on error', async () => {
       await request(app).get('/static/docs/error.png').expect(500);
+
+      await waitForSocketClose();
+      expect(cache.set).not.toHaveBeenCalled();
+    });
+
+    it('does not set cache on head requests', async () => {
+      const expectedPath = 'default/api/xyz/index.html';
+      await request(app).head(`/static/docs/${expectedPath}`).expect(200);
 
       await waitForSocketClose();
       expect(cache.set).not.toHaveBeenCalled();

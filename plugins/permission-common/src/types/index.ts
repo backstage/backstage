@@ -16,11 +16,15 @@
 
 export { AuthorizeResult } from './api';
 export type {
-  AuthorizeQuery,
-  AuthorizeRequest,
-  AuthorizeDecision,
-  AuthorizeResponse,
-  Identified,
+  EvaluatePermissionRequest,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponse,
+  EvaluatePermissionResponseBatch,
+  IdentifiedPermissionMessage,
+  PermissionMessageBatch,
+  ConditionalPolicyDecision,
+  DefinitivePolicyDecision,
+  PolicyDecision,
   PermissionCondition,
   PermissionCriteria,
   AllOfCriteria,
@@ -29,8 +33,11 @@ export type {
 } from './api';
 export type { DiscoveryApi } from './discovery';
 export type {
+  BasicPermission,
   PermissionAttributes,
   Permission,
   PermissionAuthorizer,
+  PermissionBase,
+  ResourcePermission,
   AuthorizeRequestOptions,
 } from './permission';

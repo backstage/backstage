@@ -1,5 +1,27 @@
 # @backstage/config-loader
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- e0a51384ac: build(deps): bump `ajv` from 7.0.3 to 8.10.0
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- 664821371e: The `typescript-json-schema` dependency that is used during schema collection is now lazy loaded, as it eagerly loads in the TypeScript compiler.
+- f910c2a3f8: build(deps): bump `typescript-json-schema` from 0.52.0 to 0.53.0
+- Updated dependencies
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.9.7
 
 ### Patch Changes

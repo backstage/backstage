@@ -35,6 +35,7 @@ export type AwsS3IntegrationConfig = {
   accessKeyId?: string;
   secretAccessKey?: string;
   roleArn?: string;
+  externalId?: string;
 };
 
 // @public
@@ -137,6 +138,7 @@ export class GerritIntegration implements ScmIntegration {
 export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
+  gitilesBaseUrl?: string;
   username?: string;
   password?: string;
 };
@@ -181,6 +183,17 @@ export function getBitbucketRequestOptions(
   config: BitbucketIntegrationConfig,
 ): {
   headers: Record<string, string>;
+};
+
+// @public
+export function getGerritFileContentsApiUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGerritRequestOptions(config: GerritIntegrationConfig): {
+  headers?: Record<string, string>;
 };
 
 // @public
@@ -328,6 +341,9 @@ export interface IntegrationsByType {
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 }
+
+// @public
+export function parseGerritJsonResponse(response: Response): Promise<unknown>;
 
 // @public
 export function readAwsS3IntegrationConfig(

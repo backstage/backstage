@@ -23,6 +23,7 @@ import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 import { SecretsContextProvider } from './secrets/SecretsContext';
+import { TemplatePreviewPage } from './TemplatePreviewPage';
 
 import {
   FieldExtensionOptions,
@@ -44,10 +45,10 @@ export type RouterProps = {
     TaskPageComponent?: ComponentType<{}>;
   };
   groups?: Array<{
-    title?: string;
-    titleComponent?: React.ReactNode;
+    title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  defaultPreviewTemplate?: string;
 };
 
 /**
@@ -56,7 +57,7 @@ export type RouterProps = {
  * @public
  */
 export const Router = (props: RouterProps) => {
-  const { groups, components = {} } = props;
+  const { groups, components = {}, defaultPreviewTemplate } = props;
 
   const { TemplateCardComponent, TaskPageComponent } = components;
 
@@ -104,6 +105,17 @@ export const Router = (props: RouterProps) => {
       />
       <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
+      <Route
+        path="/preview"
+        element={
+          <SecretsContextProvider>
+            <TemplatePreviewPage
+              defaultPreviewTemplate={defaultPreviewTemplate}
+              customFieldExtensions={fieldExtensions}
+            />
+          </SecretsContextProvider>
+        }
+      />
     </Routes>
   );
 };

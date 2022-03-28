@@ -23,10 +23,207 @@ import mockFs from 'mock-fs';
 import path from 'path';
 import fs from 'fs-extra';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
+import { EventEmitter } from 'events';
+import {
+  BlobUploadCommonResponse,
+  ContainerGetPropertiesResponse,
+} from '@azure/storage-blob';
+import {
+  storageRootDir,
+  StorageFilesMock,
+} from '../../testUtils/StorageFilesMock';
 
-// NOTE: /plugins/techdocs-node/__mocks__ is being used to mock Azure client library
+jest.mock('@azure/identity', () => ({
+  __esModule: true,
+  DefaultAzureCredential: class {},
+}));
 
-const rootDir = (global as any).rootDir; // Set by setupTests.ts
+jest.mock('@azure/storage-blob', () => {
+  class BlockBlobClient {
+    constructor(
+      private readonly blobName: string,
+      private readonly storage: StorageFilesMock,
+    ) {}
+
+    uploadFile(source: string): Promise<BlobUploadCommonResponse> {
+      this.storage.writeFile(this.blobName, source);
+      return Promise.resolve({
+        _response: {
+          request: {
+            url: `https://example.blob.core.windows.net`,
+          } as any,
+          status: 200,
+          headers: {} as any,
+        },
+      });
+    }
+
+    exists() {
+      return this.storage.fileExists(this.blobName);
+    }
+
+    download() {
+      const emitter = new EventEmitter();
+      setTimeout(() => {
+        if (this.storage.fileExists(this.blobName)) {
+          emitter.emit('data', this.storage.readFile(this.blobName));
+          emitter.emit('end');
+        } else {
+          emitter.emit(
+            'error',
+            new Error(`The file ${this.blobName} does not exist!`),
+          );
+        }
+      }, 0);
+      return Promise.resolve({
+        readableStreamBody: emitter,
+      });
+    }
+  }
+
+  class BlockBlobClientFailUpload extends BlockBlobClient {
+    uploadFile(): Promise<BlobUploadCommonResponse> {
+      return Promise.resolve({
+        _response: {
+          request: {
+            url: `https://example.blob.core.windows.net`,
+          } as any,
+          status: 500,
+          headers: {} as any,
+        },
+      });
+    }
+  }
+
+  class ContainerClientIterator {
+    private containerName: string;
+
+    constructor(containerName: string) {
+      this.containerName = containerName;
+    }
+
+    async next() {
+      if (
+        this.containerName === 'delete_stale_files_success' ||
+        this.containerName === 'delete_stale_files_error'
+      ) {
+        return {
+          value: {
+            segment: {
+              blobItems: [{ name: `stale_file.png` }],
+            },
+          },
+        };
+      }
+      return {
+        value: {
+          segment: {
+            blobItems: [],
+          },
+        },
+      };
+    }
+  }
+
+  class ContainerClient {
+    constructor(
+      private readonly containerName: string,
+      protected readonly storage: StorageFilesMock,
+    ) {}
+
+    getProperties(): Promise<ContainerGetPropertiesResponse> {
+      return Promise.resolve({
+        _response: {
+          request: {
+            url: `https://example.blob.core.windows.net`,
+          } as any,
+          status: 200,
+          headers: {} as any,
+          parsedHeaders: {},
+        },
+      });
+    }
+
+    getBlockBlobClient(blobName: string) {
+      return new BlockBlobClient(blobName, this.storage);
+    }
+
+    listBlobsFlat() {
+      return {
+        byPage: () => {
+          return new ContainerClientIterator(this.containerName);
+        },
+      };
+    }
+
+    deleteBlob() {
+      if (this.containerName === 'delete_stale_files_error') {
+        throw new Error('Message');
+      }
+    }
+  }
+
+  class ContainerClientFailGetProperties extends ContainerClient {
+    getProperties(): Promise<ContainerGetPropertiesResponse> {
+      return Promise.resolve({
+        _response: {
+          request: {
+            url: `https://example.blob.core.windows.net`,
+          } as any,
+          status: 404,
+          headers: {} as any,
+          parsedHeaders: {},
+        },
+      });
+    }
+  }
+
+  class ContainerClientFailUpload extends ContainerClient {
+    getBlockBlobClient(blobName: string) {
+      return new BlockBlobClientFailUpload(blobName, this.storage);
+    }
+  }
+
+  class BlobServiceClient {
+    storage = new StorageFilesMock();
+
+    constructor(
+      public readonly url: string,
+      private readonly credential?: StorageSharedKeyCredential,
+    ) {
+      this.storage.emptyFiles();
+    }
+
+    getContainerClient(containerName: string) {
+      if (containerName === 'bad_container') {
+        return new ContainerClientFailGetProperties(
+          containerName,
+          this.storage,
+        );
+      }
+      if (this.credential?.accountName === 'bad_account_credentials') {
+        return new ContainerClientFailUpload(containerName, this.storage);
+      }
+      return new ContainerClient(containerName, this.storage);
+    }
+  }
+
+  class StorageSharedKeyCredential {
+    readonly accountName;
+    readonly accountKey;
+
+    constructor(accountName: string, accountKey: string) {
+      this.accountName = accountName;
+      this.accountKey = accountKey;
+    }
+  }
+
+  return {
+    __esModule: true,
+    BlobServiceClient,
+    StorageSharedKeyCredential,
+  };
+});
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -34,7 +231,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace || DEFAULT_NAMESPACE, kind, name);
+  return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const logger = getVoidLogger();
@@ -51,7 +248,6 @@ const createPublisherFromConfig = ({
 } = {}) => {
   const config = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'azureBlobStorage',
         azureBlobStorage: {
@@ -179,7 +375,7 @@ describe('AzureBlobStoragePublish', () => {
 
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = path.join(
-        rootDir,
+        storageRootDir,
         'wrong',
         'path',
         'to',

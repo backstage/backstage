@@ -318,9 +318,9 @@ export const createGithubProvider = (
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const enterpriseInstanceUrl = envConfig.getOptionalString(
-        'enterpriseInstanceUrl',
-      );
+      const enterpriseInstanceUrl = envConfig
+        .getOptionalString('enterpriseInstanceUrl')
+        ?.replace(/\/$/, '');
       const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
       const authorizationUrl = enterpriseInstanceUrl
         ? `${enterpriseInstanceUrl}/login/oauth/authorize`

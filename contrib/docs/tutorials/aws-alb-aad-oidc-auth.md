@@ -109,6 +109,10 @@ import {
   createRouter,
   createAwsAlbProvider,
 } from '@backstage/plugin-auth-backend';
+import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -154,16 +158,20 @@ export default async function createPlugin({
             const [id] = email?.split('@') ?? '';
             // Fetch from an external system that returns entity claims like:
             // ['user:default/breanna.davison', ...]
-            const ent = [`user:default/${id}`];
+            const userEntityRef = stringifyEntityRef({
+              kind: 'User',
+              namespace: DEFAULT_NAMESPACE,
+              name: id,
+            });
 
             // Resolve group membership from the Backstage catalog
             const fullEnt =
               await ctx.catalogIdentityClient.resolveCatalogMembership({
-                entityRefs: [id].concat(ent),
+                entityRefs: [id].concat([userEntityRef]),
                 logger: ctx.logger,
               });
             const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: id, ent: fullEnt },
+              claims: { sub: userEntityRef, ent: fullEnt },
             });
             return { id, token };
           },

@@ -16,10 +16,10 @@ import { IconButton } from '@material-ui/core';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
-import { Permission } from '@backstage/plugin-permission-common';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
@@ -62,6 +62,13 @@ export { CatalogApi };
 
 // @public
 export const catalogApiRef: ApiRef<CatalogApi>;
+
+// @public (undocumented)
+export const CatalogFilterLayout: {
+  (props: { children: React_2.ReactNode }): JSX.Element;
+  Filters: (props: { children: React_2.ReactNode }) => JSX.Element;
+  Content: (props: { children: React_2.ReactNode }) => JSX.Element;
+};
 
 // @public (undocumented)
 export type CatalogReactComponentsNameToClassKey = {
@@ -254,15 +261,11 @@ export type EntityRefLinkProps = {
 } & Omit<LinkProps, 'to'>;
 
 // @public
-export const EntityRefLinks: ({
-  entityRefs,
-  defaultKind,
-  ...linkProps
-}: EntityRefLinksProps) => JSX.Element;
+export function EntityRefLinks(props: EntityRefLinksProps): JSX.Element;
 
 // @public
 export type EntityRefLinksProps = {
-  entityRefs: (Entity | CompoundEntityRef)[];
+  entityRefs: (string | Entity | CompoundEntityRef)[];
   defaultKind?: string;
 } & Omit<LinkProps, 'to'>;
 
@@ -472,9 +475,6 @@ export function useAsyncEntity<
 // @public
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
-  loading: boolean;
-  error?: Error;
-  refresh?: VoidFunction;
 };
 
 // @public
@@ -489,7 +489,9 @@ export function useEntityOwnership(): {
 };
 
 // @alpha
-export function useEntityPermission(permission: Permission): {
+export function useEntityPermission(
+  permission: ResourcePermission<'catalog-entity'>,
+): {
   loading: boolean;
   allowed: boolean;
   error?: Error;

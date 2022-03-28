@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 jest.mock('../helpers');
-jest.mock('@gitbeaker/node');
 
 import { createPublishGitlabAction } from './gitlab';
 import { ScmIntegrations } from '@backstage/integration';
@@ -22,6 +21,25 @@ import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../helpers';
+
+const mockGitlabClient = {
+  Namespaces: {
+    show: jest.fn(),
+  },
+  Projects: {
+    create: jest.fn(),
+  },
+  Users: {
+    current: jest.fn(),
+  },
+};
+jest.mock('@gitbeaker/node', () => ({
+  Gitlab: class {
+    constructor() {
+      return mockGitlabClient;
+    }
+  },
+}));
 
 describe('publish:gitlab', () => {
   const config = new ConfigReader({
@@ -53,8 +71,6 @@ describe('publish:gitlab', () => {
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
-
-  const { mockGitlabClient } = require('@gitbeaker/node');
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -165,6 +181,7 @@ describe('publish:gitlab', () => {
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -189,6 +206,7 @@ describe('publish:gitlab', () => {
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -236,6 +254,7 @@ describe('publish:gitlab', () => {
       auth: { username: 'oauth2', password: 'tokenlols' },
       logger: mockContext.logger,
       defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -278,10 +297,10 @@ describe('publish:gitlab', () => {
       dir: mockContext.workspacePath,
       remoteUrl: 'http://mockurl.git',
       auth: { username: 'oauth2', password: 'tokenlols' },
-      logger: mockContext.logger,
       defaultBranch: 'master',
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
+      logger: mockContext.logger,
     });
   });
 

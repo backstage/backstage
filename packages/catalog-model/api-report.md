@@ -447,7 +447,7 @@ interface UserEntityV1alpha1 extends Entity {
       email?: string;
       picture?: string;
     };
-    memberOf: string[];
+    memberOf?: string[];
   };
 }
 export { UserEntityV1alpha1 as UserEntity };

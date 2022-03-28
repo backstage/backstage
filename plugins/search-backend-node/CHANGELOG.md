@@ -1,5 +1,22 @@
 # @backstage/plugin-search-backend-node
 
+## 0.5.3-next.0
+
+### Patch Changes
+
+- 62ee65422c: Use new `IndexableResultSet` type as return type of query method in `SearchEngine` implementation.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.3-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-search-common@0.3.2
+
 ## 0.5.1
 
 ### Patch Changes

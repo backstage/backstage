@@ -22,11 +22,119 @@ import request from 'supertest';
 import mockFs from 'mock-fs';
 import path from 'path';
 import fs from 'fs-extra';
+import { Readable } from 'stream';
 import { GoogleGCSPublish } from './googleStorage';
+import {
+  storageRootDir,
+  StorageFilesMock,
+} from '../../testUtils/StorageFilesMock';
 
-// NOTE: /plugins/techdocs-node/__mocks__ is being used to mock Google Cloud Storage client library
+jest.mock('@google-cloud/storage', () => {
+  class GCSFile {
+    constructor(
+      private readonly filePath: string,
+      private readonly storage: StorageFilesMock,
+    ) {}
 
-const rootDir = (global as any).rootDir; // Set by setupTests.ts
+    exists() {
+      return new Promise(async (resolve, reject) => {
+        if (this.storage.fileExists(this.filePath)) {
+          resolve([true]);
+        } else {
+          reject();
+        }
+      });
+    }
+
+    createReadStream() {
+      const readable = new Readable();
+      readable._read = () => {};
+
+      process.nextTick(() => {
+        if (this.storage.fileExists(this.filePath)) {
+          if (readable.eventNames().includes('pipe')) {
+            readable.emit('pipe');
+          }
+          readable.emit('data', this.storage.readFile(this.filePath));
+          readable.emit('end');
+        } else {
+          readable.emit(
+            'error',
+            new Error(`The file ${this.filePath} does not exist!`),
+          );
+        }
+      });
+
+      return readable;
+    }
+
+    delete() {
+      return Promise.resolve();
+    }
+  }
+
+  class Bucket {
+    constructor(
+      private readonly bucketName: string,
+      private readonly storage: StorageFilesMock,
+    ) {}
+
+    async getMetadata() {
+      if (this.bucketName === 'bad_bucket_name') {
+        throw Error('Bucket does not exist');
+      }
+      return '';
+    }
+
+    upload(source: string, { destination }: { destination: string }) {
+      return new Promise(async resolve => {
+        this.storage.writeFile(destination, source);
+        resolve(null);
+      });
+    }
+
+    file(destinationFilePath: string) {
+      if (this.bucketName === 'delete_stale_files_error') {
+        throw Error('Message');
+      }
+      return new GCSFile(destinationFilePath, this.storage);
+    }
+
+    getFilesStream() {
+      const readable = new Readable();
+      readable._read = () => {};
+
+      process.nextTick(() => {
+        if (
+          this.bucketName === 'delete_stale_files_success' ||
+          this.bucketName === 'delete_stale_files_error'
+        ) {
+          readable.emit('data', { name: 'stale-file.png' });
+        }
+        readable.emit('end');
+      });
+
+      return readable;
+    }
+  }
+
+  class Storage {
+    storage = new StorageFilesMock();
+
+    constructor() {
+      this.storage.emptyFiles();
+    }
+
+    bucket(bucketName: string) {
+      return new Bucket(bucketName, this.storage);
+    }
+  }
+
+  return {
+    __esModule: true,
+    Storage,
+  };
+});
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -34,7 +142,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace || DEFAULT_NAMESPACE, kind, name);
+  return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const logger = getVoidLogger();
@@ -52,7 +160,6 @@ const createPublisherFromConfig = ({
 } = {}) => {
   const config = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'googleGcs',
         googleGcs: {
@@ -194,7 +301,7 @@ describe('GoogleGCSPublish', () => {
 
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = path.join(
-        rootDir,
+        storageRootDir,
         'wrong',
         'path',
         'to',

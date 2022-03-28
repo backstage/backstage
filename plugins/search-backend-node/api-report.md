@@ -9,13 +9,13 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { DocumentDecoratorFactory } from '@backstage/plugin-search-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
+import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { default as lunr_2 } from 'lunr';
 import { QueryTranslator } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
-import { SearchResultSet } from '@backstage/plugin-search-common';
 import { Transform } from 'stream';
 import { Writable } from 'stream';
 
@@ -87,7 +87,7 @@ export class LunrSearchEngine implements SearchEngine {
   // (undocumented)
   protected lunrIndices: Record<string, lunr_2.Index>;
   // (undocumented)
-  query(query: SearchQuery): Promise<SearchResultSet>;
+  query(query: SearchQuery): Promise<IndexableResultSet>;
   // (undocumented)
   setTranslator(translator: LunrQueryTranslator): void;
   // (undocumented)

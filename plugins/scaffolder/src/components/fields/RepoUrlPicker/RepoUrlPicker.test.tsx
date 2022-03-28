@@ -138,7 +138,7 @@ describe('RepoUrlPicker', () => {
                 'ui:options': {
                   requestUserCredentials: {
                     secretsKey: 'testKey',
-                    additionalScopes: { github: ['workflow:write'] },
+                    additionalScopes: { github: ['workflow'] },
                   },
                 },
               }}
@@ -164,7 +164,7 @@ describe('RepoUrlPicker', () => {
         additionalScope: {
           repoWrite: true,
           customScopes: {
-            github: ['workflow:write'],
+            github: ['workflow'],
           },
         },
       });

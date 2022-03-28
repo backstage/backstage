@@ -16,8 +16,9 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
-  AuthorizeDecision,
+  EvaluatePermissionResponse,
   AuthorizeResult,
+  createPermission,
   PermissionAuthorizer,
 } from '@backstage/plugin-permission-common';
 import {
@@ -78,28 +79,32 @@ describe('AuthorizedSearchEngine', () => {
 
   const defaultTypes: Record<string, DocumentTypeInfo> = {
     [typeUsers]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.users.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'test-user',
+      }),
     },
     [typeTemplates]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.templates.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'test-template',
+      }),
     },
     [typeServices]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.services.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'test-service',
+      }),
     },
     [typeGroups]: {
-      visibilityPermission: {
+      visibilityPermission: createPermission({
         name: 'search.groups.read',
         attributes: { action: 'read' },
-      },
+        resourceType: 'test-group',
+      }),
     },
   };
 
@@ -238,7 +243,7 @@ describe('AuthorizedSearchEngine', () => {
           }
           return {
             result: AuthorizeResult.CONDITIONAL,
-          } as AuthorizeDecision;
+          } as EvaluatePermissionResponse;
         }
 
         return {
@@ -289,7 +294,7 @@ describe('AuthorizedSearchEngine', () => {
 
         return {
           result: AuthorizeResult.CONDITIONAL,
-        } as AuthorizeDecision;
+        } as EvaluatePermissionResponse;
       }),
     );
 
@@ -331,7 +336,9 @@ describe('AuthorizedSearchEngine', () => {
             result: AuthorizeResult.ALLOW,
           };
         }
-        return { result: AuthorizeResult.CONDITIONAL } as AuthorizeDecision;
+        return {
+          result: AuthorizeResult.CONDITIONAL,
+        } as EvaluatePermissionResponse;
       }),
     );
 
@@ -408,7 +415,9 @@ describe('AuthorizedSearchEngine', () => {
                 : AuthorizeResult.ALLOW,
           };
         }
-        return { result: AuthorizeResult.CONDITIONAL } as AuthorizeDecision;
+        return {
+          result: AuthorizeResult.CONDITIONAL,
+        } as EvaluatePermissionResponse;
       }),
     );
 
@@ -490,7 +499,9 @@ describe('AuthorizedSearchEngine', () => {
         if (query.resourceRef) {
           return { result: AuthorizeResult.ALLOW };
         }
-        return { result: AuthorizeResult.CONDITIONAL } as AuthorizeDecision;
+        return {
+          result: AuthorizeResult.CONDITIONAL,
+        } as EvaluatePermissionResponse;
       }),
     );
 

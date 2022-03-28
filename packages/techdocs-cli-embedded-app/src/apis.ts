@@ -64,17 +64,11 @@ class TechDocsDevStorageApi implements TechDocsStorageApi {
   }
 
   async getApiOrigin() {
-    return (
-      this.configApi.getOptionalString('techdocs.requestUrl') ??
-      (await this.discoveryApi.getBaseUrl('techdocs'))
-    );
+    return await this.discoveryApi.getBaseUrl('techdocs');
   }
 
   async getStorageUrl() {
-    return (
-      this.configApi.getOptionalString('techdocs.storageUrl') ??
-      `${await this.discoveryApi.getBaseUrl('techdocs')}/static/docs`
-    );
+    return `${await this.discoveryApi.getBaseUrl('techdocs')}/static/docs`;
   }
 
   async getBuilder() {
@@ -134,10 +128,7 @@ class TechDocsDevApi implements TechDocsApi {
   }
 
   async getApiOrigin() {
-    return (
-      this.configApi.getOptionalString('techdocs.requestUrl') ??
-      (await this.discoveryApi.getBaseUrl('techdocs'))
-    );
+    return await this.discoveryApi.getBaseUrl('techdocs');
   }
 
   async getEntityMetadata(_entityId: any) {

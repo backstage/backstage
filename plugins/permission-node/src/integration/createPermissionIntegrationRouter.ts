@@ -21,7 +21,8 @@ import { InputError } from '@backstage/errors';
 import { errorHandler } from '@backstage/backend-common';
 import {
   AuthorizeResult,
-  Identified,
+  DefinitivePolicyDecision,
+  IdentifiedPermissionMessage,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
@@ -32,7 +33,6 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
-import { DefinitivePolicyDecision } from '../policy/types';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -44,6 +44,7 @@ const permissionCriteriaSchema: z.ZodSchema<
     z
       .object({
         rule: z.string(),
+        resourceType: z.string(),
         params: z.array(z.unknown()),
       })
       .strict(),
@@ -67,7 +68,7 @@ const applyConditionsRequestSchema = z.object({
  *
  * @public
  */
-export type ApplyConditionsRequestEntry = Identified<{
+export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
   resourceRef: string;
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
@@ -88,7 +89,8 @@ export type ApplyConditionsRequest = {
  *
  * @public
  */
-export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry =
+  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
 
 /**
  * A batch of {@link ApplyConditionsResponseEntry} objects.
@@ -99,10 +101,10 @@ export type ApplyConditionsResponse = {
   items: ApplyConditionsResponseEntry[];
 };
 
-const applyConditions = <TResource>(
-  criteria: PermissionCriteria<PermissionCondition>,
+const applyConditions = <TResourceType extends string, TResource>(
+  criteria: PermissionCriteria<PermissionCondition<TResourceType>>,
   resource: TResource | undefined,
-  getRule: (name: string) => PermissionRule<TResource, unknown>,
+  getRule: (name: string) => PermissionRule<TResource, unknown, TResourceType>,
 ): boolean => {
   // If resource was not found, deny. This avoids leaking information from the
   // apply-conditions API which would allow a user to differentiate between
@@ -125,6 +127,14 @@ const applyConditions = <TResource>(
 
   return getRule(criteria.rule).apply(resource, ...criteria.params);
 };
+
+/**
+ * Prevent use of type parameter from contributing to type inference.
+ *
+ * https://github.com/Microsoft/TypeScript/issues/14829#issuecomment-980401795
+ * @ignore
+ */
+type NoInfer<T> = T extends infer S ? S : never;
 
 /**
  * Create an express Router which provides an authorization route to allow
@@ -161,9 +171,16 @@ const applyConditions = <TResource>(
  *
  * @public
  */
-export const createPermissionIntegrationRouter = <TResource>(options: {
-  resourceType: string;
-  rules: PermissionRule<TResource, any>[];
+export const createPermissionIntegrationRouter = <
+  TResourceType extends string,
+  TResource,
+>(options: {
+  resourceType: TResourceType;
+  // Do not infer value of TResourceType from supplied rules.
+  // instead only consider the resourceType parameter, and
+  // consider any rules whose resource type does not match
+  // to be an error.
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>>[];
   getResources: (
     resourceRefs: string[],
   ) => Promise<Array<TResource | undefined>>;

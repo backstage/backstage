@@ -1,5 +1,35 @@
 # @backstage/plugin-tech-insights
 
+## 0.1.14-next.0
+
+### Patch Changes
+
+- 2fe58c7285: Improved the Tech-Insights documentation:
+
+  - `lifecycle` examples used `ttl` when it should be `timeToLive`
+  - Added list of included FactRetrievers
+  - Added full backend example using all included FactRetrievers
+  - Added boolean scorecard example image showing results of backend example
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/catalog-model@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.4
+
 ## 0.1.12
 
 ### Patch Changes

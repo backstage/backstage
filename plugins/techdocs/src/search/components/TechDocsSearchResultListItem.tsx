@@ -101,9 +101,3 @@ export const TechDocsSearchResultListItem = (
     </LinkWrapper>
   );
 };
-
-/**
- * @public
- * @deprecated use {@link TechDocsSearchResultListItem} instead
- */
-export const DocsResultListItem = TechDocsSearchResultListItem;

@@ -8,17 +8,14 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
-import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
-import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Location as Location_2 } from '@backstage/catalog-client';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -28,6 +25,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -112,19 +110,11 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 export class CatalogBuilder {
   addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder;
   addEntityProvider(...providers: EntityProvider[]): CatalogBuilder;
-  addPermissionRules(
-    ...permissionRules: PermissionRule<
-      Entity,
-      EntitiesSearchFilter,
-      unknown[]
-    >[]
-  ): void;
+  // @alpha
+  addPermissionRules(...permissionRules: CatalogPermissionRule[]): void;
   addProcessor(...processors: CatalogProcessor[]): CatalogBuilder;
   build(): Promise<{
-    entitiesCatalog: EntitiesCatalog;
-    locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
-    locationService: LocationService;
     router: Router;
   }>;
   static create(env: CatalogEnvironment): CatalogBuilder;
@@ -149,23 +139,37 @@ export const catalogConditions: Conditions<{
   hasAnnotation: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [annotation: string]
   >;
-  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasLabel: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [label: string]
+  >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
-  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityKind: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [kinds: string[]]
+  >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [claims: string[]]
   >;
 }>;
@@ -179,18 +183,16 @@ export type CatalogEnvironment = {
   permissions: PermissionAuthorizer;
 };
 
+// @alpha
+export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
+  PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
+
 // @public (undocumented)
 export interface CatalogProcessingEngine {
   // (undocumented)
   start(): Promise<void>;
   // (undocumented)
   stop(): Promise<void>;
-}
-
-// @public
-export interface CatalogProcessingOrchestrator {
-  // (undocumented)
-  process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
 // @public (undocumented)
@@ -267,22 +269,6 @@ export type CatalogProcessorResult =
   | CatalogProcessorRelationResult
   | CatalogProcessorErrorResult;
 
-// @public
-export type CatalogRule = {
-  allow: Array<{
-    kind: string;
-  }>;
-  locations?: Array<{
-    target?: string;
-    type: string;
-  }>;
-};
-
-// @public
-export type CatalogRulesEnforcer = {
-  isAllowed(entity: Entity, location: LocationSpec): boolean;
-};
-
 // @public (undocumented)
 export class CodeOwnersProcessor implements CatalogProcessor {
   constructor(options: {
@@ -305,23 +291,23 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 }
 
 // @alpha
-export const createCatalogPermissionRule: <TParams extends unknown[]>(
-  rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
-) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
+export const createCatalogConditionalDecision: (
+  permission: ResourcePermission<'catalog-entity'>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'catalog-entity', unknown[]>
+  >,
+) => ConditionalPolicyDecision;
 
 // @alpha
-export const createCatalogPolicyDecision: (
-  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
-) => ConditionalPolicyDecision;
+export const createCatalogPermissionRule: <TParams extends unknown[]>(
+  rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
+) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @public
 export function createRandomProcessingInterval(options: {
   minSeconds: number;
   maxSeconds: number;
 }): ProcessingIntervalFunction;
-
-// @public
-export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
@@ -389,66 +375,10 @@ export type DefaultCatalogCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
 };
 
-// @public (undocumented)
-export class DefaultCatalogProcessingOrchestrator
-  implements CatalogProcessingOrchestrator
-{
-  constructor(options: {
-    processors: CatalogProcessor[];
-    integrations: ScmIntegrationRegistry;
-    logger: Logger;
-    parser: CatalogProcessorParser;
-    policy: EntityPolicy;
-    rulesEnforcer: CatalogRulesEnforcer;
-  });
-  // (undocumented)
-  process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
-}
-
-// @public
-export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
-  constructor(rules: CatalogRule[]);
-  static readonly defaultRules: CatalogRule[];
-  static fromConfig(config: Config): DefaultCatalogRulesEnforcer;
-  isAllowed(entity: Entity, location: LocationSpec): boolean;
-}
-
 // @public
 export type DeferredEntity = {
   entity: Entity;
   locationKey?: string;
-};
-
-// @public (undocumented)
-export type EntitiesCatalog = {
-  entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
-  removeEntityByUid(
-    uid: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<void>;
-  entityAncestry(
-    entityRef: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<EntityAncestryResponse>;
-  facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
-};
-
-// @public (undocumented)
-export type EntitiesRequest = {
-  filter?: EntityFilter;
-  fields?: (entity: Entity) => Entity;
-  pagination?: EntityPagination;
-  authorizationToken?: string;
-};
-
-// @public (undocumented)
-export type EntitiesResponse = {
-  entities: Entity[];
-  pageInfo: PageInfo;
 };
 
 // @public
@@ -456,33 +386,6 @@ export type EntitiesSearchFilter = {
   key: string;
   values?: string[];
 };
-
-// @public (undocumented)
-export type EntityAncestryResponse = {
-  rootEntityRef: string;
-  items: Array<{
-    entity: Entity;
-    parentEntityRefs: string[];
-  }>;
-};
-
-// @public
-export interface EntityFacetsRequest {
-  authorizationToken?: string;
-  facets: string[];
-  filter?: EntityFilter;
-}
-
-// @public
-export interface EntityFacetsResponse {
-  facets: Record<
-    string,
-    Array<{
-      value: string;
-      count: number;
-    }>
-  >;
-}
 
 // @public
 export type EntityFilter =
@@ -496,34 +399,6 @@ export type EntityFilter =
       not: EntityFilter;
     }
   | EntitiesSearchFilter;
-
-// @public
-export type EntityPagination = {
-  limit?: number;
-  offset?: number;
-  after?: string;
-};
-
-// @public
-export type EntityProcessingRequest = {
-  entity: Entity;
-  state?: JsonObject;
-};
-
-// @public
-export type EntityProcessingResult =
-  | {
-      ok: true;
-      state: JsonObject;
-      completedEntity: Entity;
-      deferredEntities: DeferredEntity[];
-      relations: EntityRelationSpec[];
-      errors: Error[];
-    }
-  | {
-      ok: false;
-      errors: Error[];
-    };
 
 // @public
 export interface EntityProvider {
@@ -594,77 +469,11 @@ export type LocationEntityProcessorOptions = {
 };
 
 // @public
-export interface LocationInput {
-  // @deprecated (undocumented)
-  presence?: 'optional' | 'required';
-  // (undocumented)
-  target: string;
-  // (undocumented)
-  type: string;
-}
-
-// @public
-export interface LocationService {
-  // (undocumented)
-  createLocation(
-    location: LocationInput,
-    dryRun: boolean,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<{
-    location: Location_2;
-    entities: Entity[];
-    exists?: boolean;
-  }>;
-  // (undocumented)
-  deleteLocation(
-    id: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<void>;
-  // (undocumented)
-  getLocation(
-    id: string,
-    options?: {
-      authorizationToken?: string;
-    },
-  ): Promise<Location_2>;
-  // (undocumented)
-  listLocations(options?: {
-    authorizationToken?: string;
-  }): Promise<Location_2[]>;
-}
-
-// @public
 export type LocationSpec = {
   type: string;
   target: string;
   presence?: 'optional' | 'required';
 };
-
-// @public
-export interface LocationStore {
-  // (undocumented)
-  createLocation(location: LocationInput): Promise<Location_2>;
-  // (undocumented)
-  deleteLocation(id: string): Promise<void>;
-  // (undocumented)
-  getLocation(id: string): Promise<Location_2>;
-  // (undocumented)
-  listLocations(): Promise<Location_2[]>;
-}
-
-// @public (undocumented)
-export type PageInfo =
-  | {
-      hasNextPage: false;
-    }
-  | {
-      hasNextPage: true;
-      endCursor: string;
-    };
 
 // @public (undocumented)
 export function parseEntityYaml(
@@ -677,23 +486,37 @@ export const permissionRules: {
   hasAnnotation: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [annotation: string]
   >;
-  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasLabel: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [label: string]
+  >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
-  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityKind: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [kinds: string[]]
+  >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [claims: string[]]
   >;
 };
@@ -761,35 +584,6 @@ export const processingResult: Readonly<{
   ) => CatalogProcessorResult;
   readonly relation: (spec: EntityRelationSpec) => CatalogProcessorResult;
 }>;
-
-// @public
-export type RefreshOptions = {
-  entityRef: string;
-  authorizationToken?: string;
-};
-
-// @public
-export interface RefreshService {
-  refresh(options: RefreshOptions): Promise<void>;
-}
-
-// @public
-export interface RouterOptions {
-  // (undocumented)
-  config: Config;
-  // (undocumented)
-  entitiesCatalog?: EntitiesCatalog;
-  // (undocumented)
-  locationAnalyzer?: LocationAnalyzer;
-  // (undocumented)
-  locationService: LocationService;
-  // (undocumented)
-  logger: Logger;
-  // (undocumented)
-  permissionIntegrationRouter?: express.Router;
-  // (undocumented)
-  refreshService?: RefreshService;
-}
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor {

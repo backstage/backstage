@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- c8475ab3bb: Adding some documentation for exported things
+- Updated dependencies
+  - @backstage/catalog-model@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.3.0
 
 ### Minor Changes

@@ -76,7 +76,7 @@ describe('CodeOwnersProcessor', () => {
       expect(result).toEqual(entity);
     });
 
-    it('should ingore invalid locations type', async () => {
+    it('should ignore invalid locations type', async () => {
       const { entity, processor } = setupTest();
 
       const result = await processor.preProcessEntity(

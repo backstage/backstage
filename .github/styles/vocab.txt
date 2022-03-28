@@ -27,6 +27,7 @@ Billett
 bitbucket
 Bitrise
 Blackbox
+Brex
 bool
 boolean
 builtins
@@ -59,6 +60,7 @@ configmaps
 configs
 const
 cookiecutter
+Corti
 cron
 cronjobs
 crontab
@@ -102,9 +104,11 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
+Francesco
 Gerrit
 gitbeaker
 github
+Gitiles
 gitlab
 GitLab
 Gource
@@ -133,6 +137,7 @@ inlinehilite
 interop
 JaCoCo
 JavaScript
+jenkins
 Jira
 jq
 js
@@ -151,6 +156,7 @@ Leasot
 lerna
 Lerna
 LocalStack
+lockdown
 lockfile
 lunr
 Luxon
@@ -165,6 +171,7 @@ memoized
 microservice
 microservices
 microsite
+microtasks
 middleware
 minikube
 Minikube
@@ -268,6 +275,7 @@ seb
 semlas
 semver
 Serverless
+shoutout
 siloed
 Sinon
 Snyk

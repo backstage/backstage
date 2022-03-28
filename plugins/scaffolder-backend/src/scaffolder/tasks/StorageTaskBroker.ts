@@ -115,8 +115,17 @@ export class TaskManager implements TaskContext {
  * @public
  */
 export interface CurrentClaimedTask {
+  /**
+   * The TaskSpec of the current claimed task.
+   */
   spec: TaskSpec;
+  /**
+   * The uuid of the current claimed task.
+   */
   taskId: string;
+  /**
+   * The secrets that are stored with the task.
+   */
   secrets?: TaskSecrets;
 }
 
@@ -135,6 +144,9 @@ export class StorageTaskBroker implements TaskBroker {
   ) {}
   private deferredDispatch = defer();
 
+  /**
+   * {@inheritdoc TaskBroker.claim}
+   */
   async claim(): Promise<TaskContext> {
     for (;;) {
       const pendingTask = await this.storage.claimTask();
@@ -154,6 +166,9 @@ export class StorageTaskBroker implements TaskBroker {
     }
   }
 
+  /**
+   * {@inheritdoc TaskBroker.dispatch}
+   */
   async dispatch(
     options: TaskBrokerDispatchOptions,
   ): Promise<{ taskId: string }> {
@@ -164,10 +179,16 @@ export class StorageTaskBroker implements TaskBroker {
     };
   }
 
+  /**
+   * {@inheritdoc TaskBroker.get}
+   */
   async get(taskId: string): Promise<SerializedTask> {
     return this.storage.getTask(taskId);
   }
 
+  /**
+   * {@inheritdoc TaskBroker.event$}
+   */
   event$(options: {
     taskId: string;
     after?: number;
@@ -197,6 +218,9 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
+  /**
+   * {@inheritdoc TaskBroker.vacuumTasks}
+   */
   async vacuumTasks(options: { timeoutS: number }): Promise<void> {
     const { tasks } = await this.storage.listStaleTasks(options);
     await Promise.all(

@@ -19,7 +19,6 @@ import {
   ContentHeader,
   CreateButton,
   Header,
-  Lifecycle,
   Page,
   SupportButton,
 } from '@backstage/core-components';
@@ -27,13 +26,13 @@ import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
+  CatalogFilterLayout,
   EntityKindPicker,
   EntityListProvider,
   EntitySearchBar,
   EntityTagPicker,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { registerComponentRouteRef } from '../../routes';
 import { TemplateList } from '../TemplateList';
@@ -41,23 +40,12 @@ import { TemplateTypePicker } from '../TemplateTypePicker';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { usePermission } from '@backstage/plugin-permission-react';
 
-const useStyles = makeStyles(theme => ({
-  contentWrapper: {
-    display: 'grid',
-    gridTemplateAreas: "'filters' 'grid'",
-    gridTemplateColumns: '250px 1fr',
-    gridColumnGap: theme.spacing(2),
-  },
-}));
-
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
     | ComponentType<{ template: TemplateEntityV1beta3 }>
     | undefined;
   groups?: Array<{
     title?: React.ReactNode;
-    /** @deprcated use title instead as it accepts a string and react component */
-    titleComponent?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
 };
@@ -66,7 +54,6 @@ export const ScaffolderPageContents = ({
   TemplateCardComponent,
   groups,
 }: ScaffolderPageProps) => {
-  const styles = useStyles();
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
     title: groups ? 'Other Templates' : 'Templates',
@@ -76,17 +63,15 @@ export const ScaffolderPageContents = ({
     },
   };
 
-  const { allowed } = usePermission(catalogEntityCreatePermission);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
 
   return (
     <Page themeId="home">
       <Header
         pageTitleOverride="Create a New Component"
-        title={
-          <>
-            Create a New Component <Lifecycle shorthand />
-          </>
-        }
+        title="Create a New Component"
         subtitle="Create new software components using standard templates"
       />
       <Content>
@@ -104,8 +89,8 @@ export const ScaffolderPageContents = ({
           </SupportButton>
         </ContentHeader>
 
-        <div className={styles.contentWrapper}>
-          <div>
+        <CatalogFilterLayout>
+          <CatalogFilterLayout.Filters>
             <EntitySearchBar />
             <EntityKindPicker initialFilter="template" hidden />
             <UserListPicker
@@ -114,8 +99,8 @@ export const ScaffolderPageContents = ({
             />
             <TemplateTypePicker />
             <EntityTagPicker />
-          </div>
-          <div>
+          </CatalogFilterLayout.Filters>
+          <CatalogFilterLayout.Content>
             {groups &&
               groups.map((group, index) => (
                 <TemplateList
@@ -129,8 +114,8 @@ export const ScaffolderPageContents = ({
               TemplateCardComponent={TemplateCardComponent}
               group={otherTemplatesGroup}
             />
-          </div>
-        </div>
+          </CatalogFilterLayout.Content>
+        </CatalogFilterLayout>
       </Content>
     </Page>
   );

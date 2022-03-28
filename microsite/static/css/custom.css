@@ -87,6 +87,10 @@ td {
   background-color: #121212;
 }
 
+.MainContent--gradient {
+  background: linear-gradient(90.49deg, #121212 15.36%, #282828 70.44%);
+}
+
 /* marketing page */
 
 .blockContent h2 {
@@ -1073,11 +1077,13 @@ code {
 .Banner {
   position: relative;
   padding: 14px;
-  margin: 14px 20px;
+  padding-right: 50px; /* space for the dismiss button */
+  margin: 36px 20px;
   border-radius: 4px;
   background-color: $primaryColor;
   font-family: Helvetica Neue, sans-serif;
   color: #000;
+  display: flex;
 }
 
 .Banner--hidden {

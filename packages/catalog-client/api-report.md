@@ -11,7 +11,6 @@ export type AddLocationRequest = {
   type?: string;
   target: string;
   dryRun?: boolean;
-  presence?: 'optional' | 'required';
 };
 
 // @public
@@ -79,7 +78,7 @@ export class CatalogClient implements CatalogApi {
     };
   });
   addLocation(
-    { type, target, dryRun, presence }: AddLocationRequest,
+    { type, target, dryRun }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse>;
   getEntities(
@@ -195,7 +194,6 @@ type Location_2 = {
   id: string;
   type: string;
   target: string;
-  presence?: 'optional' | 'required';
 };
 export { Location_2 as Location };
 ```

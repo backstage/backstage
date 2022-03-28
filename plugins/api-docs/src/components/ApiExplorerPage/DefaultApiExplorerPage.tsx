@@ -24,13 +24,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  CatalogTable,
-  CatalogTableRow,
-  FilteredEntityLayout,
-  EntityListContainer,
-  FilterContainer,
-} from '@backstage/plugin-catalog';
+import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
 import {
   EntityKindPicker,
   EntityLifecyclePicker,
@@ -40,6 +34,7 @@ import {
   EntityTypePicker,
   UserListFilterKind,
   UserListPicker,
+  CatalogFilterLayout,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { registerComponentRouteRef } from '../../routes';
@@ -95,22 +90,22 @@ export const DefaultApiExplorerPage = ({
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <EntityListProvider>
-          <FilteredEntityLayout>
-            <FilterContainer>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
               <EntityKindPicker initialFilter="api" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
-            </FilterContainer>
-            <EntityListContainer>
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
               <CatalogTable
                 columns={columns || defaultColumns}
                 actions={actions}
               />
-            </EntityListContainer>
-          </FilteredEntityLayout>
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
         </EntityListProvider>
       </Content>
     </PageWithHeader>

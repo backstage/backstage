@@ -131,15 +131,3 @@ layer for users to determine whether they have the permission to view a
 particular docs site. There are a handful of features which are extremely hard
 to develop without a tightly integrated backend in place. Hence, support for
 `techdocs` without `techdocs-backend` is limited and challenging to develop.
-
-# Future work
-
-_Ideas here are far fetched and not in the project's milestone for near future
-(~6 months)._
-
-We currently depend on MkDocs to parse doc sites written in Markdown. And we
-store the generated static assets and re-use it later to render in Backstage. A
-better (futuristic) approach will be to directly parse whatever type of source
-files you have in your docs repository and directly render in Backstage in
-real-time. You can read more in this
-[RFC - Simplifying TechDocs Frontend Architecture](https://github.com/backstage/backstage/issues/3998).

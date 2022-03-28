@@ -52,7 +52,7 @@ describe('Differ', () => {
     expect(next).not.toBeInTheDocument();
   });
 
-  it('should render icon & current & next (with seperator)', () => {
+  it('should render icon & current & next (with separator)', () => {
     const { getByTestId, queryByTestId } = render(
       <Differ
         icon="branch"

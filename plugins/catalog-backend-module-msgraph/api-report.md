@@ -14,6 +14,7 @@ import { Logger } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import * as msal from '@azure/msal-node';
 import { Response as Response_2 } from 'node-fetch';
+import { TaskRunner } from '@backstage/backend-tasks';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -119,19 +120,23 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
   static fromConfig(
-    config: Config,
-    options: {
-      id: string;
-      target: string;
-      logger: Logger;
-      userTransformer?: UserTransformer;
-      groupTransformer?: GroupTransformer;
-      organizationTransformer?: OrganizationTransformer;
-    },
+    configRoot: Config,
+    options: MicrosoftGraphOrgEntityProviderOptions,
   ): MicrosoftGraphOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  read(): Promise<void>;
+  read(options?: { logger?: Logger }): Promise<void>;
+}
+
+// @public
+export interface MicrosoftGraphOrgEntityProviderOptions {
+  groupTransformer?: GroupTransformer;
+  id: string;
+  logger: Logger;
+  organizationTransformer?: OrganizationTransformer;
+  schedule: 'manual' | TaskRunner;
+  target: string;
+  userTransformer?: UserTransformer;
 }
 
 // @public

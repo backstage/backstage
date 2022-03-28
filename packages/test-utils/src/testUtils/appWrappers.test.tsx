@@ -48,14 +48,13 @@ describe('wrapInTestApp', () => {
       await Promise.resolve();
     });
 
-    expect(error).toEqual([
-      expect.stringMatching(
-        /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
+    expect(
+      error.some(e =>
+        e.includes(
+          'Warning: An update to %s inside a test was not wrapped in act(...)',
+        ),
       ),
-      expect.stringMatching(
-        /^Warning: An update to %s inside a test was not wrapped in act\(...\)/,
-      ),
-    ]);
+    ).toBeTruthy();
   });
 
   it('should render a component in a test app without warning about missing act()', async () => {

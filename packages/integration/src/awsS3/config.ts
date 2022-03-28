@@ -59,6 +59,11 @@ export type AwsS3IntegrationConfig = {
    * (Optional) ARN of role to be assumed
    */
   roleArn?: string;
+
+  /**
+   * (Optional) External ID to use when assuming role
+   */
+  externalId?: string;
 };
 
 /**
@@ -98,6 +103,7 @@ export function readAwsS3IntegrationConfig(
   const accessKeyId = config.getOptionalString('accessKeyId');
   const secretAccessKey = config.getOptionalString('secretAccessKey');
   const roleArn = config.getOptionalString('roleArn');
+  const externalId = config.getOptionalString('externalId');
 
   return {
     host,
@@ -106,6 +112,7 @@ export function readAwsS3IntegrationConfig(
     accessKeyId,
     secretAccessKey,
     roleArn,
+    externalId,
   };
 }
 

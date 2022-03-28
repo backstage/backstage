@@ -507,6 +507,9 @@ export function resolveRelations(
     retrieveItems(groupMemberOf, id).forEach(p => {
       const parentGroup = groupMap.get(p);
       if (parentGroup) {
+        if (!user.spec.memberOf) {
+          user.spec.memberOf = [];
+        }
         user.spec.memberOf.push(stringifyEntityRef(parentGroup));
       }
     });

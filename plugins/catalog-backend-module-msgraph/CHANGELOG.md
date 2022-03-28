@@ -1,5 +1,57 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-catalog-backend@1.0.1-next.0
+  - @backstage/backend-tasks@0.2.2-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 331f258e06: **BREAKING**: `MicrosoftGraphOrgEntityProvider.fromConfig` now requires a `schedule` field in its options, which simplifies scheduling. If you want to retain the old behavior of calling its `run()` method manually, you can set the new field value to the string `'manual'`. But you may prefer to instead give it a scheduled task runner from the backend tasks package:
+
+  ```diff
+   // packages/backend/src/plugins/catalog.ts
+  +import { Duration } from 'luxon';
+  +import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+
+  +  // The target parameter below needs to match one of the providers' target
+  +  // value specified in your app-config.
+  +  builder.addEntityProvider(
+  +    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
+  +      id: 'production',
+  +      target: 'https://graph.microsoft.com/v1.0',
+  +      logger: env.logger,
+  +      schedule: env.scheduler.createScheduledTaskRunner({
+  +        frequency: Duration.fromObject({ minutes: 5 }),
+  +        timeout: Duration.fromObject({ minutes: 3 }),
+  +      }),
+  +    }),
+  +  );
+  ```
+
+### Patch Changes
+
+- 759b32b0ce: support advanced querying capabilities using the config option `queryMode`
+- 89c7e47967: Minor README update
+- 132189e466: Updated the code to handle User kind `spec.memberOf` now being optional.
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.0.0
+  - @backstage/backend-tasks@0.2.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+
 ## 0.2.19
 
 ### Patch Changes

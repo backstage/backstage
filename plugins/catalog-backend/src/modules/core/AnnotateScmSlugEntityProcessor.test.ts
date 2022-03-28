@@ -94,7 +94,98 @@ describe('AnnotateScmSlugEntityProcessor', () => {
       const location: LocationSpec = {
         type: 'url',
         target:
-          'https://gitlab.com/backstage/backstage/-/blob/master/catalog-info.yaml',
+          'https://not-in-mock-config.example.com/backstage/backstage/-/blob/master/catalog-info.yaml',
+      };
+
+      const processor = AnnotateScmSlugEntityProcessor.fromConfig(
+        new ConfigReader({}),
+      );
+
+      expect(await processor.preProcessEntity(entity, location)).toEqual({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+        },
+      });
+    });
+  });
+  describe('gitlab', () => {
+    it('adds annotation', async () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+        },
+      };
+      const location: LocationSpec = {
+        type: 'url',
+        target:
+          'https://gitlab.com/group/subgroup/project/-/blob/master/catalog-info.yaml',
+      };
+
+      const processor = AnnotateScmSlugEntityProcessor.fromConfig(
+        new ConfigReader({}),
+      );
+
+      expect(await processor.preProcessEntity(entity, location)).toEqual({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          annotations: {
+            'gitlab.com/project-slug': 'group/subgroup/project',
+          },
+        },
+      });
+    });
+
+    it('does not override existing annotation', async () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          annotations: {
+            'gitlab.com/project-slug': 'backstage/community',
+          },
+        },
+      };
+      const location: LocationSpec = {
+        type: 'url',
+        target:
+          'https://gitlab.com/group/subgroup/project/-/blob/master/catalog-info.yaml',
+      };
+
+      const processor = AnnotateScmSlugEntityProcessor.fromConfig(
+        new ConfigReader({}),
+      );
+
+      expect(await processor.preProcessEntity(entity, location)).toEqual({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          annotations: {
+            'gitlab.com/project-slug': 'backstage/community',
+          },
+        },
+      });
+    });
+
+    it('should not add annotation for other providers', async () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+        },
+      };
+      const location: LocationSpec = {
+        type: 'url',
+        target:
+          'https://not-in-mock-config.example.com/group/subgroup/project/-/blob/master/catalog-info.yaml',
       };
 
       const processor = AnnotateScmSlugEntityProcessor.fromConfig(

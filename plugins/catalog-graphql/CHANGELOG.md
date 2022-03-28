@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- 02ad19d189: Do not use `metadata.generation` from entity data
+- Updated dependencies
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.3.6
 
 ### Patch Changes

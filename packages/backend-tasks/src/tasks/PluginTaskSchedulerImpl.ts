@@ -24,6 +24,8 @@ import {
   TaskScheduleDefinition,
 } from './types';
 import { validateId } from './util';
+import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 
 /**
  * Implements the actual task management.
@@ -33,6 +35,28 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: Logger,
   ) {}
+
+  async triggerTask(id: string): Promise<void> {
+    const knex = await this.databaseFactory();
+
+    // check if task exists
+    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .select(knex.raw(1))
+      .where('id', '=', id);
+    if (rows.length !== 1) {
+      throw new NotFoundError(`Task ${id} does not exist`);
+    }
+
+    const updatedRows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .where('id', '=', id)
+      .whereNull('current_run_ticket')
+      .update({
+        next_run_start_at: knex.fn.now(),
+      });
+    if (updatedRows < 1) {
+      throw new ConflictError(`Task ${id} is currently running`);
+    }
+  }
 
   async scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,

@@ -63,7 +63,7 @@ export interface EntitySwitchProps {
 
 /** @public */
 export const EntitySwitch = (props: EntitySwitchProps) => {
-  const { entity } = useAsyncEntity();
+  const { entity, loading } = useAsyncEntity();
   const apis = useApiHolder();
   const results = useElementFilter(
     props.children,
@@ -75,11 +75,23 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
         })
         .getElements()
         .flatMap<SwitchCaseResult>((element: ReactElement) => {
-          if (!entity) {
+          // Nothing is rendered while loading
+          if (loading) {
             return [];
           }
+
           const { if: condition, children: elementsChildren } =
             element.props as EntitySwitchCase;
+
+          // If the entity is missing or there is an error, render the default page
+          if (!entity) {
+            return [
+              {
+                if: condition === undefined,
+                children: elementsChildren,
+              },
+            ];
+          }
           return [
             {
               if: condition?.(entity, { apis }) ?? true,
@@ -87,7 +99,7 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
             },
           ];
         }),
-    [apis, entity],
+    [apis, entity, loading],
   );
   const hasAsyncCases = results.some(
     r => typeof r.if === 'object' && 'then' in r.if,

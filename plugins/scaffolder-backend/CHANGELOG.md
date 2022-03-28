@@ -1,5 +1,40 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-catalog-backend@1.0.1-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-scaffolder-common@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- 765639f98c: Added new `github:issues:label` action to apply labels to issues, and also output `pullRequestNumber` from `publish:github:pull-request`.
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- c8475ab3bb: Adding some documentation for exported things
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.0.0
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/plugin-scaffolder-common@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.18.0
 
 ### Minor Changes

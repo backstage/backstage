@@ -1,5 +1,27 @@
 # @backstage/integration
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 3ef123bbf0: Support external ID when assuming roles in S3 integration
+
+  In order to assume a role created by a 3rd party as external
+  ID is needed. This change adds an optional field to the s3
+  integration configuration and consumes that in the AwsS3UrlReader.
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- 403837cbac: Added an integration for Gerrit
+- Updated dependencies
+  - @backstage/config@1.0.0
+
 ## 0.8.0
 
 ### Minor Changes

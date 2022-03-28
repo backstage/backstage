@@ -91,9 +91,11 @@ export class TestDatabases {
 
     const databases = new TestDatabases(supportedIds);
 
-    afterAll(async () => {
-      await databases.shutdown();
-    });
+    if (supportedIds.length > 0) {
+      afterAll(async () => {
+        await databases.shutdown();
+      });
+    }
 
     return databases;
   }

@@ -1,5 +1,37 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.2.11-next.0
+
+### Patch Changes
+
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 2fe58c7285: Improved the Tech-Insights documentation:
+
+  - `lifecycle` examples used `ttl` when it should be `timeToLive`
+  - Added list of included FactRetrievers
+  - Added full backend example using all included FactRetrievers
+  - Added boolean scorecard example image showing results of backend example
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-tech-insights-node@0.2.9-next.0
+
+## 0.2.10
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.4
+  - @backstage/plugin-tech-insights-node@0.2.8
+
 ## 0.2.9
 
 ### Patch Changes

@@ -24,12 +24,106 @@ import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import mockFs from 'mock-fs';
-import os from 'os';
+import fs from 'fs-extra';
 import path from 'path';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { PublisherBase, TechDocsMetadata } from './types';
+import { storageRootDir } from '../../testUtils/StorageFilesMock';
+import { Stream, Readable } from 'stream';
 
-// NOTE: /plugins/techdocs-node/__mocks__ is being used to mock @trendyol-js/openstack-swift-sdk client library
+jest.mock('@trendyol-js/openstack-swift-sdk', () => {
+  const {
+    ContainerMetaResponse,
+    DownloadResponse,
+    NotFound,
+    ObjectMetaResponse,
+    UploadResponse,
+  }: typeof import('@trendyol-js/openstack-swift-sdk') = jest.requireActual(
+    '@trendyol-js/openstack-swift-sdk',
+  );
+
+  const checkFileExists = async (Key: string): Promise<boolean> => {
+    // Key will always have / as file separator irrespective of OS since cloud providers expects /.
+    // Normalize Key to OS specific path before checking if file exists.
+    const filePath = path.join(storageRootDir, Key);
+
+    try {
+      await fs.access(filePath, fs.constants.F_OK);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const streamToBuffer = (stream: Stream | Readable): Promise<Buffer> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const chunks: any[] = [];
+        stream.on('data', chunk => chunks.push(chunk));
+        stream.on('error', reject);
+        stream.on('end', () => resolve(Buffer.concat(chunks)));
+      } catch (e) {
+        throw new Error(`Unable to parse the response data ${e.message}`);
+      }
+    });
+  };
+
+  return {
+    __esModule: true,
+    SwiftClient: class {
+      async getMetadata(_containerName: string, file: string) {
+        const fileExists = await checkFileExists(file);
+        if (fileExists) {
+          return new ObjectMetaResponse({
+            fullPath: file,
+          });
+        }
+        return new NotFound();
+      }
+
+      async getContainerMetadata(containerName: string) {
+        if (containerName === 'mock') {
+          return new ContainerMetaResponse({
+            size: 10,
+          });
+        }
+        return new NotFound();
+      }
+
+      async upload(
+        _containerName: string,
+        destination: string,
+        stream: Readable,
+      ) {
+        try {
+          const filePath = path.join(storageRootDir, destination);
+          const fileBuffer = await streamToBuffer(stream);
+
+          await fs.writeFile(filePath, fileBuffer);
+          const fileExists = await checkFileExists(destination);
+
+          if (fileExists) {
+            return new UploadResponse(filePath);
+          }
+          const errorMessage = `Unable to upload file(s) to OpenStack Swift.`;
+          throw new Error(errorMessage);
+        } catch (error) {
+          const errorMessage = `Unable to upload file(s) to OpenStack Swift. ${error}`;
+          throw new Error(errorMessage);
+        }
+      }
+
+      async download(_containerName: string, file: string) {
+        const filePath = path.join(storageRootDir, file);
+        const fileExists = await checkFileExists(file);
+        if (!fileExists) {
+          return new NotFound();
+        }
+        return new DownloadResponse([], fs.createReadStream(filePath));
+      }
+    },
+  };
+});
 
 const createMockEntity = (annotations = {}): Entity => {
   return {
@@ -51,15 +145,13 @@ const createMockEntityName = (): CompoundEntityRef => ({
   namespace: 'test-namespace',
 });
 
-const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
-
 const getEntityRootDir = (entity: Entity) => {
   const {
     kind,
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace || DEFAULT_NAMESPACE, kind, name);
+  return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const getPosixEntityRootDir = (entity: Entity) => {
@@ -84,7 +176,6 @@ beforeEach(() => {
   mockFs.restore();
   const mockConfig = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'openStackSwift',
         openStackSwift: {
@@ -114,7 +205,6 @@ describe('OpenStackSwiftPublish', () => {
     it('should reject incorrect config', async () => {
       const mockConfig = new ConfigReader({
         techdocs: {
-          requestUrl: 'http://localhost:7007',
           publisher: {
             type: 'openStackSwift',
             openStackSwift: {
@@ -181,7 +271,7 @@ describe('OpenStackSwiftPublish', () => {
 
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = path.join(
-        rootDir,
+        storageRootDir,
         'wrong',
         'path',
         'to',

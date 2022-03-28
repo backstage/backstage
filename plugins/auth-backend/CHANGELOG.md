@@ -1,5 +1,43 @@
 # @backstage/plugin-auth-backend
 
+## 0.13.0-next.0
+
+### Minor Changes
+
+- 15d3a3c39a: **BREAKING**: All sign-in resolvers must now return a `token` in their sign-in result. Returning an `id` is no longer supported.
+
+### Patch Changes
+
+- 2cc1d1b235: Applied the fix from version 0.12.3 of this package, which is part of the v1.0.1 release of Backstage.
+- 6ee04078e1: **DEPRECATION**: The `tokenIssuer` option for `OAuthAdapter` is no longer needed and has been deprecated.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-auth-node@0.2.0-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+
+## 0.12.3
+
+### Patch Changes
+
+- Fix migrations to do the right thing on sqlite databases, and reapply the column type fix for those who are _not_ on sqlite databases.
+
+  Reconstruction of #10317 in the form of a patch release instead.
+
+## 0.12.2
+
+### Patch Changes
+
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-auth-node@0.1.6
+
 ## 0.12.1
 
 ### Patch Changes

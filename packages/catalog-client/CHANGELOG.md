@@ -1,5 +1,28 @@
 # @backstage/catalog-client
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 0163c41be2: **BREAKING**: Removed the deprecated `presence` field in the `Location` and `AddLocationRequest` types. This field was already being ignored by the catalog backend and can be safely removed.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.0
+  - @backstage/errors@1.0.0
+
 ## 0.9.0
 
 ### Minor Changes

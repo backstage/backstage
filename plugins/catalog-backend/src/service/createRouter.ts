@@ -22,7 +22,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
-import { EntitiesCatalog } from '../catalog';
+import { EntitiesCatalog } from '../catalog/types';
 import { LocationAnalyzer } from '../ingestion/types';
 import {
   basicEntityFilter,

@@ -49,15 +49,10 @@ export const createBuiltinActions: (
 
 // @public
 export interface CreateBuiltInActionsOptions {
-  // (undocumented)
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-  // (undocumented)
   catalogClient: CatalogApi;
-  // (undocumented)
   config: Config;
-  // (undocumented)
   integrations: ScmIntegrations;
-  // (undocumented)
   reader: UrlReader;
 }
 
@@ -142,19 +137,27 @@ export function createGithubActionsDispatchAction(options: {
   token?: string | undefined;
 }>;
 
-// @public (undocumented)
+// @public
+export function createGithubIssuesLabelAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<{
+  repoUrl: string;
+  number: number;
+  labels: string[];
+  token?: string | undefined;
+}>;
+
+// @public
 export interface CreateGithubPullRequestActionOptions {
-  // (undocumented)
   clientFactory?: (
     input: CreateGithubPullRequestClientFactoryInput,
   ) => Promise<OctokitWithPullRequestPluginClient>;
-  // (undocumented)
   githubCredentialsProvider?: GithubCredentialsProvider;
-  // (undocumented)
   integrations: ScmIntegrationRegistry;
 }
 
-// @public (undocumented)
+// @public
 export type CreateGithubPullRequestClientFactoryInput = {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
@@ -263,6 +266,9 @@ export function createPublishGitlabAction(options: {
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
 }>;
 
 // @public
@@ -278,7 +284,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
   token?: string | undefined;
 }>;
 
-// @public (undocumented)
+// @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
@@ -298,11 +304,8 @@ export type CreateWorkerOptions = {
 
 // @public
 export interface CurrentClaimedTask {
-  // (undocumented)
   secrets?: TaskSecrets;
-  // (undocumented)
   spec: TaskSpec;
-  // (undocumented)
   taskId: string;
 }
 
@@ -379,6 +382,7 @@ export interface OctokitWithPullRequestPluginClient {
   createPullRequest(options: createPullRequest.Options): Promise<{
     data: {
       html_url: string;
+      number: number;
     };
   } | null>;
 }

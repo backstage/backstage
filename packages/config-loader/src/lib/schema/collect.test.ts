@@ -28,6 +28,9 @@ const mockSchema = {
   },
 };
 
+// Gotta make sure this is in the compiler cache before we start mocking the filesystem
+require('typescript-json-schema');
+
 // We need to load in actual TS libraries when using mock-fs.
 // This lookup is to allow the `typescript` dependency to exist either
 // at top level or inside node_modules of typescript-json-schema

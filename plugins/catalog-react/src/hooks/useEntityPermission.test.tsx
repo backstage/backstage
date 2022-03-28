@@ -17,18 +17,18 @@
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common';
 import { renderHook } from '@testing-library/react-hooks';
 import { useEntityPermission } from './useEntityPermission';
-import { useEntity } from './useEntity';
+import { useAsyncEntity } from './useEntity';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 jest.mock('./useEntity', () => ({
   ...jest.requireActual('./useEntity'),
-  useEntity: jest.fn(),
+  useAsyncEntity: jest.fn(),
 }));
 jest.mock('@backstage/plugin-permission-react', () => ({
   ...jest.requireActual('@backstage/plugin-permission-react'),
   usePermission: jest.fn(),
 }));
-const useEntityMock = useEntity as jest.Mock;
+const useEntityMock = useAsyncEntity as jest.Mock;
 const usePermissionMock = usePermission as jest.Mock;
 
 describe('useEntityPermission', () => {

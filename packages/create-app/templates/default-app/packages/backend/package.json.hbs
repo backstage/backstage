@@ -13,8 +13,7 @@
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
-    "build-image": "docker build ../.. -f Dockerfile --tag backstage",
-    "migrate:create": "knex migrate:make -x ts"
+    "build-image": "docker build ../.. -f Dockerfile --tag backstage"
   },
   "dependencies": {
     "app": "link:../app",
@@ -41,7 +40,6 @@
     "dockerode": "^3.3.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "knex": "^0.21.6",
     {{#if dbTypePG}}
     "pg": "^8.3.0",
     {{/if}}

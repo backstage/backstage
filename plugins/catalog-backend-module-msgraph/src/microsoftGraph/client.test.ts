@@ -157,7 +157,7 @@ describe('MicrosoftGraphClient', () => {
     expect(userProfile).toEqual({ surname: 'Example' });
   });
 
-  it('should throw expection if load user profile fails', async () => {
+  it('should throw exception if load user profile fails', async () => {
     worker.use(
       rest.get('https://example.com/users/user-id', (_, res, ctx) =>
         res(ctx.status(404)),

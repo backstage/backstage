@@ -35,11 +35,25 @@ describe('scrollIntoAnchor', () => {
   it('scroll to the hash anchor element', async () => {
     const scrollIntoView = jest.fn();
     dom.querySelector.mockReturnValue({ scrollIntoView });
-    const hash = '#hash';
-    window.location.hash = hash;
+    window.location.hash = '#hash';
     transformer(dom as unknown as Element);
     jest.advanceTimersByTime(200);
-    expect(dom.querySelector).toHaveBeenCalledWith(`#${hash.slice(1)}`);
+    expect(dom.querySelector).toHaveBeenCalledWith(
+      expect.stringMatching('[id="hash"]'),
+    );
+    expect(scrollIntoView).toHaveBeenCalledWith();
+    window.location.hash = '';
+  });
+
+  it('works for anchor starting with number', async () => {
+    const scrollIntoView = jest.fn();
+    dom.querySelector.mockReturnValue({ scrollIntoView });
+    window.location.hash = '#1-hash';
+    transformer(dom as unknown as Element);
+    jest.advanceTimersByTime(200);
+    expect(dom.querySelector).toHaveBeenCalledWith(
+      expect.stringMatching('[id="1-hash"]'),
+    );
     expect(scrollIntoView).toHaveBeenCalledWith();
     window.location.hash = '';
   });

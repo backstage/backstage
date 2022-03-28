@@ -57,6 +57,11 @@ ignore:
         reason: This is a development dependency only and is therefore acceptable
         expires: 2031-09-06T17:18:55.027Z
         created: 2021-09-06T17:18:55.027Z
+  'snyk:lic:npm:eslint-plugin-deprecation:LGPL-3.0':
+    - '*':
+        reason: This is a development dependency only and is therefore acceptable
+        expires: 2032-03-22T13:37:00.000Z
+        created: 2022-03-22T13:37:00.000Z
   SNYK-JS-UNSETVALUE-2400660:
     - '*':
         reason: >-

@@ -16,7 +16,7 @@
 
 /**
  * NOTE: This is a worker thread function that is stringified and executed
- *       withing a `worker_threads.Worker`. Everything in this function must
+ *       within a `worker_threads.Worker`. Everything in this function must
  *       be self-contained.
  *       Using TypeScript is fine as it is transpiled before being stringified.
  */

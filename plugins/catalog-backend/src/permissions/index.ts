@@ -16,6 +16,6 @@
 
 export {
   catalogConditions,
-  createCatalogPolicyDecision,
+  createCatalogConditionalDecision,
 } from './conditionExports';
 export * from './rules';

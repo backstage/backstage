@@ -932,7 +932,7 @@ describe('LunrSearchEngine', () => {
       });
       inspectableSearchEngine.setDocStore({ 'existing-location': doc });
 
-      // Mock methds called by close handler.
+      // Mock methods called by close handler.
       indexerMock.buildIndex.mockReturnValueOnce('expected-index');
       indexerMock.getDocumentStore.mockReturnValueOnce({
         'new-location': doc,

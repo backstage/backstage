@@ -71,7 +71,7 @@ export const DashboardSnapshot = ({
                   src={url}
                 />
               ) : (
-                'Dashboard loading... , click here to open if it didnt render correctly'
+                'Dashboard loading... , click here to open if it did not render correctly'
               )}
             </Link>
           </Box>

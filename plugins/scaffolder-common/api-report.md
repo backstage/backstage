@@ -13,41 +13,28 @@ export type TaskSpec = TaskSpecV1beta3;
 
 // @public
 export interface TaskSpecV1beta3 {
-  // (undocumented)
   apiVersion: 'scaffolder.backstage.io/v1beta3';
-  // (undocumented)
   output: {
     [name: string]: JsonValue;
   };
-  // (undocumented)
   parameters: JsonObject;
-  // (undocumented)
   steps: TaskStep[];
-  // (undocumented)
   templateInfo?: TemplateInfo;
 }
 
 // @public
 export interface TaskStep {
-  // (undocumented)
   action: string;
-  // (undocumented)
   id: string;
-  // (undocumented)
   if?: string | boolean;
-  // (undocumented)
   input?: JsonObject;
-  // (undocumented)
   name: string;
 }
 
 // @public
 export interface TemplateEntityV1beta3 extends Entity {
-  // (undocumented)
   apiVersion: 'scaffolder.backstage.io/v1beta3';
-  // (undocumented)
   kind: 'Template';
-  // (undocumented)
   spec: {
     type: string;
     parameters?: JsonObject | JsonObject[];

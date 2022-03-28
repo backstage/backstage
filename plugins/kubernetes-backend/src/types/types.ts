@@ -110,7 +110,7 @@ export interface ClusterDetails {
    * @remarks
    * Note that you should specify the app used for the dashboard
    * using the dashboardApp property, in order to properly format
-   * links to kubernetes resources,  otherwise it will assume that you're running the standard one.
+   * links to kubernetes resources, otherwise it will assume that you're running the standard one.
    * @see dashboardApp
    * @see dashboardParameters
    */

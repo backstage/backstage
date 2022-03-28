@@ -5,6 +5,7 @@ name: E2E Test Windows
 on:
   pull_request:
     paths:
+      - 'yarn.lock'
       - '.github/workflows/verify_e2e-windows.yml'
       - 'packages/cli/**'
       - 'packages/e2e-test/**'

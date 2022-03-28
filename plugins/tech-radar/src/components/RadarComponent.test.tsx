@@ -51,7 +51,7 @@ describe('RadarComponent', () => {
     jest.useFakeTimers();
 
     const errorApi = { post: () => {} };
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, findByTestId } = render(
       <ThemeProvider theme={lightTheme}>
         <TestApiProvider
           apis={[
@@ -73,7 +73,7 @@ describe('RadarComponent', () => {
     });
     expect(getByTestId('progress')).toBeInTheDocument();
 
-    await waitFor(() => queryByTestId('tech-radar-svg'));
+    await findByTestId('tech-radar-svg');
     jest.useRealTimers();
   });
 

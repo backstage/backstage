@@ -14,60 +14,49 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter } from '../../filters';
 import { EntityTagPicker } from './EntityTagPicker';
+import { TestApiProvider } from '@backstage/test-utils';
+import { catalogApiRef } from '../../api';
+import { CatalogApi } from '@backstage/catalog-client';
 
-const taggedEntities: Entity[] = [
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-1',
-      tags: ['tag4', 'tag1', 'tag2'],
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'component-2',
-      tags: ['tag3', 'tag4'],
-    },
-  },
-];
+const tags = ['tag1', 'tag2', 'tag3', 'tag4'];
 
 describe('<EntityTagPicker/>', () => {
-  it('renders all tags', () => {
+  const mockCatalogApiRef = {
+    getEntityFacets: async () => ({
+      facets: { 'metadata.tags': tags.map(value => ({ value })) },
+    }),
+  } as unknown as CatalogApi;
+
+  it('renders all tags', async () => {
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{ entities: taggedEntities, backendEntities: taggedEntities }}
-      >
-        <EntityTagPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(rendered.getByText('Tags')).toBeInTheDocument();
+    await waitFor(() => expect(rendered.getByText('Tags')).toBeInTheDocument());
 
     fireEvent.click(rendered.getByTestId('tag-picker-expand'));
-    taggedEntities
-      .flatMap(e => e.metadata.tags!)
-      .forEach(tag => {
-        expect(rendered.getByText(tag)).toBeInTheDocument();
-      });
+    tags.forEach(tag => {
+      expect(rendered.getByText(tag)).toBeInTheDocument();
+    });
   });
 
-  it('renders unique tags in alphabetical order', () => {
+  it('renders unique tags in alphabetical order', async () => {
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{ entities: taggedEntities, backendEntities: taggedEntities }}
-      >
-        <EntityTagPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(rendered.getByText('Tags')).toBeInTheDocument();
+    await waitFor(() => expect(rendered.getByText('Tags')).toBeInTheDocument());
 
     fireEvent.click(rendered.getByTestId('tag-picker-expand'));
 
@@ -79,43 +68,47 @@ describe('<EntityTagPicker/>', () => {
     ]);
   });
 
-  it('respects the query parameter filter value', () => {
+  it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { tags: ['tag3'] };
     render(
-      <MockEntityListContextProvider
-        value={{
-          entities: taggedEntities,
-          backendEntities: taggedEntities,
-          updateFilters,
-          queryParameters,
-        }}
-      >
-        <EntityTagPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
 
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      tags: new EntityTagFilter(['tag3']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: new EntityTagFilter(['tag3']),
+      }),
+    );
   });
 
-  it('adds tags to filters', () => {
+  it('adds tags to filters', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{
-          entities: taggedEntities,
-          backendEntities: taggedEntities,
-          updateFilters,
-        }}
-      >
-        <EntityTagPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      tags: undefined,
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: undefined,
+      }),
+    );
 
     fireEvent.click(rendered.getByTestId('tag-picker-expand'));
     fireEvent.click(rendered.getByText('tag1'));
@@ -124,23 +117,25 @@ describe('<EntityTagPicker/>', () => {
     });
   });
 
-  it('removes tags from filters', () => {
+  it('removes tags from filters', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{
-          entities: taggedEntities,
-          backendEntities: taggedEntities,
-          updateFilters,
-          filters: { tags: new EntityTagFilter(['tag1']) },
-        }}
-      >
-        <EntityTagPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            filters: { tags: new EntityTagFilter(['tag1']) },
+          }}
+        >
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      tags: new EntityTagFilter(['tag1']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: new EntityTagFilter(['tag1']),
+      }),
+    );
     fireEvent.click(rendered.getByTestId('tag-picker-expand'));
     expect(rendered.getByLabelText('tag1')).toBeChecked();
 
@@ -150,30 +145,36 @@ describe('<EntityTagPicker/>', () => {
     });
   });
 
-  it('responds to external queryParameters changes', () => {
+  it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
     const rendered = render(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { tags: ['tag1'] },
-        }}
-      >
-        <EntityTagPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { tags: ['tag1'] },
+          }}
+        >
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
-    expect(updateFilters).toHaveBeenLastCalledWith({
-      tags: new EntityTagFilter(['tag1']),
-    });
+    await waitFor(() =>
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        tags: new EntityTagFilter(['tag1']),
+      }),
+    );
     rendered.rerender(
-      <MockEntityListContextProvider
-        value={{
-          updateFilters,
-          queryParameters: { tags: ['tag2'] },
-        }}
-      >
-        <EntityTagPicker />
-      </MockEntityListContextProvider>,
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { tags: ['tag2'] },
+          }}
+        >
+          <EntityTagPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
       tags: new EntityTagFilter(['tag2']),

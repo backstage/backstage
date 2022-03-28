@@ -47,10 +47,7 @@ export class TechDocsClient implements TechDocsApi {
   }
 
   async getApiOrigin(): Promise<string> {
-    return (
-      this.configApi.getOptionalString('techdocs.requestUrl') ??
-      (await this.discoveryApi.getBaseUrl('techdocs'))
-    );
+    return await this.discoveryApi.getBaseUrl('techdocs');
   }
 
   /**
@@ -126,10 +123,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   }
 
   async getApiOrigin(): Promise<string> {
-    return (
-      this.configApi.getOptionalString('techdocs.requestUrl') ??
-      (await this.discoveryApi.getBaseUrl('techdocs'))
-    );
+    return await this.discoveryApi.getBaseUrl('techdocs');
   }
 
   async getStorageUrl(): Promise<string> {

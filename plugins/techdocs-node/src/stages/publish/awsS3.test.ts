@@ -21,12 +21,112 @@ import express from 'express';
 import request from 'supertest';
 import mockFs from 'mock-fs';
 import path from 'path';
-import fs from 'fs-extra';
+import fs, { ReadStream } from 'fs-extra';
+import { EventEmitter } from 'events';
 import { AwsS3Publish } from './awsS3';
+import { storageRootDir } from '../../testUtils/StorageFilesMock';
 
-// NOTE: /plugins/techdocs-node/__mocks__ is being used to mock aws-sdk client library
+jest.mock('aws-sdk', () => {
+  const { StorageFilesMock } = require('../../testUtils/StorageFilesMock');
+  const storage = new StorageFilesMock();
 
-const rootDir = (global as any).rootDir; // Set by setupTests.ts
+  return {
+    __esModule: true,
+    Credentials: jest.requireActual('aws-sdk').Credentials,
+    default: {
+      S3: class {
+        constructor() {
+          storage.emptyFiles();
+        }
+
+        headObject({ Key }: { Key: string }) {
+          return {
+            promise: async () => {
+              if (!storage.fileExists(Key)) {
+                throw new Error('File does not exist');
+              }
+            },
+          };
+        }
+
+        getObject({ Key }: { Key: string }) {
+          return {
+            promise: async () => storage.fileExists(Key),
+            createReadStream: () => {
+              const emitter = new EventEmitter();
+              process.nextTick(() => {
+                if (storage.fileExists(Key)) {
+                  emitter.emit('data', Buffer.from(storage.readFile(Key)));
+                  emitter.emit('end');
+                } else {
+                  emitter.emit(
+                    'error',
+                    new Error(`The file ${Key} does not exist!`),
+                  );
+                }
+              });
+              return emitter;
+            },
+          };
+        }
+
+        headBucket({ Bucket }: { Bucket: string }) {
+          return {
+            promise: async () => {
+              if (Bucket === 'errorBucket') {
+                throw new Error('Bucket does not exist');
+              }
+              return {};
+            },
+          };
+        }
+
+        upload({ Key, Body }: { Key: string; Body: ReadStream }) {
+          return {
+            promise: () =>
+              new Promise(async resolve => {
+                const chunks = new Array<Buffer>();
+                Body.on('data', chunk => {
+                  chunks.push(chunk as Buffer);
+                });
+                Body.once('end', () => {
+                  storage.writeFile(Key, Buffer.concat(chunks));
+                  resolve(null);
+                });
+              }),
+          };
+        }
+
+        listObjectsV2({ Bucket }: { Bucket: string }) {
+          return {
+            promise: () => {
+              if (
+                Bucket === 'delete_stale_files_success' ||
+                Bucket === 'delete_stale_files_error'
+              ) {
+                return Promise.resolve({
+                  Contents: [{ Key: 'stale_file.png' }],
+                });
+              }
+              return Promise.resolve({});
+            },
+          };
+        }
+
+        deleteObject({ Bucket }: { Bucket: string }) {
+          return {
+            promise: () => {
+              if (Bucket === 'delete_stale_files_error') {
+                throw new Error('Message');
+              }
+              return Promise.resolve();
+            },
+          };
+        }
+      },
+    },
+  };
+});
 
 const getEntityRootDir = (entity: Entity) => {
   const {
@@ -34,7 +134,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace || DEFAULT_NAMESPACE, kind, name);
+  return path.join(storageRootDir, namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
 const logger = getVoidLogger();
@@ -54,7 +154,6 @@ const createPublisherFromConfig = ({
 } = {}) => {
   const mockConfig = new ConfigReader({
     techdocs: {
-      requestUrl: 'http://localhost:7007',
       publisher: {
         type: 'awsS3',
         awsS3: {
@@ -214,7 +313,7 @@ describe('AwsS3Publish', () => {
 
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = path.join(
-        rootDir,
+        storageRootDir,
         'wrong',
         'path',
         'to',

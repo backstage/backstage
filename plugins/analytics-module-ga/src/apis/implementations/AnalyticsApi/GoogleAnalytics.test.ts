@@ -220,7 +220,7 @@ describe('GoogleAnalytics', () => {
       });
 
       // Wait for any/all promises involved to settle.
-      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => setTimeout(resolve));
 
       // A pageview should have been fired immediately.
       const [command, data] = ReactGA.testModeAPI.calls[1];
@@ -251,7 +251,7 @@ describe('GoogleAnalytics', () => {
       });
 
       // Wait for any/all promises involved to settle.
-      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => setTimeout(resolve));
 
       // A pageview should have been fired immediately.
       const [command, data] = ReactGA.testModeAPI.calls[1];
@@ -290,7 +290,7 @@ describe('GoogleAnalytics', () => {
       });
 
       // Wait for any/all promises involved to settle.
-      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => setTimeout(resolve));
 
       // User ID should have been set after the pageview.
       const [setCommand, setData] = ReactGA.testModeAPI.calls[2];
@@ -318,7 +318,7 @@ describe('GoogleAnalytics', () => {
       });
 
       // Wait for any/all promises involved to settle.
-      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => setTimeout(resolve));
 
       // A pageview should have been fired immediately.
       const [command, data] = ReactGA.testModeAPI.calls[1];
@@ -369,7 +369,7 @@ describe('GoogleAnalytics', () => {
       });
 
       // Wait for any/all promises involved to settle.
-      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => setTimeout(resolve));
 
       // User ID should have been set first.
       const [setCommand, setData] = ReactGA.testModeAPI.calls[1];

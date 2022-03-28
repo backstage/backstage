@@ -19,8 +19,6 @@ import { Writable } from 'stream';
 
 // @public
 export class DirectoryPreparer implements PreparerBase {
-  // @deprecated
-  constructor(config: Config, _logger: Logger | null, reader: UrlReader);
   static fromConfig(
     config: Config,
     { logger, reader }: PreparerConfig,
@@ -250,8 +248,6 @@ export const transformDirLocation: (
 
 // @public
 export class UrlPreparer implements PreparerBase {
-  // @deprecated
-  constructor(reader: UrlReader, logger: Logger);
   static fromConfig({ reader, logger }: PreparerConfig): UrlPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
 }

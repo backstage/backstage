@@ -1,5 +1,32 @@
 # @backstage/cli
 
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 6ad0c45648: Added an experimental `package fix` command which applies automated fixes to the target package. The initial fix that is available is to add missing monorepo dependencies to the target package.
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 948a56f401: Added a new experimental `repo list-deprecations` command, which scans the entire project for usage of deprecated APIs.
+- Updated dependencies
+  - @backstage/config-loader@1.0.1-next.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 217547ae51: **BREAKING**: The provided Jest configuration now only matches files with a `.test.` infix, rather than any files that is suffixed with `test.<ext>`. In particular this means that files named just `test.ts` will no longer be considered a test file.
+
+### Patch Changes
+
+- 947ae3b40e: Applied the fix from version `0.15.3` of this package, which is part of the `v0.71.1` release of Backstage.
+- 19eed0edd9: Fix for `overrides` not being properly forwarded from the extra configuration passed to `@backstage/cli/config/eslint-factory`.
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/config-loader@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
 ## 0.15.3
 
 ### Patch Changes

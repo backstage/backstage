@@ -529,7 +529,7 @@ spec:
       terrains: [String]
 
       """
-      The percentage of the planet surface that is naturally occuring water or bodies
+      The percentage of the planet surface that is naturally occurring water or bodies
       of water.
       """
       surfaceWater: Float

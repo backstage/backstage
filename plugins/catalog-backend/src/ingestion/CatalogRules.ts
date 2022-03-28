@@ -23,8 +23,6 @@ import { LocationSpec } from '../api';
  * Rules to apply to catalog entities.
  *
  * An undefined list of matchers means match all, an empty list of matchers means match none.
- *
- * @public
  */
 export type CatalogRule = {
   allow: Array<{
@@ -39,8 +37,6 @@ export type CatalogRule = {
 /**
  * Decides whether an entity from a given location is allowed to enter the
  * catalog, according to some rule set.
- *
- * @public
  */
 export type CatalogRulesEnforcer = {
   isAllowed(entity: Entity, location: LocationSpec): boolean;
@@ -49,8 +45,6 @@ export type CatalogRulesEnforcer = {
 /**
  * Implements the default catalog rule set, consuming the config keys
  * `catalog.rules` and `catalog.locations.[].rules`.
- *
- * @public
  */
 export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
   /**
@@ -131,7 +125,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
   constructor(private readonly rules: CatalogRule[]) {}
 
   /**
-   * Checks wether a specific entity/location combination is allowed
+   * Checks whether a specific entity/location combination is allowed
    * according to the configured rules.
    */
   isAllowed(entity: Entity, location: LocationSpec) {

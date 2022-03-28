@@ -21,7 +21,15 @@ import { Permission } from './permission';
  * requests.
  * @public
  */
-export type Identified<T> = T & { id: string };
+export type IdentifiedPermissionMessage<T> = T & { id: string };
+
+/**
+ * A batch of request or response items.
+ * @public
+ */
+export type PermissionMessageBatch<T> = {
+  items: IdentifiedPermissionMessage<T>[];
+};
 
 /**
  * The result of an authorization request.
@@ -43,21 +51,44 @@ export enum AuthorizeResult {
 }
 
 /**
- * An individual authorization request for {@link PermissionClient#authorize}.
+ * A definitive decision returned by the {@link @backstage/plugin-permission-node#PermissionPolicy}.
+ *
+ * @remarks
+ *
+ * This indicates that the policy unconditionally allows (or denies) the request.
+ *
  * @public
  */
-export type AuthorizeQuery = {
-  permission: Permission;
-  resourceRef?: string;
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
 };
 
 /**
- * A batch of authorization requests from {@link PermissionClient#authorize}.
+ * A conditional decision returned by the {@link @backstage/plugin-permission-node#PermissionPolicy}.
+ *
+ * @remarks
+ *
+ * This indicates that the policy allows authorization for the request, given that the returned
+ * conditions hold when evaluated. The conditions will be evaluated by the corresponding plugin
+ * which knows about the referenced permission rules.
+ *
  * @public
  */
-export type AuthorizeRequest = {
-  items: Identified<AuthorizeQuery>[];
+export type ConditionalPolicyDecision = {
+  result: AuthorizeResult.CONDITIONAL;
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
 };
+
+/**
+ * A decision returned by the {@link @backstage/plugin-permission-node#PermissionPolicy}.
+ *
+ * @public
+ */
+export type PolicyDecision =
+  | DefinitivePolicyDecision
+  | ConditionalPolicyDecision;
 
 /**
  * A condition returned with a CONDITIONAL authorization response.
@@ -67,7 +98,11 @@ export type AuthorizeRequest = {
  * claims from a identity token.
  * @public
  */
-export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
+export type PermissionCondition<
+  TResourceType extends string = string,
+  TParams extends unknown[] = unknown[],
+> = {
+  resourceType: TResourceType;
   rule: string;
   params: TParams;
 };
@@ -79,7 +114,7 @@ export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
 type NonEmptyArray<T> = [T, ...T[]];
 
 /**
- * Represnts a logical AND for the provided criteria.
+ * Represents a logical AND for the provided criteria.
  * @public
  */
 export type AllOfCriteria<TQuery> = {
@@ -87,7 +122,7 @@ export type AllOfCriteria<TQuery> = {
 };
 
 /**
- * Represnts a logical OR for the provided criteria.
+ * Represents a logical OR for the provided criteria.
  * @public
  */
 export type AnyOfCriteria<TQuery> = {
@@ -113,20 +148,37 @@ export type PermissionCriteria<TQuery> =
   | TQuery;
 
 /**
- * An individual authorization response from {@link PermissionClient#authorize}.
+ * An individual request sent to the permission backend.
  * @public
  */
-export type AuthorizeDecision =
-  | { result: AuthorizeResult.ALLOW | AuthorizeResult.DENY }
-  | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
-    };
+export type EvaluatePermissionRequest = {
+  permission: Permission;
+  resourceRef?: string;
+};
 
 /**
- * A batch of authorization responses from {@link PermissionClient#authorize}.
+ * A batch of requests sent to the permission backend.
  * @public
  */
-export type AuthorizeResponse = {
-  items: Identified<AuthorizeDecision>[];
-};
+export type EvaluatePermissionRequestBatch =
+  PermissionMessageBatch<EvaluatePermissionRequest>;
+
+/**
+ * An individual response from the permission backend.
+ *
+ * @remarks
+ *
+ * This response type is an alias of {@link PolicyDecision} to maintain separation between the
+ * {@link @backstage/plugin-permission-node#PermissionPolicy} interface and the permission backend
+ * api. They may diverge at some point in the future. The response
+ *
+ * @public
+ */
+export type EvaluatePermissionResponse = PolicyDecision;
+
+/**
+ * A batch of responses from the permission backend.
+ * @public
+ */
+export type EvaluatePermissionResponseBatch =
+  PermissionMessageBatch<EvaluatePermissionResponse>;

@@ -16,8 +16,8 @@
 
 import {
   IndexableDocument,
+  IndexableResultSet,
   SearchQuery,
-  SearchResultSet,
   QueryTranslator,
   SearchEngine,
 } from '@backstage/plugin-search-common';
@@ -68,7 +68,7 @@ export class LunrSearchEngine implements SearchEngine {
       lunrQueryBuilder: q => {
         const termToken = lunr.tokenizer(term);
 
-        // Support for typeahead seach is based on https://github.com/olivernn/lunr.js/issues/256#issuecomment-295407852
+        // Support for typeahead search is based on https://github.com/olivernn/lunr.js/issues/256#issuecomment-295407852
         // look for an exact match and apply a large positive boost
         q.term(termToken, {
           usePipeline: true,
@@ -147,7 +147,7 @@ export class LunrSearchEngine implements SearchEngine {
     return indexer;
   }
 
-  async query(query: SearchQuery): Promise<SearchResultSet> {
+  async query(query: SearchQuery): Promise<IndexableResultSet> {
     const { lunrQueryBuilder, documentTypes, pageSize } = this.translator(
       query,
     ) as ConcreteLunrQuery;
@@ -196,8 +196,8 @@ export class LunrSearchEngine implements SearchEngine {
       ? encodePageCursor({ page: page - 1 })
       : undefined;
 
-    // Translate results into SearchResultSet
-    const realResultSet: SearchResultSet = {
+    // Translate results into IndexableResultSet
+    const realResultSet: IndexableResultSet = {
       results: results.slice(offset, offset + pageSize).map(d => {
         return { type: d.type, document: this.docStore[d.result.ref] };
       }),

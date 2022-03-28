@@ -97,7 +97,7 @@ export class JenkinsConfig {
     const unnamedAllPresent = baseUrl && username && apiKey;
     if (!(unnamedAllPresent || unnamedNonePresent)) {
       throw new Error(
-        `Found partial default jenkins config. All (or none) of  baseUrl, username ans apiKey must be provided.`,
+        `Found partial default jenkins config. All (or none) of baseUrl, username and apiKey must be provided.`,
       );
     }
 

@@ -15,35 +15,43 @@
  */
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Permission } from '@backstage/plugin-permission-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { useEntity } from './useEntity';
+import { useAsyncEntity } from './useEntity';
 
 /**
  * A thin wrapper around the
  * {@link @backstage/plugin-permission-react#usePermission} hook which uses the
  * current entity in context to make an authorization request for the given
- * permission.
+ * {@link @backstage/plugin-catalog-common#CatalogEntityPermission}.
  *
  * Note: this hook blocks the permission request until the entity has loaded in
  * context. If you have the entityRef and need concurrent requests, use the
  * `usePermission` hook directly.
  * @alpha
  */
-export function useEntityPermission(permission: Permission): {
+export function useEntityPermission(
+  // TODO(joeporpeglia) Replace with `CatalogEntityPermission` when the issue described in
+  // https://github.com/backstage/backstage/pull/10128 is fixed.
+  permission: ResourcePermission<'catalog-entity'>,
+): {
   loading: boolean;
   allowed: boolean;
   error?: Error;
 } {
-  const { entity, loading: loadingEntity, error: entityError } = useEntity();
+  const {
+    entity,
+    loading: loadingEntity,
+    error: entityError,
+  } = useAsyncEntity();
   const {
     allowed,
     loading: loadingPermission,
     error: permissionError,
-  } = usePermission(
+  } = usePermission({
     permission,
-    entity ? stringifyEntityRef(entity) : undefined,
-  );
+    resourceRef: entity ? stringifyEntityRef(entity) : undefined,
+  });
 
   if (loadingEntity || loadingPermission) {
     return { loading: true, allowed: false };

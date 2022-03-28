@@ -1,5 +1,120 @@
 # @backstage/plugin-catalog-backend
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 9fe24b0fc8: Adjust the error messages when entities fail validation, to clearly state what entity that failed it
+- 95408dbe99: Enable internal batching of very large deletions, to not run into SQL binding limits
+- ffec894ed0: add gitlab to AnnotateScmSlugEntityProcessor
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-search-common@0.3.3-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-scaffolder-common@1.0.1-next.0
+  - @backstage/plugin-permission-node@0.5.6-next.0
+  - @backstage/plugin-catalog-common@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 6145ca7189: **BREAKING**: A number of types and classes have been removed, without a prior deprecation period. These were all very internal, essentially unused by the vast majority of users, and their being exposed was leading to excessive breaking of public interfaces for little-to-zero benefit. So for the 1.0 release of the catalog, the following interface changes have been made (but should have no effect on most users):
+
+  - The return type of `CatalogBuilder.build()` now only has the fields `processingEngine` and `router` which is what most users actually consume; the other three fields (`entitiesCatalog`, `locationAnalyzer`, `locationService`) that see very little use have been removed. If you were relying on the presence of either of these in any way, please [open an issue](https://github.com/backstage/backstage/issues/new/choose) that describes your use case, and we'll see how we could fill the gap.
+
+  - The function `createRouter` is removed; use `CatalogBuilder` as follows instead:
+
+    ```ts
+    const builder = await CatalogBuilder.create(env);
+    // add things as needed, e.g builder.addProcessor(new ScaffolderEntitiesProcessor());
+    const { processingEngine, router } = await builder.build();
+    await processingEngine.start();
+    return router;
+    ```
+
+  - The following types were removed:
+
+    - `CatalogProcessingOrchestrator`
+    - `CatalogRule`
+    - `CatalogRulesEnforcer`
+    - `EntityAncestryResponse`
+    - `EntityFacetsRequest`
+    - `EntityFacetsResponse`
+    - `EntityPagination`
+    - `EntityProcessingRequest`
+    - `EntityProcessingResult`
+    - `EntitiesCatalog`
+    - `EntitiesRequest`
+    - `EntitiesResponse`
+    - `LocationService`
+    - `LocationInput`
+    - `LocationStore`
+    - `PageInfo`
+    - `RefreshOptions`
+    - `RefreshService`
+    - `RouterOptions`
+
+  - The following classes were removed:
+
+    - `DefaultCatalogProcessingOrchestrator`
+    - `DefaultCatalogRulesEnforcer`
+
+- 02ad19d189: **BREAKING**: Removed the deprecated `metadata.generation` field entirely. It is no longer present in TS types, nor in the REST API output. Entities that have not yet been re-stitched may still have the field present for some time, but it will get phased out gradually by your catalog instance.
+- 7250b6993d: **BREAKING**: Removed the previously deprecated `results` export. Please use `processingResult` instead.
+- 077e7c132f: **BREAKING**: Removed the following deprecated symbols:
+
+  - `catalogBuilder.setRefreshInterval`, use `catalogBuilder.setProcessingInterval` instead.
+  - `catalogBuilder.setRefreshIntervalSeconds`, use `catalogBuilder.setProcessingIntervalSeconds` instead.
+  - `createRandomRefreshInterval`, use `createRandomProcessingInterval` instead.
+  - `RefreshIntervalFunction`, use `ProcessingIntervalFunction` instead.
+
+- 74375be2c6: **BREAKING**: Removed the export of the `RecursivePartial` utility type. If you relied on this type it can be redefined like this:
+
+  ```ts
+  type RecursivePartial<T> = {
+    [P in keyof T]?: T[P] extends (infer U)[]
+      ? RecursivePartial<U>[]
+      : T[P] extends object
+      ? RecursivePartial<T[P]>
+      : T[P];
+  };
+  ```
+
+- ced3016f2a: **BREAKING**: The deprecated `CatalogEntityDocument` export has been removed, it can be imported from `@backstage/plugin-catalog-common` instead.
+- 0163c41be2: **BREAKING**: Removed the deprecated `presence` field from `LocationInput`.
+- d3e9ec43b7: **BREAKING**: Removed the `target` property from `EntityRelation`. This field has been replaced by `targetRef`.
+  This means that `target: { name: 'team-a', kind: 'group', namespace: 'default' }` is now replaced with `targetRef: 'group:default/team-a'` in entity relations.
+
+  The entities API endpoint still return the old `target` field for to ease transitions, however the future removal of this field will be considered non breaking.
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- 26fb159a30: Pass in auth token to ancestry endpoint
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- f24ef7864e: Minor typo fixes
+- e949d68059: Made sure to move the catalog-related github and ldap config into their right places
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/plugin-scaffolder-common@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-catalog-common@1.0.0
+  - @backstage/plugin-permission-common@0.5.3
+  - @backstage/plugin-permission-node@0.5.5
+  - @backstage/plugin-search-common@0.3.2
+
 ## 0.24.0
 
 ### Minor Changes

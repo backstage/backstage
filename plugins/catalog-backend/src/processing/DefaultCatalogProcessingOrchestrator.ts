@@ -241,7 +241,7 @@ export class DefaultCatalogProcessingOrchestrator
       validateEntity(entity);
     } catch (e) {
       throw new ConflictError(
-        `Entity envelope failed validation after preprocessing`,
+        `Entity envelope for ${context.entityRef} failed validation after preprocessing`,
         e,
       );
     }
@@ -262,7 +262,7 @@ export class DefaultCatalogProcessingOrchestrator
           }
         } catch (e) {
           throw new InputError(
-            `Processor ${processor.constructor.name} threw an error while validating the entity`,
+            `Processor ${processor.constructor.name} threw an error while validating the entity ${context.entityRef}`,
             e,
           );
         }
@@ -271,7 +271,7 @@ export class DefaultCatalogProcessingOrchestrator
 
     if (!foundKind) {
       throw new InputError(
-        'No processor recognized the entity as valid, possibly caused by a foreign kind or apiVersion',
+        `No processor recognized the entity ${context.entityRef} as valid, possibly caused by a foreign kind or apiVersion`,
       );
     }
   }

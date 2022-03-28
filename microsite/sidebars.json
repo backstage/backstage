@@ -1,4 +1,7 @@
 {
+  "releases": {
+    "Release Notes": ["releases/v1.0.0"]
+  },
   "docs": {
     "Overview": [
       "overview/what-is-backstage",

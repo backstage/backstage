@@ -44,6 +44,8 @@ jest.mock('@google-cloud/firestore', () => ({
   Firestore: jest.fn().mockImplementation(() => firestoreMock),
 }));
 
+jest.useFakeTimers('legacy');
+
 describe('FirestoreKeyStore', () => {
   const key = {
     kid: '123',
@@ -69,11 +71,6 @@ describe('FirestoreKeyStore', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it('can create an instance without settings', async () => {

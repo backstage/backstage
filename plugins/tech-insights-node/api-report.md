@@ -6,6 +6,7 @@
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Config } from '@backstage/config';
 import { DateTime } from 'luxon';
+import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -66,6 +67,7 @@ export type FactRetrieverContext = {
 export type FactRetrieverRegistration = {
   factRetriever: FactRetriever;
   cadence?: string;
+  timeout?: Duration;
   lifecycle?: FactLifecycle;
 };
 

@@ -193,7 +193,7 @@ describe('database connection', () => {
   });
 
   describe('ensureSchemaExists', () => {
-    it('returns sucessfully with pg client', async () => {
+    it('returns successfully with pg client', async () => {
       await ensureSchemaExists(
         new ConfigReader({
           client: 'pg',

@@ -16,10 +16,10 @@
 
 import { ServerPermissionClient } from './ServerPermissionClient';
 import {
-  Permission,
-  Identified,
-  AuthorizeQuery,
+  IdentifiedPermissionMessage,
+  EvaluatePermissionRequest,
   AuthorizeResult,
+  createPermission,
 } from '@backstage/plugin-permission-common';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -32,10 +32,12 @@ import { RestContext, rest } from 'msw';
 
 const server = setupServer();
 const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-  const responses = req.body.items.map((r: Identified<AuthorizeQuery>) => ({
-    id: r.id,
-    result: AuthorizeResult.ALLOW,
-  }));
+  const responses = req.body.items.map(
+    (r: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+      id: r.id,
+      result: AuthorizeResult.ALLOW,
+    }),
+  );
 
   return res(json({ items: responses }));
 });
@@ -48,11 +50,10 @@ const discovery: PluginEndpointDiscovery = {
     return mockBaseUrl;
   },
 };
-const testPermission: Permission = {
+const testPermission = createPermission({
   name: 'test.permission',
   attributes: {},
-  resourceType: 'test-resource',
-};
+});
 const config = new ConfigReader({
   permission: { enabled: true },
   backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },

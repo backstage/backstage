@@ -44,7 +44,7 @@ export interface Badge {
   link?: string;
   /** Badge message */
   message: string;
-  /** Badge style (apperance). One of "plastic", "flat", "flat-square", "for-the-badge" and "social" */
+  /** Badge style (appearance). One of "plastic", "flat", "flat-square", "for-the-badge" and "social" */
   style?: BadgeStyle;
 }
 
