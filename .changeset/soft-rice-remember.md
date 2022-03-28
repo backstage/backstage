@@ -2,4 +2,4 @@
 '@backstage/plugin-permission-react': patch
 ---
 
-Fix typing when invoking `PermissionClient#authorize`
+Make `IdentityPermissionApi#authorize` typing more strict, using `AuthorizePermissionRequest` and `AuthorizePermissionResponse`.

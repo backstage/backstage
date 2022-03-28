@@ -4,6 +4,8 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
+import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { ComponentProps } from 'react';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -26,8 +28,8 @@ export type AsyncPermissionResult = {
 export class IdentityPermissionApi implements PermissionApi {
   // (undocumented)
   authorize(
-    request: EvaluatePermissionRequest,
-  ): Promise<EvaluatePermissionResponse>;
+    request: AuthorizePermissionRequest,
+  ): Promise<AuthorizePermissionResponse>;
   // (undocumented)
   static create(options: {
     config: Config;
