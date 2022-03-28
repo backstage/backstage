@@ -420,6 +420,12 @@ export const useTechDocsReaderDom = (
             .md-nav {
               font-size: calc(var(--md-typeset-font-size) * 0.9);
             }
+            .md-nav__title {
+              padding: 0;
+            }
+            .md-nav__item {
+              padding: 0;
+            }
             .md-nav__link {
               display: flex;
               align-items: center;
@@ -430,12 +436,14 @@ export const useTechDocsReaderDom = (
               width: 20px !important;
               margin-left:${theme.spacing(1)}px;
             }
-            .md-nav__icon svg {
-              margin: 0;
+            .md-nav__icon:after {
               width: 20px !important;
               height: 20px !important;
             }
-            .md-nav__icon:after {
+            .md-nav__icon {
+              margin-right: -7px;
+            }
+            .md-nav__icon svg {
               width: 20px !important;
               height: 20px !important;
             }
@@ -448,6 +456,9 @@ export const useTechDocsReaderDom = (
               bottom: 75px;
               position: fixed;
               width: 16rem;
+              padding-left: 0.4rem;
+              padding-right: 0.4rem;
+              direction: rtl;
               overflow-y: auto;
               overflow-x: hidden;
               scrollbar-color: rgb(193, 193, 193) #eee;
@@ -479,6 +490,8 @@ export const useTechDocsReaderDom = (
               right: ${theme.spacing(3)}px;
             }
             .md-sidebar__scrollwrap {
+              margin: 0;
+              direction: ltr;
               overflow: unset !important;
             }
 
@@ -507,12 +520,26 @@ export const useTechDocsReaderDom = (
               .md-sidebar {
                 height: auto;
               }
+
+              .md-nav__item--nested .md-nav__toggle:checked ~ .md-nav__link .md-nav__icon {
+                transform: rotate(90deg);
+                margin-right: -5px;
+              }
             }
             
             @media screen and (max-width: 76.1875em) {
               .md-nav {
                 transition: none !important;
                 background-color: var(--md-default-bg-color)
+              }
+              .md-nav--primary :is(.md-nav__title,.md-nav__item) {
+                font-size: var(--md-typeset-font-size);
+              }
+              .md-nav .md-source {
+                display: none;
+              }
+              .md-nav--primary .md-nav__item {
+                border-top: none;
               }
               .md-nav--primary .md-nav__title {
                 cursor: auto;
@@ -527,32 +554,23 @@ export const useTechDocsReaderDom = (
                 padding: 1.2rem .8rem .8rem;
                 background-color: var(--md-default-bg-color);
               }
-              .md-nav--primary .md-nav__title~.md-nav__list {
-                box-shadow: none;
-              }
-              .md-nav--primary .md-nav__title ~ .md-nav__list > :first-child {
-                border-top: none;
-              }
-              .md-nav--primary .md-nav__title .md-nav__button {
-                display: none;
-              }
               .md-nav--primary .md-nav__title .md-nav__icon {
                 color: var(--md-default-fg-color);
                 position: static;
                 height: auto;
                 margin: 0 0 0 -0.2rem;
               }
-              .md-nav--primary > .md-nav__title [for="none"] {
-                padding-top: 0;
+              .md-nav--primary .md-nav__title .md-nav__button {
+                display: none;
               }
-              .md-nav--primary .md-nav__item {
+              .md-nav--primary .md-nav__title ~ .md-nav__list {
+                box-shadow: none;
+              }
+              .md-nav--primary .md-nav__title ~ .md-nav__list > :first-child {
                 border-top: none;
               }
-              .md-nav--primary :is(.md-nav__title,.md-nav__item) {
-                font-size : var(--md-typeset-font-size);
-              }
-              .md-nav .md-source {
-                display: none;
+              .md-nav--primary > .md-nav__title [for="none"] {
+                padding-top: 0;
               }
 
               .md-sidebar {
@@ -574,6 +592,11 @@ export const useTechDocsReaderDom = (
                 transform: translateX(16rem);
               }
 
+              .md-header__button {
+                margin: 0.4rem 0 0.4rem 0.4rem;
+                padding: 0;
+              }
+
               .md-content {
                 max-width: 100%;
                 margin-left: 0;
@@ -584,12 +607,6 @@ export const useTechDocsReaderDom = (
               .md-content__inner .highlighttable {
                 max-width: 100%;
                 margin: 1em 0;
-              }
-
-              .md-header__button {
-                margin: 0.4rem 0;
-                margin-left: 0.4rem;
-                padding: 0;
               }
 
               .md-overlay {
