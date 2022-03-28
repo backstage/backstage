@@ -17,11 +17,12 @@ catalog.
 You will have to add the processors in the catalog initialization code of your
 backend. They are not installed by default, therefore you have to add a
 dependency to `@backstage/plugin-catalog-backend-module-github` to your backend
-package.
+package, `@backstage/integration` is needed for the basic credentials management.
 
 ```bash
 # From your Backstage root directory
 cd packages/backend
+yarn add @backstage/integration 
 yarn add @backstage/plugin-catalog-backend-module-github
 ```
 
