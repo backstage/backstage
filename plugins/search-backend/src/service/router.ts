@@ -23,7 +23,7 @@ import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
   IndexableResultSet,
@@ -50,7 +50,7 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
 export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
-  permissions: PermissionAuthorizer;
+  permissions: PermissionEvaluator;
   config: Config;
   logger: Logger;
 };
