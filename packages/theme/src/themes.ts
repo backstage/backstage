@@ -39,6 +39,10 @@ export const lightTheme = createTheme({
     },
     bursts: {
       fontColor: '#FEFEFE',
+      slackChannelText: '#ddd',
+      backgroundColor: {
+        default: '#7C3699',
+      },
       gradient: {
         linear: 'linear-gradient(-137deg, #4BB8A5 0%, #187656 100%)',
       },
@@ -112,6 +116,10 @@ export const darkTheme = createTheme({
     },
     bursts: {
       fontColor: '#FEFEFE',
+      slackChannelText: '#ddd',
+      backgroundColor: {
+        default: '#7C3699',
+      },
       gradient: {
         linear: 'linear-gradient(-137deg, #4BB8A5 0%, #187656 100%)',
       },
