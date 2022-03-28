@@ -39,8 +39,6 @@ export const ComponentAccordion: ({
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ComponentRenderer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
@@ -167,6 +165,6 @@ export const WelcomeTitle: () => JSX.Element;
 
 // Warnings were encountered during analysis:
 //
-// src/extensions.d.ts:3:5 - (ae-forgotten-export) The symbol "RendererProps" needs to be exported by the entry point index.d.ts
-// src/extensions.d.ts:24:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
+// src/extensions.d.ts:6:5 - (ae-forgotten-export) The symbol "RendererProps" needs to be exported by the entry point index.d.ts
+// src/extensions.d.ts:27:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
 ```
