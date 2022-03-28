@@ -573,6 +573,9 @@ export const useTechDocsReaderDom = (
                 max-width: 100%;
                 margin-left: 0;
               }
+              .md-content__inner {
+                margin: 0;
+              }
 
               .md-header__button {
                 margin: 0.4rem 0;
