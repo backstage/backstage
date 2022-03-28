@@ -611,6 +611,9 @@ export const useTechDocsReaderDom = (
                 left: -16rem !important;
                 width: 16rem;
               }
+              .md-sidebar--primary .md-sidebar__scrollwrap {
+                bottom: ${sidebarConfig.mobileSidebarHeight}px;
+              }
             }
           `,
         }),
