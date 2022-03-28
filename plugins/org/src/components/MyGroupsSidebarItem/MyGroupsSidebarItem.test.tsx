@@ -47,11 +47,9 @@ describe('MyGroupsSidebarItem Test', () => {
           ]}
         >
           <MyGroupsSidebarItem
-            props={{
-              singularTitle: 'My Squad',
-              pluralTitle: 'My Squads',
-              icon: GroupIcon,
-            }}
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
           />
         </TestApiProvider>,
         {
@@ -103,11 +101,9 @@ describe('MyGroupsSidebarItem Test', () => {
           ]}
         >
           <MyGroupsSidebarItem
-            props={{
-              singularTitle: 'My Squad',
-              pluralTitle: 'My Squads',
-              icon: GroupIcon,
-            }}
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
           />
         </TestApiProvider>,
         {
@@ -187,11 +183,9 @@ describe('MyGroupsSidebarItem Test', () => {
           ]}
         >
           <MyGroupsSidebarItem
-            props={{
-              singularTitle: 'My Squad',
-              pluralTitle: 'My Squads',
-              icon: GroupIcon,
-            }}
+            singularTitle="My Squad"
+            pluralTitle="My Squads"
+            icon={GroupIcon}
           />
         </TestApiProvider>,
         {

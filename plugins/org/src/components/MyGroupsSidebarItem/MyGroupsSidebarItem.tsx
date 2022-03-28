@@ -40,11 +40,15 @@ import { getCompoundEntityRef } from '@backstage/catalog-model';
  * @public
  */
 export const MyGroupsSidebarItem = ({
-  props,
+  singularTitle,
+  pluralTitle,
+  icon,
 }: {
-  props: { singularTitle: string; pluralTitle: string; icon: IconComponent };
+  singularTitle: string;
+  pluralTitle: string;
+  icon: IconComponent;
 }) => {
-  const { singularTitle, pluralTitle, icon } = props;
+  // const { singularTitle, pluralTitle, icon } = props;
   const identityApi = useApi(identityApiRef);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
