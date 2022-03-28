@@ -29,9 +29,7 @@ export class GCalendarApiClient {
   // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
   constructor(options: Options);
   // (undocumented)
-  getCalendars(params?: any): Promise<{
-    items: GCalendar[];
-  }>;
+  getCalendars(params?: any): Promise<gapi.client.calendar.CalendarList>;
   // (undocumented)
   getEvents(
     calendarId: string,
@@ -54,6 +52,11 @@ export type GCalendarEvent = gapi.client.calendar.Event &
   Pick<EventAttendee, 'responseStatus'> & {
     calendarId?: string;
   };
+
+// Warning: (ae-missing-release-tag) "GCalendarList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GCalendarList = gapi.client.calendar.CalendarList;
 
 // Warning: (ae-missing-release-tag) "gcalendarPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
