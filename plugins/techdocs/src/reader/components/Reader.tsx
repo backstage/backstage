@@ -576,6 +576,10 @@ export const useTechDocsReaderDom = (
               .md-content__inner {
                 margin: 0;
               }
+              .md-content__inner .highlighttable {
+                max-width: 100%;
+                margin: 1em 0;
+              }
 
               .md-header__button {
                 margin: 0.4rem 0;
@@ -707,7 +711,7 @@ export const useTechDocsReaderDom = (
             .highlight .md-clipboard:after {
               content: unset;
             }
-
+            
             .highlight .nx {
               color: ${isDarkTheme ? '#ff53a3' : '#ec407a'};
             }
