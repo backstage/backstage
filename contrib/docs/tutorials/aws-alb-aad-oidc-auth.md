@@ -182,9 +182,8 @@ Use the following `auth` configuration when running Backstage on AWS:
 auth:
   providers:
     awsalb:
-      development:
-        issuer: https://login.microsoftonline.com/<TENANT_ID>/v2.0
-        region: <AWS_REGION>
+      issuer: https://login.microsoftonline.com/<TENANT_ID>/v2.0
+      region: <AWS_REGION>
 ```
 
 Replace `<TENANT_ID>` with the value of `Directory (tenant) ID` of the AAD App and `<AWS_REGION>` with the AWS region identifier where the ALB is deployed (for example: `eu-central-1`).
