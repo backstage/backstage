@@ -38,7 +38,10 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarPinStateContext } from '@backstage/core-components';
+import {
+  sidebarConfig,
+  SidebarPinStateContext,
+} from '@backstage/core-components';
 
 import { techdocsStorageApiRef } from '../../api';
 
@@ -559,7 +562,9 @@ export const useTechDocsReaderDom = (
                 width: 16rem !important;
                 z-index: 200;
                 left: ${
-                  isPinned ? 'calc(-16rem + 242px)' : 'calc(-16rem + 72px)'
+                  isPinned
+                    ? `calc(-16rem + ${sidebarConfig.drawerWidthOpen}px)`
+                    : `calc(-16rem + ${sidebarConfig.drawerWidthClosed}px)`
                 } !important;
               }
               .md-sidebar--secondary:not([hidden]) {
