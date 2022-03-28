@@ -20,7 +20,7 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 // @ts-ignore
 import { createRouter as CCFRouter } from '@cloud-carbon-footprint/api/dist/api';
-import { Config as getConfig, CCFConfig } from '@cloud-carbon-footprint/common';
+import { configLoader } from '@cloud-carbon-footprint/common';
 import { Config as BackstageConfig } from '@backstage/config';
 
 export interface RouterOptions {
@@ -41,10 +41,16 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
 
-  // TODO: Something off here... `getConfig` should be a function, but is a constant
-  // @ts-ignore
-  const ccfConfig: CCFConfig = getConfig;
-  const ccfRouter = CCFRouter(ccfConfig);
+  const ccfDefaults = configLoader();
+  const backstageConfig = options.config.getConfig('cloudCarbonFootprint')
+  const ccfRouter = CCFRouter({
+    ...ccfDefaults,
+    GCP: {
+      USE_BILLING_DATA: true,
+      BILLING_PROJECT_ID: backstageConfig.getString('gcpBillingProjectId'),
+      BIG_QUERY_TABLE: backstageConfig.getString('gcpBigQueryTable'),
+    },
+  });
 
   router.use(ccfRouter);
   router.use(errorHandler());
