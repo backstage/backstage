@@ -450,12 +450,6 @@ export const useTechDocsReaderDom = (
               scrollbar-color: rgb(193, 193, 193) #eee;
               scrollbar-width: thin;
             }
-            .md-sidebar .md-sidebar__scrollwrap {
-              width: calc(16rem - 10px);
-            }
-            .md-sidebar--secondary {
-              right: ${theme.spacing(3)}px;
-            }
             .md-sidebar::-webkit-scrollbar {
               width: 5px;
             }
@@ -477,6 +471,12 @@ export const useTechDocsReaderDom = (
             }
             .md-sidebar::-webkit-scrollbar-thumb:hover {
               background: rgb(125, 125, 125);
+            }
+            .md-sidebar--secondary {
+              right: ${theme.spacing(3)}px;
+            }
+            .md-sidebar__scrollwrap {
+              overflow: unset !important;
             }
 
             .md-content {
@@ -556,14 +556,17 @@ export const useTechDocsReaderDom = (
                 height: 100%;
               }
               .md-sidebar--primary {
-                width: 12.1rem !important;
+                width: 16rem !important;
                 z-index: 200;
                 left: ${
-                  isPinned ? 'calc(-12.1rem + 242px)' : 'calc(-12.1rem + 72px)'
+                  isPinned ? 'calc(-16rem + 242px)' : 'calc(-16rem + 72px)'
                 } !important;
               }
               .md-sidebar--secondary:not([hidden]) {
                 display: none;
+              }
+              [data-md-toggle=drawer]:checked~.md-container .md-sidebar--primary {
+                transform: translateX(16rem);
               }
 
               .md-content {
@@ -593,8 +596,8 @@ export const useTechDocsReaderDom = (
 
             @media screen and (max-width: 600px) {
               .md-sidebar--primary {
-                left: -12.1rem !important;
-                width: 12.1rem;
+                left: -16rem !important;
+                width: 16rem;
               }
             }
           `,
