@@ -15,7 +15,7 @@
  */
 import { OAuthApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 
-import { GCalendar, GCalendarEvent } from './types';
+import { GCalendarEvent, GCalendarList } from './types';
 import { ResponseError } from '@backstage/errors';
 
 type Options = {
@@ -58,7 +58,7 @@ export class GCalendarApiClient {
   }
 
   public async getCalendars(params?: any) {
-    return this.get<{ items: GCalendar[] }>(
+    return this.get<GCalendarList>(
       '/calendar/v3/users/me/calendarList',
       params,
     );
