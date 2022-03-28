@@ -492,7 +492,7 @@ export const useTechDocsReaderDom = (
             .md-footer__title {
               background-color: unset;
             }
-            .md-footer-nav__link {
+            .md-footer__link, .md-footer-nav__link {
               width: 16rem;
             }
 
@@ -588,7 +588,7 @@ export const useTechDocsReaderDom = (
                 position: static;
                 padding-left: 0;
               }
-              .md-footer-nav__link {
+              .md-footer__link, .md-footer-nav__link {
                 /* footer links begin to overlap at small sizes without setting width */
                 width: 50%;
               }
