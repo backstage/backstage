@@ -30,9 +30,9 @@ const Background = props => {
         </Block.Container>
       </Block>
 
-      <Block className="stripe bg-black" >
+      <Block className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.MediaFrame >
+          <Block.MediaFrame>
             <iframe
               src="https://www.youtube.com/embed/mFi_X58igzk"
               title="YouTube video player"
@@ -41,7 +41,7 @@ const Background = props => {
               allowfullscreen
             ></iframe>
           </Block.MediaFrame>
-          <Block.MediaFrame >
+          <Block.MediaFrame>
             <iframe
               width="300"
               height="500"
