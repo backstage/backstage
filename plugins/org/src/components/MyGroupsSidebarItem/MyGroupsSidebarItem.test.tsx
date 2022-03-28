@@ -56,12 +56,13 @@ describe('MyGroupsSidebarItem Test', () => {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/': entityRouteRef,
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
           },
         },
       );
-
-      expect(rendered.container).toBeEmptyDOMElement();
+      expect(
+        rendered.getByText('Mounted at /catalog/:namespace/:kind/:name'),
+      ).toBeInTheDocument();
     });
   });
 

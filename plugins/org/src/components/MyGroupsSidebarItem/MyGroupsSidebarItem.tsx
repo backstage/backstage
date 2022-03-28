@@ -62,7 +62,7 @@ export const MyGroupsSidebarItem = ({
 
   // Not a member of any groups
   if (!groups?.length) {
-    return <></>;
+    return null;
   }
 
   // Only member of one group
