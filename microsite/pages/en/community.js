@@ -125,7 +125,7 @@ const Background = props => {
             <Block.Paragraph>
               A monthly casual get together of Backstage users sharing their
               experiences and helping each other. Hosted by{' '}
-              <a href="https://roadie.io/">Roadie.io</a> and
+              <a href="https://roadie.io/">Roadie.io</a> and{' '}
               <a href="https://frontside.com/">Frontside Software</a>.
               <br />
             </Block.Paragraph>
