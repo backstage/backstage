@@ -74,7 +74,7 @@ import {
   UserSettingsTab,
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './components/advancedSettings';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-addons';
+import { TechDocsAddons } from '@backstage/techdocs-addons';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
