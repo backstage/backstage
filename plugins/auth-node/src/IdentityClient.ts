@@ -95,7 +95,7 @@ export class IdentityClient {
         type: 'user',
         userEntityRef: decoded.payload.sub,
         ownershipEntityRefs: decoded.payload.ent
-          ? [decoded.payload.ent as string]
+          ? (decoded.payload.ent as string[])
           : [],
       },
     };

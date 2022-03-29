@@ -143,6 +143,21 @@ describe('IdentityClient', () => {
       });
     });
 
+    it('should decode claims correctly', async () => {
+      const token = await factory.issueToken({
+        claims: { sub: 'foo', ent: ['entity1', 'entity2'] },
+      });
+      const response = await client.authenticate(token);
+      expect(response).toEqual({
+        token: token,
+        identity: {
+          type: 'user',
+          userEntityRef: 'foo',
+          ownershipEntityRefs: ['entity1', 'entity2'],
+        },
+      });
+    });
+
     it('should throw on incorrect issuer', async () => {
       const hackerFactory = new FakeTokenFactory({
         issuer: 'hacker',
