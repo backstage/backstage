@@ -25,7 +25,7 @@
   "dependencies": {
     "@backstage/backend-common": "^0.13.2-next.1",
     "@backstage/config": "^1.0.0",
-    "@backstage/catalog-model": "^0.13.0",
+    "@backstage/catalog-model": "^1.0.1-next.0",
     "@backstage/errors": "^1.0.0",
     "jose": "^4.6.0",
     "node-fetch": "^2.6.7",
