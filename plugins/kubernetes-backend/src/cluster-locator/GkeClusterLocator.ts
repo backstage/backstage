@@ -17,7 +17,11 @@
 import { Config } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
 import * as container from '@google-cloud/container';
-import { GKEClusterDetails, KubernetesClustersSupplier } from '../types/types';
+import {
+  ClusterDetails,
+  GKEClusterDetails,
+  KubernetesClustersSupplier,
+} from '../types/types';
 
 type GkeClusterLocatorOptions = {
   projectId: string;
@@ -31,6 +35,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   constructor(
     private readonly options: GkeClusterLocatorOptions,
     private readonly client: container.v1.ClusterManagerClient,
+    private clusterDetails: GKEClusterDetails[] | undefined = undefined,
   ) {}
 
   static fromConfigWithClient(
@@ -55,8 +60,17 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     );
   }
 
+  async getClusters(): Promise<ClusterDetails[]> {
+    if (this.clusterDetails) {
+      return this.clusterDetails;
+    }
+
+    this.clusterDetails = await this.retrieveClusters();
+    return this.clusterDetails;
+  }
+
   // TODO pass caData into the object
-  async getClusters(): Promise<GKEClusterDetails[]> {
+  async retrieveClusters(): Promise<GKEClusterDetails[]> {
     const {
       projectId,
       region,
