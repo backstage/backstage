@@ -69,7 +69,7 @@ import {
   TechDocsReaderPage,
   techdocsPlugin,
 } from '@backstage/plugin-techdocs';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-addons';
+import { TechDocsAddons } from '@backstage/techdocs-addons';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';

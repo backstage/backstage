@@ -118,7 +118,7 @@ import {
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-addons';
+import { TechDocsAddons } from '@backstage/techdocs-addons';
 import {
   ExampleContent,
   ExampleHeader,

@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-import { Content } from '@backstage/core-components';
 import {
   TechDocsReaderPageHeader,
+  TechDocsReaderPageContent,
   TechDocsReaderPage,
-  Reader,
 } from '@backstage/plugin-techdocs';
 import React from 'react';
 
 const DefaultTechDocsPage = () => {
   return (
     <TechDocsReaderPage>
-      {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
-        <>
-          <TechDocsReaderPageHeader
-            techDocsMetadata={techdocsMetadataValue}
-            entityMetadata={entityMetadataValue}
-            entityRef={entityRef}
-          />
-          <Content data-testid="techdocs-content">
-            <Reader onReady={onReady} entityRef={entityRef} />
-          </Content>
-        </>
-      )}
+      <TechDocsReaderPageHeader />
+      <TechDocsReaderPageContent />
     </TechDocsReaderPage>
   );
 };
