@@ -15,3 +15,5 @@
  */
 
 export { PermissionedRoute } from './PermissionedRoute';
+export { RequirePermission } from './RequirePermission';
+export type { RequirePermissionProps } from './RequirePermission';

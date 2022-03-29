@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, ReactElement } from 'react';
+import { ComponentProps, ReactElement } from 'react';
 import { Route } from 'react-router';
-import { useApp } from '@backstage/core-plugin-api';
-import { usePermission } from '../hooks';
 import {
-  isResourcePermission,
   Permission,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
@@ -29,9 +26,10 @@ import {
  * NotFoundErrorPage (see {@link @backstage/core-app-api#AppComponents}).
  *
  * @public
+ * @deprecated This component no longer works with the most recent version of `@backstage/core-app-api` and react-router v6, use {@link RequirePermission} instead.
  */
 export const PermissionedRoute = (
-  props: ComponentProps<typeof Route> & {
+  _props: ComponentProps<typeof Route> & {
     errorComponent?: ReactElement | null;
   } & (
       | {
@@ -44,24 +42,7 @@ export const PermissionedRoute = (
         }
     ),
 ) => {
-  const { permission, resourceRef, errorComponent, ...otherProps } = props;
-
-  const permissionResult = usePermission(
-    isResourcePermission(permission)
-      ? { permission, resourceRef }
-      : { permission },
+  throw new Error(
+    'PermissionedRoute is no longer supported, switch to using <RequirePermission> instead: <Route path="/" element={<RequirePermission permission={...}>...<RequirePermission/>}/>',
   );
-  const app = useApp();
-  const { NotFoundErrorPage } = app.getComponents();
-
-  let shownElement: ReactElement | null | undefined =
-    errorComponent === undefined ? <NotFoundErrorPage /> : errorComponent;
-
-  if (permissionResult.loading) {
-    shownElement = null;
-  } else if (permissionResult.allowed) {
-    shownElement = props.element;
-  }
-
-  return <Route {...otherProps} element={shownElement} />;
 };
