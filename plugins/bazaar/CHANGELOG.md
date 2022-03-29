@@ -1,5 +1,15 @@
 # @backstage/plugin-bazaar
 
+## 0.1.19-next.1
+
+### Patch Changes
+
+- 69738379c7: Pass authorization header with Backstage token to backend requests.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+  - @backstage/cli@0.17.0-next.1
+  - @backstage/plugin-catalog@1.1.0-next.1
+
 ## 0.1.19-next.0
 
 ### Patch Changes

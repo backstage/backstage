@@ -1,5 +1,14 @@
 # @backstage/test-utils
 
+## 1.0.1-next.1
+
+### Patch Changes
+
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.0-next.0
+  - @backstage/plugin-permission-common@0.6.0-next.0
+
 ## 1.0.1-next.0
 
 ### Patch Changes

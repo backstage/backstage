@@ -1,5 +1,11 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.11-next.1
+
+### Patch Changes
+
+- f69789330a: Fix an issue where the Radar is not updated when switching between different radars
+
 ## 0.5.11-next.0
 
 ### Patch Changes

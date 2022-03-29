@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder
 
+## 1.0.1-next.1
+
+### Patch Changes
+
+- 4431873583: Update `usePermission` usage.
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/plugin-permission-react@0.4.0-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+  - @backstage/plugin-catalog-common@1.0.1-next.1
+  - @backstage/integration-react@1.0.1-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

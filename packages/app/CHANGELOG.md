@@ -1,5 +1,30 @@
 # example-app
 
+## 0.2.70-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.0-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+  - @backstage/cli@0.17.0-next.1
+  - @backstage/plugin-home@0.4.20-next.1
+  - @backstage/plugin-kubernetes@0.6.4-next.1
+  - @backstage/plugin-catalog-common@1.0.1-next.1
+  - @backstage/plugin-org@0.5.4-next.1
+  - @backstage/plugin-catalog-graph@0.2.16-next.1
+  - @backstage/plugin-tech-radar@0.5.11-next.1
+  - @backstage/plugin-catalog@1.1.0-next.1
+  - @backstage/plugin-gcalendar@0.3.0-next.1
+  - @backstage/plugin-techdocs@1.0.1-next.1
+  - @backstage/plugin-scaffolder@1.0.1-next.1
+  - @backstage/integration-react@1.0.1-next.1
+  - @backstage/plugin-catalog-import@0.8.7-next.1
+  - @backstage/plugin-github-actions@0.5.4-next.1
+  - @backstage/app-defaults@1.0.1-next.1
+  - @backstage/plugin-search-common@0.3.3-next.1
+  - @backstage/plugin-api-docs@0.8.4-next.1
+
 ## 0.2.70-next.0
 
 ### Patch Changes
