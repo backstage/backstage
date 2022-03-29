@@ -55,33 +55,50 @@ When using ALB authentication Backstage will only be loaded once the user has su
 - add the following definition just before the app is created (`const app = createApp`):
 
 ```ts
-const DummySignInComponent: any = (props: any) => {
-  try {
-    const config = useApi(configApiRef);
+import React from 'react';
+import { UserIdentity } from '@backstage/core-components';
+import { SignInPageProps } from '@backstage/core-app-api';
+
+const DummySignInComponent: any = (props: SignInPageProps) => {
+  const [error, setError] = React.useState<string | undefined>();
+  const config = useApi(configApiRef);
+  React.useEffect(() => {
     const shouldAuth = !!config.getOptionalConfig('auth.providers.awsalb');
     if (shouldAuth) {
       fetch(`${window.location.origin}/api/auth/awsalb/refresh`)
         .then(data => data.json())
         .then(data => {
-          props.onResult({
-            userId: data.backstageIdentity.id,
-            profile: data.profile,
-          });
+          props.onSignInSuccess(
+            UserIdentity.fromLegacy({
+              userId: data.backstageIdentity.id,
+              profile: data.profile,
+            }),
+          );
+        })
+        .catch(err => {
+          setError(err.message);
         });
     } else {
-      props.onResult({
-        userId: 'guest',
-        profile: {
-          email: 'guest@example.com',
-          displayName: 'Guest',
-          picture: '',
-        },
-      });
+      try {
+        props.onSignInSuccess(
+          UserIdentity.fromLegacy({
+            userId: 'guest',
+            profile: {
+              email: 'guest@example.com',
+              displayName: 'Guest',
+              picture: '',
+            },
+          }),
+        );
+      } catch (err) {
+        setError(err.message);
+      }
     }
-    return <div />;
-  } catch (err) {
-    return <div>{err.message}</div>;
+  }, [config]);
+  if (error) {
+    return <div>{error}</div>;
   }
+  return <div />;
 };
 ```
 
