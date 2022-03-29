@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { HeaderLabel } from '@backstage/core-components';
-import { techdocsPlugin } from '@backstage/plugin-techdocs';
+import React, { useEffect } from 'react';
+
+import { Card, CardContent } from '@material-ui/core';
+
+import {
+  techdocsPlugin,
+  useShadowRootElements,
+} from '@backstage/plugin-techdocs';
 import {
   createTechDocsAddon,
   TechDocsAddonLocations,
-  useShadowRootElements,
-} from '@backstage/plugin-techdocs-addons';
-import { Card, CardContent } from '@material-ui/core';
-import React, { useEffect } from 'react';
+} from '@backstage/techdocs-addons';
+import { HeaderLabel } from '@backstage/core-components';
 
 /**
  * Note: this is not typically how or where one might define such things. It
