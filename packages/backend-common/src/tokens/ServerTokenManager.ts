@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  base64url,
-  JWSHeaderParameters,
-  generateSecret,
-  SignJWT,
-  jwtVerify,
-  exportJWK,
-} from 'jose';
+import { base64url, generateSecret, SignJWT, jwtVerify, exportJWK } from 'jose';
 import { Config } from '@backstage/config';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenManager } from './types';
@@ -76,8 +69,7 @@ export class ServerTokenManager implements TokenManager {
         'No secrets provided when constructing ServerTokenManager',
       );
     }
-    this.verificationKeys = new Array<Uint8Array>();
-    secrets.map(k => this.verificationKeys.push(base64url.decode(k)));
+    this.verificationKeys = secrets.map(s => base64url.decode(s));
     this.signingKey = this.verificationKeys[0];
   }
 
@@ -109,11 +101,8 @@ export class ServerTokenManager implements TokenManager {
   async authenticate(token: string): Promise<void> {
     let verifyError = undefined;
     for (const key of this.verificationKeys) {
-      const lookup = (_protectedHeader: JWSHeaderParameters): Uint8Array => {
-        return key;
-      };
       try {
-        await jwtVerify(token, lookup);
+        await jwtVerify(token, key);
         // If the verify succeeded, return
         return;
       } catch (e) {

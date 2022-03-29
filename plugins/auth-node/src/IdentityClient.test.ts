@@ -248,6 +248,38 @@ describe('IdentityClient', () => {
         return await client.authenticate(fakeToken);
       }).rejects.toThrow();
     });
+
+    it('should use an updated endpoint', async () => {
+      const updatedURL = 'http://backstage:9191/an-updated-base';
+      const getBaseUrl = discovery.getBaseUrl;
+      const getExternalBaseUrl = discovery.getExternalBaseUrl;
+      discovery.getBaseUrl = async () => {
+        return updatedURL;
+      };
+      discovery.getExternalBaseUrl = async () => {
+        return updatedURL;
+      };
+      server.use(
+        rest.get(`${updatedURL}/.well-known/jwks.json`, async (_, res, ctx) => {
+          const keys = await factory.listPublicKeys();
+          return res(ctx.json(keys));
+        }),
+      );
+      const token = await factory.issueToken({ claims: { sub: 'foo' } });
+      const response = await client.authenticate(token);
+      const url = (client as any).endpoint as URL;
+      expect(url.toString()).toMatch(`${updatedURL}/.well-known/jwks.json`);
+      expect(response).toEqual({
+        token: token,
+        identity: {
+          type: 'user',
+          userEntityRef: 'foo',
+          ownershipEntityRefs: [],
+        },
+      });
+      discovery.getBaseUrl = getBaseUrl;
+      discovery.getExternalBaseUrl = getExternalBaseUrl;
+    });
   });
 
   describe('listPublicKeys', () => {

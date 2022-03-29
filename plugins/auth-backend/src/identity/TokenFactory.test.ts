@@ -24,7 +24,10 @@ const logger = getVoidLogger();
 
 function jwtKid(jwt: string): string {
   const header = decodeProtectedHeader(jwt);
-  return header.kid ?? '';
+  if (!header.kid) {
+    throw new Error('JWT Header did not contain a key ID (kid)');
+  }
+  return header.kid;
 }
 
 const entityRef = stringifyEntityRef({

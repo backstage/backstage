@@ -44,11 +44,6 @@ type Options = {
   resolverContext: AuthResolverContext;
 };
 
-export const getJWTHeaders = (input: string): AwsAlbHeaders => {
-  const encoded = input.split('.')[0];
-  return JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'));
-};
-
 export type AwsAlbHeaders = {
   alg: string;
   kid: string;

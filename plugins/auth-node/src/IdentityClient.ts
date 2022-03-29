@@ -72,6 +72,14 @@ export class IdentityClient {
     if (!token) {
       throw new AuthenticationError('No token specified');
     }
+    // Check if the keystore needs to be updated
+    const url = await this.discovery.getBaseUrl('auth');
+    const endpoint = new URL(`${url}/.well-known/jwks.json`);
+    if (endpoint !== this.endpoint) {
+      this.endpoint = endpoint;
+      this.keyStore = createRemoteJWKSet(this.endpoint);
+    }
+
     // Verify token claims and signature
     // Note: Claims must match those set by TokenFactory when issuing tokens
     // Note: verify throws if verification fails
