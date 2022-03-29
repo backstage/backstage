@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,45 +14,62 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { FC, useEffect } from 'react';
+import Helmet from 'react-helmet';
+
+import { Skeleton } from '@material-ui/lab';
 import CodeIcon from '@material-ui/icons/Code';
 
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { Header, HeaderLabel } from '@backstage/core-components';
-import { CompoundEntityRef, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  TechDocsAddonLocations as locations,
+  useTechDocsAddons,
+} from '@backstage/techdocs-addons';
 import {
   EntityRefLink,
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { Header, HeaderLabel } from '@backstage/core-components';
+import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from '../../routes';
-import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
+import {
+  useTechDocsReaderPage,
+  useTechDocsMetadata,
+  useEntityMetadata,
+} from '../TechDocsReaderPage';
 
-/**
- * Props for {@link TechDocsReaderPageHeader}
- *
- * @public
- */
-export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
-  entityRef: CompoundEntityRef;
-  entityMetadata?: TechDocsEntityMetadata;
-  techDocsMetadata?: TechDocsMetadata;
-}>;
+import { rootRouteRef } from '../../../routes';
 
-/**
- * Component responsible for rendering a Header with metadata on TechDocs reader page.
- *
- * @public
- */
-export const TechDocsReaderPageHeader = (
-  props: TechDocsReaderPageHeaderProps,
-) => {
-  const { entityRef, entityMetadata, techDocsMetadata, children } = props;
-  const { name } = entityRef;
+const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
-  const { site_name: siteName, site_description: siteDescription } =
-    techDocsMetadata || {};
+export const TechDocsReaderPageHeader: FC = props => {
+  const { children } = props;
+  const addons = useTechDocsAddons();
+  const configApi = useApi(configApiRef);
+
+  const { value: techDocsMetadata } = useTechDocsMetadata();
+  const { value: entityMetadata } = useEntityMetadata();
+
+  const {
+    title,
+    setTitle,
+    subtitle,
+    setSubtitle,
+    entityName: entityRef,
+  } = useTechDocsReaderPage();
+
+  useEffect(() => {
+    if (!techDocsMetadata) return;
+    setTitle(prevTitle => prevTitle || techDocsMetadata.site_name);
+    setSubtitle(
+      prevSubtitle =>
+        prevSubtitle || techDocsMetadata.site_description || 'Home',
+    );
+  }, [techDocsMetadata, setTitle, setSubtitle]);
+
+  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const tabTitle = [subtitle, title, appTitle].filter(Boolean).join(' | ');
 
   const { locationMetadata, spec } = entityMetadata || {};
   const lifecycle = spec?.lifecycle;
@@ -109,29 +126,17 @@ export const TechDocsReaderPageHeader = (
 
   return (
     <Header
-      title={siteName ? siteName : '.'}
-      pageTitleOverride={siteName || name}
-      subtitle={
-        siteDescription && siteDescription !== 'None' ? siteDescription : ''
-      }
-      type="Docs"
+      type="Documentation"
       typeLink={docsRootLink}
+      title={title || skeleton}
+      subtitle={subtitle || skeleton}
     >
+      <Helmet titleTemplate="%s">
+        <title>{tabTitle}</title>
+      </Helmet>
       {labels}
       {children}
+      {addons.renderComponentsByLocation(locations.HEADER)}
     </Header>
   );
 };
-
-/**
- * @public
- * @deprecated use {@link TechDocsReaderPageHeader} instead
- */
-export const TechDocsPageHeader = TechDocsReaderPageHeader;
-
-/**
- * @public
- * @deprecated use {@link TechDocsReaderPageHeader} instead
- */
-
-export type TechDocsPageHeaderProps = TechDocsReaderPageHeaderProps;

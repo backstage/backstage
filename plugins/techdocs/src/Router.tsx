@@ -67,10 +67,9 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
 
   return (
     <Routes>
-      <Route
-        path="/*"
-        element={<EntityPageDocs entity={entity}>{children}</EntityPageDocs>}
-      />
+      <Route path="/*" element={<EntityPageDocs entity={entity} />}>
+        {children}
+      </Route>
     </Routes>
   );
 };

@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+
+/**
+ * Helper function that gives the children of {@link TechDocsReaderPage} access to techdocs and entity metadata
+ *
+ * @public
+ */
+export type TechDocsReaderPageRenderFunction = ({
+  techdocsMetadataValue,
+  entityMetadataValue,
+  entityRef,
+}: {
+  techdocsMetadataValue?: TechDocsMetadata | undefined;
+  entityMetadataValue?: TechDocsEntityMetadata | undefined;
+  entityRef: CompoundEntityRef;
+}) => JSX.Element;
 
 /**
  * Metadata for TechDocs page
