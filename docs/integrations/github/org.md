@@ -55,22 +55,3 @@ The authorization for loading org information comes from a configured
 [GitHub integration](locations.md#configuration). When using a personal access
 token, the token needs to have at least the scopes `read:org`, `read:user`, and
 `user:email` in the given `target`.
-
-## Addendum
-
-Some Backstage apps have _replaced_ the catalog processors to override the
-default catalog processing behavior. These apps will already have a call to
-`replaceProcessors` in the catalog initialization.
-
-In the unlikely scenario that this applies to your app, you can import and
-add the `GithubOrgReaderProcessor` as follows:
-
-```ts
-// Typically in packages/backend/src/plugins/catalog.ts
-import { GithubOrgReaderProcessor } from '@backstage/plugin-catalog-backend';
-
-builder.replaceProcessors(
-  // ... other processor replacements
-  GithubOrgReaderProcessor.fromConfig(env.config, { logger: env.logger }),
-);
-```
