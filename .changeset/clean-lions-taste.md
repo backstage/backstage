@@ -18,12 +18,12 @@ catalog:
     - type: url
       target: https://example.com/org.yaml
       rules:
-        allow: [User, Group]
+        - allow: [User, Group]
     # But also note that this applies to ALL org location types!
     - type: github-org
       target: https://github.com/my-org-name
       rules:
-        allow: [User, Group]
+        - allow: [User, Group]
 ```
 
 This rule change does NOT affect entity providers, only things that are emitted
@@ -48,5 +48,5 @@ And for any location that in any way results in org data being ingested, add the
      - type: github-org
        target: https://github.com/my-org-name
 +      rules:
-+        allow: [User, Group]
++        - allow: [User, Group]
 ```
