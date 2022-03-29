@@ -21,7 +21,7 @@ import { Alert } from '@material-ui/lab';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { useTechDocsReader } from './Reader';
+import { useTechDocsReader } from './TechDocsReaderPageContent';
 
 const useStyles = makeStyles(theme => ({
   root: {
