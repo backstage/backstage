@@ -1,0 +1,59 @@
+{
+  "name": "@backstage/techdocs-addons",
+  "description": "TechDocs Addons Framework",
+  "version": "0.0.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "web-library"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/techdocs-addons"
+  },
+  "keywords": [
+    "backstage",
+    "techdocs"
+  ],
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "^0.13.0",
+    "@backstage/core-components": "^0.9.1",
+    "@backstage/core-plugin-api": "^0.8.0",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/styles": "^4.11.0",
+    "jss": "~10.8.2",
+    "react-helmet": "6.1.0",
+    "react-router-dom": "6.0.0-beta.0",
+    "react-use": "^17.2.4"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-hooks": "^7.0.2",
+    "@backstage/test-utils": "^0.3.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
