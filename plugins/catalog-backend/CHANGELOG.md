@@ -1395,7 +1395,7 @@
       - type: github-multi-org
         target: https://github.myorg.com
         rules:
-          allow: [User, Group]
+          - allow: [User, Group]
 
     processors:
       githubMultiOrg:

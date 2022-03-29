@@ -32,7 +32,7 @@ catalog:
     - type: github-org
       target: https://github.com/my-org-name
       rules:
-        allow: [User, Group]
+        - allow: [User, Group]
 ```
 
 If Backstage is configured to use GitHub Apps authentication you must grant
