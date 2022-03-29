@@ -1,5 +1,17 @@
 # @backstage/plugin-home
 
+## 0.4.20-next.1
+
+### Patch Changes
+
+- ac323de4ad: - Adds new `HomePageStackOverflowQuestions` component which renders a list of stack overflow questions on your homepage.
+
+  - Exports `ComponentRenderer` type.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+  - @backstage/plugin-stack-overflow@0.1.0-next.0
+
 ## 0.4.20-next.0
 
 ### Patch Changes

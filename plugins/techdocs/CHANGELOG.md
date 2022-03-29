@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs
 
+## 1.0.1-next.1
+
+### Patch Changes
+
+- 0152c0de22: Some documentation layout tweaks:
+
+  - drawer toggle margins
+  - code block margins
+  - sidebar drawer width
+  - inner content width
+  - footer link width
+  - sidebar table of contents scroll
+
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+  - @backstage/integration-react@1.0.1-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

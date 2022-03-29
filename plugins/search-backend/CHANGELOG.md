@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend
 
+## 0.5.0-next.1
+
+### Patch Changes
+
+- 30f9884359: Check for non-resource permissions when authorizing result-by-result in AuthorizedSearchEngine.
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0-next.0
+  - @backstage/plugin-permission-node@0.6.0-next.1
+  - @backstage/backend-common@0.13.2-next.1
+  - @backstage/plugin-search-common@0.3.3-next.1
+
 ## 0.5.0-next.0
 
 ### Minor Changes

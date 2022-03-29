@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.4-next.1
+
+### Patch Changes
+
+- 1023ee6353: export kubernetes components
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+
 ## 0.6.4-next.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.13.0-next.1
+
+### Patch Changes
+
+- a45bce06e3: Handle trailing slashes on GitHub `enterpriseInstanceUrl` settings
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.1
+
 ## 0.13.0-next.0
 
 ### Minor Changes

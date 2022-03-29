@@ -1,5 +1,17 @@
 # @backstage/backend-tasks
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- ab008a0988: Adds the ability to manually trigger tasks which are registered
+
+### Patch Changes
+
+- bdd2773202: Refactored the internal `TaskWorker` class to make it easier to test.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.1
+
 ## 0.2.2-next.0
 
 ### Patch Changes

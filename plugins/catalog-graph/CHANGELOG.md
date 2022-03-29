@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.16-next.1
+
+### Patch Changes
+
+- 77800a32dd: Added renderNode and renderLabel property to EntityRelationsGraph to support customization using CustomNode and CustomLabel components
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+
 ## 0.2.16-next.0
 
 ### Patch Changes

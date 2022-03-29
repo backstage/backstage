@@ -1,5 +1,31 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 231fee736b: This backend now uses the `@backstage/backend-tasks` package facilities for scheduling fact retrievers.
+
+  **BREAKING**: The `buildTechInsightsContext` function now takes an additional field in its options argument: `scheduler`. This is an instance of `PluginTaskScheduler`, which can be found in your backend initialization code's `env`.
+
+  ```diff
+   const builder = buildTechInsightsContext({
+     logger: env.logger,
+     config: env.config,
+     database: env.database,
+     discovery: env.discovery,
+  +  scheduler: env.scheduler,
+     factRetrievers: [ /* ... */ ],
+   });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.0-next.1
+  - @backstage/plugin-tech-insights-node@0.2.9-next.1
+  - @backstage/backend-common@0.13.2-next.1
+
 ## 0.2.11-next.0
 
 ### Patch Changes
