@@ -57,6 +57,10 @@ This is an array used to determine where to retrieve cluster configuration from.
 
 Valid cluster locator methods are:
 
+- [`config`](#config)
+- [`gke`](#gke)
+- [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
+
 #### `config`
 
 This cluster locator method will read cluster information from your app-config
