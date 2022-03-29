@@ -20,6 +20,7 @@ import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
 import { DateTime } from 'luxon';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { AuthenticationError } from '@backstage/errors';
 
 const MS_IN_S = 1000;
 
@@ -52,7 +53,6 @@ export class TokenFactory implements TokenIssuer {
   private readonly logger: Logger;
   private readonly keyStore: KeyStore;
   private readonly keyDurationSeconds: number;
-  private readonly alg = 'ES256';
 
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JWK>;
@@ -85,8 +85,12 @@ export class TokenFactory implements TokenIssuer {
 
     this.logger.info(`Issuing token for ${sub}, with entities ${ent ?? []}`);
 
+    if (!key.alg) {
+      throw new AuthenticationError('No algorithm was provided in the key');
+    }
+
     return new SignJWT({ iss, sub, aud, iat, exp })
-      .setProtectedHeader({ alg: this.alg, kid: key.kid })
+      .setProtectedHeader({ alg: key.alg, kid: key.kid })
       .setIssuer(iss)
       .setAudience(aud)
       .setSubject(sub)
@@ -152,11 +156,11 @@ export class TokenFactory implements TokenIssuer {
       .toJSDate();
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
-      const key = await generateKeyPair(this.alg);
+      const key = await generateKeyPair('ES256');
       const publicKey = await exportJWK(key.publicKey);
       const privateKey = await exportJWK(key.privateKey);
       publicKey.kid = privateKey.kid = uuid();
-      publicKey.alg = privateKey.alg = this.alg;
+      publicKey.alg = privateKey.alg = 'ES256';
 
       // We're not allowed to use the key until it has been successfully stored
       // TODO: some token verification implementations aggressively cache the list of keys, and
