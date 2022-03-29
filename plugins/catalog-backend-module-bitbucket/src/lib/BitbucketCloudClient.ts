@@ -21,7 +21,7 @@ import {
 import fetch from 'node-fetch';
 import { BitbucketRepository20 } from './types';
 
-export class BitbucketClient {
+export class BitbucketCloudClient {
   private readonly config: BitbucketIntegrationConfig;
 
   constructor(options: { config: BitbucketIntegrationConfig }) {
@@ -49,7 +49,7 @@ export class BitbucketClient {
       '+values.file.commit.repository.links.html.href',
     ].join(',');
 
-    return this.pagedRequest20<CodeSearchResultItem>(
+    return this.pagedRequest<CodeSearchResultItem>(
       `${this.config.apiBaseUrl}/workspaces/${encodeURIComponent(
         workspace,
       )}/search/code`,
@@ -61,58 +61,17 @@ export class BitbucketClient {
     );
   }
 
-  async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
-    return this.pagedRequest(`${this.config.apiBaseUrl}/projects`, options);
-  }
-
-  async listRepositoriesByWorkspace20(
+  async listRepositoriesByWorkspace(
     workspace: string,
     options?: ListOptions20,
   ): Promise<PagedResponse20<BitbucketRepository20>> {
-    return this.pagedRequest20<BitbucketRepository20>(
+    return this.pagedRequest<BitbucketRepository20>(
       `${this.config.apiBaseUrl}/repositories/${encodeURIComponent(workspace)}`,
       options,
     );
   }
 
-  async listRepositories(
-    projectKey: string,
-    options?: ListOptions,
-  ): Promise<PagedResponse<any>> {
-    return this.pagedRequest(
-      `${this.config.apiBaseUrl}/projects/${encodeURIComponent(
-        projectKey,
-      )}/repos`,
-      options,
-    );
-  }
-
-  private async pagedRequest(
-    endpoint: string,
-    options?: ListOptions,
-  ): Promise<PagedResponse<any>> {
-    const request = new URL(endpoint);
-    for (const key in options) {
-      if (options[key]) {
-        request.searchParams.append(key, options[key]!.toString());
-      }
-    }
-
-    const response = await fetch(
-      request.toString(),
-      getBitbucketRequestOptions(this.config),
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-          response.status
-        } - ${response.statusText}`,
-      );
-    }
-    return response.json() as Promise<PagedResponse<any>>;
-  }
-
-  private async pagedRequest20<T = any>(
+  private async pagedRequest<T = any>(
     endpoint: string,
     options?: ListOptions20,
   ): Promise<PagedResponse20<T>> {
@@ -154,21 +113,6 @@ export type CodeSearchResultItem = {
   };
 };
 
-export type ListOptions = {
-  [key: string]: number | undefined;
-  limit?: number | undefined;
-  start?: number | undefined;
-};
-
-export type PagedResponse<T> = {
-  size: number;
-  limit: number;
-  start: number;
-  isLastPage: boolean;
-  values: T[];
-  nextPageStart: number;
-};
-
 export type ListOptions20 = {
   [key: string]: string | number | undefined;
   page?: number | undefined;
@@ -182,21 +126,6 @@ export type PagedResponse20<T> = {
   values: T[];
   next: string;
 };
-
-export async function* paginated(
-  request: (options: ListOptions) => Promise<PagedResponse<any>>,
-  options?: ListOptions,
-) {
-  const opts = options || { start: 0 };
-  let res;
-  do {
-    res = await request(opts);
-    opts.start = res.nextPageStart;
-    for (const item of res.values) {
-      yield item;
-    }
-  } while (!res.isLastPage);
-}
 
 export async function* paginated20<T = any>(
   request: (options: ListOptions20) => Promise<PagedResponse20<T>>,
