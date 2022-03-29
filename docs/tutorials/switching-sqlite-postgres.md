@@ -19,10 +19,9 @@ switch between database backends.
 
 First, add PostgreSQL to your `backend` package:
 
-```shell
+```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add pg
+yarn add --cwd packages/backend pg
 ```
 
 ## Add PostgreSQL configuration

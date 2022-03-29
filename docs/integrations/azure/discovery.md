@@ -21,8 +21,7 @@ package.
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend-module-azure
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-azure
 ```
 
 And then add the processors to your catalog builder:

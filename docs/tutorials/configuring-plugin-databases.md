@@ -36,14 +36,13 @@ Please ensure the appropriate database drivers are installed in your `backend`
 package. If you intend to use both PostgreSQL and SQLite, you can install
 both of them.
 
-```sh
-cd packages/backend
-
+```bash
+# From the Backstage root directory
 # install pg if you need PostgreSQL
-yarn add pg
+yarn add --cwd packages/backend pg
 
 # install SQLite 3 if you intend to set it as the client
-yarn add better-sqlite3
+yarn add --cwd packages/backend better-sqlite3
 ```
 
 From an operational perspective, you only need to install drivers for clients
