@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, ReactElement } from 'react';
-import { Route } from 'react-router';
+import React, { ReactElement, ReactNode } from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
 import {
@@ -25,26 +24,29 @@ import {
 } from '@backstage/plugin-permission-common';
 
 /**
- * Returns a React Router Route which only renders the element when authorized. If unauthorized, the Route will render a
- * NotFoundErrorPage (see {@link @backstage/core-app-api#AppComponents}).
+ * A simple rendering bounrdary which only renders children when authorized. If
+ * unauthorized, the Route will render a NotFoundErrorPage (see
+ * {@link @backstage/core-app-api#AppComponents}) or the provided
+ * unauthorizedComponent.
  *
  * @public
  */
-export const PermissionedRoute = (
-  props: ComponentProps<typeof Route> & {
-    errorComponent?: ReactElement | null;
+export function RequirePermission(
+  props: {
+    unauthorizedComponent?: ReactElement | null;
+    children: ReactNode;
   } & (
-      | {
-          permission: Exclude<Permission, ResourcePermission>;
-          resourceRef?: never;
-        }
-      | {
-          permission: ResourcePermission;
-          resourceRef: string | undefined;
-        }
-    ),
-) => {
-  const { permission, resourceRef, errorComponent, ...otherProps } = props;
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      }
+  ),
+) {
+  const { permission, resourceRef, unauthorizedComponent, children } = props;
 
   const permissionResult = usePermission(
     isResourcePermission(permission)
@@ -54,14 +56,14 @@ export const PermissionedRoute = (
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
 
-  let shownElement: ReactElement | null | undefined =
-    errorComponent === undefined ? <NotFoundErrorPage /> : errorComponent;
-
   if (permissionResult.loading) {
-    shownElement = null;
-  } else if (permissionResult.allowed) {
-    shownElement = props.element;
+    return null;
   }
-
-  return <Route {...otherProps} element={shownElement} />;
-};
+  const unauthorizedResult =
+    unauthorizedComponent === undefined ? (
+      <NotFoundErrorPage />
+    ) : (
+      unauthorizedComponent
+    );
+  return permissionResult.allowed ? <>{children}</> : unauthorizedResult;
+}

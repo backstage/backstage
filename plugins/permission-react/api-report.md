@@ -4,7 +4,6 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { ComponentProps } from 'react';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
@@ -12,8 +11,8 @@ import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common'
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { Route } from 'react-router';
 
 // @public (undocumented)
 export type AsyncPermissionResult = {
@@ -47,20 +46,21 @@ export type PermissionApi = {
 export const permissionApiRef: ApiRef<PermissionApi>;
 
 // @public
-export const PermissionedRoute: (
-  props: ComponentProps<typeof Route> & {
-    errorComponent?: ReactElement | null;
+export function RequirePermission(
+  props: {
+    unauthorizedComponent?: ReactElement | null;
+    children: ReactNode;
   } & (
-      | {
-          permission: Exclude<Permission, ResourcePermission>;
-          resourceRef?: never;
-        }
-      | {
-          permission: ResourcePermission;
-          resourceRef: string | undefined;
-        }
-    ),
-) => JSX.Element;
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      }
+  ),
+): JSX.Element | null;
 
 // @public
 export function usePermission(
