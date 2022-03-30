@@ -48,7 +48,6 @@ export const MyGroupsSidebarItem = ({
   pluralTitle: string;
   icon: IconComponent;
 }) => {
-  // const { singularTitle, pluralTitle, icon } = props;
   const identityApi = useApi(identityApiRef);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);

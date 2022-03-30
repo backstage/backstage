@@ -18,10 +18,10 @@ To use MyGroupsSidebarItem you'll need to add it to your `Root.tsx` like this:
         {/* Global nav, not org-specific */}
         //...
         <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-+       <MyGroupsSidebarItem props={{
-+         singularTitle: "My Squad",
-+         pluralTitle: "My Squads",
-+         icon: GroupIcon}}
++       <MyGroupsSidebarItem
++         singularTitle='My Squad'
++         pluralTitle='My Squads'
++         icon={GroupIcon}
 +       />
        //...
       </SidebarGroup>
