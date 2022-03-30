@@ -20,9 +20,13 @@ function isUserEntity(entity: Entity): entity is UserEntity {
   return entity.kind.toLocaleUpperCase('en-US') === 'USER';
 }
 
+function isGroupEntity(entity: Entity): entity is UserEntity {
+  return entity.kind.toLocaleUpperCase('en-US') === 'GROUP';
+}
+
 export function getDocumentText(entity: Entity): string {
   let documentText = entity.metadata.description || '';
-  if (isUserEntity(entity)) {
+  if (isUserEntity(entity) || isGroupEntity(entity)) {
     if (entity.spec?.profile?.displayName && documentText) {
       // combine displayName and description
       const displayName = entity.spec.profile.displayName;

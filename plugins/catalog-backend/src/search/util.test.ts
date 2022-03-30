@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ComponentEntity, UserEntity } from '@backstage/catalog-model';
+import {
+  ComponentEntity,
+  GroupEntity,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { getDocumentText } from './util';
 
 describe('getDocumentText', () => {
@@ -61,7 +65,54 @@ describe('getDocumentText', () => {
       expect(actual).toEqual('');
     });
   });
+
+  describe('kind is Group', () => {
+    test('contains display name if set', () => {
+      const entity = createGroup();
+      const actual = getDocumentText(entity);
+      expect(actual).toContain(entity.spec.profile?.displayName);
+    });
+
+    test('contains description if set', () => {
+      const entity = createGroup();
+      const actual = getDocumentText(entity);
+      expect(actual).toContain(entity.metadata.description);
+    });
+
+    test('contains both description and display name if both are set', () => {
+      const entity = createGroup();
+      const actual = getDocumentText(entity);
+      expect(actual).toContain(entity.spec.profile?.displayName);
+      expect(actual).toContain(entity.metadata.description);
+    });
+
+    test('is empty if description and display name are not set', () => {
+      const entity = createGroup();
+      delete entity.metadata.description;
+      delete entity.spec.profile?.displayName;
+      const actual = getDocumentText(entity);
+      expect(actual).toEqual('');
+    });
+  });
 });
+
+function createGroup(): GroupEntity {
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Group',
+    metadata: {
+      name: 'group-1',
+      description: 'The expected description',
+    },
+    spec: {
+      type: 'team',
+      profile: {
+        displayName: 'Group 1',
+      },
+      children: [],
+    },
+  };
+}
 
 function createUser(): UserEntity {
   return {
