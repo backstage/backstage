@@ -15,7 +15,17 @@
  */
 
 import React from 'react';
-import { TechDocsMetadata } from './types';
+import { renderHook, act } from '@testing-library/react-hooks';
+
+import { ThemeProvider } from '@material-ui/core';
+
+import { lightTheme } from '@backstage/theme';
+import { TestApiProvider } from '@backstage/test-utils';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+
+import { techdocsApiRef } from '../../../api';
+import { TechDocsMetadata } from '../../../types';
+
 import {
   useEntityMetadata,
   useTechDocsMetadata,
@@ -24,14 +34,17 @@ import {
   TechDocsMetadataProvider,
   TechDocsReaderPageProvider,
 } from './context';
-import { renderHook, act } from '@testing-library/react-hooks';
 
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-
-const mockEntity: Entity = {
+const mockEntityMetadata: Entity = {
   apiVersion: 'v1',
   kind: 'Component',
-  metadata: { name: 'test-component', namespace: 'default' },
+  metadata: {
+    name: 'test',
+    namespace: 'default',
+  },
+  spec: {
+    owner: 'test',
+  },
 };
 
 const mockTechDocsMetadata: TechDocsMetadata = {
@@ -46,39 +59,42 @@ const mockShadowRoot = () => {
   return shadowRoot;
 };
 
+const techdocsApiMock = {
+  getEntityMetadata: jest.fn().mockResolvedValue(mockEntityMetadata),
+  getTechDocsMetadata: jest.fn().mockResolvedValue(mockTechDocsMetadata),
+};
+
 const wrapper = ({
+  path = '',
   entityName = {
-    namespace: mockEntity.metadata.namespace!!,
-    kind: mockEntity.kind,
-    name: mockEntity.metadata.name,
+    kind: mockEntityMetadata.kind,
+    name: mockEntityMetadata.metadata.name,
+    namespace: mockEntityMetadata.metadata.namespace!!,
   },
   children,
 }: {
-  entityName: CompoundEntityRef;
+  path?: string;
+  entityName?: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
-  <TechDocsMetadataProvider
-    asyncValue={{
-      loading: false,
-      error: undefined,
-      value: mockTechDocsMetadata,
-    }}
-  >
-    <TechDocsEntityProvider
-      asyncValue={{
-        loading: false,
-        error: undefined,
-        value: mockEntity,
-      }}
-    >
-      <TechDocsReaderPageProvider entityName={entityName}>
-        {children}
-      </TechDocsReaderPageProvider>
-    </TechDocsEntityProvider>
-  </TechDocsMetadataProvider>
+  <ThemeProvider theme={lightTheme}>
+    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+      <TechDocsMetadataProvider entityName={entityName}>
+        <TechDocsEntityProvider entityName={entityName}>
+          <TechDocsReaderPageProvider path={path} entityName={entityName}>
+            {children}
+          </TechDocsReaderPageProvider>
+        </TechDocsEntityProvider>
+      </TechDocsMetadataProvider>
+    </TestApiProvider>
+  </ThemeProvider>
 );
 
 describe('context', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('useEntityMetadata', () => {
     it('should return loading state', async () => {
       const { result } = renderHook(() => useEntityMetadata());
@@ -87,11 +103,16 @@ describe('context', () => {
     });
 
     it('should return expected entity values', async () => {
-      const { result } = renderHook(() => useEntityMetadata(), { wrapper });
+      const { result, waitForNextUpdate } = renderHook(
+        () => useEntityMetadata(),
+        { wrapper },
+      );
+
+      await waitForNextUpdate();
 
       expect(result.current.value).toBeDefined();
       expect(result.current.error).toBeUndefined();
-      expect(result.current.value).toMatchObject(mockEntity);
+      expect(result.current.value).toMatchObject(mockEntityMetadata);
     });
   });
 
@@ -103,7 +124,12 @@ describe('context', () => {
     });
 
     it('should return expected techdocs metadata values', async () => {
-      const { result } = renderHook(() => useTechDocsMetadata(), { wrapper });
+      const { result, waitForNextUpdate } = renderHook(
+        () => useTechDocsMetadata(),
+        { wrapper },
+      );
+
+      await waitForNextUpdate();
 
       expect(result.current.value).toBeDefined();
       expect(result.current.error).toBeUndefined();
@@ -112,31 +138,48 @@ describe('context', () => {
   });
 
   describe('useTechDocsReaderPage', () => {
-    it('should set title', () => {
-      const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
+    it('should set title', async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useTechDocsReaderPage(),
+        { wrapper },
+      );
 
       expect(result.current.title).toBe('');
 
       act(() => result.current.setTitle('test site title'));
+
+      await waitForNextUpdate();
+
       expect(result.current.title).toBe('test site title');
     });
 
-    it('should set subtitle', () => {
-      const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
+    it('should set subtitle', async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        () => useTechDocsReaderPage(),
+        { wrapper },
+      );
 
       expect(result.current.subtitle).toBe('');
 
       act(() => result.current.setSubtitle('test site subtitle'));
+
+      await waitForNextUpdate();
+
       expect(result.current.subtitle).toBe('test site subtitle');
     });
 
     it('should set shadow root', async () => {
-      const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
+      const { result, waitForNextUpdate } = renderHook(
+        () => useTechDocsReaderPage(),
+        { wrapper },
+      );
 
       // mock shadowroot
       const shadowRoot = mockShadowRoot();
 
       act(() => result.current.setShadowRoot(shadowRoot));
+
+      await waitForNextUpdate();
 
       expect(result.current.shadowRoot?.innerHTML).toBe(
         '<h1>Shadow DOM Mock</h1>',

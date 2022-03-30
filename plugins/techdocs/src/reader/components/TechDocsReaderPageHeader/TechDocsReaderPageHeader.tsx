@@ -43,13 +43,12 @@ import { rootRouteRef } from '../../../routes';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
-export const TechDocsReaderPageHeader: FC = props => {
-  const { children } = props;
+export const TechDocsReaderPageHeader: FC = ({ children }) => {
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
 
-  const { value: techDocsMetadata } = useTechDocsMetadata();
   const { value: entityMetadata } = useEntityMetadata();
+  const { value: techDocsMetadata } = useTechDocsMetadata();
 
   const {
     title,
@@ -61,11 +60,17 @@ export const TechDocsReaderPageHeader: FC = props => {
 
   useEffect(() => {
     if (!techDocsMetadata) return;
-    setTitle(prevTitle => prevTitle || techDocsMetadata.site_name);
-    setSubtitle(
-      prevSubtitle =>
-        prevSubtitle || techDocsMetadata.site_description || 'Home',
-    );
+    setTitle(prevTitle => {
+      const { site_name } = techDocsMetadata;
+      return prevTitle || site_name;
+    });
+    setSubtitle(prevSubtitle => {
+      let { site_description } = techDocsMetadata;
+      if (site_description === 'None') {
+        site_description = 'Home';
+      }
+      return prevSubtitle || site_description;
+    });
   }, [techDocsMetadata, setTitle, setSubtitle]);
 
   const appTitle = configApi.getOptional('app.title') || 'Backstage';

@@ -14,41 +14,91 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
-import { act } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/test-utils';
+import { act, waitFor } from '@testing-library/react';
+
+import { ThemeProvider } from '@material-ui/core';
+
+import { lightTheme } from '@backstage/theme';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import { rootRouteRef } from '../../routes';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+
+import { techdocsApiRef } from '../../../api';
+import { rootRouteRef } from '../../../routes';
+
+import {
+  TechDocsEntityProvider,
+  TechDocsMetadataProvider,
+  TechDocsReaderPageProvider,
+} from '../TechDocsReaderPage';
+
+import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
+
+const mockEntityMetadata = {
+  locationMetadata: {
+    type: 'github',
+    target: 'https://example.com/',
+  },
+  apiVersion: 'v1',
+  kind: 'test',
+  metadata: {
+    name: 'test-name',
+    namespace: 'test-namespace',
+  },
+  spec: {
+    owner: 'test',
+  },
+};
+
+const mockTechDocsMetadata = {
+  site_name: 'test-site-name',
+  site_description: 'test-site-desc',
+};
+
+const getEntityMetadata = jest.fn();
+const getTechDocsMetadata = jest.fn();
+
+const techdocsApiMock = {
+  getEntityMetadata,
+  getTechDocsMetadata,
+};
+
+const Wrapper = ({
+  path = '',
+  entityName = {
+    kind: mockEntityMetadata.kind,
+    name: mockEntityMetadata.metadata.name,
+    namespace: mockEntityMetadata.metadata.namespace!!,
+  },
+  children,
+}: {
+  path?: string;
+  entityName?: CompoundEntityRef;
+  children: React.ReactNode;
+}) => (
+  <ThemeProvider theme={lightTheme}>
+    <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
+      <TechDocsMetadataProvider entityName={entityName}>
+        <TechDocsEntityProvider entityName={entityName}>
+          <TechDocsReaderPageProvider path={path} entityName={entityName}>
+            {children}
+          </TechDocsReaderPageProvider>
+        </TechDocsEntityProvider>
+      </TechDocsMetadataProvider>
+    </TestApiProvider>
+  </ThemeProvider>
+);
 
 describe('<TechDocsReaderPageHeader />', () => {
   it('should render a techdocs page header', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+
     await act(async () => {
       const rendered = await renderInTestApp(
-        <TechDocsReaderPageHeader
-          entityRef={{
-            kind: 'test',
-            name: 'test-name',
-            namespace: 'test-namespace',
-          }}
-          entityMetadata={{
-            locationMetadata: {
-              type: 'github',
-              target: 'https://example.com/',
-            },
-            apiVersion: 'v1',
-            kind: 'Component',
-            metadata: {
-              name: 'test',
-            },
-            spec: {
-              owner: 'test',
-            },
-          }}
-          techDocsMetadata={{
-            site_name: 'test-site-name',
-            site_description: 'test-site-desc',
-          }}
-        />,
+        <Wrapper>
+          <TechDocsReaderPageHeader />
+        </Wrapper>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -58,7 +108,11 @@ describe('<TechDocsReaderPageHeader />', () => {
       );
 
       expect(rendered.container.innerHTML).toContain('header');
-      expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
+
+      await waitFor(() => {
+        expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
+      });
+
       expect(rendered.getByText('test-site-desc')).toBeDefined();
     });
   });
@@ -66,13 +120,9 @@ describe('<TechDocsReaderPageHeader />', () => {
   it('should render a techdocs page header even if metadata is missing', async () => {
     await act(async () => {
       const rendered = await renderInTestApp(
-        <TechDocsReaderPageHeader
-          entityRef={{
-            kind: 'test',
-            name: 'test-name',
-            namespace: 'test-namespace',
-          }}
-        />,
+        <Wrapper>
+          <TechDocsReaderPageHeader />
+        </Wrapper>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -86,19 +136,13 @@ describe('<TechDocsReaderPageHeader />', () => {
   });
 
   it('should render a link back to the component page', async () => {
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+
     await act(async () => {
       const rendered = await renderInTestApp(
-        <TechDocsReaderPageHeader
-          entityRef={{
-            kind: 'test',
-            name: 'test-name',
-            namespace: 'test-namespace',
-          }}
-          techDocsMetadata={{
-            site_name: 'test-site-name',
-            site_description: 'test-site-desc',
-          }}
-        />,
+        <Wrapper>
+          <TechDocsReaderPageHeader />
+        </Wrapper>,
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name/*': entityRouteRef,
@@ -107,9 +151,11 @@ describe('<TechDocsReaderPageHeader />', () => {
         },
       );
 
-      expect(rendered.container.innerHTML).toContain(
-        '/catalog/test-namespace/test/test-name',
-      );
+      await waitFor(() => {
+        expect(
+          rendered.getByRole('link', { name: 'test:test-namespace/test-name' }),
+        ).toHaveAttribute('href', '/catalog/test-namespace/test/test-name');
+      });
     });
   });
 });

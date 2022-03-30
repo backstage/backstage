@@ -31,9 +31,8 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { techdocsApiRef } from '../../../api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
 
-type PropsWithEntityName<T = {}> = PropsWithChildren<
-  T & { entityName: CompoundEntityRef }
->;
+type PropsWithEntityName<T = {}> = T &
+  PropsWithChildren<{ entityName: CompoundEntityRef }>;
 
 const initialContextValue = {
   loading: true,
@@ -129,16 +128,16 @@ export const useTechDocsReaderPage = () => {
 };
 
 type TechDocsReaderPageProviderProps = PropsWithEntityName<{
-  path: string;
+  path?: string;
 }>;
 
 export const TechDocsReaderPageProvider = ({
-  path,
+  path = '',
   entityName,
   children,
 }: TechDocsReaderPageProviderProps) => {
-  const metadata = useTechDocsMetadata();
-  const entityMetadata = useEntityMetadata();
+  const { value: entityMetadataValue } = useEntityMetadata();
+  const { value: techdocsMetadataValue } = useTechDocsMetadata();
 
   const [title, setTitle] = useState(defaultTechDocsReaderPageValue.title);
   const [subtitle, setSubtitle] = useState(
@@ -165,8 +164,8 @@ export const TechDocsReaderPageProvider = ({
         {children instanceof Function
           ? children({
               entityRef: entityName,
-              techdocsMetadataValue: metadata.value,
-              entityMetadataValue: entityMetadata.value,
+              entityMetadataValue,
+              techdocsMetadataValue,
             })
           : children}
       </Page>

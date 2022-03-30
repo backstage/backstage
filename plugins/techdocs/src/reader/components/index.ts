@@ -19,12 +19,13 @@ export type {
   TechDocsReaderLayoutProps,
 } from './TechDocsReaderPage';
 export {
-  TechDocsReaderLayout,
-  useTechDocsMetadata,
-  useEntityMetadata,
-  useTechDocsReaderPage,
   useShadowRoot,
   useShadowRootElements,
+  useEntityMetadata,
+  useTechDocsMetadata,
+  useTechDocsReaderPage,
+  TechDocsReaderLayout,
+  TechDocsReaderPageProvider,
 } from './TechDocsReaderPage';
 export * from './TechDocsReaderPageHeader';
 export * from './TechDocsReaderPageContent';

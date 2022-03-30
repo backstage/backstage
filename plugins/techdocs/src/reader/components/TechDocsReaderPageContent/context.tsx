@@ -25,7 +25,8 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTheme, Theme, lighten, alpha } from '@material-ui/core';
+import { useTheme, Theme } from '@material-ui/core';
+import { lighten, alpha } from '@material-ui/core/styles';
 
 import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
