@@ -10,8 +10,7 @@ Website: [https://rollbar.com/](https://rollbar.com/)
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-rollbar
+yarn add --cwd packages/app @backstage/plugin-rollbar
 ```
 
 3. Add to the app `EntityPage` component:

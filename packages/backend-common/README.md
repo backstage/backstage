@@ -7,10 +7,9 @@ error handling and similar.
 
 Add the library to your backend package:
 
-```sh
+```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/backend-common
+yarn add --cwd packages/backend @backstage/backend-common
 ```
 
 then make use of the handlers and logger as necessary:

@@ -73,4 +73,4 @@ When using a custom pattern, the target is composed of five parts:
 
 _Note:_ the path parameter follows the same rules as the search on Azure DevOps
 web interface. For more details visit the
-[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops)
+[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).

@@ -84,8 +84,7 @@ By default, all users are loaded. If you want to filter users based on their att
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend-module-msgraph
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 ```
 
 ### Using the Entity Provider

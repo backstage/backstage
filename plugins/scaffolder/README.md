@@ -20,8 +20,7 @@ the plugin, if you previously removed it.
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-scaffolder
+yarn add --cwd packages/app @backstage/plugin-scaffolder
 ```
 
 ### Add the plugin to your `packages/app`

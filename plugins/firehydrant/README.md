@@ -18,8 +18,7 @@ The [FireHydrant](https://firehydrant.io) plugin brings incident management to B
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-firehydrant
+yarn add --cwd packages/app @backstage/plugin-firehydrant
 ```
 
 2. Add the plugin to `EntityPage.tsx`, inside the `const overviewContent`'s parent `<Grid>` component:

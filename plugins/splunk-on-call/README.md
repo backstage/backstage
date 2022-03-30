@@ -21,8 +21,7 @@ Install the plugin:
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-splunk-on-call
+yarn add --cwd packages/app @backstage/plugin-splunk-on-call
 ```
 
 Add it to your `EntityPage`:

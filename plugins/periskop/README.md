@@ -19,8 +19,7 @@ Each of the entries in the table will direct you to the error details in your de
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-periskop
+yarn add --cwd packages/app @backstage/plugin-periskop
 ```
 
 3. Add to the app `EntityPage` component:

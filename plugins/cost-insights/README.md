@@ -17,8 +17,7 @@ Learn more with the Backstage blog post [New Cost Insights plugin: The engineer'
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-cost-insights
+yarn add --cwd packages/app @backstage/plugin-cost-insights
 ```
 
 ## Setup

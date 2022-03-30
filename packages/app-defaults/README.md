@@ -6,9 +6,9 @@ This package provides a default wiring of a Backstage app that avoids boilerplat
 
 Install the package via Yarn:
 
-```sh
-cd packages/app
-yarn add @backstage/app-defaults
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/app-defaults
 ```
 
 ## Documentation
