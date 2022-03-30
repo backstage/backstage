@@ -328,39 +328,50 @@ data: {"updated":true}
       expect(MockTechDocsCache.get).toBeCalled();
     });
 
-    it('should check entity access when permissions are enabled', async () => {
-      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
-        key === 'permission.enabled' ? true : undefined,
-      );
-      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
-      publisher.docsRouter.mockReturnValue(docsRouter);
+    describe('permissions', () => {
+      it('should only check entity access for html requests', async () => {
+        MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(
+          key => (key === 'permission.enabled' ? true : undefined),
+        );
+        const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+        publisher.docsRouter.mockReturnValue(docsRouter);
 
-      const app = await createApp(outOfTheBoxOptions);
+        const app = await createApp(outOfTheBoxOptions);
 
-      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+        MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
-      const response = await request(app)
-        .get('/static/docs/default/component/test')
-        .send();
+        const responses = await Promise.all([
+          request(app).get('/static/docs/default/component/test/').send(),
+          request(app)
+            .get('/static/docs/default/component/test/index.html')
+            .send(),
+          request(app)
+            .get('/static/docs/default/component/test/icon.png')
+            .send(),
+        ]);
 
-      expect(response.status).toBe(200);
-      expect(MockCachedEntityLoader.prototype.load).toBeCalled();
-    });
+        expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalledTimes(2);
+        expect(docsRouter).toHaveBeenCalledTimes(3);
+        responses.forEach(response => expect(response.status).toBe(200));
+      });
 
-    it('should not return assets without corresponding entity access', async () => {
-      MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(key =>
-        key === 'permission.enabled' ? true : undefined,
-      );
+      it('should not return assets without corresponding entity access', async () => {
+        MockedConfigReader.prototype.getOptionalBoolean.mockImplementation(
+          key => (key === 'permission.enabled' ? true : undefined),
+        );
+        const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+        publisher.docsRouter.mockReturnValue(docsRouter);
 
-      const app = await createApp(outOfTheBoxOptions);
+        const app = await createApp(outOfTheBoxOptions);
 
-      MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
+        MockCachedEntityLoader.prototype.load.mockResolvedValue(undefined);
 
-      const response = await request(app)
-        .get('/static/docs/default/component/test')
-        .send();
+        const response = await request(app)
+          .get('/static/docs/default/component/test/index.html')
+          .send();
 
-      expect(response.status).toBe(404);
+        expect(response.status).toBe(404);
+      });
     });
   });
 });

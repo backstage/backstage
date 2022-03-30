@@ -257,6 +257,11 @@ export async function createRouter(
     router.use(
       '/static/docs/:namespace/:kind/:name',
       async (req, _res, next) => {
+        if (!req.path.endsWith('/') && !req.path.endsWith('/index.html')) {
+          next();
+          return;
+        }
+
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
         const token = getBearerToken(req.headers.authorization);
