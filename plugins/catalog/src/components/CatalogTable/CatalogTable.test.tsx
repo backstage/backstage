@@ -296,17 +296,6 @@ describe('CatalogTable component', () => {
       );
       const columnHeaderLabels = columnHeader.map(c => c.textContent);
       expect(columnHeaderLabels).toEqual(expectedColumns);
-
-      // expect(columnHeaderLabels).toEqual([
-      //   'Name',
-      //   'System',
-      //   'Owner',
-      //   'Type',
-      //   'Lifecycle',
-      //   'Description',
-      //   'Tags',
-      //   'Actions'
-      // ]);
     },
     20_000,
   );
