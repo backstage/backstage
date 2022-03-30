@@ -17,12 +17,14 @@ import {
   FactLifecycle,
   FactRetriever,
   FactRetrieverContext,
+  FactRetrieverRegistration,
   TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
-import { schedule, validate, ScheduledTask } from 'node-cron';
 import { Logger } from 'winston';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { Duration } from 'luxon';
 
 function randomDailyCron() {
   const rand = (min: number, max: number) =>
@@ -37,27 +39,33 @@ function duration(startTimestamp: [number, number]): string {
 }
 
 export class FactRetrieverEngine {
-  private scheduledJobs = new Map<string, ScheduledTask>();
-
-  constructor(
+  private constructor(
     private readonly repository: TechInsightsStore,
     private readonly factRetrieverRegistry: FactRetrieverRegistry,
     private readonly factRetrieverContext: FactRetrieverContext,
     private readonly logger: Logger,
+    private readonly scheduler: PluginTaskScheduler,
     private readonly defaultCadence?: string,
+    private readonly defaultTimeout?: Duration,
   ) {}
 
-  static async create({
-    repository,
-    factRetrieverRegistry,
-    factRetrieverContext,
-    defaultCadence,
-  }: {
+  static async create(options: {
     repository: TechInsightsStore;
     factRetrieverRegistry: FactRetrieverRegistry;
     factRetrieverContext: FactRetrieverContext;
+    scheduler: PluginTaskScheduler;
     defaultCadence?: string;
+    defaultTimeout?: Duration;
   }) {
+    const {
+      repository,
+      factRetrieverRegistry,
+      factRetrieverContext,
+      scheduler,
+      defaultCadence,
+      defaultTimeout,
+    } = options;
+
     await Promise.all(
       factRetrieverRegistry
         .listRetrievers()
@@ -69,39 +77,50 @@ export class FactRetrieverEngine {
       factRetrieverRegistry,
       factRetrieverContext,
       factRetrieverContext.logger,
+      scheduler,
       defaultCadence,
+      defaultTimeout,
     );
   }
 
-  schedule() {
+  async schedule() {
     const registrations = this.factRetrieverRegistry.listRegistrations();
     const newRegs: string[] = [];
-    registrations.forEach(registration => {
-      const { factRetriever, cadence, lifecycle } = registration;
-      if (!this.scheduledJobs.has(factRetriever.id)) {
+
+    await Promise.all(
+      registrations.map(async registration => {
+        const { factRetriever, cadence, lifecycle, timeout } = registration;
         const cronExpression =
           cadence || this.defaultCadence || randomDailyCron();
-        if (!validate(cronExpression)) {
+        const timeLimit =
+          timeout || this.defaultTimeout || Duration.fromObject({ minutes: 5 });
+        try {
+          await this.scheduler.scheduleTask({
+            id: factRetriever.id,
+            frequency: { cron: cronExpression },
+            fn: this.createFactRetrieverHandler(factRetriever, lifecycle),
+            timeout: timeLimit,
+          });
+          newRegs.push(factRetriever.id);
+        } catch (e) {
           this.logger.warn(
-            `Validation failed for cron expression ${cronExpression} when trying to schedule fact retriever ${factRetriever.id}`,
+            `Failed to schedule fact retriever ${factRetriever.id}, ${e}`,
           );
-          return;
         }
-        const job = schedule(
-          cronExpression,
-          this.createFactRetrieverHandler(factRetriever, lifecycle),
-        );
-        this.scheduledJobs.set(factRetriever.id, job);
-        newRegs.push(factRetriever.id);
-      }
-    });
+      }),
+    );
+
     this.logger.info(
-      `Scheduled ${newRegs.length} fact retrievers to Fact Retriever Engine.`,
+      `Scheduled ${newRegs.length}/${registrations.length} fact retrievers into the tech-insights engine`,
     );
   }
 
-  getJob(ref: string) {
-    return this.scheduledJobs.get(ref);
+  getJobRegistration(ref: string): FactRetrieverRegistration {
+    return this.factRetrieverRegistry.get(ref);
+  }
+
+  async triggerJob(ref: string): Promise<void> {
+    await this.scheduler.triggerTask(ref);
   }
 
   private createFactRetrieverHandler(

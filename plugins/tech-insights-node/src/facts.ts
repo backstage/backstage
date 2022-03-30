@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { DateTime, DurationLike } from 'luxon';
+import { DateTime, Duration, DurationLike } from 'luxon';
 import { Config } from '@backstage/config';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Logger } from 'winston';
@@ -242,6 +241,13 @@ export type FactRetrieverRegistration = {
    *
    */
   cadence?: string;
+
+  /**
+   * A duration to determine how long the fact retriever should be allowed to run,
+   * defaults to 5 minutes.
+   *
+   */
+  timeout?: Duration;
 
   /**
    * Fact lifecycle definition

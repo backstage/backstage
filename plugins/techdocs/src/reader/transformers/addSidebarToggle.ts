@@ -34,10 +34,11 @@ export const addSidebarToggle = (): Transformer => {
 
     const toggleSidebar = mkdocsToggleSidebar.cloneNode() as HTMLLabelElement;
     ReactDOM.render(React.createElement(MenuIcon), toggleSidebar);
-    toggleSidebar.style.paddingLeft = '5px';
-    toggleSidebar.classList.add('md-content__button');
-    toggleSidebar.title = 'Toggle Sidebar';
     toggleSidebar.id = 'toggle-sidebar';
+    toggleSidebar.title = 'Toggle Sidebar';
+    toggleSidebar.classList.add('md-content__button');
+    toggleSidebar.style.setProperty('padding', '0 0 0 5px');
+    toggleSidebar.style.setProperty('margin', '0.4rem 0 0.4rem 0.4rem');
     article?.prepend(toggleSidebar);
     return dom;
   };

@@ -30,10 +30,22 @@ export const useCalendarsQuery = ({ enabled }: Options) => {
 
   return useQuery(
     ['calendars'],
-    async () =>
-      calendarApi.getCalendars({
-        minAccessRole: 'reader',
-      }),
+    async () => {
+      const calendars = [];
+      let token = '';
+      do {
+        const { nextPageToken = '', items = [] } =
+          await calendarApi.getCalendars({
+            maxResults: 100,
+            minAccessRole: 'reader',
+            pageToken: token,
+          });
+        token = nextPageToken;
+        calendars.push(...items);
+      } while (token);
+
+      return calendars;
+    },
     {
       enabled,
       keepPreviousData: true,

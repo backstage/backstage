@@ -30,11 +30,13 @@ import {
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  AuthorizeDecision,
-  AuthorizeQuery,
-  Identified,
-  AuthorizeRequest,
-  AuthorizeResponse,
+  EvaluatePermissionResponse,
+  EvaluatePermissionRequest,
+  IdentifiedPermissionMessage,
+  EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponseBatch,
+  isResourcePermission,
+  PermissionAttributes,
 } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -46,28 +48,43 @@ import { memoize } from 'lodash';
 import DataLoader from 'dataloader';
 import { Config } from '@backstage/config';
 
-const querySchema: z.ZodSchema<Identified<AuthorizeQuery>> = z.object({
-  id: z.string(),
-  resourceRef: z.string().optional(),
-  permission: z.object({
-    name: z.string(),
-    resourceType: z.string().optional(),
-    attributes: z.object({
-      action: z
-        .union([
-          z.literal('create'),
-          z.literal('read'),
-          z.literal('update'),
-          z.literal('delete'),
-        ])
-        .optional(),
-    }),
-  }),
+const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
+  action: z
+    .union([
+      z.literal('create'),
+      z.literal('read'),
+      z.literal('update'),
+      z.literal('delete'),
+    ])
+    .optional(),
 });
 
-const requestSchema: z.ZodSchema<AuthorizeRequest> = z.object({
-  items: z.array(querySchema),
+const permissionSchema = z.union([
+  z.object({
+    type: z.literal('basic'),
+    name: z.string(),
+    attributes: attributesSchema,
+  }),
+  z.object({
+    type: z.literal('resource'),
+    name: z.string(),
+    attributes: attributesSchema,
+    resourceType: z.string(),
+  }),
+]);
+
+const evaluatePermissionRequestSchema: z.ZodSchema<
+  IdentifiedPermissionMessage<EvaluatePermissionRequest>
+> = z.object({
+  id: z.string(),
+  resourceRef: z.string().optional(),
+  permission: permissionSchema,
 });
+
+const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionRequestBatch> =
+  z.object({
+    items: z.array(evaluatePermissionRequestSchema),
+  });
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -84,12 +101,12 @@ export interface RouterOptions {
 }
 
 const handleRequest = async (
-  requests: Identified<AuthorizeQuery>[],
+  requests: IdentifiedPermissionMessage<EvaluatePermissionRequest>[],
   user: BackstageIdentityResponse | undefined,
   policy: PermissionPolicy,
   permissionIntegrationClient: PermissionIntegrationClient,
   authHeader?: string,
-): Promise<Identified<AuthorizeDecision>[]> => {
+): Promise<IdentifiedPermissionMessage<EvaluatePermissionResponse>[]> => {
   const applyConditionsLoaderFor = memoize((pluginId: string) => {
     return new DataLoader<
       ApplyConditionsRequestEntry,
@@ -107,6 +124,12 @@ const handleRequest = async (
             id,
             ...decision,
           };
+        }
+
+        if (!isResourcePermission(request.permission)) {
+          throw new Error(
+            `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
+          );
         }
 
         if (decision.resourceType !== request.permission.resourceType) {
@@ -163,15 +186,17 @@ export async function createRouter(
   router.post(
     '/authorize',
     async (
-      req: Request<AuthorizeRequest>,
-      res: Response<AuthorizeResponse>,
+      req: Request<EvaluatePermissionRequestBatch>,
+      res: Response<EvaluatePermissionResponseBatch>,
     ) => {
       const token = getBearerTokenFromAuthorizationHeader(
         req.header('authorization'),
       );
       const user = token ? await identity.authenticate(token) : undefined;
 
-      const parseResult = requestSchema.safeParse(req.body);
+      const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
+        req.body,
+      );
 
       if (!parseResult.success) {
         throw new InputError(parseResult.error.toString());

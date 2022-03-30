@@ -16,11 +16,11 @@
 
 import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  PermissionPolicy,
+  AuthorizeResult,
   PolicyDecision,
-} from '@backstage/plugin-permission-node';
+} from '@backstage/plugin-permission-common';
+import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 

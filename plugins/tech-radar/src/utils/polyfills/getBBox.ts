@@ -34,6 +34,7 @@ class GetBBoxPolyfill {
 
     Object.defineProperty(window.Element.prototype, 'getBBox', {
       writable: false,
+      configurable: true,
       value: () => ({ x, y, width, height }),
     });
   }

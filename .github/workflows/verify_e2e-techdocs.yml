@@ -1,11 +1,12 @@
 name: E2E Test Techdocs
 on:
   pull_request:
-    paths-ignore:
-      - '.changeset/**'
-      - 'contrib/**'
-      - 'docs/**'
-      - 'microsite/**'
+    paths:
+      - 'yarn.lock'
+      - '.github/workflows/verify_e2e-techdocs.yml'
+      - 'packages/techdocs-cli/**'
+      - 'packages/techdocs-cli-embedded-app/**'
+      - 'plugins/techdocs/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

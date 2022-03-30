@@ -18,4 +18,10 @@ export {
   readGerritIntegrationConfig,
   readGerritIntegrationConfigs,
 } from './config';
+export {
+  getGerritFileContentsApiUrl,
+  getGerritRequestOptions,
+  parseGerritJsonResponse,
+} from './core';
+
 export type { GerritIntegrationConfig } from './config';

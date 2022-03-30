@@ -1,5 +1,56 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 8012ac46a0: **BREAKING (alpha api):** Replace `createCatalogPolicyDecision` export with `createCatalogConditionalDecision`, which accepts a permission parameter of type `ResourcePermission<'catalog-entity'>` along with conditions. The permission passed is expected to be the handled permission in `PermissionPolicy#handle`, whose type must first be narrowed using methods like `isPermission` and `isResourcePermission`:
+
+  ```typescript
+  class TestPermissionPolicy implements PermissionPolicy {
+    async handle(
+      request: PolicyQuery<Permission>,
+      _user?: BackstageIdentityResponse,
+    ): Promise<PolicyDecision> {
+      if (
+        // Narrow type of `request.permission` to `ResourcePermission<'catalog-entity'>
+        isResourcePermission(request.permission, RESOURCE_TYPE_CATALOG_ENTITY)
+      ) {
+        return createCatalogConditionalDecision(
+          request.permission,
+          catalogConditions.isEntityOwner(
+            _user?.identity.ownershipEntityRefs ?? [],
+          ),
+        );
+      }
+
+      return {
+        result: AuthorizeResult.ALLOW,
+      };
+  ```
+
+- 8012ac46a0: **BREAKING:** Mark CatalogBuilder#addPermissionRules as @alpha.
+- fb02d2d94d: export `locationSpecToLocationEntity`
+
+### Patch Changes
+
+- ada4446733: Specify type of `visibilityPermission` property on collators and collator factories.
+- 1691c6c5c2: Clarify that config locations that emit User and Group kinds now need to declare so in the `catalog.locations.[].rules`
+- 8012ac46a0: Handle changes to @alpha permission-related types.
+
+  - All exported permission rules and conditions now have a `resourceType`.
+  - `createCatalogConditionalDecision` now expects supplied conditions to have the appropriate `resourceType`.
+  - `createCatalogPermissionRule` now expects `resourceType` as part of the supplied rule object.
+  - Introduce new `CatalogPermissionRule` convenience type.
+
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/plugin-permission-common@0.6.0-next.0
+  - @backstage/plugin-permission-node@0.6.0-next.1
+  - @backstage/plugin-catalog-common@1.0.1-next.1
+  - @backstage/backend-common@0.13.2-next.1
+  - @backstage/plugin-search-common@0.3.3-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes
@@ -1394,6 +1445,8 @@
     locations:
       - type: github-multi-org
         target: https://github.myorg.com
+        rules:
+          - allow: [User, Group]
 
     processors:
       githubMultiOrg:

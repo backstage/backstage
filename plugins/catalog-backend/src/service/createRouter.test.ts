@@ -26,7 +26,10 @@ import { LocationInput, LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createRouter } from './createRouter';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  createPermissionIntegrationRouter,
+  createPermissionRule,
+} from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 
 describe('createRouter readonly disabled', () => {
@@ -568,12 +571,13 @@ describe('NextRouter permissioning', () => {
   let app: express.Express;
   let refreshService: RefreshService;
 
-  const fakeRule = {
+  const fakeRule = createPermissionRule({
     name: 'FAKE_RULE',
     description: 'fake rule',
+    resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
     apply: () => true,
     toQuery: () => ({ key: '', values: [] }),
-  };
+  });
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -631,7 +635,11 @@ describe('NextRouter permissioning', () => {
           id: '123',
           resourceType: 'catalog-entity',
           resourceRef: 'component:default/spidey-sense',
-          conditions: { rule: 'FAKE_RULE', params: ['user:default/spiderman'] },
+          conditions: {
+            rule: 'FAKE_RULE',
+            resourceType: 'catalog-entity',
+            params: ['user:default/spiderman'],
+          },
         },
       ],
     };

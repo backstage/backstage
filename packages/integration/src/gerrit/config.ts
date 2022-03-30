@@ -39,6 +39,14 @@ export type GerritIntegrationConfig = {
   baseUrl?: string;
 
   /**
+   * Optional base url for Gitiles. This is needed for creating a valid
+   * user-friendly url that can be used for browsing the content of the
+   * provider. If not set a default value will be created in the same way
+   * as the "baseUrl" option.
+   */
+  gitilesBaseUrl?: string;
+
+  /**
    * The username to use for requests to gerrit.
    */
   username?: string;
@@ -61,6 +69,7 @@ export function readGerritIntegrationConfig(
 ): GerritIntegrationConfig {
   const host = config.getString('host');
   let baseUrl = config.getOptionalString('baseUrl');
+  let gitilesBaseUrl = config.getOptionalString('gitilesBaseUrl');
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
 
@@ -72,16 +81,26 @@ export function readGerritIntegrationConfig(
     throw new Error(
       `Invalid Gerrit integration config, '${baseUrl}' is not a valid baseUrl`,
     );
+  } else if (gitilesBaseUrl && !isValidUrl(gitilesBaseUrl)) {
+    throw new Error(
+      `Invalid Gerrit integration config, '${gitilesBaseUrl}' is not a valid gitilesBaseUrl`,
+    );
   }
   if (baseUrl) {
     baseUrl = trimEnd(baseUrl, '/');
   } else {
     baseUrl = `https://${host}`;
   }
+  if (gitilesBaseUrl) {
+    gitilesBaseUrl = trimEnd(gitilesBaseUrl, '/');
+  } else {
+    gitilesBaseUrl = `https://${host}`;
+  }
 
   return {
     host,
     baseUrl,
+    gitilesBaseUrl,
     username,
     password,
   };

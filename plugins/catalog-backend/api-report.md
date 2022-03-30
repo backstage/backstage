@@ -8,7 +8,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { ConditionalPolicyDecision } from '@backstage/plugin-permission-node';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
@@ -16,6 +16,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
+import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
@@ -25,6 +26,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TokenManager } from '@backstage/backend-common';
@@ -109,13 +111,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 export class CatalogBuilder {
   addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder;
   addEntityProvider(...providers: EntityProvider[]): CatalogBuilder;
-  addPermissionRules(
-    ...permissionRules: PermissionRule<
-      Entity,
-      EntitiesSearchFilter,
-      unknown[]
-    >[]
-  ): void;
+  // @alpha
+  addPermissionRules(...permissionRules: CatalogPermissionRule[]): void;
   addProcessor(...processors: CatalogProcessor[]): CatalogBuilder;
   build(): Promise<{
     processingEngine: CatalogProcessingEngine;
@@ -143,23 +140,37 @@ export const catalogConditions: Conditions<{
   hasAnnotation: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [annotation: string]
   >;
-  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasLabel: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [label: string]
+  >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
-  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityKind: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [kinds: string[]]
+  >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [claims: string[]]
   >;
 }>;
@@ -172,6 +183,10 @@ export type CatalogEnvironment = {
   reader: UrlReader;
   permissions: PermissionAuthorizer;
 };
+
+// @alpha
+export type CatalogPermissionRule<TParams extends unknown[] = unknown[]> =
+  PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @public (undocumented)
 export interface CatalogProcessingEngine {
@@ -277,14 +292,17 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 }
 
 // @alpha
-export const createCatalogPermissionRule: <TParams extends unknown[]>(
-  rule: PermissionRule<Entity, EntitiesSearchFilter, TParams>,
-) => PermissionRule<Entity, EntitiesSearchFilter, TParams>;
+export const createCatalogConditionalDecision: (
+  permission: ResourcePermission<'catalog-entity'>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'catalog-entity', unknown[]>
+  >,
+) => ConditionalPolicyDecision;
 
 // @alpha
-export const createCatalogPolicyDecision: (
-  conditions: PermissionCriteria<PermissionCondition<unknown[]>>,
-) => ConditionalPolicyDecision;
+export const createCatalogPermissionRule: <TParams extends unknown[]>(
+  rule: PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>,
+) => PermissionRule<Entity, EntitiesSearchFilter, 'catalog-entity', TParams>;
 
 // @public
 export function createRandomProcessingInterval(options: {
@@ -459,6 +477,12 @@ export type LocationSpec = {
 };
 
 // @public (undocumented)
+export function locationSpecToLocationEntity(opts: {
+  location: LocationSpec;
+  parentEntity?: Entity;
+}): LocationEntityV1alpha1;
+
+// @public (undocumented)
 export function parseEntityYaml(
   data: Buffer,
   location: LocationSpec,
@@ -469,23 +493,37 @@ export const permissionRules: {
   hasAnnotation: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [annotation: string]
   >;
-  hasLabel: PermissionRule<Entity, EntitiesSearchFilter, [label: string]>;
+  hasLabel: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [label: string]
+  >;
   hasMetadata: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
   hasSpec: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [key: string, value?: string | undefined]
   >;
-  isEntityKind: PermissionRule<Entity, EntitiesSearchFilter, [kinds: string[]]>;
+  isEntityKind: PermissionRule<
+    Entity,
+    EntitiesSearchFilter,
+    'catalog-entity',
+    [kinds: string[]]
+  >;
   isEntityOwner: PermissionRule<
     Entity,
     EntitiesSearchFilter,
+    'catalog-entity',
     [claims: string[]]
   >;
 };

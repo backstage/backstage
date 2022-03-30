@@ -365,4 +365,6 @@ catalog:
   locations:
     - type: ldap-org
       target: ldaps://ds.example.net
+      rules:
+        - allow: [User, Group]
 ```

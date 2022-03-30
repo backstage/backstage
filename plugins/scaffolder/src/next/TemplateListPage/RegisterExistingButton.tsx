@@ -39,7 +39,9 @@ export type RegisterExistingButtonProps = {
  */
 export const RegisterExistingButton = (props: RegisterExistingButtonProps) => {
   const { title, to } = props;
-  const { allowed } = usePermission(catalogEntityCreatePermission);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
   const isXSScreen = useMediaQuery<BackstageTheme>(theme =>
     theme.breakpoints.down('xs'),
   );

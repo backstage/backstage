@@ -1,0 +1,95 @@
+name: Automate changeset feedback
+on:
+  pull_request_target:
+
+permissions:
+  pull-requests: write
+  actions: none
+  checks: none
+  contents: none
+  deployments: none
+  issues: none
+  packages: none
+  pages: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
+jobs:
+  feedback:
+    # prevent running towards forks and version packages
+    if: github.repository == 'backstage/backstage' && github.event.pull_request.user.login != 'backstage-service'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Fetch the commit that's merged into the base rather than the target ref
+          # This will let us diff only the contents of the PR, without fetching more history
+          ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
+
+      - name: fetch base
+        run: git fetch --depth 1 origin ${{ github.base_ref }}
+
+        # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
+      - name: Generate Feedback
+        id: generate-feedback
+        run: |
+          rm -f generate.js
+          wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-changeset-feedback.js 1>&2
+          node generate.js FETCH_HEAD > feedback.txt
+
+      - name: Post Feedback
+        uses: actions/github-script@v5
+        env:
+          ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const owner = "backstage";
+            const repo = "backstage";
+            const marker = "<!-- changeset-feedback -->";
+            const feedback = require('fs').readFileSync('feedback.txt', 'utf8');
+            const issue_number = Number(process.env.ISSUE_NUMBER);
+            const body = feedback.trim() ? feedback + marker : undefined
+
+            const existingComments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+            });
+
+            const existingComment = existingComments.find((c) =>
+              c.user.login === "github-actions[bot]" &&
+              c.body.includes(marker)
+            );
+
+            if (existingComment) {
+              if (body) {
+                if (existingComment.body !== body) {
+                  console.log(`updating existing comment in #${issue_number}`);
+                  await github.rest.issues.updateComment({
+                    owner,
+                    repo,
+                    comment_id: existingComment.id,
+                    body,
+                  });
+                } else {
+                  console.log(`skipped update of identical comment in #${issue_number}`);
+                }
+              } else {
+                console.log(`removing comment from #${issue_number}`);
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: existingComment.id,
+                  body,
+                });
+              }
+            } else if (body) {
+              console.log(`creating comment for #${issue_number}`);
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }

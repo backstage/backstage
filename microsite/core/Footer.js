@@ -51,7 +51,7 @@ class Footer extends React.Component {
             <a href="https://mailchi.mp/spotify/backstage-community">
               Subscribe to our newsletter
             </a>
-            <a href="https://www.cncf.io/sandbox-projects/">CNCF Sandbox</a>
+            <a href="https://www.cncf.io/projects/">CNCF Incubation</a>
           </div>
           <div>
             <h5>More</h5>

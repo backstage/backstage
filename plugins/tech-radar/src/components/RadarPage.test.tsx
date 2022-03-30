@@ -59,7 +59,7 @@ describe('RadarPage', () => {
       svgProps: { 'data-testid': 'tech-radar-svg' },
     };
 
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, findByTestId } = render(
       wrapInTestApp(
         <ThemeProvider theme={lightTheme}>
           <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
@@ -74,7 +74,7 @@ describe('RadarPage', () => {
     });
     expect(getByTestId('progress')).toBeInTheDocument();
 
-    await waitFor(() => queryByTestId('tech-radar-svg'));
+    await findByTestId('tech-radar-svg');
     jest.useRealTimers();
   });
 
@@ -86,7 +86,7 @@ describe('RadarPage', () => {
     };
     jest.spyOn(mockClient, 'load');
 
-    const { getByText, getByTestId } = await renderInTestApp(
+    const { getByText, findByTestId } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
         <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
           <RadarPage {...techRadarProps} />
@@ -94,12 +94,10 @@ describe('RadarPage', () => {
       </ThemeProvider>,
     );
 
-    await waitFor(() => getByTestId('tech-radar-svg'));
-
+    await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
     expect(
       getByText('Pick the recommended technologies for your projects'),
     ).toBeInTheDocument();
-    expect(getByTestId('tech-radar-svg')).toBeInTheDocument();
     expect(mockClient.load).toBeCalledWith(undefined);
   });
 
@@ -112,7 +110,7 @@ describe('RadarPage', () => {
     };
     jest.spyOn(mockClient, 'load');
 
-    const { getByTestId } = await renderInTestApp(
+    const { findByTestId } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
         <TestApiProvider apis={[[techRadarApiRef, mockClient]]}>
           <RadarPage {...techRadarProps} />
@@ -120,9 +118,7 @@ describe('RadarPage', () => {
       </ThemeProvider>,
     );
 
-    await waitFor(() => getByTestId('tech-radar-svg'));
-
-    expect(getByTestId('tech-radar-svg')).toBeInTheDocument();
+    await expect(findByTestId('tech-radar-svg')).resolves.toBeInTheDocument();
     expect(mockClient.load).toBeCalledWith('myId');
   });
 

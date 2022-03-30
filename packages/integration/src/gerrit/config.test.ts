@@ -56,6 +56,7 @@ describe('readGerritIntegrationConfig', () => {
       buildConfig({
         host: 'a.com',
         baseUrl: 'https://a.com/api',
+        gitilesBaseUrl: 'https://a.com/git',
         username: 'u',
         password: 'p',
       }),
@@ -63,6 +64,7 @@ describe('readGerritIntegrationConfig', () => {
     expect(output).toEqual({
       host: 'a.com',
       baseUrl: 'https://a.com/api',
+      gitilesBaseUrl: 'https://a.com/git',
       username: 'u',
       password: 'p',
     });
@@ -77,6 +79,7 @@ describe('readGerritIntegrationConfig', () => {
     expect(output).toEqual({
       host: 'a.com',
       baseUrl: 'https://a.com',
+      gitilesBaseUrl: 'https://a.com',
       username: undefined,
       password: undefined,
     });
@@ -107,6 +110,7 @@ describe('readGerritIntegrationConfig', () => {
     ).toEqual({
       host: 'a.com',
       baseUrl: 'https://a.com/gerrit',
+      gitilesBaseUrl: 'https://a.com',
     });
   });
 });
@@ -116,7 +120,7 @@ describe('readGerritIntegrationConfigs', () => {
     return data.map(item => new ConfigReader(item));
   }
 
-  it('reads all values', () => {
+  it('reads multiple configs', () => {
     const output = readGerritIntegrationConfigs(
       buildConfig([
         {
@@ -135,12 +139,14 @@ describe('readGerritIntegrationConfigs', () => {
       {
         host: 'a.com',
         baseUrl: 'https://a.com/api',
+        gitilesBaseUrl: 'https://a.com',
         username: 'u',
         password: 'p',
       },
       {
         host: 'b.com',
         baseUrl: 'https://b.com/api',
+        gitilesBaseUrl: 'https://b.com',
         username: undefined,
         password: undefined,
       },

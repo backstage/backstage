@@ -24,7 +24,7 @@ import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
 import { CronTime } from 'cron';
 
-const WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
+const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
 /**
  * Performs the actual work of a task.
@@ -32,17 +32,13 @@ const WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
  * @private
  */
 export class TaskWorker {
-  private readonly taskId: string;
-  private readonly fn: TaskFunction;
-  private readonly knex: Knex;
-  private readonly logger: Logger;
-
-  constructor(taskId: string, fn: TaskFunction, knex: Knex, logger: Logger) {
-    this.taskId = taskId;
-    this.fn = fn;
-    this.knex = knex;
-    this.logger = logger;
-  }
+  constructor(
+    private readonly taskId: string,
+    private readonly fn: TaskFunction,
+    private readonly knex: Knex,
+    private readonly logger: Logger,
+    private readonly workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
+  ) {}
 
   async start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
     try {
@@ -63,7 +59,7 @@ export class TaskWorker {
             break;
           }
 
-          await sleep(WORK_CHECK_FREQUENCY, options?.signal);
+          await sleep(this.workCheckFrequency, options?.signal);
         }
         this.logger.info(`Task worker finished: ${this.taskId}`);
       } catch (e) {

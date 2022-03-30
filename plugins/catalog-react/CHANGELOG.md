@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-react
 
+## 1.0.1-next.1
+
+### Patch Changes
+
+- 0ffd88a90e: Prevent permissions with types other than `ResourcePermission<'catalog-entity'>` from being used with the `useEntityPermission` hook.
+- 4af82967f4: Decouple tags picker from backend entities
+
+  `EntityTagPicker` fetches all the tags independently and it doesn't require all the entities to be available client side.
+
+- 37b04b5a5e: Removed broken link from Labels section of entity inspector.
+- 4431873583: Update `usePermission` usage.
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/plugin-permission-react@0.4.0-next.0
+  - @backstage/plugin-permission-common@0.6.0-next.0
+  - @backstage/plugin-catalog-common@1.0.1-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

@@ -128,6 +128,8 @@ export const EntityRelationsGraph: ({
   relationPairs,
   className,
   zoom,
+  renderNode,
+  renderLabel,
 }: {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number | undefined;
@@ -142,6 +144,10 @@ export const EntityRelationsGraph: ({
   relationPairs?: RelationPairs | undefined;
   className?: string | undefined;
   zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+  renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode> | undefined;
+  renderLabel?:
+    | DependencyGraphTypes.RenderLabelFunction<EntityEdge>
+    | undefined;
 }) => JSX.Element;
 
 // @public
