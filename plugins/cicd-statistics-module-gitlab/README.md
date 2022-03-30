@@ -1,6 +1,6 @@
 # cicd-statistics-module-gitlab
 
-This is an extension module to the `cicd-statistics` plugin, providing a `CicdStatisticsApiGitlab` that you can use to extract the cicd statistics from your Gitlab repository.
+This is an extension module to the `cicd-statistics` plugin, providing a `CicdStatisticsApiGitlab` that you can use to extract the CI/CD statistics from your Gitlab repository.
 
 ## Getting started
 
