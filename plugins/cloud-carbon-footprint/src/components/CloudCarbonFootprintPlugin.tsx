@@ -27,7 +27,11 @@ import {
   TabbedCard,
   TabbedLayout,
 } from '@backstage/core-components';
-import { DiscoveryApi, discoveryApiRef, useApi, } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  discoveryApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 import { FlatRoutes } from '@backstage/core-app-api';
 import moment from 'moment';
@@ -42,20 +46,27 @@ import {
   RecommendationsFilterBar,
   RecommendationsTable,
   useFootprintData,
-  useRecommendationData
+  useRecommendationData,
 } from '@cloud-carbon-footprint/client';
 
-const Wrapper = ({ children, error }: PropsWithChildren<{ error: Error | null }>) => (
+const Wrapper = ({
+  children,
+  error,
+}: PropsWithChildren<{ error: Error | null }>) => (
   <Page themeId="tool">
     <Header title="Cloud Carbon Footprint" type="tool">
-      <HeaderLabel label="Owner" value="Team X"/>
-      <HeaderLabel label="Lifecycle" value="Alpha"/>
+      <HeaderLabel label="Owner" value="Team X" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
-      {error && <p><ErrorPanel error={error}/></p>}
+      {error && (
+        <p>
+          <ErrorPanel error={error} />
+        </p>
+      )}
       <ThemeProvider theme={determineTheme()}>
         <FlatRoutes>
-          <Route path="/*" element={<>{children}</>}/>
+          <Route path="/*" element={<>{children}</>} />
         </FlatRoutes>
       </ThemeProvider>
     </Content>
@@ -71,31 +82,27 @@ export const CloudCarbonFootprintPlugin = () => {
   const [useKilograms, setUseKilograms] = useState(false);
 
   const endDate: moment.Moment = moment.utc();
-  const startDate: moment.Moment = moment.utc().subtract(2, 'years')
+  const startDate: moment.Moment = moment.utc().subtract(2, 'years');
   const footprint = useFootprintData({ baseUrl, startDate, endDate });
   const recommendations = useRecommendationData({ baseUrl });
 
-  const error: Error | null = footprint.error || recommendations.error
+  const error: Error | null = footprint.error || recommendations.error;
   return (
     <Wrapper error={error}>
       <TabbedLayout>
         <TabbedLayout.Route path="/emissions" title="Emissions">
           <Grid container spacing={3} direction="column">
             <Grid item>
-              <EmissionsFilterBar
-                {...footprint.filterBarProps}
-              />
+              <EmissionsFilterBar {...footprint.filterBarProps} />
             </Grid>
             <Grid item>
               <TabbedCard title="Estimated Emissions">
                 <CardTab label="Cloud Usage">
-                  <EmissionsOverTimeCard
-                    data={footprint.filteredData}
-                  />
+                  <EmissionsOverTimeCard data={footprint.filteredData} />
                 </CardTab>
                 <CardTab label="Breakdown">
                   <Grid container direction="row" spacing={3}>
-                    <CarbonComparisonCard data={footprint.filteredData}/>
+                    <CarbonComparisonCard data={footprint.filteredData} />
                     <EmissionsBreakdownCard
                       data={footprint.filteredData}
                       baseUrl={baseUrl}
@@ -125,13 +132,13 @@ export const CloudCarbonFootprintPlugin = () => {
         </TabbedLayout.Route>
         <TabbedLayout.Route path="/carbon-map" title="Carbon Intensity Map">
           <Grid container spacing={3} direction="column">
-            <CarbonIntensityMap/>
+            <CarbonIntensityMap />
           </Grid>
         </TabbedLayout.Route>
         <TabbedLayout.Route path="/methodology" title="Methodology">
           <Grid container spacing={3} direction="column">
             <InfoCard title="How do we get our carbon estimates?">
-              <Methodology/>
+              <Methodology />
             </InfoCard>
           </Grid>
         </TabbedLayout.Route>
