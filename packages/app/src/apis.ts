@@ -33,10 +33,7 @@ import {
   createApiFactory,
   errorApiRef,
   githubAuthApiRef,
-  gitlabAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { cicdStatisticsApiRef } from '@backstage/plugin-cicd-statistics';
-import { CicdStatisticsApiGitlab } from '@backstage/plugin-cicd-statistics-module-gitlab';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -65,12 +62,6 @@ export const apis: AnyApiFactory[] = [
         }),
       ]),
   }),
-  createApiFactory({
-    api: cicdStatisticsApiRef,
-    deps: { gitlabAuthApi: gitlabAuthApiRef },
-    factory({ gitlabAuthApi }) {
-      return new CicdStatisticsApiGitlab(gitlabAuthApi);
-    },
-  }),
+
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
 ];

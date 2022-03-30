@@ -76,7 +76,7 @@ export function pipelinesToBuilds(
  *
  * @remarks
  *
- * The Gitlab API can only return the job (sub-stage) of a pipeline and not a whole stage a pipeline
+ * The Gitlab API can only return the job (sub-stage) of a pipeline and not a whole stage
  * The job does return from which stage it is
  * So, for the stage name we use the parent stage name and in the sub-stages we add the current job
  * In the end the cicd-statistics plugin will calculate the right durations for each stage
