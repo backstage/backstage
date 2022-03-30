@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AbortController } from 'node-abort-controller';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
@@ -254,6 +255,60 @@ describe('TaskWorker', () => {
       await expect(worker3.tryReleaseTask('ticket', settings)).resolves.toBe(
         false,
       );
+    },
+    60_000,
+  );
+
+  it.each(databases.eachSupportedId())(
+    'respects initialDelayDuration per worker, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const abortFirst = new AbortController();
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: 'PT0.3S',
+        cadence: 'PT0.1S',
+        timeoutAfterDuration: 'PT10S',
+      };
+
+      // Start a single worker and make sure it waits and then goes to work
+      const fn1 = jest.fn(async () => {});
+      const worker1 = new TaskWorker(
+        'task1',
+        fn1,
+        knex,
+        logger,
+        Duration.fromMillis(10),
+      );
+      await worker1.start(settings, { signal: abortFirst.signal });
+
+      expect(fn1).toBeCalledTimes(0);
+      await new Promise(resolve => setTimeout(resolve, 250));
+      expect(fn1).toBeCalledTimes(0);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      expect(fn1.mock.calls.length).toBeGreaterThan(0);
+
+      // Start a second worker and make sure it waits but the first worker still works along
+      const fn2 = jest.fn();
+      const promise2 = new Promise(resolve => fn2.mockImplementation(resolve));
+      const worker2 = new TaskWorker(
+        'task1',
+        fn2,
+        knex,
+        logger,
+        Duration.fromMillis(10),
+      );
+      await worker2.start(settings);
+
+      // We eventually abort the first worker just to make sure that the second
+      // one for sure will get a go at running the task
+      setTimeout(() => abortFirst.abort(), 1000);
+
+      const before = fn1.mock.calls.length;
+      await promise2;
+      expect(fn1.mock.calls.length).toBeGreaterThan(before);
     },
     60_000,
   );

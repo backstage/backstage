@@ -53,6 +53,13 @@ export class TaskWorker {
 
     (async () => {
       try {
+        if (settings.initialDelayDuration) {
+          await sleep(
+            Duration.fromISO(settings.initialDelayDuration),
+            options?.signal,
+          );
+        }
+
         while (!options?.signal?.aborted) {
           const runResult = await this.runOnce(options?.signal);
           if (runResult.result === 'abort') {
@@ -61,6 +68,7 @@ export class TaskWorker {
 
           await sleep(this.workCheckFrequency, options?.signal);
         }
+
         this.logger.info(`Task worker finished: ${this.taskId}`);
       } catch (e) {
         this.logger.warn(`Task worker failed unexpectedly, ${e}`);
@@ -106,6 +114,7 @@ export class TaskWorker {
 
     try {
       await this.fn(taskAbortController.signal);
+      taskAbortController.abort(); // releases resources
     } catch (e) {
       await this.tryReleaseTask(ticket, taskSettings);
       return { result: 'failed' };
