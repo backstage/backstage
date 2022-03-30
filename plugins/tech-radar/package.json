@@ -55,7 +55,7 @@
     "@backstage/test-utils": "^1.0.1-next.1",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
-    "@testing-library/user-event": "^13.1.8",
+    "@testing-library/user-event": "^14.0.0",
     "@types/color": "^3.0.1",
     "@types/d3-force": "^2.1.1",
     "@types/jest": "^26.0.7",
