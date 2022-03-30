@@ -169,6 +169,10 @@ describe('DefaultCatalogPage', () => {
 
     expect(columnHeaderLabels).toEqual([
       'Name',
+      'System',
+      'Owner',
+      'Type',
+      'Lifecycle',
       'Description',
       'Tags',
       'Actions',

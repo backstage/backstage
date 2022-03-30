@@ -74,39 +74,22 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
     function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
       switch (filters.kind?.value) {
-        case 'api':
-          return [
-            columnFactories.createSystemColumn(),
-            columnFactories.createOwnerColumn(),
-            columnFactories.createSpecTypeColumn(),
-            columnFactories.createSpecLifecycleColumn(),
-          ];
-        case 'component':
-          return [
-            columnFactories.createSystemColumn(),
-            columnFactories.createOwnerColumn(),
-            columnFactories.createSpecTypeColumn(),
-            columnFactories.createSpecLifecycleColumn(),
-          ];
+        case 'user':
+          return [];
         case 'domain':
-          return [columnFactories.createOwnerColumn()];
-        case 'group':
-          return [columnFactories.createSpecTypeColumn()];
-        case 'location':
-          return [columnFactories.createSpecTypeColumn()];
-        case 'resource':
-          return [
-            columnFactories.createSystemColumn(),
-            columnFactories.createOwnerColumn(),
-            columnFactories.createSpecTypeColumn(),
-            columnFactories.createSpecLifecycleColumn(),
-          ];
         case 'system':
           return [columnFactories.createOwnerColumn()];
+        case 'group':
+        case 'location':
         case 'template':
           return [columnFactories.createSpecTypeColumn()];
         default:
-          return [];
+          return [
+            columnFactories.createSystemColumn(),
+            columnFactories.createOwnerColumn(),
+            columnFactories.createSpecTypeColumn(),
+            columnFactories.createSpecLifecycleColumn(),
+          ];
       }
     }
   }, [filters.kind?.value]);
