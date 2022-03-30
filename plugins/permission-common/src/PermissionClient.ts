@@ -57,26 +57,27 @@ const permissionCriteriaSchema: z.ZodSchema<
     .or(z.object({ not: permissionCriteriaSchema }).strict()),
 );
 
-const authorizeDecisionSchema: z.ZodSchema<AuthorizePermissionResponse> =
+const authorizePermissionResponseSchema: z.ZodSchema<AuthorizePermissionResponse> =
   z.object({
     result: z
       .literal(AuthorizeResult.ALLOW)
       .or(z.literal(AuthorizeResult.DENY)),
   });
 
-const policyDecisionSchema: z.ZodSchema<QueryPermissionResponse> = z.union([
-  z.object({
-    result: z
-      .literal(AuthorizeResult.ALLOW)
-      .or(z.literal(AuthorizeResult.DENY)),
-  }),
-  z.object({
-    result: z.literal(AuthorizeResult.CONDITIONAL),
-    pluginId: z.string(),
-    resourceType: z.string(),
-    conditions: permissionCriteriaSchema,
-  }),
-]);
+const queryPermissionResponseSchema: z.ZodSchema<QueryPermissionResponse> =
+  z.union([
+    z.object({
+      result: z
+        .literal(AuthorizeResult.ALLOW)
+        .or(z.literal(AuthorizeResult.DENY)),
+    }),
+    z.object({
+      result: z.literal(AuthorizeResult.CONDITIONAL),
+      pluginId: z.string(),
+      resourceType: z.string(),
+      conditions: permissionCriteriaSchema,
+    }),
+  ]);
 
 const responseSchema = <T>(
   itemSchema: z.ZodSchema<T>,
@@ -122,7 +123,11 @@ export class PermissionClient implements PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
-    return this.makeRequest(requests, authorizeDecisionSchema, options);
+    return this.makeRequest(
+      requests,
+      authorizePermissionResponseSchema,
+      options,
+    );
   }
 
   /**
@@ -132,7 +137,7 @@ export class PermissionClient implements PermissionEvaluator {
     queries: QueryPermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<QueryPermissionResponse[]> {
-    return this.makeRequest(queries, policyDecisionSchema, options);
+    return this.makeRequest(queries, queryPermissionResponseSchema, options);
   }
 
   private async makeRequest<TQuery, TResult>(

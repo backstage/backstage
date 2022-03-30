@@ -25,7 +25,7 @@ describe('AuthorizedRefreshService', () => {
   };
   const permissionApi = {
     authorize: jest.fn(),
-    policyDecision: jest.fn(),
+    query: jest.fn(),
   };
 
   afterEach(() => {
