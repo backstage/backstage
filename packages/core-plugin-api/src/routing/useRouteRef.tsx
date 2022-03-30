@@ -86,8 +86,9 @@ export function useRouteRef<Params extends AnyParams>(
     | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
   const sourceLocation = useLocation();
-  const versionedContext =
-    useVersionedContext<{ 1: RouteResolver }>('routing-context');
+  const versionedContext = useVersionedContext<{ 1: RouteResolver }>(
+    'routing-context',
+  );
   if (!versionedContext) {
     throw new Error('Routing context is not available');
   }

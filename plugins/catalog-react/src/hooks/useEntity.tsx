@@ -32,8 +32,9 @@ export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
 // This context has support for multiple concurrent versions of this package.
 // It is currently used in parallel with the old context in order to provide
 // a smooth transition, but will eventually be the only context we use.
-const NewEntityContext =
-  createVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
+const NewEntityContext = createVersionedContext<{ 1: EntityLoadingStatus }>(
+  'entity-context',
+);
 
 /**
  * Properties for the AsyncEntityProvider component.
@@ -104,8 +105,9 @@ export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
 export function useEntity<TEntity extends Entity = Entity>(): {
   entity: TEntity;
 } {
-  const versionedHolder =
-    useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
+  const versionedHolder = useVersionedContext<{ 1: EntityLoadingStatus }>(
+    'entity-context',
+  );
 
   if (!versionedHolder) {
     throw new Error('Entity context is not available');
@@ -133,8 +135,9 @@ export function useEntity<TEntity extends Entity = Entity>(): {
 export function useAsyncEntity<
   TEntity extends Entity = Entity,
 >(): EntityLoadingStatus<TEntity> {
-  const versionedHolder =
-    useVersionedContext<{ 1: EntityLoadingStatus }>('entity-context');
+  const versionedHolder = useVersionedContext<{ 1: EntityLoadingStatus }>(
+    'entity-context',
+  );
 
   if (!versionedHolder) {
     throw new Error('Entity context is not available');
