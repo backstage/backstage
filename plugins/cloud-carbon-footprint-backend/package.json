@@ -22,8 +22,8 @@
   "dependencies": {
     "@backstage/backend-common": "^0.12.0",
     "@backstage/config": "^0.1.15",
-    "@cloud-carbon-footprint/api": "^1.4.0",
-    "@cloud-carbon-footprint/common": "^1.4.0",
+    "@cloud-carbon-footprint/api": "^1.4.1",
+    "@cloud-carbon-footprint/common": "^1.5.1",
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

@@ -41,15 +41,24 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
 
+  let gcpConfig;
+
   const ccfDefaults = configLoader();
-  const backstageConfig = options.config.getConfig('cloudCarbonFootprint')
+  try {
+    const backstageConfig = options.config.getConfig('cloudCarbonFootprint');
+    gcpConfig = {
+      GCP: {
+        USE_BILLING_DATA: true,
+        BILLING_PROJECT_ID: backstageConfig.getString('gcpBillingProjectId'),
+        BIG_QUERY_TABLE: backstageConfig.getString('gcpBigQueryTable'),
+      },
+    };
+  } catch (error) {
+    logger.warn('No GCP configuration');
+  }
   const ccfRouter = CCFRouter({
     ...ccfDefaults,
-    GCP: {
-      USE_BILLING_DATA: true,
-      BILLING_PROJECT_ID: backstageConfig.getString('gcpBillingProjectId'),
-      BIG_QUERY_TABLE: backstageConfig.getString('gcpBigQueryTable'),
-    },
+    ...gcpConfig,
   });
 
   router.use(ccfRouter);

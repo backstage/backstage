@@ -24,7 +24,7 @@
     "@backstage/core-components": "^0.9.0",
     "@backstage/core-plugin-api": "^0.8.0",
     "@backstage/theme": "^0.2.15",
-    "@cloud-carbon-footprint/client": "file:../../../cloud-carbon-footprint/packages/client",
+    "@cloud-carbon-footprint/client": "^3.0.0",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
