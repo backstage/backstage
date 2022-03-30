@@ -48,10 +48,16 @@ export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  options?: TableProps<CatalogTableRow>['options'];
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
-  const { columns, actions, initiallySelectedFilter = 'owned' } = props;
+  const {
+    columns,
+    actions,
+    initiallySelectedFilter = 'owned',
+    options = {},
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -76,7 +82,11 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
-              <CatalogTable columns={columns} actions={actions} />
+              <CatalogTable
+                columns={columns}
+                actions={actions}
+                options={options}
+              />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </Content>
