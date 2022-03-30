@@ -35,16 +35,11 @@ export class PullRequestsDashboardProvider {
     private readonly azureDevOpsApi: AzureDevOpsApi,
   ) {}
 
-  public static async create(
+  public static create(
     logger: Logger,
     azureDevOpsApi: AzureDevOpsApi,
-  ): Promise<PullRequestsDashboardProvider> {
+  ): PullRequestsDashboardProvider {
     const provider = new PullRequestsDashboardProvider(logger, azureDevOpsApi);
-    try {
-      await provider.readTeams();
-    } catch (error) {
-      logger.warn(`Failed to load azure team information, ${error}`);
-    }
     return provider;
   }
 

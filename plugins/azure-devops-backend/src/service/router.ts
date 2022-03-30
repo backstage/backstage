@@ -53,8 +53,10 @@ export async function createRouter(
   const azureDevOpsApi =
     options.azureDevOpsApi || new AzureDevOpsApi(logger, webApi);
 
-  const pullRequestsDashboardProvider =
-    await PullRequestsDashboardProvider.create(logger, azureDevOpsApi);
+  const pullRequestsDashboardProvider = PullRequestsDashboardProvider.create(
+    logger,
+    azureDevOpsApi,
+  );
 
   const router = Router();
   router.use(express.json());
