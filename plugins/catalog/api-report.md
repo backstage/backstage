@@ -138,6 +138,8 @@ export interface CatalogTableProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
+  // (undocumented)
+  options?: TableProps<CatalogTableRow>['options'];
 }
 
 // @public (undocumented)
