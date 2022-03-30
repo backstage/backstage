@@ -9399,13 +9399,13 @@ code-point-at@^1.0.0:
   resolved "https://registry.npmjs.org/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^1.2.13:
-  version "1.2.13"
-  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-1.2.13.tgz#2525141b2ea8e54b78aea91cc8b85693bbcb17d9"
-  integrity sha512-7I2qPHxoTndvDNBkaoYYbL2S6A6JAMXBA17ZFcIWAj7A0V/NEg0aPSxhwNRK1yLmC+3XI9OR4BjZTiPxrA2gBA==
+codemirror-graphql@^1.2.14:
+  version "1.2.14"
+  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-1.2.14.tgz#069df62347a1db5aca6a1a74ad2f933392d2a6b9"
+  integrity sha512-zt2N0sZgaZZUOp8eTNIy2d364gGKjtAu0PKHMjQqogB2S4KrD/z/wICCjRf0JXskPM8jN/kNqufhHt59UKf6gQ==
   dependencies:
     "@codemirror/stream-parser" "^0.19.2"
-    graphql-language-service "^5.0.0"
+    graphql-language-service "^5.0.1"
 
 codemirror@^5.58.2:
   version "5.63.3"
@@ -13541,19 +13541,19 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12:
-  version "1.7.1"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.7.1.tgz#426afa0379c8d5424493fce69b678ee5c94e0e33"
-  integrity sha512-diEftHKsFtONUy90v1bZYgjCsJmRRVlnS72kYdv2lTETr1jgWN8V1nLepGl47xoQg8j0Bw9Er3v0wHnOdB5JxA==
+  version "1.8.1"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.8.1.tgz#81164e696f370cf888a7fc318c792129eeb349d4"
+  integrity sha512-Eq/hySl9DWAyU4hnFNuAtJFyJEKzTTmOb+Bz5KmyK60WokhuDy1DB2jm2JC/+FIXfnAS6N5OlxDLBqh4gXDBUQ==
   dependencies:
     "@graphiql/toolkit" "^0.4.2"
     codemirror "^5.58.2"
-    codemirror-graphql "^1.2.13"
+    codemirror-graphql "^1.2.14"
     copy-to-clipboard "^3.2.0"
-    dset "^3.1.0"
     entities "^2.0.0"
     escape-html "^1.0.3"
-    graphql-language-service "^5.0.0"
+    graphql-language-service "^5.0.1"
     markdown-it "^12.2.0"
+    set-value "^4.1.0"
 
 graphlib@^2.1.8:
   version "2.1.8"
@@ -13596,10 +13596,10 @@ graphql-config@^4.1.0:
     minimatch "3.0.4"
     string-env-interpolation "1.0.1"
 
-graphql-language-service@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-5.0.0.tgz#52dad53135f06551eee4c4dc57057c61eb10c460"
-  integrity sha512-3tbJOApOJk8FQFVV+hKSs3gEWqqt3gQ5l3iEOUl7ofhyTmpRlbkYp+/dVLMF/p29iwZ5a8wqSXl+DDnHI6RMXQ==
+graphql-language-service@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-5.0.1.tgz#de72d12051fa48deec3883f4980f6ff3475ab8d6"
+  integrity sha512-DGaGtCyU5ugCJIkTWqFxNESFCqjNEHJGWDhcu2jXY28GcPnTSqfKAk4ryCK4E514AKNFrvX9WwZEB6Csi+xbdQ==
   dependencies:
     graphql-config "^4.1.0"
     nullthrows "^1.0.0"
@@ -14928,6 +14928,11 @@ is-potential-custom-element-name@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/is-potential-custom-element-name/-/is-potential-custom-element-name-1.0.1.tgz#171ed6f19e3ac554394edf78caa05784a45bebb5"
   integrity sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ==
+
+is-primitive@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/is-primitive/-/is-primitive-3.0.1.tgz#98c4db1abff185485a657fc2905052b940524d05"
+  integrity sha512-GljRxhWvlCNRfZyORiH77FwdFwGcMO620o37EOYC0ORWdq+WYNVqW0w2Juzew4M+L81l6/QS3t5gkkihyRqv9w==
 
 is-promise@4.0.0, is-promise@^4.0.0:
   version "4.0.0"
@@ -22388,6 +22393,14 @@ set-value@^2.0.0, set-value@^2.0.1:
     is-extendable "^0.1.1"
     is-plain-object "^2.0.3"
     split-string "^3.0.1"
+
+set-value@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/set-value/-/set-value-4.1.0.tgz#aa433662d87081b75ad88a4743bd450f044e7d09"
+  integrity sha512-zTEg4HL0RwVrqcWs3ztF+x1vkxfm0lP+MQQFPiMJTKVceBwEV0A569Ou8l9IYQG8jOZdMVI1hGsc0tmeD2o/Lw==
+  dependencies:
+    is-plain-object "^2.0.4"
+    is-primitive "^3.0.1"
 
 setimmediate@^1.0.4, setimmediate@^1.0.5, setimmediate@~1.0.4:
   version "1.0.5"
