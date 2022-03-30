@@ -110,6 +110,8 @@ export class PullRequestsDashboardProvider {
     const dashboardPullRequests =
       await this.azureDevOpsApi.getDashboardPullRequests(projectName, options);
 
+    await this.getAllTeams(); // Make sure team members are loaded
+
     return dashboardPullRequests.map(pr => {
       if (pr.createdBy?.id) {
         const teamIds = this.teamMembers.get(pr.createdBy.id)?.memberOf;
