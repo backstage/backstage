@@ -23,8 +23,7 @@ Navigate to your new Backstage application directory. And then to your
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-techdocs
+yarn add --cwd packages/app @backstage/plugin-techdocs
 ```
 
 Once the package has been installed, you need to import the plugin in your app.
@@ -65,8 +64,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-techdocs-backend
+yarn add --cwd packages/backend @backstage/plugin-techdocs-backend
 ```
 
 Create a file called `techdocs.ts` inside `packages/backend/src/plugins/` and

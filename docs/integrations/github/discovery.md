@@ -21,8 +21,7 @@ package.
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend-module-github
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 ```
 
 And then add the processors to your catalog builder:

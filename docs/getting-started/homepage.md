@@ -28,10 +28,9 @@ Now, let's get started by installing the home plugin and creating a simple homep
 
 #### 1. Install the plugin
 
-```
-# From your Backstage application directory
-cd packages/app
-yarn add @backstage/plugin-home
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/app @backstage/plugin-home
 ```
 
 #### 2. Create a new HomePage component
