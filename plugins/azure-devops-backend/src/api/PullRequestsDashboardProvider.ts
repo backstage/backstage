@@ -35,10 +35,10 @@ export class PullRequestsDashboardProvider {
     private readonly azureDevOpsApi: AzureDevOpsApi,
   ) {}
 
-  public static create(
+  public static async create(
     logger: Logger,
     azureDevOpsApi: AzureDevOpsApi,
-  ): PullRequestsDashboardProvider {
+  ): Promise<PullRequestsDashboardProvider> {
     const provider = new PullRequestsDashboardProvider(logger, azureDevOpsApi);
     return provider;
   }
