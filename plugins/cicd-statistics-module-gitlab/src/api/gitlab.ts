@@ -19,54 +19,14 @@ import {
   CicdState,
   CicdConfiguration,
   Build,
-  FilterStatusType,
   FetchBuildsOptions,
   Stage,
 } from '@backstage/plugin-cicd-statistics';
 import { Gitlab } from '@gitbeaker/browser';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import limiterFactory from 'p-limit';
-
-import { Types } from '@gitbeaker/core';
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
-
-const statusMap: Record<string, FilterStatusType> = {
-  manual: 'unknown',
-  created: 'enqueued',
-  waiting_for_resource: 'stalled',
-  preparing: 'unknown',
-  pending: 'scheduled',
-  running: 'running',
-  success: 'succeeded',
-  failed: 'failed',
-  canceled: 'aborted',
-  skipped: 'aborted',
-  scheduled: 'scheduled',
-};
-
-function jobtToBuild(jobs: Array<Types.PipelineSchema>): Build[] {
-  return jobs.map(j => {
-    return {
-      id: j.id.toString(),
-      status: statusMap[j.status],
-      branchType: 'master',
-      duration: 0, // will get filled in later in a seperate API call
-      requestedAt: new Date(j.created_at),
-      stages: [],
-    };
-  });
-}
-
-function jobsToStages(jobs: Array<Types.JobSchema>): Stage[] {
-  return jobs.map(j => {
-    const status = statusMap[j.status] ? statusMap[j.status] : 'unknown';
-    return {
-      name: j.name,
-      status: status,
-      duration: j.duration ? ((j.duration * 1000) as number) : 0,
-    };
-  });
-}
+import { pipelinesToBuilds, jobsToStages } from './utils';
 
 /**
  * This type represents a initialized gitlab client with gitbeaker
@@ -127,10 +87,10 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
     owner: string,
     build: Build,
   ): Promise<number> {
-    const pipeline = (await gitbeaker.Pipelines.show(
+    const pipeline = await gitbeaker.Pipelines.show(
       owner,
       parseInt(build.id, 10),
-    )) as Types.PipelineExtendedSchema;
+    );
     return parseInt(pipeline.duration as string, 10) * 1000;
   }
 
@@ -139,7 +99,7 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
     owner: string,
   ): Promise<string | undefined> {
     const branches = await gitbeaker.Branches.all(owner);
-    return branches.find(b => b.default)?.name;
+    return branches.find(branch => branch.default)?.name;
   }
 
   public async fetchBuilds(options: FetchBuildsOptions): Promise<CicdState> {
@@ -151,9 +111,7 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
       filterStatus = ['all'],
       filterType = 'all',
     } = options;
-    const { api, owner } = await this.createGitlabApi(entity as Entity, [
-      'read_api',
-    ]);
+    const { api, owner } = await this.createGitlabApi(entity, ['read_api']);
     updateProgress(0, 0, 0);
 
     const branch =
@@ -168,7 +126,7 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
     });
 
     const limiter = limiterFactory(10);
-    const builds = jobtToBuild(pipelines).map(async build => ({
+    const builds = pipelinesToBuilds(pipelines).map(async build => ({
       ...build,
       duration: await limiter(() =>
         CicdStatisticsApiGitlab.getDurationOfBuild(api, owner, build),
@@ -179,7 +137,7 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
     }));
     const promisedBuilds = (await Promise.all(builds)).filter(b =>
       filterStatus.includes(b.status),
-    ) as unknown as Build[];
+    );
 
     return { builds: promisedBuilds };
   }
