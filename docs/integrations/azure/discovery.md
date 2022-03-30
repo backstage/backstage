@@ -75,5 +75,5 @@ _Note:_ the path parameter follows the same rules as the search on Azure DevOps
 web interface. For more details visit the
 [official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
 
-You'll also need to add the [Code Search plugin in your organization](https://marketplace.visualstudio.com/items?itemName=ms.vss-code-search&targetId=f9352dac-ba6e-434e-9241-a848a510ce3f&utm_source=vstsproduct&utm_medium=SearchExtStatus). [More informations here](https://github.com/backstage/backstage/issues/10432).
+You'll also need to add the [Code Search plugin in your organization](https://marketplace.visualstudio.com/items?itemName=ms.vss-code-search&targetId=f9352dac-ba6e-434e-9241-a848a510ce3f&utm_source=vstsproduct&utm_medium=SearchExtStatus). [More information here](https://github.com/backstage/backstage/issues/10432).
 
