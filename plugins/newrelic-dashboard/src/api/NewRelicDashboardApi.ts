@@ -34,9 +34,13 @@ export const newRelicDashboardApiRef = createApiRef<NewRelicDashboardApi>({
 });
 
 export type NewRelicDashboardApi = {
-  getDashboardEntity(guid: string): Promise<DashboardEntitySummary | undefined>;
+  getDashboardEntity(
+    guid: string,
+    apiPrefix: string,
+  ): Promise<DashboardEntitySummary | undefined>;
   getDashboardSnapshot(
     guid: string,
     duration: number,
+    apiPrefix: string,
   ): Promise<DashboardSnapshotSummary | undefined>;
 };

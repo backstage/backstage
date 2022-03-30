@@ -31,4 +31,5 @@ export type ResultEntity = {
   guid: string;
   permalink: string;
   name: string;
+  apiPrefix: string;
 };

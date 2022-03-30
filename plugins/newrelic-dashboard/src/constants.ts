@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 export const NEWRELIC_GUID_ANNOTATION = 'newrelic.com/dashboard-guid';
+export const NEWRELIC_API_PREFIX_ANNOTATION =
+  'newrelic.com/dashboard-api-prefix';

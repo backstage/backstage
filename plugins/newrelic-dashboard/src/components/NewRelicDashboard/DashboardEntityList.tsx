@@ -28,7 +28,10 @@ import DesktopMac from '@material-ui/icons/DesktopMac';
 import { DashboardEntitySummary } from '../../api/NewRelicDashboardApi';
 import { ResultEntity } from '../../types/DashboardEntity';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { NEWRELIC_GUID_ANNOTATION } from './../../constants';
+import {
+  NEWRELIC_GUID_ANNOTATION,
+  NEWRELIC_API_PREFIX_ANNOTATION,
+} from './../../constants';
 
 const useStyles = makeStyles({
   svgIcon: {
@@ -50,9 +53,13 @@ export const DashboardEntityList = () => {
     const dashboardObject: Promise<DashboardEntitySummary | undefined> =
       newRelicDashboardAPI.getDashboardEntity(
         String(entity.metadata.annotations?.[NEWRELIC_GUID_ANNOTATION]),
+        String(entity.metadata.annotations?.[NEWRELIC_API_PREFIX_ANNOTATION]),
       );
     return dashboardObject;
-  }, [entity.metadata.annotations?.[NEWRELIC_GUID_ANNOTATION]]);
+  }, [
+    entity.metadata.annotations?.[NEWRELIC_GUID_ANNOTATION],
+    entity.metadata.annotations?.[NEWRELIC_API_PREFIX_ANNOTATION],
+  ]);
   if (loading) {
     return <Progress />;
   }

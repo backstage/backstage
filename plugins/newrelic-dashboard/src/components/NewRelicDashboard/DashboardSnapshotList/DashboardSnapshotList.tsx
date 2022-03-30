@@ -52,6 +52,7 @@ function a11yProps(index: number) {
 }
 type Props = {
   guid: string;
+  apiPrefix: string;
 };
 const useStyles = makeStyles(
   theme => ({
@@ -79,16 +80,16 @@ const useStyles = makeStyles(
   }),
   { name: 'DashboardHeaderTabs' },
 );
-export const DashboardSnapshotList = ({ guid }: Props) => {
+export const DashboardSnapshotList = ({ guid, apiPrefix }: Props) => {
   const styles = useStyles();
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<
     DashboardEntitySummary | undefined
   > => {
     const dashboardObject: Promise<DashboardEntitySummary | undefined> =
-      newRelicDashboardAPI.getDashboardEntity(guid);
+      newRelicDashboardAPI.getDashboardEntity(guid, apiPrefix);
     return dashboardObject;
-  }, [guid]);
+  }, [guid, apiPrefix]);
   const [value1, setValue1] = useState<number>(0);
   const handleChange = ({}: React.ChangeEvent<{}>, newValue: number) => {
     setValue1(newValue);
@@ -137,6 +138,7 @@ export const DashboardSnapshotList = ({ guid }: Props) => {
                 name={Entity.name}
                 permalink={Entity.permalink}
                 guid={Entity.guid}
+                apiPrefix={Entity.apiPrefix}
                 duration={26297430000}
               />
             </TabPanel>

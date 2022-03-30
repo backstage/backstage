@@ -24,6 +24,20 @@ proxy:
       X-Api-Key: ${NEW_RELIC_USER_KEY}
 ```
 
+```
+// app-config.yaml - Multiple Accounts
+proxy:
+  '/newrelic/api':
+    target: https://api.newrelic.com
+    headers:
+      X-Api-Key: ${NEW_RELIC_USER_KEY}
+
+  '/<api-prefix>/newrelic/api':
+    target: https://api.newrelic.com
+    headers:
+      X-Api-Key: ${NEW_RELIC_ACCOUNT2_USER_KEY}
+```
+
 2. Add the following to `EntityPage.tsx` to display New Relic Dashboard Tab
 
 ```
@@ -72,8 +86,12 @@ metadata:
   # ...
   annotations:
     newrelic.com/dashboard-guid: <dashboard_guid>
+
+    # optional, used if you have multiple api proxies for multiple accounts
+    # Or if you wanted to use something other than the default
+    newrelic.com/dashboard-api-prefix: <api-prefix>
 spec:
   type: service
 ```
 
-All set , you will be able to see the plugin in action!
+All set, you will be able to see the plugin in action!

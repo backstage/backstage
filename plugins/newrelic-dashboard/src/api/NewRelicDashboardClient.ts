@@ -27,6 +27,7 @@ import { ResponseError } from '@backstage/errors';
 
 export class NewRelicDashboardClient implements NewRelicDashboardApi {
   private readonly discoveryApi: DiscoveryApi;
+
   constructor({
     discoveryApi,
   }: {
@@ -39,6 +40,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
   private async callApi<T>(
     query: string,
     variables: { [key in string]: string | number },
+    apiPrefix: string,
   ): Promise<T | undefined> {
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -53,9 +55,10 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
       redirect: 'follow',
     };
 
-    const apiUrl = `${await this.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/newrelic/api/graphql`;
+    const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/${
+      apiPrefix === 'undefined' ? '' : `${apiPrefix}/`
+    }newrelic/api/graphql`;
+
     const response = await fetch(apiUrl, requestOptions);
     if (response.status === 200) {
       return (await response.json()) as T;
@@ -69,12 +72,14 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
 
   async getDashboardEntity(
     guid: string,
+    apiPrefix: string,
   ): Promise<DashboardEntitySummary | undefined> {
     const DashboardEntityList = await this.callApi<DashboardEntity>(
       getDashboardParentGuidQuery,
       {
         query: `id ='${guid}' OR parentId ='${guid}'`,
       },
+      apiPrefix,
     );
     if (
       DashboardEntityList &&
@@ -93,6 +98,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
   async getDashboardSnapshot(
     guid: string,
     duration: number,
+    apiPrefix: string,
   ): Promise<DashboardSnapshotSummary | undefined> {
     const DashboardSnapshotValue = await this.callApi<DashboardSnapshot>(
       getDashboardSnapshotQuery,
@@ -100,6 +106,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
         guid: guid,
         duration: duration,
       },
+      apiPrefix,
     );
     return {
       getDashboardSnapshot: DashboardSnapshotValue!,

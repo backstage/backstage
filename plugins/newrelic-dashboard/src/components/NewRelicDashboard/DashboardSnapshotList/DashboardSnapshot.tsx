@@ -31,6 +31,7 @@ type Props = {
   name: string;
   permalink: string;
   duration: number;
+  apiPrefix: string;
 };
 
 export const DashboardSnapshot = ({
@@ -38,15 +39,16 @@ export const DashboardSnapshot = ({
   name,
   permalink,
   duration,
+  apiPrefix,
 }: Props) => {
   const newRelicDashboardAPI = useApi(newRelicDashboardApiRef);
   const { value, loading, error } = useAsync(async (): Promise<
     DashboardSnapshotSummary | undefined
   > => {
     const dashboardObject: Promise<DashboardSnapshotSummary | undefined> =
-      newRelicDashboardAPI.getDashboardSnapshot(guid, duration);
+      newRelicDashboardAPI.getDashboardSnapshot(guid, duration, apiPrefix);
     return dashboardObject;
-  }, [guid, duration]);
+  }, [guid, duration, apiPrefix]);
   if (loading) {
     return <Progress />;
   }
