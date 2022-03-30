@@ -48,6 +48,7 @@ export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  initialKind?: string;
   options?: TableProps<CatalogTableRow>['options'];
 }
 
@@ -56,6 +57,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     columns,
     actions,
     initiallySelectedFilter = 'owned',
+    initialKind = 'component',
     options = {},
   } = props;
   const orgName =
@@ -66,7 +68,9 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
         <Content>
-          <ContentHeader titleComponent={<CatalogKindHeader />}>
+          <ContentHeader
+            titleComponent={<CatalogKindHeader initialFilter={initialKind} />}
+          >
             <CreateButton
               title="Create Component"
               to={createComponentLink && createComponentLink()}
