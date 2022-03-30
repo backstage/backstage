@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { ComponentType } from 'react';
 import { AsyncState } from 'react-use/lib/useAsyncFn';
 

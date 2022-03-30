@@ -69,7 +69,7 @@ export const TechDocsReaderPage = ({
     if (defaultPath) {
       return defaultPath;
     }
-    return params['*'] ?? '';
+    return params['*'];
   }, [params, defaultPath]);
 
   const entityName = useMemo(() => {
