@@ -19,7 +19,8 @@ import { NotFoundError } from '@backstage/errors';
 import React from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
-  Reader,
+  TechDocsReaderPageProvider,
+  TechDocsReaderPageContent,
   SyncResult,
   TechDocsStorageApi,
   techdocsStorageApiRef,
@@ -112,13 +113,15 @@ function createPage({
 
     render() {
       return (
-        <Reader
-          entityRef={{
+        <TechDocsReaderPageProvider
+          entityName={{
             kind: 'Component',
             namespace: 'default',
             name: 'my-docs',
           }}
-        />
+        >
+          <TechDocsReaderPageContent />
+        </TechDocsReaderPageProvider>
       );
     }
   }

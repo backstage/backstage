@@ -84,7 +84,7 @@ import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
-// import { techDocsPage } from './components/techdocs/TechDocsPage';
+import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
@@ -179,7 +179,7 @@ const routes = (
     <Route path="/docs" element={<TechDocsIndexPage />} />
     <Route
       path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage />}
+      element={<TechDocsReaderPage>{techDocsPage}</TechDocsReaderPage>}
     >
       <TechDocsAddons>
         <ExampleHeader />

@@ -29,14 +29,11 @@ import LightIcon from '@material-ui/icons/Brightness7';
 import DarkIcon from '@material-ui/icons/Brightness4';
 
 import { lightTheme, darkTheme } from '@backstage/theme';
-import { CompoundEntityRef } from '@backstage/catalog-model';
-
-import { Content } from '@backstage/core-components';
 
 import {
-  Reader,
-  TechDocsPage,
-  TechDocsPageHeader,
+  TechDocsReaderPage,
+  TechDocsReaderPageHeader,
+  TechDocsReaderPageContent,
 } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -123,47 +120,13 @@ const TechDocsThemeToggle = () => {
   );
 };
 
-const TechDocsPageContent = ({
-  onReady,
-  entityRef,
-}: {
-  entityRef: CompoundEntityRef;
-  onReady: () => void;
-}) => {
-  const classes = useStyles();
-
-  return (
-    <Content className={classes.content} data-testid="techdocs-content">
-      <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
-    </Content>
-  );
-};
-
-const DefaultTechDocsPage = () => {
-  const techDocsMetadata = {
-    site_name: 'Live preview environment',
-    site_description: '',
-  };
-
-  return (
-    <TechDocsPage>
-      {({ entityRef, onReady }) => (
-        <>
-          <TechDocsPageHeader
-            entityRef={entityRef}
-            techDocsMetadata={techDocsMetadata}
-          >
-            <TechDocsThemeToggle />
-          </TechDocsPageHeader>
-          <TechDocsPageContent entityRef={entityRef} onReady={onReady} />
-        </>
-      )}
-    </TechDocsPage>
-  );
-};
-
 export const techDocsPage = (
   <TechdocsThemeProvider>
-    <DefaultTechDocsPage />
+    <TechDocsReaderPage>
+      <TechDocsReaderPageHeader>
+        <TechDocsThemeToggle />
+      </TechDocsReaderPageHeader>
+      <TechDocsReaderPageContent />
+    </TechDocsReaderPage>
   </TechdocsThemeProvider>
 );
