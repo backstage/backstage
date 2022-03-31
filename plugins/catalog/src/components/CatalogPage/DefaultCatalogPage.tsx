@@ -49,6 +49,7 @@ export interface DefaultCatalogPageProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
+  tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -57,6 +58,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     actions,
     initiallySelectedFilter = 'owned',
     initialKind = 'component',
+    tableOptions = {},
   } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
@@ -84,7 +86,11 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
-              <CatalogTable columns={columns} actions={actions} />
+              <CatalogTable
+                columns={columns}
+                actions={actions}
+                tableOptions={tableOptions}
+              />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </Content>

@@ -50,6 +50,7 @@ import Star from '@material-ui/icons/Star';
 export interface CatalogTableProps {
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
 const YellowStar = withStyles({
@@ -60,7 +61,7 @@ const YellowStar = withStyles({
 
 /** @public */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const { columns, actions } = props;
+  const { columns, actions, tableOptions } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
 
@@ -176,6 +177,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         showEmptyDataSourceMessage: !loading,
         padding: 'dense',
         pageSizeOptions: [20, 50, 100],
+        ...tableOptions,
       }}
       title={`${titlePreamble} (${entities.length})`}
       data={rows}
