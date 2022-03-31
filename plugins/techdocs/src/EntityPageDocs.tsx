@@ -16,26 +16,15 @@
 
 import React from 'react';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
 
-import { toLowerMaybe } from './helpers';
 import { TechDocsReaderPage } from './plugin';
 import { TechDocsReaderLayout } from './reader';
 
 type EntityPageDocsProps = { entity: Entity };
 
 export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
-  const config = useApi(configApiRef);
-
-  const entityName = {
-    namespace: toLowerMaybe(
-      entity.metadata.namespace ?? DEFAULT_NAMESPACE,
-      config,
-    ),
-    kind: toLowerMaybe(entity.kind, config),
-    name: toLowerMaybe(entity.metadata.name, config),
-  };
+  const entityName = getCompoundEntityRef(entity);
 
   return (
     <TechDocsReaderPage entityName={entityName}>

@@ -15,13 +15,16 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
+
+import { Entity } from '@backstage/catalog-model';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { MissingAnnotationEmptyState } from '@backstage/core-components';
+
+import { EntityPageDocs } from './EntityPageDocs';
 import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
 import { TechDocsReaderPage } from './reader/components/TechDocsReaderPage';
-import { EntityPageDocs } from './EntityPageDocs';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -66,10 +69,10 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
   }
 
   return (
-    <Routes>
+    <FlatRoutes>
       <Route path="/*" element={<EntityPageDocs entity={entity} />}>
         {children}
       </Route>
-    </Routes>
+    </FlatRoutes>
   );
 };
