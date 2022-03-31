@@ -40,11 +40,6 @@ export class PullRequestsDashboardProvider {
     azureDevOpsApi: AzureDevOpsApi,
   ): Promise<PullRequestsDashboardProvider> {
     const provider = new PullRequestsDashboardProvider(logger, azureDevOpsApi);
-    try {
-      await provider.readTeams();
-    } catch (error) {
-      logger.warn(`Failed to load azure team information, ${error}`);
-    }
     return provider;
   }
 
@@ -114,6 +109,8 @@ export class PullRequestsDashboardProvider {
   ): Promise<DashboardPullRequest[]> {
     const dashboardPullRequests =
       await this.azureDevOpsApi.getDashboardPullRequests(projectName, options);
+
+    await this.getAllTeams(); // Make sure team members are loaded
 
     return dashboardPullRequests.map(pr => {
       if (pr.createdBy?.id) {
