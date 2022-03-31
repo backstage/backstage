@@ -21,6 +21,12 @@ import {
   createComponentExtension,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import { Options } from '@material-table/core';
+
+type SentryPageProps = {
+  statsFor?: '24h' | '14d' | '';
+  tableOptions?: Options<never>;
+};
 
 export const EntitySentryContent = sentryPlugin.provide(
   createRoutableExtension({
@@ -29,9 +35,21 @@ export const EntitySentryContent = sentryPlugin.provide(
     component: () =>
       import('./components/SentryIssuesWidget').then(
         ({ SentryIssuesWidget }) => {
-          const SentryPage = () => {
+          const SentryPage = ({ statsFor, tableOptions }: SentryPageProps) => {
             const { entity } = useEntity();
-            return <SentryIssuesWidget entity={entity} statsFor="24h" />;
+            const defaultOptions: Options<never> = {
+              padding: 'dense',
+              paging: true,
+              search: false,
+              pageSize: 5,
+            };
+            return (
+              <SentryIssuesWidget
+                entity={entity}
+                statsFor={statsFor || '24h'}
+                tableOptions={{ ...defaultOptions, ...tableOptions }}
+              />
+            );
           };
           return SentryPage;
         },
@@ -46,9 +64,25 @@ export const EntitySentryCard = sentryPlugin.provide(
       lazy: () =>
         import('./components/SentryIssuesWidget').then(
           ({ SentryIssuesWidget }) => {
-            const SentryCard = () => {
+            const SentryCard = ({
+              statsFor,
+              tableOptions,
+            }: SentryPageProps) => {
               const { entity } = useEntity();
-              return <SentryIssuesWidget entity={entity} />;
+              return (
+                <SentryIssuesWidget
+                  entity={entity}
+                  statsFor={statsFor || '24h'}
+                  tableOptions={
+                    tableOptions || {
+                      padding: 'dense',
+                      paging: true,
+                      search: false,
+                      pageSize: 5,
+                    }
+                  }
+                />
+              );
             };
             return SentryCard;
           },
