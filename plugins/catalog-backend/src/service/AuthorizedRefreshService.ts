@@ -18,14 +18,14 @@ import { NotAllowedError } from '@backstage/errors';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common';
 import {
   AuthorizeResult,
-  PermissionAuthorizer,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { RefreshOptions, RefreshService } from './types';
 
 export class AuthorizedRefreshService implements RefreshService {
   constructor(
     private readonly service: RefreshService,
-    private readonly permissionApi: PermissionAuthorizer,
+    private readonly permissionApi: PermissionEvaluator,
   ) {}
 
   async refresh(options: RefreshOptions) {
