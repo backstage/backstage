@@ -70,7 +70,7 @@ createDevApp()
       <Page themeId="home">
         <Header title="Sentry" />
         <Content>
-          <EntityProvider entity={entity('error')}>
+          <EntityProvider entity={entity('with-values')}>
             <EntitySentryContent />
           </EntityProvider>
         </Content>

@@ -11,17 +11,25 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
+import { Options } from '@material-table/core';
 import { RouteRef } from '@backstage/core-plugin-api';
 
+// Warning: (ae-forgotten-export) The symbol "SentryPageProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "EntitySentryCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntitySentryCard: () => JSX.Element;
+export const EntitySentryCard: ({
+  statsFor,
+  tableOptions,
+}: SentryPageProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntitySentryContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const EntitySentryContent: () => JSX.Element;
+export const EntitySentryContent: ({
+  statsFor,
+  tableOptions,
+}: SentryPageProps) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "MockSentryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -112,11 +120,13 @@ export type SentryIssue = {
 export const SentryIssuesWidget: ({
   entity,
   statsFor,
+  tableOptions,
   variant,
   query,
 }: {
   entity: Entity;
-  statsFor?: '' | '14d' | '24h' | undefined;
+  statsFor: '24h' | '14d' | '';
+  tableOptions: Options<never>;
   variant?: InfoCardVariants | undefined;
   query?: string | undefined;
 }) => JSX.Element;
