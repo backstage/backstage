@@ -9,4 +9,3 @@ spec:
   owner: team-a
   system: artist-engagement-portal
   consumesApis: ['component:artist-lookup']
-
