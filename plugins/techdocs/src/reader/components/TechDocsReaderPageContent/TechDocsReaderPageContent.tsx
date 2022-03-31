@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { create } from 'jss';
 
 import { makeStyles, Grid, Portal } from '@material-ui/core';
@@ -45,16 +45,16 @@ const useStyles = makeStyles({
 
 export type TechDocsReaderPageContentProps = {
   withSearch?: boolean;
+  onReady?: () => void;
 };
 
 export const TechDocsReaderPageContent = withTechDocsReaderProvider(
-  ({ withSearch = true }: TechDocsReaderPageContentProps) => {
+  ({ withSearch = true, onReady }: TechDocsReaderPageContentProps) => {
     const classes = useStyles();
     const addons = useTechDocsAddons();
-    const { entityName, setShadowRoot } = useTechDocsReaderPage();
+    const { entityName, shadowRoot, setShadowRoot } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityName);
 
-    const ref = useRef<HTMLDivElement | null>(null);
     const [jss, setJss] = useState(
       create({
         ...jssPreset(),
@@ -62,31 +62,36 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       }),
     );
 
-    useEffect(() => {
-      const shadowHost = ref.current;
-      if (!dom || !shadowHost) return;
+    const ref = useCallback(
+      (shadowHost: HTMLDivElement) => {
+        if (!dom || !shadowHost) return;
 
-      setJss(
-        create({
-          ...jssPreset(),
-          insertionPoint: dom.querySelector('head') || undefined,
-        }),
-      );
+        setJss(
+          create({
+            ...jssPreset(),
+            insertionPoint: dom.querySelector('head') || undefined,
+          }),
+        );
 
-      const shadowRoot =
-        shadowHost.shadowRoot ?? shadowHost.attachShadow({ mode: 'open' });
-      shadowRoot.innerHTML = '';
-      shadowRoot.appendChild(dom);
-      setShadowRoot(shadowRoot);
-    }, [dom, setShadowRoot]);
-
-    const contentElement = ref.current?.querySelector(
-      '[data-md-component="container"]',
+        const newShadowRoot =
+          shadowHost.shadowRoot ?? shadowHost.attachShadow({ mode: 'open' });
+        newShadowRoot.innerHTML = '';
+        newShadowRoot.appendChild(dom);
+        setShadowRoot(newShadowRoot);
+        if (onReady instanceof Function) {
+          onReady();
+        }
+      },
+      [dom, setShadowRoot, onReady],
     );
-    const primarySidebarElement = ref.current?.querySelector(
+
+    const contentElement = shadowRoot?.querySelector(
+      '[data-md-component="content"]',
+    );
+    const primarySidebarElement = shadowRoot?.querySelector(
       'div[data-md-component="sidebar"][data-md-type="navigation"], div[data-md-component="navigation"]',
     );
-    const secondarySidebarElement = ref.current?.querySelector(
+    const secondarySidebarElement = shadowRoot?.querySelector(
       'div[data-md-component="sidebar"][data-md-type="toc"], div[data-md-component="toc"]',
     );
 
