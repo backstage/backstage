@@ -32,6 +32,7 @@
 /plugins/explore                                    @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/explore-react                              @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/fossa                                      @backstage/reviewers @backstage/sda-se-reviewers
+/plugins/gcalendar                                  @backstage/reviewers @szubster @ptychu @kielosz @alexrybch
 /plugins/git-release-manager                        @backstage/reviewers @erikengervall
 /plugins/home                                       @backstage/reviewers @backstage/techdocs-core
 /plugins/ilert                                      @backstage/reviewers @yacut
@@ -44,6 +45,8 @@
 /plugins/scaffolder-backend-module-yeoman           @backstage/reviewers @pawelmitka
 /plugins/search                                     @backstage/reviewers @backstage/techdocs-core
 /plugins/search-*                                   @backstage/reviewers @backstage/techdocs-core
+/plugins/stack-overflow                             @backstage/reviewers @backstage/techdocs-core
+/plugins/stack-overflow-backend                     @backstage/reviewers @backstage/techdocs-core
 /plugins/sonarqube                                  @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/techdocs                                   @backstage/reviewers @backstage/techdocs-core
 /plugins/techdocs-*                                 @backstage/reviewers @backstage/techdocs-core

@@ -87,7 +87,7 @@ describe('frontendPlugin factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating backend plugin backstage-plugin-test',
+      'Creating frontend plugin backstage-plugin-test',
       'Checking Prerequisites:',
       `availability  plugins${sep}test`,
       'creating      temp dir',

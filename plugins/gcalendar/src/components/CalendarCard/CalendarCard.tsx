@@ -15,7 +15,7 @@
  */
 import { sortBy } from 'lodash';
 import { DateTime } from 'luxon';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { InfoCard, Progress } from '@backstage/core-components';
 import { useAnalytics } from '@backstage/core-plugin-api';
@@ -51,10 +51,10 @@ export const CalendarCard = () => {
     signIn(true);
   }, [signIn]);
 
-  const { isLoading: isCalendarLoading, data } = useCalendarsQuery({
-    enabled: isSignedIn,
-  });
-  const calendars = useMemo(() => data?.items || [], [data]);
+  const { isLoading: isCalendarLoading, data: calendars = [] } =
+    useCalendarsQuery({
+      enabled: isSignedIn,
+    });
   const primaryCalendarId = calendars.find(c => c.primary === true)?.id;
   const defaultSelectedCalendars = primaryCalendarId ? [primaryCalendarId] : [];
   const [storedCalendars, setStoredCalendars] = useStoredCalendars(

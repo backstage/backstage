@@ -20,8 +20,7 @@ package.
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend-module-bitbucket
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-bitbucket
 ```
 
 And then add the processor to your catalog builder:

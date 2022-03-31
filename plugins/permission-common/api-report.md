@@ -90,6 +90,12 @@ export function isCreatePermission(permission: Permission): boolean;
 export function isDeletePermission(permission: Permission): boolean;
 
 // @public
+export function isPermission<T extends Permission>(
+  permission: Permission,
+  comparedPermission: T,
+): permission is T;
+
+// @public
 export function isReadPermission(permission: Permission): boolean;
 
 // @public
@@ -141,7 +147,11 @@ export class PermissionClient implements PermissionAuthorizer {
 }
 
 // @public
-export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
+export type PermissionCondition<
+  TResourceType extends string = string,
+  TParams extends unknown[] = unknown[],
+> = {
+  resourceType: TResourceType;
   rule: string;
   params: TParams;
 };

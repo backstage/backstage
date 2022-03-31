@@ -9,6 +9,7 @@ const BACKSTAGE_CORE_STORIES = [
   'plugins/org',
   'plugins/search',
   'plugins/home',
+  'plugins/stack-overflow',
 ];
 
 module.exports = ({ args }) => {

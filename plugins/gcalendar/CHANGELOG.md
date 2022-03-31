@@ -1,5 +1,11 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.0-next.1
+
+### Minor Changes
+
+- c6616e6fc9: Fixed issue when not all calendars were fetched for some accounts
+
 ## 0.2.1-next.0
 
 ### Patch Changes

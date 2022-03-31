@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 2a7d52ca2c: Override default commit message and author details in GitLab action
+- f5f921dafb: Add new `draft` option to the `publish:github:pull-request` action.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0-next.1
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/backend-common@0.13.2-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

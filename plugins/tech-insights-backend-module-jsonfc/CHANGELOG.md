@@ -1,5 +1,14 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.15-next.1
+
+### Patch Changes
+
+- ab008a0988: Removes node-cron from tech-insights to utilize backend-tasks
+- Updated dependencies
+  - @backstage/plugin-tech-insights-node@0.2.9-next.1
+  - @backstage/backend-common@0.13.2-next.1
+
 ## 0.1.15-next.0
 
 ### Patch Changes

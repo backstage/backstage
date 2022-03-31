@@ -1,5 +1,13 @@
 # @backstage/plugin-org
 
+## 0.5.4-next.1
+
+### Patch Changes
+
+- 111995470d: add aggregated ownership type for kind group in OwnershipCard
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+
 ## 0.5.4-next.0
 
 ### Patch Changes

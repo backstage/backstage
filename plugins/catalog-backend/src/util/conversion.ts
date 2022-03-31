@@ -32,10 +32,14 @@ export function locationSpecToMetadataName(location: LocationSpec) {
   return `generated-${hash}`;
 }
 
-export function locationSpecToLocationEntity(
-  location: LocationSpec,
-  parentEntity?: Entity,
-): LocationEntityV1alpha1 {
+/** @public */
+export function locationSpecToLocationEntity(opts: {
+  location: LocationSpec;
+  parentEntity?: Entity;
+}): LocationEntityV1alpha1 {
+  const location = opts.location;
+  const parentEntity = opts.parentEntity;
+
   let ownLocation: string;
   let originLocation: string;
   if (parentEntity) {

@@ -18,7 +18,11 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import type { Location } from '@backstage/catalog-client';
-import type { Entity } from '@backstage/catalog-model';
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  Entity,
+} from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';
 import { EntitiesCatalog } from '../catalog/types';
@@ -26,12 +30,17 @@ import { LocationInput, LocationService, RefreshService } from './types';
 import { basicEntityFilter } from './request';
 import { createRouter } from './createRouter';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  createPermissionIntegrationRouter,
+  createPermissionRule,
+} from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
+import { CatalogProcessingOrchestrator } from '../processing/types';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationService: jest.Mocked<LocationService>;
+  let orchestrator: jest.Mocked<CatalogProcessingOrchestrator>;
   let app: express.Express;
   let refreshService: RefreshService;
 
@@ -49,9 +58,11 @@ describe('createRouter readonly disabled', () => {
       deleteLocation: jest.fn(),
     };
     refreshService = { refresh: jest.fn() };
+    orchestrator = { process: jest.fn() };
     const router = await createRouter({
       entitiesCatalog,
       locationService,
+      orchestrator,
       logger: getVoidLogger(),
       refreshService,
       config: new ConfigReader(undefined),
@@ -383,6 +394,117 @@ describe('createRouter readonly disabled', () => {
       expect(response.status).toEqual(204);
     });
   });
+
+  describe('POST /validate-entity', () => {
+    describe('valid entity', () => {
+      it('returns 200', async () => {
+        const entity: Entity = {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'n' },
+        };
+
+        orchestrator.process.mockResolvedValueOnce({
+          ok: true,
+          state: {},
+          completedEntity: entity,
+          deferredEntities: [],
+          relations: [],
+          errors: [],
+        });
+
+        const response = await request(app)
+          .post('/validate-entity')
+          .send({ entity, location: 'url:validate-entity' });
+
+        expect(response.status).toEqual(200);
+        expect(orchestrator.process).toHaveBeenCalledTimes(1);
+        expect(orchestrator.process).toHaveBeenCalledWith({
+          entity: {
+            apiVersion: 'a',
+            kind: 'b',
+            metadata: {
+              name: 'n',
+              annotations: {
+                [ANNOTATION_LOCATION]: 'url:validate-entity',
+                [ANNOTATION_ORIGIN_LOCATION]: 'url:validate-entity',
+              },
+            },
+          },
+        });
+      });
+    });
+
+    describe('invalid entity', () => {
+      it('returns 400', async () => {
+        const entity: Entity = {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'invalid*name' },
+        };
+
+        orchestrator.process.mockResolvedValueOnce({
+          ok: false,
+          errors: [new Error('Invalid entity name')],
+        });
+
+        const response = await request(app)
+          .post('/validate-entity')
+          .send({ entity, location: 'url:validate-entity' });
+
+        expect(response.status).toEqual(400);
+        expect(response.body.errors.length).toEqual(1);
+        expect(response.body.errors[0].message).toEqual('Invalid entity name');
+        expect(orchestrator.process).toHaveBeenCalledTimes(1);
+        expect(orchestrator.process).toHaveBeenCalledWith({
+          entity: {
+            apiVersion: 'a',
+            kind: 'b',
+            metadata: {
+              name: 'invalid*name',
+              annotations: {
+                [ANNOTATION_LOCATION]: 'url:validate-entity',
+                [ANNOTATION_ORIGIN_LOCATION]: 'url:validate-entity',
+              },
+            },
+          },
+        });
+      });
+    });
+
+    describe('no location', () => {
+      it('returns 400', async () => {
+        const entity: Entity = {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'n' },
+        };
+
+        const response = await request(app)
+          .post('/validate-entity')
+          .send({ entity, location: null });
+
+        expect(response.status).toEqual(400);
+        expect(response.body.errors.length).toEqual(1);
+        expect(response.body.errors[0].message).toContain('Malformed request:');
+        expect(orchestrator.process).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe('no entity', () => {
+      it('returns 400', async () => {
+        const response = await request(app)
+          .post('/validate-entity')
+          .send({ entity: null, location: 'url:entity' });
+
+        expect(response.status).toEqual(400);
+        expect(response.body.errors.length).toEqual(1);
+        expect(response.body.errors[0].message).toContain(
+          '<root> must be object - type: object',
+        );
+      });
+    });
+  });
 });
 
 describe('createRouter readonly enabled', () => {
@@ -568,12 +690,13 @@ describe('NextRouter permissioning', () => {
   let app: express.Express;
   let refreshService: RefreshService;
 
-  const fakeRule = {
+  const fakeRule = createPermissionRule({
     name: 'FAKE_RULE',
     description: 'fake rule',
+    resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
     apply: () => true,
     toQuery: () => ({ key: '', values: [] }),
-  };
+  });
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -631,7 +754,11 @@ describe('NextRouter permissioning', () => {
           id: '123',
           resourceType: 'catalog-entity',
           resourceRef: 'component:default/spidey-sense',
-          conditions: { rule: 'FAKE_RULE', params: ['user:default/spiderman'] },
+          conditions: {
+            rule: 'FAKE_RULE',
+            resourceType: 'catalog-entity',
+            params: ['user:default/spiderman'],
+          },
         },
       ],
     };

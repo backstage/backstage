@@ -251,6 +251,7 @@ export const createPublishGithubPullRequestAction: ({
   branchName: string;
   description: string;
   repoUrl: string;
+  draft?: boolean | undefined;
   targetPath?: string | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;

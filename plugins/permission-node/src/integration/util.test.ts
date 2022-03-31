@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createPermissionRule } from './createPermissionRule';
 import {
   createGetRule,
   isAndCriteria,
@@ -25,19 +26,21 @@ describe('permission integration utils', () => {
   describe('createGetRule', () => {
     let getRule: ReturnType<typeof createGetRule>;
 
-    const testRule1 = {
+    const testRule1 = createPermissionRule({
       name: 'test-rule-1',
       description: 'Test rule 1',
+      resourceType: 'test-resource',
       apply: jest.fn(),
       toQuery: jest.fn(),
-    };
+    });
 
-    const testRule2 = {
+    const testRule2 = createPermissionRule({
       name: 'test-rule-2',
       description: 'Test rule 2',
+      resourceType: 'test-resource',
       apply: jest.fn(),
       toQuery: jest.fn(),
-    };
+    });
 
     beforeEach(() => {
       getRule = createGetRule([testRule1, testRule2]);

@@ -29,7 +29,7 @@ import {
 
 const mapConditions = <TQuery>(
   criteria: PermissionCriteria<PermissionCondition>,
-  getRule: (name: string) => PermissionRule<unknown, TQuery>,
+  getRule: (name: string) => PermissionRule<unknown, TQuery, string>,
 ): PermissionCriteria<TQuery> => {
   if (isAndCriteria(criteria)) {
     return {
@@ -70,7 +70,7 @@ export type ConditionTransformer<TQuery> = (
  */
 export const createConditionTransformer = <
   TQuery,
-  TRules extends PermissionRule<any, TQuery>[],
+  TRules extends PermissionRule<any, TQuery, string>[],
 >(
   permissionRules: [...TRules],
 ): ConditionTransformer<TQuery> => {

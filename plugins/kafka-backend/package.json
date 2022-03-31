@@ -35,7 +35,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.13.2-next.0",
+    "@backstage/backend-common": "^0.13.2-next.1",
     "@backstage/catalog-model": "^1.0.1-next.0",
     "@backstage/config": "^1.0.0",
     "@backstage/errors": "^1.0.0",
@@ -47,7 +47,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.16.1-next.0",
+    "@backstage/cli": "^0.17.0-next.1",
     "@types/jest-when": "^2.7.2",
     "@types/lodash": "^4.14.151",
     "jest-when": "^3.1.0",
