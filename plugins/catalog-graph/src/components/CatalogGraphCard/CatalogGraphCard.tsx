@@ -55,6 +55,7 @@ export const CatalogGraphCard = ({
   variant = 'gridItem',
   relationPairs = ALL_RELATION_PAIRS,
   maxDepth = 1,
+  viewGraphDepth,
   unidirectional = true,
   mergeRelations = true,
   kinds,
@@ -67,6 +68,7 @@ export const CatalogGraphCard = ({
   variant?: InfoCardVariants;
   relationPairs?: RelationPairs;
   maxDepth?: number;
+  viewGraphDepth?: number;
   unidirectional?: boolean;
   mergeRelations?: boolean;
   kinds?: string[];
@@ -103,7 +105,7 @@ export const CatalogGraphCard = ({
   );
 
   const catalogGraphParams = qs.stringify(
-    { rootEntityRefs: [stringifyEntityRef(entity)] },
+    { rootEntityRefs: [stringifyEntityRef(entity)], maxDepth: viewGraphDepth },
     { arrayFormat: 'brackets', addQueryPrefix: true },
   );
   const catalogGraphUrl = `${catalogGraphRoute()}${catalogGraphParams}`;
