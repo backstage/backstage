@@ -1526,6 +1526,22 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
+"@backstage/core-app-api@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-1.0.0.tgz#2dae97b050b2f2e5ec1ea42b3d95c57e8bf434d6"
+  integrity sha512-hmoFMPCxAfHgDPQTHbf6rquiG0SCSycWTUrScpYeLwkH3UOekgX8o8ThKT0t3w7WPx83LwT0NqcbSH6zqI9nag==
+  dependencies:
+    "@backstage/config" "^1.0.0"
+    "@backstage/core-plugin-api" "^1.0.0"
+    "@backstage/types" "^1.0.0"
+    "@backstage/version-bridge" "^1.0.0"
+    "@types/prop-types" "^15.7.3"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+    zod "^3.11.6"
+
 "@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.1", "@backstage/core-components@^0.9.2":
   version "0.9.2"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.2.tgz#9a3d79a15039256bbc007e5daa08c983050e0238"
@@ -6523,18 +6539,6 @@
   integrity sha512-U5HdnwIZ5uZa+f3usxdqgyfNmOROxOxXvQdQtsu6sKo8fte5vej9br2csHxPvXreAbAO1bs8/rdEzvCLpi67nQ==
   dependencies:
     "@types/node" "*"
-
-"@types/lodash.debounce@^4.0.6":
-  version "4.0.6"
-  resolved "https://registry.npmjs.org/@types/lodash.debounce/-/lodash.debounce-4.0.6.tgz#c5a2326cd3efc46566c47e4c0aa248dc0ee57d60"
-  integrity sha512-4WTmnnhCfDvvuLMaF3KV4Qfki93KebocUF45msxhYyjMttZDQYzHkO639ohhk8+oco2cluAFL3t5+Jn4mleylQ==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash@*":
-  version "4.14.180"
-  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.180.tgz#4ab7c9ddfc92ec4a887886483bc14c79fb380670"
-  integrity sha512-XOKXa1KIxtNXgASAnwj7cnttJxS4fksBRywK/9LzRV5YxrF80BXZIGeQSuoESQ/VkUj30Ae0+YcuHc15wJCB2g==
 
 "@types/lodash@^4.14.151", "@types/lodash@^4.14.173", "@types/lodash@^4.14.175":
   version "4.14.178"
@@ -12418,9 +12422,9 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-tech-insights" "^0.1.14-next.0"
     "@backstage/plugin-tech-radar" "^0.5.11-next.1"
     "@backstage/plugin-techdocs" "^1.0.1-next.1"
-    "@backstage/plugin-techdocs-addons" "^0.0.0"
     "@backstage/plugin-todo" "^0.2.6-next.0"
     "@backstage/plugin-user-settings" "^0.4.3-next.0"
+    "@backstage/techdocs-addons" "^0.0.0"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
@@ -24045,11 +24049,6 @@ testcontainers@^8.1.2:
     properties-reader "^2.2.0"
     ssh-remote-port-forward "^1.0.4"
     tar-fs "^2.1.1"
-
-testing-library__dom@^7.29.4-beta.1:
-  version "7.29.4-beta.1"
-  resolved "https://registry.npmjs.org/testing-library__dom/-/testing-library__dom-7.29.4-beta.1.tgz#dc755f485837e923efbe12c1b7ae43b0ed326f96"
-  integrity sha512-vb/SMg8rXYcYYFY2eQ2n2a0p2VWNAseM4WHLfsckIyLwxRz5fYqKysUzUYpAX8SwRfruRK+tZqLuL4ND+D1s7Q==
 
 text-extensions@^1.0.0:
   version "1.9.0"
