@@ -27,10 +27,11 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import {
-  BitbucketClient,
+  BitbucketCloudClient,
   BitbucketRepository,
   BitbucketRepository20,
   BitbucketRepositoryParser,
+  BitbucketServerClient,
   defaultRepositoryParser,
   paginated,
   paginated20,
@@ -90,28 +91,25 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
-    const client = new BitbucketClient({
-      config: integration.config,
-    });
     const startTimestamp = Date.now();
-    this.logger.info(`Reading Bitbucket repositories from ${location.target}`);
-
-    const isBitbucketCloud = integration.config.host === 'bitbucket.org';
+    this.logger.info(
+      `Reading ${integration.config.host} repositories from ${location.target}`,
+    );
 
     const processOptions: ProcessOptions = {
-      client,
       emit,
       integration,
       location,
     };
 
+    const isBitbucketCloud = integration.config.host === 'bitbucket.org';
     const { scanned, matches } = isBitbucketCloud
       ? await this.processCloudRepositories(processOptions)
       : await this.processOrganizationRepositories(processOptions);
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
-      `Read ${scanned} Bitbucket repositories (${matches} matching the pattern) in ${duration} seconds`,
+      `Read ${scanned} ${integration.config.host} repositories (${matches} matching the pattern) in ${duration} seconds`,
     );
 
     return true;
@@ -120,7 +118,10 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private async processCloudRepositories(
     options: ProcessOptions,
   ): Promise<ResultSummary> {
-    const { client, location, integration, emit } = options;
+    const { location, integration, emit } = options;
+    const client = new BitbucketCloudClient({
+      config: integration.config,
+    });
 
     const { searchEnabled } = parseBitbucketCloudUrl(location.target);
 
@@ -147,11 +148,15 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private async processOrganizationRepositories(
     options: ProcessOptions,
   ): Promise<ResultSummary> {
-    const { client, location, integration, emit } = options;
+    const { location, integration, emit } = options;
     const { catalogPath: requestedCatalogPath } = parseUrl(location.target);
     const catalogPath = requestedCatalogPath
       ? `/${requestedCatalogPath}`
       : DEFAULT_CATALOG_LOCATION;
+
+    const client = new BitbucketServerClient({
+      config: integration.config,
+    });
 
     const result = await readBitbucketOrg(client, location.target);
     for (const repository of result.matches) {
@@ -171,7 +176,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 }
 
 export async function readBitbucketOrg(
-  client: BitbucketClient,
+  client: BitbucketServerClient,
   target: string,
 ): Promise<Result<BitbucketRepository>> {
   const { projectSearchPath, repoSearchPath } = parseUrl(target);
@@ -199,7 +204,7 @@ export async function readBitbucketOrg(
 }
 
 export async function searchBitbucketCloudLocations(
-  client: BitbucketClient,
+  client: BitbucketCloudClient,
   target: string,
 ): Promise<Result<string>> {
   const {
@@ -252,7 +257,7 @@ export async function searchBitbucketCloudLocations(
 }
 
 export async function readBitbucketCloudLocations(
-  client: BitbucketClient,
+  client: BitbucketCloudClient,
   target: string,
 ): Promise<Result<string>> {
   const { catalogPath: requestedCatalogPath } = parseBitbucketCloudUrl(target);
@@ -274,7 +279,7 @@ export async function readBitbucketCloudLocations(
 }
 
 export async function readBitbucketCloud(
-  client: BitbucketClient,
+  client: BitbucketCloudClient,
   target: string,
 ): Promise<Result<BitbucketRepository20>> {
   const {
@@ -285,7 +290,7 @@ export async function readBitbucketCloud(
   } = parseBitbucketCloudUrl(target);
 
   const repositories = paginated20(
-    options => client.listRepositoriesByWorkspace20(workspacePath, options),
+    options => client.listRepositoriesByWorkspace(workspacePath, options),
     {
       q,
     },
@@ -380,7 +385,6 @@ function escapeRegExp(str: string): RegExp {
 }
 
 type ProcessOptions = {
-  client: BitbucketClient;
   integration: BitbucketIntegration;
   location: LocationSpec;
   emit: CatalogProcessorEmit;
