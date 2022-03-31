@@ -16,7 +16,9 @@ const Background = props => {
     <main className="MainContent">
       <Block small className="stripe-bottom bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.Title>Backstage Community</Block.Title>
+          <Block.TextBox>
+            <Block.Title>Backstage Community</Block.Title>
+          </Block.TextBox>
           <Block.TextBox>
             <Block.Paragraph>
               What's the use of having fun if you can't share it? Exactly. Join
@@ -55,34 +57,37 @@ const Background = props => {
 
       <Block small className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.Title>Community Sessions</Block.Title>
           <Block.TextBox>
+            <Block.Title>Backstage Community Sessions</Block.Title>
             <Block.Paragraph>
-              <b>Adopters Community Sessions</b>
-              <br />
-              Backstage Community Sessions is the monthly meetup where we all
-              come together to listen to the latest maintainer updates, learn
-              from each other about adopting, share exciting new demos or
-              discuss any relevant topic like developer effectiveness, developer
-              experience, developer portals, etc.
-            </Block.Paragraph>
-
-            <Block.Paragraph>
-              <b>Contributor Community Sessions</b>
-              <br />
-              Discuss all things contributing, diving deep under the hood of
-              Backstage (Backstage of Backstage? Backerstage?). An open
-              discussion with maintainers and contributors of Backstage.
+              Missed a meetup? Wondering when the next one is coming up? We've
+              got you covered! Check out our all-new Meetups page.
             </Block.Paragraph>
             <Block.LinkButton href="/on-demand">Meetups</Block.LinkButton>
           </Block.TextBox>
           <Block.TextBox>
-            <Block.Graphic
-              x={60}
-              y={12}
-              width={30}
-              src={`${baseUrl}img/b-sessions.png`}
-            />
+            <Block.Title>Adopter Community Sessions</Block.Title>
+            <Block.Paragraph>
+              Backstage Community Sessions is the monthly meetup where we all
+              come together to listen to the latest maintainer updates, learn
+              from each other about adopting, share exciting new demos or
+              discuss any relevant topic like developer effectiveness, developer
+              experience, developer portals, etc. Have something to share, or a
+              burning question? Add it to the{' '}
+              <a href="https://github.com/backstage/community/issues">issue</a>.
+            </Block.Paragraph>
+          </Block.TextBox>
+          <Block.TextBox>
+            <Block.Title>Contributor Community Sessions</Block.Title>
+            <Block.Paragraph>
+              Discuss all things contributing, diving deep under the hood of
+              Backstage (Backstage of Backstage? Backerstage?). An open
+              discussion with maintainers and contributors of Backstage. If you
+              like Backstage, this is your favorite Zoom meeting of the month,
+              guaranteed! Have something to share, or a burning question? Add it
+              to the{' '}
+              <a href="https://github.com/backstage/community/issues">issue</a>.
+            </Block.Paragraph>
           </Block.TextBox>
         </Block.Container>
       </Block>
@@ -91,6 +96,8 @@ const Background = props => {
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
             <Block.Title>Backstage official Newsletter</Block.Title>
+          </Block.TextBox>
+          <Block.TextBox>
             <Block.Paragraph>
               The official monthly Backstage newsletter. Containing the latest
               news from your favorite project.
@@ -99,12 +106,6 @@ const Background = props => {
               Subscribe
             </Block.LinkButton>
           </Block.TextBox>
-          <Block.Graphic
-            x={45}
-            y={12}
-            width={30}
-            src={`${baseUrl}img/news-fpo.png`}
-          />
         </Block.Container>
       </Block>
 
@@ -143,17 +144,6 @@ const Background = props => {
               Learn more
             </Block.LinkButton>
           </Block.TextBox>
-        </Block.Container>
-      </Block>
-
-      <Block small className="bg-black-grey">
-        <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.Graphic
-            x={41}
-            y={12}
-            width={40}
-            src={`${baseUrl}img/roadie-newsletter.png`}
-          />
         </Block.Container>
       </Block>
     </main>
