@@ -58,12 +58,16 @@ const Background = props => {
       <Block small className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
-            <Block.Title>Community Sessions</Block.Title>
+            <Block.Title>Backstage Community Sessions</Block.Title>
+            <Block.Paragraph>
+              Missed a meetup? Wondering when the next one is coming up? We've
+              got you covered! Check out our all-new Meetups page.
+            </Block.Paragraph>
+            <Block.LinkButton href="/on-demand">Meetups</Block.LinkButton>
           </Block.TextBox>
           <Block.TextBox>
+            <Block.Title>Adopter Community Sessions</Block.Title>
             <Block.Paragraph>
-              <b>Adopters Community Sessions</b>
-              <br />
               Backstage Community Sessions is the monthly meetup where we all
               come together to listen to the latest maintainer updates, learn
               from each other about adopting, share exciting new demos or
@@ -72,14 +76,14 @@ const Background = props => {
             </Block.Paragraph>
           </Block.TextBox>
           <Block.TextBox>
+            <Block.Title>Contributor Community Sessions</Block.Title>
             <Block.Paragraph>
-              <b>Contributor Community Sessions</b>
-              <br />
               Discuss all things contributing, diving deep under the hood of
               Backstage (Backstage of Backstage? Backerstage?). An open
-              discussion with maintainers and contributors of Backstage.
+              discussion with maintainers and contributors of Backstage. If you
+              like Backstage, this is your favorite Zoom meeting of the month,
+              guaranteed!
             </Block.Paragraph>
-            <Block.LinkButton href="/on-demand">Meetups</Block.LinkButton>
           </Block.TextBox>
         </Block.Container>
       </Block>
