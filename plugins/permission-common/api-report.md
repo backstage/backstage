@@ -139,7 +139,7 @@ export type PermissionAttributes = {
   action?: 'create' | 'read' | 'update' | 'delete';
 };
 
-// @public
+// @public @deprecated
 export interface PermissionAuthorizer {
   // (undocumented)
   authorize(

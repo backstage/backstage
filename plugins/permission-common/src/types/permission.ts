@@ -91,6 +91,7 @@ export type ResourcePermission<TResourceType extends string = string> =
 /**
  * A client interacting with the permission backend can implement this authorizer interface.
  * @public
+ * @deprecated Use PermissionEvaluator instead
  */
 export interface PermissionAuthorizer {
   authorize(
