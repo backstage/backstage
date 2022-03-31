@@ -39,6 +39,8 @@ class NoopTokenManager implements TokenManager {
 export class ServerTokenManager implements TokenManager {
   private verificationKeys: Uint8Array[];
   private signingKey: Uint8Array;
+  private privateKeyPromise?: Promise<void>;
+  private logger: Logger;
 
   static noop(): TokenManager {
     return new NoopTokenManager();
@@ -49,7 +51,10 @@ export class ServerTokenManager implements TokenManager {
 
     const keys = config.getOptionalConfigArray('backend.auth.keys');
     if (keys?.length) {
-      return new ServerTokenManager(keys.map(key => key.getString('secret')));
+      return new ServerTokenManager(
+        keys.map(key => key.getString('secret')),
+        logger,
+      );
     }
     if (process.env.NODE_ENV !== 'development') {
       throw new Error(
@@ -60,15 +65,16 @@ export class ServerTokenManager implements TokenManager {
     logger.warn(
       'Generated a secret for backend-to-backend authentication: DEVELOPMENT USE ONLY.',
     );
-    return new ServerTokenManager([]);
+    return new ServerTokenManager([], logger);
   }
 
-  private constructor(secrets: string[]) {
+  private constructor(secrets: string[], logger: Logger) {
     if (!secrets.length && process.env.NODE_ENV !== 'development') {
       throw new Error(
         'No secrets provided when constructing ServerTokenManager',
       );
     }
+    this.logger = logger;
     this.verificationKeys = secrets.map(s => base64url.decode(s));
     this.signingKey = this.verificationKeys[0];
   }
@@ -80,10 +86,26 @@ export class ServerTokenManager implements TokenManager {
         'Key generation is not supported outside of the dev environment',
       );
     }
-    const secret = await generateSecret('HS256');
-    const jwk = await exportJWK(secret);
-    this.verificationKeys.push(base64url.decode(jwk.k ?? ''));
-    this.signingKey = this.verificationKeys[0];
+    if (this.privateKeyPromise) {
+      return this.privateKeyPromise;
+    }
+    const promise = (async () => {
+      const secret = await generateSecret('HS256');
+      const jwk = await exportJWK(secret);
+      this.verificationKeys.push(base64url.decode(jwk.k ?? ''));
+      this.signingKey = this.verificationKeys[0];
+      return;
+    })();
+
+    try {
+      // If we fail to generate a new key, we need to clear the state so that
+      // the next caller will try to generate another key.
+      await promise;
+    } catch (error) {
+      this.logger.error(`Failed to generate new key, ${error}`);
+      delete this.privateKeyPromise;
+    }
+    return promise;
   }
 
   async getToken(): Promise<{ token: string }> {

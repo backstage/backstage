@@ -18,12 +18,16 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
+  decodeJwt,
   jwtVerify,
   FlattenedJWSInput,
   JWSHeaderParameters,
+  decodeProtectedHeader,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
 import { BackstageIdentityResponse } from './types';
+
+const CLOCK_MARGIN_S = 10;
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -37,6 +41,7 @@ export class IdentityClient {
   private readonly issuer: string;
   private keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
   private endpoint?: URL;
+  private keyStoreUpdated: number = 0;
 
   /**
    * Create a new {@link IdentityClient} instance.
@@ -57,6 +62,7 @@ export class IdentityClient {
     this.discovery.getBaseUrl('auth').then(url => {
       this.endpoint = new URL(`${url}/.well-known/jwks.json`);
       this.keyStore = createRemoteJWKSet(this.endpoint);
+      this.keyStoreUpdated = Date.now() / 1000;
     });
   }
 
@@ -72,13 +78,6 @@ export class IdentityClient {
     if (!token) {
       throw new AuthenticationError('No token specified');
     }
-    // Check if the keystore needs to be updated
-    const url = await this.discovery.getBaseUrl('auth');
-    const endpoint = new URL(`${url}/.well-known/jwks.json`);
-    if (endpoint !== this.endpoint) {
-      this.endpoint = endpoint;
-      this.keyStore = createRemoteJWKSet(this.endpoint);
-    }
 
     // Verify token claims and signature
     // Note: Claims must match those set by TokenFactory when issuing tokens
@@ -86,6 +85,8 @@ export class IdentityClient {
     if (!this.keyStore) {
       throw new AuthenticationError('No keystore exists');
     }
+    // Check if the keystore needs to be updated
+    await this.refreshKeyStore(token);
     const decoded = await jwtVerify(token, this.keyStore, {
       algorithms: ['ES256'],
       audience: 'backstage',
@@ -108,5 +109,39 @@ export class IdentityClient {
       },
     };
     return user;
+  }
+
+  /**
+   * If the last keystore refresh is stale, update the keystore URL to the latest
+   */
+  private async refreshKeyStore(rawJwtToken: string): Promise<void> {
+    const payload = await decodeJwt(rawJwtToken);
+    const header = await decodeProtectedHeader(rawJwtToken);
+
+    // Refresh public keys if needed
+    let keyStoreHasKey;
+    try {
+      if (this.keyStore) {
+        // Check if the key is present in the keystore
+        const [_, rawPayload, rawSignature] = rawJwtToken.split('.');
+        keyStoreHasKey = await this.keyStore(header, {
+          payload: rawPayload,
+          signature: rawSignature,
+        });
+      }
+    } catch (error) {
+      keyStoreHasKey = false;
+    }
+    // Refresh public key URL if needed
+    // Add a small margin in case clocks are out of sync
+    const issuedAfterLastRefresh =
+      payload?.iat && payload.iat > this.keyStoreUpdated - CLOCK_MARGIN_S;
+    if (!keyStoreHasKey && issuedAfterLastRefresh) {
+      const url = await this.discovery.getBaseUrl('auth');
+      const endpoint = new URL(`${url}/.well-known/jwks.json`);
+      this.endpoint = endpoint;
+      this.keyStore = createRemoteJWKSet(this.endpoint);
+      this.keyStoreUpdated = Date.now() / 1000;
+    }
   }
 }

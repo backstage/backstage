@@ -21,6 +21,7 @@ import {
   decodeProtectedHeader,
   exportJWK,
 } from 'jose';
+import { cloneDeep } from 'lodash';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { IdentityClient } from './IdentityClient';
@@ -249,10 +250,23 @@ describe('IdentityClient', () => {
       }).rejects.toThrow();
     });
 
-    it('should use an updated endpoint', async () => {
+    it('should use an updated endpoint when the key is not found', async () => {
       const updatedURL = 'http://backstage:9191/an-updated-base';
       const getBaseUrl = discovery.getBaseUrl;
       const getExternalBaseUrl = discovery.getExternalBaseUrl;
+      // Generate a key and sign a token with it
+      await factory.issueToken({ claims: { sub: 'foo' } });
+      // Only return the key from a single token
+      const singleKey = cloneDeep(await factory.listPublicKeys());
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/.well-known/jwks.json`,
+          async (_, res, ctx) => {
+            return res(ctx.json(singleKey));
+          },
+        ),
+      );
+      // Update the discovery endpoint to point to a new URL
       discovery.getBaseUrl = async () => {
         return updatedURL;
       };
@@ -265,20 +279,29 @@ describe('IdentityClient', () => {
           return res(ctx.json(keys));
         }),
       );
-      const token = await factory.issueToken({ claims: { sub: 'foo' } });
+      // Advance time
+      const future_11s = Date.now() + 11 * 1000;
+      const dateSpy = jest
+        .spyOn(Date, 'now')
+        .mockImplementation(() => future_11s);
+      // Issue a new token
+      const token = await factory.issueToken({ claims: { sub: 'foo2' } });
       const response = await client.authenticate(token);
+      // Verify that the endpoint was updated.
       const url = (client as any).endpoint as URL;
       expect(url.toString()).toMatch(`${updatedURL}/.well-known/jwks.json`);
       expect(response).toEqual({
         token: token,
         identity: {
           type: 'user',
-          userEntityRef: 'foo',
+          userEntityRef: 'foo2',
           ownershipEntityRefs: [],
         },
       });
+      // Restore the discovery endpoint and time
       discovery.getBaseUrl = getBaseUrl;
       discovery.getExternalBaseUrl = getExternalBaseUrl;
+      dateSpy.mockClear();
     });
   });
 
