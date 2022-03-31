@@ -20,14 +20,14 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
-  permissions?: PermissionAuthorizer;
+  permissions?: PermissionEvaluator;
 }
 
 export async function createRouter(
