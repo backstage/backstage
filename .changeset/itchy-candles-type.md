@@ -19,8 +19,8 @@ To use MyGroupsSidebarItem you'll need to add it to your `Root.tsx` like this:
         //...
         <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
 +       <MyGroupsSidebarItem
-+         singularTitle='My Squad'
-+         pluralTitle='My Squads'
++         singularTitle="My Squad"
++         pluralTitle="My Squads"
 +         icon={GroupIcon}
 +       />
        //...
