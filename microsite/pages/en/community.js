@@ -72,7 +72,9 @@ const Background = props => {
               come together to listen to the latest maintainer updates, learn
               from each other about adopting, share exciting new demos or
               discuss any relevant topic like developer effectiveness, developer
-              experience, developer portals, etc.
+              experience, developer portals, etc. Have something to share, or a
+              burning question? Add it to the{' '}
+              <a href="https://github.com/backstage/community/issues">issue</a>.
             </Block.Paragraph>
           </Block.TextBox>
           <Block.TextBox>
@@ -82,7 +84,9 @@ const Background = props => {
               Backstage (Backstage of Backstage? Backerstage?). An open
               discussion with maintainers and contributors of Backstage. If you
               like Backstage, this is your favorite Zoom meeting of the month,
-              guaranteed!
+              guaranteed! Have something to share, or a burning question? Add it
+              to the{' '}
+              <a href="https://github.com/backstage/community/issues">issue</a>.
             </Block.Paragraph>
           </Block.TextBox>
         </Block.Container>
