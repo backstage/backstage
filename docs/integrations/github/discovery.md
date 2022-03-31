@@ -22,8 +22,7 @@ package, `@backstage/integration` is needed for the basic credentials management
 ```bash
 # From your Backstage root directory
 
-cd packages/backend
-yarn add --cwd packages/backend @backstage/integration 
+yarn add --cwd packages/backend @backstage/integration
 yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
 
 ```
