@@ -16,7 +16,9 @@ const Background = props => {
     <main className="MainContent">
       <Block small className="stripe-bottom bg-black-grey">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.Title>Backstage Community</Block.Title>
+          <Block.TextBox>
+            <Block.Title>Backstage Community</Block.Title>
+          </Block.TextBox>
           <Block.TextBox>
             <Block.Paragraph>
               What's the use of having fun if you can't share it? Exactly. Join
