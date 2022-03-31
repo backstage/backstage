@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-permission-node': patch
+'@backstage/plugin-permission-node': minor
 ---
 
-Use new `PermissionEvaluator#query` method in `ServerPermissionClient` and test suites.
+**BREAKING:** `ServerPermissionClient` now implements `PermissionEvaluator`, which moves out the capabilities for evaluating conditional decisions from `authorize()` to `query()` method.

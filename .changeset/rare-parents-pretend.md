@@ -2,13 +2,13 @@
 '@backstage/create-app': patch
 ---
 
-Use `ServerPermissionClient` instead of `PermissionAuthorizer`.
+Use `PermissionEvaluator` instead of `PermissionAuthorizer`.
 
 Apply the following to `packages/backend/src/types.ts`:
 
 ```diff
 - import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-+ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
++ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
   export type PluginEnvironment = {
     ...
@@ -16,6 +16,6 @@ Apply the following to `packages/backend/src/types.ts`:
     tokenManager: TokenManager;
     scheduler: PluginTaskScheduler;
 -   permissions: PermissionAuthorizer;
-+   permissions: ServerPermissionClient;
++   permissions: PermissionEvaluator;
   };
 ```
