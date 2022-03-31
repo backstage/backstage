@@ -2839,9 +2839,9 @@
   integrity sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==
 
 "@grpc/grpc-js@~1.4.0":
-  version "1.4.5"
-  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.4.5.tgz#0cd840b47180624eeedf066f2cdc422d052401f8"
-  integrity sha512-A6cOzSu7dqXZ7rzvh/9JZf+Jg/MOpLEMP0IdT8pT8hrWJZ6TB4ydN/MRuqOtAugInJe/VQ9F8BPricUpYZSaZA==
+  version "1.4.6"
+  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.4.6.tgz#8108d7ab7c0c21b38c538c1a48583edbbf2c2412"
+  integrity sha512-Byau4xiXfIixb1PnW30V/P9mkrZ05lknyNqiK+cVY9J5hj3gecxd/anwaUbAM8j834zg1x78NvAbwGnMfWEu7A==
   dependencies:
     "@grpc/proto-loader" "^0.6.4"
     "@types/node" ">=12.12.47"
@@ -6432,6 +6432,11 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-15.14.9.tgz#bc43c990c3c9be7281868bbc7b8fdd6e2b57adfa"
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
 
+"@types/node@^16.x":
+  version "16.11.26"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.26.tgz#63d204d136c9916fb4dcd1b50f9740fe86884e47"
+  integrity sha512-GZ7bu5A6+4DtG7q9GsoHXy3ALcgeIHP4NnL0Vv2wu0uUB/yQex26v0tf6/na1mm0+bS9Uw+0DFex7aaKr2qawQ==
+
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
   resolved "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
@@ -6779,18 +6784,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/ssh2@*":
-  version "0.5.47"
-  resolved "https://registry.npmjs.org/@types/ssh2/-/ssh2-0.5.47.tgz#67a8b35a0527b2bb668f6dea4c84be6ff1abdc19"
-  integrity sha512-ZhqJg8BRV7OsCi0KVqPr27lUMMmLEeHYw1VXUNGGDlQEDq9HTsKx+wYvi8E6oNC6gRZ7PV99ZMZmMr5vztcYYA==
-  dependencies:
-    "@types/node" "*"
-    "@types/ssh2-streams" "*"
-
-"@types/ssh2@^0.5.48":
-  version "0.5.48"
-  resolved "https://registry.npmjs.org/@types/ssh2/-/ssh2-0.5.48.tgz#0d9e8654a76eaaf4cfeaeb88d74c4489cfcf7aea"
-  integrity sha512-cmQu0gp/6RtDXe1r2xXGgi0V0TeCdueDSRMEvBX8cTRT/sSREkUpgCYZLyh+iI8Ql+VNV8Az9toQoYa/IdgHbQ==
+"@types/ssh2@*", "@types/ssh2@^0.5.48":
+  version "0.5.52"
+  resolved "https://registry.npmjs.org/@types/ssh2/-/ssh2-0.5.52.tgz#9dbd8084e2a976e551d5e5e70b978ed8b5965741"
+  integrity sha512-lbLLlXxdCZOSJMCInKH2+9V/77ET2J6NPQHpFI0kda61Dd1KglJs+fPQBchizmzYSOJBgdTajhPqBO1xxLywvg==
   dependencies:
     "@types/node" "*"
     "@types/ssh2-streams" "*"
