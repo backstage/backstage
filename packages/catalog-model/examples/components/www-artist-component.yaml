@@ -8,3 +8,5 @@ spec:
   lifecycle: production
   owner: team-a
   system: artist-engagement-portal
+  consumesApis: ['component:artist-lookup']
+
