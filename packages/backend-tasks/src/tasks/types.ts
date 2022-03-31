@@ -41,6 +41,8 @@ export interface TaskScheduleDefinition {
    * How often you want the task to run. The system does its best to avoid
    * overlapping invocations.
    *
+   * @remarks
+   *
    * This is a best effort value; under some circumstances there can be
    * deviations. For example, if the task runtime is longer than the frequency
    * and the timeout has not been given or not been exceeded yet, the next
@@ -53,6 +55,8 @@ export interface TaskScheduleDefinition {
     | {
         /**
          * A crontab style string.
+         *
+         * @remarks
          *
          * Overview:
          *
@@ -82,11 +86,19 @@ export interface TaskScheduleDefinition {
   /**
    * The amount of time that should pass before the first invocation happens.
    *
-   * This can be useful in cold start scenarios to stagger or delay some heavy
-   * compute jobs.
+   * @remarks
    *
-   * If no value is given for this field then the first invocation will happen
-   * as soon as possible according to the cadence.
+   * This can be useful in cold start scenarios to stagger or delay some heavy
+   * compute jobs. If no value is given for this field then the first invocation
+   * will happen as soon as possible according to the cadence.
+   *
+   * NOTE: This is a per-worker delay. If you have a cluster of workers all
+   * collaborating on a task, then you may still see the task being processed by
+   * other long-lived workers, while any given single worker is in its initial
+   * sleep delay time e.g. after a deployment. Therefore this parameter is not
+   * useful for "globally" pausing work; its main intended use is for individual
+   * machines to get a chance to reach some equilibrium at startup before
+   * triggering heavy batch workloads.
    */
   initialDelay?: Duration;
 }
