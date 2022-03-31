@@ -1411,6 +1411,30 @@
     uuid "^8.0.0"
     yup "^0.32.9"
 
+"@backstage/config@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@backstage/config/-/config-1.0.0.tgz#7af40758ae3f8e1d9ef3a07f063a1fd9cf5c364e"
+  integrity sha512-0M8UPHjCev3i/Puz/DGV7hor/vujx27bpWip5UTjachzBorI5xB0CBV1GfZ1UZMm5R5py7RJ+lKdmSJVFdw9IA==
+  dependencies:
+    "@backstage/types" "^1.0.0"
+    lodash "^4.17.21"
+
+"@backstage/core-app-api@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@backstage/core-app-api/-/core-app-api-1.0.0.tgz#2dae97b050b2f2e5ec1ea42b3d95c57e8bf434d6"
+  integrity sha512-hmoFMPCxAfHgDPQTHbf6rquiG0SCSycWTUrScpYeLwkH3UOekgX8o8ThKT0t3w7WPx83LwT0NqcbSH6zqI9nag==
+  dependencies:
+    "@backstage/config" "^1.0.0"
+    "@backstage/core-plugin-api" "^1.0.0"
+    "@backstage/types" "^1.0.0"
+    "@backstage/version-bridge" "^1.0.0"
+    "@types/prop-types" "^15.7.3"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^17.2.4"
+    zen-observable "^0.8.15"
+    zod "^3.11.6"
+
 "@backstage/core-components@^0.8.0", "@backstage/core-components@^0.8.9":
   version "0.8.10"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.8.10.tgz#6f79c46cdf507fc3a0d764848a4a8aa73af7ce93"
@@ -1481,6 +1505,19 @@
     react-router-dom "6.0.0-beta.0"
     zen-observable "^0.8.15"
 
+"@backstage/core-plugin-api@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-1.0.0.tgz#2f12a92e93323f66ff722878facf468a95562171"
+  integrity sha512-A1Xz6CcrRyUjoSdrhd0AWKgeATFITRwsjgi4CoVUny+wWgqU7gQ2mo42LtOmcaBRdUJz6AhRQn4IhKN/2T3G/A==
+  dependencies:
+    "@backstage/config" "^1.0.0"
+    "@backstage/types" "^1.0.0"
+    "@backstage/version-bridge" "^1.0.0"
+    history "^5.0.0"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    zen-observable "^0.8.15"
+
 "@backstage/integration@^0.7.3":
   version "0.7.5"
   resolved "https://registry.npmjs.org/@backstage/integration/-/integration-0.7.5.tgz#c68848f35db51705b3287b6fa6a259ae4b17bfbc"
@@ -1520,6 +1557,16 @@
     react-use "^17.2.4"
     yaml "^1.10.0"
     zen-observable "^0.8.15"
+
+"@backstage/types@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@backstage/types/-/types-1.0.0.tgz#3c4cc1487d30d113250fc530238aae0a2ba0e58c"
+  integrity sha512-x5650F/lXUO1Bo++Eg1T9vreuIzlOeljxTUCP6mxqOGgOWr8yBku42HiHX6KE80OpckFDTUyKtEWqboclfKUkg==
+
+"@backstage/version-bridge@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@backstage/version-bridge/-/version-bridge-1.0.0.tgz#b0e6a7530530e2a531ee8400273f0e89c5bb23b0"
+  integrity sha512-ma/5RWZqSKq+h3VfZfZHGilYYnTD1FoJkyRRqZitJuYvamvPZtxA7qinYWvT+YK3Xab63F+Dsn/oroYQRMa3DQ==
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -11968,9 +12015,9 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-tech-insights" "^0.1.12"
     "@backstage/plugin-tech-radar" "^0.5.9"
     "@backstage/plugin-techdocs" "^0.15.1"
-    "@backstage/plugin-techdocs-addons" "^0.0.0"
     "@backstage/plugin-todo" "^0.2.4"
     "@backstage/plugin-user-settings" "^0.4.1"
+    "@backstage/techdocs-addons" "^0.0.0"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
