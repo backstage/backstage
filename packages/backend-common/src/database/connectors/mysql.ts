@@ -34,7 +34,7 @@ export function createMysqlDatabaseClient(
   overrides?: Knex.Config,
 ) {
   const knexConfig = buildMysqlDatabaseConfig(dbConfig, overrides);
-  const database = knexFactory(knexConfig);
+  const database = knexFactory(knexConfig) as Knex;
   return database;
 }
 
@@ -168,9 +168,9 @@ export async function ensureMysqlDatabaseExists(
  *
  * Exposes database connector functionality via an immutable object.
  */
-export const mysqlConnector: DatabaseConnector = Object.freeze({
+export const mysqlConnector: DatabaseConnector = {
   createClient: createMysqlDatabaseClient,
   ensureDatabaseExists: ensureMysqlDatabaseExists,
   createNameOverride: defaultNameOverride,
   parseConnectionString: parseMysqlConnectionString,
-});
+};

@@ -22,7 +22,7 @@ import {
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import knexFactory from 'knex';
+import knexFactory, { Knex } from 'knex';
 
 export interface ServerOptions {
   port: number;
@@ -52,7 +52,7 @@ export async function startStandaloneServer(
 
   const router = await createRouter({
     logger,
-    database: { getClient: async () => db },
+    database: { getClient: async () => db as Knex },
     config: config,
   });
 

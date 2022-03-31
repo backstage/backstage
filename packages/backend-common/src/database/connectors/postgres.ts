@@ -34,7 +34,7 @@ export function createPgDatabaseClient(
   overrides?: Knex.Config,
 ) {
   const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
-  const database = knexFactory(knexConfig);
+  const database = knexFactory(knexConfig) as Knex;
   return database;
 }
 

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { DateTime } from 'luxon';
 
 function createDB() {
-  const knex = Knex({
+  const knex = knexFactory({
     client: 'better-sqlite3',
     connection: ':memory:',
     useNullAsDefault: true,
@@ -27,7 +27,7 @@ function createDB() {
   knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
     resource.run('PRAGMA foreign_keys = ON', () => {});
   });
-  return knex;
+  return knex as Knex;
 }
 
 const keyBase = {

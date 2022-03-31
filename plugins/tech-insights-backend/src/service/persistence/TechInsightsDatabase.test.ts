@@ -118,7 +118,8 @@ const additionalFacts = [
 describe('Tech Insights database', () => {
   const databases = TestDatabases.create();
   let store: TechInsightsStore;
-  let testDbClient: Knex<any, unknown[]>;
+  let testDbClient: Knex;
+
   beforeAll(async () => {
     testDbClient = await databases.init('SQLITE_3');
 

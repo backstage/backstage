@@ -22,7 +22,7 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Server } from 'http';
-import knexFactory from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 
@@ -54,7 +54,7 @@ export async function startStandaloneServer(
 
   logger.debug('Starting application server...');
   const router = await createRouter({
-    database: { getClient: async () => db },
+    database: { getClient: async () => db as Knex },
     config,
     discovery: SingleHostDiscovery.fromConfig(config),
     urlReader: UrlReaders.default({ logger, config }),

@@ -45,7 +45,7 @@ export function createSqliteDatabaseClient(
     ensureDirSync(directory);
   }
 
-  const database = knexFactory(knexConfig);
+  const database = knexFactory(knexConfig) as Knex;
 
   database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
     resource.run('PRAGMA foreign_keys = ON', () => {});

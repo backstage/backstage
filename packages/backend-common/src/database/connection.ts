@@ -55,7 +55,7 @@ const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-) {
+): Knex {
   const client: DatabaseClient = dbConfig.getString('client');
 
   return (
