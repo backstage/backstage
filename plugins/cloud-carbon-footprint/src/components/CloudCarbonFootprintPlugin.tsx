@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Route } from 'react-router-dom';
 import { Grid, ThemeProvider } from '@material-ui/core';
 import {
@@ -24,10 +24,12 @@ import {
   HeaderLabel,
   InfoCard,
   Page,
+  Progress,
   TabbedCard,
   TabbedLayout,
 } from '@backstage/core-components';
 import {
+  configApiRef,
   DiscoveryApi,
   discoveryApiRef,
   useApi,
@@ -48,11 +50,13 @@ import {
   useFootprintData,
   useRecommendationData,
 } from '@cloud-carbon-footprint/client';
+import { Config } from '@backstage/config';
 
 const Wrapper = ({
   children,
   error,
-}: PropsWithChildren<{ error: Error | null }>) => (
+  loading,
+}: PropsWithChildren<{ error: Error | null; loading?: boolean }>) => (
   <Page themeId="tool">
     <Header title="Cloud Carbon Footprint" type="tool">
       <HeaderLabel label="Owner" value="Team X" />
@@ -64,6 +68,7 @@ const Wrapper = ({
           <ErrorPanel error={error} />
         </p>
       )}
+      {loading && <Progress />}
       <ThemeProvider theme={determineTheme()}>
         <FlatRoutes>
           <Route path="/*" element={<>{children}</>} />
@@ -74,17 +79,24 @@ const Wrapper = ({
 );
 
 export const CloudCarbonFootprintPlugin = () => {
+  const config = useApi(configApiRef);
+  const clientConfig = useMemo(
+    () => config.getOptionalConfig('client'),
+    [config],
+  );
+  const groupBy = useMemo(() => config.getOptionalString('groupBy'), [config]);
+  const { endDate, startDate } = useMemo(
+    () => determineDates(clientConfig),
+    [clientConfig],
+  );
   const [baseUrl, setUrl] = useState<string | null>(null);
   const discovery: DiscoveryApi = useApi(discoveryApiRef);
   useEffect(() => {
     discovery.getBaseUrl('cloud-carbon-footprint').then(url => setUrl(url));
   }, [discovery]);
   const [useKilograms, setUseKilograms] = useState(false);
-
-  const endDate: moment.Moment = moment.utc();
-  const startDate: moment.Moment = moment.utc().subtract(2, 'years');
-  const footprint = useFootprintData({ baseUrl, startDate, endDate });
-  const recommendations = useRecommendationData({ baseUrl });
+  const footprint = useFootprintData({ baseUrl, startDate, endDate, groupBy });
+  const recommendations = useRecommendationData({ baseUrl, groupBy });
 
   const error: Error | null = footprint.error || recommendations.error;
   return (
@@ -94,6 +106,7 @@ export const CloudCarbonFootprintPlugin = () => {
           <Grid container spacing={3} direction="column">
             <Grid item>
               <EmissionsFilterBar {...footprint.filterBarProps} />
+              {footprint.loading && <Progress />}
             </Grid>
             <Grid item>
               <TabbedCard title="Estimated Emissions">
@@ -120,6 +133,7 @@ export const CloudCarbonFootprintPlugin = () => {
                 {...recommendations.filterBarProps}
                 setUseKilograms={setUseKilograms}
               />
+              {recommendations.loading && <Progress />}
             </Grid>
             <Grid item>
               <RecommendationsTable
@@ -146,3 +160,28 @@ export const CloudCarbonFootprintPlugin = () => {
     </Wrapper>
   );
 };
+
+function determineDates(clientConfig: Config | undefined) {
+  const endDate: moment.Moment = moment.utc();
+  const defaultStartDate: moment.Moment = moment.utc().subtract(1, 'years');
+
+  const previousYearOfUsage = clientConfig?.getOptionalBoolean(
+    'previousYearOfUsage',
+  );
+  const dateRangeValue = clientConfig?.getOptionalNumber('dateRangeValue');
+  const dateRangeType = clientConfig?.getOptionalString('dateRangeType');
+
+  const configuredStartDate = dateRangeType && dateRangeValue
+    ? moment
+      .utc()
+      .subtract(
+        dateRangeValue,
+        dateRangeType as moment.unitOfTime.DurationConstructor,
+      )
+    : defaultStartDate;
+  const startDate: moment.Moment =
+    previousYearOfUsage === true
+      ? defaultStartDate
+      : configuredStartDate;
+  return { endDate, startDate };
+}
