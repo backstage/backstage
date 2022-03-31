@@ -126,6 +126,29 @@ describe('<CatalogGraphCard/>', () => {
     );
   });
 
+  test('renders link to standalone viewer with limited depth', async () => {
+    const { findByText, getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <CatalogGraphCard viewGraphDepth={3}/>
+        </EntityProvider>
+      </ApiProvider>
+      , {
+        mountedRoutes: {
+          '/entity/{kind}/{namespace}/{name}': entityRouteRef,
+          '/catalog-graph': catalogGraphRouteRef,
+        },
+      });
+
+    expect(await findByText('b:d/c')).toBeInTheDocument();
+    const button = getByText('View graph');
+    expect(button).toBeInTheDocument();
+    expect(button.closest('a')).toHaveAttribute(
+      'href',
+      '/catalog-graph?rootEntityRefs%5B%5D=b%3Ad%2Fc&maxDepth=3',
+    );
+  });
+
   test('captures analytics event on click', async () => {
     const analyticsSpy = new MockAnalyticsApi();
     const { findByText } = await renderInTestApp(
