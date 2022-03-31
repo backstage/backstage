@@ -20,8 +20,8 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 // @ts-ignore
 import { createRouter as CCFRouter } from '@cloud-carbon-footprint/api/dist/api';
-import { configLoader } from '@cloud-carbon-footprint/common';
 import { Config as BackstageConfig } from '@backstage/config';
+import { convertConfig } from './convertConfig';
 
 export interface RouterOptions {
   logger: Logger;
@@ -41,25 +41,8 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
 
-  let gcpConfig;
-
-  const ccfDefaults = configLoader();
-  try {
-    const backstageConfig = options.config.getConfig('cloudCarbonFootprint');
-    gcpConfig = {
-      GCP: {
-        USE_BILLING_DATA: true,
-        BILLING_PROJECT_ID: backstageConfig.getString('gcpBillingProjectId'),
-        BIG_QUERY_TABLE: backstageConfig.getString('gcpBigQueryTable'),
-      },
-    };
-  } catch (error) {
-    logger.warn('No GCP configuration');
-  }
-  const ccfRouter = CCFRouter({
-    ...ccfDefaults,
-    ...gcpConfig,
-  });
+  const ccfConfig = convertConfig(options.config);
+  const ccfRouter = CCFRouter(ccfConfig);
 
   router.use(ccfRouter);
   router.use(errorHandler());
