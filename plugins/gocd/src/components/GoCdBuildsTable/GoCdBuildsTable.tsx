@@ -244,9 +244,11 @@ export const GoCdBuildsTable = (props: GoCdBuildsProps): JSX.Element => {
             search: true,
             searchAutoFocus: true,
             debounceInterval: 800,
-            paging: false,
+            paging: true,
+            padding: 'dense',
+            pageSizeOptions: [5, 10, 20, 50],
             showFirstLastPageButtons: false,
-            pageSize: 10,
+            pageSize: 20,
           }}
           columns={columns}
           data={

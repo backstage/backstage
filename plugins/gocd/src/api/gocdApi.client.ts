@@ -18,6 +18,8 @@ import { GoCdApiError, PipelineHistory } from './gocdApi.model';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 
+const DEFAULT_PAGE_SIZE = 100;
+
 export class GoCdClientApi implements GoCdApi {
   constructor(private readonly discoveryApi: DiscoveryApi) {}
 
@@ -26,7 +28,7 @@ export class GoCdClientApi implements GoCdApi {
   ): Promise<PipelineHistory | GoCdApiError> {
     const baseUrl = await this.discoveryApi.getBaseUrl('proxy');
     const pipelineHistoryResponse = await fetch(
-      `${baseUrl}/gocd/pipelines/${pipelineName}/history`,
+      `${baseUrl}/gocd/pipelines/${pipelineName}/history?page_size=${DEFAULT_PAGE_SIZE}`,
       {
         headers: {
           Accept: 'application/vnd.go.cd+json',
