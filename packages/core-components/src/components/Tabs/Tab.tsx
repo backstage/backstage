@@ -46,7 +46,10 @@ const useStyles = makeStyles<BackstageTheme, StyledTabProps>(
       fontSize: theme.typography.pxToRem(13),
       color: theme.palette.textSubtle,
       marginLeft: props =>
-        tabMarginLeft(props.isFirstNav as boolean, props.isFirstIndex as boolean),
+        tabMarginLeft(
+          props.isFirstNav as boolean,
+          props.isFirstIndex as boolean,
+        ),
       width: '130px',
       minWidth: '130px',
       '&:hover': {
