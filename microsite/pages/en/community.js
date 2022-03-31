@@ -55,7 +55,9 @@ const Background = props => {
 
       <Block small className="stripe bg-black">
         <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.Title>Community Sessions</Block.Title>
+          <Block.TextBox>
+            <Block.Title>Community Sessions</Block.Title>
+          </Block.TextBox>
           <Block.TextBox>
             <Block.Paragraph>
               <b>Adopters Community Sessions</b>
@@ -66,7 +68,8 @@ const Background = props => {
               discuss any relevant topic like developer effectiveness, developer
               experience, developer portals, etc.
             </Block.Paragraph>
-
+          </Block.TextBox>
+          <Block.TextBox>
             <Block.Paragraph>
               <b>Contributor Community Sessions</b>
               <br />
@@ -76,14 +79,6 @@ const Background = props => {
             </Block.Paragraph>
             <Block.LinkButton href="/on-demand">Meetups</Block.LinkButton>
           </Block.TextBox>
-          <Block.TextBox>
-            <Block.Graphic
-              x={60}
-              y={12}
-              width={30}
-              src={`${baseUrl}img/b-sessions.png`}
-            />
-          </Block.TextBox>
         </Block.Container>
       </Block>
 
@@ -91,6 +86,8 @@ const Background = props => {
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.TextBox>
             <Block.Title>Backstage official Newsletter</Block.Title>
+          </Block.TextBox>
+          <Block.TextBox>
             <Block.Paragraph>
               The official monthly Backstage newsletter. Containing the latest
               news from your favorite project.
@@ -99,12 +96,6 @@ const Background = props => {
               Subscribe
             </Block.LinkButton>
           </Block.TextBox>
-          <Block.Graphic
-            x={45}
-            y={12}
-            width={30}
-            src={`${baseUrl}img/news-fpo.png`}
-          />
         </Block.Container>
       </Block>
 
@@ -143,17 +134,6 @@ const Background = props => {
               Learn more
             </Block.LinkButton>
           </Block.TextBox>
-        </Block.Container>
-      </Block>
-
-      <Block small className="bg-black-grey">
-        <Block.Container style={{ justifyContent: 'flex-start' }}>
-          <Block.Graphic
-            x={41}
-            y={12}
-            width={40}
-            src={`${baseUrl}img/roadie-newsletter.png`}
-          />
         </Block.Container>
       </Block>
     </main>
