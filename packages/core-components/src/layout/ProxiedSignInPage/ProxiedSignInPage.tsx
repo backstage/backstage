@@ -32,7 +32,7 @@ import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
  */
 export type ProxiedSignInPageProps = SignInPageProps & {
   /**
-   * The provider to use, e.g. "gcp-iap" or "aws-alb". This must correspond to
+   * The provider to use, e.g. "gcp-iap" or "awsalb". This must correspond to
    * a properly configured auth provider ID in the auth backend.
    */
   provider: string;
