@@ -65,18 +65,35 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityList();
 
-  const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(
-    () => [
+  const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
+    return [
       columnFactories.createNameColumn({ defaultKind: filters.kind?.value }),
-      columnFactories.createSystemColumn(),
-      columnFactories.createOwnerColumn(),
-      columnFactories.createSpecTypeColumn(),
-      columnFactories.createSpecLifecycleColumn(),
+      ...createEntitySpecificColumns(),
       columnFactories.createMetadataDescriptionColumn(),
       columnFactories.createTagsColumn(),
-    ],
-    [filters.kind?.value],
-  );
+    ];
+
+    function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
+      switch (filters.kind?.value) {
+        case 'user':
+          return [];
+        case 'domain':
+        case 'system':
+          return [columnFactories.createOwnerColumn()];
+        case 'group':
+        case 'location':
+        case 'template':
+          return [columnFactories.createSpecTypeColumn()];
+        default:
+          return [
+            columnFactories.createSystemColumn(),
+            columnFactories.createOwnerColumn(),
+            columnFactories.createSpecTypeColumn(),
+            columnFactories.createSpecLifecycleColumn(),
+          ];
+      }
+    }
+  }, [filters.kind?.value]);
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
