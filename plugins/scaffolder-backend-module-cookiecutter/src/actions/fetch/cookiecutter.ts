@@ -59,23 +59,19 @@ export class CookiecutterRunner {
     logStream,
     imageName,
     templateDir,
-    templateContentsDir,
   }: {
     workspacePath: string;
     values: JsonObject;
     logStream: Writable;
     imageName?: string;
     templateDir: string;
-    templateContentsDir: string;
   }): Promise<void> {
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
     const resultDir = path.join(workspacePath, 'result');
 
     // First lets grab the default cookiecutter.json file
-    const cookieCutterJson = await this.fetchTemplateCookieCutter(
-      templateContentsDir,
-    );
+    const cookieCutterJson = await this.fetchTemplateCookieCutter(templateDir);
 
     const cookieInfo = {
       ...cookieCutterJson,
@@ -207,10 +203,6 @@ export function createFetchCookiecutterAction(options: {
       ctx.logger.info('Fetching and then templating using cookiecutter');
       const workDir = await ctx.createTemporaryDirectory();
       const templateDir = resolvePath(workDir, 'template');
-      const templateContentsDir = resolvePath(
-        templateDir,
-        "{{cookiecutter and 'contents'}}",
-      );
       const resultDir = resolvePath(workDir, 'result');
 
       if (
@@ -230,7 +222,7 @@ export function createFetchCookiecutterAction(options: {
         integrations,
         baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
-        outputPath: templateContentsDir,
+        outputPath: templateDir,
       });
 
       const cookiecutter = new CookiecutterRunner({ containerRunner });
@@ -247,7 +239,6 @@ export function createFetchCookiecutterAction(options: {
         values: values,
         imageName: ctx.input.imageName,
         templateDir: templateDir,
-        templateContentsDir: templateContentsDir,
       });
 
       // Finally move the template result into the task workspace
