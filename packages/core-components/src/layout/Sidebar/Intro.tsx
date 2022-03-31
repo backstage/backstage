@@ -23,7 +23,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import React, { useContext, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
 import {
-  sidebarConfig,
+  SidebarConfigContext,
+  SidebarConfig,
   SidebarContext,
   SIDEBAR_INTRO_LOCAL_STORAGE,
 } from './config';
@@ -37,18 +38,18 @@ export type SidebarIntroClassKey =
   | 'introDismissText'
   | 'introDismissIcon';
 
-const useStyles = makeStyles<BackstageTheme>(
+const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
   theme => ({
-    introCard: {
+    introCard: props => ({
       color: '#b5b5b5',
       // XXX (@koroeskohr): should I be using a Mui theme variable?
       fontSize: 12,
-      width: sidebarConfig.drawerWidthOpen,
+      width: props.sidebarConfig.drawerWidthOpen,
       marginTop: 18,
       marginBottom: 12,
-      paddingLeft: sidebarConfig.iconPadding,
-      paddingRight: sidebarConfig.iconPadding,
-    },
+      paddingLeft: props.sidebarConfig.iconPadding,
+      paddingRight: props.sidebarConfig.iconPadding,
+    }),
     introDismiss: {
       display: 'flex',
       justifyContent: 'flex-end',
@@ -96,7 +97,8 @@ type IntroCardProps = {
  */
 
 export function IntroCard(props: IntroCardProps) {
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useStyles({ sidebarConfig });
   const { text, onClose } = props;
   const handleClose = () => onClose();
 

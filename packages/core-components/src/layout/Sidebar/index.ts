@@ -59,4 +59,8 @@ export {
   SidebarContext,
   sidebarConfig,
 } from './config';
-export type { SidebarContextType } from './config';
+export type {
+  SidebarContextType,
+  SidebarOptions,
+  SubmenuOptions,
+} from './config';

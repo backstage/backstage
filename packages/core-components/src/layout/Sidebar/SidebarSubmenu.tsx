@@ -19,72 +19,74 @@ import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import {
   SidebarItemWithSubmenuContext,
-  sidebarConfig,
   SidebarContext,
-  submenuConfig,
+  SidebarConfigContext,
+  SubmenuConfig,
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = (props: { left: number }) =>
-  makeStyles<BackstageTheme>(
-    theme => ({
-      root: {
-        zIndex: 1000,
-        position: 'relative',
-        overflow: 'visible',
-        width: theme.spacing(7) + 1,
+const useStyles = makeStyles<
+  BackstageTheme,
+  { submenuConfig: SubmenuConfig; left: number }
+>(
+  theme => ({
+    root: {
+      zIndex: 1000,
+      position: 'relative',
+      overflow: 'visible',
+      width: theme.spacing(7) + 1,
+    },
+    drawer: props => ({
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      alignItems: 'flex-start',
+      position: 'fixed',
+      [theme.breakpoints.up('sm')]: {
+        marginLeft: props.left,
+        transition: theme.transitions.create('margin-left', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.shortest,
+        }),
       },
-      drawer: {
-        display: 'flex',
-        flexFlow: 'column nowrap',
-        alignItems: 'flex-start',
-        position: 'fixed',
-        [theme.breakpoints.up('sm')]: {
-          marginLeft: props.left,
-          transition: theme.transitions.create('margin-left', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.shortest,
-          }),
-        },
-        top: 0,
-        bottom: 0,
-        padding: 0,
-        background: theme.palette.navigation.submenu?.background ?? '#404040',
-        overflowX: 'hidden',
-        msOverflowStyle: 'none',
-        scrollbarWidth: 'none',
-        cursor: 'default',
-        width: submenuConfig.drawerWidthClosed,
-        transitionDelay: `${submenuConfig.defaultOpenDelayMs}ms`,
-        '& > *': {
-          flexShrink: 0,
-        },
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
+      top: 0,
+      bottom: 0,
+      padding: 0,
+      background: theme.palette.navigation.submenu?.background ?? '#404040',
+      overflowX: 'hidden',
+      msOverflowStyle: 'none',
+      scrollbarWidth: 'none',
+      cursor: 'default',
+      width: props.submenuConfig.drawerWidthClosed,
+      transitionDelay: `${props.submenuConfig.defaultOpenDelayMs}ms`,
+      '& > *': {
+        flexShrink: 0,
       },
-      drawerOpen: {
-        width: submenuConfig.drawerWidthOpen,
-        [theme.breakpoints.down('xs')]: {
-          width: '100%',
-          position: 'relative',
-          paddingLeft: theme.spacing(3),
-          left: 0,
-          top: 0,
-        },
-      },
-      title: {
-        fontSize: 24,
-        fontWeight: 500,
-        color: '#FFF',
-        padding: 20,
-        [theme.breakpoints.down('xs')]: {
-          display: 'none',
-        },
+      '&::-webkit-scrollbar': {
+        display: 'none',
       },
     }),
-    { name: 'BackstageSidebarSubmenu' },
-  );
+    drawerOpen: props => ({
+      width: props.submenuConfig.drawerWidthOpen,
+      [theme.breakpoints.down('xs')]: {
+        width: '100%',
+        position: 'relative',
+        paddingLeft: theme.spacing(3),
+        left: 0,
+        top: 0,
+      },
+    }),
+    title: {
+      fontSize: 24,
+      fontWeight: 500,
+      color: '#FFF',
+      padding: 20,
+      [theme.breakpoints.down('xs')]: {
+        display: 'none',
+      },
+    },
+  }),
+  { name: 'BackstageSidebarSubmenu' },
+);
 
 /**
  * Holds a title for text Header of a sidebar submenu and children
@@ -104,10 +106,11 @@ export type SidebarSubmenuProps = {
  */
 export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   const { isOpen } = useContext(SidebarContext);
+  const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const classes = useStyles({ left })();
+  const classes = useStyles({ left, submenuConfig });
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);

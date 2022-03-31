@@ -972,6 +972,12 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
+// @public (undocumented)
+export type SidebarOptions = {
+  drawerWidthClosed?: number;
+  drawerWidthOpen?: number;
+};
+
 // Warning: (ae-missing-release-tag) "SidebarPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -1001,6 +1007,8 @@ export type SidebarPinStateContextType = {
 export type SidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
+  sidebarOptions?: SidebarOptions;
+  submenuOptions?: SubmenuOptions;
   disableExpandOnHover?: boolean;
   children?: React_2.ReactNode;
 };
@@ -1180,6 +1188,12 @@ export type StructuredMetadataTableListClassKey = 'root';
 //
 // @public (undocumented)
 export type StructuredMetadataTableNestedListClassKey = 'root';
+
+// @public (undocumented)
+export type SubmenuOptions = {
+  drawerWidthClosed?: number;
+  drawerWidthOpen?: number;
+};
 
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SubvalueCell" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
