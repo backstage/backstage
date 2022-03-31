@@ -17,6 +17,8 @@
 /// <reference types="gapi.auth2" />
 /// <reference types="gapi.client.calendar" />
 
+export type GCalendarList = gapi.client.calendar.CalendarList;
+
 export type GCalendar = gapi.client.calendar.CalendarListEntry;
 
 export type EventAttendee = gapi.client.calendar.EventAttendee;

@@ -14,6 +14,7 @@ import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node'
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
 
@@ -26,11 +27,9 @@ export const buildTechInsightsContext: <
 ) => Promise<TechInsightsContext<CheckType, CheckResultType>>;
 
 // @public
-export function createFactRetrieverRegistration({
-  cadence,
-  factRetriever,
-  lifecycle,
-}: FactRetrieverRegistrationOptions): FactRetrieverRegistration;
+export function createFactRetrieverRegistration(
+  options: FactRetrieverRegistrationOptions,
+): FactRetrieverRegistration;
 
 // @public
 export function createRouter<
@@ -94,6 +93,8 @@ export interface TechInsightsOptions<
   factRetrievers: FactRetrieverRegistration[];
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  scheduler: PluginTaskScheduler;
 }
 
 // (No @packageDocumentation comment for this package)

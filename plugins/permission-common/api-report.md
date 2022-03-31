@@ -16,34 +16,8 @@ export type AnyOfCriteria<TQuery> = {
 };
 
 // @public
-export type AuthorizeDecision =
-  | {
-      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-    }
-  | {
-      result: AuthorizeResult.CONDITIONAL;
-      conditions: PermissionCriteria<PermissionCondition>;
-    };
-
-// @public
-export type AuthorizeQuery = {
-  permission: Permission;
-  resourceRef?: string;
-};
-
-// @public
-export type AuthorizeRequest = {
-  items: Identified<AuthorizeQuery>[];
-};
-
-// @public
 export type AuthorizeRequestOptions = {
   token?: string;
-};
-
-// @public
-export type AuthorizeResponse = {
-  items: Identified<AuthorizeDecision>[];
 };
 
 // @public
@@ -54,12 +28,58 @@ export enum AuthorizeResult {
 }
 
 // @public
+export type BasicPermission = PermissionBase<'basic', {}>;
+
+// @public
+export type ConditionalPolicyDecision = {
+  result: AuthorizeResult.CONDITIONAL;
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+};
+
+// @public
+export function createPermission<TResourceType extends string>(input: {
+  name: string;
+  attributes: PermissionAttributes;
+  resourceType: TResourceType;
+}): ResourcePermission<TResourceType>;
+
+// @public
+export function createPermission(input: {
+  name: string;
+  attributes: PermissionAttributes;
+}): BasicPermission;
+
+// @public
+export type DefinitivePolicyDecision = {
+  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+};
+
+// @public
 export type DiscoveryApi = {
   getBaseUrl(pluginId: string): Promise<string>;
 };
 
 // @public
-export type Identified<T> = T & {
+export type EvaluatePermissionRequest = {
+  permission: Permission;
+  resourceRef?: string;
+};
+
+// @public
+export type EvaluatePermissionRequestBatch =
+  PermissionMessageBatch<EvaluatePermissionRequest>;
+
+// @public
+export type EvaluatePermissionResponse = PolicyDecision;
+
+// @public
+export type EvaluatePermissionResponseBatch =
+  PermissionMessageBatch<EvaluatePermissionResponse>;
+
+// @public
+export type IdentifiedPermissionMessage<T> = T & {
   id: string;
 };
 
@@ -70,7 +90,19 @@ export function isCreatePermission(permission: Permission): boolean;
 export function isDeletePermission(permission: Permission): boolean;
 
 // @public
+export function isPermission<T extends Permission>(
+  permission: Permission,
+  comparedPermission: T,
+): permission is T;
+
+// @public
 export function isReadPermission(permission: Permission): boolean;
+
+// @public
+export function isResourcePermission<T extends string = string>(
+  permission: Permission,
+  resourceType?: T,
+): permission is ResourcePermission<T>;
 
 // @public
 export function isUpdatePermission(permission: Permission): boolean;
@@ -81,11 +113,7 @@ export type NotCriteria<TQuery> = {
 };
 
 // @public
-export type Permission = {
-  name: string;
-  attributes: PermissionAttributes;
-  resourceType?: string;
-};
+export type Permission = BasicPermission | ResourcePermission;
 
 // @public
 export type PermissionAttributes = {
@@ -96,22 +124,34 @@ export type PermissionAttributes = {
 export interface PermissionAuthorizer {
   // (undocumented)
   authorize(
-    queries: AuthorizeQuery[],
+    requests: EvaluatePermissionRequest[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeDecision[]>;
+  ): Promise<EvaluatePermissionResponse[]>;
 }
+
+// @public
+export type PermissionBase<TType extends string, TFields extends object> = {
+  name: string;
+  attributes: PermissionAttributes;
+} & {
+  type: TType;
+} & TFields;
 
 // @public
 export class PermissionClient implements PermissionAuthorizer {
   constructor(options: { discovery: DiscoveryApi; config: Config });
   authorize(
-    queries: AuthorizeQuery[],
+    queries: EvaluatePermissionRequest[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeDecision[]>;
+  ): Promise<EvaluatePermissionResponse[]>;
 }
 
 // @public
-export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
+export type PermissionCondition<
+  TResourceType extends string = string,
+  TParams extends unknown[] = unknown[],
+> = {
+  resourceType: TResourceType;
   rule: string;
   params: TParams;
 };
@@ -122,4 +162,23 @@ export type PermissionCriteria<TQuery> =
   | AnyOfCriteria<TQuery>
   | NotCriteria<TQuery>
   | TQuery;
+
+// @public
+export type PermissionMessageBatch<T> = {
+  items: IdentifiedPermissionMessage<T>[];
+};
+
+// @public
+export type PolicyDecision =
+  | DefinitivePolicyDecision
+  | ConditionalPolicyDecision;
+
+// @public
+export type ResourcePermission<TResourceType extends string = string> =
+  PermissionBase<
+    'resource',
+    {
+      resourceType: TResourceType;
+    }
+  >;
 ```

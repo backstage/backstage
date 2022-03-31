@@ -18,7 +18,11 @@ import { runPeriodically } from './runPeriodically';
 jest.useFakeTimers();
 
 describe('runPeriodically', () => {
-  const flushPromises = () => new Promise(setImmediate);
+  const flushPromises = async () => {
+    const promise = new Promise(resolve => process.nextTick(resolve));
+    jest.runAllTicks();
+    await promise;
+  };
   const advanceTimersByTime = async (time: number) => {
     jest.advanceTimersByTime(time);
     // Advancing the time with jest doesn't run all promises, but only sync code

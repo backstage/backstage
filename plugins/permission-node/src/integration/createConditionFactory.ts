@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '../types';
 
 /**
@@ -33,8 +34,11 @@ import { PermissionRule } from '../types';
  * @public
  */
 export const createConditionFactory =
-  <TParams extends any[]>(rule: PermissionRule<unknown, unknown, TParams>) =>
-  (...params: TParams) => ({
+  <TResourceType extends string, TParams extends any[]>(
+    rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
+  ) =>
+  (...params: TParams): PermissionCondition<TResourceType, TParams> => ({
     rule: rule.name,
+    resourceType: rule.resourceType,
     params,
   });

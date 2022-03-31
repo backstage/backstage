@@ -60,8 +60,10 @@ export class ConfigLocationEntityProvider implements EntityProvider {
       const type = location.getString('type');
       const target = location.getString('target');
       const entity = locationSpecToLocationEntity({
-        type,
-        target: type === 'file' ? path.resolve(target) : target,
+        location: {
+          type,
+          target: type === 'file' ? path.resolve(target) : target,
+        },
       });
       const locationKey = getEntityLocationRef(entity);
       return { entity, locationKey };

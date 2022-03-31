@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.3.1-next.1
+
+### Patch Changes
+
+- 1691c6c5c2: Clarify that config locations that emit User and Group kinds now need to declare so in the `catalog.locations.[].rules`
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0-next.1
+  - @backstage/backend-tasks@0.3.0-next.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes

@@ -122,6 +122,8 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
   createBadgeSvg(options: BadgeOptions): Promise<string>;
   // (undocumented)
   getBadges(): Promise<BadgeInfo[]>;
+  // (undocumented)
+  protected getMarkdownCode(params: Badge, badgeUrl: string): string;
 }
 
 // Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

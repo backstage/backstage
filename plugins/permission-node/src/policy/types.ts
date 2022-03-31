@@ -15,67 +15,24 @@
  */
 
 import {
-  AuthorizeQuery,
-  AuthorizeResult,
-  PermissionCondition,
-  PermissionCriteria,
+  Permission,
+  PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 
 /**
- * An authorization request to be evaluated by the {@link PermissionPolicy}.
+ * A query to be evaluated by the {@link PermissionPolicy}.
  *
  * @remarks
  *
- * This differs from {@link @backstage/permission-common#AuthorizeQuery} in that `resourceRef`
- * should never be provided. This forces policies to be written in a way that's compatible with
- * filtering collections of resources at data load time.
+ * Unlike other parts of the permission API, the policy does not accept a resource ref. This keeps
+ * the policy decoupled from the resource loading and condition applying logic.
  *
  * @public
  */
-export type PolicyAuthorizeQuery = Omit<AuthorizeQuery, 'resourceRef'>;
-
-/**
- * A definitive result to an authorization request, returned by the {@link PermissionPolicy}.
- *
- * @remarks
- *
- * This indicates that the policy unconditionally allows (or denies) the request.
- *
- * @public
- */
-export type DefinitivePolicyDecision = {
-  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+export type PolicyQuery = {
+  permission: Permission;
 };
-
-/**
- * A conditional result to an authorization request, returned by the {@link PermissionPolicy}.
- *
- * @remarks
- *
- * This indicates that the policy allows authorization for the request, given that the returned
- * conditions hold when evaluated. The conditions will be evaluated by the corresponding plugin
- * which knows about the referenced permission rules.
- *
- * Similar to {@link @backstage/permission-common#AuthorizeDecision}, but with the plugin and resource
- * identifiers needed to evaluate the returned conditions.
- * @public
- */
-export type ConditionalPolicyDecision = {
-  result: AuthorizeResult.CONDITIONAL;
-  pluginId: string;
-  resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition>;
-};
-
-/**
- * The result of evaluating an authorization request with a {@link PermissionPolicy}.
- *
- * @public
- */
-export type PolicyDecision =
-  | DefinitivePolicyDecision
-  | ConditionalPolicyDecision;
 
 /**
  * A policy to evaluate authorization requests for any permissioned action performed in Backstage.
@@ -95,7 +52,7 @@ export type PolicyDecision =
  */
 export interface PermissionPolicy {
   handle(
-    request: PolicyAuthorizeQuery,
+    request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }

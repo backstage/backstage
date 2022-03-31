@@ -85,6 +85,7 @@ describe('createPublishGithubPullRequestAction', () => {
         title: 'Create my new app',
         branchName: 'new-app',
         description: 'This PR is really good',
+        draft: true,
       };
 
       mockFs({
@@ -109,6 +110,7 @@ describe('createPublishGithubPullRequestAction', () => {
         title: 'Create my new app',
         head: 'new-app',
         body: 'This PR is really good',
+        draft: true,
         changes: [
           {
             commit: 'Create my new app',

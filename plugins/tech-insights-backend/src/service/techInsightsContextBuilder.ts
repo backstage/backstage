@@ -33,6 +33,7 @@ import {
   PersistenceContext,
 } from './persistence/persistenceContext';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 
 /**
  * @public
@@ -61,6 +62,7 @@ export interface TechInsightsOptions<
   config: Config;
   discovery: PluginEndpointDiscovery;
   database: PluginDatabaseManager;
+  scheduler: PluginTaskScheduler;
 }
 
 /**
@@ -101,6 +103,7 @@ export const buildTechInsightsContext = async <
     discovery,
     database,
     logger,
+    scheduler,
   } = options;
 
   const factRetrieverRegistry = new FactRetrieverRegistry(factRetrievers);
@@ -111,6 +114,7 @@ export const buildTechInsightsContext = async <
   );
 
   const factRetrieverEngine = await FactRetrieverEngine.create({
+    scheduler,
     repository: persistenceContext.techInsightsStore,
     factRetrieverRegistry,
     factRetrieverContext: {
@@ -120,7 +124,7 @@ export const buildTechInsightsContext = async <
     },
   });
 
-  factRetrieverEngine.schedule();
+  await factRetrieverEngine.schedule();
 
   if (factCheckerFactory) {
     const factChecker = factCheckerFactory.construct(

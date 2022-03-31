@@ -1,5 +1,15 @@
 # @backstage/integration
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- b7436743cb: Gerrit integration: Added an optional configuration to set the Gitiles base url.
+
+### Patch Changes
+
+- 1691c6c5c2: Clarify that config locations that emit User and Group kinds now need to declare so in the `catalog.locations.[].rules`
+
 ## 1.0.1-next.0
 
 ### Patch Changes
@@ -237,6 +247,8 @@
     locations:
       - type: github-multi-org
         target: https://github.myorg.com
+        rules:
+          - allow: [User, Group]
 
     processors:
       githubMultiOrg:

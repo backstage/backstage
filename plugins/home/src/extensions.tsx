@@ -21,6 +21,9 @@ import { InfoCard } from '@backstage/core-components';
 import { SettingsModal } from './components';
 import { createReactExtension, useApp } from '@backstage/core-plugin-api';
 
+/**
+ * @public
+ */
 export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
 };

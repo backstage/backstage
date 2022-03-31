@@ -18,41 +18,49 @@ import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
 import { permissionRules } from './rules';
 
-const conditionExports = createConditionExports({
+const { conditions, createConditionalDecision } = createConditionExports({
   pluginId: 'catalog',
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   rules: permissionRules,
 });
 
 /**
- * These conditions are used when creating conditional decisions that are returned
- * by authorization policies.
+ * These conditions are used when creating conditional decisions for catalog
+ * entities that are returned by authorization policies.
  *
  * @alpha
  */
-export const catalogConditions = conditionExports.conditions;
+export const catalogConditions = conditions;
 
 /**
- * `createCatalogPolicyDecision` can be used when authoring policies to create
- * conditional decisions.
+ * `createCatalogConditionalDecision` can be used when authoring policies to
+ * create conditional decisions. It requires a permission of type
+ * `ResourcePermission<'catalog-entity'>` to be passed as the first parameter.
+ * It's recommended that you use the provided `isResourcePermission` and
+ * `isPermission` helper methods to narrow the type of the permission passed to
+ * the handle method as shown below.
  *
  * ```
  * // MyAuthorizationPolicy.ts
  * ...
  * import { createCatalogPolicyDecision } from '@backstage/plugin-catalog-backend';
+ * import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
  *
  * class MyAuthorizationPolicy implements PermissionPolicy {
  *   async handle(request, user) {
  *     ...
  *
- *     return createCatalogPolicyDecision({
- *       anyOf: [...insert conditions here...],
- *     });
- *   }
+ *     if (isResourcePermission(request.permission, RESOURCE_TYPE_CATALOG_ENTITY)) {
+ *       return createCatalogConditionalDecision(
+ *         request.permission,
+ *         { anyOf: [...insert conditions here...] }
+ *       );
+ *     }
+ *
+ *     ...
  * }
  * ```
  *
  * @alpha
  */
-export const createCatalogPolicyDecision =
-  conditionExports.createPolicyDecision;
+export const createCatalogConditionalDecision = createConditionalDecision;

@@ -521,7 +521,9 @@ The built-in configuration brings a couple of benefits and features. The most
 important one being a baseline transformer and module configuration that enables
 support for the listed [loaders](#loaders) within tests. It will also
 automatically detect and use `src/setupTests.ts` if it exists, and provides a
-coverage configuration that works well with our selected transpilers.
+coverage configuration that works well with our selected transpilers. The configuration
+will also detect the appropriate Jest environment for each package role, running
+`web-libraries` with the `"jsdom"` environment, `node-libraries` with `"node"`, and so on.
 
 The configuration also takes a project-wide approach, with the expectation most
 if not all packages within a monorepo will use the same base configuration. This

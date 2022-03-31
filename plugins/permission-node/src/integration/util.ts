@@ -62,11 +62,11 @@ export const isNotCriteria = <T>(
   Object.prototype.hasOwnProperty.call(criteria, 'not');
 
 export const createGetRule = <TResource, TQuery>(
-  rules: PermissionRule<TResource, TQuery>[],
+  rules: PermissionRule<TResource, TQuery, string>[],
 ) => {
   const rulesMap = new Map(Object.values(rules).map(rule => [rule.name, rule]));
 
-  return (name: string): PermissionRule<TResource, TQuery> => {
+  return (name: string): PermissionRule<TResource, TQuery, string> => {
     const rule = rulesMap.get(name);
 
     if (!rule) {

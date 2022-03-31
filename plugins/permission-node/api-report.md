@@ -5,19 +5,23 @@
 ```ts
 import { AllOfCriteria } from '@backstage/plugin-permission-common';
 import { AnyOfCriteria } from '@backstage/plugin-permission-common';
-import { AuthorizeDecision } from '@backstage/plugin-permission-common';
-import { AuthorizeQuery } from '@backstage/plugin-permission-common';
 import { AuthorizeRequestOptions } from '@backstage/plugin-permission-common';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
+import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import express from 'express';
-import { Identified } from '@backstage/plugin-permission-common';
+import { IdentifiedPermissionMessage } from '@backstage/plugin-permission-common';
 import { NotCriteria } from '@backstage/plugin-permission-common';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PolicyDecision } from '@backstage/plugin-permission-common';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenManager } from '@backstage/backend-common';
 
 // @public
@@ -26,7 +30,7 @@ export type ApplyConditionsRequest = {
 };
 
 // @public
-export type ApplyConditionsRequestEntry = Identified<{
+export type ApplyConditionsRequestEntry = IdentifiedPermissionMessage<{
   resourceRef: string;
   resourceType: string;
   conditions: PermissionCriteria<PermissionCondition>;
@@ -38,28 +42,22 @@ export type ApplyConditionsResponse = {
 };
 
 // @public
-export type ApplyConditionsResponseEntry = Identified<DefinitivePolicyDecision>;
+export type ApplyConditionsResponseEntry =
+  IdentifiedPermissionMessage<DefinitivePolicyDecision>;
 
 // @public
 export type Condition<TRule> = TRule extends PermissionRule<
   any,
   any,
+  infer TResourceType,
   infer TParams
 >
-  ? (...params: TParams) => PermissionCondition<TParams>
+  ? (...params: TParams) => PermissionCondition<TResourceType, TParams>
   : never;
 
 // @public
-export type ConditionalPolicyDecision = {
-  result: AuthorizeResult.CONDITIONAL;
-  pluginId: string;
-  resourceType: string;
-  conditions: PermissionCriteria<PermissionCondition>;
-};
-
-// @public
 export type Conditions<
-  TRules extends Record<string, PermissionRule<any, any>>,
+  TRules extends Record<string, PermissionRule<any, any, any>>,
 > = {
   [Name in keyof TRules]: Condition<TRules[Name]>;
 };
@@ -71,39 +69,49 @@ export type ConditionTransformer<TQuery> = (
 
 // @public
 export const createConditionExports: <
+  TResourceType extends string,
   TResource,
-  TRules extends Record<string, PermissionRule<TResource, any, unknown[]>>,
+  TRules extends Record<
+    string,
+    PermissionRule<TResource, any, TResourceType, unknown[]>
+  >,
 >(options: {
   pluginId: string;
-  resourceType: string;
+  resourceType: TResourceType;
   rules: TRules;
 }) => {
   conditions: Conditions<TRules>;
-  createPolicyDecision: (
-    conditions: PermissionCriteria<PermissionCondition>,
+  createConditionalDecision: (
+    permission: ResourcePermission<TResourceType>,
+    conditions: PermissionCriteria<
+      PermissionCondition<TResourceType, unknown[]>
+    >,
   ) => ConditionalPolicyDecision;
 };
 
 // @public
-export const createConditionFactory: <TParams extends any[]>(
-  rule: PermissionRule<unknown, unknown, TParams>,
-) => (...params: TParams) => {
-  rule: string;
-  params: TParams;
-};
+export const createConditionFactory: <
+  TResourceType extends string,
+  TParams extends any[],
+>(
+  rule: PermissionRule<unknown, unknown, TResourceType, TParams>,
+) => (...params: TParams) => PermissionCondition<TResourceType, TParams>;
 
 // @public
 export const createConditionTransformer: <
   TQuery,
-  TRules extends PermissionRule<any, TQuery, unknown[]>[],
+  TRules extends PermissionRule<any, TQuery, string, unknown[]>[],
 >(
   permissionRules: [...TRules],
 ) => ConditionTransformer<TQuery>;
 
 // @public
-export const createPermissionIntegrationRouter: <TResource>(options: {
-  resourceType: string;
-  rules: PermissionRule<TResource, any, unknown[]>[];
+export const createPermissionIntegrationRouter: <
+  TResourceType extends string,
+  TResource,
+>(options: {
+  resourceType: TResourceType;
+  rules: PermissionRule<TResource, any, NoInfer<TResourceType>, unknown[]>[];
   getResources: (resourceRefs: string[]) => Promise<(TResource | undefined)[]>;
 }) => express.Router;
 
@@ -111,15 +119,11 @@ export const createPermissionIntegrationRouter: <TResource>(options: {
 export const createPermissionRule: <
   TResource,
   TQuery,
+  TResourceType extends string,
   TParams extends unknown[],
 >(
-  rule: PermissionRule<TResource, TQuery, TParams>,
-) => PermissionRule<TResource, TQuery, TParams>;
-
-// @public
-export type DefinitivePolicyDecision = {
-  result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
-};
+  rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
+) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
 // @alpha
 export const isAndCriteria: <T>(
@@ -137,17 +141,19 @@ export const isOrCriteria: <T>(
 ) => criteria is AnyOfCriteria<T>;
 
 // @public
-export const makeCreatePermissionRule: <TResource, TQuery>() => <
-  TParams extends unknown[],
->(
-  rule: PermissionRule<TResource, TQuery, TParams>,
-) => PermissionRule<TResource, TQuery, TParams>;
+export const makeCreatePermissionRule: <
+  TResource,
+  TQuery,
+  TResourceType extends string,
+>() => <TParams extends unknown[]>(
+  rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
+) => PermissionRule<TResource, TQuery, TResourceType, TParams>;
 
 // @public
 export interface PermissionPolicy {
   // (undocumented)
   handle(
-    request: PolicyAuthorizeQuery,
+    request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision>;
 }
@@ -156,29 +162,28 @@ export interface PermissionPolicy {
 export type PermissionRule<
   TResource,
   TQuery,
+  TResourceType extends string,
   TParams extends unknown[] = unknown[],
 > = {
   name: string;
   description: string;
+  resourceType: TResourceType;
   apply(resource: TResource, ...params: TParams): boolean;
   toQuery(...params: TParams): PermissionCriteria<TQuery>;
 };
 
 // @public
-export type PolicyAuthorizeQuery = Omit<AuthorizeQuery, 'resourceRef'>;
-
-// @public
-export type PolicyDecision =
-  | DefinitivePolicyDecision
-  | ConditionalPolicyDecision;
+export type PolicyQuery = {
+  permission: Permission;
+};
 
 // @public
 export class ServerPermissionClient implements PermissionAuthorizer {
   // (undocumented)
   authorize(
-    queries: AuthorizeQuery[],
+    requests: EvaluatePermissionRequest[],
     options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeDecision[]>;
+  ): Promise<EvaluatePermissionResponse[]>;
   // (undocumented)
   static fromConfig(
     config: Config,

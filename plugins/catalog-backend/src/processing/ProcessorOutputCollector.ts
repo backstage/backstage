@@ -106,10 +106,10 @@ export class ProcessorOutputCollector {
 
       this.deferredEntities.push({ entity, locationKey: location });
     } else if (i.type === 'location') {
-      const entity = locationSpecToLocationEntity(
-        i.location,
-        this.parentEntity,
-      );
+      const entity = locationSpecToLocationEntity({
+        location: i.location,
+        parentEntity: this.parentEntity,
+      });
       const locationKey = getEntityLocationRef(entity);
       this.deferredEntities.push({ entity, locationKey });
     } else if (i.type === 'relation') {

@@ -115,6 +115,7 @@ export const createPublishGithubPullRequestAction = ({
     branchName: string;
     description: string;
     repoUrl: string;
+    draft?: boolean;
     targetPath?: string;
     sourcePath?: string;
     token?: string;
@@ -144,6 +145,11 @@ export const createPublishGithubPullRequestAction = ({
             type: 'string',
             title: 'Pull Request Description',
             description: 'The description of the pull request',
+          },
+          draft: {
+            type: 'boolean',
+            title: 'Create as Draft',
+            description: 'Create a draft pull request',
           },
           sourcePath: {
             type: 'string',
@@ -186,6 +192,7 @@ export const createPublishGithubPullRequestAction = ({
         branchName,
         title,
         description,
+        draft,
         targetPath,
         sourcePath,
         token: providedToken,
@@ -264,6 +271,7 @@ export const createPublishGithubPullRequestAction = ({
           changes,
           body: description,
           head: branchName,
+          draft,
         });
 
         if (!response) {

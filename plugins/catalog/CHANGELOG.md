@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- bdc61b4002: Expose 'initalFilter' through initialKind prop on Catalog Page.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+  - @backstage/plugin-catalog-common@1.0.1-next.1
+  - @backstage/integration-react@1.0.1-next.1
+  - @backstage/plugin-search-common@0.3.3-next.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

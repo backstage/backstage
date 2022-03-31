@@ -141,8 +141,6 @@ catalog:
   locations:
     - type: microsoft-graph-org
       target: https://graph.microsoft.com/v1.0
-      # If you catalog doesn't allow to import Group and User entities by
-      # default, allow them here
       rules:
         - allow: [Group, User]
     …

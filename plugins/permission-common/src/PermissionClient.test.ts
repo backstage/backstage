@@ -18,9 +18,13 @@ import { RestContext, rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import { PermissionClient } from './PermissionClient';
-import { AuthorizeQuery, AuthorizeResult, Identified } from './types/api';
+import {
+  EvaluatePermissionRequest,
+  AuthorizeResult,
+  IdentifiedPermissionMessage,
+} from './types/api';
 import { DiscoveryApi } from './types/discovery';
-import { Permission } from './types/permission';
+import { createPermission } from './permissions';
 
 const server = setupServer();
 const token = 'fake-token';
@@ -36,16 +40,11 @@ const client: PermissionClient = new PermissionClient({
   config: new ConfigReader({ permission: { enabled: true } }),
 });
 
-const mockPermission: Permission = {
+const mockPermission = createPermission({
   name: 'test.permission',
   attributes: {},
-  resourceType: 'test-resource',
-};
-
-const mockAuthorizeQuery = {
-  permission: mockPermission,
-  resourceRef: 'foo',
-};
+  resourceType: 'foo',
+});
 
 describe('PermissionClient', () => {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -53,11 +52,18 @@ describe('PermissionClient', () => {
   afterEach(() => server.resetHandlers());
 
   describe('authorize', () => {
+    const mockAuthorizeQuery = {
+      permission: mockPermission,
+      resourceRef: 'foo:bar',
+    };
+
     const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-      const responses = req.body.items.map((a: Identified<AuthorizeQuery>) => ({
-        id: a.id,
-        result: AuthorizeResult.ALLOW,
-      }));
+      const responses = req.body.items.map(
+        (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+          id: a.id,
+          result: AuthorizeResult.ALLOW,
+        }),
+      );
 
       return res(json({ items: responses }));
     });
@@ -84,7 +90,7 @@ describe('PermissionClient', () => {
         items: [
           expect.objectContaining({
             permission: mockPermission,
-            resourceRef: 'foo',
+            resourceRef: 'foo:bar',
           }),
         ],
       });
@@ -141,7 +147,7 @@ describe('PermissionClient', () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
           const responses = req.body.items.map(
-            (a: Identified<AuthorizeQuery>) => ({
+            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
               id: a.id,
               outcome: AuthorizeResult.ALLOW,
             }),
@@ -158,10 +164,12 @@ describe('PermissionClient', () => {
     it('should allow all when permission.enabled is false', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
-            id: a.id,
-            result: AuthorizeResult.DENY,
-          }));
+          const responses = req.body.map(
+            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+              id: a.id,
+              result: AuthorizeResult.DENY,
+            }),
+          );
 
           return res(json({ items: responses }));
         },
@@ -180,10 +188,12 @@ describe('PermissionClient', () => {
     it('should allow all when permission.enabled is not configured', async () => {
       mockAuthorizeHandler.mockImplementationOnce(
         (req, res, { json }: RestContext) => {
-          const responses = req.body.map((a: Identified<AuthorizeQuery>) => ({
-            id: a.id,
-            outcome: AuthorizeResult.DENY,
-          }));
+          const responses = req.body.map(
+            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+              id: a.id,
+              outcome: AuthorizeResult.DENY,
+            }),
+          );
 
           return res(json(responses));
         },

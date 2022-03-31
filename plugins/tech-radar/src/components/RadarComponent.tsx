@@ -28,7 +28,7 @@ const useTechRadarLoader = (id: string | undefined) => {
 
   const { error, value, loading } = useAsync(
     async () => techRadarApi.load(id),
-    [techRadarApi],
+    [techRadarApi, id],
   );
 
   useEffect(() => {

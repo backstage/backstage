@@ -37,8 +37,8 @@ Out of the box, Backstage includes:
 
 ## Backstage and the CNCF
 
-Backstage is a CNCF Sandbox project. Read the announcement
-[here](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox).
+Backstage is a CNCF Incubation project after graduating from Sandbox. Read the announcement
+[here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
 
 <img src="https://backstage.io/img/cncf-white.svg" width="400" />
 

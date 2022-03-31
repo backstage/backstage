@@ -47,7 +47,7 @@ export const frontendPlugin = createFactory<Options>({
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
     Task.log();
-    Task.log(`Creating backend plugin ${chalk.cyan(name)}`);
+    Task.log(`Creating frontend plugin ${chalk.cyan(name)}`);
 
     const targetDir = ctx.isMonoRepo
       ? paths.resolveTargetRoot('plugins', id)

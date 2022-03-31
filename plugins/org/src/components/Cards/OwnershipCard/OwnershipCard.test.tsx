@@ -112,9 +112,9 @@ const getEntitiesMock = (
   request?: GetEntitiesRequest,
 ): Promise<GetEntitiesResponse> => {
   const filterKinds =
-    !Array.isArray(request?.filter) && Array.isArray(request?.filter?.kind)
-      ? request?.filter?.kind ?? []
-      : []; // we expect the request to be like { filter: { kind: ['API','System'], .... }. If changed in OwnerShipCard, let's change in also here
+    Array.isArray(request?.filter) && Array.isArray(request?.filter[0].kind)
+      ? request?.filter[0].kind ?? []
+      : []; // we expect the request to be like { filter: [{ kind: ['API','System'], 'relations.ownedBy': [group:default/my-team], .... }]. If changed in OwnerShipCard, let's change in also here
   return Promise.resolve({
     items: items.filter(item => filterKinds.find(k => k === item.kind)),
   } as GetEntitiesResponse);
@@ -160,7 +160,12 @@ describe('OwnershipCard', () => {
     );
 
     expect(catalogApi.getEntities).toHaveBeenCalledWith({
-      filter: { kind: ['Component', 'API'] },
+      filter: [
+        {
+          kind: ['Component', 'API', 'System'],
+          'relations.ownedBy': ['group:default/my-team'],
+        },
+      ],
       fields: [
         'kind',
         'metadata.name',
@@ -182,7 +187,10 @@ describe('OwnershipCard', () => {
     expect(
       queryByText(getByText('LIBRARY').parentElement!, '1'),
     ).toBeInTheDocument();
-    expect(() => getByText('SYSTEM')).toThrowError();
+    expect(getByText('SYSTEM')).toBeInTheDocument();
+    expect(
+      queryByText(getByText('SYSTEM').parentElement!, '1'),
+    ).toBeInTheDocument();
   });
 
   it('applies CustomFilterDefinition', async () => {
@@ -238,7 +246,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D%5B0%5D=my-team&filters%5Buser%5D=all',
     );
   });
 
@@ -280,7 +288,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D%5B0%5D=the-user&filters%5Bowners%5D%5B1%5D=my-team&filters%5Buser%5D=all',
     );
   });
 });
