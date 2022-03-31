@@ -139,7 +139,7 @@ export interface CatalogTableProps {
   // (undocumented)
   columns?: TableColumn<CatalogTableRow>[];
   // (undocumented)
-  options?: TableProps<CatalogTableRow>['options'];
+  tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
 // @public (undocumented)
@@ -167,7 +167,7 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   initiallySelectedFilter?: UserListFilterKind;
   // (undocumented)
-  options?: TableProps<CatalogTableRow>['options'];
+  tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
 // @public
