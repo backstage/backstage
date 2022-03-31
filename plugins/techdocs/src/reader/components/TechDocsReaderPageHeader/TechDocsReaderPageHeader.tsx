@@ -33,11 +33,7 @@ import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
-import {
-  useTechDocsReaderPage,
-  useTechDocsMetadata,
-  useEntityMetadata,
-} from '../TechDocsReaderPage';
+import { useTechDocsReaderPage } from '../TechDocsReaderPage';
 
 import { rootRouteRef } from '../../../routes';
 
@@ -47,31 +43,30 @@ export const TechDocsReaderPageHeader: FC = ({ children }) => {
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
 
-  const { value: entityMetadata } = useEntityMetadata();
-  const { value: techDocsMetadata } = useTechDocsMetadata();
-
   const {
     title,
     setTitle,
     subtitle,
     setSubtitle,
-    entityName: entityRef,
+    entityName,
+    metadata: { value: metadata },
+    entityMetadata: { value: entityMetadata },
   } = useTechDocsReaderPage();
 
   useEffect(() => {
-    if (!techDocsMetadata) return;
+    if (!metadata) return;
     setTitle(prevTitle => {
-      const { site_name } = techDocsMetadata;
+      const { site_name } = metadata;
       return prevTitle || site_name;
     });
     setSubtitle(prevSubtitle => {
-      let { site_description } = techDocsMetadata;
+      let { site_description } = metadata;
       if (site_description === 'None') {
         site_description = 'Home';
       }
       return prevSubtitle || site_description;
     });
-  }, [techDocsMetadata, setTitle, setSubtitle]);
+  }, [metadata, setTitle, setSubtitle]);
 
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const tabTitle = [subtitle, title, appTitle].filter(Boolean).join(' | ');
@@ -92,7 +87,7 @@ export const TechDocsReaderPageHeader: FC = ({ children }) => {
         value={
           <EntityRefLink
             color="inherit"
-            entityRef={entityRef}
+            entityRef={entityName}
             defaultKind="Component"
           />
         }
