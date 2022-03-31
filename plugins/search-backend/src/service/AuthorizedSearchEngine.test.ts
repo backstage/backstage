@@ -19,7 +19,6 @@ import {
   EvaluatePermissionResponse,
   AuthorizeResult,
   createPermission,
-  PermissionAuthorizer,
   PolicyDecision,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
@@ -77,7 +76,7 @@ describe('AuthorizedSearchEngine', () => {
     PermissionEvaluator['query']
   > = jest.fn();
 
-  const permissionAuthorizer: PermissionEvaluator = {
+  const permissionEvaluator: PermissionEvaluator = {
     authorize: mockedAuthorize,
     query: mockedPermissionQuery,
   };
@@ -116,13 +115,13 @@ describe('AuthorizedSearchEngine', () => {
   const authorizedSearchEngine = new AuthorizedSearchEngine(
     searchEngine,
     defaultTypes,
-    permissionAuthorizer,
+    permissionEvaluator,
     new ConfigReader({}),
   );
 
   const options = { token: 'token' };
 
-  const allowAll: PermissionAuthorizer['authorize'] &
+  const allowAll: PermissionEvaluator['authorize'] &
     PermissionEvaluator['query'] = async queries => {
     return queries.map(() => ({
       result: AuthorizeResult.ALLOW,
