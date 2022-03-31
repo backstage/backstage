@@ -1,0 +1,14 @@
+---
+title: Tech Insights
+author: '@RoadieHQ'
+authorUrl: https://github.com/RoadieHQ
+category: Discovery
+description: Visualize, understand and optimize your team's tech health.
+documentation: https://roadie.io/backstage/plugins/tech-insights/
+iconUrl: https://roadie.io/images/logos/tech-insights.png
+npmPackageName: '@backstage/plugin-tech-insights'
+tags:
+  - tech-insights
+  - reporting
+  - tech health
+  - migrations
