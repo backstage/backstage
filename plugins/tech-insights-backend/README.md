@@ -100,7 +100,7 @@ const ttlWithAHumanReadableValue = { timeToLive: { weeks: 2 } }; // Deletes item
 To register these fact retrievers to your application you can modify the example `techInsights.ts` file shown above like this:
 
 ```diff
-const builder = new DefaultTechInsightsBuilder({
+const builder = buildTechInsightsContext({
   logger: env.logger,
   config: env.config,
   database: env.database,
@@ -115,7 +115,7 @@ const builder = new DefaultTechInsightsBuilder({
 Current logic on running scheduled fact retrievers is intended to be executed in a single instance. Running on multi-instane environment there might be some additional data accumulation when multiple fact retrievers would retrieve and persist their facts. To mitigate this it is recommended to mark a single instance to be a specific fact retriever instance. One way to do this is by using environment variables to indicate if the retrievers should be registered. This can be done for example like the code snippet below
 
 ```diff
-const builder = new DefaultTechInsightsBuilder({
+const builder = buildTechInsightsContext({
   logger: env.logger,
   config: env.config,
   database: env.database,
