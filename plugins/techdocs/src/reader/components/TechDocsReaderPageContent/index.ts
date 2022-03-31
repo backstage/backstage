@@ -16,3 +16,4 @@
 
 export { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
 export * from './context';
+export * from './dom';
