@@ -15,6 +15,7 @@
  */
 
 import {
+  TechDocsReaderPage,
   TechDocsReaderPageHeader,
   TechDocsReaderPageContent,
 } from '@backstage/plugin-techdocs';
@@ -22,10 +23,10 @@ import React from 'react';
 
 const DefaultTechDocsPage = () => {
   return (
-    <>
+    <TechDocsReaderPage>
       <TechDocsReaderPageHeader />
       <TechDocsReaderPageContent />
-    </>
+    </TechDocsReaderPage>
   );
 };
 

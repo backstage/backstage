@@ -180,8 +180,9 @@ const routes = (
     <Route path="/docs" element={<TechDocsIndexPage />} />
     <Route
       path="/docs/:namespace/:kind/:name/*"
-      element={<TechDocsReaderPage>{techDocsPage}</TechDocsReaderPage>}
+      element={<TechDocsReaderPage />}
     >
+      {techDocsPage}
       <TechDocsAddons>
         <ExampleHeader />
         <ExampleSubHeader />

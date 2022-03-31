@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { ReactNode, ReactChild, Children } from 'react';
+import { useOutlet, useParams } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { TECHDOCS_ADDONS_WRAPPER_KEY } from '@backstage/techdocs-addons';
 
 import { TechDocsReaderPageRenderFunction } from '../../../types';
 
@@ -28,27 +29,37 @@ import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
 
 import { TechDocsReaderPageProvider } from './context';
 
+type Extension = ReactChild & {
+  type: {
+    __backstage_data: {
+      map: Map<string, boolean>;
+    };
+  };
+};
+
 export type TechDocsReaderLayoutProps = {
-  hideHeader?: boolean;
+  withHeader?: boolean;
   withSearch?: boolean;
 };
 
 export const TechDocsReaderLayout = ({
-  hideHeader = false,
   withSearch,
-}: TechDocsReaderLayoutProps) => (
-  <>
-    {!hideHeader && <TechDocsReaderPageHeader />}
-    <TechDocsReaderPageSubheader />
-    <TechDocsReaderPageContent withSearch={withSearch} />
-  </>
-);
+  withHeader = true,
+}: TechDocsReaderLayoutProps) => {
+  return (
+    <>
+      {withHeader && <TechDocsReaderPageHeader />}
+      <TechDocsReaderPageSubheader />
+      <TechDocsReaderPageContent withSearch={withSearch} />
+    </>
+  );
+};
 
 /**
  * @public
  */
 export type TechDocsReaderPageProps = {
-  entityName?: CompoundEntityRef;
+  entityRef?: CompoundEntityRef;
   children?: TechDocsReaderPageRenderFunction | ReactNode;
 };
 
@@ -57,12 +68,31 @@ export type TechDocsReaderPageProps = {
  * @public
  */
 export const TechDocsReaderPage = ({
-  entityName: defaultEntityName,
-  children = <TechDocsReaderLayout />,
+  entityRef,
+  children,
 }: TechDocsReaderPageProps) => {
   const { kind, name, namespace } = useParams();
+  const route = useOutlet() || { props: { children: [] } };
+  const entityName = entityRef ?? { kind, name, namespace };
 
-  const entityName = defaultEntityName || { kind, name, namespace };
+  if (!children) {
+    const outlet = Children.toArray(route.props.children);
+
+    const page = outlet.find(child => {
+      const { type } = child as Extension;
+      return !type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY);
+    });
+
+    return (
+      (page as JSX.Element) || (
+        <TechDocsReaderPageProvider entityName={entityName}>
+          <Page themeId="documentation">
+            <TechDocsReaderLayout />
+          </Page>
+        </TechDocsReaderPageProvider>
+      )
+    );
+  }
 
   return (
     <TechDocsReaderPageProvider entityName={entityName}>
