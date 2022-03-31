@@ -24,14 +24,14 @@ import {
 } from '@backstage/plugin-catalog-common';
 import {
   AuthorizeResult,
-  PermissionAuthorizer,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { LocationInput, LocationService } from './types';
 
 export class AuthorizedLocationService implements LocationService {
   constructor(
     private readonly locationService: LocationService,
-    private readonly permissionApi: PermissionAuthorizer,
+    private readonly permissionApi: PermissionEvaluator,
   ) {}
 
   async createLocation(
