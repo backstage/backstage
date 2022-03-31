@@ -2201,24 +2201,12 @@
   resolved "https://registry.npmjs.org/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
-"@gitbeaker/core@^34.6.0":
-  version "34.6.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-34.6.0.tgz#f774ea98ac079ba2edf495fdef738ac3f741178b"
-  integrity sha512-yKF+oxffPyzOnyuHCqLGJrBHhcFHuGHtcmqKhGKtnYPfqcNYA8rt4INAHaE5wMz4ILua9b4sB8p42fki+xn6WA==
+"@gitbeaker/core@^35.5.0", "@gitbeaker/core@^35.6.0":
+  version "35.6.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.6.0.tgz#c46e15986081ef1e647434c450964eed5fb0e390"
+  integrity sha512-ZhaDUs/4BxHODfjRkVmwkWxZVaFIpYduxaj28+J+4FH9X93WZp0IsyT4szcFM7FwAbRW2+ZvGeEfw4NQwgB/RA==
   dependencies:
-    "@gitbeaker/requester-utils" "^34.6.0"
-    form-data "^4.0.0"
-    li "^1.3.0"
-    mime "^3.0.0"
-    query-string "^7.0.0"
-    xcase "^2.0.1"
-
-"@gitbeaker/core@^35.5.0":
-  version "35.5.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.5.0.tgz#e744ca9115133f8070a40b3bbfedf5a11801d341"
-  integrity sha512-ExAIDoUWmaY/QBNoUNkxEvvg79kF9ccFkEoFnHdKYvrqX2517OJCSoWoslGt9/XaSEcE9sTm7lYZrCmqExXsWg==
-  dependencies:
-    "@gitbeaker/requester-utils" "^35.5.0"
+    "@gitbeaker/requester-utils" "^35.6.0"
     form-data "^4.0.0"
     li "^1.3.0"
     mime "^3.0.0"
@@ -2236,19 +2224,10 @@
     got "11.8.3"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^34.6.0":
-  version "34.6.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-34.6.0.tgz#4489009b759ca6f9a83f244453f4f610f1ac7349"
-  integrity sha512-H8utxbSP1kEdX0KcyVYrTDTT0A3UcPwrIV1ahyufX9ZLybYSUsA56B8Wx5kJSbWGFT1ffu2f8H2YDMwNCKKsBg==
-  dependencies:
-    form-data "^4.0.0"
-    qs "^6.10.1"
-    xcase "^2.0.1"
-
-"@gitbeaker/requester-utils@^35.5.0":
-  version "35.5.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-35.5.0.tgz#22fb09698da018607c9ce70a62114747bd92752e"
-  integrity sha512-5weE7X7kfIuUHGWl0XfSt68kFMVXUg3SrUZW7MOS2Y0w2tj/H+6eomzJ7mYcJmI7ttNGIDGYhqxftPh8zLpi0w==
+"@gitbeaker/requester-utils@^35.5.0", "@gitbeaker/requester-utils@^35.6.0":
+  version "35.6.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-35.6.0.tgz#41e5008f64f5910b3c0793488a2a41b23c9f081f"
+  integrity sha512-5IVzv1gO626qaC7CEV7LUG68IHgEjWovIHXQsbI9MraxhrI9eSV5/l/81Povv7tJlni7u8OnARPU7bmxlXlx7g==
   dependencies:
     form-data "^4.0.0"
     qs "^6.10.1"
