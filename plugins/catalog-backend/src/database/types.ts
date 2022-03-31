@@ -19,6 +19,7 @@ import { JsonObject } from '@backstage/types';
 import { DateTime } from 'luxon';
 import { EntityRelationSpec } from '../api';
 import { DeferredEntity } from '../processing/types';
+import { DbRelationsRow } from './tables';
 
 /**
  * An abstraction for transactions of the underlying database technology.
@@ -125,7 +126,7 @@ export interface ProcessingDatabase {
   updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
-  ): Promise<void>;
+  ): Promise<{ previous: { relations: DbRelationsRow[] } }>;
 
   /**
    * Updates the cache associated with an entity.

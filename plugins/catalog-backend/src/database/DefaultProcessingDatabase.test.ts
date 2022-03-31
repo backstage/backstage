@@ -221,7 +221,7 @@ describe('Default Processing Database', () => {
           },
         ];
 
-        await db.transaction(tx =>
+        let updateResult = await db.transaction(tx =>
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
@@ -231,7 +231,7 @@ describe('Default Processing Database', () => {
           }),
         );
 
-        const savedRelations = await knex<DbRelationsRow>('relations')
+        let savedRelations = await knex<DbRelationsRow>('relations')
           .where({ originating_entity_id: id })
           .select();
         expect(savedRelations.length).toBe(1);
@@ -241,6 +241,36 @@ describe('Default Processing Database', () => {
           type: 'memberOf',
           target_entity_ref: 'component:default/foo',
         });
+        expect(updateResult.previous.relations).toEqual([]);
+
+        updateResult = await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity,
+            resultHash: '',
+            relations: relations,
+            deferredEntities: [],
+          }),
+        );
+
+        savedRelations = await knex<DbRelationsRow>('relations')
+          .where({ originating_entity_id: id })
+          .select();
+        expect(savedRelations.length).toBe(1);
+        expect(savedRelations[0]).toEqual({
+          originating_entity_id: id,
+          source_entity_ref: 'component:default/foo',
+          type: 'memberOf',
+          target_entity_ref: 'component:default/foo',
+        });
+        expect(updateResult.previous.relations).toEqual([
+          {
+            originating_entity_id: expect.any(String),
+            source_entity_ref: 'component:default/foo',
+            type: 'memberOf',
+            target_entity_ref: 'component:default/foo',
+          },
+        ]);
       },
       60_000,
     );

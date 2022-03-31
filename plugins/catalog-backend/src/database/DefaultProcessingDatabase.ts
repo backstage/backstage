@@ -68,7 +68,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   async updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
-  ): Promise<void> {
+  ): Promise<{ previous: { relations: DbRelationsRow[] } }> {
     const tx = txOpaque as Knex.Transaction;
     const {
       id,
@@ -108,9 +108,20 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     });
 
     // Delete old relations
-    await tx<DbRelationsRow>('relations')
-      .where({ originating_entity_id: id })
-      .delete();
+    let previousRelationRows: DbRelationsRow[];
+    if (tx.client.config.client.includes('sqlite3')) {
+      previousRelationRows = await tx<DbRelationsRow>('relations')
+        .select('*')
+        .where({ originating_entity_id: id });
+      await tx<DbRelationsRow>('relations')
+        .where({ originating_entity_id: id })
+        .delete();
+    } else {
+      previousRelationRows = await tx<DbRelationsRow>('relations')
+        .where({ originating_entity_id: id })
+        .delete()
+        .returning('*');
+    }
 
     // Batch insert new relations
     const relationRows: DbRelationsRow[] = relations.map(
@@ -126,6 +137,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       this.deduplicateRelations(relationRows),
       BATCH_SIZE,
     );
+
+    return {
+      previous: {
+        relations: previousRelationRows,
+      },
+    };
   }
 
   async updateProcessedEntityErrors(
