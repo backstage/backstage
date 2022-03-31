@@ -1,5 +1,4 @@
 {
   labels: ['dependencies'],
   extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
-  rangeStrategy: 'update-lockfile',
 }
