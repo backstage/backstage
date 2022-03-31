@@ -2,4 +2,4 @@
 '@backstage/plugin-search-backend': patch
 ---
 
-Fix typing when invoking `PermissionClient#authorize`
+Use `PermissionEvaluator` instead of `PermissionAuthorizer`.

@@ -26,7 +26,7 @@ import request from 'supertest';
 
 import { createRouter } from './router';
 
-const mockPermissionAuthorizer: PermissionEvaluator = {
+const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
     throw new Error('Not implemented');
   },
@@ -62,7 +62,7 @@ describe('createRouter', () => {
         'second-type': {},
       },
       config: new ConfigReader({ permissions: { enabled: false } }),
-      permissions: mockPermissionAuthorizer,
+      permissions: mockPermissionEvaluator,
       logger,
     });
     app = express().use(router);
@@ -167,7 +167,7 @@ describe('createRouter', () => {
           engine: indexBuilder.getSearchEngine(),
           types: indexBuilder.getDocumentTypes(),
           config: new ConfigReader({ permissions: { enabled: false } }),
-          permissions: mockPermissionAuthorizer,
+          permissions: mockPermissionEvaluator,
           logger,
         });
         app = express().use(router);
