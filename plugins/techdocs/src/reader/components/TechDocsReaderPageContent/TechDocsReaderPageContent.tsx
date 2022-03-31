@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { create } from 'jss';
 
 import { makeStyles, Grid, Portal } from '@material-ui/core';
@@ -29,7 +29,9 @@ import { Content, Progress } from '@backstage/core-components';
 import { TechDocsSearch } from '../../../search';
 import { useTechDocsReaderPage } from '../TechDocsReaderPage';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
-import { useTechDocsReaderDom, withTechDocsReaderProvider } from './context';
+
+import { useTechDocsReaderDom } from './dom';
+import { withTechDocsReaderProvider } from './context';
 
 const useStyles = makeStyles({
   search: {
@@ -49,10 +51,10 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
   ({ withSearch = true }: TechDocsReaderPageContentProps) => {
     const classes = useStyles();
     const addons = useTechDocsAddons();
-    const page = useTechDocsReaderPage();
-    const dom = useTechDocsReaderDom(page.entityName);
+    const { entityName, setShadowRoot } = useTechDocsReaderPage();
+    const dom = useTechDocsReaderDom(entityName);
 
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLDivElement | null>(null);
     const [jss, setJss] = useState(
       create({
         ...jssPreset(),
@@ -75,16 +77,16 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
         shadowHost.shadowRoot ?? shadowHost.attachShadow({ mode: 'open' });
       shadowRoot.innerHTML = '';
       shadowRoot.appendChild(dom);
-      page.setShadowRoot(shadowRoot);
-    }, [dom, page]);
+      setShadowRoot(shadowRoot);
+    }, [dom, setShadowRoot]);
 
-    const contentElement = ref.current?.shadowRoot?.querySelector(
+    const contentElement = ref.current?.querySelector(
       '[data-md-component="container"]',
     );
-    const primarySidebarElement = ref.current?.shadowRoot?.querySelector(
+    const primarySidebarElement = ref.current?.querySelector(
       'div[data-md-component="sidebar"][data-md-type="navigation"], div[data-md-component="navigation"]',
     );
-    const secondarySidebarElement = ref.current?.shadowRoot?.querySelector(
+    const secondarySidebarElement = ref.current?.querySelector(
       'div[data-md-component="sidebar"][data-md-type="toc"], div[data-md-component="toc"]',
     );
 
@@ -111,7 +113,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
           </Grid>
           {withSearch && (
             <Grid className={classes.search} xs="auto" item>
-              <TechDocsSearch entityId={page.entityName} />
+              <TechDocsSearch entityId={entityName} />
             </Grid>
           )}
           <Grid xs={12} item>
