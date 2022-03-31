@@ -30,8 +30,6 @@ import {
   useEntityMetadata,
   useTechDocsMetadata,
   useTechDocsReaderPage,
-  TechDocsEntityProvider,
-  TechDocsMetadataProvider,
   TechDocsReaderPageProvider,
 } from './context';
 
@@ -65,7 +63,6 @@ const techdocsApiMock = {
 };
 
 const wrapper = ({
-  path = '',
   entityName = {
     kind: mockEntityMetadata.kind,
     name: mockEntityMetadata.metadata.name,
@@ -73,19 +70,14 @@ const wrapper = ({
   },
   children,
 }: {
-  path?: string;
   entityName?: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
     <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
-      <TechDocsMetadataProvider entityName={entityName}>
-        <TechDocsEntityProvider entityName={entityName}>
-          <TechDocsReaderPageProvider path={path} entityName={entityName}>
-            {children}
-          </TechDocsReaderPageProvider>
-        </TechDocsEntityProvider>
-      </TechDocsMetadataProvider>
+      <TechDocsReaderPageProvider entityName={entityName}>
+        {children}
+      </TechDocsReaderPageProvider>
     </TestApiProvider>
   </ThemeProvider>
 );

@@ -24,11 +24,11 @@ import { TechDocsReaderLayout } from './reader';
 type EntityPageDocsProps = { entity: Entity };
 
 export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
-  const entityName = getCompoundEntityRef(entity);
+  const entityRef = getCompoundEntityRef(entity);
 
   return (
-    <TechDocsReaderPage entityName={entityName}>
-      <TechDocsReaderLayout hideHeader />
+    <TechDocsReaderPage entityRef={entityRef}>
+      <TechDocsReaderLayout withHeader={false} />
     </TechDocsReaderPage>
   );
 };

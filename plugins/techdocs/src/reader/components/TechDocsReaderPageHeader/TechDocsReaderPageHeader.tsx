@@ -39,7 +39,7 @@ import { rootRouteRef } from '../../../routes';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
-export const TechDocsReaderPageHeader: FC = ({ children }) => {
+export const TechDocsReaderPageHeader = () => {
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
 
@@ -135,7 +135,6 @@ export const TechDocsReaderPageHeader: FC = ({ children }) => {
         <title>{tabTitle}</title>
       </Helmet>
       {labels}
-      {children}
       {addons.renderComponentsByLocation(locations.HEADER)}
     </Header>
   );
