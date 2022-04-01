@@ -51,15 +51,30 @@ export enum TechDocsAddonLocations {
   CONTENT = 'content',
 
   /**
-   * A virtual location allowing an instance of the addon to be rendered for
-   * every HTML node with the same tag name as the addon name in the markdown
-   * content. If no reference is made, no instance will be rendered. Works like
-   * regular React components, just being accessible from markdown.
+   * todo(backstage/community): This is a proposed virtual location which would
+   * help implement a common addon pattern in which many instances of a given
+   * element in markdown would be dynamically replaced at render-time based on
+   * attributes provided on that element, for example:
    *
-   * todo(backstage/techdocs-core): Keep and implement or remove before
-   * releasing this package!
+   * ```md
+   * ## Component Metadata
+   * [CatalogEntityCard](default:component/some-component-name)
+   *
+   * ## System Metadata
+   * [CatalogEntityCard](default:system/some-system-name)
+   * ```
+   *
+   * Could correspond to a TechDocs addon named `CatalogEntityCard` with
+   * location `TechDocsAddonLocations.COMPONENT`, whose `component` would be
+   * the react component that would be rendered in place of all instances of
+   * the markdown illustrated above.
+   *
+   * The `@backstage/techdocs-addons` plugin would need to be updated to, in
+   * cases where such addons had been registered, find all instances of the
+   * rendered markdown (e.g. `<a href="{entityRef}">CatalogEntityCard</a>`) and
+   * replace them with react portals to the addon component.
    */
-  COMPONENT = 'component',
+  // COMPONENT = 'component',
 }
 
 /**
