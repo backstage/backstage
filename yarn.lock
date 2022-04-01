@@ -15679,16 +15679,7 @@ jest-when@^3.1.0:
   resolved "https://registry.npmjs.org/jest-when/-/jest-when-3.5.1.tgz#33ab6f923661cf878cd08fe9df64b507934603db"
   integrity sha512-o+HiaIVCg1IC95sMDKHU9G5v5N5l3UHqXvJpf0PgAMThZeQo4Hf5Sgoj+wpCBRGg4/KtzSAZZZEKNiLqE0i4eQ==
 
-jest-worker@^27.3.1, jest-worker@^27.4.1:
-  version "27.4.6"
-  resolved "https://registry.npmjs.org/jest-worker/-/jest-worker-27.4.6.tgz#5d2d93db419566cb680752ca0792780e71b3273e"
-  integrity sha512-gHWJF/6Xi5CTG5QCvROr6GcmpIqNYpDJyc8A1h/DyXqH1tD6SnRCM0d3U5msV31D2LB/U+E0M+W4oyvKV44oNw==
-  dependencies:
-    "@types/node" "*"
-    merge-stream "^2.0.0"
-    supports-color "^8.0.0"
-
-jest-worker@^27.5.1:
+jest-worker@^27.3.1, jest-worker@^27.4.5, jest-worker@^27.5.1:
   version "27.5.1"
   resolved "https://registry.npmjs.org/jest-worker/-/jest-worker-27.5.1.tgz#8d146f0900e8973b106b6f73cc1e9a8cb86f8db0"
   integrity sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==
@@ -23755,11 +23746,11 @@ terminal-link@^2.0.0:
     supports-hyperlinks "^2.0.0"
 
 terser-webpack-plugin@*, terser-webpack-plugin@^5.1.3:
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/terser-webpack-plugin/-/terser-webpack-plugin-5.3.0.tgz#21641326486ecf91d8054161c816e464435bae9f"
-  integrity sha512-LPIisi3Ol4chwAaPP8toUJ3L4qCM1G0wao7L3qNv57Drezxj6+VEyySpPw4B1HSO2Eg/hDY/MNF5XihCAoqnsQ==
+  version "5.3.1"
+  resolved "https://registry.npmjs.org/terser-webpack-plugin/-/terser-webpack-plugin-5.3.1.tgz#0320dcc270ad5372c1e8993fabbd927929773e54"
+  integrity sha512-GvlZdT6wPQKbDNW/GDQzZFg/j4vKU96yl2q6mcUkzKOgW4gwf1Z8cZToUCrz31XHlPWH8MVb1r2tFtdDtTGJ7g==
   dependencies:
-    jest-worker "^27.4.1"
+    jest-worker "^27.4.5"
     schema-utils "^3.1.1"
     serialize-javascript "^6.0.0"
     source-map "^0.6.1"
