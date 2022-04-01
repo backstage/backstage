@@ -85,7 +85,7 @@ export function ScaffolderPageContextMenu(
       >
         <MenuList>
           {showEditor && (
-            <MenuItem onClick={() => navigate(`${pageLink()}/preview`)}>
+            <MenuItem onClick={() => navigate(`${pageLink()}/edit`)}>
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>

@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType } from 'react';
-import { Routes, Route, useOutlet } from 'react-router';
+import { Routes, Route, useOutlet, Navigate } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
@@ -23,7 +23,7 @@ import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 import { SecretsContextProvider } from './secrets/SecretsContext';
-import { TemplatePreviewPage } from './TemplatePreviewPage';
+import { TemplateEditorPage } from './TemplateEditorPage';
 
 import {
   FieldExtensionOptions,
@@ -116,16 +116,18 @@ export const Router = (props: RouterProps) => {
       <Route path="/tasks/:taskId" element={<TaskPageElement />} />
       <Route path="/actions" element={<ActionsPage />} />
       <Route
-        path="/preview"
+        path="/edit"
         element={
           <SecretsContextProvider>
-            <TemplatePreviewPage
+            <TemplateEditorPage
               defaultPreviewTemplate={defaultPreviewTemplate}
               customFieldExtensions={fieldExtensions}
             />
           </SecretsContextProvider>
         }
       />
+
+      <Route path="preview" element={<Navigate to="../edit" />} />
     </Routes>
   );
 };
