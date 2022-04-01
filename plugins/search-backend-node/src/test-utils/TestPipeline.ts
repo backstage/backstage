@@ -129,7 +129,7 @@ export class TestPipeline {
       }
       pipes.push(this.indexer!);
 
-      pipeline(pipes, error => {
+      pipeline(pipes, (error: NodeJS.ErrnoException | null) => {
         done({
           error,
           documents,
