@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   CompoundEntityRef,
   stringifyEntityRef,
@@ -67,21 +68,7 @@ const useStyles = makeStyles(theme => ({
  *
  * @public
  */
-export const EntityRelationsGraph = ({
-  rootEntityNames,
-  maxDepth = Number.POSITIVE_INFINITY,
-  unidirectional = true,
-  mergeRelations = true,
-  kinds,
-  relations,
-  direction = Direction.LEFT_RIGHT,
-  onNodeClick,
-  relationPairs = ALL_RELATION_PAIRS,
-  className,
-  zoom = 'enabled',
-  renderNode,
-  renderLabel,
-}: {
+export const EntityRelationsGraph = (props: {
   rootEntityNames: CompoundEntityRef | CompoundEntityRef[];
   maxDepth?: number;
   unidirectional?: boolean;
@@ -96,6 +83,22 @@ export const EntityRelationsGraph = ({
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
 }) => {
+  const {
+    rootEntityNames,
+    maxDepth = Number.POSITIVE_INFINITY,
+    unidirectional = true,
+    mergeRelations = true,
+    kinds,
+    relations,
+    direction = Direction.LEFT_RIGHT,
+    onNodeClick,
+    relationPairs = ALL_RELATION_PAIRS,
+    className,
+    zoom = 'enabled',
+    renderNode,
+    renderLabel,
+  } = props;
+
   const theme = useTheme();
   const classes = useStyles();
   const rootEntityRefs = useMemo(

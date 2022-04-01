@@ -85,13 +85,13 @@ export interface EntityProviderProps {
  *
  * @public
  */
-export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
+export const EntityProvider = (props: EntityProviderProps) => (
   <AsyncEntityProvider
-    entity={entity}
-    loading={!Boolean(entity)}
+    entity={props.entity}
+    loading={!Boolean(props.entity)}
     error={undefined}
     refresh={undefined}
-    children={children}
+    children={props.children}
   />
 );
 

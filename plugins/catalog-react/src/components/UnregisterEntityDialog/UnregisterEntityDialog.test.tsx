@@ -61,14 +61,14 @@ describe('UnregisterEntityDialog', () => {
     spec: {},
   };
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = (props: { children?: React.ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogApiRef, new CatalogClient({ discoveryApi })],
         [alertApiRef, alertApi],
       ]}
     >
-      {children}
+      {props.children}
     </TestApiProvider>
   );
 

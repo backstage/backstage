@@ -16,6 +16,7 @@
 
 import { createRouteRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export const graphiQLRouteRef = createRouteRef({
   id: 'graphiql-root',
 });

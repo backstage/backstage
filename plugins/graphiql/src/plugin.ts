@@ -22,6 +22,7 @@ import {
 import { graphQlBrowseApiRef, GraphQLEndpoints } from './lib/api';
 import { graphiQLRouteRef } from './route-refs';
 
+/** @public */
 export const graphiqlPlugin = createPlugin({
   id: 'graphiql',
   apis: [
@@ -40,6 +41,7 @@ export const graphiqlPlugin = createPlugin({
   ],
 });
 
+/** @public */
 export const GraphiQLPage = graphiqlPlugin.provide(
   createRoutableExtension({
     name: 'GraphiQLPage',

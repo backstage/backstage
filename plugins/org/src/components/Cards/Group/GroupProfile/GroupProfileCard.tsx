@@ -53,18 +53,15 @@ import {
 } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
-const CardTitle = ({ title }: { title: string }) => (
+const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
     <GroupIcon fontSize="inherit" />
-    <Box ml={1}>{title}</Box>
+    <Box ml={1}>{props.title}</Box>
   </Box>
 );
 
-export const GroupProfileCard = ({
-  variant,
-}: {
-  variant?: InfoCardVariants;
-}) => {
+/** @public */
+export const GroupProfileCard = (props: { variant?: InfoCardVariants }) => {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const { entity: group } = useEntity<GroupEntity>();
@@ -118,7 +115,7 @@ export const GroupProfileCard = ({
     <InfoCard
       title={<CardTitle title={displayName} />}
       subheader={description}
-      variant={variant}
+      variant={props.variant}
       action={
         <>
           {allowRefresh && (

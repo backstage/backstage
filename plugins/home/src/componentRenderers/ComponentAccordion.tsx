@@ -38,15 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export const ComponentAccordion = ({
-  title,
-  expanded = false,
-  Content,
-  Actions,
-  Settings,
-  ContextProvider,
-  ...childProps
-}: {
+export const ComponentAccordion = (props: {
   title: string;
   expanded?: boolean;
   Content: () => JSX.Element;
@@ -54,6 +46,16 @@ export const ComponentAccordion = ({
   Settings?: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
 }) => {
+  const {
+    title,
+    expanded = false,
+    Content,
+    Actions,
+    Settings,
+    ContextProvider,
+    ...childProps
+  } = props;
+
   const classes = useStyles();
   const [settingsIsExpanded, setSettingsIsExpanded] = React.useState(false);
   const [isExpanded, setIsExpanded] = React.useState(expanded);

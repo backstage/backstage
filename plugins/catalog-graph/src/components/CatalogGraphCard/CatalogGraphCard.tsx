@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   getCompoundEntityRef,
   parseEntityRef,
@@ -51,19 +52,7 @@ const useStyles = makeStyles<Theme, { height: number | undefined }>({
   },
 });
 
-export const CatalogGraphCard = ({
-  variant = 'gridItem',
-  relationPairs = ALL_RELATION_PAIRS,
-  maxDepth = 1,
-  unidirectional = true,
-  mergeRelations = true,
-  kinds,
-  relations,
-  direction = Direction.LEFT_RIGHT,
-  height,
-  title = 'Relations',
-  zoom = 'enable-on-click',
-}: {
+export const CatalogGraphCard = (props: {
   variant?: InfoCardVariants;
   relationPairs?: RelationPairs;
   maxDepth?: number;
@@ -76,6 +65,20 @@ export const CatalogGraphCard = ({
   title?: string;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 }) => {
+  const {
+    variant = 'gridItem',
+    relationPairs = ALL_RELATION_PAIRS,
+    maxDepth = 1,
+    unidirectional = true,
+    mergeRelations = true,
+    kinds,
+    relations,
+    direction = Direction.LEFT_RIGHT,
+    height,
+    title = 'Relations',
+    zoom = 'enable-on-click',
+  } = props;
+
   const { entity } = useEntity();
   const entityName = getCompoundEntityRef(entity);
   const catalogEntityRoute = useRouteRef(entityRouteRef);

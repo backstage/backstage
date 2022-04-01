@@ -47,7 +47,9 @@ type GraphiQLBrowserProps = {
   endpoints: GraphQLEndpoint[];
 };
 
-export const GraphiQLBrowser = ({ endpoints }: GraphiQLBrowserProps) => {
+export const GraphiQLBrowser = (props: GraphiQLBrowserProps) => {
+  const { endpoints } = props;
+
   const classes = useStyles();
   const [tabIndex, setTabIndex] = useState(0);
 

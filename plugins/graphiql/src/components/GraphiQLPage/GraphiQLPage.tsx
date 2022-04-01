@@ -28,6 +28,7 @@ import {
   Progress,
 } from '@backstage/core-components';
 
+/** @public */
 export const GraphiQLPage = () => {
   const graphQlBrowseApi = useApi(graphQlBrowseApiRef);
   const endpoints = useAsync(() => graphQlBrowseApi.getEndpoints());

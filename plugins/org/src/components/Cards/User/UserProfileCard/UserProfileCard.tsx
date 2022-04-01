@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { RELATION_MEMBER_OF, UserEntity } from '@backstage/catalog-model';
 import {
   EntityRefLinks,
@@ -40,19 +41,16 @@ import {
   Link,
 } from '@backstage/core-components';
 
-const CardTitle = ({ title }: { title?: string }) =>
-  title ? (
+const CardTitle = (props: { title?: string }) =>
+  props.title ? (
     <Box display="flex" alignItems="center">
       <PersonIcon fontSize="inherit" />
-      <Box ml={1}>{title}</Box>
+      <Box ml={1}>{props.title}</Box>
     </Box>
   ) : null;
 
-export const UserProfileCard = ({
-  variant,
-}: {
-  variant?: InfoCardVariants;
-}) => {
+/** @public */
+export const UserProfileCard = (props: { variant?: InfoCardVariants }) => {
   const { entity: user } = useEntity<UserEntity>();
   if (!user) {
     return <Alert severity="error">User not found</Alert>;
@@ -72,7 +70,7 @@ export const UserProfileCard = ({
     <InfoCard
       title={<CardTitle title={displayName} />}
       subheader={description}
-      variant={variant}
+      variant={props.variant}
     >
       <Grid container spacing={3} alignItems="flex-start">
         <Grid item xs={12} sm={2} xl={1}>

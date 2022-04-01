@@ -46,9 +46,9 @@ describe('useUnregisterEntityDialogState', () => {
   };
   const catalogApi = catalogApiMock as Partial<CatalogApi> as CatalogApi;
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = (props: { children?: React.ReactNode }) => (
     <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
-      {children}
+      {props.children}
     </TestApiProvider>
   );
 

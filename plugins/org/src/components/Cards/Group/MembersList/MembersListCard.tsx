@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   DEFAULT_NAMESPACE,
   GroupEntity,
@@ -61,12 +62,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const MemberComponent = ({ member }: { member: UserEntity }) => {
+const MemberComponent = (props: { member: UserEntity }) => {
   const classes = useStyles();
   const {
     metadata: { name: metaName },
     spec: { profile },
-  } = member;
+  } = props.member;
   const displayName = profile?.displayName ?? metaName;
 
   return (
@@ -92,7 +93,7 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
               <Link
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(member),
+                  entityRouteParams(props.member),
                 )}
               >
                 {displayName}
@@ -108,12 +109,14 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
   );
 };
 
-export const MembersListCard = (_props: {
+/** @public */
+export const MembersListCard = (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
 }) => {
+  const { memberDisplayTitle = 'Members', pageSize = 50 } = props;
+
   const { entity: groupEntity } = useEntity<GroupEntity>();
-  let { memberDisplayTitle, pageSize } = _props;
   const {
     metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
@@ -128,8 +131,6 @@ export const MembersListCard = (_props: {
   const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
-  pageSize = pageSize ? pageSize : 50;
-  memberDisplayTitle = memberDisplayTitle ? memberDisplayTitle : 'Members';
 
   const {
     loading,
