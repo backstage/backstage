@@ -49,6 +49,15 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  /**
+   * Options for the context menu on the scaffolder page.
+   */
+  contextMenu?: {
+    /** Whether to show a link to the template editor */
+    editor?: boolean;
+    /** Whether to show a link to the actions documentation */
+    actions?: boolean;
+  };
 };
 
 /**
@@ -92,6 +101,7 @@ export const Router = (props: RouterProps) => {
           <ScaffolderPage
             groups={groups}
             TemplateCardComponent={TemplateCardComponent}
+            contextMenu={props.contextMenu}
           />
         }
       />
