@@ -22,27 +22,10 @@ import React, {
 } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { CompoundEntityRef } from '@backstage/catalog-model';
-
-import { useReaderState } from '../useReaderState';
+import { useReaderState, ReaderState } from '../useReaderState';
 import { useTechDocsReaderPage } from '../TechDocsReaderPage';
 
-/**
- * Props for {@link Reader}
- *
- * @public
- */
-export type ReaderProps = {
-  entityRef: CompoundEntityRef;
-  withSearch?: boolean;
-  onReady?: () => void;
-};
-
-type TechDocsReaderValue = ReturnType<typeof useReaderState>;
-
-const TechDocsReaderContext = createContext<TechDocsReaderValue>(
-  {} as TechDocsReaderValue,
-);
+const TechDocsReaderContext = createContext<ReaderState>({} as ReaderState);
 
 /**
  * Note: this hook is currently being exported so that we can rapidly
@@ -56,14 +39,25 @@ const TechDocsReaderContext = createContext<TechDocsReaderValue>(
 
 export const useTechDocsReader = () => useContext(TechDocsReaderContext);
 
-type TechDocsReaderProviderRenderFunction = (
-  value: TechDocsReaderValue,
+/**
+ * @public Render function for {@link TechDocsReaderProvider}
+ */
+export type TechDocsReaderProviderRenderFunction = (
+  value: ReaderState,
 ) => JSX.Element;
 
-type TechDocsReaderProviderProps = {
+/**
+ * @public Props for {@link TechDocsReaderProvider}
+ */
+export type TechDocsReaderProviderProps = {
   children: TechDocsReaderProviderRenderFunction | ReactNode;
 };
 
+/**
+ * Provides shared building process state to the reader page components.
+ *
+ * @public
+ */
 export const TechDocsReaderProvider = ({
   children,
 }: TechDocsReaderProviderProps) => {

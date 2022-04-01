@@ -37,11 +37,25 @@ type Extension = ReactChild & {
   };
 };
 
+/**
+ * Props for {@link TechDocsReaderLayout}
+ * @public
+ */
 export type TechDocsReaderLayoutProps = {
+  /**
+   * Show or hide the header, defaults to true.
+   */
   withHeader?: boolean;
+  /**
+   * Show or hide the content search bar, defaults to true.
+   */
   withSearch?: boolean;
 };
 
+/**
+ * Default TechDocs reader page structure composed with a header and content
+ * @public
+ */
 export const TechDocsReaderLayout = ({
   withSearch,
   withHeader = true,
@@ -96,13 +110,14 @@ export const TechDocsReaderPage = ({
 
   return (
     <TechDocsReaderPageProvider entityName={entityName}>
-      {({ metadata, entityMetadata }) => (
+      {({ metadata, entityMetadata, onReady }) => (
         <Page themeId="documentation">
           {children instanceof Function
             ? children({
                 entityRef: entityName,
                 techdocsMetadataValue: metadata.value,
                 entityMetadataValue: entityMetadata.value,
+                onReady,
               })
             : children}
         </Page>

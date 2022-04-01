@@ -91,6 +91,10 @@ const getAllTechDocsAddonsData = (collection: ElementCollection) => {
     });
 };
 
+/**
+ * hook to use addons in components
+ * @public
+ */
 export const useTechDocsAddons = () => {
   const node = useOutlet();
   const collection = useElementFilter(node, getAllTechDocsAddons);

@@ -47,6 +47,10 @@ const areEntityNamesEqual = (
   return true;
 };
 
+/**
+ * @public type for the value of the TechDocsReaderPageContext
+ */
+
 export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
   entityName: CompoundEntityRef;
@@ -57,6 +61,10 @@ export type TechDocsReaderPageValue = {
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
   setSubtitle: Dispatch<SetStateAction<string>>;
+  /**
+   * @deprecated property can be passed down directly to the `TechDocsReaderPageContent` instead.
+   */
+  onReady?: () => void;
 };
 
 export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
@@ -73,20 +81,37 @@ export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
 export const TechDocsReaderPageContext = createContext<TechDocsReaderPageValue>(
   defaultTechDocsReaderPageValue,
 );
-
+/**
+ * Hook used to get access to shared state between reader page components.
+ * @public
+ */
 export const useTechDocsReaderPage = () => {
   return useContext(TechDocsReaderPageContext);
 };
 
-type TechDocsReaderPageProviderRenderFunction = (
+/**
+ * render function for {@link TechDocsReaderPageProvider}
+ *
+ * @public
+ */
+export type TechDocsReaderPageProviderRenderFunction = (
   value: TechDocsReaderPageValue,
 ) => JSX.Element;
 
-type TechDocsReaderPageProviderProps = {
+/**
+ * Props for {@link TechDocsReaderPageProvider}
+ *
+ * @public
+ */
+export type TechDocsReaderPageProviderProps = {
   entityName: CompoundEntityRef;
   children: TechDocsReaderPageProviderRenderFunction | ReactNode;
 };
 
+/**
+ * A context to store the reader page state
+ * @public
+ */
 export const TechDocsReaderPageProvider = memo(
   ({ entityName, children }: TechDocsReaderPageProviderProps) => {
     const techdocsApi = useApi(techdocsApiRef);
