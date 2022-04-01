@@ -83,16 +83,17 @@ export type TechDocsReaderPageProps = {
  */
 export const TechDocsReaderPage = ({
   entityRef,
-  children,
+  children
 }: TechDocsReaderPageProps) => {
   const { kind, name, namespace } = useParams();
-  const route = useOutlet() || { props: { children: [] } };
+
+  const outlet = useOutlet()
   const entityName = entityRef ?? { kind, name, namespace };
 
   if (!children) {
-    const outlet = Children.toArray(route.props.children);
+    const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
-    const page = outlet.find(child => {
+    const page = childrenList.find(child => {
       const { type } = child as Extension;
       return !type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY);
     });

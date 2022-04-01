@@ -64,7 +64,7 @@ type TechDocsThemeValue = {
 
 const TechDocsThemeContext = createContext<TechDocsThemeValue>({
   theme: Themes.LIGHT,
-  toggleTheme: () => {},
+  toggleTheme: () => { },
 });
 
 const TechdocsThemeProvider: FC = ({ children }) => {
@@ -120,11 +120,13 @@ export const TechDocsThemeToggle = () => {
   );
 };
 
-export const techDocsPage = (
-  <TechDocsReaderPage>
-    <TechdocsThemeProvider>
+const DefaultTechDocsPage = () => {
+  return <TechdocsThemeProvider>
+    <TechDocsReaderPage>
       <TechDocsReaderPageHeader />
       <TechDocsReaderPageContent withSearch={false} />
-    </TechdocsThemeProvider>
-  </TechDocsReaderPage>
-);
+    </TechDocsReaderPage>
+  </TechdocsThemeProvider>
+}
+
+export const techDocsPage = <DefaultTechDocsPage />
