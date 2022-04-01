@@ -179,6 +179,9 @@ export interface PanelConfig {
 // @public
 export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
+// @public @deprecated
+export const Reader: (props: TechDocsReaderPageContentProps) => JSX.Element;
+
 // @public
 export type ReaderState = {
   state: ContentStateTypes;
@@ -331,7 +334,7 @@ export type TechDocsReaderPageContentProps = {
 
 // @public
 export const TechDocsReaderPageHeader: (
-  _props: TechDocsReaderPageHeaderProps,
+  props: TechDocsReaderPageHeaderProps,
 ) => JSX.Element;
 
 // @public @deprecated
