@@ -52,8 +52,10 @@ describe('BuildList', () => {
       </TestApiProvider>,
     );
 
-    userEvent.click(
-      (await rendered.findAllByLabelText('Detail panel visiblity toggle'))[0],
+    await userEvent.click(
+      (
+        await rendered.findAllByLabelText('Detail panel visiblity toggle')
+      )[0],
     );
     expect(await rendered.findByText('BuildDetails')).toBeInTheDocument();
   });

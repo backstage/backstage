@@ -298,7 +298,7 @@ describe('<AboutCard />', () => {
       'component:default/software',
     );
 
-    userEvent.click(getByTitle('Schedule entity refresh'));
+    await userEvent.click(getByTitle('Schedule entity refresh'));
 
     expect(catalogApi.refreshEntity).toHaveBeenCalledWith(
       'component:default/software',

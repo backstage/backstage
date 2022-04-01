@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { waitFor } from '@testing-library/react';
-import UserEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { MetricSelect, MetricSelectProps } from './MetricSelect';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -46,7 +46,7 @@ describe('<MetricSelect />', () => {
     );
     const button = getByRole('button');
 
-    UserEvent.click(button);
+    await userEvent.click(button);
 
     await waitFor(() => getAllByText(/None/));
 

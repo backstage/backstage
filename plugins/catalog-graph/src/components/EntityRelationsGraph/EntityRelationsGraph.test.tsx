@@ -377,7 +377,7 @@ describe('<EntityRelationsGraph/>', () => {
       </Wrapper>,
     );
 
-    userEvent.click(await findByText('k:d/a1'));
+    await userEvent.click(await findByText('k:d/a1'));
     expect(onNodeClick).toBeCalledTimes(1);
   });
 

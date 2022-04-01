@@ -98,7 +98,7 @@ describe('UnregisterEntityDialog', () => {
       },
     );
 
-    userEvent.click(screen.getByText('Cancel'));
+    await userEvent.click(screen.getByText('Cancel'));
 
     await waitFor(() => {
       expect(onClose).toBeCalled();
@@ -187,13 +187,13 @@ describe('UnregisterEntityDialog', () => {
       expect(screen.getByText(/You cannot unregister/)).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText('Advanced Options'));
+    await userEvent.click(screen.getByText('Advanced Options'));
 
     await waitFor(() => {
       expect(screen.getByText(/option to delete/)).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText('Delete Entity'));
+    await userEvent.click(screen.getByText('Delete Entity'));
 
     await waitFor(() => {
       expect(deleteEntity).toBeCalled();
@@ -233,7 +233,7 @@ describe('UnregisterEntityDialog', () => {
       ).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText('Delete Entity'));
+    await userEvent.click(screen.getByText('Delete Entity'));
 
     await waitFor(() => {
       expect(deleteEntity).toBeCalled();
@@ -281,7 +281,7 @@ describe('UnregisterEntityDialog', () => {
       expect(screen.getByText(/k2:ns2\/n2/)).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText('Unregister Location'));
+    await userEvent.click(screen.getByText('Unregister Location'));
 
     await waitFor(() => {
       expect(unregisterLocation).toBeCalled();
@@ -329,7 +329,7 @@ describe('UnregisterEntityDialog', () => {
       expect(screen.getByText(/k2:ns2\/n2/)).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText('Advanced Options'));
+    await userEvent.click(screen.getByText('Advanced Options'));
 
     await waitFor(() => {
       expect(
@@ -337,7 +337,7 @@ describe('UnregisterEntityDialog', () => {
       ).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText('Delete Entity'));
+    await userEvent.click(screen.getByText('Delete Entity'));
 
     await waitFor(() => {
       expect(deleteEntity).toBeCalled();

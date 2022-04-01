@@ -48,13 +48,13 @@ describe('<SelectedRelationsFilter/>', () => {
       />,
     );
 
-    userEvent.click(getByLabelText('Open'));
+    await userEvent.click(getByLabelText('Open'));
 
     await waitFor(() =>
       expect(getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
     );
 
-    userEvent.click(getByText(RELATION_HAS_MEMBER));
+    await userEvent.click(getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
       expect(onChange).toBeCalledWith([
@@ -77,13 +77,13 @@ describe('<SelectedRelationsFilter/>', () => {
       />,
     );
 
-    userEvent.click(getByLabelText('Open'));
+    await userEvent.click(getByLabelText('Open'));
 
     await waitFor(() =>
       expect(getByText(RELATION_HAS_MEMBER)).toBeInTheDocument(),
     );
 
-    userEvent.click(getByText(RELATION_HAS_MEMBER));
+    await userEvent.click(getByText(RELATION_HAS_MEMBER));
 
     await waitFor(() => {
       expect(onChange).toBeCalledWith(undefined);
@@ -100,7 +100,7 @@ describe('<SelectedRelationsFilter/>', () => {
       />,
     );
 
-    userEvent.click(getByRole('combobox'));
+    await userEvent.click(getByRole('combobox'));
     userEvent.tab();
 
     await waitFor(() => {

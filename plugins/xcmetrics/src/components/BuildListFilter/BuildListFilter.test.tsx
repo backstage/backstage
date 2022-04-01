@@ -44,21 +44,21 @@ const renderWithFiltersVisible = async (
     </TestApiProvider>,
   );
 
-  userEvent.click(rendered.getByLabelText('show filters'));
+  await userEvent.click(rendered.getByLabelText('show filters'));
   return rendered;
 };
 
 const setStatusFilter = async (rendered: RenderResult, option: string) => {
   const statusSelect = rendered.getAllByTestId('select')[0];
-  userEvent.click(statusSelect);
-  userEvent.click((await rendered.findAllByText(option))[0]);
+  await userEvent.click(statusSelect);
+  await userEvent.click((await rendered.findAllByText(option))[0]);
 };
 
 const setProjectFilter = async (rendered: RenderResult, option: string) => {
   const statusSelect = rendered.getAllByTestId('select')[1];
-  userEvent.click(statusSelect);
+  await userEvent.click(statusSelect);
   const options = await rendered.findAllByText(option);
-  userEvent.click(options[options.length - 1]);
+  await userEvent.click(options[options.length - 1]);
 };
 
 describe('BuildListFilter', () => {
@@ -82,7 +82,7 @@ describe('BuildListFilter', () => {
     expect(await rendered.findByText('Status')).toBeInTheDocument();
     expect(await rendered.findByText('Project')).toBeInTheDocument();
 
-    userEvent.click(rendered.getByLabelText('hide filters'));
+    await userEvent.click(rendered.getByLabelText('hide filters'));
     expect(rendered.queryByText('DatePicker')).toBeNull();
     expect(rendered.queryByText('Status')).toBeNull();
     expect(rendered.queryByText('Project')).toBeNull();
@@ -91,7 +91,7 @@ describe('BuildListFilter', () => {
   it('should load projects', async () => {
     const callback = jest.fn();
     const rendered = await renderWithFiltersVisible(callback);
-    userEvent.click((await rendered.findAllByText('All'))[1]);
+    await userEvent.click((await rendered.findAllByText('All'))[1]);
 
     expect(
       await rendered.findByText(client.mockBuild.projectName),
@@ -143,7 +143,7 @@ describe('BuildListFilter', () => {
     await setProjectFilter(rendered, client.mockBuild.projectName);
 
     callback.mockClear();
-    userEvent.click(await rendered.findByText('Clear all'));
+    await userEvent.click(await rendered.findByText('Clear all'));
 
     expect(callback).toHaveBeenCalledWith(initialValues);
     expect(await rendered.findByText('Filters (0)')).toBeInTheDocument();

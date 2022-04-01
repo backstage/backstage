@@ -56,7 +56,7 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('SearchType', () => {
         expect(screen.getByText(name)).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -140,13 +140,13 @@ describe('SearchType', () => {
 
       const button = screen.getByRole('button');
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
@@ -156,7 +156,7 @@ describe('SearchType', () => {
         );
       });
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -181,13 +181,13 @@ describe('SearchType', () => {
 
       const button = screen.getByRole('button');
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
@@ -197,13 +197,13 @@ describe('SearchType', () => {
         );
       });
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(expect.objectContaining([]));

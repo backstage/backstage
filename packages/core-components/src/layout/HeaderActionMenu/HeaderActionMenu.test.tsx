@@ -34,13 +34,13 @@ describe('<ComponentContextMenu />', () => {
     );
     expect(rendered.queryByText('Some label')).not.toBeInTheDocument();
     expect(onClickFunction).not.toHaveBeenCalled();
-    fireEvent.click(rendered.getByTestId('header-action-menu'));
+    await fireEvent.click(rendered.getByTestId('header-action-menu'));
     expect(onClickFunction).not.toHaveBeenCalled();
     expect(rendered.getByTestId('header-action-item')).not.toHaveAttribute(
       'aria-disabled',
       'true',
     );
-    fireEvent.click(rendered.queryByText('Some label') as Node);
+    await fireEvent.click(rendered.queryByText('Some label') as Node);
     expect(onClickFunction).toHaveBeenCalled();
     // We do not expect the dropdown to disappear after click
     expect(rendered.queryByText('Some label')).toBeInTheDocument();
@@ -77,9 +77,9 @@ describe('<ComponentContextMenu />', () => {
     );
 
     expect(onClickFunction).not.toHaveBeenCalled();
-    fireEvent.click(rendered.getByTestId('header-action-menu'));
+    await fireEvent.click(rendered.getByTestId('header-action-menu'));
     expect(onClickFunction).not.toHaveBeenCalled();
-    fireEvent.click(rendered.queryByText('Secondary label') as Node);
+    await fireEvent.click(rendered.queryByText('Secondary label') as Node);
     expect(onClickFunction).toHaveBeenCalled();
     // We do not expect the dropdown to disappear after click
     expect(rendered.queryByText('Some label')).toBeInTheDocument();
@@ -90,9 +90,12 @@ describe('<ComponentContextMenu />', () => {
       <HeaderActionMenu actionItems={[{ label: 'Some label' }]} />,
     );
     expect(rendered.container.getAttribute('aria-hidden')).toBeNull();
-    fireEvent.click(rendered.getByTestId('header-action-menu'));
+    await fireEvent.click(rendered.getByTestId('header-action-menu'));
     expect(rendered.container.getAttribute('aria-hidden')).toBe('true');
-    userEvent.type(rendered.getByTestId('header-action-menu'), '{esc}');
+    await userEvent.type(
+      rendered.getByTestId('header-action-menu'),
+      '{Escape}',
+    );
     expect(rendered.container.getAttribute('aria-hidden')).toBeNull();
   });
 });

@@ -86,7 +86,7 @@ describe('Sidebar', () => {
 
   describe('Click to Expand', () => {
     it('Sidebar should show expanded items when expand button is clicked', async () => {
-      userEvent.click(screen.getByTestId('sidebar-expand-button'));
+      await userEvent.click(screen.getByTestId('sidebar-expand-button'));
       expect(await screen.findByText('Create...')).toBeInTheDocument();
     });
     it('Sidebar should not show expanded items when hovered on', async () => {
@@ -108,14 +108,14 @@ describe('Sidebar', () => {
 
     it('Multicategory item in submenu shows drop down on click', async () => {
       userEvent.hover(screen.getByTestId('item-with-submenu'));
-      userEvent.click(screen.getByText('Misc'));
+      await userEvent.click(screen.getByText('Misc'));
       expect(screen.getByText('dropdown item 1')).toBeInTheDocument();
       expect(screen.getByText('dropdown item 2')).toBeInTheDocument();
     });
 
     it('Dropdown item in submenu renders a link when `to` value is provided', async () => {
       userEvent.hover(screen.getByTestId('item-with-submenu'));
-      userEvent.click(screen.getByText('Misc'));
+      await userEvent.click(screen.getByText('Misc'));
       expect(screen.getByText('dropdown item 1').closest('a')).toHaveAttribute(
         'href',
         '/dropdownitemlink',
@@ -132,7 +132,7 @@ describe('Sidebar', () => {
 
     it('Dropdown item in submenu renders an external link when `to` value is provided', async () => {
       userEvent.hover(screen.getByTestId('item-with-submenu'));
-      userEvent.click(screen.getByText('Misc'));
+      await userEvent.click(screen.getByText('Misc'));
       expect(screen.getByText('dropdown item 3').closest('a')).toHaveAttribute(
         'href',
         'https://backstage.io/',
