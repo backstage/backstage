@@ -22,7 +22,8 @@ import {
 } from '@material-ui/core';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { FieldExtensionOptions } from '../../../extensions';
 import { TemplateParameterSchema } from '../../../types';
 import { useTemplateSchema } from './useTemplateSchema';
 
@@ -42,6 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 export interface StepperProps {
   manifest: TemplateParameterSchema;
+  extensions: FieldExtensionOptions<any, any>[];
 }
 
 const Form = withTheme(MuiTheme);
@@ -50,6 +52,13 @@ export const Stepper = (props: StepperProps) => {
   const { steps } = useTemplateSchema(props.manifest);
   const [activeStep, setActiveStep] = useState(0);
   const styles = useStyles();
+
+  const extensions = useMemo(() => {
+    return Object.fromEntries(
+      props.extensions.map(({ name, component }) => [name, component]),
+    );
+  }, [props.extensions]);
+
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
@@ -69,7 +78,9 @@ export const Stepper = (props: StepperProps) => {
       <div className={styles.formWrapper}>
         <Form
           schema={steps[activeStep].schema}
+          uiSchema={steps[activeStep].uiSchema}
           onSubmit={handleNext}
+          fields={extensions}
           showErrorList={false}
         >
           <div className={styles.footer}>

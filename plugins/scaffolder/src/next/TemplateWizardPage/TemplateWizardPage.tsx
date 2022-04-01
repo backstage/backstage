@@ -23,14 +23,15 @@ import {
   MarkdownContent,
 } from '@backstage/core-components';
 import { FieldExtensionOptions } from '../../extensions';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core';
 import { Stepper } from './Stepper';
 import { BackstageTheme } from '@backstage/theme';
+import { nextRouteRef } from '../../routes';
 
 export interface TemplateWizardPageProps {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
@@ -58,9 +59,11 @@ const useTemplateParameterSchema = (templateRef: string) => {
   return { manifest: value, loading, error };
 };
 
-export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
+export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const styles = useStyles();
+  const rootRef = useRouteRef(nextRouteRef);
   const { templateName, namespace } = useParams();
+  const errorApi = useApi(errorApiRef);
   const { loading, manifest, error } = useTemplateParameterSchema(
     stringifyEntityRef({
       kind: 'Template',
@@ -68,6 +71,11 @@ export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
       name: templateName,
     }),
   );
+
+  if (error) {
+    errorApi.post(new Error(`Failed to load template, ${error}`));
+    return <Navigate to={rootRef()} />;
+  }
 
   return (
     <Page themeId="website">
@@ -90,7 +98,10 @@ export const TemplateWizardPage = (_props: TemplateWizardPageProps) => {
             noPadding
             titleTypographyProps={{ component: 'h2' }}
           >
-            <Stepper manifest={manifest} fields={{}} widgets={{}} />
+            <Stepper
+              manifest={manifest}
+              extensions={props.customFieldExtensions}
+            />
           </InfoCard>
         )}
       </Content>
