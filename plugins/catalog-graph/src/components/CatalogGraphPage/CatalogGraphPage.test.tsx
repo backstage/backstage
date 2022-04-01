@@ -142,7 +142,7 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(queryByText('Max Depth')).toBeNull();
 
-    userEvent.click(getByText('Filters'));
+    await userEvent.click(getByText('Filters'));
 
     expect(getByText('Max Depth')).toBeInTheDocument();
   });
@@ -159,7 +159,7 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'));
+    await userEvent.click(getByText('b:d/e'));
 
     expect(await findByText('hasPart')).toBeInTheDocument();
   });
@@ -173,8 +173,9 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'), { shiftKey: true });
-
+    const user = userEvent.setup();
+    await user.keyboard('{Shift>}');
+    await user.click(getByText('b:d/e'));
     expect(navigate).toBeCalledWith('/entity/{kind}/{namespace}/{name}');
   });
 
@@ -193,7 +194,10 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'));
+    await userEvent.pointer({
+      keys: '[MouseLeft]',
+      target: getByText('b:d/e'),
+    });
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',
@@ -216,7 +220,9 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'), { shiftKey: true });
+    const user = userEvent.setup();
+    await user.keyboard('{Shift>}');
+    await user.click(getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',
