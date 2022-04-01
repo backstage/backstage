@@ -19,7 +19,7 @@ export interface Config {
    * Configuration settings for the cloud-carbon-footprint-backend plugin
    * Each key should correspond to an environment variable listed here: https://www.cloudcarbonfootprint.org/docs/configurations-glossary/
    */
-  cloudCarbonFootprint: {
+  cloudCarbonFootprint?: {
     /** All client settings are optional **/
     client?: {
       /**

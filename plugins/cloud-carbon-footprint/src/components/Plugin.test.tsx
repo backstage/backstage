@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { CloudCarbonFootprintPlugin } from './CloudCarbonFootprintPlugin';
+import { Plugin } from './Plugin';
 import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from 'packages/theme';
+import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers, renderInTestApp } from 'packages/test-utils';
+import {
+  setupRequestMockHandlers,
+  renderInTestApp,
+} from '@backstage/test-utils';
 
 describe('ExampleComponent', () => {
   const server = setupServer();
@@ -36,7 +40,7 @@ describe('ExampleComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <CloudCarbonFootprintPlugin />
+        <Plugin />
       </ThemeProvider>,
     );
     expect(rendered.getByText('Cloud Carbon Footprint')).toBeInTheDocument();

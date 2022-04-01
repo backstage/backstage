@@ -23,7 +23,7 @@ import {
 export const convertConfig = (appConfig?: BackstageConfig): CCFConfig => {
   const ccfDefaults = configLoader();
   const backstageConfig = appConfig?.getOptionalConfig('cloudCarbonFootprint');
-  if (backstageConfig === undefined) {
+  if (!backstageConfig) {
     return ccfDefaults;
   }
   const gcpConfig = backstageConfig.getOptionalConfig('gcp');
@@ -31,42 +31,41 @@ export const convertConfig = (appConfig?: BackstageConfig): CCFConfig => {
   const azureConfig = backstageConfig.getOptionalConfig('azure');
   const onPremiseConfig = backstageConfig.getOptionalConfig('onPremise');
   const optionalConfig = backstageConfig.getOptionalConfig('optional');
+
   return {
     ...ccfDefaults,
-    GCP:
-      gcpConfig === undefined
-        ? ccfDefaults.GCP
-        : {
-            ...ccfDefaults.GCP,
-            USE_BILLING_DATA:
-              gcpConfig.getOptionalBoolean('useBillingData') ??
-              ccfDefaults.GCP!.USE_BILLING_DATA,
-            BILLING_PROJECT_ID:
-              gcpConfig.getOptionalString('billingProjectId') ??
-              ccfDefaults.GCP!.BILLING_PROJECT_ID,
-            BILLING_PROJECT_NAME:
-              gcpConfig.getOptionalString('billingProjectName') ??
-              ccfDefaults.GCP!.BILLING_PROJECT_NAME,
-            BIG_QUERY_TABLE:
-              gcpConfig.getOptionalString('bigQueryTable') ??
-              ccfDefaults.GCP!.BIG_QUERY_TABLE,
-            projects:
-              gcpConfig.getOptional<{ id: string; name: string }[]>(
-                'projects',
-              ) ?? ccfDefaults.GCP!.projects,
-            USE_CARBON_FREE_ENERGY_PERCENTAGE:
-              gcpConfig.getOptionalBoolean('useCarbonFreeEnergyPercentage') ??
-              ccfDefaults.GCP!.USE_CARBON_FREE_ENERGY_PERCENTAGE,
-            VCPUS_PER_GKE_CLUSTER:
-              gcpConfig.getOptionalNumber('vcpusPerGkeCluster') ??
-              ccfDefaults.GCP!.VCPUS_PER_GKE_CLUSTER,
-            VCPUS_PER_CLOUD_COMPOSER_ENVIRONMENT:
-              gcpConfig.getOptionalNumber('vcpusPerCloudComposerEnvironment') ??
-              ccfDefaults.GCP!.VCPUS_PER_CLOUD_COMPOSER_ENVIRONMENT,
-            CACHE_BUCKET_NAME:
-              optionalConfig?.getOptionalString('gcsCacheBucketName') ??
-              ccfDefaults.GCP!.CACHE_BUCKET_NAME,
-          },
+    GCP: !gcpConfig
+      ? ccfDefaults.GCP
+      : {
+          ...ccfDefaults.GCP,
+          USE_BILLING_DATA:
+            gcpConfig.getOptionalBoolean('useBillingData') ??
+            ccfDefaults.GCP!.USE_BILLING_DATA,
+          BILLING_PROJECT_ID:
+            gcpConfig.getOptionalString('billingProjectId') ??
+            ccfDefaults.GCP!.BILLING_PROJECT_ID,
+          BILLING_PROJECT_NAME:
+            gcpConfig.getOptionalString('billingProjectName') ??
+            ccfDefaults.GCP!.BILLING_PROJECT_NAME,
+          BIG_QUERY_TABLE:
+            gcpConfig.getOptionalString('bigQueryTable') ??
+            ccfDefaults.GCP!.BIG_QUERY_TABLE,
+          projects:
+            gcpConfig.getOptional<{ id: string; name: string }[]>('projects') ??
+            ccfDefaults.GCP!.projects,
+          USE_CARBON_FREE_ENERGY_PERCENTAGE:
+            gcpConfig.getOptionalBoolean('useCarbonFreeEnergyPercentage') ??
+            ccfDefaults.GCP!.USE_CARBON_FREE_ENERGY_PERCENTAGE,
+          VCPUS_PER_GKE_CLUSTER:
+            gcpConfig.getOptionalNumber('vcpusPerGkeCluster') ??
+            ccfDefaults.GCP!.VCPUS_PER_GKE_CLUSTER,
+          VCPUS_PER_CLOUD_COMPOSER_ENVIRONMENT:
+            gcpConfig.getOptionalNumber('vcpusPerCloudComposerEnvironment') ??
+            ccfDefaults.GCP!.VCPUS_PER_CLOUD_COMPOSER_ENVIRONMENT,
+          CACHE_BUCKET_NAME:
+            optionalConfig?.getOptionalString('gcsCacheBucketName') ??
+            ccfDefaults.GCP!.CACHE_BUCKET_NAME,
+        },
     AWS:
       awsConfig === undefined
         ? ccfDefaults.AWS

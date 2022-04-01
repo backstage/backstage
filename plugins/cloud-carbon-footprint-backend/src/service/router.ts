@@ -25,7 +25,7 @@ import { convertConfig } from './convertConfig';
 
 export interface RouterOptions {
   logger: Logger;
-  config: BackstageConfig;
+  config?: BackstageConfig;
 }
 
 export async function createRouter(
