@@ -15,20 +15,16 @@
  */
 
 import React, {
-  FC,
-  createContext,
-  useContext,
   useState,
-  useCallback,
 } from 'react';
 
 import { Theme, makeStyles } from '@material-ui/core';
 
-import { ThemeProvider, Box, Tooltip, IconButton } from '@material-ui/core';
+import { Box, Tooltip, IconButton } from '@material-ui/core';
 import LightIcon from '@material-ui/icons/Brightness7';
 import DarkIcon from '@material-ui/icons/Brightness4';
 
-import { lightTheme, darkTheme } from '@backstage/theme';
+import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
 
 import {
   TechDocsReaderPage,
@@ -57,44 +53,10 @@ enum Themes {
   DARK = 'dark',
 }
 
-type TechDocsThemeValue = {
-  theme: Themes;
-  toggleTheme: () => void;
-};
-
-const TechDocsThemeContext = createContext<TechDocsThemeValue>({
-  theme: Themes.LIGHT,
-  toggleTheme: () => { },
-});
-
-const TechdocsThemeProvider: FC = ({ children }) => {
-  const [theme, setTheme] = useState<Themes>(Themes.LIGHT);
-
-  const toggleTheme = useCallback(() => {
-    setTheme(prevTheme =>
-      prevTheme === Themes.LIGHT ? Themes.DARK : Themes.LIGHT,
-    );
-  }, [setTheme]);
-
-  const value = { theme, toggleTheme };
-
-  const themes = {
-    [Themes.LIGHT]: lightTheme,
-    [Themes.DARK]: darkTheme,
-  };
-
-  return (
-    <TechDocsThemeContext.Provider value={value}>
-      <ThemeProvider theme={themes[theme]}>{children}</ThemeProvider>
-    </TechDocsThemeContext.Provider>
-  );
-};
-
-const useTechDocsTheme = () => useContext(TechDocsThemeContext);
-
 export const TechDocsThemeToggle = () => {
+  const appThemeApi = useApi(appThemeApiRef)
   const classes = useStyles();
-  const { theme, toggleTheme } = useTechDocsTheme();
+  const [theme, setTheme] = useState<Themes>(appThemeApi.getActiveThemeId() as Themes || Themes.LIGHT);
 
   const themes = {
     [Themes.LIGHT]: {
@@ -109,10 +71,18 @@ export const TechDocsThemeToggle = () => {
 
   const { title, icon: Icon } = themes[theme];
 
+  const handleSetTheme = () => {
+    setTheme(prevTheme => {
+      const newTheme = prevTheme === Themes.LIGHT ? Themes.DARK : Themes.LIGHT;
+      appThemeApi.setActiveThemeId(newTheme);
+      return newTheme;
+    });
+  }
+
   return (
     <Box display="flex" alignItems="center" mr={2}>
       <Tooltip title={title} arrow>
-        <IconButton size="small" onClick={toggleTheme}>
+        <IconButton size="small" onClick={handleSetTheme}>
           <Icon className={classes.headerIcon} />
         </IconButton>
       </Tooltip>
@@ -121,12 +91,12 @@ export const TechDocsThemeToggle = () => {
 };
 
 const DefaultTechDocsPage = () => {
-  return <TechdocsThemeProvider>
+  return (
     <TechDocsReaderPage>
       <TechDocsReaderPageHeader />
       <TechDocsReaderPageContent withSearch={false} />
     </TechDocsReaderPage>
-  </TechdocsThemeProvider>
+  )
 }
 
 export const techDocsPage = <DefaultTechDocsPage />
