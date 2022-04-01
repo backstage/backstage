@@ -28,13 +28,12 @@ type ToolkitContextValue = {
 
 const Context = createContext<ToolkitContextValue | undefined>(undefined);
 
-export const ContextProvider = ({
-  children,
-  tools,
-}: {
+export const ContextProvider = (props: {
   children: JSX.Element;
   tools: Tool[];
 }) => {
+  const { children, tools } = props;
+
   const [toolsValue, _setTools] = React.useState(tools);
 
   const value: ToolkitContextValue = {

@@ -51,13 +51,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const OwnershipCard = ({
-  variant,
-  entityFilterKind,
-}: {
+/** @public */
+export const OwnershipCard = (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
 }) => {
+  const { variant, entityFilterKind } = props;
+
   const classes = useStyles();
   const { entity } = useEntity();
   const isGroup = entity.kind === 'Group';

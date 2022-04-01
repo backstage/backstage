@@ -23,17 +23,14 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 
-export const SettingsModal = ({
-  open,
-  close,
-  componentName,
-  children,
-}: {
+export const SettingsModal = (props: {
   open: boolean;
   close: Function;
   componentName: string;
   children: JSX.Element;
 }) => {
+  const { open, close, componentName, children } = props;
+
   return (
     <Dialog open={open} onClose={() => close()}>
       <DialogTitle>Settings - {componentName}</DialogTitle>

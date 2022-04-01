@@ -236,10 +236,7 @@ export class EntityOwnerFilter implements EntityFilter {
 export const EntityOwnerPicker: () => JSX.Element | null;
 
 // @public
-export const EntityProvider: ({
-  entity,
-  children,
-}: EntityProviderProps) => JSX.Element;
+export const EntityProvider: (props: EntityProviderProps) => JSX.Element;
 
 // @public
 export interface EntityProviderProps {

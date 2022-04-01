@@ -48,9 +48,9 @@ describe('useStarredEntities', () => {
 
   beforeEach(() => {
     mockApi = new MockStarredEntitiesApi();
-    wrapper = ({ children }: PropsWithChildren<{}>) => (
+    wrapper = (props: PropsWithChildren<{}>) => (
       <TestApiProvider apis={[[starredEntitiesApiRef, mockApi]]}>
-        {children}
+        {props.children}
       </TestApiProvider>
     );
   });

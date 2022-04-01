@@ -42,13 +42,12 @@ const getNewJoke = (type: string): Promise<Joke> =>
     .then(res => res.json())
     .then(data => (Array.isArray(data) ? data[0] : data));
 
-export const ContextProvider = ({
-  children,
-  defaultCategory,
-}: {
+export const ContextProvider = (props: {
   children: JSX.Element;
   defaultCategory?: JokeType;
 }) => {
+  const { children, defaultCategory } = props;
+
   const [loading, setLoading] = React.useState(true);
   const [joke, setJoke] = React.useState<Joke>({
     setup: '',

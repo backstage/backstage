@@ -243,6 +243,8 @@ const NO_WARNING_PACKAGES = [
   'plugins/catalog-common',
   'plugins/catalog-graph',
   'plugins/catalog-react',
+  'plugins/graphiql',
+  'plugins/org',
   'plugins/periskop',
   'plugins/periskop-backend',
   'plugins/permission-backend',

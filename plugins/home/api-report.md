@@ -19,18 +19,8 @@ export type ClockConfig = {
   timeZone: string;
 };
 
-// Warning: (ae-missing-release-tag) "ComponentAccordion" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const ComponentAccordion: ({
-  title,
-  expanded,
-  Content,
-  Actions,
-  Settings,
-  ContextProvider,
-  ...childProps
-}: {
+export const ComponentAccordion: (props: {
   title: string;
   expanded?: boolean | undefined;
   Content: () => JSX.Element;
@@ -44,27 +34,15 @@ export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
 };
 
-// Warning: (ae-missing-release-tag) "ComponentTab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const ComponentTab: ({
-  title,
-  Content,
-  ContextProvider,
-  ...childProps
-}: {
+export const ComponentTab: (props: {
   title: string;
   Content: () => JSX.Element;
   ContextProvider?: ((props: any) => JSX.Element) | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "ComponentTabs" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const ComponentTabs: ({
-  title,
-  tabs,
-}: {
+export const ComponentTabs: (props: {
   title: string;
   tabs: {
     label: string;
@@ -75,22 +53,14 @@ export const ComponentTabs: ({
 // Warning: (ae-forgotten-export) The symbol "CardExtensionProps" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function createCardExtension<T>({
-  title,
-  components,
-  name,
-}: {
+export function createCardExtension<T>(options: {
   title: string;
   components: () => Promise<ComponentParts>;
   name?: string;
 }): Extension<(props: CardExtensionProps<T>) => JSX.Element>;
 
-// Warning: (ae-missing-release-tag) "HeaderWorldClock" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export const HeaderWorldClock: ({
-  clockConfigs,
-}: {
+export const HeaderWorldClock: (props: {
   clockConfigs: ClockConfig[];
 }) => JSX.Element | null;
 
@@ -100,16 +70,12 @@ export const HomePageCompanyLogo: (props: {
   className?: string | undefined;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "HomepageCompositionRoot" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const HomepageCompositionRoot: (props: {
   title?: string | undefined;
   children?: ReactNode;
 }) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "HomePageRandomJoke" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const HomePageRandomJoke: (
   props: ComponentRenderer & {
@@ -135,8 +101,6 @@ export const HomePageToolkit: (
   } & ToolkitContentProps,
 ) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "homePlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const homePlugin: BackstagePlugin<
   {
@@ -148,12 +112,7 @@ export const homePlugin: BackstagePlugin<
 // Warning: (ae-missing-release-tag) "SettingsModal" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const SettingsModal: ({
-  open,
-  close,
-  componentName,
-  children,
-}: {
+export const SettingsModal: (props: {
   open: boolean;
   close: Function;
   componentName: string;

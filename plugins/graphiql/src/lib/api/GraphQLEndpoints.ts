@@ -17,7 +17,11 @@
 import { GraphQLBrowseApi, GraphQLEndpoint } from './types';
 import { ErrorApi, OAuthApi } from '@backstage/core-plugin-api';
 
-// Helper for generic http endpoints
+/**
+ * Helper for generic http endpoints
+ *
+ * @public
+ */
 export type EndpointConfig = {
   id: string;
   title: string;
@@ -29,6 +33,7 @@ export type EndpointConfig = {
   headers?: { [name in string]: string };
 };
 
+/** @public */
 export type GithubEndpointConfig = {
   id: string;
   title: string;
@@ -46,6 +51,7 @@ export type GithubEndpointConfig = {
   githubAuthApi: OAuthApi;
 };
 
+/** @public */
 export class GraphQLEndpoints implements GraphQLBrowseApi {
   // Create a support
   static create(config: EndpointConfig): GraphQLEndpoint {

@@ -23,13 +23,9 @@ type TabType = {
   Component: () => JSX.Element;
 };
 
-export const ComponentTabs = ({
-  title,
-  tabs,
-}: {
-  title: string;
-  tabs: TabType[];
-}) => {
+export const ComponentTabs = (props: { title: string; tabs: TabType[] }) => {
+  const { title, tabs } = props;
+
   const [value, setValue] = React.useState(0);
 
   const handleChange = (_event: any, newValue: number) => {

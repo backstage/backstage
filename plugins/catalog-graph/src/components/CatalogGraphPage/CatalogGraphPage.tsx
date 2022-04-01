@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { parseEntityRef } from '@backstage/catalog-model';
 import {
   Content,
@@ -98,10 +99,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const CatalogGraphPage = ({
-  relationPairs = ALL_RELATION_PAIRS,
-  initialState,
-}: {
+export const CatalogGraphPage = (props: {
   relationPairs?: RelationPairs;
   initialState?: {
     selectedRelations?: string[];
@@ -114,6 +112,8 @@ export const CatalogGraphPage = ({
     showFilters?: boolean;
   };
 }) => {
+  const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
+
   const navigate = useNavigate();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);

@@ -297,10 +297,10 @@ describe('<UserListPicker />', () => {
   `('filter resetting for $type entities', ({ type, filterFn }) => {
     let updateFilters: jest.Mock;
 
-    const picker = ({ loading }: { loading: boolean }) => (
+    const picker = (props: { loading: boolean }) => (
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ backendEntities, updateFilters, loading }}
+          value={{ backendEntities, updateFilters, loading: props.loading }}
         >
           <UserListPicker initialFilter={type} />
         </MockEntityListContextProvider>

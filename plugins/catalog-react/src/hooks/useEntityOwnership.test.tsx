@@ -37,14 +37,14 @@ describe('useEntityOwnership', () => {
   const identityApi = mockIdentityApi as unknown as IdentityApi;
   const catalogApi = mockCatalogApi as unknown as CatalogApi;
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = (props: { children?: React.ReactNode }) => (
     <TestApiProvider
       apis={[
         [identityApiRef, identityApi],
         [catalogApiRef, catalogApi],
       ]}
     >
-      {children}
+      {props.children}
     </TestApiProvider>
   );
 

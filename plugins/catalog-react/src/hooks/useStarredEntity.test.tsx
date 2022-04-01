@@ -30,9 +30,9 @@ describe('useStarredEntity', () => {
   let wrapper: React.ComponentType;
 
   beforeEach(() => {
-    wrapper = ({ children }: PropsWithChildren<{}>) => (
+    wrapper = (props: PropsWithChildren<{}>) => (
       <TestApiProvider apis={[[starredEntitiesApiRef, mockStarredEntitiesApi]]}>
-        {children}
+        {props.children}
       </TestApiProvider>
     );
   });
