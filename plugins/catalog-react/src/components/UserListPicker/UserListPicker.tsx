@@ -134,7 +134,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
     filters,
     updateFilters,
     backendEntities,
-    queryParameters,
+    queryParameters: { kind: kindParameter, user: userParameter },
     loading: loadingBackendEntities,
   } = useEntityList();
 
@@ -146,7 +146,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
       ...filterGroup,
       items: filterGroup.items.filter(({ id }) =>
         // TODO: avoid hardcoding kinds here
-        ['group', 'user'].some(kind => kind === queryParameters.kind)
+        ['group', 'user'].some(kind => kind === kindParameter)
           ? userAndGroupFilterIds.includes(id)
           : !availableFilters || availableFilters.includes(id),
       ),
@@ -170,8 +170,8 @@ export const UserListPicker = (props: UserListPickerProps) => {
   );
 
   const queryParamUserFilter = useMemo(
-    () => [queryParameters.user].flat()[0],
-    [queryParameters],
+    () => [userParameter].flat()[0],
+    [userParameter],
   );
 
   const [selectedUserFilter, setSelectedUserFilter] = useState(

@@ -49,12 +49,16 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityLifecyclePicker = () => {
   const classes = useStyles();
-  const { updateFilters, backendEntities, filters, queryParameters } =
-    useEntityList();
+  const {
+    updateFilters,
+    backendEntities,
+    filters,
+    queryParameters: { lifecycles: lifecyclesParameter },
+  } = useEntityList();
 
   const queryParamLifecycles = useMemo(
-    () => [queryParameters.lifecycles].flat().filter(Boolean) as string[],
-    [queryParameters],
+    () => [lifecyclesParameter].flat().filter(Boolean) as string[],
+    [lifecyclesParameter],
   );
 
   const [selectedLifecycles, setSelectedLifecycles] = useState(

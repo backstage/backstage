@@ -51,12 +51,16 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityOwnerPicker = () => {
   const classes = useStyles();
-  const { updateFilters, backendEntities, filters, queryParameters } =
-    useEntityList();
+  const {
+    updateFilters,
+    backendEntities,
+    filters,
+    queryParameters: { owners: ownersParameter },
+  } = useEntityList();
 
   const queryParamOwners = useMemo(
-    () => [queryParameters.owners].flat().filter(Boolean) as string[],
-    [queryParameters],
+    () => [ownersParameter].flat().filter(Boolean) as string[],
+    [ownersParameter],
   );
 
   const [selectedOwners, setSelectedOwners] = useState(
