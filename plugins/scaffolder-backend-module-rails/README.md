@@ -13,9 +13,9 @@ You need to configure the action in your backend:
 
 ## From your Backstage root directory
 
-```
-cd packages/backend
-yarn add @backstage/plugin-scaffolder-backend-module-rails
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-rails
 ```
 
 Configure the action (you can check

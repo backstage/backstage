@@ -6,10 +6,9 @@ Common distributed task management for Backstage backends.
 
 Add the library to your backend package:
 
-```sh
+```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/backend-tasks
+yarn add --cwd packages/backend @backstage/backend-tasks
 ```
 
 then make use of its facilities as necessary:

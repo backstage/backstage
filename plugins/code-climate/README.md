@@ -10,8 +10,7 @@ The Code Climate Plugin displays a few stats from the quality section from [Code
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-code-climate
+yarn add --cwd packages/app @backstage/plugin-code-climate
 ```
 
 2. Add the `EntityCodeClimateCard` to the EntityPage:

@@ -68,8 +68,7 @@ To get the Azure Pipelines component working you'll need to do the following two
 
    ```bash
    # From your Backstage root directory
-   cd packages/app
-   yarn add @backstage/plugin-azure-devops
+   yarn add --cwd packages/app @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app. How to do this will depend on which annotation you are using in your entities:
@@ -127,8 +126,7 @@ To get the Azure Repos component working you'll need to do the following two ste
 
    ```bash
    # From your Backstage root directory
-   cd packages/app
-   yarn add @backstage/plugin-azure-devops
+   yarn add --cwd packages/app @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePullRequestsContent` extension to the entity page in your app:

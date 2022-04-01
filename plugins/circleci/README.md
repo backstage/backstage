@@ -11,8 +11,7 @@ Website: [https://circleci.com/](https://circleci.com/)
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-circleci
+yarn add --cwd packages/app @backstage/plugin-circleci
 ```
 
 2. Add the `EntityCircleCIContent` extension to the entity page in your app:

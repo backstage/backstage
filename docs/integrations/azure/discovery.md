@@ -73,4 +73,10 @@ When using a custom pattern, the target is composed of five parts:
 
 _Note:_ the path parameter follows the same rules as the search on Azure DevOps
 web interface. For more details visit the
-[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops)
+[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
+
+Azure discovery is driven by the Code Search feature in Azure DevOps, this may not be enabled by default. For Azure
+DevOps Services you can confirm this by looking at the installed extensions in your Organization Settings. For Azure
+DevOps Server you'll find this information in your Collection Settings.
+
+If the Code Search extension is not listed then you can install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ms.vss-code-search&targetId=f9352dac-ba6e-434e-9241-a848a510ce3f&utm_source=vstsproduct&utm_medium=SearchExtStatus).

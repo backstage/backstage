@@ -25,10 +25,9 @@ The Tech Radar can be used in two ways:
 
 For either simple or advanced installations, you'll need to add the dependency using Yarn:
 
-```sh
+```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-tech-radar
+yarn add --cwd packages/app @backstage/plugin-tech-radar
 ```
 
 ### Configuration

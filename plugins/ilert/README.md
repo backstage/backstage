@@ -27,8 +27,7 @@ Install the plugin:
 
 ```bash
 # From the Backstage repository root
-cd packages/app
-yarn add @backstage/plugin-ilert
+yarn add --cwd packages/app @backstage/plugin-ilert
 ```
 
 Add it to the `EntityPage.tsx`:
