@@ -29,6 +29,10 @@ export type TechDocsReaderPageRenderFunction = ({
   techdocsMetadataValue?: TechDocsMetadata | undefined;
   entityMetadataValue?: TechDocsEntityMetadata | undefined;
   entityRef: CompoundEntityRef;
+  /**
+   * @deprecated You can continue pass this property, but directly to the `TechDocsReaderPageContent` component.
+   */
+  onReady?: () => void;
 }) => JSX.Element;
 
 /**

@@ -6,11 +6,13 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
+import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { CSSProperties } from '@material-ui/styles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -18,9 +20,27 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { SetStateAction } from 'react';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
+
+// @public
+export type ContentStateTypes =
+  /** There is nothing to display but a loading indicator */
+  | 'CHECKING'
+  /** There is no content yet -> present a full screen loading page */
+  | 'INITIAL_BUILD'
+  /** There is content, but the backend is about to update it */
+  | 'CONTENT_STALE_REFRESHING'
+  /** There is content, but after a reload, the content will be different */
+  | 'CONTENT_STALE_READY'
+  /** There is content, the backend tried to update it, but failed */
+  | 'CONTENT_STALE_ERROR'
+  /** There is nothing to see but a "not found" page. Is also shown on page load errors */
+  | 'CONTENT_NOT_FOUND'
+  /** There is only the latest and greatest content */
+  | 'CONTENT_FRESH';
 
 // @public
 export const DefaultTechDocsHome: (
@@ -160,13 +180,14 @@ export interface PanelConfig {
 export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
 // @public
-export const Reader: (props: ReaderProps) => JSX.Element;
-
-// @public
-export type ReaderProps = {
-  entityRef: CompoundEntityRef;
-  withSearch?: boolean;
-  onReady?: () => void;
+export type ReaderState = {
+  state: ContentStateTypes;
+  path: string;
+  contentReload: () => void;
+  content?: string;
+  contentErrorMessage?: string;
+  syncErrorMessage?: string;
+  buildLog: string[];
 };
 
 // @public
@@ -246,22 +267,8 @@ export type TechDocsMetadata = {
   site_description: string;
 };
 
-// @public @deprecated (undocumented)
-export const TechDocsPage: (props: TechDocsReaderPageProps) => JSX.Element;
-
 // @public
 export const TechdocsPage: () => JSX.Element;
-
-// @public @deprecated (undocumented)
-export const TechDocsPageHeader: (
-  props: TechDocsReaderPageHeaderProps,
-) => JSX.Element;
-
-// @public @deprecated (undocumented)
-export type TechDocsPageHeaderProps = TechDocsReaderPageHeaderProps;
-
-// @public @deprecated (undocumented)
-export type TechDocsPageRenderFunction = TechDocsReaderPageRenderFunction;
 
 // @public
 export const TechDocsPageWrapper: (
@@ -293,26 +300,68 @@ export { techdocsPlugin as plugin };
 export { techdocsPlugin };
 
 // @public
-export const TechDocsReaderPage: (
-  props: TechDocsReaderPageProps,
+export const TechDocsReaderLayout: ({
+  withSearch,
+  withHeader,
+}: TechDocsReaderLayoutProps) => JSX.Element;
+
+// @public
+export type TechDocsReaderLayoutProps = {
+  withHeader?: boolean;
+  withSearch?: boolean;
+};
+
+// @public
+export const TechDocsReaderPage: ({
+  entityRef,
+  children,
+}: TechDocsReaderPageProps) => JSX.Element;
+
+// @public
+export const TechDocsReaderPageContent: (
+  props: TechDocsReaderPageContentProps,
 ) => JSX.Element;
+
+// @public
+export type TechDocsReaderPageContentProps = {
+  entityRef?: CompoundEntityRef;
+  withSearch?: boolean;
+  onReady?: () => void;
+};
 
 // @public
 export const TechDocsReaderPageHeader: (
-  props: TechDocsReaderPageHeaderProps,
+  _props: TechDocsReaderPageHeaderProps,
 ) => JSX.Element;
 
-// @public
+// @public @deprecated
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
-  entityRef: CompoundEntityRef;
+  entityRef?: CompoundEntityRef;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
 }>;
 
-// @public
+// @public (undocumented)
 export type TechDocsReaderPageProps = {
-  children?: TechDocsReaderPageRenderFunction | React_2.ReactNode;
+  entityRef?: CompoundEntityRef;
+  children?: TechDocsReaderPageRenderFunction | ReactNode;
 };
+
+// @public
+export const TechDocsReaderPageProvider: React_2.MemoExoticComponent<
+  ({ entityName, children }: TechDocsReaderPageProviderProps) => JSX.Element
+>;
+
+// @public
+export type TechDocsReaderPageProviderProps = {
+  entityName: CompoundEntityRef;
+  children: TechDocsReaderPageProviderRenderFunction | ReactNode;
+};
+
+// @public
+export type TechDocsReaderPageProviderRenderFunction = (
+  value: TechDocsReaderPageValue,
+) => JSX.Element;
 
 // @public
 export type TechDocsReaderPageRenderFunction = ({
@@ -323,8 +372,37 @@ export type TechDocsReaderPageRenderFunction = ({
   techdocsMetadataValue?: TechDocsMetadata | undefined;
   entityMetadataValue?: TechDocsEntityMetadata | undefined;
   entityRef: CompoundEntityRef;
-  onReady: () => void;
+  onReady?: () => void;
 }) => JSX.Element;
+
+// @public
+export type TechDocsReaderPageValue = {
+  metadata: AsyncState<TechDocsMetadata>;
+  entityName: CompoundEntityRef;
+  entityMetadata: AsyncState<TechDocsEntityMetadata>;
+  shadowRoot?: ShadowRoot;
+  setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
+  title: string;
+  setTitle: Dispatch<SetStateAction<string>>;
+  subtitle: string;
+  setSubtitle: Dispatch<SetStateAction<string>>;
+  onReady?: () => void;
+};
+
+// @public
+export const TechDocsReaderProvider: ({
+  children,
+}: TechDocsReaderProviderProps) => JSX.Element;
+
+// @public
+export type TechDocsReaderProviderProps = {
+  children: TechDocsReaderProviderRenderFunction | ReactNode;
+};
+
+// @public
+export type TechDocsReaderProviderRenderFunction = (
+  value: ReaderState,
+) => JSX.Element;
 
 // @public
 export const TechDocsSearch: (props: TechDocsSearchProps) => JSX.Element;
@@ -406,4 +484,23 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }
+
+// @public
+export const useEntityMetadata: () => AsyncState<TechDocsEntityMetadata>;
+
+// @public
+export const useShadowRoot: () => ShadowRoot | undefined;
+
+// @public
+export const useShadowRootElements: <
+  TReturnedElement extends HTMLElement = HTMLElement,
+>(
+  selectors: string[],
+) => TReturnedElement[];
+
+// @public
+export const useTechDocsMetadata: () => AsyncState<TechDocsMetadata>;
+
+// @public
+export const useTechDocsReaderPage: () => TechDocsReaderPageValue;
 ```

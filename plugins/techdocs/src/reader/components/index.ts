@@ -17,6 +17,9 @@
 export type {
   TechDocsReaderPageProps,
   TechDocsReaderLayoutProps,
+  TechDocsReaderPageValue,
+  TechDocsReaderPageProviderProps,
+  TechDocsReaderPageProviderRenderFunction,
 } from './TechDocsReaderPage';
 export {
   useShadowRoot,
@@ -30,3 +33,4 @@ export {
 export * from './TechDocsReaderPageHeader';
 export * from './TechDocsReaderPageContent';
 export * from './TechDocsStateIndicator';
+export type { ReaderState, ContentStateTypes } from './useReaderState';

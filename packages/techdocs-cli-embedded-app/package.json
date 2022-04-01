@@ -17,7 +17,6 @@
     "@backstage/integration-react": "^0.1.25",
     "@backstage/plugin-catalog": "^0.10.0",
     "@backstage/plugin-techdocs": "^0.15.1",
-    "@backstage/techdocs-addons": "^0.0.0",
     "@backstage/test-utils": "^0.3.0",
     "@backstage/theme": "^0.2.15",
     "@material-ui/core": "^4.11.0",
