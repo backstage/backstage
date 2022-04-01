@@ -92,7 +92,7 @@ const TechdocsThemeProvider: FC = ({ children }) => {
 
 const useTechDocsTheme = () => useContext(TechDocsThemeContext);
 
-const TechDocsThemeToggle = () => {
+export const TechDocsThemeToggle = () => {
   const classes = useStyles();
   const { theme, toggleTheme } = useTechDocsTheme();
 
@@ -121,12 +121,10 @@ const TechDocsThemeToggle = () => {
 };
 
 export const techDocsPage = (
-  <TechdocsThemeProvider>
-    <TechDocsReaderPage>
-      <TechDocsReaderPageHeader>
-        <TechDocsThemeToggle />
-      </TechDocsReaderPageHeader>
-      <TechDocsReaderPageContent />
-    </TechDocsReaderPage>
-  </TechdocsThemeProvider>
+  <TechDocsReaderPage>
+    <TechdocsThemeProvider>
+      <TechDocsReaderPageHeader />
+      <TechDocsReaderPageContent withSearch={false} />
+    </TechdocsThemeProvider>
+  </TechDocsReaderPage>
 );
