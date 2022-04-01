@@ -37,7 +37,7 @@ export interface TemplateWizardPageProps {
   customFieldExtensions: FieldExtensionOptions<any, any>[];
 }
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>(() => ({
   markdown: {
     /** to make the styles for React Markdown not leak into the description */
     '& :first-child': {
