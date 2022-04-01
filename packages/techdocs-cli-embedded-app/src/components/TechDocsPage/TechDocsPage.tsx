@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  useState,
-} from 'react';
+import React, { useState } from 'react';
 
 import { Theme, makeStyles } from '@material-ui/core';
 
@@ -54,9 +52,11 @@ enum Themes {
 }
 
 export const TechDocsThemeToggle = () => {
-  const appThemeApi = useApi(appThemeApiRef)
+  const appThemeApi = useApi(appThemeApiRef);
   const classes = useStyles();
-  const [theme, setTheme] = useState<Themes>(appThemeApi.getActiveThemeId() as Themes || Themes.LIGHT);
+  const [theme, setTheme] = useState<Themes>(
+    (appThemeApi.getActiveThemeId() as Themes) || Themes.LIGHT,
+  );
 
   const themes = {
     [Themes.LIGHT]: {
@@ -77,7 +77,7 @@ export const TechDocsThemeToggle = () => {
       appThemeApi.setActiveThemeId(newTheme);
       return newTheme;
     });
-  }
+  };
 
   return (
     <Box display="flex" alignItems="center" mr={2}>
@@ -96,7 +96,7 @@ const DefaultTechDocsPage = () => {
       <TechDocsReaderPageHeader />
       <TechDocsReaderPageContent withSearch={false} />
     </TechDocsReaderPage>
-  )
-}
+  );
+};
 
-export const techDocsPage = <DefaultTechDocsPage />
+export const techDocsPage = <DefaultTechDocsPage />;

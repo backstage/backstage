@@ -83,11 +83,11 @@ export type TechDocsReaderPageProps = {
  */
 export const TechDocsReaderPage = ({
   entityRef,
-  children
+  children,
 }: TechDocsReaderPageProps) => {
   const { kind, name, namespace } = useParams();
 
-  const outlet = useOutlet()
+  const outlet = useOutlet();
   const entityName = entityRef ?? { kind, name, namespace };
 
   if (!children) {
