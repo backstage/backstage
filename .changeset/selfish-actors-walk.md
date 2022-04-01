@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Exported IdentityProviders
+Exported `IdentityProviders` type.
