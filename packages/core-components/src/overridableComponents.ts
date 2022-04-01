@@ -63,6 +63,7 @@ import {
   TabBarClassKey,
   TabIconClassKey,
   TabsClassKey,
+  TabClassKey,
   WarningPanelClassKey,
 } from './components';
 
@@ -143,6 +144,7 @@ type BackstageComponentsNameToClassKey = {
   BackstageTabBar: TabBarClassKey;
   BackstageTabIcon: TabIconClassKey;
   BackstageTabs: TabsClassKey;
+  BackstageTab: TabClassKey;
   BackstageWarningPanel: WarningPanelClassKey;
   BackstageBottomLink: BottomLinkClassKey;
   BackstageBreadcrumbsClickableText: BreadcrumbsClickableTextClassKey;

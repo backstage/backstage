@@ -37,6 +37,9 @@ const tabMarginLeft = (isFirstNav: boolean, isFirstIndex: boolean) => {
   return '40px';
 };
 
+/** @public */
+export type TabClassKey = 'root' | 'selected';
+
 const useStyles = makeStyles<BackstageTheme, StyledTabProps>(
   theme => ({
     root: {
@@ -65,5 +68,5 @@ const useStyles = makeStyles<BackstageTheme, StyledTabProps>(
 export const StyledTab = (props: StyledTabProps) => {
   const classes = useStyles(props);
   const { isFirstNav, isFirstIndex, ...rest } = props;
-  return <Tab className={classes.root} disableRipple {...rest} />;
+  return <Tab classes={classes} disableRipple {...rest} />;
 };
