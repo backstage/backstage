@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { MaxDepthFilter } from './MaxDepthFilter';
@@ -59,8 +59,7 @@ describe('<MaxDepthFilter/>', () => {
     expect(onChange).toBeCalledWith(Number.POSITIVE_INFINITY);
   });
 
-  // TODO: FIX this
-  test.skip('should select direction', async () => {
+  test('should select direction', async () => {
     const onChange = jest.fn();
     const { getByLabelText } = render(
       <MaxDepthFilter value={5} onChange={onChange} />,
@@ -70,6 +69,8 @@ describe('<MaxDepthFilter/>', () => {
 
     await userEvent.clear(getByLabelText('maxp'));
     await userEvent.type(getByLabelText('maxp'), '10');
-    expect(onChange).toBeCalledWith(10);
+    waitFor(() => {
+      expect(onChange).toBeCalledWith(10);
+    });
   });
 });
