@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
 import { Skeleton } from '@material-ui/lab';
@@ -29,17 +29,39 @@ import {
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { useTechDocsReaderPage } from '../TechDocsReaderPage';
 
 import { rootRouteRef } from '../../../routes';
+import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
-export const TechDocsReaderPageHeader = () => {
+/**
+ * Props for {@link TechDocsReaderPageHeader}
+ *
+ * @public
+ * @deprecated No need to pass down properties anymore. The component consumes data from `TechDocsReaderPageContext` instead. Use the {@link useTechDocsReaderPage} hook for custom header.
+ */
+export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
+  entityRef?: CompoundEntityRef;
+  entityMetadata?: TechDocsEntityMetadata;
+  techDocsMetadata?: TechDocsMetadata;
+}>;
+
+/**
+ * Renders the reader page header.
+ * This component does not accept props, please use
+ * the Tech Docs add-ons to customize it
+ * @public
+ */
+export const TechDocsReaderPageHeader = (
+  props: TechDocsReaderPageHeaderProps,
+) => {
+  const { children } = props;
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
 
@@ -61,7 +83,7 @@ export const TechDocsReaderPageHeader = () => {
     });
     setSubtitle(prevSubtitle => {
       let { site_description } = metadata;
-      if (site_description === 'None') {
+      if (!site_description || site_description === 'None') {
         site_description = 'Home';
       }
       return prevSubtitle || site_description;
@@ -135,6 +157,7 @@ export const TechDocsReaderPageHeader = () => {
         <title>{tabTitle}</title>
       </Helmet>
       {labels}
+      {children}
       {addons.renderComponentsByLocation(locations.HEADER)}
     </Header>
   );

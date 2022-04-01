@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-export { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
+export { TechDocsReaderPageContent, Reader } from './TechDocsReaderPageContent';
+export type { TechDocsReaderPageContentProps } from './TechDocsReaderPageContent';
 export * from './context';
 export * from './dom';

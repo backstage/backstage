@@ -24,6 +24,7 @@ import {
   useTechDocsAddons,
   TechDocsAddonLocations as locations,
 } from '@backstage/techdocs-addons';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Content, Progress } from '@backstage/core-components';
 
 import { TechDocsSearch } from '../../../search';
@@ -43,13 +44,32 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Props for {@link TechDocsReaderPageContent}
+ * @public
+ */
 export type TechDocsReaderPageContentProps = {
+  /**
+   * @deprecated No need to pass down entityRef as property anymore. Consumes the entityName from `TechDocsReaderPageContext`. Use the {@link useTechDocsReaderPage} hook for custom reader page content.
+   */
+  entityRef?: CompoundEntityRef;
+  /**
+   * Show or hide the search bar, defaults to true.
+   */
   withSearch?: boolean;
+  /**
+   * Callback called when the content is rendered.
+   */
   onReady?: () => void;
 };
 
+/**
+ * Renders the reader page content
+ * @public
+ */
 export const TechDocsReaderPageContent = withTechDocsReaderProvider(
-  ({ withSearch = true, onReady }: TechDocsReaderPageContentProps) => {
+  (props: TechDocsReaderPageContentProps) => {
+    const { withSearch = true, onReady } = props;
     const classes = useStyles();
     const addons = useTechDocsAddons();
     const { entityName, shadowRoot, setShadowRoot } = useTechDocsReaderPage();
@@ -141,3 +161,18 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     );
   },
 );
+
+/**
+ * Props for {@link Reader}
+ *
+ * @public
+ * @deprecated use `TechDocsReaderPageContentProps` instead.
+ */
+export type ReaderProps = TechDocsReaderPageContentProps;
+
+/**
+ * Component responsible for rendering TechDocs documentation
+ * @public
+ * @deprecated use `TechDocsReaderPageContent` component instead.
+ */
+export const Reader = TechDocsReaderPageContent;
