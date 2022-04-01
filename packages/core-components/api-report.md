@@ -510,6 +510,11 @@ export type IconLinkVerticalProps = {
   title?: string;
 };
 
+// Warning: (ae-missing-release-tag) "IdentityProviders" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type IdentityProviders = ('guest' | 'custom' | SignInProviderConfig)[];
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
 // @public
