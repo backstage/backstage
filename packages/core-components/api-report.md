@@ -1286,6 +1286,11 @@ export namespace TabbedLayout {
     Route: (props: SubRoute) => null;
 }
 
+// Warning: (ae-missing-release-tag) "TabClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type TabClassKey = 'root' | 'selected';
+
 // Warning: (ae-missing-release-tag) "TabIconClassKey" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
