@@ -32,6 +32,12 @@ import {
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../routes';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -96,7 +102,6 @@ export const Router = (props: RouterProps) => {
   return (
     <Routes>
       <Route
-        path="/"
         element={
           <ScaffolderPage
             groups={groups}
@@ -106,17 +111,17 @@ export const Router = (props: RouterProps) => {
         }
       />
       <Route
-        path="/templates/:templateName"
+        path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplatePage customFieldExtensions={fieldExtensions} />
           </SecretsContextProvider>
         }
       />
-      <Route path="/tasks/:taskId" element={<TaskPageElement />} />
-      <Route path="/actions" element={<ActionsPage />} />
+      <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
+      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
-        path="/edit"
+        path={editRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplateEditorPage
