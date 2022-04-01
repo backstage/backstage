@@ -37,6 +37,7 @@ const tabMarginLeft = (isFirstNav: boolean, isFirstIndex: boolean) => {
   return '40px';
 };
 
+/** @public */
 export type TabClassKey = 'root' | 'selected';
 
 const useStyles = makeStyles<BackstageTheme, StyledTabProps>(
