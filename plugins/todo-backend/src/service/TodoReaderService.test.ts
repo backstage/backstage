@@ -321,8 +321,7 @@ describe('TodoReaderService', () => {
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
         name: 'Error',
-        message:
-          'Entity \'component:default/my-component\' is missing location',
+        message: "Entity 'component:default/my-component' is missing location",
       }),
     );
   });
@@ -341,12 +340,11 @@ describe('TodoReaderService', () => {
     const service = new TodoReaderService({ todoReader, catalogClient });
 
     await expect(service.listTodos({ entity: entityName })).resolves.toEqual({
-        items: [],
-        totalCount: 0,
-        offset: 0,
-        limit: 10,
-      }
-    );
+      items: [],
+      totalCount: 0,
+      offset: 0,
+      limit: 10,
+    });
   });
 
   it('should not throw if entity has an invalid source location', async () => {
@@ -363,11 +361,10 @@ describe('TodoReaderService', () => {
     const service = new TodoReaderService({ todoReader, catalogClient });
 
     await expect(service.listTodos({ entity: entityName })).resolves.toEqual({
-        items: [],
-        totalCount: 0,
-        offset: 0,
-        limit: 10,
-      }
-    );
+      items: [],
+      totalCount: 0,
+      offset: 0,
+      limit: 10,
+    });
   });
 });

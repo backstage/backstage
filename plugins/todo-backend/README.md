@@ -52,7 +52,7 @@ async function main() {
 
 ## Scanned Files
 
-The included `TodoReaderService` and `TodoScmReader` works by getting the entity source location from the catalog. 
+The included `TodoReaderService` and `TodoScmReader` works by getting the entity source location from the catalog.
 
 The location source code is determined automatically. In case of the source code of the component is not in the same place of the entity YAML file, you can explicitly set the value of the [`backstage.io/source-location`](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiosource-location) annotation of the entity, and if that is missing it falls back to the [`backstage.io/managed-by-location `](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-location) annotation. Only `url` locations are currently supported, meaning locally configured `file` locations won't work. Also note that dot-files and folders are ignored.
 
