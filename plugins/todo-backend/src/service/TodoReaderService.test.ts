@@ -310,7 +310,7 @@ describe('TodoReaderService', () => {
     });
   });
 
-  it('should throw if entity does not have a location', async () => {
+  it('should not throw if entity does not have a location', async () => {
     const todoReader = mockTodoReader([]);
     const catalogClient = mockCatalogClient({
       ...mockEntity,
@@ -320,14 +320,14 @@ describe('TodoReaderService', () => {
 
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
-        name: 'InputError',
+        name: 'Error',
         message:
-          'No entity location annotation found for component:default/my-component',
+          'Entity \'component:default/my-component\' is missing location',
       }),
     );
   });
 
-  it('should throw if entity has an invalid location', async () => {
+  it('should not throw if entity has an invalid location', async () => {
     const todoReader = mockTodoReader([]);
     const catalogClient = mockCatalogClient({
       ...mockEntity,
@@ -340,15 +340,16 @@ describe('TodoReaderService', () => {
     });
     const service = new TodoReaderService({ todoReader, catalogClient });
 
-    await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
-      expect.objectContaining({
-        name: 'InputError',
-        message: `Invalid entity location type for component:default/my-component, got 'file'`,
-      }),
+    await expect(service.listTodos({ entity: entityName })).resolves.toEqual({
+        items: [],
+        totalCount: 0,
+        offset: 0,
+        limit: 10,
+      }
     );
   });
 
-  it('should throw if entity has an invalid source location', async () => {
+  it('should not throw if entity has an invalid source location', async () => {
     const todoReader = mockTodoReader([]);
     const catalogClient = mockCatalogClient({
       ...mockEntity,
@@ -361,11 +362,12 @@ describe('TodoReaderService', () => {
     });
     const service = new TodoReaderService({ todoReader, catalogClient });
 
-    await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
-      expect.objectContaining({
-        name: 'InputError',
-        message: `Invalid entity source location type for component:default/my-component, got 'file'`,
-      }),
+    await expect(service.listTodos({ entity: entityName })).resolves.toEqual({
+        items: [],
+        totalCount: 0,
+        offset: 0,
+        limit: 10,
+      }
     );
   });
 });
