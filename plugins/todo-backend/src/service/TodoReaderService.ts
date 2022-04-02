@@ -17,10 +17,7 @@
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  ANNOTATION_LOCATION,
-  ANNOTATION_SOURCE_LOCATION,
-  Entity,
-  parseLocationRef,
+  getEntitySourceLocation,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { TodoReader } from '../lib';
@@ -75,7 +72,7 @@ export class TodoReaderService implements TodoService {
       );
     }
 
-    const url = this.getEntitySourceUrl(entity);
+    const url = getEntitySourceLocation(entity).target;
     const todos = await this.todoReader.readTodos({ url });
 
     let limit = req.limit ?? this.defaultPageSize;
@@ -124,37 +121,5 @@ export class TodoReaderService implements TodoService {
       offset,
       limit,
     };
-  }
-
-  private getEntitySourceUrl(entity: Entity) {
-    const sourceLocation =
-      entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
-    if (sourceLocation) {
-      const parsed = parseLocationRef(sourceLocation);
-      if (parsed.type !== 'url') {
-        throw new InputError(
-          `Invalid entity source location type for ${stringifyEntityRef(
-            entity,
-          )}, got '${parsed.type}'`,
-        );
-      }
-      return parsed.target;
-    }
-
-    const location = entity.metadata.annotations?.[ANNOTATION_LOCATION];
-    if (location) {
-      const parsed = parseLocationRef(location);
-      if (parsed.type !== 'url') {
-        throw new InputError(
-          `Invalid entity location type for ${stringifyEntityRef(
-            entity,
-          )}, got '${parsed.type}'`,
-        );
-      }
-      return parsed.target;
-    }
-    throw new InputError(
-      `No entity location annotation found for ${stringifyEntityRef(entity)}`,
-    );
   }
 }
