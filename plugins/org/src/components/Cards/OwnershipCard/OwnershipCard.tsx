@@ -55,48 +55,58 @@ const useStyles = makeStyles(theme => ({
 export const OwnershipCard = (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
+  hideRelationsToggle?: boolean;
+  relationsType?: string;
 }) => {
-  const { variant, entityFilterKind } = props;
-
+  const { variant, entityFilterKind, hideRelationsToggle, relationsType } =
+    props;
+  const relationsToggle =
+    hideRelationsToggle === undefined ? false : hideRelationsToggle;
   const classes = useStyles();
   const { entity } = useEntity();
   const isGroup = entity.kind === 'Group';
-  const [relationsType, setRelationsType] = useState('direct');
+  const [getRelationsType, setRelationsType] = useState(
+    relationsType || 'direct',
+  );
 
   return (
     <InfoCard title="Ownership" variant={variant}>
       <List dense>
         <ListItem className={classes.list}>
           <ListItemText className={classes.listItemText} />
-          <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
-            Direct Relations
-            <Tooltip
-              placement="top"
-              arrow
-              title={`${
-                relationsType === 'direct' ? 'Direct' : 'Aggregated'
-              } Relations`}
+          {!relationsToggle && (
+            <ListItemSecondaryAction
+              className={classes.listItemSecondaryAction}
             >
-              <Switch
-                color="primary"
-                checked={relationsType !== 'direct'}
-                onChange={() =>
-                  relationsType === 'direct'
-                    ? setRelationsType('aggregated')
-                    : setRelationsType('direct')
-                }
-                name="pin"
-                inputProps={{ 'aria-label': 'Ownership Type Switch' }}
-                disabled={!isGroup}
-              />
-            </Tooltip>
-            Aggregated Relations
-          </ListItemSecondaryAction>
+              Direct Relations
+              <Tooltip
+                placement="top"
+                arrow
+                title={`${
+                  getRelationsType === 'direct' ? 'Direct' : 'Aggregated'
+                } Relations`}
+              >
+                <Switch
+                  color="primary"
+                  checked={getRelationsType !== 'direct'}
+                  onChange={() =>
+                    getRelationsType === 'direct'
+                      ? setRelationsType('aggregated')
+                      : setRelationsType('direct')
+                  }
+                  name="pin"
+                  inputProps={{ 'aria-label': 'Ownership Type Switch' }}
+                  disabled={!isGroup}
+                />
+              </Tooltip>
+              Aggregated Relations
+            </ListItemSecondaryAction>
+          )}
         </ListItem>
       </List>
       <ComponentsGrid
         entity={entity}
-        relationsType={relationsType}
+        relationsType={getRelationsType}
         isGroup={isGroup}
         entityFilterKind={entityFilterKind}
       />
