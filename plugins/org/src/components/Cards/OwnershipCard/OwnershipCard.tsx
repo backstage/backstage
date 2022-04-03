@@ -71,10 +71,10 @@ export const OwnershipCard = (props: {
 
   return (
     <InfoCard title="Ownership" variant={variant}>
-      <List dense>
-        <ListItem className={classes.list}>
-          <ListItemText className={classes.listItemText} />
-          {!relationsToggle && (
+      {!relationsToggle && (
+        <List dense>
+          <ListItem className={classes.list}>
+            <ListItemText className={classes.listItemText} />
             <ListItemSecondaryAction
               className={classes.listItemSecondaryAction}
             >
@@ -101,9 +101,9 @@ export const OwnershipCard = (props: {
               </Tooltip>
               Aggregated Relations
             </ListItemSecondaryAction>
-          )}
-        </ListItem>
-      </List>
+          </ListItem>
+        </List>
+      )}
       <ComponentsGrid
         entity={entity}
         relationsType={getRelationsType}
