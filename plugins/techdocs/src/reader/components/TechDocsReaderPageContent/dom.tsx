@@ -725,10 +725,6 @@ export const useTechDocsReaderDom = (
                 window.open(parsedUrl.pathname, '_blank');
               } else {
                 navigate(parsedUrl.pathname);
-                // Scroll to top of reader if primary sidebar link is clicked
-                transformedElement
-                  ?.querySelector('.md-content__inner')
-                  ?.scrollIntoView();
               }
             }
           },
