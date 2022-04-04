@@ -13525,9 +13525,9 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12:
-  version "1.8.2"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.8.2.tgz#f3debd55b7bbcc8a5ea5022060f7a24c6b9c9aee"
-  integrity sha512-e8svnv6Nw2Q/uWueDhUmUeQ/jlTC/i6zRXI6JjMNEaGJUXUx2SFPny9MSqM7JCHhCOs+XhAgDD7nwib2+YSpwg==
+  version "1.8.3"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.8.3.tgz#4696755cbba851c93aea9deacbcf4229044a705d"
+  integrity sha512-3qb3jdlzg8nqQCRMnch6lG11royrE6etP2eoDKLxdrSpdaxI0PgNNttbMAJJYfsqEJ0XHcXtUDt1jH6jkKOK4Q==
   dependencies:
     "@graphiql/toolkit" "^0.4.2"
     codemirror "^5.58.2"
