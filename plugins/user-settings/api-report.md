@@ -136,8 +136,4 @@ export const useUserProfile: () => {
   displayName: string;
   loading: boolean;
 };
-
-// Warnings were encountered during analysis:
-//
-// src/components/UserSettingsTab/UserSettingsTab.d.ts:7:17 - (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
 ```
