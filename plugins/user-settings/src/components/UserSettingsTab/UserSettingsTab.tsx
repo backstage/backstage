@@ -19,6 +19,7 @@ import { attachComponentData } from '@backstage/core-plugin-api';
 /** @public */
 export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
 
+/** @public */
 export type UserSettingsTabProps = PropsWithChildren<{
   /**
    * The path to the tab in the settings route

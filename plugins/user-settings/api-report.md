@@ -115,8 +115,6 @@ export const UserSettingsSignInAvatar: ({ size }: Props_5) => JSX.Element;
 // @public
 export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "UserSettingsTabProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type UserSettingsTabProps = PropsWithChildren<{
   path: string;
