@@ -25,7 +25,13 @@ describe('<Banner>', () => {
       .spyOn(global.Date, 'now')
       .mockImplementation(() => new Date('1970-01-01T23:00:00').valueOf());
 
-    const { getByText } = await renderInTestApp(<Banner />);
+    const { getByText } = await renderInTestApp(
+      <Banner
+        startTime="2021-12-20"
+        endTime="2022-12-31"
+        info="Happyyy Holidaays for everyone"
+      />,
+    );
 
     expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
   });

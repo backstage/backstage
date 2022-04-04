@@ -22,8 +22,8 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { DateTime } from 'luxon';
 
 type BannerProps = {
-  startTime: DateTime;
-  endTime: DateTime;
+  startTime: string;
+  endTime: string;
   info: string;
 };
 const useStyles = makeStyles(
@@ -68,7 +68,8 @@ const useStyles = makeStyles(
 export const Banner = (props: BannerProps) => {
   const classes = useStyles();
   const isOpen =
-    props.startTime < DateTime.now() && DateTime.now() < props.endTime;
+    DateTime.fromISO(props.startTime) < DateTime.now() &&
+    DateTime.now() < DateTime.fromISO(props.endTime);
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
