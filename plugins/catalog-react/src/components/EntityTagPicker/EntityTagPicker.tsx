@@ -51,7 +51,11 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 /** @public */
 export const EntityTagPicker = () => {
   const classes = useStyles();
-  const { updateFilters, filters, queryParameters } = useEntityList();
+  const {
+    updateFilters,
+    filters,
+    queryParameters: { tags: tagsParameter },
+  } = useEntityList();
 
   const catalogApi = useApi(catalogApiRef);
   const { value: availableTags } = useAsync(async () => {
@@ -65,8 +69,8 @@ export const EntityTagPicker = () => {
   }, [filters.kind]);
 
   const queryParamTags = useMemo(
-    () => [queryParameters.tags].flat().filter(Boolean) as string[],
-    [queryParameters],
+    () => [tagsParameter].flat().filter(Boolean) as string[],
+    [tagsParameter],
   );
 
   const [selectedTags, setSelectedTags] = useState(

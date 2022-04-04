@@ -38,26 +38,28 @@ export function useEntityTypeFilter(): {
   const catalogApi = useApi(catalogApiRef);
   const {
     filters: { kind: kindFilter, type: typeFilter },
-    queryParameters,
+    queryParameters: { type: typeParameter },
     updateFilters,
   } = useEntityList();
 
-  const queryParamTypes = useMemo(
-    () => [queryParameters.type].flat().filter(Boolean) as string[],
-    [queryParameters],
+  const flattenedQueryTypes = useMemo(
+    () => [typeParameter].flat().filter(Boolean) as string[],
+    [typeParameter],
   );
 
   const [selectedTypes, setSelectedTypes] = useState(
-    queryParamTypes.length ? queryParamTypes : typeFilter?.getTypes() ?? [],
+    flattenedQueryTypes.length
+      ? flattenedQueryTypes
+      : typeFilter?.getTypes() ?? [],
   );
 
   // Set selected types on query parameter updates; this happens at initial page load and from
   // external updates to the page location.
   useEffect(() => {
-    if (queryParamTypes.length) {
-      setSelectedTypes(queryParamTypes);
+    if (flattenedQueryTypes.length) {
+      setSelectedTypes(flattenedQueryTypes);
     }
-  }, [queryParamTypes]);
+  }, [flattenedQueryTypes]);
 
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const kind = useMemo(() => kindFilter?.value, [kindFilter]);
