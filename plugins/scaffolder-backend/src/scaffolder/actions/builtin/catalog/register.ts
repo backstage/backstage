@@ -84,6 +84,18 @@ export function createCatalogRegisterAction(options: {
           },
         ],
       },
+      output: {
+        type: 'object',
+        required: ['catalogInfoUrl'],
+        properties: {
+          entityRef: {
+            type: 'string',
+          },
+          catalogInfoUrl: {
+            type: 'string',
+          },
+        },
+      },
     },
     async handler(ctx) {
       const { input } = ctx;

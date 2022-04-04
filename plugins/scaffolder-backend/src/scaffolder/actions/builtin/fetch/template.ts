@@ -101,6 +101,7 @@ export function createFetchTemplateAction(options: {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logger.info('Fetching template content from remote URL');
 
