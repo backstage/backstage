@@ -44,6 +44,15 @@ export interface Config {
        * Pull the latest docker image
        */
       pullImage?: boolean;
+
+      /**
+       * (Optional and not recommended) Configures the techdocs generator to
+       * attempt to ensure an index.md exists falling back to using <docs-dir>/README.md
+       * or README.md in case a default <docs-dir>/index.md is not provided.
+       * Note that https://www.mkdocs.org/user-guide/configuration/#edit_uri behavior
+       * will be broken in these scenarios.
+       */
+      legacyCopyReadmeMdToIndexMd?: boolean;
     };
 
     /**
