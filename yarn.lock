@@ -5761,10 +5761,10 @@
   dependencies:
     classnames "*"
 
-"@types/codemirror@^0.0.108":
-  version "0.0.108"
-  resolved "https://registry.npmjs.org/@types/codemirror/-/codemirror-0.0.108.tgz#e640422b666bf49251b384c390cdeb2362585bde"
-  integrity sha512-3FGFcus0P7C2UOGCNUVENqObEb4SFk+S8Dnxq7K6aIsLVs/vDtlangl3PEO0ykaKXyK56swVF6Nho7VsA44uhw==
+"@types/codemirror@^0.0.109":
+  version "0.0.109"
+  resolved "https://registry.npmjs.org/@types/codemirror/-/codemirror-0.0.109.tgz#89d575ff1c7b462c4c3b8654f8bb38e5622e9036"
+  integrity sha512-cSdiHeeLjvGn649lRTNeYrVCDOgDrtP+bDDSFDd1TF+i0jKGPDRozno2NOJ9lTniso+taiv4kiVS8dgM8Jm5lg==
   dependencies:
     "@types/tern" "*"
 
