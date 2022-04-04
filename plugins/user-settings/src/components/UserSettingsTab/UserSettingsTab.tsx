@@ -13,15 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
+import { attachComponentData } from '@backstage/core-plugin-api';
 
-interface Props {
+export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
+
+export type UserSettingsTabProps = PropsWithChildren<{
+  /**
+   * The path to the tab in the settings route
+   * @example `/settings/advanced
+   */
   path: string;
-  title: React.ReactNode;
-}
+  /** The title of the tab. It will also reflect in the document title when the tab is active */
+  title: string;
+}>;
 
-export const UserSettingsTab: React.FC<Props> = ({ children }) => {
-  return <>{children}</>;
+/**
+ * Renders a tab inside the settings page
+ * @param props - Component props
+ * @public
+ */
+export const UserSettingsTab = (props: UserSettingsTabProps) => {
+  return <>{props.children}</>;
 };
 
-UserSettingsTab.displayName = 'UserSettingsTab';
+attachComponentData(UserSettingsTab, USER_SETTINGS_TAB_KEY, 'UserSettingsTab');

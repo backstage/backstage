@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { PropsWithChildren } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 
@@ -43,6 +43,11 @@ export const Router: ({ providerSettings }: Props) => JSX.Element;
 //
 // @public (undocumented)
 export const Settings: (props: SettingsProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "USER_SETTINGS_TAB_KEY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
 
 // Warning: (ae-missing-release-tag) "UserSettingsAppearanceCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -109,11 +114,16 @@ export const UserSettingsProfileCard: () => JSX.Element;
 // @public (undocumented)
 export const UserSettingsSignInAvatar: ({ size }: Props_5) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "UserSettingsTab" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// @public
+export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "UserSettingsTabProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const UserSettingsTab: React_2.FC<Props_6>;
+export type UserSettingsTabProps = PropsWithChildren<{
+  path: string;
+  title: string;
+}>;
 
 // Warning: (ae-missing-release-tag) "UserSettingsThemeToggle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -128,4 +138,8 @@ export const useUserProfile: () => {
   displayName: string;
   loading: boolean;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/components/UserSettingsTab/UserSettingsTab.d.ts:6:17 - (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
 ```
