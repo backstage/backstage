@@ -29,11 +29,6 @@ export const useShadowRoot = () => {
  * Convenience hook for use within TechDocs addons that provides access to
  * elements that match a given selector within the shadow root.
  *
- * todo(backstage/techdocs-core): Consider extending `selectors` from string[]
- * to some kind of typed object array, so users have more control over the
- * shape of the result. e.g. a flag to indicate querySelector vs.
- * querySelectorAll.
- *
  * @public
  */
 export const useShadowRootElements = <
