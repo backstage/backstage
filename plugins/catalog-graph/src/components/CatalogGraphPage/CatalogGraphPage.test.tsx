@@ -45,6 +45,14 @@ describe('<CatalogGraphPage/>', () => {
       value: () => ({ width: 100, height: 100 }),
       configurable: true,
     });
+    Object.defineProperty(window.SVGElement.prototype, 'viewBox', {
+      value: { baseVal: { x: 0, y: 0, width: 100, height: 100 } },
+      configurable: true,
+    });
+    Object.defineProperty(window.MouseEvent.prototype, 'view', {
+      value: window,
+      configurable: true,
+    });
   });
 
   beforeEach(() => {
@@ -193,6 +201,9 @@ describe('<CatalogGraphPage/>', () => {
     );
 
     expect(await findAllByTestId('node')).toHaveLength(2);
+
+    // We wait a bit here to reliably reproduce an issue where that requires the `baseVal` and `view` mocks
+    await new Promise(r => setTimeout(r, 100));
 
     await userEvent.click(getByText('b:d/e'));
 
