@@ -111,6 +111,10 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
         {
           helpers: {
             version(name: string) {
+              // Ignore non Backstage packages
+              if (!name.startsWith('@backstage/')) {
+                return '^0.0.0';
+              }
               const pkge = require(`${name}/package.json`);
               if (!pkge) {
                 throw new Error(`No version available for package ${name}`);
@@ -118,6 +122,10 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
               return pkge.version;
             },
             versionQuery(name: string, hint: string) {
+              // Ignore non Backstage packages
+              if (!name.startsWith('@backstage/')) {
+                return '^0.0.0';
+              }
               const pkgData = require(`${name}/package.json`);
               if (!pkgData) {
                 if (typeof hint !== 'string') {
