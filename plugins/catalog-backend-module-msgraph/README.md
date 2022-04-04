@@ -72,7 +72,7 @@ catalog:
           # Optional search for groups, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           groupSearch: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
-          # Optional select for groups, this will allow you work with schemaExtensions in order to add extra information to your groups
+          # Optional select for groups, this will allow you work with schemaExtensions in order to add extra information to your groups that can be used on you custom groupTransformers
           # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
           groupSelect: ['id', 'displayName', 'description']
 ```
