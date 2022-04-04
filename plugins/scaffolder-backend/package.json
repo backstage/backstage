@@ -67,6 +67,7 @@
     "nunjucks": "^3.2.3",
     "octokit": "^1.7.1",
     "octokit-plugin-create-pull-request": "^3.10.0",
+    "p-limit": "^3.1.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
     "yaml": "^1.10.0",
