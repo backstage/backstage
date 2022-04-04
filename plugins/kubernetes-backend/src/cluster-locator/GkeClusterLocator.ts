@@ -61,16 +61,11 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   }
 
   async getClusters(): Promise<ClusterDetails[]> {
-    if (this.clusterDetails) {
-      return this.clusterDetails;
-    }
-
-    this.clusterDetails = await this.retrieveClusters();
-    return this.clusterDetails;
+    return this.clusterDetails ?? [];
   }
 
   // TODO pass caData into the object
-  async retrieveClusters(): Promise<GKEClusterDetails[]> {
+  async refreshClusters(): Promise<void> {
     const {
       projectId,
       region,
@@ -84,7 +79,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
 
     try {
       const [response] = await this.client.listClusters(request);
-      return (response.clusters ?? []).map(r => ({
+      this.clusterDetails = (response.clusters ?? []).map(r => ({
         // TODO filter out clusters which don't have name or endpoint
         name: r.name ?? 'unknown',
         url: `https://${r.endpoint ?? ''}`,

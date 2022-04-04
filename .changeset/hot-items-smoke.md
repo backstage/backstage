@@ -21,12 +21,11 @@ For example, here's a simple example of this in `packages/backend/src/plugins/ku
 +} from '@backstage/plugin-kubernetes-backend';
  import { Router } from 'express';
  import { PluginEnvironment } from '../types';
-+import { Duration } from 'luxon';
-+
+
 +export class CustomClustersSupplier implements KubernetesClustersSupplier {
 +  private clusterDetails: ClusterDetails[] = [];
 +
-+  async retrieveClusters() {
++  async refreshClusters(): Promise<void> {
 +    this.clusterDetails = []; // fetch from somewhere
 +  }
 +
@@ -34,7 +33,7 @@ For example, here's a simple example of this in `packages/backend/src/plugins/ku
 +    return this.clusterDetails;
 +  }
 +}
-
++
  export default async function createPlugin(
    env: PluginEnvironment,
  ): Promise<Router> {
@@ -46,18 +45,12 @@ For example, here's a simple example of this in `packages/backend/src/plugins/ku
 +  });
 +
 +  const clusterSupplier = new CustomClustersSupplier();
-+  env.scheduler
-+    .createScheduledTaskRunner({
-+      frequency: Duration.fromObject({ minutes: 60 }),
-+      timeout: Duration.fromObject({ minutes: 15 }),
-+    })
-+    .run({
-+      id: 'refresh-kubernetes-clusters',
-+      fn: clusterSupplier.retrieveClusters,
-+    });
 +  builder.setClusterSupplier(clusterSupplier);
 +
 +  const { router } = await builder.build();
    return router;
  }
 ```
+
+If you need to adjust the refresh interval from the default once per hour
+you can call `builder.setClusterRefreshInterval`.

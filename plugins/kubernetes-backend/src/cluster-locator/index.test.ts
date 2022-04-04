@@ -15,9 +15,9 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
-import { getCombinedClusterDetails } from './index';
+import { getCombinedClusterSupplier } from './index';
 
-describe('getCombinedClusterDetails', () => {
+describe('getCombinedClusterSupplier', () => {
   it('should retrieve cluster details from config', async () => {
     const config: Config = new ConfigReader(
       {
@@ -45,7 +45,9 @@ describe('getCombinedClusterDetails', () => {
       'ctx',
     );
 
-    const result = await getCombinedClusterDetails(config);
+    const clusterSupplier = getCombinedClusterSupplier(config);
+    await clusterSupplier.refreshClusters();
+    const result = await clusterSupplier.getClusters();
 
     expect(result).toStrictEqual([
       {
@@ -99,7 +101,7 @@ describe('getCombinedClusterDetails', () => {
       'ctx',
     );
 
-    await expect(getCombinedClusterDetails(config)).rejects.toStrictEqual(
+    expect(() => getCombinedClusterSupplier(config)).toThrowError(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });

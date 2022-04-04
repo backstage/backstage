@@ -125,6 +125,8 @@ export class KubernetesBuilder {
   // (undocumented)
   protected getServiceLocatorMethod(): ServiceLocatorMethod;
   // (undocumented)
+  setClusterRefreshInterval(refreshMs: number): this;
+  // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
   setFetcher(fetcher?: KubernetesFetcher): this;
@@ -148,8 +150,8 @@ export type KubernetesBuilderReturn = Promise<{
 //
 // @public (undocumented)
 export interface KubernetesClustersSupplier {
-  // (undocumented)
   getClusters(): Promise<ClusterDetails[]>;
+  refreshClusters(): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesEnvironment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

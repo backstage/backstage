@@ -17,7 +17,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { getCombinedClusterDetails } from '../cluster-locator';
+import { getCombinedClusterSupplier } from '../cluster-locator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import {
   KubernetesObjectTypes,
@@ -36,6 +36,7 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { runPeriodically } from './runPeriodically';
 
 export interface KubernetesEnvironment {
   logger: Logger;
@@ -58,6 +59,7 @@ export type KubernetesBuilderReturn = Promise<{
 
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
+  private clusterRefreshMs: number = 60 * 60 * 1000; // defaults to once per hour
   private objectsProvider?: KubernetesObjectsProvider;
   private fetcher?: KubernetesFetcher;
   private serviceLocator?: KubernetesServiceLocator;
@@ -91,6 +93,16 @@ export class KubernetesBuilder {
 
     const clusterSupplier = this.clusterSupplier ?? this.buildClusterSupplier();
 
+    // we cannot use the regular scheduler here because all instances need this info
+    // and it is not persisted anywhere.
+    runPeriodically(async () => {
+      try {
+        await clusterSupplier.refreshClusters();
+      } catch (e) {
+        logger.warn(`Failed to refresh kubernetes clusters: ${e}`);
+      }
+    }, this.clusterRefreshMs);
+
     const serviceLocator =
       this.serviceLocator ??
       this.buildServiceLocator(this.getServiceLocatorMethod(), clusterSupplier);
@@ -119,6 +131,11 @@ export class KubernetesBuilder {
 
   public setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier) {
     this.clusterSupplier = clusterSupplier;
+    return this;
+  }
+
+  public setClusterRefreshInterval(refreshMs: number) {
+    this.clusterRefreshMs = refreshMs;
     return this;
   }
 
@@ -158,11 +175,7 @@ export class KubernetesBuilder {
 
   protected buildClusterSupplier(): KubernetesClustersSupplier {
     const config = this.env.config;
-    return {
-      getClusters() {
-        return getCombinedClusterDetails(config);
-      },
-    };
+    return getCombinedClusterSupplier(config);
   }
 
   protected buildObjectsProvider(

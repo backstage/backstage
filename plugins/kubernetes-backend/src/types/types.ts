@@ -80,6 +80,17 @@ export type KubernetesObjectTypes =
 
 // Used to load cluster details from different sources
 export interface KubernetesClustersSupplier {
+  /**
+   * Refreshes the list of cluster from the source.
+   *
+   * This will be called periodically on a schedule to refresh the list
+   * of clusters.
+   */
+  refreshClusters(): Promise<void>;
+
+  /**
+   * Returns the cached list of clusters.
+   */
   getClusters(): Promise<ClusterDetails[]>;
 }
 
