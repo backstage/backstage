@@ -16,6 +16,7 @@
 import React, { PropsWithChildren } from 'react';
 import { attachComponentData } from '@backstage/core-plugin-api';
 
+/** @public */
 export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
 
 export type UserSettingsTabProps = PropsWithChildren<{

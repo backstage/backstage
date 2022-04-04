@@ -44,8 +44,6 @@ export const Router: ({ providerSettings }: Props) => JSX.Element;
 // @public (undocumented)
 export const Settings: (props: SettingsProps) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "USER_SETTINGS_TAB_KEY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
 
@@ -141,5 +139,5 @@ export const useUserProfile: () => {
 
 // Warnings were encountered during analysis:
 //
-// src/components/UserSettingsTab/UserSettingsTab.d.ts:6:17 - (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
+// src/components/UserSettingsTab/UserSettingsTab.d.ts:7:17 - (tsdoc-code-span-missing-delimiter) The code span is missing its closing backtick
 ```
