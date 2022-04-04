@@ -2374,9 +2374,7 @@
     tslib "~2.3.0"
 
 "@graphql-codegen/graphql-modules-preset@^2.3.2":
-  version "2.3.5"
-  resolved "https://registry.npmjs.org/@graphql-codegen/graphql-modules-preset/-/graphql-modules-preset-2.3.5.tgz#07ef9ef6e66d4fbb76767097a7cc3cace34f8d08"
-  integrity sha512-y1PcTFr483Imzd346YdmNSvW3FlN4iYj4sRWCRys+WXpiFcXq+D7+1dFZvs75/9bIHoOEeQtusHHuRPy9qJVkA==
+  version: "2.3.8"
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
     "@graphql-codegen/visitor-plugin-common" "2.7.1"
