@@ -88,7 +88,7 @@ export const routeObjectCollector = createCollector(
 
     const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
     if (routeRef) {
-      parentObj?.routeRefs.add(routeRef);
+      currentObj?.routeRefs.add(routeRef);
     }
 
     return currentObj;
