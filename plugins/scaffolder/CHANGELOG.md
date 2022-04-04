@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder
 
+## 1.0.1
+
+### Patch Changes
+
+- Pin the `event-source-polyfill` dependency to version 1.0.25
+
 ## 1.0.0
 
 ### Major Changes
