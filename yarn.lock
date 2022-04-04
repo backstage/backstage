@@ -5979,9 +5979,7 @@
     "@types/ssh2" "*"
 
 "@types/dockerode@^3.2.7", "@types/dockerode@^3.3.0":
-  version "3.3.6"
-  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.3.6.tgz#14b7f1f7b5d2a2d3929440c8e3d1020daf182e65"
-  integrity sha512-jzL+tRwmtsqWT4owNTHmEWUexkeWLSirXFbWZzx/N5jX7hPIrbF5K8e8OPhYsqQrilqZSdcy6Y96iOXOxklvVA==
+  version: "3.3.7"
   dependencies:
     "@types/docker-modem" "*"
     "@types/node" "*"
