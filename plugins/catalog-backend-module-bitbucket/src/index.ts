@@ -20,5 +20,7 @@
  * @packageDocumentation
  */
 
+export { BitbucketCloudDiscoveryProcessor } from './BitbucketCloudDiscoveryProcessor';
 export { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
+export { BitbucketServerDiscoveryProcessor } from './BitbucketServerDiscoveryProcessor';
 export type { BitbucketRepositoryParser } from './lib/BitbucketRepositoryParser';

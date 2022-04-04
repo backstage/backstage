@@ -13,6 +13,31 @@ import { Logger } from 'winston';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
 // @public (undocumented)
+export class BitbucketCloudDiscoveryProcessor implements CatalogProcessor {
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    parser?: BitbucketRepositoryParser;
+    logger: Logger;
+  });
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      parser?: BitbucketRepositoryParser;
+      logger: Logger;
+    },
+  ): BitbucketCloudDiscoveryProcessor;
+  // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
+  ): Promise<boolean>;
+}
+
+// @public @deprecated (undocumented)
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
@@ -44,4 +69,29 @@ export type BitbucketRepositoryParser = (options: {
   presence?: 'optional' | 'required';
   logger: Logger;
 }) => AsyncIterable<CatalogProcessorResult>;
+
+// @public (undocumented)
+export class BitbucketServerDiscoveryProcessor implements CatalogProcessor {
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    parser?: BitbucketRepositoryParser;
+    logger: Logger;
+  });
+  // (undocumented)
+  static fromConfig(
+    config: Config,
+    options: {
+      parser?: BitbucketRepositoryParser;
+      logger: Logger;
+    },
+  ): BitbucketServerDiscoveryProcessor;
+  // (undocumented)
+  getProcessorName(): string;
+  // (undocumented)
+  readLocation(
+    location: LocationSpec,
+    _optional: boolean,
+    emit: CatalogProcessorEmit,
+  ): Promise<boolean>;
+}
 ```

@@ -16,7 +16,6 @@
 
 import { Config } from '@backstage/config';
 import {
-  BitbucketIntegration,
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
@@ -26,25 +25,18 @@ import {
   LocationSpec,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
-import {
-  BitbucketCloudClient,
-  BitbucketRepository,
-  BitbucketRepository20,
-  BitbucketRepositoryParser,
-  BitbucketServerClient,
-  defaultRepositoryParser,
-  paginated,
-  paginated20,
-} from './lib';
+import { BitbucketRepositoryParser } from './lib';
+import { BitbucketCloudDiscoveryProcessor } from './BitbucketCloudDiscoveryProcessor';
+import { BitbucketServerDiscoveryProcessor } from './BitbucketServerDiscoveryProcessor';
 
-const DEFAULT_BRANCH = 'master';
-const DEFAULT_CATALOG_LOCATION = '/catalog-info.yaml';
-
-/** @public */
+/**
+ * @public
+ * @deprecated Use `BitbucketCloudDiscoveryProcessor` and/or `BitbucketServerDiscoveryProcessor` instead.
+ */
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly parser: BitbucketRepositoryParser;
-  private readonly logger: Logger;
+  private readonly bitbucketCloudProcessor;
+  private readonly bitbucketServerProcessor;
 
   static fromConfig(
     config: Config,
@@ -67,8 +59,12 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     logger: Logger;
   }) {
     this.integrations = options.integrations;
-    this.parser = options.parser || defaultRepositoryParser;
-    this.logger = options.logger;
+    this.bitbucketCloudProcessor = new BitbucketCloudDiscoveryProcessor(
+      options,
+    );
+    this.bitbucketServerProcessor = new BitbucketServerDiscoveryProcessor(
+      options,
+    );
   }
 
   getProcessorName(): string {
@@ -91,311 +87,25 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
-    const startTimestamp = Date.now();
-    this.logger.info(
-      `Reading ${integration.config.host} repositories from ${location.target}`,
-    );
-
-    const processOptions: ProcessOptions = {
-      emit,
-      integration,
-      location,
-    };
-
     const isBitbucketCloud = integration.config.host === 'bitbucket.org';
-    const { scanned, matches } = isBitbucketCloud
-      ? await this.processCloudRepositories(processOptions)
-      : await this.processOrganizationRepositories(processOptions);
+    if (isBitbucketCloud) {
+      return this.bitbucketCloudProcessor.readLocation(
+        {
+          ...location,
+          type: 'bitbucket-cloud-discovery',
+        },
+        _optional,
+        emit,
+      );
+    }
 
-    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    this.logger.debug(
-      `Read ${scanned} ${integration.config.host} repositories (${matches} matching the pattern) in ${duration} seconds`,
+    return this.bitbucketServerProcessor.readLocation(
+      {
+        ...location,
+        type: 'bitbucket-server-discovery',
+      },
+      _optional,
+      emit,
     );
-
-    return true;
-  }
-
-  private async processCloudRepositories(
-    options: ProcessOptions,
-  ): Promise<ResultSummary> {
-    const { location, integration, emit } = options;
-    const client = new BitbucketCloudClient({
-      config: integration.config,
-    });
-
-    const { searchEnabled } = parseBitbucketCloudUrl(location.target);
-
-    const result = searchEnabled
-      ? await searchBitbucketCloudLocations(client, location.target)
-      : await readBitbucketCloudLocations(client, location.target);
-
-    for (const locationTarget of result.matches) {
-      for await (const entity of this.parser({
-        integration,
-        target: locationTarget,
-        presence: searchEnabled ? 'required' : 'optional',
-        logger: this.logger,
-      })) {
-        emit(entity);
-      }
-    }
-    return {
-      matches: result.matches.length,
-      scanned: result.scanned,
-    };
-  }
-
-  private async processOrganizationRepositories(
-    options: ProcessOptions,
-  ): Promise<ResultSummary> {
-    const { location, integration, emit } = options;
-    const { catalogPath: requestedCatalogPath } = parseUrl(location.target);
-    const catalogPath = requestedCatalogPath
-      ? `/${requestedCatalogPath}`
-      : DEFAULT_CATALOG_LOCATION;
-
-    const client = new BitbucketServerClient({
-      config: integration.config,
-    });
-
-    const result = await readBitbucketOrg(client, location.target);
-    for (const repository of result.matches) {
-      for await (const entity of this.parser({
-        integration,
-        target: `${repository.links.self[0].href}${catalogPath}`,
-        logger: this.logger,
-      })) {
-        emit(entity);
-      }
-    }
-    return {
-      matches: result.matches.length,
-      scanned: result.scanned,
-    };
   }
 }
-
-export async function readBitbucketOrg(
-  client: BitbucketServerClient,
-  target: string,
-): Promise<Result<BitbucketRepository>> {
-  const { projectSearchPath, repoSearchPath } = parseUrl(target);
-  const projects = paginated(options => client.listProjects(options));
-  const result: Result<BitbucketRepository> = {
-    scanned: 0,
-    matches: [],
-  };
-
-  for await (const project of projects) {
-    if (!projectSearchPath.test(project.key)) {
-      continue;
-    }
-    const repositories = paginated(options =>
-      client.listRepositories(project.key, options),
-    );
-    for await (const repository of repositories) {
-      result.scanned++;
-      if (repoSearchPath.test(repository.slug)) {
-        result.matches.push(repository);
-      }
-    }
-  }
-  return result;
-}
-
-export async function searchBitbucketCloudLocations(
-  client: BitbucketCloudClient,
-  target: string,
-): Promise<Result<string>> {
-  const {
-    workspacePath,
-    catalogPath: requestedCatalogPath,
-    projectSearchPath,
-    repoSearchPath,
-  } = parseBitbucketCloudUrl(target);
-
-  const result: Result<string> = {
-    scanned: 0,
-    matches: [],
-  };
-
-  const catalogPath = requestedCatalogPath
-    ? requestedCatalogPath
-    : DEFAULT_CATALOG_LOCATION;
-  const catalogFilename = catalogPath.substring(
-    catalogPath.lastIndexOf('/') + 1,
-  );
-
-  const searchResults = paginated20(options =>
-    client.searchCode(
-      workspacePath,
-      `"${catalogFilename}" path:${catalogPath}`,
-      options,
-    ),
-  );
-
-  for await (const searchResult of searchResults) {
-    // not a file match, but a code match
-    if (searchResult.path_matches.length === 0) {
-      continue;
-    }
-
-    const repository = searchResult.file.commit.repository;
-    if (!matchesPostFilters(repository, projectSearchPath, repoSearchPath)) {
-      continue;
-    }
-
-    const repoUrl = repository.links.html.href;
-    const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
-    const filePath = searchResult.file.path;
-    const location = `${repoUrl}/src/${branch}/${filePath}`;
-
-    result.matches.push(location);
-  }
-
-  return result;
-}
-
-export async function readBitbucketCloudLocations(
-  client: BitbucketCloudClient,
-  target: string,
-): Promise<Result<string>> {
-  const { catalogPath: requestedCatalogPath } = parseBitbucketCloudUrl(target);
-  const catalogPath = requestedCatalogPath
-    ? `/${requestedCatalogPath}`
-    : DEFAULT_CATALOG_LOCATION;
-
-  return readBitbucketCloud(client, target).then(result => {
-    const matches = result.matches.map(repository => {
-      const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
-      return `${repository.links.html.href}/src/${branch}${catalogPath}`;
-    });
-
-    return {
-      scanned: result.scanned,
-      matches,
-    };
-  });
-}
-
-export async function readBitbucketCloud(
-  client: BitbucketCloudClient,
-  target: string,
-): Promise<Result<BitbucketRepository20>> {
-  const {
-    workspacePath,
-    queryParam: q,
-    projectSearchPath,
-    repoSearchPath,
-  } = parseBitbucketCloudUrl(target);
-
-  const repositories = paginated20(
-    options => client.listRepositoriesByWorkspace(workspacePath, options),
-    {
-      q,
-    },
-  );
-  const result: Result<BitbucketRepository20> = {
-    scanned: 0,
-    matches: [],
-  };
-
-  for await (const repository of repositories) {
-    result.scanned++;
-    if (matchesPostFilters(repository, projectSearchPath, repoSearchPath)) {
-      result.matches.push(repository);
-    }
-  }
-  return result;
-}
-
-function matchesPostFilters(
-  repository: BitbucketRepository20,
-  projectSearchPath: RegExp | undefined,
-  repoSearchPath: RegExp | undefined,
-): boolean {
-  return (
-    (!projectSearchPath || projectSearchPath.test(repository.project.key)) &&
-    (!repoSearchPath || repoSearchPath.test(repository.slug))
-  );
-}
-
-function parseUrl(urlString: string): {
-  projectSearchPath: RegExp;
-  repoSearchPath: RegExp;
-  catalogPath: string;
-} {
-  const url = new URL(urlString);
-  const indexOfProjectSegment =
-    url.pathname.toLowerCase().indexOf('/projects/') + 1;
-  const path = url.pathname.substr(indexOfProjectSegment).split('/');
-
-  // /projects/backstage/repos/techdocs-*/catalog-info.yaml
-  if (path.length > 3 && path[1].length && path[3].length) {
-    return {
-      projectSearchPath: escapeRegExp(decodeURIComponent(path[1])),
-      repoSearchPath: escapeRegExp(decodeURIComponent(path[3])),
-      catalogPath: decodeURIComponent(path.slice(4).join('/') + url.search),
-    };
-  }
-
-  throw new Error(`Failed to parse ${urlString}`);
-}
-
-function readPathParameters(pathParts: string[]): Map<string, string> {
-  const vals: Record<string, any> = {};
-  for (let i = 0; i + 1 < pathParts.length; i += 2) {
-    vals[pathParts[i]] = decodeURIComponent(pathParts[i + 1]);
-  }
-  return new Map<string, string>(Object.entries(vals));
-}
-
-function parseBitbucketCloudUrl(urlString: string): {
-  workspacePath: string;
-  catalogPath?: string;
-  projectSearchPath?: RegExp;
-  repoSearchPath?: RegExp;
-  queryParam?: string;
-  searchEnabled: boolean;
-} {
-  const url = new URL(urlString);
-  const pathMap = readPathParameters(url.pathname.substr(1).split('/'));
-  const query = url.searchParams;
-
-  if (!pathMap.has('workspaces')) {
-    throw new Error(`Failed to parse workspace from ${urlString}`);
-  }
-
-  return {
-    workspacePath: pathMap.get('workspaces')!,
-    projectSearchPath: pathMap.has('projects')
-      ? escapeRegExp(pathMap.get('projects')!)
-      : undefined,
-    repoSearchPath: pathMap.has('repos')
-      ? escapeRegExp(pathMap.get('repos')!)
-      : undefined,
-    catalogPath: query.get('catalogPath') || undefined,
-    queryParam: query.get('q') || undefined,
-    searchEnabled: query.get('search')?.toLowerCase() === 'true',
-  };
-}
-
-function escapeRegExp(str: string): RegExp {
-  return new RegExp(`^${str.replace(/\*/g, '.*')}$`);
-}
-
-type ProcessOptions = {
-  integration: BitbucketIntegration;
-  location: LocationSpec;
-  emit: CatalogProcessorEmit;
-};
-
-type Result<T> = {
-  scanned: number;
-  matches: T[];
-};
-
-type ResultSummary = {
-  scanned: number;
-  matches: number;
-};

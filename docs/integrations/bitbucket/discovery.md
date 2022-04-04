@@ -11,7 +11,9 @@ catalog entities located in Bitbucket. The processor will crawl your Bitbucket
 account and register entities matching the configured path. This can be useful
 as an alternative to static locations or manually adding things to the catalog.
 
-## Installation
+## Self-hosted Bitbucket Server
+
+### Installation
 
 You will have to add the processor in the catalog initialization code of your
 backend. The provider is not installed by default, therefore you have to add a
@@ -27,18 +29,18 @@ And then add the processor to your catalog builder:
 
 ```diff
 // In packages/backend/src/plugins/catalog.ts
-+import { BitbucketDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-bitbucket';
++import { BitbucketServerDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-bitbucket';
 
  export default async function createPlugin(
    env: PluginEnvironment,
  ): Promise<Router> {
    const builder = await CatalogBuilder.create(env);
 +  builder.addProcessor(
-+    BitbucketDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
++    BitbucketServerDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
 +  );
 ```
 
-## Self-hosted Bitbucket Server
+### Configuration
 
 To use the discovery processor with a self-hosted Bitbucket Server, you'll need
 a Bitbucket integration [set up](locations.md) with a `BITBUCKET_TOKEN` and a
@@ -48,11 +50,11 @@ configuration:
 ```yaml
 catalog:
   locations:
-    - type: bitbucket-discovery
+    - type: bitbucket-server-discovery
       target: https://bitbucket.mycompany.com/projects/my-project/repos/service-*/catalog-info.yaml
 ```
 
-Note the `bitbucket-discovery` type, as this is not a regular `url` processor.
+Note the `bitbucket-server-discovery` type, as this is not a regular `url` processor.
 
 The target is composed of four parts:
 
@@ -73,6 +75,35 @@ The target is composed of four parts:
 
 ## Bitbucket Cloud
 
+### Installation
+
+You will have to add the processor in the catalog initialization code of your
+backend. The provider is not installed by default, therefore you have to add a
+dependency to `@backstage/plugin-catalog-backend-module-bitbucket` to your backend
+package.
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-bitbucket
+```
+
+And then add the processor to your catalog builder:
+
+```diff
+// In packages/backend/src/plugins/catalog.ts
++import { BitbucketCloudDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-bitbucket';
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
++  builder.addProcessor(
++    BitbucketCloudDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
++  );
+```
+
+### Configuration
+
 To use the discovery processor with Bitbucket Cloud, you'll need a Bitbucket
 integration [set up](locations.md) with a `username` and an `appPassword`. Then
 you can add a location target to the catalog configuration:
@@ -80,11 +111,11 @@ you can add a location target to the catalog configuration:
 ```yaml
 catalog:
   locations:
-    - type: bitbucket-discovery
+    - type: bitbucket-cloud-discovery
       target: https://bitbucket.org/workspaces/my-workspace
 ```
 
-Note the `bitbucket-discovery` type, as this is not a regular `url` processor.
+Note the `bitbucket-cloud-discovery` type, as this is not a regular `url` processor.
 
 The target is composed of the following parts:
 
@@ -154,17 +185,17 @@ Examples:
 
 ## Custom repository processing
 
-The Bitbucket Discovery Processor will by default emit a location for each
+The Bitbucket discovery processors will by default emit a location for each
 matching repository for further processing by other processors. However, it is
 possible to override this functionality and take full control of how each
 matching repository is processed.
 
-`BitbucketDiscoveryProcessor.fromConfig` takes an optional parameter
-`options.parser` where you can set your own parser to be used for each matched
+`BitbucketCloudDiscoveryProcessor.fromConfig` and `BitbucketServerDiscoveryProcessor.fromConfig`
+take an optional parameter `options.parser` where you can set your own parser to be used for each matched
 repository.
 
 ```typescript
-const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
+const processor = BitbucketCloudDiscoveryProcessor.fromConfig(env.config, {
   parser: async function* customRepositoryParser({ client, repository }) {
     // Custom logic for interpreting the matching repository.
     // See defaultRepositoryParser for an example
