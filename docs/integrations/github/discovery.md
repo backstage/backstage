@@ -108,7 +108,7 @@ the catalog in your `packages/backend/src/plugins/catalog.ts` file:
 const builder = await CatalogBuilder.create(env);
 
 // For example, to refresh every 5 minutes (300 seconds).
-builder.setRefreshIntervalSeconds(300);
+builder.setProcessingIntervalSeconds(300);
 ```
 
 Alternatively, or additionally, you can configure [github-apps] authentication
