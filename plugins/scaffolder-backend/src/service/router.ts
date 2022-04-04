@@ -42,6 +42,7 @@ import {
   TemplateAction,
   TemplateActionRegistry,
 } from '../scaffolder';
+import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { getEntityBaseUrl, getWorkingDirectory, findTemplate } from './helpers';
 
@@ -128,6 +129,14 @@ export async function createRouter(
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
+
+  const dryRunner = createDryRunner({
+    actionRegistry,
+    integrations,
+    logger,
+    workingDirectory,
+    additionalTemplateFilters,
+  });
 
   router
     .get(
@@ -324,6 +333,46 @@ export async function createRouter(
         subscription.unsubscribe();
         clearTimeout(timeout);
       });
+    })
+    .post('/v2/dryrun', async (req, res) => {
+      const template = req.body.template as TemplateEntityV1beta3;
+      const values = req.body.values;
+      const token = getBearerToken(req.headers.authorization);
+      const content = req.body.content as {
+        path: string;
+        base64Content: string;
+      }[];
+
+      for (const parameters of [template.spec.parameters ?? []].flat()) {
+        const result = validate(values, parameters);
+        if (!result.valid) {
+          res.status(400).json({ errors: result.errors });
+          return;
+        }
+      }
+
+      const result = await dryRunner({
+        spec: {
+          apiVersion: template.apiVersion,
+          steps: template.spec.steps.map((step, index) => ({
+            ...step,
+            id: step.id ?? `step-${index + 1}`,
+            name: step.name ?? step.action,
+          })),
+          output: template.spec.output ?? {},
+          parameters: values,
+        },
+        content: (content ?? []).map(file => ({
+          path: file.path,
+          content: Buffer.from(file.base64Content, 'base64'),
+        })),
+        secrets: {
+          ...req.body.secrets,
+          backstageToken: token,
+        },
+      });
+
+      res.status(200).json(result);
     });
 
   const app = express();
