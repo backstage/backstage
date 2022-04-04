@@ -6237,9 +6237,7 @@
     pretty-format "^26.0.0"
 
 "@types/jquery@^3.3.34":
-  version "3.5.13"
-  resolved "https://registry.npmjs.org/@types/jquery/-/jquery-3.5.13.tgz#5482d3ee325d5862f77a91c09369ae0a5b082bf3"
-  integrity sha512-ZxJrup8nz/ZxcU0vantG+TPdboMhB24jad2uSap50zE7Q9rUeYlCF25kFMSmHR33qoeOgqcdHEp3roaookC0Sg==
+  version: "3.5.14"
   dependencies:
     "@types/sizzle" "*"
 
