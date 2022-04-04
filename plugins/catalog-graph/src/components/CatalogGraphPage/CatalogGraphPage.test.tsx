@@ -194,10 +194,7 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    await userEvent.pointer({
-      keys: '[MouseLeft]',
-      target: getByText('b:d/e'),
-    });
+    await userEvent.click(getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',
