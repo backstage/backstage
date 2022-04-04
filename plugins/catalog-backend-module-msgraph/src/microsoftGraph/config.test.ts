@@ -56,6 +56,7 @@ describe('readMicrosoftGraphConfig', () => {
           userExpand: 'manager',
           userFilter: 'accountEnabled eq true',
           groupExpand: 'member',
+          groupSelect: ['id', 'displayName', 'description'],
           groupFilter: 'securityEnabled eq false',
         },
       ],
@@ -71,6 +72,7 @@ describe('readMicrosoftGraphConfig', () => {
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         groupExpand: 'member',
+        groupSelect: ['id', 'displayName', 'description'],
         groupFilter: 'securityEnabled eq false',
       },
     ];

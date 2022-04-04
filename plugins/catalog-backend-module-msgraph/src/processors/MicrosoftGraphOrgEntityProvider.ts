@@ -176,7 +176,6 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     const provider = this.options.provider;
     const { markReadComplete } = trackProgress(logger);
     const client = MicrosoftGraphClient.create(this.options.provider);
-
     const { users, groups } = await readMicrosoftGraphOrg(
       client,
       provider.tenantId,
@@ -186,6 +185,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         userGroupMemberSearch: provider.userGroupMemberSearch,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
+        groupSelect: provider.groupSelect,
         queryMode: provider.queryMode,
         groupTransformer: this.options.groupTransformer,
         userTransformer: this.options.userTransformer,
