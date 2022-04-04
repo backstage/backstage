@@ -15,7 +15,7 @@
  */
 
 import chalk from 'chalk';
-import { Command } from 'commander';
+import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { PackageGraph } from '../../lib/monorepo';
@@ -60,29 +60,31 @@ function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
 
     // Can't clone or copy or even use commands as prototype, so we mutate
     // the necessary members instead, and then reset them once we're done
-    const currentOpts = cmd._optionValues;
-    const currentStore = cmd._storeOptionsAsProperties;
+    const currentOpts = (cmd as any)._optionValues;
+    const currentStore = (cmd as any)._storeOptionsAsProperties;
 
     const result: Record<string, any> = {};
-    cmd._storeOptionsAsProperties = false;
-    cmd._optionValues = result;
+    (cmd as any)._storeOptionsAsProperties = false;
+    (cmd as any)._optionValues = result;
 
     // Triggers the writing of options to the result object
     cmd.parseOptions(argsStr.split(' '));
 
-    cmd._storeOptionsAsProperties = currentOpts;
-    cmd._optionValues = currentStore;
+    (cmd as any)._storeOptionsAsProperties = currentOpts;
+    (cmd as any)._optionValues = currentStore;
 
     return result;
   };
 }
 
-export async function command(cmd: Command): Promise<void> {
+export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
-  if (cmd.since) {
+  if (opts.since) {
     const graph = PackageGraph.fromPackages(packages);
-    const changedPackages = await graph.listChangedPackages({ ref: cmd.since });
+    const changedPackages = await graph.listChangedPackages({
+      ref: opts.since,
+    });
     const withDevDependents = graph.collectPackageNames(
       changedPackages.map(pkg => pkg.name),
       pkg => pkg.localDevDependents.keys(),
@@ -137,7 +139,7 @@ export async function command(cmd: Command): Promise<void> {
   console.log('Building packages');
   await buildPackages(options);
 
-  if (cmd.all) {
+  if (opts.all) {
     console.log('Building apps');
     await runParallelWorkers({
       items: apps,

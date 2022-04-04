@@ -18,7 +18,7 @@ import os from 'os';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import tar, { CreateOptions } from 'tar';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
 import { getEnvironmentParallelism } from '../../lib/parallel';
@@ -27,7 +27,7 @@ import { buildPackage, Output } from '../../lib/builder';
 const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const targetDir = paths.resolveTarget('dist');
   const pkg = await fs.readJson(paths.resolveTarget('package.json'));
 
@@ -38,7 +38,7 @@ export default async (cmd: Command) => {
   try {
     await createDistWorkspace([pkg.name], {
       targetDir: tmpDir,
-      buildDependencies: Boolean(cmd.buildDependencies),
+      buildDependencies: Boolean(opts.buildDependencies),
       buildExcludes: [pkg.name],
       parallelism: getEnvironmentParallelism(),
       skeleton: SKELETON_FILE,

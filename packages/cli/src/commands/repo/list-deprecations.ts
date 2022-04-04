@@ -16,12 +16,12 @@
 
 import chalk from 'chalk';
 import { ESLint } from 'eslint';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { join as joinPath, relative as relativePath } from 'path';
 import { paths } from '../../lib/paths';
 import { PackageGraph } from '../../lib/monorepo';
 
-export async function command(cmd: Command) {
+export async function command(opts: OptionValues) {
   const packages = await PackageGraph.listTargetPackages();
 
   const eslint = new ESLint({
@@ -74,7 +74,7 @@ export async function command(cmd: Command) {
     stderr.cursorTo(0);
   }
 
-  if (cmd.json) {
+  if (opts.json) {
     console.log(JSON.stringify(deprecations, null, 2));
   } else {
     for (const d of deprecations) {

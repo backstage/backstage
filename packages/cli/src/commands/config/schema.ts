@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../../lib/config';
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const { schema } = await loadCliConfig({
     args: [],
-    fromPackage: cmd.package,
+    fromPackage: opts.package,
     mockEnv: true,
   });
 
@@ -38,7 +38,7 @@ export default async (cmd: Command) => {
   merged.description =
     'This is the schema describing the structure of the app-config.yaml configuration file.';
 
-  if (cmd.format === 'json') {
+  if (opts.format === 'json') {
     process.stdout.write(`${JSON.stringify(merged, null, 2)}\n`);
   } else {
     process.stdout.write(`${stringifyYaml(merged)}\n`);

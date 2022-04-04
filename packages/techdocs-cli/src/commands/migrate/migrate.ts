@@ -16,19 +16,19 @@
 
 import { SingleHostDiscovery } from '@backstage/backend-common';
 import { Publisher } from '@backstage/plugin-techdocs-node';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { createLogger } from '../../lib/utility';
 import { PublisherConfig } from '../../lib/PublisherConfig';
 
-export default async function migrate(cmd: Command) {
-  const logger = createLogger({ verbose: cmd.verbose });
+export default async function migrate(opts: OptionValues) {
+  const logger = createLogger({ verbose: opts.verbose });
 
-  const config = PublisherConfig.getValidConfig(cmd);
+  const config = PublisherConfig.getValidConfig(opts);
   const discovery = SingleHostDiscovery.fromConfig(config);
   const publisher = await Publisher.fromConfig(config, { logger, discovery });
 
   if (!publisher.migrateDocsCase) {
-    throw new Error(`Migration not implemented for ${cmd.publisherType}`);
+    throw new Error(`Migration not implemented for ${opts.publisherType}`);
   }
 
   // Check that the publisher's underlying storage is ready and available.
@@ -39,12 +39,12 @@ export default async function migrate(cmd: Command) {
   }
 
   // Validate and parse migration arguments.
-  const removeOriginal = cmd.removeOriginal;
-  const numericConcurrency = parseInt(cmd.concurrency, 10);
+  const removeOriginal = opts.removeOriginal;
+  const numericConcurrency = parseInt(opts.concurrency, 10);
 
   if (!Number.isInteger(numericConcurrency) || numericConcurrency <= 0) {
     throw new Error(
-      `Concurrency must be a number greater than 1. ${cmd.concurrency} provided.`,
+      `Concurrency must be a number greater than 1. ${opts.concurrency} provided.`,
     );
   }
 

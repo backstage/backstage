@@ -15,12 +15,12 @@
  */
 
 import { buildPackage, Output } from '../lib/builder';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   let outputs = new Set<Output>();
 
-  const { outputs: outputsStr } = cmd as { outputs?: string };
+  const { outputs: outputsStr } = opts as { outputs?: string };
   if (outputsStr) {
     for (const output of outputsStr.split(',') as (keyof typeof Output)[]) {
       if (output in Output) {
@@ -35,7 +35,7 @@ export default async (cmd: Command) => {
 
   await buildPackage({
     outputs,
-    minify: cmd.minify,
-    useApiExtractor: cmd.experimentalTypeBuild,
+    minify: opts.minify,
+    useApiExtractor: opts.experimentalTypeBuild,
   });
 };

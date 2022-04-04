@@ -68,7 +68,7 @@
     "@backstage/config": "^1.0.0",
     "@backstage/plugin-techdocs-node": "^1.0.1-next.1",
     "@types/dockerode": "^3.3.0",
-    "commander": "^6.1.0",
+    "commander": "^9.1.0",
     "dockerode": "^3.3.1",
     "fs-extra": "^10.0.1",
     "http-proxy": "^1.18.1",

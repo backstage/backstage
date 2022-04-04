@@ -22,7 +22,7 @@ import {
 import { fetchPackageInfo } from '../../lib/versioning';
 import { NotFoundError } from '../../lib/errors';
 import * as stepDefinitionMap from './steps';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 
 const stepDefinitions = Object.values(stepDefinitionMap);
@@ -154,7 +154,7 @@ async function loadPeerPluginDeps(
   }
 }
 
-export default async (pluginId?: string, cmd?: Command) => {
+export default async (pluginId?: string, cmd?: OptionValues) => {
   const from = pluginId || cmd?.from;
   // TODO(himanshu): If no plugin id is provided, it should list all plugins available. Maybe in some other command?
   if (!from) {

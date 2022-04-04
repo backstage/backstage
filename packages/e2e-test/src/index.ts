@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import program from 'commander';
+import { program } from 'commander';
 import chalk from 'chalk';
 import { registerCommands } from './commands';
 import { version } from '../package.json';

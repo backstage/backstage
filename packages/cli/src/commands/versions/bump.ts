@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import semver from 'semver';
 import minimatch from 'minimatch';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
@@ -55,10 +55,10 @@ type PkgVersionInfo = {
   location: string;
 };
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
-  let pattern = cmd.pattern;
+  let pattern = opts.pattern;
 
   if (!pattern) {
     console.log(`Using default pattern glob ${DEFAULT_PATTERN_GLOB}`);
@@ -70,14 +70,14 @@ export default async (cmd: Command) => {
   let findTargetVersion: (name: string) => Promise<string>;
   let releaseManifest: ReleaseManifest;
   // Specific release specified. Be strict when resolving versions
-  if (semver.valid(cmd.release)) {
-    releaseManifest = await getManifestByVersion({ version: cmd.release });
+  if (semver.valid(opts.release)) {
+    releaseManifest = await getManifestByVersion({ version: opts.release });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
   } else {
     // Release line specified. Be lenient when resolving versions.
-    if (cmd.release === 'next') {
+    if (opts.release === 'next') {
       const next = await getManifestByReleaseLine({
         releaseLine: 'next',
       });
@@ -90,11 +90,11 @@ export default async (cmd: Command) => {
         : main;
     } else {
       releaseManifest = await getManifestByReleaseLine({
-        releaseLine: cmd.release,
+        releaseLine: opts.release,
       });
     }
     findTargetVersion = createVersionFinder({
-      releaseLine: cmd.releaseLine,
+      releaseLine: opts.releaseLine,
       releaseManifest,
     });
   }

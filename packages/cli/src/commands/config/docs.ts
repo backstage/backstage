@@ -16,17 +16,17 @@
 
 import { JsonObject } from '@backstage/types';
 import { mergeConfigSchemas } from '@backstage/config-loader';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { loadCliConfig } from '../../lib/config';
 
 const DOCS_URL = 'https://config.backstage.io';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const { schema: appSchemas } = await loadCliConfig({
     args: [],
-    fromPackage: cmd.package,
+    fromPackage: opts.package,
     mockEnv: true,
   });
 

@@ -15,7 +15,7 @@
  */
 
 import { resolve } from 'path';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import Docker from 'dockerode';
 import {
@@ -30,19 +30,19 @@ import {
 } from '../../lib/utility';
 import { stdout } from 'process';
 
-export default async function generate(cmd: Command) {
+export default async function generate(opts: OptionValues) {
   // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
   // Docs can be prepared using actions/checkout or git clone, or similar paradigms on CI. The TechDocs CI workflow
   // will run on the CI pipeline containing the documentation files.
 
-  const logger = createLogger({ verbose: cmd.verbose });
+  const logger = createLogger({ verbose: opts.verbose });
 
-  const sourceDir = resolve(cmd.sourceDir);
-  const outputDir = resolve(cmd.outputDir);
-  const omitTechdocsCorePlugin = cmd.omitTechdocsCoreMkdocsPlugin;
-  const dockerImage = cmd.dockerImage;
-  const pullImage = cmd.pull;
-  const legacyCopyReadmeMdToIndexMd = cmd.legacyCopyReadmeMdToIndexMd;
+  const sourceDir = resolve(opts.sourceDir);
+  const outputDir = resolve(opts.outputDir);
+  const omitTechdocsCorePlugin = opts.omitTechdocsCoreMkdocsPlugin;
+  const dockerImage = opts.dockerImage;
+  const pullImage = opts.pull;
+  const legacyCopyReadmeMdToIndexMd = opts.legacyCopyReadmeMdToIndexMd;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -54,7 +54,7 @@ export default async function generate(cmd: Command) {
   const config = new ConfigReader({
     techdocs: {
       generator: {
-        runIn: cmd.docker ? 'docker' : 'local',
+        runIn: opts.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
         legacyCopyReadmeMdToIndexMd,
@@ -70,10 +70,10 @@ export default async function generate(cmd: Command) {
   const containerRunner = new DockerContainerRunner({ dockerClient });
 
   let parsedLocationAnnotation = {} as ParsedLocationAnnotation;
-  if (cmd.techdocsRef) {
+  if (opts.techdocsRef) {
     try {
       parsedLocationAnnotation = convertTechDocsRefToLocationAnnotation(
-        cmd.techdocsRef,
+        opts.techdocsRef,
       );
     } catch (err) {
       logger.error(err.message);
@@ -91,13 +91,13 @@ export default async function generate(cmd: Command) {
   await techdocsGenerator.run({
     inputDir: sourceDir,
     outputDir,
-    ...(cmd.techdocsRef
+    ...(opts.techdocsRef
       ? {
           parsedLocationAnnotation,
         }
       : {}),
     logger,
-    etag: cmd.etag,
+    etag: opts.etag,
     ...(process.env.LOG_LEVEL === 'debug' ? { logStream: stdout } : {}),
   });
 

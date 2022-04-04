@@ -79,9 +79,10 @@ describe('getRoleFromPackage', () => {
 
 describe('findRoleFromCommand', () => {
   function mkCommand(args: string) {
-    return new Command()
+    const parsed = new Command()
       .option('--role <role>', 'test role')
       .parse(['node', 'entry.js', ...args.split(' ')]) as Command;
+    return parsed.opts();
   }
 
   beforeEach(() => {

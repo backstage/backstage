@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { run } from '../../lib/run';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const args = ['test'];
 
-  if (cmd.watch) {
+  if (opts.watch) {
     args.push('--watch');
   }
-  if (cmd.coverage) {
+  if (opts.coverage) {
     args.push('--coverage');
   }
 
