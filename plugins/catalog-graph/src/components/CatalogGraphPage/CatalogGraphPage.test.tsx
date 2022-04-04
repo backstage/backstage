@@ -30,6 +30,7 @@ import React from 'react';
 import { CatalogGraphPage } from './CatalogGraphPage';
 
 const navigate = jest.fn();
+const user = userEvent.setup();
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
@@ -160,7 +161,6 @@ describe('<CatalogGraphPage/>', () => {
     expect(await findAllByTestId('node')).toHaveLength(2);
 
     await userEvent.click(getByText('b:d/e'));
-
     expect(await findByText('hasPart')).toBeInTheDocument();
   });
 
@@ -173,7 +173,6 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    const user = userEvent.setup();
     await user.keyboard('{Shift>}');
     await user.click(getByText('b:d/e'));
     expect(navigate).toBeCalledWith('/entity/{kind}/{namespace}/{name}');
@@ -217,7 +216,6 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    const user = userEvent.setup();
     await user.keyboard('{Shift>}');
     await user.click(getByText('b:d/e'));
 
