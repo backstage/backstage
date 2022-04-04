@@ -53,6 +53,10 @@ export type BackstagePaletteAdditions = {
   };
   bursts: {
     fontColor: string;
+    slackChannelText: string;
+    backgroundColor: {
+      default: string;
+    };
     gradient: {
       linear: string;
     };
