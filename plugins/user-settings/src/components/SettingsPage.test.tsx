@@ -27,6 +27,10 @@ jest.mock('react-router', () => ({
 import { useOutlet } from 'react-router';
 
 describe('<SettingsPage />', () => {
+  beforeEach(() => {
+    (useOutlet as jest.Mock).mockReset();
+  });
+
   it('should render the settings page with 3 tabs', async () => {
     const { container } = await renderWithEffects(
       wrapInTestApp(<SettingsPage />),
@@ -38,13 +42,11 @@ describe('<SettingsPage />', () => {
 
   it('should render the settings page with 4 tabs when extra tabs are provided', async () => {
     const advancedTabRoute = (
-      <>
-        <UserSettingsTab path="/advanced" title="Advanced">
-          <div>Advanced settings</div>
-        </UserSettingsTab>
-      </>
+      <UserSettingsTab path="/advanced" title="Advanced">
+        <div>Advanced settings</div>
+      </UserSettingsTab>
     );
-    (useOutlet as jest.Mock).mockReturnValueOnce(advancedTabRoute);
+    (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderWithEffects(
       wrapInTestApp(<SettingsPage />),
     );
@@ -52,26 +54,5 @@ describe('<SettingsPage />', () => {
     const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
-  });
-
-  it('should throw error if non compliant route is passed to settings routes', async () => {
-    const advancedTabRoute = (
-      <>
-        <UserSettingsTab path="/advanced" title="Advanced">
-          <div>Advanced settings</div>
-        </UserSettingsTab>
-        <div>Non compliant element</div>
-      </>
-    );
-    (useOutlet as jest.Mock).mockReturnValueOnce(advancedTabRoute);
-    let error: Error;
-    try {
-      await renderWithEffects(wrapInTestApp(<SettingsPage />));
-    } catch (err) {
-      error = err;
-    }
-    expect(error!.message).toEqual(
-      expect.stringContaining('Invalid element passed'),
-    );
   });
 });
