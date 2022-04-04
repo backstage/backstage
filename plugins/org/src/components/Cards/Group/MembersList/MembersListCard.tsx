@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const MemberComponent = (props: { member: UserEntity }) => {
   const classes = useStyles();
   const {
-    metadata: { name: metaName },
+    metadata: { name: metaName, description },
     spec: { profile },
   } = props.member;
   const displayName = profile?.displayName ?? metaName;
@@ -101,6 +101,9 @@ const MemberComponent = (props: { member: UserEntity }) => {
             </Typography>
             {profile?.email && (
               <Link to={`mailto:${profile.email}`}>{profile.email}</Link>
+            )}
+            {description && (
+              <Typography variant="subtitle2">{description}</Typography>
             )}
           </Box>
         </Box>

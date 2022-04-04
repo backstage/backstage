@@ -55,6 +55,7 @@ describe('MemberTab Test', () => {
               name: 'tara.macgovern',
               namespace: 'foo-bar',
               uid: 'a5gerth56',
+              description: 'Super Awesome Developer',
             },
             relations: [
               {
@@ -98,6 +99,8 @@ describe('MemberTab Test', () => {
       'href',
       '/catalog/foo-bar/user/tara.macgovern',
     );
+
+    expect(rendered.getByText('Super Awesome Developer')).toBeInTheDocument();
 
     expect(rendered.getByText('Members (1)')).toBeInTheDocument();
   });
