@@ -40,7 +40,6 @@ export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
   private readonly issuer: string;
   private keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
-  private endpoint?: URL;
   private keyStoreUpdated: number = 0;
 
   /**
@@ -59,11 +58,6 @@ export class IdentityClient {
   }) {
     this.discovery = options.discovery;
     this.issuer = options.issuer;
-    this.discovery.getBaseUrl('auth').then(url => {
-      this.endpoint = new URL(`${url}/.well-known/jwks.json`);
-      this.keyStore = createRemoteJWKSet(this.endpoint);
-      this.keyStoreUpdated = Date.now() / 1000;
-    });
   }
 
   /**
@@ -82,11 +76,11 @@ export class IdentityClient {
     // Verify token claims and signature
     // Note: Claims must match those set by TokenFactory when issuing tokens
     // Note: verify throws if verification fails
+    // Check if the keystore needs to be updated
+    await this.refreshKeyStore(token);
     if (!this.keyStore) {
       throw new AuthenticationError('No keystore exists');
     }
-    // Check if the keystore needs to be updated
-    await this.refreshKeyStore(token);
     const decoded = await jwtVerify(token, this.keyStore, {
       algorithms: ['ES256'],
       audience: 'backstage',
@@ -139,8 +133,7 @@ export class IdentityClient {
     if (!keyStoreHasKey && issuedAfterLastRefresh) {
       const url = await this.discovery.getBaseUrl('auth');
       const endpoint = new URL(`${url}/.well-known/jwks.json`);
-      this.endpoint = endpoint;
-      this.keyStore = createRemoteJWKSet(this.endpoint);
+      this.keyStore = createRemoteJWKSet(endpoint);
       this.keyStoreUpdated = Date.now() / 1000;
     }
   }

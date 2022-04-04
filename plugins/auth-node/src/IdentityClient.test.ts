@@ -273,9 +273,11 @@ describe('IdentityClient', () => {
       discovery.getExternalBaseUrl = async () => {
         return updatedURL;
       };
+      let calledUpdatedEndpoint = false;
       server.use(
         rest.get(`${updatedURL}/.well-known/jwks.json`, async (_, res, ctx) => {
           const keys = await factory.listPublicKeys();
+          calledUpdatedEndpoint = true;
           return res(ctx.json(keys));
         }),
       );
@@ -288,8 +290,7 @@ describe('IdentityClient', () => {
       const token = await factory.issueToken({ claims: { sub: 'foo2' } });
       const response = await client.authenticate(token);
       // Verify that the endpoint was updated.
-      const url = (client as any).endpoint as URL;
-      expect(url.toString()).toMatch(`${updatedURL}/.well-known/jwks.json`);
+      expect(calledUpdatedEndpoint).toBeTruthy();
       expect(response).toEqual({
         token: token,
         identity: {
@@ -302,13 +303,6 @@ describe('IdentityClient', () => {
       discovery.getBaseUrl = getBaseUrl;
       discovery.getExternalBaseUrl = getExternalBaseUrl;
       dateSpy.mockClear();
-    });
-  });
-
-  describe('listPublicKeys', () => {
-    it('should use the correct endpoint', async () => {
-      const url = (client as any).endpoint as URL;
-      expect(url.toString()).toMatch(`${mockBaseUrl}/.well-known/jwks.json`);
     });
   });
 });
