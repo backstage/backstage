@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog
 
+## 1.1.0-next.2
+
+### Patch Changes
+
+- f6d2694092: Added tableOptions property to CatalogTable and DefaultCatalogPage to support customization of the Catalog Table. Related issue #10453
+- 5d5fdbe541: Columns in CatalogTable now change depending on the entity kind, ensuring only relevant columns are displayed.
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 1.1.0-next.1
 
 ### Minor Changes

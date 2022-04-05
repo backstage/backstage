@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 64d9a031a8: build(deps): bump `isbinaryfile` from 4.0.8 to 5.0.0
+- 2f3d3a1eae: build(deps): bump `@gitbeaker/core` from 34.6.0 to 35.6.0
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 1.1.0-next.1
 
 ### Minor Changes

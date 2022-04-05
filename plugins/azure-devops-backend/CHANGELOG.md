@@ -1,5 +1,11 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.10-next.1
+
+### Patch Changes
+
+- 236245d9f8: Stop loading all teams when plugin is initialized
+
 ## 0.3.10-next.0
 
 ### Patch Changes

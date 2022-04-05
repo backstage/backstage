@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-bitbucket
 
+## 0.1.2-next.2
+
+### Patch Changes
+
+- 9fed130139: split BitbucketClient into BitbucketCloudClient, BitbucketServerClient
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 0.1.2-next.1
 
 ### Patch Changes
