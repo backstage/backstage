@@ -222,7 +222,7 @@ export function readGeneratorConfig(
       'techdocs.generator.mkdocs.omitTechdocsCorePlugin',
     ),
     legacyCopyReadmeMdToIndexMd: config.getOptionalBoolean(
-      'techdocs.generator.legacyCopyReadmeMdToIndexMd',
+      'techdocs.generator.mkdocs.legacyCopyReadmeMdToIndexMd',
     ),
   };
 }

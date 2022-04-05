@@ -9,5 +9,6 @@ BREAKING: The default Techdocs behavior will no longer attempt to copy `docs/REA
 ```yaml
 techdocs:
   generator:
-    legacyCopyReadmeMdToIndexMd: true
+    mkdocs:
+      legacyCopyReadmeMdToIndexMd: true
 ```
