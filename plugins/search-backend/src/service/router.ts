@@ -23,7 +23,11 @@ import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  PermissionAuthorizer,
+  PermissionEvaluator,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
   IndexableResultSet,
@@ -50,7 +54,7 @@ const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
 export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
-  permissions: PermissionEvaluator;
+  permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: Logger;
 };
@@ -71,8 +75,23 @@ export async function createRouter(
     pageCursor: z.string().optional(),
   });
 
+  let permissionEvaluator: PermissionEvaluator;
+  if (!permissions.hasOwnProperty('query')) {
+    logger.warn(
+      'PermissionAuthorizer is deprecated. Please use PermissionEvaluator instead of PermissionAuthorizer in search.ts',
+    );
+    permissionEvaluator = toPermissionEvaluator(permissions);
+  } else {
+    permissionEvaluator = permissions as PermissionEvaluator;
+  }
+
   const engine = config.getOptionalBoolean('permission.enabled')
-    ? new AuthorizedSearchEngine(inputEngine, types, permissions, config)
+    ? new AuthorizedSearchEngine(
+        inputEngine,
+        types,
+        permissionEvaluator,
+        config,
+      )
     : inputEngine;
 
   const filterResultSet = ({ results, ...resultSet }: SearchResultSet) => ({
