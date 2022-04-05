@@ -151,6 +151,14 @@
       },
       {
         "type": "subcategory",
+        "label": "Bitbucket Cloud",
+        "ids": [
+          "integrations/bitbucketCloud/locations",
+          "integrations/bitbucketCloud/discovery"
+        ]
+      },
+      {
+        "type": "subcategory",
         "label": "Datadog",
         "ids": ["integrations/datadog-rum/installation"]
       },
