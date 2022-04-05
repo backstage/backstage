@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-import { Permission, ResourcePermission } from '../types';
+import {
+  AuthorizePermissionRequest,
+  AuthorizePermissionResponse,
+  DefinitivePolicyDecision,
+  EvaluatorRequestOptions,
+  Permission,
+  PermissionAuthorizer,
+  PermissionEvaluator,
+  QueryPermissionRequest,
+  QueryPermissionResponse,
+  ResourcePermission,
+} from '../types';
 
 /**
  * Check if the two parameters are equivalent permissions.
@@ -74,4 +85,27 @@ export function isUpdatePermission(permission: Permission) {
  */
 export function isDeletePermission(permission: Permission) {
   return permission.attributes.action === 'delete';
+}
+
+export function toPermissionEvaluator(
+  permissionAuthorizer: PermissionAuthorizer,
+): PermissionEvaluator {
+  return {
+    authorize: async (
+      requests: AuthorizePermissionRequest[],
+      options?: EvaluatorRequestOptions,
+    ): Promise<AuthorizePermissionResponse[]> => {
+      const response = await permissionAuthorizer.authorize(requests, options);
+
+      return response as DefinitivePolicyDecision[];
+    },
+    query(
+      requests: QueryPermissionRequest[],
+      options?: EvaluatorRequestOptions,
+    ): Promise<QueryPermissionResponse[]> {
+      // @ts-expect-error
+      const parsedRequests: AuthorizePermissionRequest[] = requests;
+      return permissionAuthorizer.authorize(parsedRequests, options);
+    },
+  };
 }

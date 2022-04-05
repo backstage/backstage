@@ -79,7 +79,11 @@ import {
   CatalogPermissionRule,
   permissionRules as catalogPermissionRules,
 } from '../permissions/rules';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  PermissionAuthorizer,
+  PermissionEvaluator,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import {
   createConditionTransformer,
   createPermissionIntegrationRouter,
@@ -95,7 +99,7 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
-  permissions: PermissionEvaluator;
+  permissions: PermissionEvaluator | PermissionAuthorizer;
 };
 
 /**
@@ -376,9 +380,20 @@ export class CatalogBuilder {
       policy,
     });
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog(dbClient);
+
+    let permissionEvaluator: PermissionEvaluator;
+    if (!permissions.hasOwnProperty('query')) {
+      logger.warn(
+        'PermissionAuthorizer is deprecated. Please use PermissionEvaluator instead of PermissionAuthorizer in catalog.ts',
+      );
+      permissionEvaluator = toPermissionEvaluator(permissions);
+    } else {
+      permissionEvaluator = permissions as PermissionEvaluator;
+    }
+
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
-      permissions,
+      permissionEvaluator,
       createConditionTransformer(this.permissionRules),
     );
     const permissionIntegrationRouter = createPermissionIntegrationRouter({
@@ -428,11 +443,11 @@ export class CatalogBuilder {
       this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator),
-      permissions,
+      permissionEvaluator,
     );
     const refreshService = new AuthorizedRefreshService(
       new DefaultRefreshService({ database: processingDatabase }),
-      permissions,
+      permissionEvaluator,
     );
     const router = await createRouter({
       entitiesCatalog,
