@@ -214,9 +214,6 @@ describe('SearchBar', () => {
       jest.advanceTimersByTime(debounceTime);
     });
     expect(textbox).toHaveValue(value);
-    await waitFor(() => {
-      expect(textbox).toHaveValue(value);
-    });
 
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
