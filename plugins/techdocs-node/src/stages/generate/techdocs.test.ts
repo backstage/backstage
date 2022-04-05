@@ -137,4 +137,24 @@ describe('readGeneratorConfig', () => {
       );
     });
   });
+
+  it('should read legacyCopyReadmeMdToIndexMd config', () => {
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'docker',
+          dockerImage: 'my-org/techdocs',
+          pullImage: false,
+          mkdocs: { legacyCopyReadmeMdToIndexMd: true },
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      dockerImage: 'my-org/techdocs',
+      pullImage: false,
+      legacyCopyReadmeMdToIndexMd: true,
+    });
+  });
 });

@@ -42,6 +42,13 @@ techdocs:
       # Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
       omitTechdocsCorePlugin: false
 
+      # (Optional and not recommended) Configures the techdocs generator to
+      # attempt to ensure an index.md exists falling back to using <docs-dir>/README.md
+      # or README.md in case a default <docs-dir>/index.md is not provided.
+      # Note that https://www.mkdocs.org/user-guide/configuration/#edit_uri behavior
+      # will be broken in these scenarios.
+      legacyCopyReadmeMdToIndexMd: false
+
   # techdocs.builder can be either 'local' or 'external.
   # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
   # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwords.
