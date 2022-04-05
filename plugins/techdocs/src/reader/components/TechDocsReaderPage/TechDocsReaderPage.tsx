@@ -61,11 +61,11 @@ export const TechDocsReaderLayout = ({
   withHeader = true,
 }: TechDocsReaderLayoutProps) => {
   return (
-    <>
+    <Page themeId="documentation">
       {withHeader && <TechDocsReaderPageHeader />}
       <TechDocsReaderPageSubheader />
       <TechDocsReaderPageContent withSearch={withSearch} />
-    </>
+    </Page>
   );
 };
 
@@ -101,9 +101,7 @@ export const TechDocsReaderPage = ({
     return (
       (page as JSX.Element) || (
         <TechDocsReaderPageProvider entityName={entityName}>
-          <Page themeId="documentation">
-            <TechDocsReaderLayout />
-          </Page>
+          <TechDocsReaderLayout />
         </TechDocsReaderPageProvider>
       )
     );
