@@ -90,6 +90,9 @@ export interface Config {
       oauth2?: {
         [authEnv: string]: {
           clientId: string;
+          /**
+           * @visibility secret
+           */
           clientSecret: string;
           authorizationUrl: string;
           tokenUrl: string;
