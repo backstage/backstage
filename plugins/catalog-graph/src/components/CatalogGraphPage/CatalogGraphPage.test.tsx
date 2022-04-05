@@ -45,6 +45,14 @@ describe('<CatalogGraphPage/>', () => {
       value: () => ({ width: 100, height: 100 }),
       configurable: true,
     });
+    Object.defineProperty(window.SVGElement.prototype, 'viewBox', {
+      value: { baseVal: { x: 0, y: 0, width: 100, height: 100 } },
+      configurable: true,
+    });
+    Object.defineProperty(window.MouseEvent.prototype, 'view', {
+      value: window,
+      configurable: true,
+    });
   });
 
   beforeEach(() => {
@@ -142,7 +150,7 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(queryByText('Max Depth')).toBeNull();
 
-    userEvent.click(getByText('Filters'));
+    await userEvent.click(getByText('Filters'));
 
     expect(getByText('Max Depth')).toBeInTheDocument();
   });
@@ -159,7 +167,7 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'));
+    await userEvent.click(getByText('b:d/e'));
 
     expect(await findByText('hasPart')).toBeInTheDocument();
   });
@@ -173,8 +181,9 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'), { shiftKey: true });
-
+    const user = userEvent.setup();
+    await user.keyboard('{Shift>}');
+    await user.click(getByText('b:d/e'));
     expect(navigate).toBeCalledWith('/entity/{kind}/{namespace}/{name}');
   });
 
@@ -193,7 +202,10 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'));
+    // We wait a bit here to reliably reproduce an issue where that requires the `baseVal` and `view` mocks
+    await new Promise(r => setTimeout(r, 100));
+
+    await userEvent.click(getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',
@@ -216,7 +228,9 @@ describe('<CatalogGraphPage/>', () => {
 
     expect(await findAllByTestId('node')).toHaveLength(2);
 
-    userEvent.click(getByText('b:d/e'), { shiftKey: true });
+    const user = userEvent.setup();
+    await user.keyboard('{Shift>}');
+    await user.click(getByText('b:d/e'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',

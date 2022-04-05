@@ -39,7 +39,7 @@ describe('<PreparePullRequestForm />', () => {
     );
 
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /submit/i }));
+      await userEvent.click(getByRole('button', { name: /submit/i }));
     });
 
     expect(onSubmitFn).toBeCalledTimes(1);
@@ -69,7 +69,7 @@ describe('<PreparePullRequestForm />', () => {
     await act(async () => {
       userEvent.clear(getByLabelText('Main Field'));
       await userEvent.type(getByLabelText('Main Field'), 'My Text');
-      userEvent.click(getByRole('button', { name: /submit/i }));
+      await userEvent.click(getByRole('button', { name: /submit/i }));
     });
 
     expect(onSubmitFn).toBeCalledTimes(1);
@@ -104,7 +104,7 @@ describe('<PreparePullRequestForm />', () => {
     expect(queryByText('Error in required main field')).not.toBeInTheDocument();
 
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /submit/i }));
+      await userEvent.click(getByRole('button', { name: /submit/i }));
     });
 
     expect(onSubmitFn).not.toBeCalled();

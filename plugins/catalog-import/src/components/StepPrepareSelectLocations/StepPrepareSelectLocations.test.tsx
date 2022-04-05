@@ -124,14 +124,14 @@ describe('<StepPrepareSelectLocations />', () => {
     expect(getByRole('button', { name: /Review/i })).toBeDisabled();
 
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /Select All/i }));
+      await userEvent.click(getByRole('button', { name: /Select All/i }));
     });
 
     checkboxes.forEach(c => expect(c).toBeChecked());
     expect(getByRole('button', { name: /Review/i })).not.toBeDisabled();
 
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /Select All/i }));
+      await userEvent.click(getByRole('button', { name: /Select All/i }));
     });
 
     checkboxes.forEach(c => expect(c).not.toBeChecked());
@@ -171,7 +171,7 @@ describe('<StepPrepareSelectLocations />', () => {
     checkboxes.forEach(c => expect(c).not.toBeChecked());
 
     await act(async () => {
-      userEvent.click(checkboxes[1]);
+      await userEvent.click(checkboxes[1]);
     });
 
     expect(checkboxes[0]).not.toBeChecked();
@@ -179,7 +179,7 @@ describe('<StepPrepareSelectLocations />', () => {
     expect(checkboxes[2]).not.toBeChecked();
 
     await act(async () => {
-      userEvent.click(checkboxes[1]);
+      await userEvent.click(checkboxes[1]);
     });
 
     checkboxes.forEach(c => expect(c).not.toBeChecked());
@@ -197,7 +197,7 @@ describe('<StepPrepareSelectLocations />', () => {
     );
 
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /Back/i }));
+      await userEvent.click(getByRole('button', { name: /Back/i }));
     });
 
     expect(onGoBack).toBeCalledTimes(1);
@@ -217,11 +217,11 @@ describe('<StepPrepareSelectLocations />', () => {
     const checkboxes = getAllByRole('checkbox');
 
     await act(async () => {
-      userEvent.click(checkboxes[1]);
+      await userEvent.click(checkboxes[1]);
     });
 
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /Review/i }));
+      await userEvent.click(getByRole('button', { name: /Review/i }));
     });
 
     expect(onPrepare).toBeCalledTimes(1);

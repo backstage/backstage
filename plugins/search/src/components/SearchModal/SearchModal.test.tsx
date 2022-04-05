@@ -68,7 +68,7 @@ describe('SearchModal', () => {
     );
 
     expect(query).toHaveBeenCalledTimes(1);
-    userEvent.keyboard('{esc}');
+    await userEvent.keyboard('{Escape}');
     expect(toggleModal).toHaveBeenCalledTimes(1);
   });
 

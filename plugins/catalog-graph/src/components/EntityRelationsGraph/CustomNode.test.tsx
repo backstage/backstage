@@ -81,7 +81,7 @@ describe('<CustomNode />', () => {
     );
 
     expect(getByText('kind:namespace/name')).toBeInTheDocument();
-    userEvent.click(getByText('kind:namespace/name'));
+    await userEvent.click(getByText('kind:namespace/name'));
     expect(onClick).toBeCalledTimes(1);
   });
 

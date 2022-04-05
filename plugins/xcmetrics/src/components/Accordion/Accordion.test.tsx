@@ -45,7 +45,7 @@ describe('Accordion', () => {
 
     expect(rendered.getByText('Content')).not.toBeVisible();
 
-    userEvent.click(rendered.getByRole('button'));
+    await userEvent.click(rendered.getByRole('button'));
     expect(await rendered.findByText('Content')).toBeVisible();
   });
 });

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { CostInsightsTabs } from './CostInsightsTabs';
-import UserEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { Group } from '../../types';
 import { MockFilterProvider, MockLoadingProvider } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -65,8 +65,8 @@ describe('<CostInsightsTabs />', () => {
     const rendered = await renderWrapped(
       <CostInsightsTabs groups={mockGroups} />,
     );
-    UserEvent.click(rendered.getByTestId('cost-insights-groups-tab'));
-    UserEvent.click(rendered.getByTestId('test-group-1'));
+    await userEvent.click(rendered.getByTestId('cost-insights-groups-tab'));
+    await userEvent.click(rendered.getByTestId('test-group-1'));
     expect(mockSetPageFilters).toHaveBeenCalledWith(selectedGroup);
   });
 
@@ -74,7 +74,7 @@ describe('<CostInsightsTabs />', () => {
     const rendered = await renderWrapped(
       <CostInsightsTabs groups={mockGroups} />,
     );
-    UserEvent.click(rendered.getByTestId('cost-insights-groups-tab'));
+    await userEvent.click(rendered.getByTestId('cost-insights-groups-tab'));
     mockGroups.forEach(group =>
       expect(rendered.getByText(group.id)).toBeInTheDocument(),
     );

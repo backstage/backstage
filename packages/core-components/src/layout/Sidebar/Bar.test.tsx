@@ -86,11 +86,11 @@ describe('Sidebar', () => {
 
   describe('Click to Expand', () => {
     it('Sidebar should show expanded items when expand button is clicked', async () => {
-      userEvent.click(screen.getByTestId('sidebar-expand-button'));
+      await userEvent.click(screen.getByTestId('sidebar-expand-button'));
       expect(await screen.findByText('Create...')).toBeInTheDocument();
     });
     it('Sidebar should not show expanded items when hovered on', async () => {
-      userEvent.hover(screen.getByTestId('sidebar-root'));
+      await userEvent.hover(screen.getByTestId('sidebar-root'));
       expect(screen.queryByText('Create...')).not.toBeInTheDocument();
     });
   });
@@ -101,21 +101,21 @@ describe('Sidebar', () => {
     });
 
     it('Extended sidebar with submenu content visible when hover over submenu items', async () => {
-      userEvent.hover(screen.getByTestId('item-with-submenu'));
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
       expect(await screen.findByText('Tools')).toBeInTheDocument();
       expect(await screen.findByText('Misc')).toBeInTheDocument();
     });
 
     it('Multicategory item in submenu shows drop down on click', async () => {
-      userEvent.hover(screen.getByTestId('item-with-submenu'));
-      userEvent.click(screen.getByText('Misc'));
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      await userEvent.click(screen.getByText('Misc'));
       expect(screen.getByText('dropdown item 1')).toBeInTheDocument();
       expect(screen.getByText('dropdown item 2')).toBeInTheDocument();
     });
 
     it('Dropdown item in submenu renders a link when `to` value is provided', async () => {
-      userEvent.hover(screen.getByTestId('item-with-submenu'));
-      userEvent.click(screen.getByText('Misc'));
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      await userEvent.click(screen.getByText('Misc'));
       expect(screen.getByText('dropdown item 1').closest('a')).toHaveAttribute(
         'href',
         '/dropdownitemlink',
@@ -123,7 +123,7 @@ describe('Sidebar', () => {
     });
 
     it('Submenu item renders an external link when `to` value is provided', async () => {
-      userEvent.hover(screen.getByTestId('item-with-submenu'));
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
       expect(screen.getByText('External Link').closest('a')).toHaveAttribute(
         'href',
         'https://backstage.io/',
@@ -131,8 +131,8 @@ describe('Sidebar', () => {
     });
 
     it('Dropdown item in submenu renders an external link when `to` value is provided', async () => {
-      userEvent.hover(screen.getByTestId('item-with-submenu'));
-      userEvent.click(screen.getByText('Misc'));
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      await userEvent.click(screen.getByText('Misc'));
       expect(screen.getByText('dropdown item 3').closest('a')).toHaveAttribute(
         'href',
         'https://backstage.io/',

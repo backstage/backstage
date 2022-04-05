@@ -70,19 +70,19 @@ describe('SearchType.Tabs', () => {
     await act(() => Promise.resolve());
   });
 
-  it('should set entire types array when a type is selected', () => {
+  it('should set entire types array when a type is selected', async () => {
     const { getByText } = render(
       <SearchContext.Provider value={contextSpy}>
         <SearchType.Tabs types={[expectedType]} />
       </SearchContext.Provider>,
     );
 
-    user.click(getByText(expectedType.name));
+    await user.click(getByText(expectedType.name));
 
     expect(contextSpy.setTypes).toHaveBeenCalledWith([expectedType.value]);
   });
 
-  it('should reset types array when all is selected', () => {
+  it('should reset types array when all is selected', async () => {
     const { getByText } = render(
       <SearchContext.Provider value={contextSpy}>
         <SearchType.Tabs
@@ -92,19 +92,19 @@ describe('SearchType.Tabs', () => {
       </SearchContext.Provider>,
     );
 
-    user.click(getByText('All'));
+    await user.click(getByText('All'));
 
     expect(contextSpy.setTypes).toHaveBeenCalledWith([]);
   });
 
-  it('should reset page cursor when a new type is selected', () => {
+  it('should reset page cursor when a new type is selected', async () => {
     const { getByText } = render(
       <SearchContext.Provider value={contextSpy}>
         <SearchType.Tabs types={[expectedType]} />
       </SearchContext.Provider>,
     );
 
-    user.click(getByText(expectedType.name));
+    await user.click(getByText(expectedType.name));
 
     expect(contextSpy.setPageCursor).toHaveBeenCalledWith(undefined);
   });

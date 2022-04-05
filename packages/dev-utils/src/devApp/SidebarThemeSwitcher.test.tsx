@@ -61,7 +61,7 @@ describe('SidebarThemeSwitcher', () => {
     const button = getByLabelText('Switch Theme');
     expect(button).toBeInTheDocument();
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(getByRole('listbox')).toBeInTheDocument();
     expect(getByText('Dark Theme')).toBeInTheDocument();
@@ -80,11 +80,11 @@ describe('SidebarThemeSwitcher', () => {
     const button = getByLabelText('Switch Theme');
     expect(button).toBeInTheDocument();
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(getByRole('listbox')).toBeInTheDocument();
 
-    userEvent.click(getByText('Light Theme'));
+    await userEvent.click(getByText('Light Theme'));
 
     expect(appThemeApi.setActiveThemeId).toHaveBeenCalledWith('light');
   });
