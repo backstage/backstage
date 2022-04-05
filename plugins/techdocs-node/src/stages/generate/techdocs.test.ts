@@ -145,7 +145,7 @@ describe('readGeneratorConfig', () => {
           runIn: 'docker',
           dockerImage: 'my-org/techdocs',
           pullImage: false,
-          legacyCopyReadmeMdToIndexMd: true,
+          mkdocs: { legacyCopyReadmeMdToIndexMd: true },
         },
       },
     });
