@@ -382,13 +382,13 @@ export class CatalogBuilder {
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog(dbClient);
 
     let permissionEvaluator: PermissionEvaluator;
-    if (!permissions.hasOwnProperty('query')) {
+    if ('query' in permissions) {
+      permissionEvaluator = permissions as PermissionEvaluator;
+    } else {
       logger.warn(
-        'PermissionAuthorizer is deprecated. Please use PermissionEvaluator instead of PermissionAuthorizer in catalog.ts',
+        'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
       );
       permissionEvaluator = toPermissionEvaluator(permissions);
-    } else {
-      permissionEvaluator = permissions as PermissionEvaluator;
     }
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(

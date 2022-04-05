@@ -225,4 +225,9 @@ export type ResourcePermission<TResourceType extends string = string> =
       resourceType: TResourceType;
     }
   >;
+
+// @public
+export function toPermissionEvaluator(
+  permissionAuthorizer: PermissionAuthorizer,
+): PermissionEvaluator;
 ```

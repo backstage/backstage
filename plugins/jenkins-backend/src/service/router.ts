@@ -40,11 +40,11 @@ export async function createRouter(
   const { jenkinsInfoProvider, permissions, logger } = options;
 
   let permissionEvaluator: PermissionEvaluator | undefined;
-  if (permissions?.hasOwnProperty('query')) {
+  if (permissions && 'query' in permissions) {
     permissionEvaluator = permissions as PermissionEvaluator;
   } else {
     logger.warn(
-      'PermissionAuthorizer is deprecated. Please use PermissionEvaluator instead of PermissionAuthorizer in your jenkins.ts',
+      'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
     );
     permissionEvaluator = permissions
       ? toPermissionEvaluator(permissions)

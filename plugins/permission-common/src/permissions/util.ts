@@ -87,6 +87,11 @@ export function isDeletePermission(permission: Permission) {
   return permission.attributes.action === 'delete';
 }
 
+/**
+ * Convert {@link PermissionAuthorizer} to {@link PermissionEvaluator}.
+ *
+ * @public
+ */
 export function toPermissionEvaluator(
   permissionAuthorizer: PermissionAuthorizer,
 ): PermissionEvaluator {
@@ -103,8 +108,8 @@ export function toPermissionEvaluator(
       requests: QueryPermissionRequest[],
       options?: EvaluatorRequestOptions,
     ): Promise<QueryPermissionResponse[]> {
-      // @ts-expect-error
-      const parsedRequests: AuthorizePermissionRequest[] = requests;
+      const parsedRequests =
+        requests as unknown as AuthorizePermissionRequest[];
       return permissionAuthorizer.authorize(parsedRequests, options);
     },
   };
