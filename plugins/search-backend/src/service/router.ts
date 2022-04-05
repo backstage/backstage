@@ -76,13 +76,13 @@ export async function createRouter(
   });
 
   let permissionEvaluator: PermissionEvaluator;
-  if (!permissions.hasOwnProperty('query')) {
+  if ('query' in permissions) {
+    permissionEvaluator = permissions as PermissionEvaluator;
+  } else {
     logger.warn(
-      'PermissionAuthorizer is deprecated. Please use PermissionEvaluator instead of PermissionAuthorizer in search.ts',
+      'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
     );
     permissionEvaluator = toPermissionEvaluator(permissions);
-  } else {
-    permissionEvaluator = permissions as PermissionEvaluator;
   }
 
   const engine = config.getOptionalBoolean('permission.enabled')
