@@ -24,35 +24,6 @@ import { BackstageRouteObject } from './types';
 import { createCollector } from '../extensions/traversal';
 import { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
 
-export const routePathCollector = createCollector(
-  () => new Map<RouteRef, string>(),
-  (acc, node, _parent, ctxPath: string | undefined) => {
-    const path: string | undefined = node.props?.path || ctxPath;
-
-    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (routeRef) {
-      if (!path) {
-        throw new Error('Mounted routable extension must have a path');
-      }
-      acc.set(routeRef, path);
-    }
-    return path;
-  },
-);
-
-export const routeParentCollector = createCollector(
-  () => new Map<RouteRef, RouteRef | undefined>(),
-  (acc, node, _parent, parentRef?: RouteRef) => {
-    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (routeRef) {
-      acc.set(routeRef, parentRef);
-      return routeRef;
-    }
-
-    return parentRef;
-  },
-);
-
 // We always add a child that matches all subroutes but without any route refs. This makes
 // sure that we're always able to match each route no matter how deep the navigation goes.
 // The route resolver then takes care of selecting the most specific match in order to find
@@ -64,14 +35,27 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   routeRefs: new Set(),
 };
 
-export const routeObjectCollector = createCollector(
-  () => Array<BackstageRouteObject>(),
-  (acc, node, _parent, parentObj: BackstageRouteObject | undefined) => {
-    let currentObj = parentObj;
-    const parentChildren = currentObj?.children ?? acc;
+interface RoutingCollectorParentContext {
+  path?: string;
+  routeRef?: RouteRef;
+  obj?: BackstageRouteObject;
+  isElementAncestor?: boolean;
+}
+
+export const routingCollector = createCollector(
+  () => ({
+    paths: new Map<RouteRef, string>(),
+    parents: new Map<RouteRef, RouteRef | undefined>(),
+    objects: new Array<BackstageRouteObject>(),
+  }),
+  (acc, node, parentElement, parent?: RoutingCollectorParentContext) => {
+    let currentObj = parent?.obj;
+    const isElement = parentElement?.props.element === node;
+    const isElementAncestor = parent?.isElementAncestor || isElement;
+    const parentChildren = currentObj?.children ?? acc.objects;
 
     const path: string | undefined = node.props?.path;
-    if (path) {
+    if (path && !isElementAncestor) {
       currentObj = {
         path,
         element: 'mounted',
@@ -90,9 +74,20 @@ export const routeObjectCollector = createCollector(
     const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
     if (routeRef) {
       currentObj?.routeRefs.add(routeRef);
+      acc.parents.set(routeRef, parent?.routeRef);
+
+      if (!parent?.path) {
+        throw new Error('Mounted routable extension must have a path');
+      }
+      acc.paths.set(routeRef, isElement ? parent?.path : path ?? parent?.path);
     }
 
-    return currentObj;
+    return {
+      obj: currentObj,
+      path: path ?? parent?.path,
+      routeRef: routeRef ?? parent?.routeRef,
+      isElementAncestor,
+    };
   },
 );
 
