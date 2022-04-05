@@ -63,3 +63,31 @@ const AppRoutes = () => (
 ```
 
 > **Note that the list of providers expects to be rendered within a MUI [`<List>`](https://material-ui.com/components/lists/)**
+
+**Tabs**
+
+By default, the plugin renders 3 tabs of settings; GENERAL, AUTHENTICATION PROVIDERS, and FEATURE FLAGS.
+
+If you want to add more options for your users,
+just pass the extra tabs using `UserSettingsTab` components as children of the `UserSettingsPage` route.
+The path is in this case a child of the settings path,
+in the example below it would be `/settings/advanced` so that you can easily link to it.
+
+```tsx
+import {
+  UserSettingsPage,
+  UserSettingsTab,
+} from '@backstage/plugin-user-settings';
+
+<Route path="/settings" element={<UserSettingsPage />}>
+  <UserSettingsTab path="/advanced" title="Advanced">
+    <AdvancedSettings />
+  </UserSettingsTab>
+</Route>;
+```
+
+To standardize the UI of all setting tabs,
+make sure you use a similar component structure as the other tabs.
+You can take a look at
+[the example extra tab](https://github.com/backstage/backstage/blob/master/packages/app/src/components/advancedSettings/AdvancedSettings.tsx)
+we have created in Backstage's demo app.
