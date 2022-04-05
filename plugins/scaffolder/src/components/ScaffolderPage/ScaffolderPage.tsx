@@ -39,6 +39,7 @@ import { TemplateList } from '../TemplateList';
 import { TemplateTypePicker } from '../TemplateTypePicker';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
 
 export type ScaffolderPageProps = {
   TemplateCardComponent?:
@@ -48,11 +49,16 @@ export type ScaffolderPageProps = {
     title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+  };
 };
 
 export const ScaffolderPageContents = ({
   TemplateCardComponent,
   groups,
+  contextMenu,
 }: ScaffolderPageProps) => {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const otherTemplatesGroup = {
@@ -73,7 +79,9 @@ export const ScaffolderPageContents = ({
         pageTitleOverride="Create a New Component"
         title="Create a New Component"
         subtitle="Create new software components using standard templates"
-      />
+      >
+        <ScaffolderPageContextMenu {...contextMenu} />
+      </Header>
       <Content>
         <ContentHeader title="Available Templates">
           {allowed && (

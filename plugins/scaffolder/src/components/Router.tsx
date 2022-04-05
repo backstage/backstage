@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType } from 'react';
-import { Routes, Route, useOutlet } from 'react-router';
+import { Routes, Route, useOutlet, Navigate } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
@@ -23,7 +23,7 @@ import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 import { SecretsContextProvider } from './secrets/SecretsContext';
-import { TemplatePreviewPage } from './TemplatePreviewPage';
+import { TemplateEditorPage } from './TemplateEditorPage';
 
 import {
   FieldExtensionOptions,
@@ -32,6 +32,12 @@ import {
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../routes';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -49,6 +55,15 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  /**
+   * Options for the context menu on the scaffolder page.
+   */
+  contextMenu?: {
+    /** Whether to show a link to the template editor */
+    editor?: boolean;
+    /** Whether to show a link to the actions documentation */
+    actions?: boolean;
+  };
 };
 
 /**
@@ -87,35 +102,37 @@ export const Router = (props: RouterProps) => {
   return (
     <Routes>
       <Route
-        path="/"
         element={
           <ScaffolderPage
             groups={groups}
             TemplateCardComponent={TemplateCardComponent}
+            contextMenu={props.contextMenu}
           />
         }
       />
       <Route
-        path="/templates/:templateName"
+        path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplatePage customFieldExtensions={fieldExtensions} />
           </SecretsContextProvider>
         }
       />
-      <Route path="/tasks/:taskId" element={<TaskPageElement />} />
-      <Route path="/actions" element={<ActionsPage />} />
+      <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
+      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
-        path="/preview"
+        path={editRouteRef.path}
         element={
           <SecretsContextProvider>
-            <TemplatePreviewPage
+            <TemplateEditorPage
               defaultPreviewTemplate={defaultPreviewTemplate}
               customFieldExtensions={fieldExtensions}
             />
           </SecretsContextProvider>
         }
       />
+
+      <Route path="preview" element={<Navigate to="../edit" />} />
     </Routes>
   );
 };
