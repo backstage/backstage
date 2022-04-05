@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-react
 
+## 1.0.1-next.2
+
+### Patch Changes
+
+- 4be0d1e777: Changed catalog filter components to only pay attention to query parameters relevant to the component.
+- 5d5fdbe541: Columns in CatalogTable now change depending on the entity kind, ensuring only relevant columns are displayed.
+- 99063c39ae: Minor API report cleanup
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 1.0.1-next.1
 
 ### Patch Changes

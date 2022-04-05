@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs
 
+## 1.0.1-next.2
+
+### Patch Changes
+
+- f0fb9153b7: Fix broken query selectors on techdocs
+- 9975ff9852: Applied the fix from version 1.0.1 of this package, which is part of the v1.0.2 release of Backstage.
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 1.0.1
 
 ### Patch Changes

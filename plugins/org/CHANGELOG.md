@@ -1,5 +1,65 @@
 # @backstage/plugin-org
 
+## 0.5.4-next.2
+
+### Patch Changes
+
+- cb592bfce7: Provides the ability to hide the relations toggle on the `OwnershipCard` as well as setting a default relation type.
+
+  To hide the toggle simply include the `hideRelationsToggle` prop like this:
+
+  ```tsx
+  <EntityOwnershipCard
+    variant="gridItem"
+    entityFilterKind={customEntityFilterKind}
+    hideRelationsToggle
+  />
+  ```
+
+  To set the default relation type, add the `relationsType` prop with a value of direct or aggregated, the default if not provided is direct. Here is an example:
+
+  ```tsx
+  <EntityOwnershipCard
+    variant="gridItem"
+    entityFilterKind={customEntityFilterKind}
+    relationsType="aggregated"
+  />
+  ```
+
+- d014fe2cb4: Introduced a new MyGroupsSidebarItem SidebarItem that links to one or more groups based on the logged in user's membership.
+
+  To use MyGroupsSidebarItem you'll need to add it to your `Root.tsx` like this:
+
+  ```diff
+  // app/src/components/Root/Root.tsx
+  + import { MyGroupsSidebarItem } from '@backstage/plugin-org';
+  + import GroupIcon from '@material-ui/icons/People';
+
+  <SidebarPage>
+      <Sidebar>
+        //...
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          {/* Global nav, not org-specific */}
+          //...
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+  +       <MyGroupsSidebarItem
+  +         singularTitle="My Squad"
+  +         pluralTitle="My Squads"
+  +         icon={GroupIcon}
+  +       />
+         //...
+        </SidebarGroup>
+      </ Sidebar>
+  </SidebarPage>
+  ```
+
+- 0bada4fc4d: Added the `metadata.description` to the bottom of each member on the MembersListCard
+- 99063c39ae: Minor API report cleanup
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 0.5.4-next.1
 
 ### Patch Changes

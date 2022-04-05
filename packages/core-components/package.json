@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.9.3-next.0",
+  "version": "0.9.3-next.1",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "@backstage/core-app-api": "^1.0.1-next.0",
-    "@backstage/cli": "^0.17.0-next.1",
+    "@backstage/cli": "^0.17.0-next.2",
     "@backstage/test-utils": "^1.0.1-next.1",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",

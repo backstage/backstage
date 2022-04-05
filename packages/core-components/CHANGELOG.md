@@ -1,5 +1,14 @@
 # @backstage/core-components
 
+## 0.9.3-next.1
+
+### Patch Changes
+
+- 25b8e8d5b5: Add BackstageTab to overridableComponents so can override styles in a theme
+- a13604b8f7: Adding a name to the core-components Tab styles so can customise in the theme settings
+- 72f3dfd05a: Updated ProxiedSignInPageProps docs
+- 7741e47eae: `<Sidebar />` now accepts additional props `sidebarOptions` and `submenuOptions` to allow further customization
+
 ## 0.9.3-next.0
 
 ### Patch Changes

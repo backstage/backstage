@@ -1,5 +1,15 @@
 # @backstage/plugin-gocd
 
+## 0.1.10-next.1
+
+### Patch Changes
+
+- 2677db7c15: Add pagination controls to GoCD build table
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 0.1.10-next.0
 
 ### Patch Changes

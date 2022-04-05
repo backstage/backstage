@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.4.25-next.1
+
+### Patch Changes
+
+- e80cca164d: Tweaked `.eslintrc.js` files in the template to avoid having them apply during development. This change does not affect create apps.
+
 ## 0.4.25-next.0
 
 ### Patch Changes
