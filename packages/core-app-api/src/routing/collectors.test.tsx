@@ -15,11 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import {
-  routePathCollector,
-  routeParentCollector,
-  routeObjectCollector,
-} from './collectors';
+import { routingV1Collector } from './collectors';
 
 import {
   traverseElementTree,
@@ -162,30 +158,28 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents, routeObjects } = traverseElementTree({
+    const { routing } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routePathCollector,
-        routeParents: routeParentCollector,
-        routeObjects: routeObjectCollector,
+        routing: routingV1Collector,
       },
     });
-    expect(sortedEntries(routes)).toEqual([
+    expect(sortedEntries(routing.paths)).toEqual([
       [ref1, '/foo'],
       [ref2, '/bar/:id'],
       [ref3, '/baz'],
       [ref4, '/divsoup'],
       [ref5, '/blop'],
     ]);
-    expect(sortedEntries(routeParents)).toEqual([
+    expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
       [ref2, ref1],
       [ref3, ref2],
       [ref4, undefined],
       [ref5, ref1],
     ]);
-    expect(routeObjects).toEqual([
+    expect(routing.objects).toEqual([
       routeObj(
         '/foo',
         [ref1],
@@ -220,22 +214,21 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents } = traverseElementTree({
+    const { routing } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routePathCollector,
-        routeParents: routeParentCollector,
+        routing: routingV1Collector,
       },
     });
-    expect(sortedEntries(routes)).toEqual([
+    expect(sortedEntries(routing.paths)).toEqual([
       [ref1, '/foo'],
       [ref2, '/bar/:id'],
       [ref3, '/baz'],
       [ref4, '/divsoup'],
       [ref5, '/blop'],
     ]);
-    expect(sortedEntries(routeParents)).toEqual([
+    expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
       [ref2, ref1],
       [ref3, undefined],
@@ -266,30 +259,28 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents, routeObjects } = traverseElementTree({
+    const { routing } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routePathCollector,
-        routeParents: routeParentCollector,
-        routeObjects: routeObjectCollector,
+        routing: routingV1Collector,
       },
     });
-    expect(sortedEntries(routes)).toEqual([
+    expect(sortedEntries(routing.paths)).toEqual([
       [ref1, '/foo'],
       [ref2, '/foo'],
       [ref3, '/bar'],
       [ref4, '/baz'],
       [ref5, '/baz'],
     ]);
-    expect(sortedEntries(routeParents)).toEqual([
+    expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
       [ref2, undefined],
       [ref3, undefined],
       [ref4, ref3],
       [ref5, ref3],
     ]);
-    expect(routeObjects).toEqual([
+    expect(routing.objects).toEqual([
       routeObj('/foo', [ref1, ref2], [], 'gathered'),
       routeObj(
         '/bar',
@@ -317,30 +308,28 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routes, routeParents, routeObjects } = traverseElementTree({
+    const { routing } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routes: routePathCollector,
-        routeParents: routeParentCollector,
-        routeObjects: routeObjectCollector,
+        routing: routingV1Collector,
       },
     });
-    expect(sortedEntries(routes)).toEqual([
+    expect(sortedEntries(routing.paths)).toEqual([
       [ref1, '/foo'],
       [ref2, '/bar'],
       [ref3, '/baz'],
       [ref4, '/blop'],
       [ref5, '/bar'],
     ]);
-    expect(sortedEntries(routeParents)).toEqual([
+    expect(sortedEntries(routing.parents)).toEqual([
       [ref1, undefined],
       [ref2, ref1],
       [ref3, ref1],
       [ref4, ref3],
       [ref5, ref1],
     ]);
-    expect(routeObjects).toEqual([
+    expect(routing.objects).toEqual([
       routeObj(
         '/foo',
         [ref1],
@@ -376,8 +365,7 @@ describe('discovery', () => {
         root,
         discoverers: [childDiscoverer, routeElementDiscoverer],
         collectors: {
-          routes: routePathCollector,
-          routeParents: routeParentCollector,
+          routing: routingV1Collector,
         },
       });
     }).toThrow('Mounted routable extension must have a path');

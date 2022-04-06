@@ -55,9 +55,7 @@ import {
 import { pluginCollector } from '../plugins/collectors';
 import {
   featureFlagCollector,
-  routeObjectCollector,
-  routeParentCollector,
-  routePathCollector,
+  routingV1Collector,
 } from '../routing/collectors';
 import { RoutingProvider } from '../routing/RoutingProvider';
 import { RouteTracker } from '../routing/RouteTracker';
@@ -205,20 +203,12 @@ export class AppManager implements BackstageApp {
         [],
       );
 
-      const {
-        routePaths,
-        routeParents,
-        routeObjects,
-        featureFlags,
-        routeBindings,
-      } = useMemo(() => {
+      const { routing, featureFlags, routeBindings } = useMemo(() => {
         const result = traverseElementTree({
           root: children,
           discoverers: [childDiscoverer, routeElementDiscoverer],
           collectors: {
-            routePaths: routePathCollector,
-            routeParents: routeParentCollector,
-            routeObjects: routeObjectCollector,
+            routing: routingV1Collector,
             collectedPlugins: pluginCollector,
             featureFlags: featureFlagCollector,
           },
@@ -241,7 +231,7 @@ export class AppManager implements BackstageApp {
 
       if (!routesHaveBeenValidated) {
         routesHaveBeenValidated = true;
-        validateRouteParameters(routePaths, routeParents);
+        validateRouteParameters(routing.paths, routing.parents);
         validateRouteBindings(
           routeBindings,
           this.plugins as Iterable<BackstagePlugin<any, any>>,
@@ -304,9 +294,9 @@ export class AppManager implements BackstageApp {
           <AppContextProvider appContext={appContext}>
             <ThemeProvider>
               <RoutingProvider
-                routePaths={routePaths}
-                routeParents={routeParents}
-                routeObjects={routeObjects}
+                routePaths={routing.paths}
+                routeParents={routing.parents}
+                routeObjects={routing.objects}
                 routeBindings={routeBindings}
                 basePath={getBasePath(loadedConfig.api)}
               >
