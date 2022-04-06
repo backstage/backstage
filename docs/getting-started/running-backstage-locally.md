@@ -68,7 +68,7 @@ In the first window, run
 
 ```bash
 # From your Backstage root directory
-yarn start --cwd packages/backend
+yarn --cwd packages/backend start
 ```
 
 That starts up a backend instance on port 7007.
