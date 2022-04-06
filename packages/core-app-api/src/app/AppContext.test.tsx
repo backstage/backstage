@@ -22,8 +22,9 @@ import { AppContextProvider } from './AppContext';
 
 describe('v1 consumer', () => {
   function useMockAppV1(): AppContextV1 {
-    const impl =
-      useVersionedContext<{ 1: AppContextV1 }>('app-context')?.atVersion(1);
+    const impl = useVersionedContext<{ 1: AppContextV1 }>(
+      'app-context',
+    )?.atVersion(1);
     if (!impl) {
       throw new Error('no impl');
     }
