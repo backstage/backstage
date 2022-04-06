@@ -32,6 +32,8 @@ export interface JenkinsInfoProvider {
      * A specific job to get. This is only passed in when we know about a job name we are interested in.
      */
     jobFullName?: string;
+
+    token?: string;
   }): Promise<JenkinsInfo>;
 }
 
@@ -184,9 +186,12 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   async getInstance(opt: {
     entityRef: CompoundEntityRef;
     jobFullName?: string;
+    token?: string;
   }): Promise<JenkinsInfo> {
     // load entity
-    const entity = await this.catalog.getEntityByRef(opt.entityRef);
+    const entity = await this.catalog.getEntityByRef(opt.entityRef, {
+      token: opt.token,
+    });
     if (!entity) {
       throw new Error(
         `Couldn't find entity with name: ${stringifyEntityRef(opt.entityRef)}`,
