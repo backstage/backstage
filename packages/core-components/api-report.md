@@ -510,6 +510,9 @@ export type IconLinkVerticalProps = {
   title?: string;
 };
 
+// @public (undocumented)
+export type IdentityProviders = ('guest' | 'custom' | SignInProviderConfig)[];
+
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
 // @public
