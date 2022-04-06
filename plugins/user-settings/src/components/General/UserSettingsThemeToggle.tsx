@@ -50,24 +50,34 @@ type TooltipToggleButtonProps = {
 };
 
 const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 8,
+    paddingRight: 16,
+  },
   list: {
+    width: 'initial',
     [theme.breakpoints.down('xs')]: {
+      width: '100%',
       padding: `0 0 12px`,
     },
   },
   listItemText: {
-    [theme.breakpoints.down('xs')]: {
-      paddingRight: 0,
-      paddingLeft: 0,
-    },
+    paddingRight: 0,
+    paddingLeft: 0,
   },
   listItemSecondaryAction: {
+    position: 'relative',
+    transform: 'unset',
+    top: 'auto',
+    right: 'auto',
+    paddingLeft: 16,
     [theme.breakpoints.down('xs')]: {
-      width: '100%',
-      top: 'auto',
-      right: 'auto',
-      position: 'relative',
-      transform: 'unset',
+      paddingLeft: 0,
     },
   },
 }));
@@ -109,7 +119,10 @@ export const UserSettingsThemeToggle = () => {
   };
 
   return (
-    <ListItem className={classes.list}>
+    <ListItem
+      className={classes.list}
+      classes={{ container: classes.container }}
+    >
       <ListItemText
         className={classes.listItemText}
         primary="Theme"
