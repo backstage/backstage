@@ -17,8 +17,10 @@
 import { Config } from '@backstage/config';
 import React, {
   ComponentType,
+  createContext,
   PropsWithChildren,
   ReactElement,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -77,12 +79,17 @@ import { AppThemeProvider } from './AppThemeProvider';
 import { defaultConfigLoader } from './defaultConfigLoader';
 import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
+import { BackstageRouteObject } from '../routing/types';
 
 type CompatiblePlugin =
   | BackstagePlugin<any, any>
   | (Omit<BackstagePlugin<any, any>, 'getFeatureFlags'> & {
       output(): Array<{ type: 'feature-flag'; name: string }>;
     });
+
+const InternalAppContext = createContext<{
+  routeObjects: BackstageRouteObject[];
+}>({ routeObjects: [] });
 
 /**
  * Get the app base path from the configured app baseUrl.
@@ -300,7 +307,11 @@ export class AppManager implements BackstageApp {
                 routeBindings={routeBindings}
                 basePath={getBasePath(loadedConfig.api)}
               >
-                {children}
+                <InternalAppContext.Provider
+                  value={{ routeObjects: routing.objects }}
+                >
+                  {children}
+                </InternalAppContext.Provider>
               </RoutingProvider>
             </ThemeProvider>
           </AppContextProvider>
@@ -335,6 +346,7 @@ export class AppManager implements BackstageApp {
     const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
       const mountPath = `${getBasePath(configApi)}/*`;
+      const { routeObjects } = useContext(InternalAppContext);
 
       // If the app hasn't configured a sign-in page, we just continue as guest.
       if (!SignInPageComponent) {
@@ -360,7 +372,7 @@ export class AppManager implements BackstageApp {
 
         return (
           <RouterComponent>
-            <RouteTracker tree={children} />
+            <RouteTracker routeObjects={routeObjects} />
             <Routes>
               <Route path={mountPath} element={<>{children}</>} />
             </Routes>
@@ -370,7 +382,7 @@ export class AppManager implements BackstageApp {
 
       return (
         <RouterComponent>
-          <RouteTracker tree={children} />
+          <RouteTracker routeObjects={routeObjects} />
           <SignInPageWrapper component={SignInPageComponent}>
             <Routes>
               <Route path={mountPath} element={<>{children}</>} />
