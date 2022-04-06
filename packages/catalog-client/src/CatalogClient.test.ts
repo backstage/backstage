@@ -20,6 +20,7 @@ import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
 import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
 import { DiscoveryApi } from './types/discovery';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 
 const server = setupServer();
 const token = 'fake-token';
@@ -33,9 +34,7 @@ const discoveryApi: DiscoveryApi = {
 describe('CatalogClient', () => {
   let client: CatalogClient;
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  setupRequestMockHandlers(server);
 
   beforeEach(() => {
     client = new CatalogClient({ discoveryApi });
