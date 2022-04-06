@@ -54,7 +54,7 @@
     "@graphql-codegen/graphql-modules-preset": "^2.3.2",
     "@graphql-tools/schema": "^8.3.1",
     "eslint-plugin-graphql": "^4.0.0",
-    "msw": "^0.35.0"
+    "msw": "^0.39.2"
   },
   "files": [
     "dist"
