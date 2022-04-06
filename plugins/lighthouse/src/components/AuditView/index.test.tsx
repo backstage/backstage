@@ -27,9 +27,9 @@ jest.mock('react-router-dom', () => {
 });
 
 import {
-  setupRequestMockHandlers,
   TestApiRegistry,
   wrapInTestApp,
+  setupRequestMockHandlers,
 } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import { rest } from 'msw';
@@ -45,11 +45,12 @@ const { useParams }: { useParams: jest.Mock } =
   jest.requireMock('react-router-dom');
 const websiteResponse = data as Website;
 
+const server = setupServer();
+
 describe('AuditView', () => {
   let apis: TestApiRegistry;
   let id: string;
 
-  const server = setupServer();
   setupRequestMockHandlers(server);
 
   beforeEach(() => {
