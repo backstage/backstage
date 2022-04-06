@@ -19,13 +19,6 @@ import { CustomNode } from './CustomNode';
 import userEvent from '@testing-library/user-event';
 
 describe('<CustomNode />', () => {
-  beforeAll(() => {
-    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
-      value: () => ({ width: 100, height: 100 }),
-      configurable: true,
-    });
-  });
-
   test('renders node', async () => {
     const { getByText } = await renderInTestApp(
       <svg xmlns="http://www.w3.org/2000/svg">
