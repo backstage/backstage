@@ -22,7 +22,7 @@ import {
   CommonAnalyticsContext,
   RouteRef,
 } from '@backstage/core-plugin-api';
-import { routeObjectCollector } from './collectors';
+import { routingV1Collector } from './collectors';
 import {
   childDiscoverer,
   routeElementDiscoverer,
@@ -101,18 +101,20 @@ export const RouteTracker = ({ tree }: { tree: React.ReactNode }) => {
   const { pathname, search, hash } = useLocation();
   // todo(iamEAP): Work this into the existing traversal and make the data
   // available on the provider. Then grab from app instance on the router.
-  const { routeObjects } = useMemo(() => {
+  const { routing } = useMemo(() => {
     return traverseElementTree({
       root: tree,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routeObjects: routeObjectCollector,
+        routing: routingV1Collector,
       },
     });
   }, [tree]);
 
   return (
-    <AnalyticsContext attributes={getExtensionContext(pathname, routeObjects)}>
+    <AnalyticsContext
+      attributes={getExtensionContext(pathname, routing.objects)}
+    >
       <TrackNavigation pathname={pathname} search={search} hash={hash} />
     </AnalyticsContext>
   );
