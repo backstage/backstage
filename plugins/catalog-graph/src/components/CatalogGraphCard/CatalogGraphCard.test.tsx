@@ -39,13 +39,6 @@ describe('<CatalogGraphCard/>', () => {
   let catalog: jest.Mocked<CatalogApi>;
   let apis: TestApiRegistry;
 
-  beforeAll(() => {
-    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
-      value: () => ({ width: 100, height: 100 }),
-      configurable: true,
-    });
-  });
-
   beforeEach(() => {
     entity = {
       apiVersion: 'a',
@@ -141,7 +134,7 @@ describe('<CatalogGraphCard/>', () => {
     );
 
     expect(await findByText('b:d/c')).toBeInTheDocument();
-    userEvent.click(await findByText('b:d/c'));
+    await userEvent.click(await findByText('b:d/c'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',

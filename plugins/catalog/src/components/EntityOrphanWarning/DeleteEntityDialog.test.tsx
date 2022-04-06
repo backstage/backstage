@@ -77,7 +77,7 @@ describe('DeleteEntityDialog', () => {
       </Wrapper>,
     );
 
-    userEvent.click(screen.getByText('Cancel'));
+    await userEvent.click(screen.getByText('Cancel'));
 
     await waitFor(() => {
       expect(onClose).toBeCalled();
@@ -98,7 +98,7 @@ describe('DeleteEntityDialog', () => {
       </Wrapper>,
     );
 
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(screen.getByText('Delete'));
 
     await waitFor(() => {
       expect(catalogClient.removeEntityByUid).toBeCalledWith('123');
@@ -121,7 +121,7 @@ describe('DeleteEntityDialog', () => {
     );
 
     catalogClient.removeEntityByUid.mockRejectedValue(new Error('no no no'));
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(screen.getByText('Delete'));
 
     await waitFor(() => {
       expect(catalogClient.removeEntityByUid).toBeCalledWith('123');

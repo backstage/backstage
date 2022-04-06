@@ -59,6 +59,11 @@ export function registerCommands(program: CommanderStatic) {
       "Don't patch MkDocs file automatically with techdocs-core plugin.",
       false,
     )
+    .option(
+      '--legacyCopyReadmeMdToIndexMd',
+      'Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided.',
+      false,
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
 
@@ -207,6 +212,10 @@ export function registerCommands(program: CommanderStatic) {
       defaultDockerImage,
     )
     .option(
+      '--docker-entrypoint <DOCKER_ENTRYPOINT>',
+      'Override the image entrypoint',
+    )
+    .option(
       '--no-docker',
       'Do not use Docker, run `mkdocs serve` in current user environment.',
     )
@@ -223,6 +232,10 @@ export function registerCommands(program: CommanderStatic) {
       '-i, --docker-image <DOCKER_IMAGE>',
       'The mkdocs docker container to use',
       defaultDockerImage,
+    )
+    .option(
+      '--docker-entrypoint <DOCKER_ENTRYPOINT>',
+      'Override the image entrypoint',
     )
     .option(
       '--no-docker',

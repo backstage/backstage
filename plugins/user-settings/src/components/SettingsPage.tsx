@@ -21,9 +21,12 @@ import {
   TabbedLayout,
 } from '@backstage/core-components';
 import React, { useContext } from 'react';
+import { useOutlet } from 'react-router';
+import { useElementFilter } from '@backstage/core-plugin-api';
 import { UserSettingsAuthProviders } from './AuthProviders';
 import { UserSettingsFeatureFlags } from './FeatureFlags';
 import { UserSettingsGeneral } from './General';
+import { USER_SETTINGS_TAB_KEY, UserSettingsTabProps } from './UserSettingsTab';
 
 type Props = {
   providerSettings?: JSX.Element;
@@ -31,6 +34,15 @@ type Props = {
 
 export const SettingsPage = ({ providerSettings }: Props) => {
   const { isMobile } = useContext(SidebarPinStateContext);
+  const outlet = useOutlet();
+
+  const tabs = useElementFilter(outlet, elements =>
+    elements
+      .selectByComponentData({
+        key: USER_SETTINGS_TAB_KEY,
+      })
+      .getElements<UserSettingsTabProps>(),
+  );
 
   return (
     <Page themeId="home">
@@ -48,6 +60,12 @@ export const SettingsPage = ({ providerSettings }: Props) => {
         <TabbedLayout.Route path="feature-flags" title="Feature Flags">
           <UserSettingsFeatureFlags />
         </TabbedLayout.Route>
+
+        {tabs.map((child, i) => (
+          <TabbedLayout.Route key={i} {...child.props}>
+            {child}
+          </TabbedLayout.Route>
+        ))}
       </TabbedLayout>
     </Page>
   );

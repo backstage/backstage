@@ -134,7 +134,7 @@ describe('SearchFilter', () => {
       const checkBox = screen.getByRole('checkbox', { name: values[0] });
 
       // Check the box.
-      userEvent.click(checkBox);
+      await userEvent.click(checkBox);
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: { field: [values[0]] } }),
@@ -142,7 +142,7 @@ describe('SearchFilter', () => {
       });
 
       // Uncheck the box.
-      userEvent.click(checkBox);
+      await userEvent.click(checkBox);
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: {} }),
@@ -164,7 +164,7 @@ describe('SearchFilter', () => {
       const checkBox = screen.getByRole('checkbox', { name: values[0] });
 
       // Check the box.
-      userEvent.click(checkBox);
+      await userEvent.click(checkBox);
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
@@ -174,7 +174,7 @@ describe('SearchFilter', () => {
       });
 
       // Uncheck the box.
-      userEvent.click(checkBox);
+      await userEvent.click(checkBox);
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
@@ -195,7 +195,7 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -227,7 +227,7 @@ describe('SearchFilter', () => {
         ).not.toBe('true');
       });
 
-      userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -259,7 +259,7 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -293,7 +293,7 @@ describe('SearchFilter', () => {
         expect(screen.getByText(label)).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('button'));
+      await userEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -324,13 +324,13 @@ describe('SearchFilter', () => {
 
       const button = screen.getByRole('button');
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
@@ -340,13 +340,13 @@ describe('SearchFilter', () => {
         );
       });
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: 'All' }));
+      await userEvent.click(screen.getByRole('option', { name: 'All' }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
@@ -375,13 +375,13 @@ describe('SearchFilter', () => {
 
       const button = screen.getByRole('button');
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(
@@ -391,13 +391,13 @@ describe('SearchFilter', () => {
         );
       });
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument();
       });
 
-      userEvent.click(screen.getByRole('option', { name: 'All' }));
+      await userEvent.click(screen.getByRole('option', { name: 'All' }));
 
       await waitFor(() => {
         expect(query).toHaveBeenLastCalledWith(

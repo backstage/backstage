@@ -71,7 +71,7 @@ implementation, which uses the MkDocs preview server as a proxy to fetch the
 generated documentation files and assets.
 
 NOTE: When using a custom `techdocs` docker image, make sure the entry point is
-also `ENTRYPOINT ["mkdocs"]`.
+also `ENTRYPOINT ["mkdocs"]` or override with `--docker-entrypoint`.
 
 Command reference:
 
@@ -81,11 +81,12 @@ Usage: techdocs-cli serve [options]
 Serve a documentation project locally in a Backstage app-like environment
 
 Options:
-  -i, --docker-image <DOCKER_IMAGE>  The mkdocs docker container to use (default: "spotify/techdocs")
-  --no-docker                        Do not use Docker, use MkDocs executable in current user environment.
-  --mkdocs-port <PORT>               Port for MkDocs server to use (default: "8000")
-  -v --verbose                       Enable verbose output. (default: false)
-  -h, --help                         display help for command
+  -i, --docker-image <DOCKER_IMAGE>        The mkdocs docker container to use (default: "spotify/techdocs")
+  --docker-entrypoint <DOCKER_ENTRYPOINT>  Override the image entrypoint
+  --no-docker                              Do not use Docker, use MkDocs executable in current user environment.
+  --mkdocs-port <PORT>                     Port for MkDocs server to use (default: "8000")
+  -v --verbose                             Enable verbose output. (default: false)
+  -h, --help                               display help for command
 ```
 
 ### Generate TechDocs site from a documentation project
@@ -132,6 +133,8 @@ Options:
                                   in techdocs_metadata.json.
   --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
                                   Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+  --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
+                                  in case a default <docs-dir>/index.md is not provided. (default: false)
   -v --verbose                    Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```

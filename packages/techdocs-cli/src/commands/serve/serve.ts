@@ -90,6 +90,7 @@ export default async function serve(cmd: Command) {
   const mkdocsChildProcess = await runMkdocsServer({
     port: cmd.mkdocsPort,
     dockerImage: cmd.dockerImage,
+    dockerEntrypoint: cmd.dockerEntrypoint,
     useDocker: cmd.docker,
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,

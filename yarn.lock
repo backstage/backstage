@@ -1620,6 +1620,101 @@
     lodash "^4.17.21"
     uuid "^8.0.0"
 
+"@backstage/cli@0.17.0-next.1":
+  version "0.17.0-next.1"
+  resolved "https://registry.npmjs.org/@backstage/cli/-/cli-0.17.0-next.1.tgz#dce45be442386ce59bcd03af7a35f8238b5efcea"
+  integrity sha512-gtdAoRAkF05ISUHaS6crt+v57VjgnLQKQxyeJJzxLhyV74veX/KTcc8+7AamL19IsG4KKNAZDWxrlgkbSTXF2w==
+  dependencies:
+    "@backstage/cli-common" "^0.1.8"
+    "@backstage/config" "^1.0.0"
+    "@backstage/config-loader" "^1.0.1-next.0"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/release-manifests" "^0.0.2"
+    "@backstage/types" "^1.0.0"
+    "@hot-loader/react-dom-v16" "npm:@hot-loader/react-dom@^16.0.2"
+    "@hot-loader/react-dom-v17" "npm:@hot-loader/react-dom@^17.0.2"
+    "@manypkg/get-packages" "^1.1.3"
+    "@octokit/request" "^5.4.12"
+    "@rollup/plugin-commonjs" "^21.0.1"
+    "@rollup/plugin-json" "^4.1.0"
+    "@rollup/plugin-node-resolve" "^13.0.0"
+    "@rollup/plugin-yaml" "^3.1.0"
+    "@spotify/eslint-config-base" "^13.0.0"
+    "@spotify/eslint-config-react" "^12.0.0"
+    "@spotify/eslint-config-typescript" "^13.0.0"
+    "@sucrase/jest-plugin" "^2.1.1"
+    "@sucrase/webpack-loader" "^2.0.0"
+    "@svgr/plugin-jsx" "6.2.x"
+    "@svgr/plugin-svgo" "6.2.x"
+    "@svgr/rollup" "6.2.x"
+    "@svgr/webpack" "6.2.x"
+    "@types/webpack-env" "^1.15.2"
+    "@typescript-eslint/eslint-plugin" "^5.9.0"
+    "@typescript-eslint/parser" "^5.9.0"
+    "@yarnpkg/lockfile" "^1.1.0"
+    bfj "^7.0.2"
+    buffer "^6.0.3"
+    chalk "^4.0.0"
+    chokidar "^3.3.1"
+    commander "^6.1.0"
+    css-loader "^6.5.1"
+    diff "^5.0.0"
+    esbuild "^0.14.10"
+    esbuild-loader "^2.18.0"
+    eslint "^8.6.0"
+    eslint-config-prettier "^8.3.0"
+    eslint-formatter-friendly "^7.0.0"
+    eslint-plugin-deprecation "^1.3.2"
+    eslint-plugin-import "^2.25.4"
+    eslint-plugin-jest "^26.1.2"
+    eslint-plugin-jsx-a11y "^6.5.1"
+    eslint-plugin-monorepo "^0.3.2"
+    eslint-plugin-react "^7.28.0"
+    eslint-plugin-react-hooks "^4.3.0"
+    eslint-webpack-plugin "^3.1.1"
+    express "^4.17.1"
+    fork-ts-checker-webpack-plugin "^7.0.0-alpha.8"
+    fs-extra "10.0.1"
+    glob "^7.1.7"
+    handlebars "^4.7.3"
+    html-webpack-plugin "^5.3.1"
+    inquirer "^8.2.0"
+    jest "^27.5.1"
+    jest-css-modules "^2.1.0"
+    jest-transform-yaml "^1.0.0"
+    json-schema "^0.4.0"
+    lodash "^4.17.21"
+    mini-css-extract-plugin "^2.4.2"
+    minimatch "5.0.1"
+    node-libs-browser "^2.2.1"
+    npm-packlist "^3.0.0"
+    ora "^5.3.0"
+    postcss "^8.1.0"
+    process "^0.11.10"
+    react-dev-utils "^12.0.0-next.60"
+    react-hot-loader "^4.13.0"
+    recursive-readdir "^2.2.2"
+    replace-in-file "^6.0.0"
+    rollup "^2.60.2"
+    rollup-plugin-dts "^4.0.1"
+    rollup-plugin-esbuild "^4.7.2"
+    rollup-plugin-postcss "^4.0.0"
+    rollup-pluginutils "^2.8.2"
+    run-script-webpack-plugin "^0.0.11"
+    semver "^7.3.2"
+    style-loader "^3.3.1"
+    sucrase "^3.20.2"
+    tar "^6.1.2"
+    terser-webpack-plugin "^5.1.3"
+    util "^0.12.3"
+    webpack "^5.66.0"
+    webpack-dev-server "^4.7.3"
+    webpack-node-externals "^3.0.0"
+    yaml "^1.10.0"
+    yml-loader "^2.1.0"
+    yn "^4.0.0"
+    zod "^3.11.6"
+
 "@backstage/config@^0.1.15":
   version "0.1.15"
   resolved "https://registry.npmjs.org/@backstage/config/-/config-0.1.15.tgz#4bad122ad861be5bd61a60639f92d2494fa245c5"
@@ -4835,10 +4930,10 @@
   dependencies:
     "@types/gapi.client" "*"
 
-"@microsoft/api-documenter@^7.15.0":
-  version "7.17.1"
-  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.17.1.tgz#1237024d1f752213d63aea3b06449a6bf845c682"
-  integrity sha512-Qjn+pQUoT/nuFgsf/IOBSWSDJyTStHo1jIbWxMfmwh62Zr9NB/OKBPNH+YwKt6NWq4Ds0Ajhurdind2Z8coBkg==
+"@microsoft/api-documenter@^7.17.0":
+  version "7.17.0"
+  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.17.0.tgz#7d2b7775b37775fc7491b94cb5fa13ee8271fcc3"
+  integrity sha512-rIZcfDkBsWsflvN1n0tVgIUdivV7slBIsN0WyK8gUG1MjK7dv+rbAB5QPLhg3dPvbXLgPLanJCFwoO2yFdxs+A==
   dependencies:
     "@microsoft/api-extractor-model" "7.16.0"
     "@microsoft/tsdoc" "0.13.2"
@@ -4857,7 +4952,7 @@
     "@microsoft/tsdoc-config" "~0.15.2"
     "@rushstack/node-core-library" "3.45.0"
 
-"@microsoft/api-extractor-model@7.16.0", "@microsoft/api-extractor-model@^7.15.3":
+"@microsoft/api-extractor-model@7.16.0", "@microsoft/api-extractor-model@^7.16.0":
   version "7.16.0"
   resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.16.0.tgz#3db7360897115f26a857f1f684fb5af82b0ef9f6"
   integrity sha512-0FOrbNIny8mzBrzQnSIkEjAXk0JMSnPmWYxt3ZDTPVg9S8xIPzB6lfgTg9+Mimu0RKCpGKBpd+v2WcR5vGzyUQ==
@@ -5908,6 +6003,11 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-base/-/eslint-config-base-13.0.0.tgz#bb748bb2b705ffb5085f873aa0daf94dfad59985"
   integrity sha512-BrnexUcUQkp6XUw8HWSmE4LpWtJGgEC6A7vrSkgpgKJtZaYkpw8O+Xnk60DA266ecbFHYbQD6ngqKHlvjNB+pA==
 
+"@spotify/eslint-config-react@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-12.0.0.tgz#5b8d4bc3b81a8ec2824648f482f1f6c3cf711893"
+  integrity sha512-lNHZRtJesNA273OJHBVUGAg2JYyVDZ+bsT7h3OwnX1HYgejJ3YcKPSziPM8TGFAN8DruH3tHFfaM63uAIA1+uw==
+
 "@spotify/eslint-config-react@^13.0.0":
   version "13.0.0"
   resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-13.0.0.tgz#95584dd5f698c5ccb550e712cad68e9451003579"
@@ -5918,10 +6018,10 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-13.0.0.tgz#908a51e05de7ec9d2e3b136f9831e0ddb36c7f89"
   integrity sha512-pR9hptdnu39FCofS9y4SbLRJOgGNhBsX6N24HD3LxbLnVedSF2kpqMmgaBw3W2T932oXSrJlf5nsCePWVsUTjQ==
 
-"@spotify/prettier-config@^12.0.0":
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-12.0.0.tgz#936ca5e977cfccbccd1731ab98b1f2bf65852b5d"
-  integrity sha512-64WWqE40U/WwWV8iIQBseTU+b2t+SdJSyQoCLdVPCKM9uf7KOjRivVwXe4KlWoV3y7duNSGuB2UgWhkXzscVmQ==
+"@spotify/prettier-config@^13.0.0":
+  version "13.0.0"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.0.tgz#ff6372cedf7e97e2e8a2d96c5ec12aa32cca3dbf"
+  integrity sha512-Hl3zgj67zaYejjLQLq0h0DlDMaI62EppO30AcStpLZNihjfwnFeS2+/gamiRHAnLki3P8bXaZVYwOV5NYNGQfw==
 
 "@sucrase/jest-plugin@^2.1.1":
   version "2.2.0"
@@ -6268,6 +6368,11 @@
   integrity sha512-5Kwtbo3Y/NowpkbRuSepbyMFkZmHgD+vPzYB/RJ4oxt5Gj/avFFBYjhw27cqSVPVw/3a67NK1PbiIr9k4Gwmdg==
   dependencies:
     "@babel/runtime" "^7.12.5"
+
+"@testing-library/user-event@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-14.0.0.tgz#3906aa6f0e56fd012d73559f5f05c02e63ba18dd"
+  integrity sha512-hZhjNrle/DMi1ziHwHy8LS0fYJtf+cID7fuG5+4h+Bk83xQaRDQT/DlqfL4hJYw3mxW6KTIxoODrhGnhqJebdQ==
 
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
@@ -7118,6 +7223,11 @@
   version "15.14.9"
   resolved "https://registry.npmjs.org/@types/node/-/node-15.14.9.tgz#bc43c990c3c9be7281868bbc7b8fdd6e2b57adfa"
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
+
+"@types/node@^16.11.26":
+  version "16.11.26"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.26.tgz#63d204d136c9916fb4dcd1b50f9740fe86884e47"
+  integrity sha512-GZ7bu5A6+4DtG7q9GsoHXy3ALcgeIHP4NnL0Vv2wu0uUB/yQex26v0tf6/na1mm0+bS9Uw+0DFex7aaKr2qawQ==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -13476,10 +13586,10 @@ etag@~1.8.1:
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
-event-source-polyfill@^1.0.25:
-  version "1.0.26"
-  resolved "https://registry.npmjs.org/event-source-polyfill/-/event-source-polyfill-1.0.26.tgz#86c04d088ef078279168eefa028f928fec5059a4"
-  integrity sha512-IwDLs9fUTcGAyacHBeS53T8wcEkDyDn0UP4tfQqJ4wQP8AyH0mszuQf2ULTylnpI0sMquzJ4usrNV7+uztwI9A==
+event-source-polyfill@1.0.25:
+  version "1.0.25"
+  resolved "https://registry.npmjs.org/event-source-polyfill/-/event-source-polyfill-1.0.25.tgz#d8bb7f99cb6f8119c2baf086d9f6ee0514b6d9c8"
+  integrity sha512-hQxu6sN1Eq4JjoI7ITdQeGGUN193A2ra83qC0Ltm9I2UJVAten3OFVN6k5RX4YWeCS0BoC8xg/5czOCIHVosQg==
 
 event-stream@=3.3.4:
   version "3.3.4"
@@ -17356,6 +17466,11 @@ jose@^2.0.5:
   dependencies:
     "@panva/asn1.js" "^1.0.0"
 
+jose@^4.1.4:
+  version "4.5.0"
+  resolved "https://registry.npmjs.org/jose/-/jose-4.5.0.tgz#92829d8cf846351eb55aaaf94f252fb1d191f2d5"
+  integrity sha512-GFcVFQwYQKbQTUOo2JlpFGXTkgBw26uzDsRMD2q1WgSKNSnpKS9Ug7bdQ8dS+p4sZHNH6iRPu6WK2jLIjspaMA==
+
 joycon@^3.0.1:
   version "3.1.0"
   resolved "https://registry.npmjs.org/joycon/-/joycon-3.1.0.tgz#33bb2b6b5a6849a1e251bed623bdf610f477d49f"
@@ -20690,16 +20805,13 @@ openid-client@^4.1.1:
     object-hash "^2.0.1"
     oidc-token-hash "^5.0.1"
 
-openid-client@^4.2.1:
-  version "4.9.1"
-  resolved "https://registry.npmjs.org/openid-client/-/openid-client-4.9.1.tgz#4f00a9d1566c0fa08f0dd5986cf0e6b1e5d14186"
-  integrity sha512-DYUF07AHjI3QDKqKbn2F7RqozT4hyi4JvmpodLrq0HHoNP7t/AjeG/uqiBK1/N2PZSAQEThVjDLHSmJN4iqu/w==
+openid-client@^5.1.3:
+  version "5.1.3"
+  resolved "https://registry.npmjs.org/openid-client/-/openid-client-5.1.3.tgz#25ef0e48929f33462028001fd4077a7ae5b3ad4d"
+  integrity sha512-i5quCXurPkN50ndRLE2D3Q6khz6AieJ0gTKOmsl3G4ZIP/Udf5Qw5CMRdhMvbFvfKRrkcCWPFXmduFUFYTC0xw==
   dependencies:
-    aggregate-error "^3.1.0"
-    got "^11.8.0"
-    jose "^2.0.5"
+    jose "^4.1.4"
     lru-cache "^6.0.0"
-    make-error "^1.3.6"
     object-hash "^2.0.1"
     oidc-token-hash "^5.0.1"
 

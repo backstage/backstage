@@ -23,8 +23,9 @@ import { AppContext as AppContextV1 } from './types';
  * @public
  */
 export const useApp = (): AppContextV1 => {
-  const versionedContext =
-    useVersionedContext<{ 1: AppContextV1 }>('app-context');
+  const versionedContext = useVersionedContext<{ 1: AppContextV1 }>(
+    'app-context',
+  );
   if (!versionedContext) {
     throw new Error('App context is not available');
   }

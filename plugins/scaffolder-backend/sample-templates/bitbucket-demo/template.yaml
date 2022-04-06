@@ -45,20 +45,18 @@ spec:
   steps:
     - id: fetch-base
       name: Fetch Base
-      action: fetch:cookiecutter
+      action: fetch:template
       input:
         url: ./template
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
-
     - id: fetch-docs
       name: Fetch Docs
       action: fetch:plain
       input:
         targetPath: ./community
         url: https://github.com/backstage/community/tree/main/backstage-community-sessions
-
     - id: publish
       name: Publish
       action: publish:bitbucket
@@ -74,9 +72,9 @@ spec:
         catalogInfoPath: '/catalog-info.yaml'
 
   output:
-    links:	
-      - title: Repository	
+    links:
+      - title: Repository
         url: ${{ steps.publish.output.remoteUrl }}
-      - title: Open in catalog	
+      - title: Open in catalog
         icon: catalog
         entityRef: ${{ steps.register.output.entityRef }}

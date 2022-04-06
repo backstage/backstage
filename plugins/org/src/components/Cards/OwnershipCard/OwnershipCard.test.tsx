@@ -291,4 +291,74 @@ describe('OwnershipCard', () => {
       '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D%5B0%5D=the-user&filters%5Bowners%5D%5B1%5D=my-team&filters%5Buser%5D=all',
     );
   });
+
+  describe('OwnershipCard relations', () => {
+    it('shows relations toggle', async () => {
+      const catalogApi: jest.Mocked<CatalogApi> = {
+        getEntities: jest.fn(),
+      } as any;
+
+      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+
+      const { getByTitle } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <OwnershipCard />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByTitle('Direct Relations')).toBeInTheDocument();
+    });
+
+    it('hides relations toggle', async () => {
+      const catalogApi: jest.Mocked<CatalogApi> = {
+        getEntities: jest.fn(),
+      } as any;
+
+      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+
+      const rendered = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <OwnershipCard hideRelationsToggle />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(rendered.queryByText('Direct Relations')).toBeNull();
+    });
+    it('overrides relation type', async () => {
+      const catalogApi: jest.Mocked<CatalogApi> = {
+        getEntities: jest.fn(),
+      } as any;
+
+      catalogApi.getEntities.mockImplementation(getEntitiesMock);
+
+      const { getByTitle } = await renderInTestApp(
+        <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+          <EntityProvider entity={groupEntity}>
+            <OwnershipCard relationsType="aggregated" />
+          </EntityProvider>
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': catalogIndexRouteRef,
+          },
+        },
+      );
+
+      expect(getByTitle('Aggregated Relations')).toBeInTheDocument();
+    });
+  });
 });

@@ -40,6 +40,7 @@ export type GeneratorConfig = {
   dockerImage?: string;
   pullImage?: boolean;
   omitTechdocsCoreMkdocsPlugin?: boolean;
+  legacyCopyReadmeMdToIndexMd?: boolean;
 };
 
 /**

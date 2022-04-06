@@ -25,6 +25,8 @@ export const EntityMembersListCard: (props: {
 export const EntityOwnershipCard: (props: {
   variant?: InfoCardVariants | undefined;
   entityFilterKind?: string[] | undefined;
+  hideRelationsToggle?: boolean | undefined;
+  relationsType?: string | undefined;
 }) => JSX.Element;
 
 // @public (undocumented)
@@ -64,6 +66,8 @@ export { orgPlugin as plugin };
 export const OwnershipCard: (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
+  hideRelationsToggle?: boolean;
+  relationsType?: string;
 }) => JSX.Element;
 
 // @public (undocumented)

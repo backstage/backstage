@@ -1,5 +1,14 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 21de525ce9: Updated README.md with better install instructions
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.0-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 0.3.0-next.1
 
 ### Minor Changes

@@ -61,7 +61,7 @@ describe('RadarEntry', () => {
     expect(screen.getByText(String(minProps.value))).toBeInTheDocument();
   });
 
-  it('should render with description', () => {
+  it('should render with description', async () => {
     render(
       <ThemeProvider theme={lightTheme}>
         <svg>
@@ -70,7 +70,7 @@ describe('RadarEntry', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(screen.getByRole('button'));
+    await userEvent.click(screen.getByRole('button'));
 
     const radarEntry = screen.getByTestId('radar-entry');
     expect(radarEntry).toBeInTheDocument();

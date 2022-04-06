@@ -108,6 +108,7 @@ describe('SearchBar', () => {
   });
 
   it('Updates term state when text is entered', async () => {
+    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
     const defaultDebounceTime = 200;
 
@@ -124,7 +125,7 @@ describe('SearchBar', () => {
 
     const value = 'value';
 
-    userEvent.type(textbox, value);
+    await user.type(textbox, value);
 
     act(() => {
       jest.advanceTimersByTime(defaultDebounceTime);
@@ -137,6 +138,7 @@ describe('SearchBar', () => {
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
+    jest.useRealTimers();
   });
 
   it('Clear button clears term state', async () => {
@@ -152,7 +154,7 @@ describe('SearchBar', () => {
       expect(screen.getByRole('textbox', { name })).toHaveValue(term);
     });
 
-    userEvent.click(screen.getByRole('button', { name: 'Clear' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Clear' }));
 
     await waitFor(() => {
       expect(screen.getByRole('textbox', { name })).toHaveValue('');
@@ -172,12 +174,15 @@ describe('SearchBar', () => {
       </ApiProvider>,
     );
 
-    expect(
-      screen.queryByRole('button', { name: 'Clear' }),
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('button', { name: 'Clear' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('Adheres to provided debounceTime', async () => {
+    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
 
     const debounceTime = 600;
@@ -199,7 +204,7 @@ describe('SearchBar', () => {
 
     const value = 'value';
 
-    userEvent.type(textbox, value);
+    await user.type(textbox, value);
 
     expect(query).not.toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
@@ -208,17 +213,16 @@ describe('SearchBar', () => {
     act(() => {
       jest.advanceTimersByTime(debounceTime);
     });
-
-    await waitFor(() => {
-      expect(textbox).toHaveValue(value);
-    });
+    expect(textbox).toHaveValue(value);
 
     expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
+    jest.useRealTimers();
   });
 
   it('does not capture analytics event if not enabled in app', async () => {
+    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
 
     const debounceTime = 600;
@@ -240,7 +244,7 @@ describe('SearchBar', () => {
 
     const value = 'value';
 
-    userEvent.type(textbox, value);
+    await user.type(textbox, value);
 
     act(() => {
       jest.advanceTimersByTime(debounceTime);
@@ -249,9 +253,11 @@ describe('SearchBar', () => {
     await waitFor(() => expect(textbox).toHaveValue(value));
 
     expect(analyticsApiSpy.getEvents()).toHaveLength(0);
+    jest.useRealTimers();
   });
 
   it('captures analytics events if enabled in app', async () => {
+    const user = userEvent.setup({ delay: null });
     jest.useFakeTimers();
 
     const debounceTime = 600;
@@ -296,7 +302,7 @@ describe('SearchBar', () => {
 
     const value = 'value';
 
-    userEvent.type(textbox, value);
+    await user.type(textbox, value);
 
     expect(analyticsApiSpy.getEvents()).toHaveLength(0);
 
@@ -318,10 +324,10 @@ describe('SearchBar', () => {
       subject: 'value',
     });
 
-    userEvent.clear(textbox);
+    await user.clear(textbox);
 
     // make sure new term is captured
-    userEvent.type(textbox, 'new value');
+    await user.type(textbox, 'new value');
 
     act(() => {
       jest.advanceTimersByTime(debounceTime);
@@ -340,5 +346,6 @@ describe('SearchBar', () => {
       },
       subject: 'new value',
     });
+    jest.useRealTimers();
   });
 });

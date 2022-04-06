@@ -19,3 +19,4 @@ export * from './AuthProviders';
 export * from './General';
 export * from './FeatureFlags';
 export { useUserProfile } from './useUserProfileInfo';
+export * from './UserSettingsTab';

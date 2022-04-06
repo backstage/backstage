@@ -28,6 +28,7 @@ import {
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '../TemplateListPage/TemplateGroups';
+import { selectedTemplateRouteRef } from '../../routes';
 
 /**
  * The Props for the Scaffolder Router
@@ -77,7 +78,6 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
   return (
     <Routes>
       <Route
-        path="/"
         element={
           <TemplateListPage
             TemplateCardComponent={TemplateCardComponent}
@@ -87,7 +87,7 @@ export const Router = (props: PropsWithChildren<NextRouterProps>) => {
       />
 
       <Route
-        path="/templates/:templateName"
+        path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplateWizardPage customFieldExtensions={fieldExtensions} />

@@ -111,7 +111,10 @@ export class TechdocsGenerator implements GeneratorBase {
         parsedLocationAnnotation,
         this.scmIntegrations,
       );
-      await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
+
+      if (this.options.legacyCopyReadmeMdToIndexMd) {
+        await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
+      }
     }
 
     if (!this.options.omitTechdocsCoreMkdocsPlugin) {
@@ -217,6 +220,9 @@ export function readGeneratorConfig(
     pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
     omitTechdocsCoreMkdocsPlugin: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.omitTechdocsCorePlugin',
+    ),
+    legacyCopyReadmeMdToIndexMd: config.getOptionalBoolean(
+      'techdocs.generator.mkdocs.legacyCopyReadmeMdToIndexMd',
     ),
   };
 }

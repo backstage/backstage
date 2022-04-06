@@ -92,7 +92,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const TemplatePreviewPage = ({
+export const TemplateEditorPage = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
   customFieldExtensions = [],
 }: {
@@ -200,7 +200,7 @@ export const TemplatePreviewPage = ({
   return (
     <Page themeId="home">
       <Header
-        title="Template Preview"
+        title="Template Editor"
         subtitle="Preview your template parameter UI"
       />
       <Content>

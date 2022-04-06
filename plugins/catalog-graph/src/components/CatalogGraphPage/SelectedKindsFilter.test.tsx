@@ -69,10 +69,10 @@ describe('<SelectedKindsFilter/>', () => {
       </ApiProvider>,
     );
 
-    userEvent.click(getByLabelText('Open'));
+    await userEvent.click(getByLabelText('Open'));
     await waitFor(() => expect(getByText('System')).toBeInTheDocument());
 
-    userEvent.click(getByText('System'));
+    await userEvent.click(getByText('System'));
 
     await waitFor(() => {
       expect(onChange).toBeCalledWith(['api', 'component', 'system']);
@@ -89,11 +89,11 @@ describe('<SelectedKindsFilter/>', () => {
         />
       </ApiProvider>,
     );
-    userEvent.click(getByLabelText('Open'));
+    await userEvent.click(getByLabelText('Open'));
 
     await waitFor(() => expect(getByText('Resource')).toBeInTheDocument());
 
-    userEvent.click(getByText('Resource'));
+    await userEvent.click(getByText('Resource'));
 
     await waitFor(() => {
       expect(onChange).toBeCalledWith(undefined);
@@ -108,7 +108,7 @@ describe('<SelectedKindsFilter/>', () => {
       </ApiProvider>,
     );
 
-    userEvent.click(getByRole('combobox'));
+    await userEvent.click(getByRole('combobox'));
     userEvent.tab();
 
     await waitFor(() => {

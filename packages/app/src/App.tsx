@@ -69,7 +69,11 @@ import {
   techdocsPlugin,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
-import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import {
+  UserSettingsPage,
+  UserSettingsTab,
+} from '@backstage/plugin-user-settings';
+import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
@@ -83,7 +87,6 @@ import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTe
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
-
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
@@ -218,7 +221,11 @@ const routes = (
       path="/cost-insights/labeling-jobs"
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
-    <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/settings" element={<UserSettingsPage />}>
+      <UserSettingsTab path="/advanced" title="Advanced">
+        <AdvancedSettings />
+      </UserSettingsTab>
+    </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
     <Route

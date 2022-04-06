@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 
@@ -42,6 +43,9 @@ export const Router: ({ providerSettings }: Props) => JSX.Element;
 //
 // @public (undocumented)
 export const Settings: (props: SettingsProps) => JSX.Element;
+
+// @public (undocumented)
+export const USER_SETTINGS_TAB_KEY = 'user-settings.tab';
 
 // Warning: (ae-missing-release-tag) "UserSettingsAppearanceCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -107,6 +111,15 @@ export const UserSettingsProfileCard: () => JSX.Element;
 //
 // @public (undocumented)
 export const UserSettingsSignInAvatar: ({ size }: Props_5) => JSX.Element;
+
+// @public
+export const UserSettingsTab: (props: UserSettingsTabProps) => JSX.Element;
+
+// @public (undocumented)
+export type UserSettingsTabProps = PropsWithChildren<{
+  path: string;
+  title: string;
+}>;
 
 // Warning: (ae-missing-release-tag) "UserSettingsThemeToggle" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

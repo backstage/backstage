@@ -149,6 +149,11 @@ const myTheme = createTheme({
 });
 ```
 
+For a more complete example of a custom theme including Backstage and
+Material-UI component overrides, see the [Aperture
+theme](https://github.com/backstage/demo/blob/master/packages/app/src/theme/aperture.ts)
+from the [Backstage demo site](https://demo.backstage.io).
+
 ## Overriding Backstage and Material UI components styles
 
 When creating a custom theme you would be applying different values to

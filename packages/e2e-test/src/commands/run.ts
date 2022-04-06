@@ -43,50 +43,39 @@ const templatePackagePaths = [
 ];
 
 export async function run() {
-  try {
-    const rootDir = await fs.mkdtemp(
-      resolvePath(os.tmpdir(), 'backstage-e2e-'),
-    );
-    print(`CLI E2E test root: ${rootDir}\n`);
+  const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
+  print(`CLI E2E test root: ${rootDir}\n`);
 
-    print('Building dist workspace');
-    const workspaceDir = await buildDistWorkspace('workspace', rootDir);
+  print('Building dist workspace');
+  const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
-    const isPostgres = Boolean(process.env.POSTGRES_USER);
-    print('Creating a Backstage App');
-    const appDir = await createApp(
-      'test-app',
-      isPostgres,
-      workspaceDir,
-      rootDir,
-    );
+  const isPostgres = Boolean(process.env.POSTGRES_USER);
+  print('Creating a Backstage App');
+  const appDir = await createApp('test-app', isPostgres, workspaceDir, rootDir);
 
-    print('Creating a Backstage Plugin');
-    const pluginName = await createPlugin('test-plugin', appDir);
+  print('Creating a Backstage Plugin');
+  const pluginName = await createPlugin('test-plugin', appDir);
 
-    print('Creating a Backstage Backend Plugin');
-    await createPlugin('test-plugin', appDir, ['--backend']);
+  print('Creating a Backstage Backend Plugin');
+  await createPlugin('test-plugin', appDir, ['--backend']);
 
-    print('Starting the app');
-    await testAppServe(pluginName, appDir);
+  print('Starting the app');
+  await testAppServe(pluginName, appDir);
 
-    print('Testing the backend startup');
-    await testBackendStart(appDir, isPostgres);
+  print('Testing the backend startup');
+  await testBackendStart(appDir, isPostgres);
 
-    if (process.env.CI) {
-      // Cleanup actually takes significant time, so skip it in CI since the
-      // runner will be destroyed anyway
-      print('All tests successful');
-    } else {
-      print('All tests successful, removing test dir');
-      await fs.remove(rootDir);
-    }
-
-    // Just in case some child process was left hanging
-    process.exit(0);
-  } catch {
-    process.exit(1);
+  if (process.env.CI) {
+    // Cleanup actually takes significant time, so skip it in CI since the
+    // runner will be destroyed anyway
+    print('All tests successful');
+  } else {
+    print('All tests successful, removing test dir');
+    await fs.remove(rootDir);
   }
+
+  // Just in case some child process was left hanging
+  process.exit(0);
 }
 
 /**
@@ -122,6 +111,10 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
         {
           helpers: {
             version(name: string) {
+              // Ignore non Backstage packages
+              if (!name.startsWith('@backstage/')) {
+                return '^0.0.0';
+              }
               const pkge = require(`${name}/package.json`);
               if (!pkge) {
                 throw new Error(`No version available for package ${name}`);
@@ -129,6 +122,10 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
               return pkge.version;
             },
             versionQuery(name: string, hint: string) {
+              // Ignore non Backstage packages
+              if (!name.startsWith('@backstage/')) {
+                return '^0.0.0';
+              }
               const pkgData = require(`${name}/package.json`);
               if (!pkgData) {
                 if (typeof hint !== 'string') {
@@ -383,9 +380,9 @@ async function testAppServe(pluginName: string, appDir: string) {
     }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    await new Promise<void>((res, rej) =>
-      killTree(startApp.pid, err => (err ? rej(err) : res())),
-    );
+    await new Promise<void>((res, rej) => {
+      killTree(startApp.pid!, err => (err ? rej(err) : res()));
+    });
   }
 
   try {
@@ -488,9 +485,9 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   } finally {
     print('Stopping the child process');
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    await new Promise<void>((res, rej) =>
-      killTree(child.pid, err => (err ? rej(err) : res())),
-    );
+    await new Promise<void>((res, rej) => {
+      killTree(child.pid!, err => (err ? rej(err) : res()));
+    });
   }
 
   try {

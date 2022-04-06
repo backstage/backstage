@@ -54,7 +54,7 @@ describe('SearchFilter.Autocomplete', () => {
 
     const autocomplete = screen.getByRole('combobox');
     const input = within(autocomplete).getByRole('textbox');
-    userEvent.click(input);
+    await userEvent.click(input);
 
     await waitFor(() => {
       screen.getByRole('listbox');
@@ -75,7 +75,7 @@ describe('SearchFilter.Autocomplete', () => {
 
     const autocomplete = screen.getByRole('combobox');
     const input = within(autocomplete).getByRole('textbox');
-    userEvent.click(input);
+    await userEvent.click(input);
 
     await waitFor(() => {
       screen.getByRole('listbox');
@@ -109,11 +109,11 @@ describe('SearchFilter.Autocomplete', () => {
     // Select a value from the autocomplete filter.
     const autocomplete = screen.getByRole('combobox');
     const input = within(autocomplete).getByRole('textbox');
-    userEvent.click(input);
+    await userEvent.click(input);
     await waitFor(() => {
       screen.getByRole('listbox');
     });
-    userEvent.click(screen.getByRole('option', { name: values[1] }));
+    await userEvent.click(screen.getByRole('option', { name: values[1] }));
 
     // Wait for the autocomplete filter's value to change.
     await waitFor(() => {
@@ -193,11 +193,11 @@ describe('SearchFilter.Autocomplete', () => {
       // Select the first option in the autocomplete.
       const autocomplete = screen.getByRole('combobox');
       const input = within(autocomplete).getByRole('textbox');
-      userEvent.click(input);
+      await userEvent.click(input);
       await waitFor(() => {
         screen.getByRole('listbox');
       });
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       // The value should be present in the context.
       await waitFor(() => {
@@ -208,7 +208,7 @@ describe('SearchFilter.Autocomplete', () => {
 
       // Click the "Clear" button to remove the value.
       const clearButton = within(autocomplete).getByLabelText('Clear');
-      userEvent.click(clearButton);
+      await userEvent.click(clearButton);
 
       // That value should have been unset from the context.
       await waitFor(() => {
@@ -284,11 +284,11 @@ describe('SearchFilter.Autocomplete', () => {
       const input = within(autocomplete).getByRole('textbox');
 
       // Select the second value.
-      userEvent.click(input);
+      await userEvent.click(input);
       await waitFor(() => {
         screen.getByRole('listbox');
       });
-      userEvent.click(screen.getByRole('option', { name: values[1] }));
+      await userEvent.click(screen.getByRole('option', { name: values[1] }));
       await waitFor(() => {
         expect(
           screen.getByRole('button', { name: values[1] }),
@@ -296,11 +296,11 @@ describe('SearchFilter.Autocomplete', () => {
       });
 
       // Select the first value.
-      userEvent.click(input);
+      await userEvent.click(input);
       await waitFor(() => {
         screen.getByRole('listbox');
       });
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
       await waitFor(() => {
         expect(
           screen.getByRole('button', { name: values[0] }),
@@ -329,16 +329,16 @@ describe('SearchFilter.Autocomplete', () => {
 
       // Select both values in the autocomplete.
       const input = within(autocomplete).getByRole('textbox');
-      userEvent.click(input);
+      await userEvent.click(input);
       await waitFor(() => {
         screen.getByRole('listbox');
       });
-      userEvent.click(screen.getByRole('option', { name: values[0] }));
-      userEvent.click(input);
+      await userEvent.click(screen.getByRole('option', { name: values[0] }));
+      await userEvent.click(input);
       await waitFor(() => {
         screen.getByRole('listbox');
       });
-      userEvent.click(screen.getByRole('option', { name: values[1] }));
+      await userEvent.click(screen.getByRole('option', { name: values[1] }));
 
       // Both options should be present in the context.
       await waitFor(() => {
@@ -349,7 +349,7 @@ describe('SearchFilter.Autocomplete', () => {
 
       // Click the "Clear" button to remove the value.
       const clearButton = within(autocomplete).getByLabelText('Clear');
-      userEvent.click(clearButton);
+      await userEvent.click(clearButton);
 
       // There should be no content in the filter context.
       await waitFor(() => {

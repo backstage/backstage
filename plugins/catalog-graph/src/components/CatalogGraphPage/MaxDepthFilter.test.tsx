@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { MaxDepthFilter } from './MaxDepthFilter';
@@ -37,24 +37,24 @@ describe('<MaxDepthFilter/>', () => {
     expect(getByLabelText('maxp')).toHaveValue(null);
   });
 
-  test('should clear max depth', () => {
+  test('should clear max depth', async () => {
     const onChange = jest.fn();
     const { getByLabelText } = render(
       <MaxDepthFilter value={10} onChange={onChange} />,
     );
 
-    userEvent.click(getByLabelText('clear max depth'));
+    await userEvent.click(getByLabelText('clear max depth'));
     expect(onChange).toBeCalledWith(Number.POSITIVE_INFINITY);
   });
 
-  test('should set max depth to undefined if below one', () => {
+  test('should set max depth to undefined if below one', async () => {
     const onChange = jest.fn();
     const { getByLabelText } = render(
       <MaxDepthFilter value={1} onChange={onChange} />,
     );
 
-    userEvent.clear(getByLabelText('maxp'));
-    userEvent.type(getByLabelText('maxp'), '0');
+    await userEvent.clear(getByLabelText('maxp'));
+    await userEvent.type(getByLabelText('maxp'), '0');
 
     expect(onChange).toBeCalledWith(Number.POSITIVE_INFINITY);
   });
@@ -67,9 +67,10 @@ describe('<MaxDepthFilter/>', () => {
 
     expect(getByLabelText('maxp')).toHaveValue(5);
 
-    userEvent.clear(getByLabelText('maxp'));
-    userEvent.type(getByLabelText('maxp'), '10');
-
-    expect(onChange).toBeCalledWith(10);
+    await userEvent.clear(getByLabelText('maxp'));
+    await userEvent.type(getByLabelText('maxp'), '10');
+    waitFor(() => {
+      expect(onChange).toBeCalledWith(10);
+    });
   });
 });

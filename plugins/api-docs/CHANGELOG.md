@@ -1,5 +1,16 @@
 # @backstage/plugin-api-docs
 
+## 0.8.4-next.2
+
+### Patch Changes
+
+- ae321bd414: build(deps): bump `@asyncapi/react-component`
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.2
+  - @backstage/plugin-catalog@1.1.0-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 0.8.4-next.1
 
 ### Patch Changes

@@ -42,6 +42,7 @@ export default async function generate(cmd: Command) {
   const omitTechdocsCorePlugin = cmd.omitTechdocsCoreMkdocsPlugin;
   const dockerImage = cmd.dockerImage;
   const pullImage = cmd.pull;
+  const legacyCopyReadmeMdToIndexMd = cmd.legacyCopyReadmeMdToIndexMd;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -56,6 +57,7 @@ export default async function generate(cmd: Command) {
         runIn: cmd.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
+        legacyCopyReadmeMdToIndexMd,
         mkdocs: {
           omitTechdocsCorePlugin,
         },

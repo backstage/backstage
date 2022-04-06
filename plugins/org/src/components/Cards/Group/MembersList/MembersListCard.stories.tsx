@@ -31,11 +31,13 @@ const makeUser = ({
   name,
   uid,
   displayName,
+  description,
   email,
 }: {
   name: string;
   uid: string;
   displayName: string;
+  description: string;
   email: string;
 }) => ({
   apiVersion: 'backstage.io/v1alpha1',
@@ -43,6 +45,7 @@ const makeUser = ({
   metadata: {
     name,
     uid,
+    description,
   },
   spec: {
     profile: {
@@ -87,12 +90,14 @@ const alice = makeUser({
   name: 'alice',
   uid: '123',
   displayName: 'Alice Doe',
+  description: 'Developer',
   email: 'alice@example.com',
 });
 const bob = makeUser({
   name: 'bob',
   uid: '456',
   displayName: 'Bob Jones',
+  description: 'Developer',
   email: 'bob@example.com',
 });
 

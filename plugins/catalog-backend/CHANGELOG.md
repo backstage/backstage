@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.0-next.2
+
+### Minor Changes
+
+- bf82edf4c9: Added `/validate-entity` endpoint
+
+### Patch Changes
+
+- 8592cacfd3: Fixed an issue where sometimes entities would have stale relations "stuck" and
+  not getting removed as expected, after the other end of the relation had stopped
+  referring to them.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 1.1.0-next.1
 
 ### Minor Changes

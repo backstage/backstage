@@ -168,9 +168,9 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      userEvent.type(await screen.findByLabelText('name'), '-changed');
-      userEvent.type(await screen.findByLabelText('owner'), '-changed');
-      userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
+      await userEvent.type(await screen.findByLabelText('name'), '-changed');
+      await userEvent.type(await screen.findByLabelText('owner'), '-changed');
+      await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
     });
 
     expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
@@ -244,7 +244,7 @@ spec:
         },
       );
 
-      userEvent.click(
+      await userEvent.click(
         await screen.findByRole('button', { name: /Create PR/i }),
       );
     });

@@ -217,6 +217,10 @@ export type RouterProps = {
     filter: (entity: Entity) => boolean;
   }>;
   defaultPreviewTemplate?: string;
+  contextMenu?: {
+    editor?: boolean;
+    actions?: boolean;
+  };
 };
 
 // @public

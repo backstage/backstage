@@ -33,10 +33,11 @@ export interface EntityKindPickerProps {
 export const EntityKindPicker = (props: EntityKindPickerProps) => {
   const { initialFilter, hidden } = props;
 
-  const { updateFilters, queryParameters } = useEntityList();
-  const [selectedKind] = useState(
-    [queryParameters.kind].flat()[0] ?? initialFilter,
-  );
+  const {
+    updateFilters,
+    queryParameters: { kind: kindParameter },
+  } = useEntityList();
+  const [selectedKind] = useState([kindParameter].flat()[0] ?? initialFilter);
 
   useEffect(() => {
     updateFilters({

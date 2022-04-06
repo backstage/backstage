@@ -17,7 +17,7 @@
 import React from 'react';
 import { getByRole, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
-import UserEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { PeriodSelect, getDefaultOptions } from './PeriodSelect';
 import { getDefaultPageFilters } from '../../utils/filters';
 import { MockBillingDateProvider } from '../../testUtils';
@@ -55,7 +55,7 @@ describe('<PeriodSelect />', () => {
     );
     const periodSelectContainer = rendered.getByTestId('period-select');
     const button = getByRole(periodSelectContainer, 'button');
-    UserEvent.click(button);
+    await userEvent.click(button);
     await waitFor(() => rendered.getByText('Past 60 Days'));
     options.forEach(option =>
       expect(
@@ -88,8 +88,10 @@ describe('<PeriodSelect />', () => {
       const periodSelect = rendered.getByTestId('period-select');
       const button = getByRole(periodSelect, 'button');
 
-      UserEvent.click(button);
-      UserEvent.click(rendered.getByTestId(`period-select-option-${duration}`));
+      await userEvent.click(button);
+      await userEvent.click(
+        rendered.getByTestId(`period-select-option-${duration}`),
+      );
       expect(mockOnSelect).toHaveBeenLastCalledWith(duration);
     });
   });

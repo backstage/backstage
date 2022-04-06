@@ -33,13 +33,6 @@ describe('<EntityRelationsGraph/>', () => {
   let catalog: jest.Mocked<CatalogApi>;
   const CUSTOM_TEST_ID = 'custom-test-id';
 
-  beforeAll(() => {
-    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
-      value: () => ({ width: 100, height: 100 }),
-      configurable: true,
-    });
-  });
-
   beforeEach(() => {
     const entities: { [ref: string]: Entity } = {
       'b:d/c': {
@@ -377,7 +370,7 @@ describe('<EntityRelationsGraph/>', () => {
       </Wrapper>,
     );
 
-    userEvent.click(await findByText('k:d/a1'));
+    await userEvent.click(await findByText('k:d/a1'));
     expect(onNodeClick).toBeCalledTimes(1);
   });
 

@@ -1,5 +1,15 @@
 # @backstage/plugin-sentry
 
+## 0.3.42-next.1
+
+### Patch Changes
+
+- 68bb66102d: Exposed options for the material table
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
 ## 0.3.42-next.0
 
 ### Patch Changes
