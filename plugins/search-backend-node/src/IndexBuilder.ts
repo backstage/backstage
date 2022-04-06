@@ -134,18 +134,21 @@ export class IndexBuilder {
 
         // Compose collator/decorators/indexer into a pipeline
         return new Promise<void>(done => {
-          pipeline([collator, ...decorators, indexer], error => {
-            if (error) {
-              this.logger.error(
-                `Collating documents for ${type} failed: ${error}`,
-              );
-            } else {
-              this.logger.info(`Collating documents for ${type} succeeded`);
-            }
+          pipeline(
+            [collator, ...decorators, indexer],
+            (error: NodeJS.ErrnoException | null) => {
+              if (error) {
+                this.logger.error(
+                  `Collating documents for ${type} failed: ${error}`,
+                );
+              } else {
+                this.logger.info(`Collating documents for ${type} succeeded`);
+              }
 
-            // Signal index pipeline completion!
-            done();
-          });
+              // Signal index pipeline completion!
+              done();
+            },
+          );
         });
       }, this.collators[type].refreshInterval * 1000);
     });

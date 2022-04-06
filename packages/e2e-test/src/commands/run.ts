@@ -380,9 +380,9 @@ async function testAppServe(pluginName: string, appDir: string) {
     }
   } finally {
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    await new Promise<void>((res, rej) =>
-      killTree(startApp.pid, err => (err ? rej(err) : res())),
-    );
+    await new Promise<void>((res, rej) => {
+      killTree(startApp.pid!, err => (err ? rej(err) : res()));
+    });
   }
 
   try {
@@ -485,9 +485,9 @@ async function testBackendStart(appDir: string, isPostgres: boolean) {
   } finally {
     print('Stopping the child process');
     // Kill entire process group, otherwise we'll end up with hanging serve processes
-    await new Promise<void>((res, rej) =>
-      killTree(child.pid, err => (err ? rej(err) : res())),
-    );
+    await new Promise<void>((res, rej) => {
+      killTree(child.pid!, err => (err ? rej(err) : res()));
+    });
   }
 
   try {
