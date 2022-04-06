@@ -1625,10 +1625,10 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@braintree/sanitize-url@^5.0.2":
-  version "5.0.2"
-  resolved "https://registry.npmjs.org/@braintree/sanitize-url/-/sanitize-url-5.0.2.tgz#b23080fa35520e993a8a37a0f5bca26aa4650a48"
-  integrity sha512-NBEJlHWrhQucLhZGHtSxM2loSaNUMajC7KOYJLyfcdW/6goVoff2HoYI3bz8YCDN0wKGbxtUL0gx2dvHpvnWlw==
+"@braintree/sanitize-url@=6.0.0":
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/@braintree/sanitize-url/-/sanitize-url-6.0.0.tgz#fe364f025ba74f6de6c837a84ef44bdb1d61e68f"
+  integrity sha512-mgmE7XBYY/21erpzhexk4Cj1cyTQ9LzvnTxtzM17BJ7ERMNE6W72mQRo0I1Ud8eFJ+RVVIcBNhLFZ3GX4XFz5w==
 
 "@changesets/apply-release-plan@^5.0.5":
   version "5.0.5"
@@ -11299,6 +11299,11 @@ dotenv@^10.0.0:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
 
+drange@^1.0.2:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/drange/-/drange-1.1.1.tgz#b2aecec2aab82fcef11dbbd7b9e32b83f8f6c0b8"
+  integrity sha512-pYxfDYpued//QpnLIm4Avk7rsNtAtQkUES2cwAYSvD/wd2pKD71gN2Ebj3e7klzXwjocvE8c5vx/1fxwpqmSxA==
+
 dset@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/dset/-/dset-3.1.0.tgz#23feb6df93816ea452566308b1374d6e869b0d7b"
@@ -20746,6 +20751,14 @@ ramda@^0.27.1:
   resolved "https://registry.npmjs.org/ramda/-/ramda-0.27.2.tgz#84463226f7f36dc33592f6f4ed6374c48306c3f1"
   integrity sha512-SbiLPU40JuJniHexQSAgad32hfwd+DRUdwF2PlVuI5RZD0/vahUco7R8vD86J/tcEKKF9vZrUVwgtmGCqlCKyA==
 
+randexp@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.npmjs.org/randexp/-/randexp-0.5.3.tgz#f31c2de3148b30bdeb84b7c3f59b0ebb9fec3738"
+  integrity sha512-U+5l2KrcMNOUPYvazA3h5ekF80FHTUG+87SEAmHZmolh1M+i/WyTCxVzmi+tidIa1tM4BSe8g2Y/D3loWDjj+w==
+  dependencies:
+    drange "^1.0.2"
+    ret "^0.2.0"
+
 random-bytes@~1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/random-bytes/-/random-bytes-1.0.0.tgz#4f68a1dc0ae58bd3fb95848c30324db75d64360b"
@@ -21903,15 +21916,15 @@ restore-cursor@^3.1.0:
     onetime "^5.1.0"
     signal-exit "^3.0.2"
 
+ret@^0.2.0, ret@~0.2.0:
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/ret/-/ret-0.2.2.tgz#b6861782a1f4762dce43402a71eb7a283f44573c"
+  integrity sha512-M0b3YWQs7R3Z917WRQy1HHA7Ba7D8hvZg6UE5mLykJxQVE2ju0IXbGlaHPPlkY+WN7wFP+wUMXmBFA0aV6vYGQ==
+
 ret@~0.1.10:
   version "0.1.15"
   resolved "https://registry.npmjs.org/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
-
-ret@~0.2.0:
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/ret/-/ret-0.2.2.tgz#b6861782a1f4762dce43402a71eb7a283f44573c"
-  integrity sha512-M0b3YWQs7R3Z917WRQy1HHA7Ba7D8hvZg6UE5mLykJxQVE2ju0IXbGlaHPPlkY+WN7wFP+wUMXmBFA0aV6vYGQ==
 
 retry-request@^4.0.0, retry-request@^4.2.2:
   version "4.2.2"
@@ -23525,12 +23538,12 @@ swagger-client@^3.18.4:
     url "~0.11.0"
 
 swagger-ui-react@^4.1.3:
-  version "4.6.1"
-  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-4.6.1.tgz#25d0dc380f73fcba00df214f50adc940910f480c"
-  integrity sha512-NIVzdzzaHnoG6NxK15A0wpd7TiGPpcK4BBh5mgLq6/hCrytjpeQZrkSM1Yf0p1fD7+rkvKcI+b33w/6RCLt3yw==
+  version "4.10.3"
+  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-4.10.3.tgz#72b7eb432f3e1ad09a81556af75d22ac3a66ae40"
+  integrity sha512-rxLVM8hv6aH+8BEJuyfejt2BweV2TLB8KiifE/8CAk96PoDyQeCTnLgivTdXIuDqdSSSajlzTq0ccw0QMYQbvA==
   dependencies:
     "@babel/runtime-corejs3" "^7.16.8"
-    "@braintree/sanitize-url" "^5.0.2"
+    "@braintree/sanitize-url" "=6.0.0"
     base64-js "^1.5.1"
     classnames "^2.3.1"
     css.escape "1.5.1"
@@ -23541,7 +23554,8 @@ swagger-ui-react@^4.1.3:
     js-file-download "^0.4.12"
     js-yaml "=4.1.0"
     lodash "^4.17.21"
-    prop-types "^15.7.2"
+    prop-types "^15.8.1"
+    randexp "^0.5.3"
     randombytes "^2.1.0"
     react-copy-to-clipboard "5.0.4"
     react-debounce-input "=3.2.4"
