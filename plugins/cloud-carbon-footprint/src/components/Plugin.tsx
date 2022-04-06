@@ -26,7 +26,7 @@ import {
 } from '@backstage/core-components';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { ThemeProvider } from '@material-ui/core';
-import { determineTheme } from '@cloud-carbon-footprint/client';
+import { defaultTheme } from '@cloud-carbon-footprint/client';
 import { PluginTabs } from './PluginTabs';
 
 // TODO: Can we change the location from the cache-files? `packages/backend` is far from optimal :/
@@ -46,7 +46,7 @@ export const Plugin = ({ loading }: { loading?: boolean }) => {
           </p>
         )}
         {loading && <Progress />}
-        <ThemeProvider theme={determineTheme()}>
+        <ThemeProvider theme={defaultTheme()}>
           <FlatRoutes>
             <Route
               path="/*"

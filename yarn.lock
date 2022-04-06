@@ -2022,10 +2022,10 @@
     "@google-cloud/secret-manager" "^3.10.1"
     moment "^2.29.1"
 
-"@cloud-carbon-footprint/client@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/client/-/client-3.0.0.tgz#7ab9da898b61c3a63b2688b5c59c3ce195d6f78e"
-  integrity sha512-ncjYljEvOCQhvYeMrAXJ7/TAkUSRTeSqQETlKqfe4+RphpJb86iFi5NXwUmYKU2dgtHz8s3zsUhogeNiAL+anA==
+"@cloud-carbon-footprint/client@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/@cloud-carbon-footprint/client/-/client-3.1.0.tgz#00f3814da20194cccdb5ed5dfad174b6a517d34c"
+  integrity sha512-OrZ7z/hJ8omuryuMOzDYQ9USVrzTje5xU9J3mSrrm2vB2kCCI5NeWbdAn4Gi5tpVHVdBat9n5pqmVaZKPILbLg==
   dependencies:
     "@babel/runtime" "^7.14.0"
     "@cloud-carbon-footprint/common" "^1.5.1"
