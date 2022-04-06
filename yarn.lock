@@ -2374,13 +2374,13 @@
     tslib "~2.3.0"
 
 "@graphql-codegen/graphql-modules-preset@^2.3.2":
-  version "2.3.5"
-  resolved "https://registry.npmjs.org/@graphql-codegen/graphql-modules-preset/-/graphql-modules-preset-2.3.5.tgz#07ef9ef6e66d4fbb76767097a7cc3cace34f8d08"
-  integrity sha512-y1PcTFr483Imzd346YdmNSvW3FlN4iYj4sRWCRys+WXpiFcXq+D7+1dFZvs75/9bIHoOEeQtusHHuRPy9qJVkA==
+  version "2.3.8"
+  resolved "https://registry.npmjs.org/@graphql-codegen/graphql-modules-preset/-/graphql-modules-preset-2.3.8.tgz#6b7bc5fed2890c1893e1e3779921821265055023"
+  integrity sha512-mYQG2+cbyG3AB1mKR3bqcUUHinbDpCfU/JzHu48t9S/db0HHDzo00WtUMnYPBPd5gohXJ1D1y4h6noPU0gt8bg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.4.0"
-    "@graphql-codegen/visitor-plugin-common" "2.7.1"
-    "@graphql-tools/utils" "8.6.1"
+    "@graphql-codegen/visitor-plugin-common" "2.7.4"
+    "@graphql-tools/utils" "8.6.3"
     change-case-all "1.0.14"
     parse-filepath "^1.0.2"
     tslib "~2.3.0"
@@ -2427,22 +2427,6 @@
     "@graphql-codegen/schema-ast" "^2.4.1"
     "@graphql-codegen/visitor-plugin-common" "2.7.4"
     auto-bind "~4.0.0"
-    tslib "~2.3.0"
-
-"@graphql-codegen/visitor-plugin-common@2.7.1":
-  version "2.7.1"
-  resolved "https://registry.npmjs.org/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-2.7.1.tgz#bdcded24d1d6f329d32b90704397d6001374b893"
-  integrity sha512-Ew/+0GwGwL3ZSXS0cYz6lVvE7S5SkbTr7caRpLa4FpAdLGNskCgdA1n6W5tX5c7qsaYstqlxp30hJTfgTsYS6A==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^2.4.0"
-    "@graphql-tools/optimize" "^1.0.1"
-    "@graphql-tools/relay-operation-optimizer" "^6.3.7"
-    "@graphql-tools/utils" "^8.3.0"
-    auto-bind "~4.0.0"
-    change-case-all "1.0.14"
-    dependency-graph "^0.11.0"
-    graphql-tag "^2.11.0"
-    parse-filepath "^1.0.2"
     tslib "~2.3.0"
 
 "@graphql-codegen/visitor-plugin-common@2.7.4":
@@ -2781,17 +2765,17 @@
     value-or-promise "^1.0.11"
     ws "^8.3.0"
 
-"@graphql-tools/utils@8.6.1":
-  version "8.6.1"
-  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.6.1.tgz#52c7eb108f2ca2fd01bdba8eef85077ead1bf882"
-  integrity sha512-uxcfHCocp4ENoIiovPxUWZEHOnbXqj3ekWc0rm7fUhW93a1xheARNHcNKhwMTR+UKXVJbTFQdGI1Rl5XdyvDBg==
-  dependencies:
-    tslib "~2.3.0"
-
 "@graphql-tools/utils@8.6.2":
   version "8.6.2"
   resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.6.2.tgz#095408135f091aac68fe18a0a21b708e685500da"
   integrity sha512-x1DG0cJgpJtImUlNE780B/dfp8pxvVxOD6UeykFH5rHes26S4kGokbgU8F1IgrJ1vAPm/OVBHtd2kicTsPfwdA==
+  dependencies:
+    tslib "~2.3.0"
+
+"@graphql-tools/utils@8.6.3":
+  version "8.6.3"
+  resolved "https://registry.npmjs.org/@graphql-tools/utils/-/utils-8.6.3.tgz#ce9fc9adce4d45b229e314a2261290a88a252aed"
+  integrity sha512-CNyP7Uu7dlVMQ32IpHWOxz4yic9BYXXVkDhG0UdTKSszvzHdgMilemE9MpUrGzzBPsTe3aYTtNGyPUkyh9yTXA==
   dependencies:
     tslib "~2.3.0"
 
