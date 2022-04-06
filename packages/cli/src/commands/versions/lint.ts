@@ -36,7 +36,11 @@ const FORBID_DUPLICATES = [
 // above.
 const ALLOW_DUPLICATES = [
   /^@backstage\/core-plugin-api$/,
-  /^@backstage\/plugin-catalog-react$/,
+  // Duplicates of libraries are OK
+  // TODO(Rugvip): Check this using package role instead
+  /^@backstage\/plugin-.*-react$/,
+  /^@backstage\/plugin-.*-node$/,
+  /^@backstage\/plugin-.*-common$/,
 ];
 
 export const forbiddenDuplicatesFilter = (name: string) =>
