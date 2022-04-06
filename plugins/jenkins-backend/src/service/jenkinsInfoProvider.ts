@@ -33,7 +33,7 @@ export interface JenkinsInfoProvider {
      */
     jobFullName?: string;
 
-    token?: string;
+    backstageToken?: string;
   }): Promise<JenkinsInfo>;
 }
 
@@ -186,11 +186,11 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   async getInstance(opt: {
     entityRef: CompoundEntityRef;
     jobFullName?: string;
-    token?: string;
+    backstageToken?: string;
   }): Promise<JenkinsInfo> {
     // load entity
     const entity = await this.catalog.getEntityByRef(opt.entityRef, {
-      token: opt.token,
+      token: opt.backstageToken,
     });
     if (!entity) {
       throw new Error(

@@ -70,7 +70,7 @@ export async function createRouter(
           namespace,
           name,
         },
-        token,
+        backstageToken: token,
       });
       const projects = await jenkinsApi.getProjects(jenkinsInfo, branchStr);
 
@@ -96,7 +96,7 @@ export async function createRouter(
           name,
         },
         jobFullName,
-        token,
+        backstageToken: token,
       });
 
       const build = await jenkinsApi.getBuild(

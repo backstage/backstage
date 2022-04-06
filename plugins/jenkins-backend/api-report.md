@@ -28,7 +28,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   getInstance(opt: {
     entityRef: CompoundEntityRef;
     jobFullName?: string;
-    token?: string;
+    backstageToken?: string;
   }): Promise<JenkinsInfo>;
   // (undocumented)
   static readonly NEW_JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
@@ -69,7 +69,7 @@ export interface JenkinsInfoProvider {
   getInstance(options: {
     entityRef: CompoundEntityRef;
     jobFullName?: string;
-    token?: string;
+    backstageToken?: string;
   }): Promise<JenkinsInfo>;
 }
 
