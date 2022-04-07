@@ -2012,9 +2012,9 @@
     "@codemirror/text" "^0.19.0"
 
 "@codemirror/stream-parser@^0.19.0", "@codemirror/stream-parser@^0.19.2", "@codemirror/stream-parser@^0.19.6":
-  version "0.19.7"
-  resolved "https://registry.npmjs.org/@codemirror/stream-parser/-/stream-parser-0.19.7.tgz#99a9696307b90677f6e3abe29ea6d77c1c0a8db5"
-  integrity sha512-4ExcbKksmU4PIT8s11/dPESgMNLQqlMlbQzRQ1CyMcmygcuQk+58zQ84nv/X17OCUd2ephZ1DKEaHHACifzCiA==
+  version "0.19.9"
+  resolved "https://registry.npmjs.org/@codemirror/stream-parser/-/stream-parser-0.19.9.tgz#34955ea91a8047cf72abebd5ce28f0d332aeca48"
+  integrity sha512-WTmkEFSRCetpk8xIOvV2yyXdZs3DgYckM0IP7eFi4ewlxWnJO/H4BeJZLs4wQaydWsAqTQoDyIwNH1BCzK5LUQ==
   dependencies:
     "@codemirror/highlight" "^0.19.0"
     "@codemirror/language" "^0.19.0"
