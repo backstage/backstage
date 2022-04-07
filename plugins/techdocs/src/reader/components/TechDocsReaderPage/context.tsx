@@ -57,10 +57,6 @@ export type TechDocsReaderPageValue = {
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
   setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
-  title: string;
-  setTitle: Dispatch<SetStateAction<string>>;
-  subtitle: string;
-  setSubtitle: Dispatch<SetStateAction<string>>;
   /**
    * @deprecated property can be passed down directly to the `TechDocsReaderPageContent` instead.
    */
@@ -68,10 +64,6 @@ export type TechDocsReaderPageValue = {
 };
 
 export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
-  title: '',
-  subtitle: '',
-  setTitle: () => {},
-  setSubtitle: () => {},
   setShadowRoot: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
@@ -124,10 +116,6 @@ export const TechDocsReaderPageProvider = memo(
       return techdocsApi.getEntityMetadata(entityName);
     }, [entityName]);
 
-    const [title, setTitle] = useState(defaultTechDocsReaderPageValue.title);
-    const [subtitle, setSubtitle] = useState(
-      defaultTechDocsReaderPageValue.subtitle,
-    );
     const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
@@ -138,10 +126,6 @@ export const TechDocsReaderPageProvider = memo(
       entityMetadata,
       shadowRoot,
       setShadowRoot,
-      title,
-      setTitle,
-      subtitle,
-      setSubtitle,
     };
 
     return (

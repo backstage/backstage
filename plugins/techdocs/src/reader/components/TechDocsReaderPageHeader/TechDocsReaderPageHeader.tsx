@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Helmet from 'react-helmet';
 
 import { Skeleton } from '@material-ui/lab';
@@ -33,10 +33,11 @@ import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
-import { useTechDocsReaderPage } from '../TechDocsReaderPage';
+import { useEntityMetadata, useTechDocsMetadata } from '../TechDocsReaderPage';
 
 import { rootRouteRef } from '../../../routes';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
+import { useTechDocsReaderPage } from '../TechDocsReaderPage/context';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -46,11 +47,12 @@ const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
  * @public
  * @deprecated No need to pass down properties anymore. The component consumes data from `TechDocsReaderPageContext` instead. Use the {@link useTechDocsReaderPage} hook for custom header.
  */
-export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
+export type TechDocsReaderPageHeaderProps = {
+  children?: React.ReactNode;
   entityRef?: CompoundEntityRef;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
-}>;
+};
 
 /**
  * Renders the reader page header.
@@ -64,31 +66,22 @@ export const TechDocsReaderPageHeader = (
   const { children } = props;
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
-
-  const {
-    title,
-    setTitle,
-    subtitle,
-    setSubtitle,
-    entityName,
-    metadata: { value: metadata },
-    entityMetadata: { value: entityMetadata },
-  } = useTechDocsReaderPage();
+  const [title, setTitle] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const { entityName } = useTechDocsReaderPage();
+  const { value: techDocsMetadata } = useTechDocsMetadata();
+  const { value: entityMetadata } = useEntityMetadata();
 
   useEffect(() => {
-    if (!metadata) return;
-    setTitle(prevTitle => {
-      const { site_name } = metadata;
-      return prevTitle || site_name;
-    });
-    setSubtitle(prevSubtitle => {
-      let { site_description } = metadata;
-      if (!site_description || site_description === 'None') {
-        site_description = 'Home';
-      }
-      return prevSubtitle || site_description;
-    });
-  }, [metadata, setTitle, setSubtitle]);
+    if (!techDocsMetadata) return;
+    const { site_name, site_description } = techDocsMetadata;
+    setTitle(prevTitle => prevTitle || site_name);
+    setSubtitle(prevSubtitle =>
+      !site_description || site_description === 'None'
+        ? 'Home'
+        : prevSubtitle || site_description,
+    );
+  }, [techDocsMetadata, setTitle, setSubtitle]);
 
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
   const tabTitle = [subtitle, title, appTitle].filter(Boolean).join(' | ');
@@ -102,6 +95,7 @@ export const TechDocsReaderPageHeader = (
 
   const docsRootLink = useRouteRef(rootRouteRef)();
 
+  // TODO(@backstage/techdocs-core): All labels should be replaced by Addons
   const labels = (
     <>
       <HeaderLabel
@@ -157,6 +151,7 @@ export const TechDocsReaderPageHeader = (
         <title>{tabTitle}</title>
       </Helmet>
       {labels}
+      {/* TODO(@backstage/techdocs-core): remove once props are fully deprecated */}
       {children}
       {addons.renderComponentsByLocation(locations.HEADER)}
     </Header>

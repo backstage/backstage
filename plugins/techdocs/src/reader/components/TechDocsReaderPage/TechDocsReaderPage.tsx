@@ -86,20 +86,20 @@ export const TechDocsReaderPage = ({
   children,
 }: TechDocsReaderPageProps) => {
   const { kind, name, namespace } = useParams();
-
   const outlet = useOutlet();
   const entityName = entityRef ?? { kind, name, namespace };
 
   if (!children) {
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
-    const page = childrenList.find(child => {
+    const readerPageComponent = childrenList.find(child => {
       const { type } = child as Extension;
+      // return children that is not the techdocs addons wrapper (<TechDocsAddons/>)
       return !type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY);
-    });
+    }) as JSX.Element;
 
     return (
-      (page as JSX.Element) || (
+      readerPageComponent || (
         <TechDocsReaderPageProvider entityName={entityName}>
           <TechDocsReaderLayout />
         </TechDocsReaderPageProvider>

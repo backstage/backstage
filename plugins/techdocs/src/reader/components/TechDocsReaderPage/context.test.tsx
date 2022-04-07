@@ -130,36 +130,6 @@ describe('context', () => {
   });
 
   describe('useTechDocsReaderPage', () => {
-    it('should set title', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsReaderPage(),
-        { wrapper },
-      );
-
-      expect(result.current.title).toBe('');
-
-      act(() => result.current.setTitle('test site title'));
-
-      await waitForNextUpdate();
-
-      expect(result.current.title).toBe('test site title');
-    });
-
-    it('should set subtitle', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsReaderPage(),
-        { wrapper },
-      );
-
-      expect(result.current.subtitle).toBe('');
-
-      act(() => result.current.setSubtitle('test site subtitle'));
-
-      await waitForNextUpdate();
-
-      expect(result.current.subtitle).toBe('test site subtitle');
-    });
-
     it('should set shadow root', async () => {
       const { result, waitForNextUpdate } = renderHook(
         () => useTechDocsReaderPage(),
