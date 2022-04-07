@@ -18,25 +18,52 @@ import { ConfigReader } from '@backstage/config';
 import { BitbucketIntegration } from './BitbucketIntegration';
 
 describe('BitbucketIntegration', () => {
-  it('has a working factory', () => {
-    const integrations = BitbucketIntegration.factory({
-      config: new ConfigReader({
-        integrations: {
-          bitbucket: [
-            {
-              host: 'h.com',
-              apiBaseUrl: 'a',
-              token: 't',
-              username: 'u',
-              appPassword: 'p',
-            },
-          ],
-        },
-      }),
+  describe('factory', () => {
+    it('works', () => {
+      const integrations = BitbucketIntegration.factory({
+        config: new ConfigReader({
+          integrations: {
+            bitbucket: [
+              {
+                host: 'h.com',
+                apiBaseUrl: 'a',
+                token: 't',
+                username: 'u',
+                appPassword: 'p',
+              },
+            ],
+          },
+        }),
+      });
+      expect(integrations.list().length).toBe(2); // including default
+      expect(integrations.list()[0].config.host).toBe('h.com');
+      expect(integrations.list()[1].config.host).toBe('bitbucket.org');
     });
-    expect(integrations.list().length).toBe(2); // including default
-    expect(integrations.list()[0].config.host).toBe('h.com');
-    expect(integrations.list()[1].config.host).toBe('bitbucket.org');
+
+    it('falls back to bitbucketCloud+bitbucketServer', () => {
+      const integrations = BitbucketIntegration.factory({
+        config: new ConfigReader({
+          integrations: {
+            bitbucketCloud: [
+              {
+                username: 'u',
+                appPassword: 'p',
+              },
+            ],
+            bitbucketServer: [
+              {
+                host: 'h.com',
+                apiBaseUrl: 'a',
+                token: 't',
+              },
+            ],
+          },
+        }),
+      });
+      expect(integrations.list().length).toBe(2); // including default
+      expect(integrations.list()[0].config.host).toBe('bitbucket.org');
+      expect(integrations.list()[1].config.host).toBe('h.com');
+    });
   });
 
   it('returns the basics', () => {

@@ -18,47 +18,41 @@ import parseGitUrl from 'git-url-parse';
 import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
-  BitbucketIntegrationConfig,
-  readBitbucketIntegrationConfigs,
+  BitbucketServerIntegrationConfig,
+  readBitbucketServerIntegrationConfigs,
 } from './config';
 
 /**
- * A Bitbucket based integration.
+ * A Bitbucket Server based integration.
  *
  * @public
- * @deprecated replaced by the integrations bitbucketCloud and bitbucketServer.
  */
-export class BitbucketIntegration implements ScmIntegration {
-  static factory: ScmIntegrationsFactory<BitbucketIntegration> = ({
+export class BitbucketServerIntegration implements ScmIntegration {
+  static factory: ScmIntegrationsFactory<BitbucketServerIntegration> = ({
     config,
   }) => {
-    const configs = readBitbucketIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.bitbucket') ?? [
-        // if integrations.bitbucket was not used assume the use was migrated to the new configs
-        // and backport for the deprecated integration to be usable for other parts of the system
-        // until these got migrated
-        ...(config.getOptionalConfigArray('integrations.bitbucketCloud') ?? []),
-        ...(config.getOptionalConfigArray('integrations.bitbucketServer') ??
-          []),
-      ],
+    const configs = readBitbucketServerIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.bitbucketServer') ?? [],
     );
     return basicIntegrations(
-      configs.map(c => new BitbucketIntegration(c)),
+      configs.map(c => new BitbucketServerIntegration(c)),
       i => i.config.host,
     );
   };
 
-  constructor(private readonly integrationConfig: BitbucketIntegrationConfig) {}
+  constructor(
+    private readonly integrationConfig: BitbucketServerIntegrationConfig,
+  ) {}
 
   get type(): string {
-    return 'bitbucket';
+    return 'bitbucketServer';
   }
 
   get title(): string {
     return this.integrationConfig.host;
   }
 
-  get config(): BitbucketIntegrationConfig {
+  get config(): BitbucketServerIntegrationConfig {
     return this.integrationConfig;
   }
 
@@ -68,21 +62,17 @@ export class BitbucketIntegration implements ScmIntegration {
     lineNumber?: number;
   }): string {
     const resolved = defaultScmResolveUrl(options);
-    if (!options.lineNumber) {
-      return resolved;
+
+    // Bitbucket Server line numbers use the syntax #example.txt-42, rather than #L42
+    if (options.lineNumber) {
+      const url = new URL(resolved);
+
+      const filename = url.pathname.split('/').slice(-1)[0];
+      url.hash = `${filename}-${options.lineNumber}`;
+      return url.toString();
     }
 
-    const url = new URL(resolved);
-
-    if (this.integrationConfig.host === 'bitbucket.org') {
-      // Bitbucket Cloud uses the syntax #lines-{start}[:{end}][,...]
-      url.hash = `lines-${options.lineNumber}`;
-    } else {
-      // Bitbucket Server uses the syntax #{start}[-{end}][,...]
-      url.hash = `${options.lineNumber}`;
-    }
-
-    return url.toString();
+    return resolved;
   }
 
   resolveEditUrl(url: string): string {
