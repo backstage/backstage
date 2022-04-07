@@ -60,7 +60,7 @@ export class GitLabIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    return replaceUrlType(url, 'edit');
+    return replaceGitLabUrlType(url, 'edit');
   }
 }
 
@@ -71,7 +71,7 @@ export class GitLabIntegration implements ScmIntegration {
  * @param type - The desired type, e.g. 'blob', 'tree', 'edit'
  * @public
  */
-export function replaceUrlType(
+export function replaceGitLabUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
 ): string {

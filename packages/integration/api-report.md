@@ -417,7 +417,7 @@ export function replaceGitHubUrlType(
 ): string;
 
 // @public
-export function replaceUrlType(
+export function replaceGitLabUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
 ): string;

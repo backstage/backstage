@@ -19,7 +19,7 @@ import parseGitUrl from 'git-url-parse';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   replaceGitHubUrlType,
-  replaceUrlType as replaceGitlabUrlType,
+  replaceGitLabUrlType,
 } from '@backstage/integration';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
@@ -33,7 +33,7 @@ const resolveBlobUrl = (url: string, type: string) => {
   if (type === 'github') {
     return replaceGitHubUrlType(url, 'blob');
   }
-  return replaceGitlabUrlType(url, 'blob');
+  return replaceGitLabUrlType(url, 'blob');
 };
 
 export const getTitle = (selection: Selection) => {
