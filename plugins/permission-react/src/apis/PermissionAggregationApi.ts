@@ -15,7 +15,12 @@
  */
 
 import { Config } from '@backstage/config';
-import { ApiRef, createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
+import {
+  ApiRef,
+  createApiRef,
+  DiscoveryApi,
+  FetchApi,
+} from '@backstage/core-plugin-api';
 import {
   Permission,
   PermissionAggregator,
@@ -26,12 +31,17 @@ export class PermissionAggregationApi {
     private readonly permissionAggregator: PermissionAggregator,
   ) {}
 
-  static create(options: { config: Config; discovery: DiscoveryApi }) {
-    const { config, discovery } = options;
+  static create(options: {
+    config: Config;
+    discovery: DiscoveryApi;
+    fetch: FetchApi;
+  }) {
+    const { config, discovery, fetch } = options;
     const permissionedPlugins =
       config.getOptionalStringArray('permission.permissionedPlugins') ?? [];
     const permissionAggregator = new PermissionAggregator(permissionedPlugins, {
       discovery,
+      fetch,
     });
     return new PermissionAggregationApi(permissionAggregator);
   }

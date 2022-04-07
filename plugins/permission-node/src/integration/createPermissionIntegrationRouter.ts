@@ -175,7 +175,7 @@ export const createPermissionIntegrationRouter = <
   TResource,
 >(
   permissions: Permission[],
-  options: {
+  options?: {
     resourceType: TResourceType;
     // Do not infer value of TResourceType from supplied rules.
     // instead only consider the resourceType parameter, and
@@ -185,7 +185,6 @@ export const createPermissionIntegrationRouter = <
     getResources: (
       resourceRefs: string[],
     ) => Promise<Array<TResource | undefined>>;
-    permissions: Array<Permission>;
   },
 ): express.Router => {
   const router = Router();

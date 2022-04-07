@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
+import { FetchApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi, Permission } from '../types';
 
 export class PermissionAggregator {
   private readonly discovery: DiscoveryApi;
+  private readonly fetch: FetchApi;
 
   constructor(
     private readonly permissionedPlugins: string[],
-    options: { discovery: DiscoveryApi },
+    options: { discovery: DiscoveryApi; fetch: FetchApi },
   ) {
     this.discovery = options.discovery;
+    this.fetch = options.fetch;
   }
 
   async getAllPermissions(): Promise<Permission[]> {
@@ -31,7 +34,7 @@ export class PermissionAggregator {
     await Promise.all(
       this.permissionedPlugins.map(async pluginId => {
         const pluginApi = await this.discovery.getBaseUrl(pluginId);
-        const response = await fetch(
+        const response = await this.fetch.fetch(
           `${pluginApi}/.well-known/backstage/permissions/permission-list`,
         );
         const data = await response.json();

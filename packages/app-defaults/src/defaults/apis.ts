@@ -255,8 +255,9 @@ export const apis = [
     deps: {
       discovery: discoveryApiRef,
       config: configApiRef,
+      fetch: fetchApiRef,
     },
-    factory: ({ config, discovery }) =>
-      PermissionAggregationApi.create({ config, discovery }),
+    factory: ({ config, discovery, fetch }) =>
+      PermissionAggregationApi.create({ config, discovery, fetch }),
   }),
 ];
