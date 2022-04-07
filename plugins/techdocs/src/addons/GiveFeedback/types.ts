@@ -17,7 +17,7 @@
 /**
  * @public
  */
-export type Template = {
+export type GiveFeedbackTemplate = {
   title: string;
   body: string;
 };
@@ -25,7 +25,9 @@ export type Template = {
 /**
  * @public
  */
-export type TemplateBuilder = (selection: Selection) => Template;
+export type GiveFeedbackTemplateBuilder = (
+  selection: Selection,
+) => GiveFeedbackTemplate;
 
 export type Repository = {
   type: string;

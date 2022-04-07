@@ -16,6 +16,6 @@
 
 export type {
   GiveFeedbackProps,
-  Template,
-  TemplateBuilder,
+  GiveFeedbackTemplate,
+  GiveFeedbackTemplateBuilder,
 } from './GiveFeedback';
