@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
+interface AwsS3Config {
+  /**
+   * (Required) AWS S3 Bucket Name
+   * @visibility backend
+   */
+  bucketName: string;
+  /**
+   * (Optional) AWS S3 Object key prefix
+   * If not set, all keys will be accepted, no filtering will be applied.
+   * @visibility backend
+   */
+  prefix?: string;
+  /**
+   * (Optional) AWS Region.
+   * If not set, AWS_REGION environment variable or aws config file will be used.
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
+   * @visibility backend
+   */
+  region?: string;
+}
+
 export interface Config {
   catalog?: {
     /**
@@ -31,6 +52,17 @@ export interface Config {
           roleArn?: string;
         };
       };
+    };
+    /**
+     * List of provider-specific options and attributes
+     */
+    providers?: {
+      /**
+       * AwsS3EntityProvider configuration
+       *
+       * Uses "default" as default id for the single config variant.
+       */
+      awsS3?: AwsS3Config | Record<string, AwsS3Config>;
     };
   };
 }
