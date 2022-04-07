@@ -110,7 +110,7 @@ jobs:
         continue-on-error: true
 
       - name: prettier
-        run: yarn prettier:check '!ADOPTERS.md'
+        run: yarn prettier:check
 
       - name: lock
         run: yarn lock:check
