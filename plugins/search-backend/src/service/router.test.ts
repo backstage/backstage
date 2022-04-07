@@ -30,7 +30,7 @@ const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
     throw new Error('Not implemented');
   },
-  query: () => {
+  authorizeConditional: () => {
     throw new Error('Not implemented');
   },
 };

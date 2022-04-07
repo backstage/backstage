@@ -186,6 +186,11 @@ export class ServerPermissionClient implements PermissionEvaluator {
     options?: EvaluatorRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
   // (undocumented)
+  authorizeConditional(
+    queries: QueryPermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<PolicyDecision[]>;
+  // (undocumented)
   static fromConfig(
     config: Config,
     options: {
@@ -193,10 +198,5 @@ export class ServerPermissionClient implements PermissionEvaluator {
       tokenManager: TokenManager;
     },
   ): ServerPermissionClient;
-  // (undocumented)
-  query(
-    queries: QueryPermissionRequest[],
-    options?: EvaluatorRequestOptions,
-  ): Promise<PolicyDecision[]>;
 }
 ```

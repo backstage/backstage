@@ -104,7 +104,7 @@ export function toPermissionEvaluator(
 
       return response as DefinitivePolicyDecision[];
     },
-    query(
+    authorizeConditional(
       requests: QueryPermissionRequest[],
       options?: EvaluatorRequestOptions,
     ): Promise<QueryPermissionResponse[]> {

@@ -78,12 +78,13 @@ export class ServerPermissionClient implements PermissionEvaluator {
     this.tokenManager = options.tokenManager;
     this.permissionEnabled = options.permissionEnabled;
   }
-  async query(
+
+  async authorizeConditional(
     queries: QueryPermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<PolicyDecision[]> {
     return (await this.isEnabled(options?.token))
-      ? this.permissionClient.query(queries, options)
+      ? this.permissionClient.authorizeConditional(queries, options)
       : queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
   }
 

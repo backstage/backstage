@@ -131,9 +131,9 @@ export class PermissionClient implements PermissionEvaluator {
   }
 
   /**
-   * {@inheritdoc PermissionEvaluator.query}
+   * {@inheritdoc PermissionEvaluator.authorizeConditional}
    */
-  async query(
+  async authorizeConditional(
     queries: QueryPermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<QueryPermissionResponse[]> {

@@ -137,7 +137,7 @@ describe('ServerPermissionClient', () => {
     });
   });
 
-  describe('query', () => {
+  describe('authorizeConditional', () => {
     let mockAuthorizeHandler: jest.Mock;
 
     beforeEach(() => {
@@ -162,7 +162,9 @@ describe('ServerPermissionClient', () => {
         tokenManager: ServerTokenManager.noop(),
       });
 
-      await client.query([{ permission: testResourcePermission }]);
+      await client.authorizeConditional([
+        { permission: testResourcePermission },
+      ]);
 
       expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
@@ -174,9 +176,12 @@ describe('ServerPermissionClient', () => {
         tokenManager,
       });
 
-      await client.query([{ permission: testResourcePermission }], {
-        token: (await tokenManager.getToken()).token,
-      });
+      await client.authorizeConditional(
+        [{ permission: testResourcePermission }],
+        {
+          token: (await tokenManager.getToken()).token,
+        },
+      );
 
       expect(mockAuthorizeHandler).not.toHaveBeenCalled();
     });
@@ -188,9 +193,12 @@ describe('ServerPermissionClient', () => {
         tokenManager,
       });
 
-      await client.query([{ permission: testResourcePermission }], {
-        token: 'a-user-token',
-      });
+      await client.authorizeConditional(
+        [{ permission: testResourcePermission }],
+        {
+          token: 'a-user-token',
+        },
+      );
 
       expect(mockAuthorizeHandler).toHaveBeenCalled();
     });

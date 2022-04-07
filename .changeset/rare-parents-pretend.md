@@ -2,23 +2,20 @@
 '@backstage/create-app': patch
 ---
 
-Accept `PermissionEvaluator` together with the deprecated `PermissionAuthorizer`.
+Accept `PermissionEvaluator` instead of the deprecated `PermissionAuthorizer`.
 
 Apply the following to `packages/backend/src/types.ts`:
 
 ```diff
-- import { ServerPermissionClient } from '@backstage/plugin-permission-node';
-+ import {
-+  PermissionAuthorizer,
-+  PermissionEvaluator,
-+ } from '@backstage/plugin-permission-common';
+- import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
++ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
   export type PluginEnvironment = {
     ...
     discovery: PluginEndpointDiscovery;
     tokenManager: TokenManager;
     scheduler: PluginTaskScheduler;
--   permissions: ServerPermissionClient;
-+   permissions: PermissionEvaluator | PermissionAuthorizer;
+-   permissions: PermissionAuthorizer;
++   permissions: PermissionEvaluator;
   };
 ```

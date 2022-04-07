@@ -73,12 +73,12 @@ describe('AuthorizedSearchEngine', () => {
   const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
     jest.fn();
   const mockedPermissionQuery: jest.MockedFunction<
-    PermissionEvaluator['query']
+    PermissionEvaluator['authorizeConditional']
   > = jest.fn();
 
   const permissionEvaluator: PermissionEvaluator = {
     authorize: mockedAuthorize,
-    query: mockedPermissionQuery,
+    authorizeConditional: mockedPermissionQuery,
   };
 
   const defaultTypes: Record<string, DocumentTypeInfo> = {
@@ -122,7 +122,7 @@ describe('AuthorizedSearchEngine', () => {
   const options = { token: 'token' };
 
   const allowAll: PermissionEvaluator['authorize'] &
-    PermissionEvaluator['query'] = async queries => {
+    PermissionEvaluator['authorizeConditional'] = async queries => {
     return queries.map(() => ({
       result: AuthorizeResult.ALLOW,
     }));

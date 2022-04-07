@@ -53,7 +53,7 @@ describe('PermissionClient', () => {
   afterEach(() => server.resetHandlers());
 
   describe('authorize', () => {
-    const mockAuthorizeQuery = {
+    const mockAuthorizeConditional = {
       permission: mockPermission,
       resourceRef: 'foo:bar',
     };
@@ -78,12 +78,12 @@ describe('PermissionClient', () => {
     });
 
     it('should fetch entities from correct endpoint', async () => {
-      await client.authorize([mockAuthorizeQuery]);
+      await client.authorize([mockAuthorizeConditional]);
       expect(mockAuthorizeHandler).toHaveBeenCalled();
     });
 
     it('should include a request body', async () => {
-      await client.authorize([mockAuthorizeQuery]);
+      await client.authorize([mockAuthorizeConditional]);
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
 
@@ -98,21 +98,21 @@ describe('PermissionClient', () => {
     });
 
     it('should return the response from the fetch request', async () => {
-      const response = await client.authorize([mockAuthorizeQuery]);
+      const response = await client.authorize([mockAuthorizeConditional]);
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
     });
 
     it('should not include authorization headers if no token is supplied', async () => {
-      await client.authorize([mockAuthorizeQuery]);
+      await client.authorize([mockAuthorizeConditional]);
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
-      await client.authorize([mockAuthorizeQuery], { token });
+      await client.authorize([mockAuthorizeConditional], { token });
 
       const request = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
@@ -125,7 +125,7 @@ describe('PermissionClient', () => {
         },
       );
       await expect(
-        client.authorize([mockAuthorizeQuery], { token }),
+        client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrowError(/request failed with 401/i);
     });
 
@@ -140,7 +140,7 @@ describe('PermissionClient', () => {
         },
       );
       await expect(
-        client.authorize([mockAuthorizeQuery], { token }),
+        client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrowError(/items in response do not match request/i);
     });
 
@@ -158,7 +158,7 @@ describe('PermissionClient', () => {
         },
       );
       await expect(
-        client.authorize([mockAuthorizeQuery], { token }),
+        client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrowError(/invalid input/i);
     });
 
@@ -179,7 +179,7 @@ describe('PermissionClient', () => {
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
-      const response = await disabled.authorize([mockAuthorizeQuery]);
+      const response = await disabled.authorize([mockAuthorizeConditional]);
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
@@ -203,7 +203,7 @@ describe('PermissionClient', () => {
         discovery,
         config: new ConfigReader({}),
       });
-      const response = await disabled.authorize([mockAuthorizeQuery]);
+      const response = await disabled.authorize([mockAuthorizeConditional]);
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
@@ -211,8 +211,8 @@ describe('PermissionClient', () => {
     });
   });
 
-  describe('query', () => {
-    const mockResourceAuthorizeQuery = {
+  describe('authorizeConditional', () => {
+    const mockResourceAuthorizeConditional = {
       permission: mockPermission,
     };
 
@@ -247,12 +247,12 @@ describe('PermissionClient', () => {
     });
 
     it('should fetch entities from correct endpoint', async () => {
-      await client.query([mockResourceAuthorizeQuery]);
+      await client.authorizeConditional([mockResourceAuthorizeConditional]);
       expect(mockPolicyDecisionHandler).toHaveBeenCalled();
     });
 
     it('should include a request body', async () => {
-      await client.query([mockResourceAuthorizeQuery]);
+      await client.authorizeConditional([mockResourceAuthorizeConditional]);
 
       const request = mockPolicyDecisionHandler.mock.calls[0][0];
 
@@ -266,7 +266,9 @@ describe('PermissionClient', () => {
     });
 
     it('should return the response from the fetch request', async () => {
-      const response = await client.query([mockResourceAuthorizeQuery]);
+      const response = await client.authorizeConditional([
+        mockResourceAuthorizeConditional,
+      ]);
       expect(response[0]).toEqual(
         expect.objectContaining({
           result: AuthorizeResult.CONDITIONAL,
@@ -280,14 +282,14 @@ describe('PermissionClient', () => {
     });
 
     it('should not include authorization headers if no token is supplied', async () => {
-      await client.query([mockResourceAuthorizeQuery]);
+      await client.authorizeConditional([mockResourceAuthorizeConditional]);
 
       const request = mockPolicyDecisionHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
-      await client.query([mockResourceAuthorizeQuery], {
+      await client.authorizeConditional([mockResourceAuthorizeConditional], {
         token,
       });
 
@@ -302,7 +304,7 @@ describe('PermissionClient', () => {
         },
       );
       await expect(
-        client.query([mockResourceAuthorizeQuery], {
+        client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
         }),
       ).rejects.toThrowError(/request failed with 401/i);
@@ -319,7 +321,7 @@ describe('PermissionClient', () => {
         },
       );
       await expect(
-        client.query([mockResourceAuthorizeQuery], {
+        client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
         }),
       ).rejects.toThrowError(/items in response do not match request/i);
@@ -339,7 +341,7 @@ describe('PermissionClient', () => {
         },
       );
       await expect(
-        client.query([mockResourceAuthorizeQuery], {
+        client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
         }),
       ).rejects.toThrowError(/invalid input/i);
@@ -362,9 +364,12 @@ describe('PermissionClient', () => {
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
       });
-      const response = await disabled.query([mockResourceAuthorizeQuery], {
-        token,
-      });
+      const response = await disabled.authorizeConditional(
+        [mockResourceAuthorizeConditional],
+        {
+          token,
+        },
+      );
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );
@@ -388,9 +393,12 @@ describe('PermissionClient', () => {
         discovery,
         config: new ConfigReader({}),
       });
-      const response = await disabled.query([mockResourceAuthorizeQuery], {
-        token,
-      });
+      const response = await disabled.authorizeConditional(
+        [mockResourceAuthorizeConditional],
+        {
+          token,
+        },
+      );
       expect(response[0]).toEqual(
         expect.objectContaining({ result: AuthorizeResult.ALLOW }),
       );

@@ -163,7 +163,7 @@ export class PermissionClient implements PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
-  query(
+  authorizeConditional(
     queries: QueryPermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
@@ -192,7 +192,7 @@ export interface PermissionEvaluator {
     requests: AuthorizePermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
-  query(
+  authorizeConditional(
     requests: QueryPermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<QueryPermissionResponse[]>;

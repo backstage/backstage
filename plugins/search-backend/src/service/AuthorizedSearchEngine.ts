@@ -93,7 +93,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     const conditionFetcher = new DataLoader(
       (requests: readonly QueryPermissionRequest[]) =>
-        this.permissions.query(requests.slice(), options),
+        this.permissions.authorizeConditional(requests.slice(), options),
       {
         cacheKeyFn: ({ permission: { name } }) => name,
       },

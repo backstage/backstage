@@ -203,7 +203,7 @@ export type AuthorizePermissionRequest =
 export type AuthorizePermissionResponse = DefinitivePolicyDecision;
 
 /**
- * Request object for {@link PermissionEvaluator.query}.
+ * Request object for {@link PermissionEvaluator.authorizeConditional}.
  * @public
  */
 export type QueryPermissionRequest = {
@@ -212,7 +212,7 @@ export type QueryPermissionRequest = {
 };
 
 /**
- * Response object for {@link PermissionEvaluator.query}.
+ * Response object for {@link PermissionEvaluator.authorizeConditional}.
  * @public
  */
 export type QueryPermissionResponse = PolicyDecision;
@@ -239,7 +239,7 @@ export interface PermissionEvaluator {
    * backend may want to use {@link PermissionCriteria | conditions} in a database query instead of
    * evaluating each resource in memory.
    */
-  query(
+  authorizeConditional(
     requests: QueryPermissionRequest[],
     options?: EvaluatorRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
