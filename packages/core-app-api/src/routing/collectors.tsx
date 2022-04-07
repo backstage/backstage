@@ -19,7 +19,7 @@ import {
   getComponentData,
   BackstagePlugin,
 } from '@backstage/core-plugin-api';
-import { isValidElement } from 'react';
+import { isValidElement, ReactNode, Children } from 'react';
 import { BackstageRouteObject } from './types';
 import { createCollector } from '../extensions/traversal';
 import { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
@@ -35,58 +35,148 @@ export const MATCH_ALL_ROUTE: BackstageRouteObject = {
   routeRefs: new Set(),
 };
 
-interface RoutingCollectorParentContext {
-  path?: string;
+interface RoutingV2CollectorContext {
   routeRef?: RouteRef;
+  gatherPath?: string;
+  gatherRouteRef?: RouteRef;
   obj?: BackstageRouteObject;
   isElementAncestor?: boolean;
 }
 
-export const routingCollector = createCollector(
+function collectSubTree(
+  node: ReactNode,
+  entries = new Array<{ routeRef: RouteRef; plugin?: BackstagePlugin }>(),
+) {
+  Children.forEach(node, element => {
+    if (!isValidElement(element)) {
+      return;
+    }
+
+    if (element.props.path) {
+      throw new Error(
+        'Elements within the element prop tree may not contain paths',
+      );
+    }
+
+    const routeRef = getComponentData<RouteRef>(element, 'core.mountPoint');
+    if (routeRef) {
+      const plugin = getComponentData<BackstagePlugin>(element, 'core.plugin');
+      entries.push({ routeRef, plugin });
+    }
+
+    collectSubTree(element.props.children, entries);
+  });
+
+  return entries;
+}
+
+export const routingV2Collector = createCollector(
   () => ({
     paths: new Map<RouteRef, string>(),
     parents: new Map<RouteRef, RouteRef | undefined>(),
     objects: new Array<BackstageRouteObject>(),
   }),
-  (acc, node, parentElement, parent?: RoutingCollectorParentContext) => {
-    let currentObj = parent?.obj;
-    const isElement = parentElement?.props.element === node;
-    const isElementAncestor = parent?.isElementAncestor || isElement;
-    const parentChildren = currentObj?.children ?? acc.objects;
-
+  (acc, node, parent, ctx?: RoutingV2CollectorContext) => {
     const path: string | undefined = node.props?.path;
-    if (path && !isElementAncestor) {
-      currentObj = {
-        path,
-        element: 'mounted',
-        routeRefs: new Set(),
-        caseSensitive: Boolean(node.props?.caseSensitive),
-        children: [MATCH_ALL_ROUTE],
-        // TODO(Rugvip): This is borked
-        plugin: getComponentData<BackstagePlugin>(
-          node.props.element,
-          'core.plugin',
-        ),
-      };
-      parentChildren.push(currentObj);
+
+    const mountPoint = getComponentData<RouteRef>(node, 'core.mountPoint');
+    if (mountPoint) {
+      if (path) {
+        throw new Error(
+          'Path property may not be set directly on a routable extension',
+        );
+      }
     }
 
-    const routeRef = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (routeRef) {
-      currentObj?.routeRefs.add(routeRef);
-      acc.parents.set(routeRef, parent?.routeRef);
+    // If we're in an element prop, ignore everything
+    if (ctx?.isElementAncestor) {
+      return ctx;
+    }
+    // Start ignoring everything if we enter an element prop
+    if (parent?.props.element === node) {
+      return { ...ctx, isElementAncestor: true };
+    }
 
-      if (!parent?.path) {
-        throw new Error('Mounted routable extension must have a path');
+    let currentObj = ctx?.obj;
+    const parentChildren = currentObj?.children ?? acc.objects;
+
+    if (path) {
+      const elementProp = node.props.element;
+
+      if (getComponentData<boolean>(node, 'core.gatherMountPoints')) {
+        if (elementProp) {
+          throw new Error('Mount point gatherers may not have an element prop');
+        }
+
+        currentObj = {
+          path,
+          element: 'gathered',
+          routeRefs: new Set(),
+          caseSensitive: Boolean(node.props?.caseSensitive),
+          children: [MATCH_ALL_ROUTE],
+          plugin: undefined,
+        };
+        parentChildren.push(currentObj);
+
+        return {
+          obj: currentObj,
+          gatherPath: path,
+          routeRef: ctx?.routeRef,
+          gatherRouteRef: ctx?.routeRef,
+        };
       }
-      acc.paths.set(routeRef, isElement ? parent?.path : path ?? parent?.path);
+
+      if (elementProp) {
+        const [{ routeRef, plugin }, ...others] = collectSubTree(elementProp);
+        if (others.length > 0) {
+          throw new Error(
+            'Route element may not contain multiple routable extensions',
+          );
+        }
+
+        currentObj = {
+          path,
+          element: 'mounted',
+          routeRefs: new Set([routeRef]),
+          caseSensitive: Boolean(node.props?.caseSensitive),
+          children: [MATCH_ALL_ROUTE],
+          plugin,
+        };
+        parentChildren.push(currentObj);
+        acc.parents.set(routeRef, ctx?.routeRef);
+        acc.paths.set(routeRef, path);
+
+        return {
+          obj: currentObj,
+          routeRef: routeRef ?? ctx?.routeRef,
+          gatherPath: path,
+          gatherRouteRef: ctx?.gatherRouteRef,
+        };
+      }
+    }
+
+    if (mountPoint) {
+      if (!ctx?.gatherPath) {
+        throw new Error('Routable extension must be assigned a path');
+      }
+
+      ctx?.obj?.routeRefs.add(mountPoint);
+      acc.parents.set(mountPoint, ctx?.gatherRouteRef);
+      acc.paths.set(mountPoint, ctx.gatherPath);
+
+      return {
+        obj: currentObj,
+        routeRef: mountPoint,
+        gatherPath: ctx?.gatherPath,
+        gatherRouteRef: ctx?.gatherRouteRef,
+      };
     }
 
     return {
       obj: currentObj,
-      path: path ?? parent?.path,
-      routeRef: routeRef ?? parent?.routeRef,
-      isElementAncestor,
+      routeRef: ctx?.routeRef,
+      gatherPath: ctx?.gatherPath,
+      gatherRouteRef: ctx?.gatherRouteRef,
     };
   },
 );
