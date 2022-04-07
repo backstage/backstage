@@ -6,11 +6,11 @@ _This plugin was created through the Backstage CLI_
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/cloud-carbon-footprint-backend](http://localhost:3000/cloud-carbon-footprint-backend).
+Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to http://localhost:3000/cloud-carbon-footprint-backend.
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+It is only meant for local development, and the setup for it can be found inside the `/dev` directory.
 
 ## Configuration
 
@@ -24,7 +24,7 @@ To see data, set follow the setup for one or more of the cloud providers.
 
 Follow the first three steps given [here](https://www.cloudcarbonfootprint.org/docs/gcp).
 
-Then, put relevant values into the Backstage config (see the schema [here](./config.d.ts)). They will be injected into to CCF config.
+Then, put relevant values into the Backstage config (see the schema in `./config.d.ts`). They will be injected into to CCF config.
 
 Here is an example of the recommended billing-based approach with GCP:
 
@@ -42,7 +42,7 @@ cloudCarbonFootprint:
 
 Follow the first four steps given [here](https://www.cloudcarbonfootprint.org/docs/aws/)
 
-Then, put relevant values into the Backstage config (see the schema [here](./config.d.ts)). They will be injected into to CCF config.
+Then, put relevant values into the Backstage config (see the schema in `./config.d.ts`). They will be injected into to CCF config.
 
 Here is an example of the recommended billing-based approach with AWS:
 
@@ -63,7 +63,7 @@ cloudCarbonFootprint:
 
 Follow the first three steps given [here](https://www.cloudcarbonfootprint.org/docs/azure/)
 
-Then, put relevant values into the Backstage config (see the schema [here](./config.d.ts)). They will be injected into to CCF config.
+Then, put relevant values into the Backstage config (see the schema in `./config.d.ts`). They will be injected into to CCF config.
 
 Here is an example of the recommended billing-based approach with Azure:
 
