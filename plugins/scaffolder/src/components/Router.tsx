@@ -49,6 +49,11 @@ export type RouterProps = {
       | ComponentType<{ template: TemplateEntityV1beta3 }>
       | undefined;
     TaskPageComponent?: ComponentType<{}>;
+    TaskPageExtraAction?: {
+      component: React.ReactNode;
+      showOnSuccess?: boolean;
+      style?: React.CSSProperties;
+    };
   };
   groups?: Array<{
     title?: React.ReactNode;
@@ -74,7 +79,8 @@ export type RouterProps = {
 export const Router = (props: RouterProps) => {
   const { groups, components = {}, defaultPreviewTemplate } = props;
 
-  const { TemplateCardComponent, TaskPageComponent } = components;
+  const { TemplateCardComponent, TaskPageComponent, TaskPageExtraAction } =
+    components;
 
   const outlet = useOutlet();
   const TaskPageElement = TaskPageComponent ?? TaskPage;
@@ -118,7 +124,10 @@ export const Router = (props: RouterProps) => {
           </SecretsContextProvider>
         }
       />
-      <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
+      <Route
+        path={scaffolderTaskRouteRef.path}
+        element={<TaskPageElement extraAction={TaskPageExtraAction} />}
+      />
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route
         path={editRouteRef.path}

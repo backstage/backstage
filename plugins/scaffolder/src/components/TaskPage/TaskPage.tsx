@@ -65,7 +65,8 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2),
     },
     actionsContainer: {
-      marginBottom: theme.spacing(2),
+      display: 'flex',
+      flexDirection: 'row',
     },
     resetContainer: {
       padding: theme.spacing(3),
@@ -222,20 +223,27 @@ const hasLinks = ({ links = [] }: ScaffolderTaskOutput): boolean =>
 /**
  * TaskPageProps for constructing a TaskPage
  * @param loadingText - Optional loading text shown before a task begins executing.
+ * @param extraAction - Optional component displays extra actions. It can be displayed either before task begin or task completed with showOnSuccess param. You can pass style to action container
  *
  * @public
  */
 export type TaskPageProps = {
   loadingText?: string;
+  extraAction?: {
+    component: React.ReactNode;
+    showOnSuccess?: boolean;
+    style?: React.CSSProperties;
+  };
 };
 
 /**
  * TaskPage for showing the status of the taskId provided as a param
  * @param loadingText - Optional loading text shown before a task begins executing.
+ * @param extraAction - Optional component displays extra actions. It can be displayed either before task begin or task completed with showOnSuccess param. You can pass to action container.
  *
  * @public
  */
-export const TaskPage = ({ loadingText }: TaskPageProps) => {
+export const TaskPage = ({ loadingText, extraAction }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const rootPath = useRouteRef(rootRouteRef);
@@ -246,6 +254,11 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const [lastActiveStepId, setLastActiveStepId] = useState<string | undefined>(
     undefined,
   );
+  const {
+    component: actionComponent,
+    showOnSuccess = true,
+    style: actionContainerStyle,
+  } = extraAction || {};
   const { taskId } = useParams();
   const taskStream = useTaskEventStream(taskId);
   const completed = taskStream.completed;
@@ -337,15 +350,23 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
                   {output && hasLinks(output) && (
                     <TaskPageLinks output={output} />
                   )}
-                  <Button
-                    className={classes.button}
-                    onClick={handleStartOver}
-                    disabled={!completed}
-                    variant="contained"
-                    color="primary"
+                  <Grid
+                    className={classes.actionsContainer}
+                    style={actionContainerStyle}
                   >
-                    Start Over
-                  </Button>
+                    <Button
+                      className={classes.button}
+                      onClick={handleStartOver}
+                      disabled={!completed}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Start Over
+                    </Button>
+                    {showOnSuccess
+                      ? output && actionComponent
+                      : actionComponent}
+                  </Grid>
                 </Paper>
               </Grid>
               <Grid item xs={9}>
