@@ -25,12 +25,13 @@ type Transforms = {
 
 type TransformOptions = {
   isDev: boolean;
+  isBackend?: boolean;
 };
 
 export const transforms = (options: TransformOptions): Transforms => {
-  const { isDev } = options;
+  const { isDev, isBackend } = options;
 
-  const extraTransforms = isDev ? ['react-hot-loader'] : [];
+  const extraTransforms = isDev && !isBackend ? ['react-hot-loader'] : [];
 
   // This ensures that styles inserted from the style-loader and any
   // async style chunks are always given lower priority than JSS styles.
