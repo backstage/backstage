@@ -19,6 +19,7 @@ export type ConfigSchema = {
 // @public
 export type ConfigSchemaProcessingOptions = {
   visibility?: ConfigVisibility[];
+  ignoreSchemaErrors?: boolean;
   valueTransform?: TransformFunc<any>;
   withFilteredKeys?: boolean;
   withDeprecatedKeys?: boolean;

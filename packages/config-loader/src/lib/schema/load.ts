@@ -82,18 +82,26 @@ export async function loadConfigSchema(
   return {
     process(
       configs: AppConfig[],
-      { visibility, valueTransform, withFilteredKeys, withDeprecatedKeys } = {},
+      {
+        visibility,
+        valueTransform,
+        withFilteredKeys,
+        withDeprecatedKeys,
+        ignoreSchemaErrors,
+      } = {},
     ): AppConfig[] {
       const result = validate(configs);
 
-      const visibleErrors = filterErrorsByVisibility(
-        result.errors,
-        visibility,
-        result.visibilityByDataPath,
-        result.visibilityBySchemaPath,
-      );
-      if (visibleErrors.length > 0) {
-        throw errorsToError(visibleErrors);
+      if (!ignoreSchemaErrors) {
+        const visibleErrors = filterErrorsByVisibility(
+          result.errors,
+          visibility,
+          result.visibilityByDataPath,
+          result.visibilityBySchemaPath,
+        );
+        if (visibleErrors.length > 0) {
+          throw errorsToError(visibleErrors);
+        }
       }
 
       let processedConfigs = configs;
