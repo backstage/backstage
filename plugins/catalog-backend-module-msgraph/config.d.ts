@@ -79,6 +79,14 @@ export interface Config {
            * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
            */
           groupSearch?: string;
+
+          /**
+           * The fields to be fetched on query.
+           *
+           * E.g. ["id", "displayName", "description"]
+           */
+          groupSelect?: string[];
+
           /**
            * The filter to apply to extract users by groups memberships.
            *

@@ -88,6 +88,14 @@ export type MicrosoftGraphProviderConfig = {
    * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
    */
   groupSearch?: string;
+
+  /**
+   * The fields to be fetched on query.
+   *
+   * E.g. ["id", "displayName", "description"]
+   */
+  groupSelect?: string[];
+
   /**
    * By default, the Microsoft Graph API only provides the basic feature set
    * for querying. Certain features are limited to advanced query capabilities
@@ -145,6 +153,7 @@ export function readMicrosoftGraphConfig(
       );
     }
 
+    const groupSelect = providerConfig.getOptionalStringArray('groupSelect');
     const queryMode = providerConfig.getOptionalString('queryMode');
     if (
       queryMode !== undefined &&
@@ -167,6 +176,7 @@ export function readMicrosoftGraphConfig(
       groupExpand,
       groupFilter,
       groupSearch,
+      groupSelect,
       queryMode,
     });
   }

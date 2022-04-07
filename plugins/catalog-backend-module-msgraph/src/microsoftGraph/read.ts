@@ -343,6 +343,7 @@ export async function readMicrosoftGraphGroups(
     groupExpand?: string;
     groupFilter?: string;
     groupSearch?: string;
+    groupSelect?: string[];
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
   },
@@ -373,6 +374,7 @@ export async function readMicrosoftGraphGroups(
       expand: options?.groupExpand,
       search: options?.groupSearch,
       filter: options?.groupFilter,
+      select: options?.groupSelect,
     },
     options?.queryMode,
   )) {
@@ -535,6 +537,7 @@ export async function readMicrosoftGraphOrg(
     groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
+    groupSelect?: string[];
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
@@ -571,6 +574,7 @@ export async function readMicrosoftGraphOrg(
       queryMode: options.queryMode,
       groupSearch: options.groupSearch,
       groupFilter: options.groupFilter,
+      groupSelect: options.groupSelect,
       groupTransformer: options.groupTransformer,
       organizationTransformer: options.organizationTransformer,
     });
