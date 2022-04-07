@@ -77,15 +77,13 @@ export const routingV2Collector = createCollector(
     objects: new Array<BackstageRouteObject>(),
   }),
   (acc, node, parent, ctx?: RoutingV2CollectorContext) => {
-    const path: string | undefined = node.props?.path;
+    const path: unknown = node.props?.path;
 
     const mountPoint = getComponentData<RouteRef>(node, 'core.mountPoint');
-    if (mountPoint) {
-      if (path) {
-        throw new Error(
-          'Path property may not be set directly on a routable extension',
-        );
-      }
+    if (mountPoint && path) {
+      throw new Error(
+        'Path property may not be set directly on a routable extension',
+      );
     }
 
     // If we're in an element prop, ignore everything
@@ -97,10 +95,13 @@ export const routingV2Collector = createCollector(
       return { ...ctx, isElementAncestor: true };
     }
 
-    let currentObj = ctx?.obj;
-    const parentChildren = currentObj?.children ?? acc.objects;
+    const parentChildren = ctx?.obj?.children ?? acc.objects;
 
     if (path) {
+      if (typeof path !== 'string') {
+        throw new Error('Element path must be a string');
+      }
+
       const elementProp = node.props.element;
 
       if (getComponentData<boolean>(node, 'core.gatherMountPoints')) {
@@ -108,18 +109,18 @@ export const routingV2Collector = createCollector(
           throw new Error('Mount point gatherers may not have an element prop');
         }
 
-        currentObj = {
+        const newObj = {
           path,
           element: 'gathered',
-          routeRefs: new Set(),
+          routeRefs: new Set<RouteRef>(),
           caseSensitive: Boolean(node.props?.caseSensitive),
           children: [MATCH_ALL_ROUTE],
           plugin: undefined,
         };
-        parentChildren.push(currentObj);
+        parentChildren.push(newObj);
 
         return {
-          obj: currentObj,
+          obj: newObj,
           gatherPath: path,
           routeRef: ctx?.routeRef,
           gatherRouteRef: ctx?.routeRef,
@@ -134,7 +135,7 @@ export const routingV2Collector = createCollector(
           );
         }
 
-        currentObj = {
+        const newObj = {
           path,
           element: 'mounted',
           routeRefs: new Set([routeRef]),
@@ -142,12 +143,12 @@ export const routingV2Collector = createCollector(
           children: [MATCH_ALL_ROUTE],
           plugin,
         };
-        parentChildren.push(currentObj);
-        acc.parents.set(routeRef, ctx?.routeRef);
+        parentChildren.push(newObj);
         acc.paths.set(routeRef, path);
+        acc.parents.set(routeRef, ctx?.routeRef);
 
         return {
-          obj: currentObj,
+          obj: newObj,
           routeRef: routeRef ?? ctx?.routeRef,
           gatherPath: path,
           gatherRouteRef: ctx?.gatherRouteRef,
@@ -161,23 +162,16 @@ export const routingV2Collector = createCollector(
       }
 
       ctx?.obj?.routeRefs.add(mountPoint);
-      acc.parents.set(mountPoint, ctx?.gatherRouteRef);
       acc.paths.set(mountPoint, ctx.gatherPath);
+      acc.parents.set(mountPoint, ctx?.gatherRouteRef);
 
       return {
-        obj: currentObj,
+        ...ctx,
         routeRef: mountPoint,
-        gatherPath: ctx?.gatherPath,
-        gatherRouteRef: ctx?.gatherRouteRef,
       };
     }
 
-    return {
-      obj: currentObj,
-      routeRef: ctx?.routeRef,
-      gatherPath: ctx?.gatherPath,
-      gatherRouteRef: ctx?.gatherRouteRef,
-    };
+    return ctx;
   },
 );
 
