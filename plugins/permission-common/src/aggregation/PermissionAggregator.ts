@@ -15,6 +15,7 @@
  */
 
 import { FetchApi } from '@backstage/core-plugin-api';
+import { aggregatedPermissionsReadPermission } from '..';
 import { DiscoveryApi, Permission } from '../types';
 
 export class PermissionAggregator {
@@ -30,7 +31,8 @@ export class PermissionAggregator {
   }
 
   async getAllPermissions(): Promise<Permission[]> {
-    const allPermissions: Permission[] = [];
+    // permissions for aggregation itself must be included manually
+    const allPermissions: Permission[] = [aggregatedPermissionsReadPermission];
     await Promise.all(
       this.permissionedPlugins.map(async pluginId => {
         const pluginApi = await this.discovery.getBaseUrl(pluginId);

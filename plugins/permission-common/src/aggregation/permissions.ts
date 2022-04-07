@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { PermissionAggregator } from './PermissionAggregator';
-export { aggregatedPermissionsReadPermission } from './permissions';
+import { createPermission } from '../permissions';
+
+export const aggregatedPermissionsReadPermission = createPermission({
+  name: 'permission.aggregation.read',
+  attributes: { action: 'read' },
+});

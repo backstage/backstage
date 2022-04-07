@@ -58,7 +58,13 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
-  router.use(createPermissionIntegrationRouter([jenkinsExecutePermission]));
+  if (options.permissions) {
+    router.use(
+      createPermissionIntegrationRouter(options.permissions, [
+        jenkinsExecutePermission,
+      ]),
+    );
+  }
 
   router.get(
     '/v1/entity/:namespace/:kind/:name/projects',
