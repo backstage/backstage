@@ -182,6 +182,7 @@ export type MicrosoftGraphProviderConfig = {
   groupExpand?: string;
   groupFilter?: string;
   groupSearch?: string;
+  groupSelect?: string[];
   queryMode?: 'basic' | 'advanced';
 };
 
@@ -219,6 +220,7 @@ export function readMicrosoftGraphOrg(
     groupExpand?: string;
     groupSearch?: string;
     groupFilter?: string;
+    groupSelect?: string[];
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
