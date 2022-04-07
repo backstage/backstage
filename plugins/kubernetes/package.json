@@ -46,7 +46,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@types/react": "^16.13.1 || ^17.0.0",
-    "cronstrue": "^1.122.0",
+    "cronstrue": "^2.2.0",
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
