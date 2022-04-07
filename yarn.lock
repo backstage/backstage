@@ -10069,10 +10069,10 @@ cron@^1.8.2:
   dependencies:
     moment-timezone "^0.5.x"
 
-cronstrue@^1.122.0:
-  version "1.125.0"
-  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-1.125.0.tgz#8030816d033d00caade9b2a9f9b71e69175bcf42"
-  integrity sha512-qkC5mVbVGuuyBVXmam5anaRtbLcgfBUKajoyZqCdf/XBdgF43PsLSEm8eEi2dsI3YbqDPbLSH2mWNzM1dVqHgQ==
+cronstrue@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-2.2.0.tgz#8e02b8ef0fa70a9eab9999f1f838df4bd378b471"
+  integrity sha512-oM/ftAvCNIdygVGGfYp8gxrVc81mDSA2mff0kvu6+ehrZhfYPzGHG8DVcFdrRVizjHnzWoFIlgEq6KTM/9lPBw==
 
 cross-env@^7.0.0:
   version "7.0.3"
