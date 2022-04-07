@@ -21,7 +21,7 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 
 import { Link, GitHubIcon } from '@backstage/core-components';
 
-import { Template, Repository } from './types';
+import { GiveFeedbackTemplate, Repository } from './types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type FeedbackLinkProps = {
-  template: Template;
+  template: GiveFeedbackTemplate;
   repository: Repository;
 };
 
@@ -54,7 +54,7 @@ const getName = ({ type }: Repository) => {
   return 'Gitlab';
 };
 
-const getUrl = (repository: Repository, template: Template) => {
+const getUrl = (repository: Repository, template: GiveFeedbackTemplate) => {
   const { title, body } = template;
   const { protocol, resource, owner, name, type } = repository;
   const url = `${protocol}://${resource}/${owner}/${name}`;

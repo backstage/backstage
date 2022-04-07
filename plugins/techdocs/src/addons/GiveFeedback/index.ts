@@ -16,4 +16,7 @@
 
 export { GiveFeedback } from './GiveFeedback';
 export type { GiveFeedbackProps } from './GiveFeedback';
-export type { Template, TemplateBuilder } from './types';
+export type {
+  GiveFeedbackTemplate,
+  GiveFeedbackTemplateBuilder,
+} from './types';

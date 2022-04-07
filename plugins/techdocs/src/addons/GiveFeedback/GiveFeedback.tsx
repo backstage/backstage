@@ -19,7 +19,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles, Portal, Paper } from '@material-ui/core';
 
 import { useGitTemplate, useGitRepository } from './hooks';
-import { TemplateBuilder } from './types';
+import { GiveFeedbackTemplateBuilder } from './types';
 import {
   PAGE_MAIN_CONTENT_SELECTOR,
   PAGE_FEEDBACK_LINK_SELECTOR,
@@ -53,7 +53,7 @@ type Style = {
  */
 export type GiveFeedbackProps = {
   debounceTime?: number;
-  templateBuilder?: TemplateBuilder;
+  templateBuilder?: GiveFeedbackTemplateBuilder;
 };
 
 /**

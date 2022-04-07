@@ -161,8 +161,19 @@ export const GiveFeedbackAddon: ComponentType<GiveFeedbackProps>;
 // @public (undocumented)
 export type GiveFeedbackProps = {
   debounceTime?: number;
-  templateBuilder?: TemplateBuilder;
+  templateBuilder?: GiveFeedbackTemplateBuilder;
 };
+
+// @public (undocumented)
+export type GiveFeedbackTemplate = {
+  title: string;
+  body: string;
+};
+
+// @public (undocumented)
+export type GiveFeedbackTemplateBuilder = (
+  selection: Selection,
+) => GiveFeedbackTemplate;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;
@@ -494,15 +505,6 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }
-
-// @public (undocumented)
-export type Template = {
-  title: string;
-  body: string;
-};
-
-// @public (undocumented)
-export type TemplateBuilder = (selection: Selection) => Template;
 
 // @public
 export const useEntityMetadata: () => AsyncState<TechDocsEntityMetadata>;
