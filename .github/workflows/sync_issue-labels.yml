@@ -5,6 +5,7 @@ on:
 jobs:
   label-issue:
     runs-on: ubuntu-latest
+    if: github.repository == 'backstage/backstage'
     steps:
       - name: View context attributes
         uses: actions/github-script@v6
