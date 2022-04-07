@@ -24,7 +24,7 @@ export function setupRequestMockHandlers(worker: {
   close: () => void;
   resetHandlers: () => void;
 }) {
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  beforeAll(() => worker.listen({}));
   afterAll(() => worker.close());
   afterEach(() => worker.resetHandlers());
 }
