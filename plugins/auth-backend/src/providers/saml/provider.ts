@@ -130,20 +130,6 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-export const samlNameIdEntityNameSignInResolver: SignInResolver<
-  SamlAuthResult
-> = async (info, ctx) => {
-  const id = info.result.fullProfile.nameID;
-
-  if (!id) {
-    throw new AuthenticationError('No nameID found in SAML response');
-  }
-
-  return ctx.signInWithCatalogUser({
-    entityRef: { name: id },
-  });
-};
-
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
 /**
@@ -224,6 +210,24 @@ export const saml = createAuthProviderIntegration({
       });
     };
   },
+  resolvers: {
+    /**
+     * Looks up the user by matching their nameID to the entity name.
+     */
+    byNameId(): SignInResolver<SamlAuthResult> {
+      return async (info, ctx) => {
+        const id = info.result.fullProfile.nameID;
+
+        if (!id) {
+          throw new AuthenticationError('No nameID found in SAML response');
+        }
+
+        return ctx.signInWithCatalogUser({
+          entityRef: { name: id },
+        });
+      };
+    },
+  },
 });
 
 /**
@@ -231,3 +235,9 @@ export const saml = createAuthProviderIntegration({
  * @deprecated Use `providers.saml.create` instead
  */
 export const createSamlProvider = saml.create;
+
+/**
+ * @public
+ * @deprecated Use `providers.saml.resolvers.byNameId()` instead.
+ */
+export const samlNameIdEntityNameSignInResolver = saml.resolvers.byNameId();
