@@ -33,17 +33,53 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     providerFactories: {
       ...defaultAuthProviderFactories,
-      google: providers.google.create({
+
+      // NOTE: DO NOT add this many resolvers in your own instance!
+      //       It is important that each real user always gets resolved to
+      //       the same sign-in identity. The code below will not do that.
+      //       It is here for demo purposes only.
+      github: providers.github.create({
         signIn: {
-          resolver({ profile }, ctx) {
-            if (!profile.email) {
-              throw new Error(
-                'Login failed, user profile does not contain an email',
-              );
-            }
+          resolver: providers.github.resolvers.byUsername(),
+        },
+      }),
+      gitlab: providers.gitlab.create({
+        signIn: {
+          async resolver({ result: { fullProfile } }, ctx) {
             return ctx.signInWithCatalogUser({
               entityRef: {
-                name: profile.email.split('@')[0],
+                name: fullProfile.id,
+              },
+            });
+          },
+        },
+      }),
+      microsoft: providers.microsoft.create({
+        signIn: {
+          resolver: providers.microsoft.resolvers.lookupEmailAnnotation(),
+        },
+      }),
+      google: providers.google.create({
+        signIn: {
+          resolver: providers.google.resolvers.byEmailLocalPart(),
+        },
+      }),
+      okta: providers.okta.create({
+        signIn: {
+          resolver: providers.okta.resolvers.lookupEmailAnnotation(),
+        },
+      }),
+      bitbucket: providers.bitbucket.create({
+        signIn: {
+          resolver: providers.bitbucket.resolvers.lookupUsernameAnnotation(),
+        },
+      }),
+      onelogin: providers.onelogin.create({
+        signIn: {
+          async resolver({ result: { fullProfile } }, ctx) {
+            return ctx.signInWithCatalogUser({
+              entityRef: {
+                name: fullProfile.id,
               },
             });
           },
