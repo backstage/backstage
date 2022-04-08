@@ -16,11 +16,9 @@
 
 import { AtlassianAuthProvider } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TokenIssuer } from '../../identity';
-import { CatalogIdentityClient } from '../../lib/catalog';
 import { OAuthResult } from '../../lib/oauth';
 import { PassportProfile } from '../../lib/passport/types';
+import { AuthResolverContext } from '../types';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -28,19 +26,8 @@ const mockFrameHandler = jest.spyOn(
 ) as unknown as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
 
 describe('createAtlassianProvider', () => {
-  const tokenIssuer = {
-    issueToken: jest.fn(),
-    listPublicKeys: jest.fn(),
-  };
-  const catalogIdentityClient = {
-    findUser: jest.fn(),
-  };
-
   const provider = new AtlassianAuthProvider({
-    logger: getVoidLogger(),
-    catalogIdentityClient:
-      catalogIdentityClient as unknown as CatalogIdentityClient,
-    tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+    resolverContext: {} as AuthResolverContext,
     authHandler: async ({ fullProfile }) => ({
       profile: {
         email: fullProfile.emails![0]!.value,
