@@ -186,23 +186,6 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
   }
 }
 
-export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Microsoft profile contained no email');
-  }
-
-  return ctx.signInWithCatalogUser({
-    annotations: {
-      'microsoft.com/email': profile.email,
-    },
-  });
-};
-
 /**
  * @deprecated This type has been inlined into the create method and will be removed.
  */
@@ -285,6 +268,26 @@ export const microsoft = createAuthProviderIntegration({
         });
       });
   },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email to the `microsoft.com/email` annotation.
+     */
+    lookupEmailAnnotation(): SignInResolver<OAuthResult> {
+      return async (info, ctx) => {
+        const { profile } = info;
+
+        if (!profile.email) {
+          throw new Error('Microsoft profile contained no email');
+        }
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'microsoft.com/email': profile.email,
+          },
+        });
+      };
+    },
+  },
 });
 
 /**
@@ -292,3 +295,10 @@ export const microsoft = createAuthProviderIntegration({
  * @deprecated Use `providers.microsoft.create` instead
  */
 export const createMicrosoftProvider = microsoft.create;
+
+/**
+ * @public
+ * @deprecated Use `providers.microsoft.resolvers.lookupEmailAnnotation()` instead.
+ */
+export const microsoftEmailSignInResolver =
+  microsoft.resolvers.lookupEmailAnnotation();
