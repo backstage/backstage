@@ -5982,9 +5982,9 @@
     "@types/ssh2" "*"
 
 "@types/dockerode@^3.2.7", "@types/dockerode@^3.3.0":
-  version "3.3.7"
-  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.3.7.tgz#e5a1083c026bc8fef4b3f7dbb05ee98f72c79732"
-  integrity sha512-vxRyHVyYJOkLdquTZLNtKDPnPM4+6P/kXZRRb0axbx6WcBVZycmzeXvnllspKXvkjR5mG02IX3IFmkO9RfR0fw==
+  version "3.3.8"
+  resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.3.8.tgz#afb844b8e8cf54160e1686832903a1444912ff79"
+  integrity sha512-/Hip29GzPBWfbSS87lyQDVoB7Ja+kr8oOFWXsySxNFa7jlyj3Yws8LaZRmn1xZl7uJH3Xxsg0oI09GHpT1pIBw==
   dependencies:
     "@types/docker-modem" "*"
     "@types/node" "*"
@@ -6415,10 +6415,10 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@>= 8", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^16.9.2":
-  version "16.11.6"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.6.tgz#6bef7a2a0ad684cf6e90fcfe31cecabd9ce0a3ae"
-  integrity sha512-ua7PgUoeQFjmWPcoo9khiPum3Pd60k4/2ZGXt18sm2Slk0W0xZTqt5Y0Ny1NyBiN1EVQ/+FaF9NcY4Qe6rwk5w==
+"@types/node@*", "@types/node@>= 8", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^16.11.26", "@types/node@^16.9.2":
+  version "16.11.26"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.26.tgz#63d204d136c9916fb4dcd1b50f9740fe86884e47"
+  integrity sha512-GZ7bu5A6+4DtG7q9GsoHXy3ALcgeIHP4NnL0Vv2wu0uUB/yQex26v0tf6/na1mm0+bS9Uw+0DFex7aaKr2qawQ==
 
 "@types/node@12.20.24", "@types/node@^12.7.1":
   version "12.20.24"
@@ -6439,11 +6439,6 @@
   version "15.14.9"
   resolved "https://registry.npmjs.org/@types/node/-/node-15.14.9.tgz#bc43c990c3c9be7281868bbc7b8fdd6e2b57adfa"
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
-
-"@types/node@^16.11.26":
-  version "16.11.26"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.26.tgz#63d204d136c9916fb4dcd1b50f9740fe86884e47"
-  integrity sha512-GZ7bu5A6+4DtG7q9GsoHXy3ALcgeIHP4NnL0Vv2wu0uUB/yQex26v0tf6/na1mm0+bS9Uw+0DFex7aaKr2qawQ==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -6566,12 +6561,12 @@
   resolved "https://registry.npmjs.org/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
 
-"@types/react-dom@*", "@types/react-dom@>=16.9.0":
-  version "17.0.14"
-  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.14.tgz#c8f917156b652ddf807711f5becbd2ab018dea9f"
-  integrity sha512-H03xwEP1oXmSfl3iobtmQ/2dHF5aBHr8aUMwyGZya6OW45G+xtdzmq6HkncefiBt5JU8DVyaWl/nWZbjZCnzAQ==
+"@types/react-dom@*", "@types/react-dom@>=16.9.0", "@types/react-dom@^17":
+  version "17.0.15"
+  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.15.tgz#f2c8efde11521a4b7991e076cb9c70ba3bb0d156"
+  integrity sha512-Tr9VU9DvNoHDWlmecmcsE5ZZiUkYx+nKBzum4Oxe1K0yJVyBlfbq7H3eXjxXqJczBKqPGq3EgfTru4MgKb9+Yw==
   dependencies:
-    "@types/react" "*"
+    "@types/react" "^17"
 
 "@types/react-helmet@^6.1.0":
   version "6.1.5"
@@ -6639,7 +6634,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@>=16.9.0", "@types/react@^16.13.1 || ^17.0.0", "@types/react@^17.0.39":
+"@types/react@*", "@types/react@>=16.9.0", "@types/react@^16.13.1 || ^17.0.0", "@types/react@^17":
   version "17.0.44"
   resolved "https://registry.npmjs.org/@types/react/-/react-17.0.44.tgz#c3714bd34dd551ab20b8015d9d0dbec812a51ec7"
   integrity sha512-Ye0nlw09GeMp2Suh8qoOv0odfgCoowfM/9MG6WeRD60Gq9wS90bdkdRtYbRkNhXOpG4H+YXGvj4wOWhAC0LJ1g==
