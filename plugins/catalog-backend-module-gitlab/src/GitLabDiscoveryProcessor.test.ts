@@ -24,26 +24,36 @@ import { GitLabProject } from './lib';
 
 const server = setupServer();
 
-const PROJECTS_URL = 'https://gitlab.fake/api/v4/projects';
-const GROUP_PROJECTS_URL =
-  'https://gitlab.fake/api/v4/groups/group%2Fsubgroup/projects';
+const DOMAIN = 'gitlab.fake';
+const SERVER_URL = `https://${DOMAIN}`;
+const API_URL = `${SERVER_URL}/api/v4`;
+const PROJECTS_URL = `${API_URL}/projects`;
+const GROUP_PROJECTS_URL = `${API_URL}/groups/group%2Fsubgroup/projects`;
 
 const PROJECT_LOCATION: LocationSpec = {
   type: 'gitlab-discovery',
-  target: 'https://gitlab.fake/blob/*/catalog-info.yaml',
+  target: `${SERVER_URL}/blob/*/catalog-info.yaml`,
 };
 const PROJECT_LOCATION_MASTER_BRANCH: LocationSpec = {
   type: 'gitlab-discovery',
-  target: 'https://gitlab.fake/blob/master/catalog-info.yaml',
+  target: `${SERVER_URL}/blob/master/catalog-info.yaml`,
 };
 const GROUP_LOCATION: LocationSpec = {
   type: 'gitlab-discovery',
-  target: 'https://gitlab.fake/group/subgroup/blob/*/catalog-info.yaml',
+  target: `${SERVER_URL}/group/subgroup/blob/*/catalog-info.yaml`,
+};
+
+const GROUP_LOCATION_CUSTOM_BRANCH: LocationSpec = {
+  type: 'gitlab-discovery',
+  target: `${SERVER_URL}/group/subgroup/blob/test/catalog-info.yaml`,
 };
 
 function setupFakeServer(
   url: string,
-  callback: (request: { page: number; include_subgroups: boolean }) => {
+  list_projects_callback: (request: {
+    page: number;
+    include_subgroups: boolean;
+  }) => {
     data: GitLabProject[];
     nextPage?: number;
   },
@@ -55,7 +65,7 @@ function setupFakeServer(
       }
       const page = req.url.searchParams.get('page');
       const include_subgroups = req.url.searchParams.get('include_subgroups');
-      const response = callback({
+      const response = list_projects_callback({
         page: parseInt(page!, 10),
         include_subgroups: include_subgroups === 'true',
       });
@@ -75,6 +85,20 @@ function setupFakeServer(
         ctx.json(filteredData),
       );
     }),
+    rest.head(
+      `${API_URL}/projects/:project_path/repository/files/:file_path`,
+      (req, res, ctx) => {
+        if (req.headers.get('private-token') !== 'test-token') {
+          return res(ctx.status(401), ctx.json({}));
+        }
+        const ref = req.url.searchParams.get('ref');
+
+        if (ref === 'main' || ref === 'master') {
+          return res(ctx.status(200));
+        }
+        return res(ctx.status(404));
+      },
+    ),
   );
 }
 
@@ -86,8 +110,8 @@ function getConfig(): any {
     integrations: {
       gitlab: [
         {
-          host: 'gitlab.fake',
-          apiBaseUrl: 'https://gitlab.fake/api/v4',
+          host: DOMAIN,
+          apiBaseUrl: API_URL,
           token: 'test-token',
         },
       ],
@@ -163,6 +187,15 @@ describe('GitlabDiscoveryProcessor', () => {
                   default_branch: 'main',
                   last_activity_at: '2021-08-05T11:03:05.774Z',
                   web_url: 'https://gitlab.fake/1',
+                  path_with_namespace: '1',
+                },
+                {
+                  id: 2,
+                  archived: false,
+                  default_branch: 'main',
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/g/2',
+                  path_with_namespace: 'g/2',
                 },
               ],
               nextPage: 2,
@@ -171,25 +204,28 @@ describe('GitlabDiscoveryProcessor', () => {
             return {
               data: [
                 {
-                  id: 2,
-                  archived: false,
-                  default_branch: 'master',
-                  last_activity_at: '2021-08-05T11:03:05.774Z',
-                  web_url: 'https://gitlab.fake/2',
-                },
-                {
                   id: 3,
-                  archived: true, // ARCHIVED
+                  archived: false,
                   default_branch: 'master',
                   last_activity_at: '2021-08-05T11:03:05.774Z',
                   web_url: 'https://gitlab.fake/3',
+                  path_with_namespace: '3',
                 },
                 {
                   id: 4,
+                  archived: true, // ARCHIVED
+                  default_branch: 'master',
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/4',
+                  path_with_namespace: '4',
+                },
+                {
+                  id: 5,
                   archived: false,
                   default_branch: undefined, // MISSING DEFAULT BRANCH
                   last_activity_at: '2021-08-05T11:03:05.774Z',
-                  web_url: 'https://gitlab.fake/4',
+                  web_url: 'https://gitlab.fake/g/5',
+                  path_with_namespace: 'g/5',
                 },
               ],
             };
@@ -215,7 +251,15 @@ describe('GitlabDiscoveryProcessor', () => {
           type: 'location',
           location: {
             type: 'url',
-            target: 'https://gitlab.fake/2/-/blob/master/catalog-info.yaml',
+            target: 'https://gitlab.fake/g/2/-/blob/main/catalog-info.yaml',
+            presence: 'optional',
+          },
+        },
+        {
+          type: 'location',
+          location: {
+            type: 'url',
+            target: 'https://gitlab.fake/3/-/blob/master/catalog-info.yaml',
             presence: 'optional',
           },
         },
@@ -235,6 +279,7 @@ describe('GitlabDiscoveryProcessor', () => {
                   default_branch: 'main',
                   last_activity_at: '2021-08-05T11:03:05.774Z',
                   web_url: 'https://gitlab.fake/1',
+                  path_with_namespace: '1',
                 },
               ],
             };
@@ -275,6 +320,7 @@ describe('GitlabDiscoveryProcessor', () => {
                   default_branch: 'main',
                   last_activity_at: '2021-08-05T11:03:05.774Z',
                   web_url: 'https://gitlab.fake/1',
+                  path_with_namespace: '1',
                 },
               ],
             };
@@ -291,6 +337,47 @@ describe('GitlabDiscoveryProcessor', () => {
       expect(result).toHaveLength(1);
     });
 
+    it('can filter based on file existing', async () => {
+      const processor = getProcessor();
+      setupFakeServer(GROUP_PROJECTS_URL, request => {
+        if (!request.include_subgroups) {
+          throw new Error('include_subgroups should be set');
+        }
+        switch (request.page) {
+          case 1:
+            return {
+              data: [
+                {
+                  id: 1,
+                  archived: false,
+                  default_branch: 'main',
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/1',
+                  path_with_namespace: '1',
+                },
+                {
+                  id: 1,
+                  archived: false,
+                  default_branch: 'main',
+                  last_activity_at: '2021-08-05T11:03:05.774Z',
+                  web_url: 'https://gitlab.fake/g/2',
+                  path_with_namespace: 'g/2',
+                },
+              ],
+            };
+          default:
+            throw new Error('Invalid request');
+        }
+      });
+
+      const result: any[] = [];
+      await processor.readLocation(GROUP_LOCATION_CUSTOM_BRANCH, false, e => {
+        result.push(e);
+      });
+      // If everything was set up correctly, we should have received the fake repo specified above
+      expect(result).toHaveLength(0);
+    });
+
     it('uses the previous scan timestamp to filter', async () => {
       const processor = getProcessor();
       setupFakeServer(PROJECTS_URL, request => {
@@ -304,6 +391,7 @@ describe('GitlabDiscoveryProcessor', () => {
                   default_branch: 'main',
                   last_activity_at: '2000-01-01T00:00:00Z',
                   web_url: 'https://gitlab.fake/1',
+                  path_with_namespace: '1',
                 },
                 {
                   id: 2,
@@ -311,6 +399,7 @@ describe('GitlabDiscoveryProcessor', () => {
                   default_branch: 'main',
                   last_activity_at: '2002-01-01T00:00:00Z',
                   web_url: 'https://gitlab.fake/2',
+                  path_with_namespace: '2',
                 },
               ],
             };
