@@ -219,10 +219,9 @@ export type AuthProviderFactory = (options: {
   providerId: string;
   globalConfig: AuthProviderConfig;
   config: Config;
+  logger: Logger;
   resolverContext: AuthResolverContext;
 
-  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
-  logger: Logger;
   /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
   tokenManager: TokenManager;
   /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
