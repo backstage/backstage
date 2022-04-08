@@ -2,4 +2,4 @@
 '@backstage/plugin-api-docs': patch
 ---
 
-Add dedicated grpc api definition widget
+Add dedicated gRPC api definition widget
