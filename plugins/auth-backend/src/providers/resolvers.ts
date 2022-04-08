@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import { SignInResolver } from './types';
 
+/**
+ * A common sign-in resolver that looks up the user using the local part of
+ * their email address as the entity name.
+ */
 export const commonByEmailLocalPartResolver: SignInResolver<unknown> = async (
   info,
   ctx,
@@ -29,23 +29,9 @@ export const commonByEmailLocalPartResolver: SignInResolver<unknown> = async (
   if (!profile.email) {
     throw new Error('Login failed, user profile does not contain an email');
   }
-  const [userId] = profile.email.split('@');
+  const [localPart] = profile.email.split('@');
 
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
+  return ctx.signInWithCatalogUser({
+    entityRef: { name: localPart },
   });
-  const ownershipEntityRefs =
-    await ctx.catalogIdentityClient.resolveCatalogMembership({
-      entityRefs: [entityRef],
-    });
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: ownershipEntityRefs,
-    },
-  });
-
-  return { id: userId, token };
 };
