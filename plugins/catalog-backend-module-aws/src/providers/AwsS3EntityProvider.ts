@@ -63,6 +63,9 @@ export class AwsS3EntityProvider implements EntityProvider {
     // In this case, we still want the first one though, but have no means to select it
     // just from the bucket name (and region).
     const integration = ScmIntegrations.fromConfig(configRoot).awsS3.list()[0];
+    if (!integration) {
+      throw new Error('No integration found for awsS3');
+    }
 
     return providerConfigs.map(
       providerConfig =>
