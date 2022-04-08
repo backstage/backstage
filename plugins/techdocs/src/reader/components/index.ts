@@ -16,7 +16,6 @@
 
 export type {
   TechDocsReaderPageProps,
-  TechDocsReaderLayoutProps,
   TechDocsReaderPageValue,
   TechDocsReaderPageProviderProps,
   TechDocsReaderPageProviderRenderFunction,
@@ -27,7 +26,6 @@ export {
   useEntityMetadata,
   useTechDocsMetadata,
   useTechDocsReaderPage,
-  TechDocsReaderLayout,
   TechDocsReaderPageProvider,
 } from './TechDocsReaderPage';
 export * from './TechDocsReaderPageHeader';
