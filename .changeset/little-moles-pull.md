@@ -6,7 +6,7 @@ Add type resolutions for `@types/react` and `types/react-dom`.
 
 The reason for this is the usage of `"@types/react": "*"` as a dependency which is very common practice in react packages. This recently resolves to react 18 which introduces several breaking changes in both internal and external packages.
 
-To apply these changes to your existing installation. Add a resolutions block to your `package.json`
+To apply these changes to your existing installation, add a resolutions block to your `package.json`
 
 ```json
   "resolutions": {
