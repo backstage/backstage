@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
@@ -53,9 +54,15 @@ class DifferentlyTypedDocumentDecoratorFactory extends TestDocumentDecoratorFact
 describe('IndexBuilder', () => {
   let testSearchEngine: SearchEngine;
   let testIndexBuilder: IndexBuilder;
+  let testScheduledTaskRunner: TaskRunner;
 
   beforeEach(() => {
     const logger = getVoidLogger();
+    testScheduledTaskRunner = {
+      run: async (task: TaskInvocationDefinition & { fn: () => void }) => {
+        task.fn();
+      },
+    };
     testSearchEngine = new LunrSearchEngine({ logger });
     testIndexBuilder = new IndexBuilder({
       logger,
@@ -65,35 +72,32 @@ describe('IndexBuilder', () => {
 
   describe('addCollator', () => {
     it('adds a collator', async () => {
-      jest.useFakeTimers();
       const testCollatorFactory = new TestDocumentCollatorFactory();
       const collatorSpy = jest.spyOn(testCollatorFactory, 'getCollator');
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        defaultRefreshIntervalSeconds: 6,
         factory: testCollatorFactory,
+        schedule: testScheduledTaskRunner,
       });
 
       // Build the index and ensure the collator was invoked.
       const { scheduler } = await testIndexBuilder.build();
       scheduler.start();
-      jest.advanceTimersByTime(6000);
       expect(collatorSpy).toHaveBeenCalled();
     });
   });
 
   describe('addDecorator', () => {
     it('adds a decorator', async () => {
-      jest.useFakeTimers();
       const testCollatorFactory = new TestDocumentCollatorFactory();
       const testDecoratorFactory = new TestDocumentDecoratorFactory();
       const decoratorSpy = jest.spyOn(testDecoratorFactory, 'getDecorator');
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        defaultRefreshIntervalSeconds: 6,
         factory: testCollatorFactory,
+        schedule: testScheduledTaskRunner,
       });
 
       // Add a decorator.
@@ -104,14 +108,12 @@ describe('IndexBuilder', () => {
       // Build the index and ensure the decorator was invoked.
       const { scheduler } = await testIndexBuilder.build();
       scheduler.start();
-      jest.advanceTimersByTime(6000);
       // wait for async decorator execution
       await Promise.resolve();
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
     it('adds a type-specific decorator', async () => {
-      jest.useFakeTimers();
       const testCollatorFactory = new TypedDocumentCollatorFactory();
       const testDecoratorFactory = new TypedDocumentDecoratorFactory();
       jest.spyOn(testCollatorFactory, 'getCollator');
@@ -119,8 +121,8 @@ describe('IndexBuilder', () => {
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        defaultRefreshIntervalSeconds: 6,
         factory: testCollatorFactory,
+        schedule: testScheduledTaskRunner,
       });
 
       // Add a decorator for the same type.
@@ -131,7 +133,6 @@ describe('IndexBuilder', () => {
       // Build the index and ensure the decorator was invoked.
       const { scheduler } = await testIndexBuilder.build();
       scheduler.start();
-      jest.advanceTimersByTime(6000);
       // wait for async decorator execution
       await Promise.resolve();
       expect(decoratorSpy).toHaveBeenCalled();
@@ -146,8 +147,8 @@ describe('IndexBuilder', () => {
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        defaultRefreshIntervalSeconds: 6,
         factory: testCollatorFactory,
+        schedule: testScheduledTaskRunner,
       });
 
       // Add a decorator for a different type.
@@ -158,7 +159,6 @@ describe('IndexBuilder', () => {
       // Build the index and ensure the decorator was not invoked.
       const { scheduler } = await testIndexBuilder.build();
       scheduler.start();
-      jest.advanceTimersByTime(6000);
       expect(collatorSpy).toHaveBeenCalled();
       expect(decoratorSpy).not.toHaveBeenCalled();
     });
