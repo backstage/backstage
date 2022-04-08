@@ -14,8 +14,36 @@
  * limitations under the License.
  */
 
+import { atlassian } from './atlassian/provider';
+import { auth0 } from './auth0/provider';
+import { awsAlb } from './aws-alb/provider';
+import { bitbucket } from './bitbucket/provider';
+import { gcpIap } from './gcp-iap/provider';
+import { github } from './github/provider';
+import { gitlab } from './gitlab/provider';
 import { google } from './google/provider';
+import { microsoft } from './microsoft/provider';
+import { oauth2 } from './oauth2/provider';
+import { oauth2Proxy } from './oauth2-proxy/provider';
+import { oidc } from './oidc/provider';
+import { okta } from './okta/provider';
+import { onelogin } from './onelogin/provider';
+import { saml } from './saml/provider';
 
 export const providers = Object.freeze({
+  atlassian,
+  auth0,
+  awsAlb,
+  bitbucket,
+  gcpIap,
+  github,
+  gitlab,
   google,
+  microsoft,
+  oauth2,
+  oauth2Proxy,
+  oidc,
+  okta,
+  onelogin,
+  saml,
 });
