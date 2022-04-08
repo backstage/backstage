@@ -17,7 +17,6 @@
 import express from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { getEntityClaims } from '../../lib/catalog';
 import {
   encodeState,
   OAuthAdapter,
@@ -189,6 +188,11 @@ export type GoogleProviderOptions = {
   };
 };
 
+/**
+ * Auth provider integration for Google auth
+ *
+ * @public
+ */
 export const google = createAuthProviderIntegration({
   create(options?: {
     /**
@@ -239,7 +243,13 @@ export const google = createAuthProviderIntegration({
       });
   },
   resolvers: {
+    /**
+     * Looks up the user by matching their email local part to the entity name.
+     */
     byEmailLocalPart: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the `google.com/email` annotation.
+     */
     lookupEmailAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { profile } = info;
@@ -248,27 +258,25 @@ export const google = createAuthProviderIntegration({
           throw new Error('Google profile contained no email');
         }
 
-        const entity = await ctx.catalogIdentityClient.findUser({
+        return ctx.signInWithCatalogUser({
           annotations: {
             'google.com/email': profile.email,
           },
         });
-
-        const claims = getEntityClaims(entity);
-        const token = await ctx.tokenIssuer.issueToken({ claims });
-
-        return { id: entity.metadata.name, entity, token };
       };
     },
   },
 });
 
 /**
+ * @public
  * @deprecated Use `providers.google.create` instead.
  */
 export const createGoogleProvider = google.create;
 
 /**
- * @deprecated Use `google.resolvers.lookupEmailAnnotation` instead.
+ * @public
+ * @deprecated Use `providers.google.resolvers.lookupEmailAnnotation()` instead.
  */
-export const googleEmailSignInResolver = google.resolvers.lookupEmailAnnotation;
+export const googleEmailSignInResolver =
+  google.resolvers.lookupEmailAnnotation();
