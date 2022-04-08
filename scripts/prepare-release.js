@@ -40,6 +40,43 @@ const DEPENDENCY_TYPES = [
 ];
 
 /**
+ * Finds the current stable release version of the repo, looking at
+ * the current commit and backwards, finding the first commit were a
+ * stable version is present.
+ */
+async function findCurrentReleaseVersion(repo) {
+  const rootPkgPath = path.resolve(repo.root.dir, 'package.json');
+  const pkg = await fs.readJson(rootPkgPath);
+
+  if (!semver.prerelease(pkg.version)) {
+    return pkg.version;
+  }
+
+  const { stdout: revListStr } = await execFile('git', [
+    'rev-list',
+    'HEAD',
+    '--',
+    'package.json',
+  ]);
+  const revList = revListStr.trim().split(/\r?\n/);
+
+  for (const rev of revList) {
+    const { stdout: pkgJsonStr } = await execFile('git', [
+      'show',
+      `${rev}:package.json`,
+    ]);
+    if (pkgJsonStr) {
+      const pkgJson = JSON.parse(pkgJsonStr);
+      if (!semver.prerelease(pkgJson.version)) {
+        return pkgJson.version;
+      }
+    }
+  }
+
+  throw new Error('No stable release found');
+}
+
+/**
  * Finds the tip of the patch branch of a given release version.
  * Returns undefined if no patch branch exists.
  */
@@ -63,7 +100,7 @@ async function findTipOfPatchBranch(repo, release) {
  * Returns a map of packages to their versions for any package version
  * in <ref> that does not match the current version in the working directory.
  */
-async function detectPatchVersionsForRef(repo, ref) {
+async function detectPatchVersionsBetweenRefs(repo, baseRef, ref) {
   const patchVersions = new Map();
 
   for (const pkg of repo.packages) {
@@ -72,20 +109,29 @@ async function detectPatchVersionsForRef(repo, ref) {
       'package.json',
     );
     try {
+      const { stdout: basePkgJsonStr } = await execFile('git', [
+        'show',
+        `${baseRef}:${pkgJsonPath}`,
+      ]);
+
       const { stdout: pkgJsonStr } = await execFile('git', [
         'show',
         `${ref}:${pkgJsonPath}`,
       ]);
-      if (pkgJsonStr) {
+      if (basePkgJsonStr && pkgJsonStr) {
+        const basePkgJson = JSON.parse(basePkgJsonStr);
         const releasePkgJson = JSON.parse(pkgJsonStr);
-        const pkgJson = pkg.packageJson;
-        if (releasePkgJson.name !== pkgJson.name) {
+
+        if (releasePkgJson.private) {
+          continue;
+        }
+        if (releasePkgJson.name !== basePkgJson.name) {
           throw new Error(
-            `Mismatched package name at ${pkg.dir}, ${releasePkgJson.name} !== ${pkgJson.name}`,
+            `Mismatched package name at ${pkg.dir}, ${releasePkgJson.name} !== ${basePkgJson.name}`,
           );
         }
-        if (releasePkgJson.version !== pkgJson.version) {
-          patchVersions.set(pkgJson.name, releasePkgJson.version);
+        if (releasePkgJson.version !== basePkgJson.version) {
+          patchVersions.set(basePkgJson.name, releasePkgJson.version);
         }
       }
     } catch (error) {
@@ -110,24 +156,33 @@ async function detectPatchVersionsForRef(repo, ref) {
 async function applyPatchVersions(repo, patchVersions) {
   const pendingVersionBumps = new Map();
 
-  for (const [name, version] of patchVersions) {
+  for (const [name, patchVersion] of patchVersions) {
     const pkg = repo.packages.find(p => p.packageJson.name === name);
     if (!pkg) {
       throw new Error(`Package ${name} not found`);
     }
 
-    if (!semver.valid(version)) {
-      throw new Error(`Invalid base version ${version} for package ${name}`);
+    if (!semver.valid(patchVersion)) {
+      throw new Error(
+        `Invalid base version ${patchVersion} for package ${name}`,
+      );
     }
 
-    let targetVersion = version;
+    if (semver.gte(pkg.packageJson.version, patchVersion)) {
+      console.log(
+        `No need to bump ${name} ${pkg.packageJson.version} is already ahead of ${patchVersion}`,
+      );
+      continue;
+    }
+
+    let targetVersion = patchVersion;
 
     // If we're currently in a pre-release we need to manually execute the
     // patch bump up to the next version. And we also need to make sure we
     // resume the releases at the same pre-release tag.
     const currentPrerelease = semver.prerelease(pkg.packageJson.version);
     if (currentPrerelease) {
-      const parsed = targetVersion.parse(version);
+      const parsed = semver.parse(targetVersion);
       parsed.inc('patch');
       parsed.prerelease = currentPrerelease;
       targetVersion = parsed.format();
@@ -182,15 +237,18 @@ async function applyPatchVersions(repo, patchVersions) {
  * the main branch, and then bumps all packages in the repo accordingly.
  */
 async function updatePackageVersions(repo) {
-  const rootPkgPath = path.resolve(repo.root.dir, 'package.json');
-  const { version: currentRelease } = await fs.readJson(rootPkgPath);
+  const currentRelease = await findCurrentReleaseVersion(repo);
   console.log(`Current release version: ${currentRelease}`);
 
   const patchRef = await findTipOfPatchBranch(repo, currentRelease);
   if (patchRef) {
     console.log(`Tip of the patch branch: ${patchRef}`);
 
-    const patchVersions = await detectPatchVersionsForRef(repo, patchRef);
+    const patchVersions = await detectPatchVersionsBetweenRefs(
+      repo,
+      `v${currentRelease}`,
+      patchRef,
+    );
     if (patchVersions.size > 0) {
       console.log(
         `Found ${patchVersions.size} packages that were patched since the last release`,
