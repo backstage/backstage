@@ -38,11 +38,11 @@ import {
 } from '../../lib/passport';
 import {
   RedirectInfo,
-  AuthProviderFactory,
   AuthHandler,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -188,56 +188,67 @@ export type Auth0ProviderOptions = {
   };
 };
 
-/** @public */
-export const createAuth0Provider = (options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
+/**
+ * Auth provider integration for auth0 auth
+ *
+ * @public
+ */
+export const auth0 = createAuthProviderIntegration({
+  create(options?: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
      */
-    resolver: SignInResolver<OAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const domain = envConfig.getString('domain');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const domain = envConfig.getString('domain');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-      const signInResolver = options?.signIn?.resolver;
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
 
-      const provider = new Auth0AuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        domain,
-        authHandler,
-        signInResolver,
-        resolverContext,
+        const signInResolver = options?.signIn?.resolver;
+
+        const provider = new Auth0AuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          domain,
+          authHandler,
+          signInResolver,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: true,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: true,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @deprecated Use `providers.auth0.create` instead.
+ */
+export const createAuth0Provider = auth0.create;
