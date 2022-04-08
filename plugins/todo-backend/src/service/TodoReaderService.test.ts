@@ -333,7 +333,8 @@ describe('TodoReaderService', () => {
       metadata: {
         ...mockEntity.metadata,
         annotations: {
-          ['backstage.io/managed-by-location']: 'file:../managed-by-location.yaml',
+          ['backstage.io/managed-by-location']:
+            'file:../managed-by-location.yaml',
         },
       },
     });
