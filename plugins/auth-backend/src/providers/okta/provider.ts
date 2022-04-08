@@ -37,12 +37,12 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  AuthProviderFactory,
   AuthHandler,
   RedirectInfo,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { StateStore } from 'passport-oauth2';
 
 type PrivateInfo = {
@@ -226,60 +226,73 @@ export type OktaProviderOptions = {
   };
 };
 
-export const createOktaProvider = (_options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
+/**
+ * Auth provider integration for Okta auth
+ *
+ * @public
+ */
+export const okta = createAuthProviderIntegration({
+  create(options?: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
      */
-    resolver: SignInResolver<OAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const audience = envConfig.getString('audience');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    authHandler?: AuthHandler<OAuthResult>;
 
-      // This is a safe assumption as `passport-okta-oauth` uses the audience
-      // as the base for building the authorization, token, and user info URLs.
-      // https://github.com/fischerdan/passport-okta-oauth/blob/ea9ac42d/lib/passport-okta-oauth/oauth2.js#L12-L14
-      if (!audience.startsWith('https://')) {
-        throw new Error("URL for 'audience' must start with 'https://'.");
-      }
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const audience = envConfig.getString('audience');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-      const authHandler: AuthHandler<OAuthResult> = _options?.authHandler
-        ? _options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+        // This is a safe assumption as `passport-okta-oauth` uses the audience
+        // as the base for building the authorization, token, and user info URLs.
+        // https://github.com/fischerdan/passport-okta-oauth/blob/ea9ac42d/lib/passport-okta-oauth/oauth2.js#L12-L14
+        if (!audience.startsWith('https://')) {
+          throw new Error("URL for 'audience' must start with 'https://'.");
+        }
 
-      const provider = new OktaAuthProvider({
-        audience,
-        clientId,
-        clientSecret,
-        callbackUrl,
-        authHandler,
-        signInResolver: _options?.signIn?.resolver,
-        resolverContext,
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
+
+        const provider = new OktaAuthProvider({
+          audience,
+          clientId,
+          clientSecret,
+          callbackUrl,
+          authHandler,
+          signInResolver: options?.signIn?.resolver,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.okta.create` instead
+ */
+export const createOktaProvider = okta.create;

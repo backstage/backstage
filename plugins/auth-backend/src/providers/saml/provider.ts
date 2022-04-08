@@ -28,13 +28,13 @@ import {
 } from '../../lib/passport';
 import {
   AuthProviderRouteHandlers,
-  AuthProviderFactory,
   AuthHandler,
   SignInResolver,
   AuthResponse,
   AuthResolverContext,
 } from '../types';
 import { postMessageResponse } from '../../lib/flow';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { AuthenticationError, isError } from '@backstage/errors';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 
@@ -167,55 +167,67 @@ export type SamlProviderOptions = {
   };
 };
 
-/** @public */
-export const createSamlProvider = (options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<SamlAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
+/**
+ * Auth provider integration for SAML auth
+ *
+ * @public
+ */
+export const saml = createAuthProviderIntegration({
+  create(options?: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
      */
-    resolver: SignInResolver<SamlAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) => {
-    const authHandler: AuthHandler<SamlAuthResult> = options?.authHandler
-      ? options.authHandler
-      : async ({ fullProfile }) => ({
-          profile: {
-            email: fullProfile.email,
-            displayName: fullProfile.displayName,
-          },
-        });
+    authHandler?: AuthHandler<SamlAuthResult>;
 
-    return new SamlAuthProvider({
-      callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
-      entryPoint: config.getString('entryPoint'),
-      logoutUrl: config.getOptionalString('logoutUrl'),
-      audience: config.getOptionalString('audience'),
-      issuer: config.getString('issuer'),
-      cert: config.getString('cert'),
-      privateKey: config.getOptionalString('privateKey'),
-      authnContext: config.getOptionalStringArray('authnContext'),
-      identifierFormat: config.getOptionalString('identifierFormat'),
-      decryptionPvk: config.getOptionalString('decryptionPvk'),
-      signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
-        | SignatureAlgorithm
-        | undefined,
-      digestAlgorithm: config.getOptionalString('digestAlgorithm'),
-      acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<SamlAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) => {
+      const authHandler: AuthHandler<SamlAuthResult> = options?.authHandler
+        ? options.authHandler
+        : async ({ fullProfile }) => ({
+            profile: {
+              email: fullProfile.email,
+              displayName: fullProfile.displayName,
+            },
+          });
 
-      appUrl: globalConfig.appUrl,
-      authHandler,
-      signInResolver: options?.signIn?.resolver,
-      resolverContext,
-    });
-  };
-};
+      return new SamlAuthProvider({
+        callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
+        entryPoint: config.getString('entryPoint'),
+        logoutUrl: config.getOptionalString('logoutUrl'),
+        audience: config.getOptionalString('audience'),
+        issuer: config.getString('issuer'),
+        cert: config.getString('cert'),
+        privateKey: config.getOptionalString('privateKey'),
+        authnContext: config.getOptionalStringArray('authnContext'),
+        identifierFormat: config.getOptionalString('identifierFormat'),
+        decryptionPvk: config.getOptionalString('decryptionPvk'),
+        signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
+          | SignatureAlgorithm
+          | undefined,
+        digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+        acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
+
+        appUrl: globalConfig.appUrl,
+        authHandler,
+        signInResolver: options?.signIn?.resolver,
+        resolverContext,
+      });
+    };
+  },
+});
+
+/**
+ * @public
+ * @deprecated Use `providers.saml.create` instead
+ */
+export const createSamlProvider = saml.create;

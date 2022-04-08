@@ -27,7 +27,6 @@ import {
 } from '../../lib/passport';
 import {
   RedirectInfo,
-  AuthProviderFactory,
   AuthHandler,
   SignInResolver,
   StateEncoder,
@@ -42,6 +41,7 @@ import {
   encodeState,
   OAuthRefreshRequest,
 } from '../../lib/oauth';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 const ACCESS_TOKEN_PREFIX = 'access-token.';
 
@@ -279,91 +279,106 @@ export type GithubProviderOptions = {
   stateEncoder?: StateEncoder;
 };
 
-export const createGithubProvider = (options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<GithubOAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
+/**
+ * Auth provider integration for GitHub auth
+ *
+ * @public
+ */
+export const github = createAuthProviderIntegration({
+  create(options?: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
      */
-    resolver: SignInResolver<GithubOAuthResult>;
-  };
+    authHandler?: AuthHandler<GithubOAuthResult>;
 
-  /**
-   * The state encoder used to encode the 'state' parameter on the OAuth request.
-   *
-   * It should return a string that takes the state params (from the request), url encodes the params
-   * and finally base64 encodes them.
-   *
-   * Providing your own stateEncoder will allow you to add addition parameters to the state field.
-   *
-   * It is typed as follows:
-   *   `export type StateEncoder = (input: OAuthState) => Promise<{encodedState: string}>;`
-   *
-   * Note: the stateEncoder must encode a 'nonce' value and an 'env' value. Without this, the OAuth flow will fail
-   * (These two values will be set by the req.state by default)
-   *
-   * For more information, please see the helper module in ../../oauth/helpers #readState
-   */
-  stateEncoder?: StateEncoder;
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const enterpriseInstanceUrl = envConfig
-        .getOptionalString('enterpriseInstanceUrl')
-        ?.replace(/\/$/, '');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const authorizationUrl = enterpriseInstanceUrl
-        ? `${enterpriseInstanceUrl}/login/oauth/authorize`
-        : undefined;
-      const tokenUrl = enterpriseInstanceUrl
-        ? `${enterpriseInstanceUrl}/login/oauth/access_token`
-        : undefined;
-      const userProfileUrl = enterpriseInstanceUrl
-        ? `${enterpriseInstanceUrl}/api/v3/user`
-        : undefined;
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<GithubOAuthResult>;
+    };
 
-      const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile }) => ({
-            profile: makeProfileInfo(fullProfile),
+    /**
+     * The state encoder used to encode the 'state' parameter on the OAuth request.
+     *
+     * It should return a string that takes the state params (from the request), url encodes the params
+     * and finally base64 encodes them.
+     *
+     * Providing your own stateEncoder will allow you to add addition parameters to the state field.
+     *
+     * It is typed as follows:
+     *   `export type StateEncoder = (input: OAuthState) => Promise<{encodedState: string}>;`
+     *
+     * Note: the stateEncoder must encode a 'nonce' value and an 'env' value. Without this, the OAuth flow will fail
+     * (These two values will be set by the req.state by default)
+     *
+     * For more information, please see the helper module in ../../oauth/helpers #readState
+     */
+    stateEncoder?: StateEncoder;
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const enterpriseInstanceUrl = envConfig
+          .getOptionalString('enterpriseInstanceUrl')
+          ?.replace(/\/$/, '');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const authorizationUrl = enterpriseInstanceUrl
+          ? `${enterpriseInstanceUrl}/login/oauth/authorize`
+          : undefined;
+        const tokenUrl = enterpriseInstanceUrl
+          ? `${enterpriseInstanceUrl}/login/oauth/access_token`
+          : undefined;
+        const userProfileUrl = enterpriseInstanceUrl
+          ? `${enterpriseInstanceUrl}/api/v3/user`
+          : undefined;
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+
+        const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile }) => ({
+              profile: makeProfileInfo(fullProfile),
+            });
+
+        const stateEncoder: StateEncoder =
+          options?.stateEncoder ??
+          (async (
+            req: OAuthStartRequest,
+          ): Promise<{ encodedState: string }> => {
+            return { encodedState: encodeState(req.state) };
           });
 
-      const stateEncoder: StateEncoder =
-        options?.stateEncoder ??
-        (async (req: OAuthStartRequest): Promise<{ encodedState: string }> => {
-          return { encodedState: encodeState(req.state) };
+        const provider = new GithubAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          tokenUrl,
+          userProfileUrl,
+          authorizationUrl,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          stateEncoder,
+          resolverContext,
         });
 
-      const provider = new GithubAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        tokenUrl,
-        userProfileUrl,
-        authorizationUrl,
-        signInResolver: options?.signIn?.resolver,
-        authHandler,
-        stateEncoder,
-        resolverContext,
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          persistScopes: true,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        persistScopes: true,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.github.create` instead
+ */
+export const createGithubProvider = github.create;

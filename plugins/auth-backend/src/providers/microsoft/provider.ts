@@ -37,12 +37,12 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  AuthProviderFactory,
   AuthHandler,
   RedirectInfo,
   SignInResolver,
   AuthResolverContext,
 } from '../types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
 
@@ -224,58 +224,71 @@ export type MicrosoftProviderOptions = {
   };
 };
 
-export const createMicrosoftProvider = (options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
+/**
+ * Auth provider integration for Microsoft auth
+ *
+ * @public
+ */
+export const microsoft = createAuthProviderIntegration({
+  create(options?: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
      */
-    resolver: SignInResolver<OAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, logger, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const tenantId = envConfig.getString('tenantId');
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-      const authorizationUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`;
-      const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, logger, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const tenantId = envConfig.getString('tenantId');
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const authorizationUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`;
+        const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
 
-      const provider = new MicrosoftAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        authorizationUrl,
-        tokenUrl,
-        authHandler,
-        signInResolver: options?.signIn?.resolver,
-        logger,
-        resolverContext,
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
+
+        const provider = new MicrosoftAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          authorizationUrl,
+          tokenUrl,
+          authHandler,
+          signInResolver: options?.signIn?.resolver,
+          logger,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.microsoft.create` instead
+ */
+export const createMicrosoftProvider = microsoft.create;

@@ -38,11 +38,11 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  AuthProviderFactory,
   AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -196,51 +196,65 @@ export type OAuth2ProviderOptions = {
   };
 };
 
-export const createOAuth2Provider = (options?: {
-  authHandler?: AuthHandler<OAuthResult>;
+/**
+ * Auth provider integration for generic OAuth2 auth
+ *
+ * @public
+ */
+export const oauth2 = createAuthProviderIntegration({
+  create(options?: {
+    authHandler?: AuthHandler<OAuthResult>;
 
-  signIn?: {
-    resolver: SignInResolver<OAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-      const authorizationUrl = envConfig.getString('authorizationUrl');
-      const tokenUrl = envConfig.getString('tokenUrl');
-      const scope = envConfig.getOptionalString('scope');
-      const includeBasicAuth = envConfig.getOptionalBoolean('includeBasicAuth');
-      const disableRefresh =
-        envConfig.getOptionalBoolean('disableRefresh') ?? false;
+    signIn?: {
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const authorizationUrl = envConfig.getString('authorizationUrl');
+        const tokenUrl = envConfig.getString('tokenUrl');
+        const scope = envConfig.getOptionalString('scope');
+        const includeBasicAuth =
+          envConfig.getOptionalBoolean('includeBasicAuth');
+        const disableRefresh =
+          envConfig.getOptionalBoolean('disableRefresh') ?? false;
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
 
-      const provider = new OAuth2AuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        signInResolver: options?.signIn?.resolver,
-        authHandler,
-        authorizationUrl,
-        tokenUrl,
-        scope,
-        includeBasicAuth,
-        resolverContext,
+        const provider = new OAuth2AuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          authorizationUrl,
+          tokenUrl,
+          scope,
+          includeBasicAuth,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.oauth2.create` instead
+ */
+export const createOAuth2Provider = oauth2.create;

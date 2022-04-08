@@ -26,7 +26,6 @@ import {
 } from '../../lib/passport';
 import {
   RedirectInfo,
-  AuthProviderFactory,
   SignInResolver,
   AuthHandler,
   AuthResolverContext,
@@ -42,6 +41,7 @@ import {
   encodeState,
   OAuthResult,
 } from '../../lib/oauth';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -202,54 +202,67 @@ export type GitlabProviderOptions = {
   };
 };
 
-export const createGitlabProvider = (options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
+/**
+ * Auth provider integration for GitLab auth
+ *
+ * @public
+ */
+export const gitlab = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  /**
-   * Maps an auth result to a Backstage identity for the user.
-   *
-   * Set to `'email'` to use the default email-based sign in resolver, which will search
-   * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
-   */
-  signIn?: {
-    resolver: SignInResolver<OAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const audience = envConfig.getOptionalString('audience');
-      const baseUrl = audience || 'https://gitlab.com';
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     *
+     * Set to `'email'` to use the default email-based sign in resolver, which will search
+     * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
+     */
+    signIn?: {
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const audience = envConfig.getOptionalString('audience');
+        const baseUrl = audience || 'https://gitlab.com';
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-      const authHandler: AuthHandler<OAuthResult> =
-        options?.authHandler ?? gitlabDefaultAuthHandler;
+        const authHandler: AuthHandler<OAuthResult> =
+          options?.authHandler ?? gitlabDefaultAuthHandler;
 
-      const provider = new GitlabAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        baseUrl,
-        authHandler,
-        signInResolver: options?.signIn?.resolver,
-        resolverContext,
+        const provider = new GitlabAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          baseUrl,
+          authHandler,
+          signInResolver: options?.signIn?.resolver,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.gitlab.create` instead
+ */
+export const createGitlabProvider = gitlab.create;

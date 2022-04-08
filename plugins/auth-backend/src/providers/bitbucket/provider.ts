@@ -36,8 +36,8 @@ import {
   makeProfileInfo,
   PassportDoneCallback,
 } from '../../lib/passport';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
-  AuthProviderFactory,
   AuthHandler,
   RedirectInfo,
   SignInResolver,
@@ -245,52 +245,65 @@ export type BitbucketProviderOptions = {
   };
 };
 
-export const createBitbucketProvider = (options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<OAuthResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn?: {
+/**
+ * Auth provider integration for BitBucket auth
+ *
+ * @public
+ */
+export const bitbucket = createAuthProviderIntegration({
+  create(options?: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
      */
-    resolver: SignInResolver<OAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const authHandler: AuthHandler<BitbucketOAuthResult> =
-        options?.authHandler
-          ? options.authHandler
-          : async ({ fullProfile, params }) => ({
-              profile: makeProfileInfo(fullProfile, params.id_token),
-            });
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-      const provider = new BitbucketAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        signInResolver: options?.signIn?.resolver,
-        authHandler,
-        resolverContext,
+        const authHandler: AuthHandler<BitbucketOAuthResult> =
+          options?.authHandler
+            ? options.authHandler
+            : async ({ fullProfile, params }) => ({
+                profile: makeProfileInfo(fullProfile, params.id_token),
+              });
+
+        const provider = new BitbucketAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.bitbucket.create` instead
+ */
+export const createBitbucketProvider = bitbucket.create;

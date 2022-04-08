@@ -16,10 +16,10 @@
 
 import express from 'express';
 import { TokenPayload } from 'google-auth-library';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import {
   AuthHandler,
-  AuthProviderFactory,
   AuthProviderRouteHandlers,
   AuthResolverContext,
   SignInResolver,
@@ -77,41 +77,49 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
 }
 
 /**
- * Creates an auth provider for Google Identity-Aware Proxy.
+ * Auth provider integration for Google Identity-Aware Proxy auth
  *
  * @public
  */
-export function createGcpIapProvider(options: {
-  /**
-   * The profile transformation function used to verify and convert the auth
-   * response into the profile that will be presented to the user. The default
-   * implementation just provides the authenticated email that the IAP
-   * presented.
-   */
-  authHandler?: AuthHandler<GcpIapResult>;
-
-  /**
-   * Configures sign-in for this provider.
-   */
-  signIn: {
+export const gcpIap = createAuthProviderIntegration({
+  create(options: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth
+     * response into the profile that will be presented to the user. The default
+     * implementation just provides the authenticated email that the IAP
+     * presented.
      */
-    resolver: SignInResolver<GcpIapResult>;
-  };
-}): AuthProviderFactory {
-  return ({ config, resolverContext }) => {
-    const audience = config.getString('audience');
+    authHandler?: AuthHandler<GcpIapResult>;
 
-    const authHandler = options.authHandler ?? defaultAuthHandler;
-    const signInResolver = options.signIn.resolver;
-    const tokenValidator = createTokenValidator(audience);
+    /**
+     * Configures sign-in for this provider.
+     */
+    signIn: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<GcpIapResult>;
+    };
+  }) {
+    return ({ config, resolverContext }) => {
+      const audience = config.getString('audience');
 
-    return new GcpIapProvider({
-      authHandler,
-      signInResolver,
-      tokenValidator,
-      resolverContext,
-    });
-  };
-}
+      const authHandler = options.authHandler ?? defaultAuthHandler;
+      const signInResolver = options.signIn.resolver;
+      const tokenValidator = createTokenValidator(audience);
+
+      return new GcpIapProvider({
+        authHandler,
+        signInResolver,
+        tokenValidator,
+        resolverContext,
+      });
+    };
+  },
+});
+
+/**
+ * @public
+ * @deprecated Use `providers.gcpIap.create` instead
+ */
+export const createGcpIapProvider = gcpIap.create;

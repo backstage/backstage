@@ -39,11 +39,11 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  AuthProviderFactory,
   AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -209,55 +209,68 @@ export type OidcProviderOptions = {
   };
 };
 
-export const createOidcProvider = (options?: {
-  authHandler?: AuthHandler<OidcAuthResult>;
+/**
+ * Auth provider integration for generic OpenID Connect auth
+ *
+ * @public
+ */
+export const oidc = createAuthProviderIntegration({
+  create(options?: {
+    authHandler?: AuthHandler<OidcAuthResult>;
 
-  signIn?: {
-    resolver: SignInResolver<OidcAuthResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, resolverContext }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-      const metadataUrl = envConfig.getString('metadataUrl');
-      const tokenSignedResponseAlg = envConfig.getOptionalString(
-        'tokenSignedResponseAlg',
-      );
-      const scope = envConfig.getOptionalString('scope');
-      const prompt = envConfig.getOptionalString('prompt');
+    signIn?: {
+      resolver: SignInResolver<OidcAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const metadataUrl = envConfig.getString('metadataUrl');
+        const tokenSignedResponseAlg = envConfig.getOptionalString(
+          'tokenSignedResponseAlg',
+        );
+        const scope = envConfig.getOptionalString('scope');
+        const prompt = envConfig.getOptionalString('prompt');
 
-      const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ userinfo }) => ({
-            profile: {
-              displayName: userinfo.name,
-              email: userinfo.email,
-              picture: userinfo.picture,
-            },
-          });
+        const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ userinfo }) => ({
+              profile: {
+                displayName: userinfo.name,
+                email: userinfo.email,
+                picture: userinfo.picture,
+              },
+            });
 
-      const provider = new OidcAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        tokenSignedResponseAlg,
-        metadataUrl,
-        scope,
-        prompt,
-        signInResolver: options?.signIn?.resolver,
-        authHandler,
-        resolverContext,
+        const provider = new OidcAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          tokenSignedResponseAlg,
+          metadataUrl,
+          scope,
+          prompt,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.oidc.create` instead
+ */
+export const createOidcProvider = oidc.create;

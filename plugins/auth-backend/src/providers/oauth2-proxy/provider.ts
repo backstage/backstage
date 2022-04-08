@@ -20,13 +20,13 @@ import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-no
 import {
   AuthHandler,
   SignInResolver,
-  AuthProviderFactory,
   AuthProviderRouteHandlers,
   AuthResponse,
   AuthResolverContext,
 } from '../types';
 import { JWT } from 'jose';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
@@ -151,12 +151,12 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
 }
 
 /**
- * Factory function for oauth2-proxy auth provider
+ * Auth provider integration for oauth2-proxy auth
  *
  * @public
  */
-export const createOauth2ProxyProvider =
-  <JWTPayload>(options: {
+export const oauth2Proxy = createAuthProviderIntegration({
+  create<JWTPayload>(options: {
     /**
      * Configure an auth handler to generate a profile for the user.
      */
@@ -171,13 +171,21 @@ export const createOauth2ProxyProvider =
        */
       resolver: SignInResolver<OAuth2ProxyResult<JWTPayload>>;
     };
-  }): AuthProviderFactory =>
-  ({ resolverContext }) => {
-    const signInResolver = options.signIn.resolver;
-    const authHandler = options.authHandler;
-    return new Oauth2ProxyAuthProvider<JWTPayload>({
-      resolverContext,
-      signInResolver,
-      authHandler,
-    });
-  };
+  }) {
+    return ({ resolverContext }) => {
+      const signInResolver = options.signIn.resolver;
+      const authHandler = options.authHandler;
+      return new Oauth2ProxyAuthProvider<JWTPayload>({
+        resolverContext,
+        signInResolver,
+        authHandler,
+      });
+    };
+  },
+});
+
+/**
+ * @public
+ * @deprecated Use `providers.oauth2Proxy.create` instead
+ */
+export const createOauth2ProxyProvider = oauth2Proxy.create;
