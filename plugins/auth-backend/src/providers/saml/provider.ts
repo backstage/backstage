@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
@@ -36,12 +32,10 @@ import {
   AuthHandler,
   SignInResolver,
   AuthResponse,
+  AuthResolverContext,
 } from '../types';
 import { postMessageResponse } from '../../lib/flow';
-import { TokenIssuer } from '../../identity/types';
-import { isError } from '@backstage/errors';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { Logger } from 'winston';
+import { AuthenticationError, isError } from '@backstage/errors';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 
 /** @public */
@@ -52,9 +46,7 @@ export type SamlAuthResult = {
 type Options = SamlConfig & {
   signInResolver?: SignInResolver<SamlAuthResult>;
   authHandler: AuthHandler<SamlAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
   appUrl: string;
 };
 
@@ -62,18 +54,14 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly strategy: SamlStrategy;
   private readonly signInResolver?: SignInResolver<SamlAuthResult>;
   private readonly authHandler: AuthHandler<SamlAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
   private readonly appUrl: string;
 
   constructor(options: Options) {
     this.appUrl = options.appUrl;
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
     this.strategy = new SamlStrategy({ ...options }, ((
       fullProfile: SamlProfile,
       done: PassportDoneCallback<SamlAuthResult>,
@@ -97,18 +85,12 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     res: express.Response,
   ): Promise<void> {
     try {
-      const context = {
-        logger: this.logger,
-        catalogIdentityClient: this.catalogIdentityClient,
-        tokenIssuer: this.tokenIssuer,
-      };
-
       const { result } = await executeFrameHandlerStrategy<SamlAuthResult>(
         req,
         this.strategy,
       );
 
-      const { profile } = await this.authHandler(result, context);
+      const { profile } = await this.authHandler(result, this.resolverContext);
 
       const response: AuthResponse<{}> = {
         profile,
@@ -121,7 +103,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
             result,
             profile,
           },
-          context,
+          this.resolverContext,
         );
 
         response.backstageIdentity =
@@ -153,23 +135,13 @@ export const samlNameIdEntityNameSignInResolver: SignInResolver<
 > = async (info, ctx) => {
   const id = info.result.fullProfile.nameID;
 
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: id,
-  });
-  const ownershipEntityRefs =
-    await ctx.catalogIdentityClient.resolveCatalogMembership({
-      entityRefs: [entityRef],
-    });
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: ownershipEntityRefs,
-    },
-  });
+  if (!id) {
+    throw new AuthenticationError('No nameID found in SAML response');
+  }
 
-  return { id, token };
+  return ctx.signInWithCatalogUser({
+    entityRef: { name: id },
+  });
 };
 
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
@@ -213,20 +185,7 @@ export const createSamlProvider = (options?: {
     resolver: SignInResolver<SamlAuthResult>;
   };
 }): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) => {
-    const catalogIdentityClient = new CatalogIdentityClient({
-      catalogApi,
-      tokenManager,
-    });
-
+  return ({ providerId, globalConfig, config, resolverContext }) => {
     const authHandler: AuthHandler<SamlAuthResult> = options?.authHandler
       ? options.authHandler
       : async ({ fullProfile }) => ({
@@ -253,12 +212,10 @@ export const createSamlProvider = (options?: {
       digestAlgorithm: config.getOptionalString('digestAlgorithm'),
       acceptedClockSkewMs: config.getOptionalNumber('acceptedClockSkewMs'),
 
-      tokenIssuer,
       appUrl: globalConfig.appUrl,
       authHandler,
       signInResolver: options?.signIn?.resolver,
-      logger,
-      catalogIdentityClient,
+      resolverContext,
     });
   };
 };
