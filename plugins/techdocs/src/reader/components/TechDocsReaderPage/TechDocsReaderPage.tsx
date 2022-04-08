@@ -74,7 +74,7 @@ export const TechDocsReaderPage = ({
         </Page>
       </TechDocsReaderPageProvider>
     ) : (
-      outlet?.props.children
+      (outlet?.props.children as JSX.Element)
     );
   }
 
