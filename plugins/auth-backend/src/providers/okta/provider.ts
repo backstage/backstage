@@ -188,23 +188,6 @@ export class OktaAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oktaEmailSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Okta profile contained no email');
-  }
-
-  return ctx.signInWithCatalogUser({
-    annotations: {
-      'okta.com/email': profile.email,
-    },
-  });
-};
-
 /**
  * @deprecated This type has been inlined into the create method and will be removed.
  */
@@ -289,6 +272,26 @@ export const okta = createAuthProviderIntegration({
         });
       });
   },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email to the `okta.com/email` annotation.
+     */
+    lookupEmailAnnotation(): SignInResolver<OAuthResult> {
+      return async (info, ctx) => {
+        const { profile } = info;
+
+        if (!profile.email) {
+          throw new Error('Okta profile contained no email');
+        }
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'okta.com/email': profile.email,
+          },
+        });
+      };
+    },
+  },
 });
 
 /**
@@ -296,3 +299,9 @@ export const okta = createAuthProviderIntegration({
  * @deprecated Use `providers.okta.create` instead
  */
 export const createOktaProvider = okta.create;
+
+/**
+ * @public
+ * @deprecated Use `providers.okta.resolvers.lookupEmailAnnotation()` instead.
+ */
+export const oktaEmailSignInResolver = okta.resolvers.lookupEmailAnnotation();
