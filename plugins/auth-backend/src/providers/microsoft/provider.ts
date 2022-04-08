@@ -220,6 +220,9 @@ export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
+/**
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type MicrosoftProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -238,9 +241,23 @@ export type MicrosoftProviderOptions = {
   };
 };
 
-export const createMicrosoftProvider = (
-  options?: MicrosoftProviderOptions,
-): AuthProviderFactory => {
+export const createMicrosoftProvider = (options?: {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<OAuthResult>;
+
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver: SignInResolver<OAuthResult>;
+  };
+}): AuthProviderFactory => {
   return ({
     providerId,
     globalConfig,

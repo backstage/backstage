@@ -174,7 +174,9 @@ export const samlNameIdEntityNameSignInResolver: SignInResolver<
 
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
-/** @public */
+/**
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type SamlProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -194,9 +196,23 @@ export type SamlProviderOptions = {
 };
 
 /** @public */
-export const createSamlProvider = (
-  options?: SamlProviderOptions,
-): AuthProviderFactory => {
+export const createSamlProvider = (options?: {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<SamlAuthResult>;
+
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver: SignInResolver<SamlAuthResult>;
+  };
+}): AuthProviderFactory => {
   return ({
     providerId,
     globalConfig,

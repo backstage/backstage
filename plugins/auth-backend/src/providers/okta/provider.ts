@@ -223,6 +223,9 @@ export const oktaEmailSignInResolver: SignInResolver<OAuthResult> = async (
   return { id: entity.metadata.name, entity, token };
 };
 
+/**
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type OktaProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -241,9 +244,23 @@ export type OktaProviderOptions = {
   };
 };
 
-export const createOktaProvider = (
-  _options?: OktaProviderOptions,
-): AuthProviderFactory => {
+export const createOktaProvider = (_options?: {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<OAuthResult>;
+
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver: SignInResolver<OAuthResult>;
+  };
+}): AuthProviderFactory => {
   return ({
     providerId,
     globalConfig,

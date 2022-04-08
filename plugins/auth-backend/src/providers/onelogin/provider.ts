@@ -179,7 +179,9 @@ export class OneLoginProvider implements OAuthHandlers {
   }
 }
 
-/** @public */
+/**
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type OneLoginProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -199,9 +201,23 @@ export type OneLoginProviderOptions = {
 };
 
 /** @public */
-export const createOneLoginProvider = (
-  options?: OneLoginProviderOptions,
-): AuthProviderFactory => {
+export const createOneLoginProvider = (options?: {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<OAuthResult>;
+
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn?: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver: SignInResolver<OAuthResult>;
+  };
+}): AuthProviderFactory => {
   return ({
     providerId,
     globalConfig,

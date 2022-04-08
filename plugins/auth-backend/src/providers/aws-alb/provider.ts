@@ -220,6 +220,9 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
+/**
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type AwsAlbProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -238,9 +241,23 @@ export type AwsAlbProviderOptions = {
   };
 };
 
-export const createAwsAlbProvider = (
-  options?: AwsAlbProviderOptions,
-): AuthProviderFactory => {
+export const createAwsAlbProvider = (options?: {
+  /**
+   * The profile transformation function used to verify and convert the auth response
+   * into the profile that will be presented to the user.
+   */
+  authHandler?: AuthHandler<AwsAlbResult>;
+
+  /**
+   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+   */
+  signIn: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver: SignInResolver<AwsAlbResult>;
+  };
+}): AuthProviderFactory => {
   return ({ config, tokenIssuer, catalogApi, logger, tokenManager }) => {
     const region = config.getString('region');
     const issuer = config.getOptionalString('iss');

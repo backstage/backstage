@@ -99,9 +99,25 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
  *
  * @public
  */
-export function createGcpIapProvider(
-  options: GcpIapProviderOptions,
-): AuthProviderFactory {
+export function createGcpIapProvider(options: {
+  /**
+   * The profile transformation function used to verify and convert the auth
+   * response into the profile that will be presented to the user. The default
+   * implementation just provides the authenticated email that the IAP
+   * presented.
+   */
+  authHandler?: AuthHandler<GcpIapResult>;
+
+  /**
+   * Configures sign-in for this provider.
+   */
+  signIn: {
+    /**
+     * Maps an auth result to a Backstage identity for the user.
+     */
+    resolver: SignInResolver<GcpIapResult>;
+  };
+}): AuthProviderFactory {
   return ({ config, tokenIssuer, catalogApi, logger, tokenManager }) => {
     const audience = config.getString('audience');
 

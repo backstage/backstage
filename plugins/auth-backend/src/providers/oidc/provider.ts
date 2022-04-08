@@ -212,16 +212,7 @@ export class OidcAuthProvider implements OAuthHandlers {
 }
 
 /**
- * OIDC provider callback options. An auth handler and a sign in resolver
- * can be passed while creating a OIDC provider.
- *
- * authHandler : called after sign in was successful, a new object must be returned which includes a profile
- * signInResolver: called after sign in was successful, expects to return a new {@link @backstage/plugin-auth-node#BackstageSignInResult}
- *
- * Both options are optional. There is fallback for authHandler where the default handler expect an e-mail explicitly
- * otherwise it throws an error
- *
- * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type OidcProviderOptions = {
   authHandler?: AuthHandler<OidcAuthResult>;
@@ -231,9 +222,13 @@ export type OidcProviderOptions = {
   };
 };
 
-export const createOidcProvider = (
-  options?: OidcProviderOptions,
-): AuthProviderFactory => {
+export const createOidcProvider = (options?: {
+  authHandler?: AuthHandler<OidcAuthResult>;
+
+  signIn?: {
+    resolver: SignInResolver<OidcAuthResult>;
+  };
+}): AuthProviderFactory => {
   return ({
     providerId,
     globalConfig,
