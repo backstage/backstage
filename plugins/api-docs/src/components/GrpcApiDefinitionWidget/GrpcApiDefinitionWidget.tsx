@@ -20,7 +20,7 @@ import { useTheme } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 
 export type GrpcApiDefinitionWidgetProps = {
-  definition: any;
+  definition: string;
 };
 
 export const GrpcApiDefinitionWidget = (
