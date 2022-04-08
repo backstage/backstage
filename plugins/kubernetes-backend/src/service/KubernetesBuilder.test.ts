@@ -59,7 +59,6 @@ describe('KubernetesBuilder', () => {
       },
     ];
     const clusterSupplier: KubernetesClustersSupplier = {
-      async refreshClusters() {},
       async getClusters() {
         return clusters;
       },
@@ -180,7 +179,6 @@ describe('KubernetesBuilder', () => {
         },
       ];
       const clusterSupplier: KubernetesClustersSupplier = {
-        async refreshClusters() {},
         async getClusters() {
           return clusters;
         },

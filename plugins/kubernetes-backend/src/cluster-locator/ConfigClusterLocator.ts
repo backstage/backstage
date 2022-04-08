@@ -77,8 +77,6 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     );
   }
 
-  async refreshClusters(): Promise<void> {}
-
   async getClusters(): Promise<ClusterDetails[]> {
     return this.clusterDetails;
   }

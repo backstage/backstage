@@ -46,7 +46,6 @@ describe('getCombinedClusterSupplier', () => {
     );
 
     const clusterSupplier = getCombinedClusterSupplier(config);
-    await clusterSupplier.refreshClusters();
     const result = await clusterSupplier.getClusters();
 
     expect(result).toStrictEqual([

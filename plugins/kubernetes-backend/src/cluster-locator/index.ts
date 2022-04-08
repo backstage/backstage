@@ -15,18 +15,16 @@
  */
 
 import { Config } from '@backstage/config';
+import { Duration } from 'luxon';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
-  constructor(
-    readonly clusterSuppliers: KubernetesClustersSupplier[],
-    private clusterDetails: ClusterDetails[] | undefined = undefined,
-  ) {}
+  constructor(readonly clusterSuppliers: KubernetesClustersSupplier[]) {}
 
-  async refreshClusters(): Promise<void> {
-    this.clusterDetails = await Promise.all(
+  async getClusters(): Promise<ClusterDetails[]> {
+    return await Promise.all(
       this.clusterSuppliers.map(supplier => supplier.getClusters()),
     )
       .then(res => {
@@ -36,14 +34,11 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
         throw e;
       });
   }
-
-  async getClusters(): Promise<ClusterDetails[]> {
-    return this.clusterDetails ?? [];
-  }
 }
 
 export const getCombinedClusterSupplier = (
   rootConfig: Config,
+  refreshInterval: Duration | undefined = undefined,
 ): KubernetesClustersSupplier => {
   const clusterSuppliers = rootConfig
     .getConfigArray('kubernetes.clusterLocatorMethods')
@@ -53,7 +48,10 @@ export const getCombinedClusterSupplier = (
         case 'config':
           return ConfigClusterLocator.fromConfig(clusterLocatorMethod);
         case 'gke':
-          return GkeClusterLocator.fromConfig(clusterLocatorMethod);
+          return GkeClusterLocator.fromConfig(
+            clusterLocatorMethod,
+            refreshInterval,
+          );
         default:
           throw new Error(
             `Unsupported kubernetes.clusterLocatorMethods: "${type}"`,

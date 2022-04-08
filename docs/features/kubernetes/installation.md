@@ -108,9 +108,20 @@ Change the following in `packages/backend/src/plugin/kubernetes.ts`:
 +} from '@backstage/plugin-kubernetes-backend';
  import { Router } from 'express';
  import { PluginEnvironment } from '../types';
-
++import { Duration } from 'luxon';
++
 +export class CustomClustersSupplier implements KubernetesClustersSupplier {
-+  private clusterDetails: ClusterDetails[] = [];
++  constructor(private clusterDetails: ClusterDetails[] = []) {}
++
++  static create(refreshInterval: Duration) {
++    const clusterSupplier = new CustomClustersSupplier();
++    // setup refresh, e.g. using a copy of https://github.com/backstage/backstage/blob/master/plugins/search-backend-node/src/runPeriodically.ts
++    runPeriodically(
++      () => clusterSupplier.refreshClusters(),
++      refreshInterval.toMillis(),
++    );
++    return clusterSupplier;
++  }
 +
 +  async refreshClusters(): Promise<void> {
 +    this.clusterDetails = []; // fetch from somewhere
@@ -120,7 +131,7 @@ Change the following in `packages/backend/src/plugin/kubernetes.ts`:
 +    return this.clusterDetails;
 +  }
 +}
-+
+
  export default async function createPlugin(
    env: PluginEnvironment,
  ): Promise<Router> {
@@ -130,17 +141,11 @@ Change the following in `packages/backend/src/plugin/kubernetes.ts`:
      config: env.config,
 -  }).build();
 +  });
-+
-+  const clusterSupplier = new CustomClustersSupplier();
-+  builder.setClusterSupplier(clusterSupplier);
-+
++  builder.setClusterSupplier(
++    CustomClustersSupplier.create(Duration.fromObject({ minutes: 60 })),
++  );
 +  const { router } = await builder.build();
-   return router;
- }
 ```
-
-If you need to adjust the refresh interval from the default once per hour
-you can call `builder.setClusterRefreshInterval`.
 
 ## Running Backstage locally
 

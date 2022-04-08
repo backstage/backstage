@@ -69,7 +69,6 @@ describe('GkeClusterLocator', () => {
         listClusters: mockedListClusters,
       } as any);
 
-      await sut.refreshClusters();
       const result = await sut.getClusters();
 
       expect(result).toStrictEqual([]);
@@ -101,7 +100,6 @@ describe('GkeClusterLocator', () => {
         listClusters: mockedListClusters,
       } as any);
 
-      await sut.refreshClusters();
       const result = await sut.getClusters();
 
       expect(result).toStrictEqual([
@@ -139,7 +137,6 @@ describe('GkeClusterLocator', () => {
         listClusters: mockedListClusters,
       } as any);
 
-      await sut.refreshClusters();
       const result = await sut.getClusters();
 
       expect(result).toStrictEqual([
@@ -182,7 +179,6 @@ describe('GkeClusterLocator', () => {
         listClusters: mockedListClusters,
       } as any);
 
-      await sut.refreshClusters();
       const result = await sut.getClusters();
 
       expect(result).toStrictEqual([
@@ -221,7 +217,7 @@ describe('GkeClusterLocator', () => {
         listClusters: mockedListClusters,
       } as any);
 
-      await expect(sut.refreshClusters()).rejects.toThrow(
+      await expect(sut.getClusters()).rejects.toThrow(
         'There was an error retrieving clusters from GKE for projectId=some-project region=some-region; caused by Error: some error',
       );
 
@@ -254,7 +250,6 @@ describe('GkeClusterLocator', () => {
         listClusters: mockedListClusters,
       } as any);
 
-      await sut.refreshClusters();
       const result = await sut.getClusters();
 
       expect(result).toStrictEqual([

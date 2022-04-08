@@ -17,6 +17,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { Duration } from 'luxon';
 import { getCombinedClusterSupplier } from '../cluster-locator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import {
@@ -36,7 +37,6 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { runPeriodically } from './runPeriodically';
 
 export interface KubernetesEnvironment {
   logger: Logger;
@@ -59,7 +59,9 @@ export type KubernetesBuilderReturn = Promise<{
 
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
-  private clusterRefreshMs: number = 60 * 60 * 1000; // defaults to once per hour
+  private defaultClusterRefreshInterval: Duration = Duration.fromObject({
+    minutes: 60,
+  });
   private objectsProvider?: KubernetesObjectsProvider;
   private fetcher?: KubernetesFetcher;
   private serviceLocator?: KubernetesServiceLocator;
@@ -91,17 +93,9 @@ export class KubernetesBuilder {
 
     const fetcher = this.fetcher ?? this.buildFetcher();
 
-    const clusterSupplier = this.clusterSupplier ?? this.buildClusterSupplier();
-
-    // we cannot use the regular scheduler here because all instances need this info
-    // and it is not persisted anywhere.
-    runPeriodically(async () => {
-      try {
-        await clusterSupplier.refreshClusters();
-      } catch (e) {
-        logger.warn(`Failed to refresh kubernetes clusters: ${e}`);
-      }
-    }, this.clusterRefreshMs);
+    const clusterSupplier =
+      this.clusterSupplier ??
+      this.buildClusterSupplier(this.defaultClusterRefreshInterval);
 
     const serviceLocator =
       this.serviceLocator ??
@@ -134,8 +128,8 @@ export class KubernetesBuilder {
     return this;
   }
 
-  public setClusterRefreshInterval(refreshMs: number) {
-    this.clusterRefreshMs = refreshMs;
+  public setDefaultClusterRefreshInterval(refreshInterval: Duration) {
+    this.defaultClusterRefreshInterval = refreshInterval;
     return this;
   }
 
@@ -173,9 +167,11 @@ export class KubernetesBuilder {
     return customResources;
   }
 
-  protected buildClusterSupplier(): KubernetesClustersSupplier {
+  protected buildClusterSupplier(
+    refreshInterval: Duration,
+  ): KubernetesClustersSupplier {
     const config = this.env.config;
-    return getCombinedClusterSupplier(config);
+    return getCombinedClusterSupplier(config, refreshInterval);
   }
 
   protected buildObjectsProvider(

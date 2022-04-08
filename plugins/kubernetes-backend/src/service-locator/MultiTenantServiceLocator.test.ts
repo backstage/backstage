@@ -20,7 +20,6 @@ import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
 describe('MultiTenantConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
     const sut = new MultiTenantServiceLocator({
-      refreshClusters: async () => {},
       getClusters: async () => [],
     });
 
@@ -31,7 +30,6 @@ describe('MultiTenantConfigClusterLocator', () => {
 
   it('one clusters returns one cluster details', async () => {
     const sut = new MultiTenantServiceLocator({
-      refreshClusters: async () => {},
       getClusters: async () => {
         return [
           {
@@ -58,7 +56,6 @@ describe('MultiTenantConfigClusterLocator', () => {
 
   it('two clusters returns two cluster details', async () => {
     const sut = new MultiTenantServiceLocator({
-      refreshClusters: async () => {},
       getClusters: async () => {
         return [
           {
