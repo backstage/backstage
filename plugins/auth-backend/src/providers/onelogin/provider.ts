@@ -41,10 +41,8 @@ import {
   AuthProviderFactory,
   AuthHandler,
   SignInResolver,
+  AuthResolverContext,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -54,25 +52,19 @@ export type Options = OAuthProviderOptions & {
   issuer: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class OneLoginProvider implements OAuthHandlers {
   private readonly _strategy: any;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
     this._strategy = new OneLoginStrategy(
       {
         issuer: options.issuer,
@@ -148,12 +140,7 @@ export class OneLoginProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -171,7 +158,7 @@ export class OneLoginProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -218,15 +205,7 @@ export const createOneLoginProvider = (options?: {
     resolver: SignInResolver<OAuthResult>;
   };
 }): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
+  return ({ providerId, globalConfig, config, resolverContext }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
@@ -235,11 +214,6 @@ export const createOneLoginProvider = (options?: {
       const callbackUrl =
         customCallbackUrl ||
         `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
 
       const authHandler: AuthHandler<OAuthResult> = options?.authHandler
         ? options.authHandler
@@ -254,15 +228,12 @@ export const createOneLoginProvider = (options?: {
         issuer,
         authHandler,
         signInResolver: options?.signIn?.resolver,
-        tokenIssuer,
-        catalogIdentityClient,
-        logger,
+        resolverContext,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
         disableRefresh: false,
         providerId,
-        tokenIssuer,
         callbackUrl,
       });
     });
