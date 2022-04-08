@@ -15,9 +15,6 @@
  */
 
 import { Profile as PassportProfile } from 'passport';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient } from '../../lib/catalog';
 import {
   GithubAuthProvider,
   GithubOAuthResult,
@@ -26,6 +23,7 @@ import {
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
 import { OAuthStartRequest, encodeState } from '../../lib/oauth';
+import { AuthResolverContext } from '../types';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -38,25 +36,12 @@ const mockFrameHandler = jest.spyOn(
 >;
 
 describe('GithubAuthProvider', () => {
-  const tokenIssuer: TokenIssuer = {
-    listPublicKeys: jest.fn(),
-    async issueToken(params) {
-      return `token-for-${params.claims.sub}`;
-    },
-  };
-  const catalogIdentityClient = {
-    findUser: jest.fn(),
-    resolveCatalogMembership: async ({
-      entityRefs,
-    }: {
-      entityRefs: string[];
-    }) => entityRefs,
-  } as unknown as CatalogIdentityClient;
-
   const provider = new GithubAuthProvider({
-    logger: getVoidLogger(),
-    catalogIdentityClient: catalogIdentityClient,
-    tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+    resolverContext: {
+      signInWithCatalogUser: jest.fn(({ entityRef }) => ({
+        token: `token-for-user:${entityRef.name}`,
+      })),
+    } as unknown as AuthResolverContext,
     signInResolver: githubUsernameEntityNameSignInResolver,
     authHandler: async ({ fullProfile }) => ({
       profile: makeProfileInfo(fullProfile),
@@ -96,8 +81,7 @@ describe('GithubAuthProvider', () => {
 
       const expected = {
         backstageIdentity: {
-          id: 'jimmymarkum',
-          token: 'token-for-user:default/jimmymarkum',
+          token: 'token-for-user:jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -142,8 +126,7 @@ describe('GithubAuthProvider', () => {
 
       const expected = {
         backstageIdentity: {
-          id: 'jimmymarkum',
-          token: 'token-for-user:default/jimmymarkum',
+          token: 'token-for-user:jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -186,8 +169,7 @@ describe('GithubAuthProvider', () => {
       };
       const expected = {
         backstageIdentity: {
-          id: 'jimmymarkum',
-          token: 'token-for-user:default/jimmymarkum',
+          token: 'token-for-user:jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -230,8 +212,7 @@ describe('GithubAuthProvider', () => {
 
       const expected = {
         backstageIdentity: {
-          id: 'daveboyle',
-          token: 'token-for-user:default/daveboyle',
+          token: 'token-for-user:daveboyle',
         },
         providerInfo: {
           accessToken:
@@ -276,8 +257,7 @@ describe('GithubAuthProvider', () => {
       expect(response).toEqual({
         response: {
           backstageIdentity: {
-            id: 'daveboyle',
-            token: 'token-for-user:default/daveboyle',
+            token: 'token-for-user:daveboyle',
           },
           providerInfo: {
             accessToken: 'a.b.c',
@@ -352,8 +332,7 @@ describe('GithubAuthProvider', () => {
       expect(result).toEqual({
         response: {
           backstageIdentity: {
-            id: 'mockuser',
-            token: 'token-for-user:default/mockuser',
+            token: 'token-for-user:mockuser',
           },
           profile: {
             displayName: 'Mocked User',
@@ -404,8 +383,7 @@ describe('GithubAuthProvider', () => {
       expect(result).toEqual({
         response: {
           backstageIdentity: {
-            id: 'mockuser',
-            token: 'token-for-user:default/mockuser',
+            token: 'token-for-user:mockuser',
           },
           profile: {
             displayName: 'Mocked User',

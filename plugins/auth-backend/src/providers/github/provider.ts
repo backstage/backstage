@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
-import { Logger } from 'winston';
 import { Profile as PassportProfile } from 'passport';
 import { Strategy as GithubStrategy } from 'passport-github2';
 import {
@@ -36,6 +31,7 @@ import {
   AuthHandler,
   SignInResolver,
   StateEncoder,
+  AuthResolverContext,
 } from '../types';
 import {
   OAuthAdapter,
@@ -46,8 +42,6 @@ import {
   encodeState,
   OAuthRefreshRequest,
 } from '../../lib/oauth';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
 
 const ACCESS_TOKEN_PREFIX = 'access-token.';
 
@@ -76,27 +70,21 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<GithubOAuthResult>;
   authHandler: AuthHandler<GithubOAuthResult>;
   stateEncoder: StateEncoder;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class GithubAuthProvider implements OAuthHandlers {
   private readonly _strategy: GithubStrategy;
   private readonly signInResolver?: SignInResolver<GithubOAuthResult>;
   private readonly authHandler: AuthHandler<GithubOAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
   private readonly stateEncoder: StateEncoder;
 
   constructor(options: GithubAuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.stateEncoder = options.stateEncoder;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
     this._strategy = new GithubStrategy(
       {
         clientID: options.clientId,
@@ -198,12 +186,7 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: GithubOAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const expiresInStr = result.params.expires_in;
     let expiresInSeconds =
@@ -217,7 +200,7 @@ export class GithubAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
 
       // GitHub sessions last longer than Backstage sessions, so if we're using
@@ -254,23 +237,7 @@ export const githubUsernameEntityNameSignInResolver: SignInResolver<
     throw new Error(`GitHub user profile does not contain a username`);
   }
 
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-  const ownershipEntityRefs =
-    await ctx.catalogIdentityClient.resolveCatalogMembership({
-      entityRefs: [entityRef],
-    });
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: ownershipEntityRefs,
-    },
-  });
-
-  return { id: userId, token };
+  return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
 };
 
 /**
@@ -347,15 +314,7 @@ export const createGithubProvider = (options?: {
    */
   stateEncoder?: StateEncoder;
 }): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
+  return ({ providerId, globalConfig, config, resolverContext }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
@@ -375,11 +334,6 @@ export const createGithubProvider = (options?: {
       const callbackUrl =
         customCallbackUrl ||
         `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
 
       const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
         ? options.authHandler
@@ -402,16 +356,13 @@ export const createGithubProvider = (options?: {
         authorizationUrl,
         signInResolver: options?.signIn?.resolver,
         authHandler,
-        tokenIssuer,
-        catalogIdentityClient,
         stateEncoder,
-        logger,
+        resolverContext,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
         persistScopes: true,
         providerId,
-        tokenIssuer,
         callbackUrl,
       });
     });
