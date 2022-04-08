@@ -192,38 +192,6 @@ export class BitbucketAuthProvider implements OAuthHandlers {
   }
 }
 
-export const bitbucketUsernameSignInResolver: SignInResolver<
-  BitbucketOAuthResult
-> = async (info, ctx) => {
-  const { result } = info;
-
-  if (!result.fullProfile.username) {
-    throw new Error('Bitbucket profile contained no Username');
-  }
-
-  return ctx.signInWithCatalogUser({
-    annotations: {
-      'bitbucket.org/username': result.fullProfile.username,
-    },
-  });
-};
-
-export const bitbucketUserIdSignInResolver: SignInResolver<
-  BitbucketOAuthResult
-> = async (info, ctx) => {
-  const { result } = info;
-
-  if (!result.fullProfile.id) {
-    throw new Error('Bitbucket profile contained no User ID');
-  }
-
-  return ctx.signInWithCatalogUser({
-    annotations: {
-      'bitbucket.org/user-id': result.fullProfile.id,
-    },
-  });
-};
-
 /**
  * @deprecated This type has been inlined into the create method and will be removed.
  */
@@ -300,6 +268,44 @@ export const bitbucket = createAuthProviderIntegration({
         });
       });
   },
+  resolvers: {
+    /**
+     * Looks up the user by matching their username to the `bitbucket.org/username` annotation.
+     */
+    lookupUsernameAnnotation(): SignInResolver<OAuthResult> {
+      return async (info, ctx) => {
+        const { result } = info;
+
+        if (!result.fullProfile.username) {
+          throw new Error('Bitbucket profile contained no Username');
+        }
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'bitbucket.org/username': result.fullProfile.username,
+          },
+        });
+      };
+    },
+    /**
+     * Looks up the user by matching their user ID to the `bitbucket.org/user-id` annotation.
+     */
+    lookupUserIdAnnotation(): SignInResolver<OAuthResult> {
+      return async (info, ctx) => {
+        const { result } = info;
+
+        if (!result.fullProfile.id) {
+          throw new Error('Bitbucket profile contained no User ID');
+        }
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'bitbucket.org/user-id': result.fullProfile.id,
+          },
+        });
+      };
+    },
+  },
 });
 
 /**
@@ -307,3 +313,17 @@ export const bitbucket = createAuthProviderIntegration({
  * @deprecated Use `providers.bitbucket.create` instead
  */
 export const createBitbucketProvider = bitbucket.create;
+
+/**
+ * @public
+ * @deprecated Use `providers.bitbucket.resolvers.lookupUsernameAnnotation()` instead.
+ */
+export const bitbucketUsernameSignInResolver =
+  bitbucket.resolvers.lookupUsernameAnnotation();
+
+/**
+ * @public
+ * @deprecated Use `providers.bitbucket.resolvers.lookupUserIdAnnotation()` instead.
+ */
+export const bitbucketUserIdSignInResolver =
+  bitbucket.resolvers.lookupUserIdAnnotation();
