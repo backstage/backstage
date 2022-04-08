@@ -176,8 +176,6 @@ export async function createConfig(
 
         /* new ignores */
         path: false,
-        https: false,
-        http: false,
         util: require.resolve('util/'),
       },
       plugins: [
