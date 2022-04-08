@@ -84,7 +84,9 @@ index-time.
 There are many ways a search index could be built and maintained, but Backstage
 Search chooses to completely rebuild indices on a schedule. Different collators
 can be configured to refresh at different intervals, depending on how often the
-source information is updated.
+source information is updated. When search indexing is distributed among multiple
+backend nodes, coordination to prevent clashes is typically handled by a
+distributed `TaskRunner`.
 
 ### The Search Page
 

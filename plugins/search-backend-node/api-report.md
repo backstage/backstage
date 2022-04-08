@@ -16,6 +16,8 @@ import { QueryTranslator } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { SearchQuery } from '@backstage/plugin-search-common';
+import { TaskFunction } from '@backstage/backend-tasks';
+import { TaskRunner } from '@backstage/backend-tasks';
 import { Transform } from 'stream';
 import { Writable } from 'stream';
 
@@ -52,10 +54,7 @@ export abstract class DecoratorBase extends Transform {
 // @beta (undocumented)
 export class IndexBuilder {
   constructor({ logger, searchEngine }: IndexBuilderOptions);
-  addCollator({
-    factory,
-    defaultRefreshIntervalSeconds,
-  }: RegisterCollatorParameters): void;
+  addCollator({ factory, schedule }: RegisterCollatorParameters): void;
   addDecorator({ factory }: RegisterDecoratorParameters): void;
   build(): Promise<{
     scheduler: Scheduler;
@@ -111,8 +110,8 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
 
 // @beta
 export interface RegisterCollatorParameters {
-  defaultRefreshIntervalSeconds: number;
   factory: DocumentCollatorFactory;
+  schedule: TaskRunner;
 }
 
 // @beta
@@ -123,9 +122,19 @@ export interface RegisterDecoratorParameters {
 // @beta (undocumented)
 export class Scheduler {
   constructor({ logger }: { logger: Logger });
-  addToSchedule(task: Function, interval: number): void;
+  addToSchedule({ id, task, scheduledRunner }: ScheduleTaskParameters): void;
   start(): void;
   stop(): void;
+}
+
+// @public
+export interface ScheduleTaskParameters {
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  scheduledRunner: TaskRunner;
+  // (undocumented)
+  task: TaskFunction;
 }
 
 export { SearchEngine };
