@@ -16,7 +16,6 @@
 
 import {
   AuthHandler,
-  AuthProviderFactory,
   AuthProviderRouteHandlers,
   AuthResolverContext,
   AuthResponse,
@@ -32,6 +31,7 @@ import { Profile as PassportProfile } from 'passport';
 import { makeProfileInfo } from '../../lib/passport';
 import { AuthenticationError } from '@backstage/errors';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 export const ALB_JWT_HEADER = 'x-amzn-oidc-data';
 export const ALB_ACCESS_TOKEN_HEADER = 'x-amzn-oidc-accesstoken';
@@ -229,45 +229,54 @@ export type AwsAlbProviderOptions = {
   };
 };
 
-export const createAwsAlbProvider = (options?: {
-  /**
-   * The profile transformation function used to verify and convert the auth response
-   * into the profile that will be presented to the user.
-   */
-  authHandler?: AuthHandler<AwsAlbResult>;
-
-  /**
-   * Configure sign-in for this provider, without it the provider can not be used to sign users in.
-   */
-  signIn: {
+/**
+ * Auth provider integration for AWS ALB auth
+ *
+ * @public
+ */
+export const awsAlb = createAuthProviderIntegration({
+  create(options?: {
     /**
-     * Maps an auth result to a Backstage identity for the user.
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
      */
-    resolver: SignInResolver<AwsAlbResult>;
-  };
-}): AuthProviderFactory => {
-  return ({ config, resolverContext }) => {
-    const region = config.getString('region');
-    const issuer = config.getOptionalString('iss');
+    authHandler?: AuthHandler<AwsAlbResult>;
 
-    if (options?.signIn.resolver === undefined) {
-      throw new Error(
-        'SignInResolver is required to use this authentication provider',
-      );
-    }
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<AwsAlbResult>;
+    };
+  }) {
+    return ({ config, resolverContext }) => {
+      const region = config.getString('region');
+      const issuer = config.getOptionalString('iss');
 
-    const authHandler: AuthHandler<AwsAlbResult> = options?.authHandler
-      ? options.authHandler
-      : async ({ fullProfile }) => ({
-          profile: makeProfileInfo(fullProfile),
-        });
+      if (options?.signIn.resolver === undefined) {
+        throw new Error(
+          'SignInResolver is required to use this authentication provider',
+        );
+      }
 
-    return new AwsAlbAuthProvider({
-      region,
-      issuer,
-      signInResolver: options?.signIn.resolver,
-      authHandler,
-      resolverContext,
-    });
-  };
-};
+      const authHandler: AuthHandler<AwsAlbResult> = options?.authHandler
+        ? options.authHandler
+        : async ({ fullProfile }) => ({
+            profile: makeProfileInfo(fullProfile),
+          });
+
+      return new AwsAlbAuthProvider({
+        region,
+        issuer,
+        signInResolver: options?.signIn.resolver,
+        authHandler,
+        resolverContext,
+      });
+    };
+  },
+});
+
+export const createAwsAlbProvider = awsAlb.create;
