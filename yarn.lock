@@ -13455,9 +13455,9 @@ globby@^7.1.1:
     slash "^1.0.0"
 
 google-auth-library@^7.0.0, google-auth-library@^7.14.0, google-auth-library@^7.6.1:
-  version "7.14.0"
-  resolved "https://registry.npmjs.org/google-auth-library/-/google-auth-library-7.14.0.tgz#9d6a20592f7b4d4c463cd3e93934c4b1711d5dc6"
-  integrity sha512-or8r7qUqGVI3W8lVSdPh0ZpeFyQHeE73g5c0p+bLNTTUFXJ+GSeDQmZRZ2p4H8cF/RJYa4PNvi/A1ar1uVNLFA==
+  version "7.14.1"
+  resolved "https://registry.npmjs.org/google-auth-library/-/google-auth-library-7.14.1.tgz#e3483034162f24cc71b95c8a55a210008826213c"
+  integrity sha512-5Rk7iLNDFhFeBYc3s8l1CqzbEBcdhwR193RlD4vSNFajIcINKI8W8P0JLmBpwymHqqWbX34pJDQu39cSy/6RsA==
   dependencies:
     arrify "^2.0.0"
     base64-js "^1.3.0"
