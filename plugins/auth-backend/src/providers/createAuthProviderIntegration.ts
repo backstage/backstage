@@ -25,18 +25,20 @@ import { AuthProviderFactory, SignInResolver } from './types';
  */
 export function createAuthProviderIntegration<
   TCreateOptions extends unknown[],
-  TResolvers extends {
-    [name in string]: (...args: any[]) => SignInResolver<any>;
-  },
+  TResolvers extends
+    | {
+        [name in string]: (...args: any[]) => SignInResolver<any>;
+      },
 >(config: {
   create: (...args: TCreateOptions) => AuthProviderFactory;
-  resolvers: TResolvers;
+  resolvers?: TResolvers;
 }): Readonly<{
   create: (...args: TCreateOptions) => AuthProviderFactory;
-  resolvers: Readonly<TResolvers>;
+  // If no resolvers are defined, this receives the type `never`
+  resolvers: Readonly<string extends keyof TResolvers ? never : TResolvers>;
 }> {
   return Object.freeze({
     ...config,
-    resolvers: Object.freeze(config.resolvers),
+    resolvers: Object.freeze(config.resolvers ?? ({} as any)),
   });
 }
