@@ -5581,29 +5581,7 @@
     "@types/react-dom" "*"
 
 "@testing-library/user-event@^14.0.0":
-  version "14.0.0"
-  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-14.0.0.tgz#3906aa6f0e56fd012d73559f5f05c02e63ba18dd"
-  integrity sha512-hZhjNrle/DMi1ziHwHy8LS0fYJtf+cID7fuG5+4h+Bk83xQaRDQT/DlqfL4hJYw3mxW6KTIxoODrhGnhqJebdQ==
-
-"@tokenizer/token@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/@tokenizer/token/-/token-0.3.0.tgz#fe98a93fe789247e998c75e74e9c7c63217aa276"
-  integrity sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==
-
-"@tootallnate/once@1":
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
-  integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
-
-"@tootallnate/once@2":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
-  integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
-
-"@trendyol-js/openstack-swift-sdk@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.npmjs.org/@trendyol-js/openstack-swift-sdk/-/openstack-swift-sdk-0.0.5.tgz#65be3c42b8dbafc57f2f2a46c327e2ad51e5a70e"
-  integrity sha512-KS5nz0cvd35UUyMzhZm+btGV4prtA1KNE7CCMOGBdVxoMGl06Qidli3HgHoc2I9jLPmky1SPp5yzQUwrsyWa0g==
+  version: "14.0.4"
   dependencies:
     agentkeepalive "^4.1.4"
     axios "^0.21.1"
