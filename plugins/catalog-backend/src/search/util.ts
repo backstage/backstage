@@ -25,15 +25,13 @@ function isGroupEntity(entity: Entity): entity is UserEntity {
 }
 
 export function getDocumentText(entity: Entity): string {
-  let documentText = entity.metadata.description || '';
+  const documentTexts: string[] = [];
+  documentTexts.push(entity.metadata.description || '');
+
   if (isUserEntity(entity) || isGroupEntity(entity)) {
-    if (entity.spec?.profile?.displayName && documentText) {
-      // combine displayName and description
-      const displayName = entity.spec.profile.displayName;
-      documentText = displayName.concat(' : ', documentText);
-    } else {
-      documentText = entity.spec?.profile?.displayName || documentText;
+    if (entity.spec?.profile?.displayName) {
+      documentTexts.push(entity.spec.profile.displayName);
     }
   }
-  return documentText;
+  return documentTexts.join(' : ');
 }
