@@ -30,6 +30,11 @@ import { okta } from './okta/provider';
 import { onelogin } from './onelogin/provider';
 import { saml } from './saml/provider';
 
+/**
+ * All built-in auth provider integrations.
+ *
+ * @public
+ */
 export const providers = Object.freeze({
   atlassian,
   auth0,

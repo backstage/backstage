@@ -69,6 +69,7 @@ export type AwsAlbClaims = {
   iss: string;
 };
 
+/** @public */
 export type AwsAlbResult = {
   fullProfile: PassportProfile;
   expiresInSeconds?: number;
@@ -209,6 +210,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
 }
 
 /**
+ * @public
  * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type AwsAlbProviderOptions = {
@@ -279,4 +281,8 @@ export const awsAlb = createAuthProviderIntegration({
   },
 });
 
+/**
+ * @public
+ * @deprecated Use `providers.awsAlb.create` instead
+ */
 export const createAwsAlbProvider = awsAlb.create;

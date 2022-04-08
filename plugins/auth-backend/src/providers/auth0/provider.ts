@@ -168,6 +168,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
 }
 
 /**
+ * @public
  * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type Auth0ProviderOptions = {
@@ -249,6 +250,7 @@ export const auth0 = createAuthProviderIntegration({
 });
 
 /**
+ * @public
  * @deprecated Use `providers.auth0.create` instead.
  */
 export const createAuth0Provider = auth0.create;

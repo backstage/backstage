@@ -34,8 +34,6 @@ export { providers } from './providers';
 
 export { factories as defaultAuthProviderFactories } from './factories';
 
-// Export the minimal interface required for implementing a
-// custom Authorization Handler
 export type {
   AuthProviderConfig,
   AuthProviderRouteHandlers,
@@ -48,10 +46,9 @@ export type {
   SignInResolver,
   SignInInfo,
   CookieConfigurer,
+  StateEncoder,
+  AuthResponse,
+  ProfileInfo,
 } from './types';
-
-// These types are needed for a postMessage from the login pop-up
-// to the frontend
-export type { AuthResponse, ProfileInfo } from './types';
 
 export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';

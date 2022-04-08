@@ -133,6 +133,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
 type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
 /**
+ * @public
  * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type SamlProviderOptions = {

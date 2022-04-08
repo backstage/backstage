@@ -43,6 +43,8 @@ import { Entity } from '@backstage/catalog-model';
  *
  * Regardless of the query method, the query must match exactly one entity
  * in the catalog, or an error will be thrown.
+ *
+ * @public
  */
 export type AuthResolverCatalogUserQuery =
   | {
@@ -112,6 +114,7 @@ export type CookieConfigurer = (ctx: {
   callbackUrl: string;
 }) => { domain: string; path: string; secure: boolean };
 
+/** @public */
 export type AuthProviderConfig = {
   /**
    * The protocol://domain[:port] where the app is hosted. This is used to construct the
@@ -232,6 +235,7 @@ export type AuthProviderFactory = (options: {
   catalogApi: CatalogApi;
 }) => AuthProviderRouteHandlers;
 
+/** @public */
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
@@ -319,6 +323,7 @@ export type AuthHandler<TAuthResult> = (
   context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
+/** @public */
 export type StateEncoder = (
   req: OAuthStartRequest,
 ) => Promise<{ encodedState: string }>;

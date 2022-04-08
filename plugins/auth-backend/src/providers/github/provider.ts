@@ -228,6 +228,7 @@ export class GithubAuthProvider implements OAuthHandlers {
 }
 
 /**
+ * @public
  * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type GithubProviderOptions = {
