@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.4.25
+
+### Patch Changes
+
+- Added resolutions for `@types/react` and `@types/react-dom` to make sure that React v17 types are installed.
+
 ## 0.4.24
 
 ### Patch Changes
