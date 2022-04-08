@@ -6842,9 +6842,7 @@
     "@types/superagent" "*"
 
 "@types/svgo@^2.6.2":
-  version "2.6.2"
-  resolved "https://registry.npmjs.org/@types/svgo/-/svgo-2.6.2.tgz#97d8be0c50ff0562ed7522ba840149aee1c970e3"
-  integrity sha512-m1SqMc/EDAZ8v0BBX+NmlYytUXtvrMD2/J9LICwnMvAuJwb0GSmACU3XPvcORqE7ghEJA4Mk6NYzpwhQI/biPw==
+  version: "2.6.3"
   dependencies:
     "@types/node" "*"
 
