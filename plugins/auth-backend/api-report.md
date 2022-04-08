@@ -46,7 +46,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
 
 // Warning: (ae-missing-release-tag) "AtlassianProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type AtlassianProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -54,7 +54,9 @@ export type AtlassianProviderOptions = {
   };
 };
 
-// @public (undocumented)
+// Warning: (ae-missing-release-tag) "Auth0ProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export type Auth0ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -73,6 +75,16 @@ export type AuthHandlerResult = {
   profile: ProfileInfo;
 };
 
+// Warning: (ae-missing-release-tag) "AuthProviderConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type AuthProviderConfig = {
+  baseUrl: string;
+  appUrl: string;
+  isOriginAllowed: (origin: string) => boolean;
+  cookieConfigurer?: CookieConfigurer;
+};
+
 // Warning: (ae-missing-release-tag) "AuthProviderFactory" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -80,8 +92,8 @@ export type AuthProviderFactory = (options: {
   providerId: string;
   globalConfig: AuthProviderConfig;
   config: Config;
-  resolverContext: AuthResolverContext;
   logger: Logger;
+  resolverContext: AuthResolverContext;
   tokenManager: TokenManager;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
@@ -159,7 +171,7 @@ export type AuthResponse<ProviderInfo> = {
 
 // Warning: (ae-missing-release-tag) "AwsAlbProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type AwsAlbProviderOptions = {
   authHandler?: AuthHandler<AwsAlbResult>;
   signIn: {
@@ -200,7 +212,7 @@ export type BitbucketPassportProfile = Profile & {
 
 // Warning: (ae-missing-release-tag) "BitbucketProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -208,15 +220,11 @@ export type BitbucketProviderOptions = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "bitbucketUserIdSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const bitbucketUserIdSignInResolver: SignInResolver<BitbucketOAuthResult>;
+// @public @deprecated (undocumented)
+export const bitbucketUserIdSignInResolver: SignInResolver<OAuthResult>;
 
-// Warning: (ae-missing-release-tag) "bitbucketUsernameSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const bitbucketUsernameSignInResolver: SignInResolver<BitbucketOAuthResult>;
+// @public @deprecated (undocumented)
+export const bitbucketUsernameSignInResolver: SignInResolver<OAuthResult>;
 
 // Warning: (ae-missing-release-tag) "CatalogIdentityClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -240,53 +248,101 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
 };
 
-// Warning: (ae-missing-release-tag) "createAtlassianProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createAtlassianProvider: (
-  options?: AtlassianProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// @public (undocumented)
+// Warning: (ae-missing-release-tag) "createAuth0Provider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export const createAuth0Provider: (
-  options?: Auth0ProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createAwsAlbProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const createAwsAlbProvider: (
-  options?: AwsAlbProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<AwsAlbResult> | undefined;
+        signIn: {
+          resolver: SignInResolver<AwsAlbResult>;
+        };
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createBitbucketProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createBitbucketProvider: (
-  options?: BitbucketProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// @public
-export function createGcpIapProvider(
-  options: GcpIapProviderOptions,
-): AuthProviderFactory;
+// @public @deprecated (undocumented)
+export const createGcpIapProvider: (options: {
+  authHandler?: AuthHandler<GcpIapResult> | undefined;
+  signIn: {
+    resolver: SignInResolver<GcpIapResult>;
+  };
+}) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createGithubProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createGithubProvider: (
-  options?: GithubProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<GithubOAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<GithubOAuthResult>;
+            }
+          | undefined;
+        stateEncoder?: StateEncoder | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createGitlabProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createGitlabProvider: (
-  options?: GitlabProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createGoogleProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export const createGoogleProvider: (
   options?:
@@ -301,42 +357,82 @@ export const createGoogleProvider: (
     | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createMicrosoftProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createMicrosoftProvider: (
-  options?: MicrosoftProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createOAuth2Provider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createOAuth2Provider: (
-  options?: OAuth2ProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// @public
-export const createOauth2ProxyProvider: <JWTPayload>(
-  options: Oauth2ProxyProviderOptions<JWTPayload>,
-) => AuthProviderFactory;
+// @public @deprecated (undocumented)
+export const createOauth2ProxyProvider: (options: {
+  authHandler: AuthHandler<OAuth2ProxyResult<unknown>>;
+  signIn: {
+    resolver: SignInResolver<OAuth2ProxyResult<unknown>>;
+  };
+}) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createOidcProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createOidcProvider: (
-  options?: OidcProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OidcAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OidcAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// Warning: (ae-missing-release-tag) "createOktaProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createOktaProvider: (
-  _options?: OktaProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createOneLoginProvider: (
-  options?: OneLoginProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<OAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<OAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "createOriginFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -349,9 +445,18 @@ export function createOriginFilter(config: Config): (origin: string) => boolean;
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const createSamlProvider: (
-  options?: SamlProviderOptions | undefined,
+  options?:
+    | {
+        authHandler?: AuthHandler<SamlAuthResult> | undefined;
+        signIn?:
+          | {
+              resolver: SignInResolver<SamlAuthResult>;
+            }
+          | undefined;
+      }
+    | undefined,
 ) => AuthProviderFactory;
 
 // Warning: (ae-missing-release-tag) "factories" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -371,7 +476,9 @@ export const encodeState: (state: OAuthState) => string;
 // @public (undocumented)
 export const ensuresXRequestedWith: (req: express.Request) => boolean;
 
-// @public
+// Warning: (ae-missing-release-tag) "GcpIapProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export type GcpIapProviderOptions = {
   authHandler?: AuthHandler<GcpIapResult>;
   signIn: {
@@ -415,7 +522,7 @@ export type GithubOAuthResult = {
 
 // Warning: (ae-missing-release-tag) "GithubProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type GithubProviderOptions = {
   authHandler?: AuthHandler<GithubOAuthResult>;
   signIn?: {
@@ -424,14 +531,9 @@ export type GithubProviderOptions = {
   stateEncoder?: StateEncoder;
 };
 
-// Warning: (ae-missing-release-tag) "githubUsernameEntityNameSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export const githubUsernameEntityNameSignInResolver: SignInResolver<GithubOAuthResult>;
-
 // Warning: (ae-missing-release-tag) "GitlabProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type GitlabProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -439,10 +541,8 @@ export type GitlabProviderOptions = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "googleEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
-export const googleEmailSignInResolver: () => SignInResolver<OAuthResult>;
+export const googleEmailSignInResolver: SignInResolver<OAuthResult>;
 
 // Warning: (ae-missing-release-tag) "GoogleProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -454,14 +554,12 @@ export type GoogleProviderOptions = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "microsoftEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const microsoftEmailSignInResolver: SignInResolver<OAuthResult>;
 
 // Warning: (ae-missing-release-tag) "MicrosoftProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type MicrosoftProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -471,7 +569,7 @@ export type MicrosoftProviderOptions = {
 
 // Warning: (ae-missing-release-tag) "OAuth2ProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type OAuth2ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -479,7 +577,9 @@ export type OAuth2ProviderOptions = {
   };
 };
 
-// @public
+// Warning: (ae-missing-release-tag) "Oauth2ProxyProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export type Oauth2ProxyProviderOptions<JWTPayload> = {
   authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
   signIn: {
@@ -629,7 +729,9 @@ export type OidcAuthResult = {
   userinfo: UserinfoResponse;
 };
 
-// @public
+// Warning: (ae-missing-release-tag) "OidcProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export type OidcProviderOptions = {
   authHandler?: AuthHandler<OidcAuthResult>;
   signIn?: {
@@ -637,14 +739,12 @@ export type OidcProviderOptions = {
   };
 };
 
-// Warning: (ae-missing-release-tag) "oktaEmailSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const oktaEmailSignInResolver: SignInResolver<OAuthResult>;
 
 // Warning: (ae-missing-release-tag) "OktaProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type OktaProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -652,7 +752,9 @@ export type OktaProviderOptions = {
   };
 };
 
-// @public (undocumented)
+// Warning: (ae-missing-release-tag) "OneLoginProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export type OneLoginProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
   signIn?: {
@@ -685,6 +787,109 @@ export type ProfileInfo = {
 //
 // @public (undocumented)
 export const providers: Readonly<{
+  atlassian: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  auth0: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  awsAlb: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<AwsAlbResult> | undefined;
+            signIn: {
+              resolver: SignInResolver<AwsAlbResult>;
+            };
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  bitbucket: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      lookupUsernameAnnotation(): SignInResolver<OAuthResult>;
+      lookupUserIdAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  gcpIap: Readonly<{
+    create: (options: {
+      authHandler?: AuthHandler<GcpIapResult> | undefined;
+      signIn: {
+        resolver: SignInResolver<GcpIapResult>;
+      };
+    }) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  github: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<GithubOAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<GithubOAuthResult>;
+                }
+              | undefined;
+            stateEncoder?: StateEncoder | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      byUsername: () => SignInResolver<GithubOAuthResult>;
+    }>;
+  }>;
+  gitlab: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
   google: Readonly<{
     create: (
       options?:
@@ -701,6 +906,111 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       byEmailLocalPart: () => SignInResolver<unknown>;
       lookupEmailAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  microsoft: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      lookupEmailAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  oauth2: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  oauth2Proxy: Readonly<{
+    create: (options: {
+      authHandler: AuthHandler<OAuth2ProxyResult<unknown>>;
+      signIn: {
+        resolver: SignInResolver<OAuth2ProxyResult<unknown>>;
+      };
+    }) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  oidc: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OidcAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OidcAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  okta: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      lookupEmailAnnotation(): SignInResolver<OAuthResult>;
+    }>;
+  }>;
+  onelogin: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<OAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<OAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: never;
+  }>;
+  saml: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<SamlAuthResult> | undefined;
+            signIn?:
+              | {
+                  resolver: SignInResolver<SamlAuthResult>;
+                }
+              | undefined;
+          }
+        | undefined,
+    ) => AuthProviderFactory;
+    resolvers: Readonly<{
+      byNameId(): SignInResolver<SamlAuthResult>;
     }>;
   }>;
 }>;
@@ -735,12 +1045,12 @@ export type SamlAuthResult = {
   fullProfile: any;
 };
 
-// Warning: (ae-missing-release-tag) "samlNameIdEntityNameSignInResolver" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const samlNameIdEntityNameSignInResolver: SignInResolver<SamlAuthResult>;
 
-// @public (undocumented)
+// Warning: (ae-missing-release-tag) "SamlProviderOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public @deprecated (undocumented)
 export type SamlProviderOptions = {
   authHandler?: AuthHandler<SamlAuthResult>;
   signIn?: {
@@ -770,6 +1080,16 @@ export type TokenIssuer = {
   }>;
 };
 
+// Warning: (ae-missing-release-tag) "TokenParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type TokenParams = {
+  claims: {
+    sub: string;
+    ent?: string[];
+  };
+};
+
 // Warning: (ae-missing-release-tag) "verifyNonce" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -791,8 +1111,6 @@ export type WebMessageResponse =
 // Warnings were encountered during analysis:
 //
 // src/identity/types.d.ts:31:9 - (ae-forgotten-export) The symbol "AnyJWK" needs to be exported by the entry point index.d.ts
-// src/providers/aws-alb/provider.d.ts:77:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
-// src/providers/github/provider.d.ts:97:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:50:5 - (ae-forgotten-export) The symbol "TokenParams" needs to be exported by the entry point index.d.ts
-// src/providers/types.d.ts:180:5 - (ae-forgotten-export) The symbol "AuthProviderConfig" needs to be exported by the entry point index.d.ts
+// src/providers/aws-alb/provider.d.ts:73:5 - (ae-forgotten-export) The symbol "AwsAlbResult" needs to be exported by the entry point index.d.ts
+// src/providers/github/provider.d.ts:175:5 - (ae-forgotten-export) The symbol "StateEncoder" needs to be exported by the entry point index.d.ts
 ```
