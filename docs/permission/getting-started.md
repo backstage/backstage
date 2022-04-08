@@ -38,17 +38,22 @@ Like many other parts of Backstage, the permissions framework relies on informat
 
 The permissions framework uses a new `permission-backend` plugin to accept authorization requests from other plugins across your Backstage instance. The Backstage backend does not include this permission backend by default, so you will need to add it:
 
-1. Add `@backstage/plugin-permission-backend` as a dependency of your Backstage backend.
+1. Add `@backstage/plugin-permission-backend` as a dependency of your Backstage backend:
+
+```bash
+$ yarn workspace backend add @backstage/plugin-permission-backend
+```
+
 2. Add the following to a new file, `packages/backend/src/plugins/permission.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
 
 ```typescript
 import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  PermissionPolicy,
+  AuthorizeResult,
   PolicyDecision,
-} from '@backstage/plugin-permission-node';
+} from '@backstage/plugin-permission-common';
+import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -61,21 +66,41 @@ class TestPermissionPolicy implements PermissionPolicy {
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const { config, logger, discovery } = env;
   return await createRouter({
-    config,
-    logger,
-    discovery,
+    config: env.config,
+    logger: env.logger,
+    discovery: env.discovery,
     policy: new TestPermissionPolicy(),
     identity: IdentityClient.create({
-      discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
+      discovery: env.discovery,
+      issuer: await env.discovery.getExternalBaseUrl('auth'),
     }),
   });
 }
 ```
 
-3. Wire up the permission policy in `packages/backend/src/index.ts`. [The index in the example backend](https://github.com/backstage/backstage/blob/master/packages/backend/src/index.ts) shows how to do this. You’ll need to import the module from the previous step, create a plugin environment, and add the router to the express app.
+3. Wire up the permission policy in `packages/backend/src/index.ts`. [The index in the example backend](https://github.com/backstage/backstage/blob/master/packages/backend/src/index.ts) shows how to do this. You’ll need to import the module from the previous step, create a plugin environment, and add the router to the express app:
+
+```diff
+  import proxy from './plugins/proxy';
+  import techdocs from './plugins/techdocs';
+  import search from './plugins/search';
++ import permission from './plugins/permission';
+
+  ...
+
+  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+  const searchEnv = useHotMemoize(module, () => createEnv('search'));
+  const appEnv = useHotMemoize(module, () => createEnv('app'));
++ const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
+
+  ...
+
+  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+  apiRouter.use('/proxy', await proxy(proxyEnv));
+  apiRouter.use('/search', await search(searchEnv));
++ apiRouter.use('/permission', await permission(permissionEnv));
+```
 
 ### 2. Enable and test the permissions system
 
@@ -93,18 +118,21 @@ permission:
 ```diff
   import { IdentityClient } from '@backstage/plugin-auth-node';
   import { createRouter } from '@backstage/plugin-permission-backend';
-  import { AuthorizeResult } from '@backstage/plugin-permission-common';
   import {
-    PermissionPolicy,
-+   PolicyAuthorizeQuery,
+    AuthorizeResult,
     PolicyDecision,
-  } from '@backstage/plugin-permission-node';
+  } from '@backstage/plugin-permission-common';
+-  import { PermissionPolicy } from '@backstage/plugin-permission-node';
++ import {
++   PermissionPolicy,
++   PolicyQuery,
++ } from '@backstage/plugin-permission-node';
   import { Router } from 'express';
   import { PluginEnvironment } from '../types';
 
   class TestPermissionPolicy implements PermissionPolicy {
 -   async handle(): Promise<PolicyDecision> {
-+   async handle(request: PolicyAuthorizeQuery): Promise<PolicyDecision> {
++   async handle(request: PolicyQuery): Promise<PolicyDecision> {
 +     if (request.permission.name === 'catalog.entity.delete') {
 +       return {
 +         result: AuthorizeResult.DENY,
@@ -113,22 +141,6 @@ permission:
 +
       return { result: AuthorizeResult.ALLOW };
     }
-  }
-
-  export default async function createPlugin(
-    env: PluginEnvironment,
-  ): Promise<Router> {
-    const { config, logger, discovery } = env;
-    return await createRouter({
-      config,
-      logger,
-      discovery,
-      policy: new TestPermissionPolicy(),
-      identity: IdentityClient.create({
-        discovery,
-        issuer: await discovery.getExternalBaseUrl('auth'),
-      }),
-    });
   }
 ```
 

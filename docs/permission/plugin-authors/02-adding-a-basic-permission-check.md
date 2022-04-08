@@ -16,7 +16,7 @@ Install the following module:
 
 ```
 $ yarn workspace @internal/plugin-todo-list-backend \
-    add @backstage/plugin-permission-common
+  add @backstage/plugin-permission-common
 ```
 
 ## Creating a new permission
@@ -24,14 +24,12 @@ $ yarn workspace @internal/plugin-todo-list-backend \
 Let's create a new file `plugins/todo-list-backend/src/service/permissions.ts` with the following content:
 
 ```typescript
-import { Permission } from '@backstage/plugin-permission-common';
+import { createPermission } from '@backstage/plugin-permission-common';
 
-export const todosListCreate: Permission = {
+export const todosListCreate = createPermission({
   name: 'todos.list.create',
-  attributes: {
-    action: 'create',
-  },
-};
+  attributes: { action: 'create' },
+});
 ```
 
 We recommend exporting all permissions from your plugin, so that Backstage integrators can import them when writing policies.
@@ -45,7 +43,7 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
 
 - import { InputError } from '@backstage/errors';
 + import { InputError, NotAllowedError } from '@backstage/errors';
-+ import { PermissionAuthorizer, AuthorizeResult } from '@backstage/plugin-permission-common';
++ import { PermissionEvaluator, AuthorizeResult } from '@backstage/plugin-permission-common';
 + import { todosListCreate } from './permissions';
 
 ...
@@ -53,7 +51,7 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
   export interface RouterOptions {
     logger: Logger;
     identity: IdentityClient;
-+   permissions: PermissionAuthorizer;
++   permissions: PermissionEvaluator;
   }
 
   export async function createRouter(
@@ -117,24 +115,28 @@ That's it! Now your plugin is fully configured. Let's try to test the logic by d
 
 ## Test the authorized create endpoint
 
+Before running this step, please make sure you followed the steps described in [Getting started](../getting-started) section.
+
 In order to test the logic above, the integrators of your backstage instance need to change their permission policy to return `DENY` for our newly-created permission:
 
 ```diff
 // packages/backend/src/plugins/permission.ts
 
 - import { IdentityClient } from '@backstage/plugin-auth-node';
-+ import { BackstageIdentityResponse, IdentityClient } from '@backstage/plugin-auth-node';
++ import {
++   BackstageIdentityResponse,
++   IdentityClient
++ } from '@backstage/plugin-auth-node';
   import {
     PermissionPolicy,
-+   PolicyAuthorizeQuery,
-    PolicyDecision,
++   PolicyQuery,
   } from '@backstage/plugin-permission-node';
 
-- class AllowAllPermissionPolicy implements PermissionPolicy
-+ class MyPermissionPolicy implements PermissionPolicy {
+- class TestPermissionPolicy implements PermissionPolicy
++ class TestPermissionPolicy implements PermissionPolicy {
 -   async handle(): Promise<PolicyDecision> {
 +   async handle(
-+     request: PolicyAuthorizeQuery,
++     request: PolicyQuery,
 +     user?: BackstageIdentityResponse,
 +   ): Promise<PolicyDecision> {
 +     if (request.permission.name === 'todos.list.create') {
@@ -146,16 +148,6 @@ In order to test the logic above, the integrators of your backstage instance nee
       return {
         result: AuthorizeResult.ALLOW,
       };
-  }
-
-  export default async function createPlugin({
-    discovery,
-    logger,
-  }: PluginEnvironment) {
--   const policy = new AllowAllPermissionPolicy();
-+   const policy = new MyPermissionPolicy();
-    ...
-
   }
 ```
 
