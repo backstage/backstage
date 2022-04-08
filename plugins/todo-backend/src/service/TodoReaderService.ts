@@ -71,8 +71,15 @@ export class TodoReaderService implements TodoService {
         `Entity not found, ${stringifyEntityRef(req.entity)}`,
       );
     }
-
-    const url = getEntitySourceLocation(entity).target;
+    const entitySourceLocation = getEntitySourceLocation(entity)
+    if (entitySourceLocation.type !== 'url') {
+      throw new InputError(
+        `Invalid entity location type for ${stringifyEntityRef(
+          entity,
+        )}, got '${entitySourceLocation.type}' for location ${entitySourceLocation.target}`,
+      );
+    }
+    const url = entitySourceLocation.target;
     const todos = await this.todoReader.readTodos({ url });
 
     let limit = req.limit ?? this.defaultPageSize;
