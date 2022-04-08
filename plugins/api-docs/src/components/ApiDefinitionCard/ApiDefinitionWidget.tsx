@@ -17,6 +17,7 @@ import React from 'react';
 import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
 import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
+import { GrpcApiDefinitionWidget } from '../GrpcApiDefinitionWidget';
 
 export type ApiDefinitionWidget = {
   type: string;
@@ -49,6 +50,13 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       rawLanguage: 'graphql',
       component: definition => (
         <GraphQlDefinitionWidget definition={definition} />
+      ),
+    },
+    {
+      type: 'grpc',
+      title: 'gRPC',
+      component: definition => (
+        <GrpcApiDefinitionWidget definition={definition} />
       ),
     },
   ];
