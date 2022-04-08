@@ -18,6 +18,7 @@ import {
   AuthHandler,
   AuthProviderFactory,
   AuthProviderRouteHandlers,
+  AuthResolverContext,
   AuthResponse,
   SignInResolver,
 } from '../types';
@@ -25,11 +26,8 @@ import express from 'express';
 import fetch from 'node-fetch';
 import * as crypto from 'crypto';
 import { KeyObject } from 'crypto';
-import { Logger } from 'winston';
 import NodeCache from 'node-cache';
 import { JWT } from 'jose';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient } from '../../lib/catalog';
 import { Profile as PassportProfile } from 'passport';
 import { makeProfileInfo } from '../../lib/passport';
 import { AuthenticationError } from '@backstage/errors';
@@ -41,11 +39,9 @@ export const ALB_ACCESS_TOKEN_HEADER = 'x-amzn-oidc-accesstoken';
 type Options = {
   region: string;
   issuer?: string;
-  logger: Logger;
   authHandler: AuthHandler<AwsAlbResult>;
   signInResolver: SignInResolver<AwsAlbResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
+  resolverContext: AuthResolverContext;
 };
 
 export const getJWTHeaders = (input: string): AwsAlbHeaders => {
@@ -95,9 +91,7 @@ export type AwsAlbResponse = AuthResponse<AwsAlbProviderInfo>;
 export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   private readonly region: string;
   private readonly issuer?: string;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
   private readonly keyCache: NodeCache;
   private readonly authHandler: AuthHandler<AwsAlbResult>;
   private readonly signInResolver: SignInResolver<AwsAlbResult>;
@@ -107,9 +101,7 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     this.issuer = options.issuer;
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
     this.keyCache = new NodeCache({ stdTTL: 3600 });
   }
 
@@ -123,9 +115,10 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
       const response = await this.handleResult(result);
       res.json(response);
     } catch (e) {
-      this.logger.error('Exception occurred during AWS ALB token refresh', e);
-      res.status(401);
-      res.end();
+      throw new AuthenticationError(
+        'Exception occurred during AWS ALB token refresh',
+        e,
+      );
     }
   }
 
@@ -182,18 +175,13 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
   }
 
   private async handleResult(result: AwsAlbResult): Promise<AwsAlbResponse> {
-    const context = {
-      tokenIssuer: this.tokenIssuer,
-      catalogIdentityClient: this.catalogIdentityClient,
-      logger: this.logger,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
     const backstageIdentity = await this.signInResolver(
       {
         result,
         profile,
       },
-      context,
+      this.resolverContext,
     );
 
     return {
@@ -258,7 +246,7 @@ export const createAwsAlbProvider = (options?: {
     resolver: SignInResolver<AwsAlbResult>;
   };
 }): AuthProviderFactory => {
-  return ({ config, tokenIssuer, catalogApi, logger, tokenManager }) => {
+  return ({ config, resolverContext }) => {
     const region = config.getString('region');
     const issuer = config.getOptionalString('iss');
 
@@ -268,27 +256,18 @@ export const createAwsAlbProvider = (options?: {
       );
     }
 
-    const catalogIdentityClient = new CatalogIdentityClient({
-      catalogApi,
-      tokenManager,
-    });
-
     const authHandler: AuthHandler<AwsAlbResult> = options?.authHandler
       ? options.authHandler
       : async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         });
 
-    const signInResolver = options?.signIn.resolver;
-
     return new AwsAlbAuthProvider({
       region,
       issuer,
-      signInResolver,
+      signInResolver: options?.signIn.resolver,
       authHandler,
-      tokenIssuer,
-      catalogIdentityClient,
-      logger,
+      resolverContext,
     });
   };
 };
