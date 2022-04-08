@@ -58,6 +58,7 @@ export class DocsSynchronizer {
   }: {
     publisher: PublisherBase;
     logger: winston.Logger;
+    buildLogger: winston.Logger;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
     cache: TechDocsCache | undefined;
