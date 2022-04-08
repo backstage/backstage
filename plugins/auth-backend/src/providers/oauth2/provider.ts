@@ -39,12 +39,10 @@ import {
 import {
   AuthHandler,
   AuthProviderFactory,
+  AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
-import { Logger } from 'winston';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -53,12 +51,10 @@ type PrivateInfo = {
 export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
   authorizationUrl: string;
   tokenUrl: string;
   scope?: string;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
   includeBasicAuth?: boolean;
 };
 
@@ -66,16 +62,12 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   private readonly _strategy: OAuth2Strategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: OAuth2AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
 
     this._strategy = new OAuth2Strategy(
       {
@@ -163,12 +155,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -186,7 +173,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -216,15 +203,7 @@ export const createOAuth2Provider = (options?: {
     resolver: SignInResolver<OAuthResult>;
   };
 }): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
+  return ({ providerId, globalConfig, config, resolverContext }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
@@ -239,11 +218,6 @@ export const createOAuth2Provider = (options?: {
       const disableRefresh =
         envConfig.getOptionalBoolean('disableRefresh') ?? false;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
-
       const authHandler: AuthHandler<OAuthResult> = options?.authHandler
         ? options.authHandler
         : async ({ fullProfile, params }) => ({
@@ -253,22 +227,19 @@ export const createOAuth2Provider = (options?: {
       const provider = new OAuth2AuthProvider({
         clientId,
         clientSecret,
-        tokenIssuer,
-        catalogIdentityClient,
         callbackUrl,
         signInResolver: options?.signIn?.resolver,
         authHandler,
         authorizationUrl,
         tokenUrl,
         scope,
-        logger,
         includeBasicAuth,
+        resolverContext,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
         disableRefresh,
         providerId,
-        tokenIssuer,
         callbackUrl,
       });
     });
