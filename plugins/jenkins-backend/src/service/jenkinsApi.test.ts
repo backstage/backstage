@@ -49,6 +49,7 @@ const fakePermissionApi = {
       result: AuthorizeResult.ALLOW,
     },
   ]),
+  authorizeConditional: jest.fn(),
 };
 
 describe('JenkinsApi', () => {

@@ -20,22 +20,38 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import {
+  PermissionAuthorizer,
+  PermissionEvaluator,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
-  permissions?: PermissionAuthorizer;
+  permissions?: PermissionEvaluator | PermissionAuthorizer;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { jenkinsInfoProvider } = options;
+  const { jenkinsInfoProvider, permissions, logger } = options;
 
-  const jenkinsApi = new JenkinsApiImpl(options.permissions);
+  let permissionEvaluator: PermissionEvaluator | undefined;
+  if (permissions && 'query' in permissions) {
+    permissionEvaluator = permissions as PermissionEvaluator;
+  } else {
+    logger.warn(
+      'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
+    );
+    permissionEvaluator = permissions
+      ? toPermissionEvaluator(permissions)
+      : undefined;
+  }
+
+  const jenkinsApi = new JenkinsApiImpl(permissionEvaluator);
 
   const router = Router();
   router.use(express.json());

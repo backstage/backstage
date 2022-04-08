@@ -79,7 +79,11 @@ import {
   CatalogPermissionRule,
   permissionRules as catalogPermissionRules,
 } from '../permissions/rules';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import {
+  PermissionAuthorizer,
+  PermissionEvaluator,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import {
   createConditionTransformer,
   createPermissionIntegrationRouter,
@@ -95,7 +99,7 @@ export type CatalogEnvironment = {
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
-  permissions: PermissionAuthorizer;
+  permissions: PermissionEvaluator | PermissionAuthorizer;
 };
 
 /**
@@ -376,9 +380,20 @@ export class CatalogBuilder {
       policy,
     });
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog(dbClient);
+
+    let permissionEvaluator: PermissionEvaluator;
+    if ('query' in permissions) {
+      permissionEvaluator = permissions as PermissionEvaluator;
+    } else {
+      logger.warn(
+        'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
+      );
+      permissionEvaluator = toPermissionEvaluator(permissions);
+    }
+
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
-      permissions,
+      permissionEvaluator,
       createConditionTransformer(this.permissionRules),
     );
     const permissionIntegrationRouter = createPermissionIntegrationRouter({
@@ -428,11 +443,11 @@ export class CatalogBuilder {
       this.locationAnalyzer ?? new RepoLocationAnalyzer(logger, integrations);
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator),
-      permissions,
+      permissionEvaluator,
     );
     const refreshService = new AuthorizedRefreshService(
       new DefaultRefreshService({ database: processingDatabase }),
-      permissions,
+      permissionEvaluator,
     );
     const router = await createRouter({
       entitiesCatalog,
