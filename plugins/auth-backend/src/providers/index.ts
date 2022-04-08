@@ -37,6 +37,7 @@ export { factories as defaultAuthProviderFactories } from './factories';
 // Export the minimal interface required for implementing a
 // custom Authorization Handler
 export type {
+  AuthProviderConfig,
   AuthProviderRouteHandlers,
   AuthProviderFactoryOptions,
   AuthProviderFactory,
