@@ -16,14 +16,12 @@
 
 import express from 'express';
 import { TokenPayload } from 'google-auth-library';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient } from '../../lib/catalog';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import {
   AuthHandler,
   AuthProviderFactory,
   AuthProviderRouteHandlers,
+  AuthResolverContext,
   SignInResolver,
 } from '../types';
 import {
@@ -31,35 +29,24 @@ import {
   defaultAuthHandler,
   parseRequestToken,
 } from './helpers';
-import {
-  GcpIapProviderOptions,
-  GcpIapResponse,
-  GcpIapResult,
-  IAP_JWT_HEADER,
-} from './types';
+import { GcpIapResponse, GcpIapResult, IAP_JWT_HEADER } from './types';
 
 export class GcpIapProvider implements AuthProviderRouteHandlers {
   private readonly authHandler: AuthHandler<GcpIapResult>;
   private readonly signInResolver: SignInResolver<GcpIapResult>;
   private readonly tokenValidator: (token: string) => Promise<TokenPayload>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: {
     authHandler: AuthHandler<GcpIapResult>;
     signInResolver: SignInResolver<GcpIapResult>;
     tokenValidator: (token: string) => Promise<TokenPayload>;
-    tokenIssuer: TokenIssuer;
-    catalogIdentityClient: CatalogIdentityClient;
-    logger: Logger;
+    resolverContext: AuthResolverContext;
   }) {
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
     this.tokenValidator = options.tokenValidator;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
   }
 
   async start() {}
@@ -71,17 +58,12 @@ export class GcpIapProvider implements AuthProviderRouteHandlers {
       req.header(IAP_JWT_HEADER),
       this.tokenValidator,
     );
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
 
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const backstageIdentity = await this.signInResolver(
       { profile, result },
-      context,
+      this.resolverContext,
     );
 
     const response: GcpIapResponse = {
@@ -118,25 +100,18 @@ export function createGcpIapProvider(options: {
     resolver: SignInResolver<GcpIapResult>;
   };
 }): AuthProviderFactory {
-  return ({ config, tokenIssuer, catalogApi, logger, tokenManager }) => {
+  return ({ config, resolverContext }) => {
     const audience = config.getString('audience');
 
     const authHandler = options.authHandler ?? defaultAuthHandler;
     const signInResolver = options.signIn.resolver;
     const tokenValidator = createTokenValidator(audience);
 
-    const catalogIdentityClient = new CatalogIdentityClient({
-      catalogApi,
-      tokenManager,
-    });
-
     return new GcpIapProvider({
       authHandler,
       signInResolver,
       tokenValidator,
-      tokenIssuer,
-      catalogIdentityClient,
-      logger,
+      resolverContext,
     });
   };
 }
