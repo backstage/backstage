@@ -101,6 +101,23 @@ export enum GoCdBuildResultStatus {
   pending,
 }
 
+export const toBuildResultStatus = (status: string): GoCdBuildResultStatus => {
+  switch (status.toLocaleLowerCase('en-US')) {
+    case 'passed':
+      return GoCdBuildResultStatus.successful;
+    case 'failed':
+      return GoCdBuildResultStatus.error;
+    case 'aborted':
+      return GoCdBuildResultStatus.aborted;
+    case 'building':
+      return GoCdBuildResultStatus.running;
+    case 'pending':
+      return GoCdBuildResultStatus.pending;
+    default:
+      return GoCdBuildResultStatus.aborted;
+  }
+};
+
 export interface GoCdBuildStageResult {
   status: GoCdBuildResultStatus;
   text: string;
