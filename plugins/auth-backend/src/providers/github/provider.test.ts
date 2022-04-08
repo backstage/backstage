@@ -15,11 +15,7 @@
  */
 
 import { Profile as PassportProfile } from 'passport';
-import {
-  GithubAuthProvider,
-  GithubOAuthResult,
-  githubUsernameEntityNameSignInResolver,
-} from './provider';
+import { GithubAuthProvider, GithubOAuthResult, github } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
 import { OAuthStartRequest, encodeState } from '../../lib/oauth';
@@ -42,7 +38,7 @@ describe('GithubAuthProvider', () => {
         token: `token-for-user:${entityRef.name}`,
       })),
     } as unknown as AuthResolverContext,
-    signInResolver: githubUsernameEntityNameSignInResolver,
+    signInResolver: github.resolvers.byUsername(),
     authHandler: async ({ fullProfile }) => ({
       profile: makeProfileInfo(fullProfile),
     }),

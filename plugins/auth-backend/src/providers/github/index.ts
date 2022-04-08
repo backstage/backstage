@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export {
-  createGithubProvider,
-  githubUsernameEntityNameSignInResolver,
-} from './provider';
+export { createGithubProvider } from './provider';
 export type { GithubOAuthResult, GithubProviderOptions } from './provider';

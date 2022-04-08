@@ -227,19 +227,6 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 }
 
-export const githubUsernameEntityNameSignInResolver: SignInResolver<
-  GithubOAuthResult
-> = async (info, ctx) => {
-  const { fullProfile } = info.result;
-
-  const userId = fullProfile.username;
-  if (!userId) {
-    throw new Error(`GitHub user profile does not contain a username`);
-  }
-
-  return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
-};
-
 /**
  * @deprecated This type has been inlined into the create method and will be removed.
  */
@@ -374,6 +361,23 @@ export const github = createAuthProviderIntegration({
           callbackUrl,
         });
       });
+  },
+  resolvers: {
+    /**
+     * Looks up the user by matching their GitHub username to the entity name.
+     */
+    byUsername: (): SignInResolver<GithubOAuthResult> => {
+      return async (info, ctx) => {
+        const { fullProfile } = info.result;
+
+        const userId = fullProfile.username;
+        if (!userId) {
+          throw new Error(`GitHub user profile does not contain a username`);
+        }
+
+        return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
+      };
+    },
   },
 });
 
