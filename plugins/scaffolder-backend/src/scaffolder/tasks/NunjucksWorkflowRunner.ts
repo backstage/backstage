@@ -239,6 +239,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           if (task.isDryRun && !action.supportsDryRun) {
             task.emitLog(
               `Skipping because ${action.id} does not support dry-run`,
+              {
+                stepId: step.id,
+                status: 'skipped',
+              },
             );
             const outputSchema = action.schema?.output;
             if (outputSchema) {
