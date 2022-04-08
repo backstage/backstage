@@ -56,6 +56,7 @@ export type OutOfTheBoxDeploymentOptions = {
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  buildLogger: Logger;
 };
 
 /**
@@ -127,6 +128,7 @@ export async function createRouter(
   const docsSynchronizer = new DocsSynchronizer({
     publisher,
     logger,
+    buildLogger,
     config,
     scmIntegrations,
     cache,

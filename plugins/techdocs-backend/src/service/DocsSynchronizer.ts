@@ -43,6 +43,7 @@ export type DocsSynchronizerSyncOpts = {
 export class DocsSynchronizer {
   private readonly publisher: PublisherBase;
   private readonly logger: winston.Logger;
+  private readonly buildLogger: winston.Logger;
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly cache: TechDocsCache | undefined;
@@ -50,6 +51,7 @@ export class DocsSynchronizer {
   constructor({
     publisher,
     logger,
+    buildLogger,
     config,
     scmIntegrations,
     cache,
@@ -62,6 +64,7 @@ export class DocsSynchronizer {
   }) {
     this.config = config;
     this.logger = logger;
+    this.buildLogger = buildLogger;
     this.publisher = publisher;
     this.scmIntegrations = scmIntegrations;
     this.cache = cache;
@@ -96,7 +99,7 @@ export class DocsSynchronizer {
     });
 
     taskLogger.add(new winston.transports.Stream({ stream: logStream }));
-    taskLogger.add(this.logger);
+    taskLogger.add(this.buildLogger);
 
     // check if the last update check was too recent
     if (!shouldCheckForUpdate(entity.metadata.uid!)) {
