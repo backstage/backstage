@@ -97,6 +97,8 @@ nav:
           - Discovery: 'integrations/bitbucket/discovery.md'
       - Datadog:
           - Installation: 'integrations/datadog-rum/installation.md'
+      - Gerrit:
+          - Locations: 'integrations/gerrit/locations.md'
       - GitHub:
           - Locations: 'integrations/github/locations.md'
           - Discovery: 'integrations/github/discovery.md'
