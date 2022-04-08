@@ -155,6 +155,11 @@
       },
       {
         "type": "subcategory",
+        "label": "Gerrit",
+        "ids": ["integrations/gerrit/locations"]
+      },
+      {
+        "type": "subcategory",
         "label": "GitHub",
         "ids": [
           "integrations/github/locations",

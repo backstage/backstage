@@ -19,8 +19,8 @@ To use this integration, add at least one Gerrit configuration to your root `app
 integrations:
   gerrit:
     - host: gerrit.company.com
-      apiBaseUrl: gerrit.company.com/gerrit
-      gitilesBaseUrl: gerrit.company.com/gitiles
+      apiBaseUrl: https://gerrit.company.com/gerrit
+      gitilesBaseUrl: https://gerrit.company.com/gitiles
       username: ${GERRIT_USERNAME}
       password: ${GERRIT_PASSWORD}
 ```
