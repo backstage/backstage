@@ -17,8 +17,8 @@ To make this change to an existing app, make the following changes to `packages/
 /* ... */
 
 +  const schedule = env.scheduler.createScheduledTaskRunner({
-+    frequency: Duration.fromObject({ seconds: 600 }),
-+    timeout: Duration.fromObject({ seconds: 900 }),
++    frequency: Duration.fromObject({ minutes: 10 }),
++    timeout: Duration.fromObject({ minutes: 15 }),
 +    initialDelay: Duration.fromObject({ seconds: 3 }),
 +  });
 

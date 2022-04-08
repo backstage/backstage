@@ -163,8 +163,8 @@ export default async function createPlugin(
   });
 
   const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-    frequency: Duration.fromObject({ seconds: 600 }),
-    timeout: Duration.fromObject({ seconds: 900 }),
+    frequency: Duration.fromObject({ minutes: 10 }),
+    timeout: Duration.fromObject({ minutes: 15 }),
     initialDelay: Duration.fromObject({ seconds: 3 }),
   });
 
@@ -299,14 +299,14 @@ import { Duration } from 'luxon';
 const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 
 const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-  frequency: Duration.fromObject({ seconds: 600 }),
-  timeout: Duration.fromObject({ seconds: 900 }),
+  frequency: Duration.fromObject({ minutes: 10 }),
+  timeout: Duration.fromObject({ minutes: 15 }),
   initialDelay: Duration.fromObject({ seconds: 3 }),
 });
 
 const everyHourSchedule = env.scheduler.createScheduledTaskRunner({
-  frequency: Duration.fromObject({ seconds: 3600 }),
-  timeout: Duration.fromObject({ seconds: 5400 }),
+  frequency: Duration.fromObject({ hours: 1 }),
+  timeout: Duration.fromObject({ minutes: 90 }),
   initialDelay: Duration.fromObject({ seconds: 3 }),
 });
 
@@ -332,8 +332,8 @@ a scheduled `TaskRunner` to pass into the `schedule` value, like this:
 
 ```typescript {3}
 const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-  frequency: Duration.fromObject({ seconds: 600 }),
-  timeout: Duration.fromObject({ seconds: 900 }),
+  frequency: Duration.fromObject({ minutes: 10 }),
+  timeout: Duration.fromObject({ minutes: 15 }),
   initialDelay: Duration.fromObject({ seconds: 3 }),
 });
 
