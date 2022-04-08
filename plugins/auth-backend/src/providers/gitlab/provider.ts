@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import { Strategy as GitlabStrategy } from 'passport-gitlab2';
-import { Logger } from 'winston';
 import {
   executeRedirectStrategy,
   executeFrameHandlerStrategy,
@@ -34,6 +29,7 @@ import {
   AuthProviderFactory,
   SignInResolver,
   AuthHandler,
+  AuthResolverContext,
 } from '../types';
 import {
   OAuthAdapter,
@@ -46,8 +42,6 @@ import {
   encodeState,
   OAuthResult,
 } from '../../lib/oauth';
-import { TokenIssuer } from '../../identity';
-import { CatalogIdentityClient } from '../../lib/catalog';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -57,9 +51,7 @@ export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   baseUrl: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export const gitlabUsernameEntityNameSignInResolver: SignInResolver<
@@ -72,23 +64,7 @@ export const gitlabUsernameEntityNameSignInResolver: SignInResolver<
     throw new Error(`GitLab user profile does not contain a username`);
   }
 
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: id,
-  });
-  const ownershipEntityRefs =
-    await ctx.catalogIdentityClient.resolveCatalogMembership({
-      entityRefs: [entityRef],
-    });
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: ownershipEntityRefs,
-    },
-  });
-
-  return { id, token };
+  return ctx.signInWithCatalogUser({ entityRef: { name: id } });
 };
 
 export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
@@ -102,14 +78,10 @@ export class GitlabAuthProvider implements OAuthHandlers {
   private readonly _strategy: GitlabStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: GitlabAuthProviderOptions) {
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
-    this.tokenIssuer = options.tokenIssuer;
+    this.resolverContext = options.resolverContext;
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
 
@@ -180,12 +152,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -203,7 +170,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -255,15 +222,7 @@ export const createGitlabProvider = (options?: {
     resolver: SignInResolver<OAuthResult>;
   };
 }): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
+  return ({ providerId, globalConfig, config, resolverContext }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
@@ -273,11 +232,6 @@ export const createGitlabProvider = (options?: {
       const callbackUrl =
         customCallbackUrl ||
         `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
 
       const authHandler: AuthHandler<OAuthResult> =
         options?.authHandler ?? gitlabDefaultAuthHandler;
@@ -289,15 +243,12 @@ export const createGitlabProvider = (options?: {
         baseUrl,
         authHandler,
         signInResolver: options?.signIn?.resolver,
-        catalogIdentityClient,
-        logger,
-        tokenIssuer,
+        resolverContext,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
         disableRefresh: false,
         providerId,
-        tokenIssuer,
         callbackUrl,
       });
     });
