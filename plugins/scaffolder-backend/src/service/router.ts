@@ -351,14 +351,16 @@ export async function createRouter(
         }
       }
 
+      const steps = template.spec.steps.map((step, index) => ({
+        ...step,
+        id: step.id ?? `step-${index + 1}`,
+        name: step.name ?? step.action,
+      }));
+
       const result = await dryRunner({
         spec: {
           apiVersion: template.apiVersion,
-          steps: template.spec.steps.map((step, index) => ({
-            ...step,
-            id: step.id ?? `step-${index + 1}`,
-            name: step.name ?? step.action,
-          })),
+          steps,
           output: template.spec.output ?? {},
           parameters: values,
         },
@@ -372,7 +374,15 @@ export async function createRouter(
         },
       });
 
-      res.status(200).json(result);
+      res.status(200).json({
+        ...result,
+        steps,
+        content: result.content.map(file => ({
+          path: file.path,
+          executable: file.executable,
+          base64Content: file.content.toString('base64'),
+        })),
+      });
     });
 
   const app = express();

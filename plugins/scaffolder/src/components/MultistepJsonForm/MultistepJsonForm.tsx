@@ -180,8 +180,9 @@ export const MultistepJsonForm = (props: Props) => {
     try {
       await onFinish();
     } catch (err) {
-      setDisableButtons(false);
       errorApi.post(err);
+    } finally {
+      setDisableButtons(false);
     }
   };
 
