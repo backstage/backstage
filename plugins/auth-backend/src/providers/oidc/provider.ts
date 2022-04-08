@@ -40,12 +40,10 @@ import {
 import {
   AuthHandler,
   AuthProviderFactory,
+  AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
-import { Logger } from 'winston';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -72,9 +70,7 @@ export type Options = OAuthProviderOptions & {
   tokenSignedResponseAlg?: string;
   signInResolver?: SignInResolver<OidcAuthResult>;
   authHandler: AuthHandler<OidcAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
@@ -84,9 +80,7 @@ export class OidcAuthProvider implements OAuthHandlers {
 
   private readonly signInResolver?: SignInResolver<OidcAuthResult>;
   private readonly authHandler: AuthHandler<OidcAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {
     this.implementation = this.setupStrategy(options);
@@ -94,9 +88,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     this.prompt = options.prompt;
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
@@ -182,12 +174,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   // Use this function to grab the user profile info from the token
   // Then populate the profile with it
   private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
     const response: OAuthResponse = {
       providerInfo: {
         idToken: result.tokenset.id_token,
@@ -203,7 +190,7 @@ export class OidcAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -229,15 +216,7 @@ export const createOidcProvider = (options?: {
     resolver: SignInResolver<OidcAuthResult>;
   };
 }): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
+  return ({ providerId, globalConfig, config, resolverContext }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
@@ -251,10 +230,6 @@ export const createOidcProvider = (options?: {
       );
       const scope = envConfig.getOptionalString('scope');
       const prompt = envConfig.getOptionalString('prompt');
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
 
       const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
         ? options.authHandler
@@ -276,15 +251,12 @@ export const createOidcProvider = (options?: {
         prompt,
         signInResolver: options?.signIn?.resolver,
         authHandler,
-        logger,
-        tokenIssuer,
-        catalogIdentityClient,
+        resolverContext,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
         disableRefresh: false,
         providerId,
-        tokenIssuer,
         callbackUrl,
       });
     });
