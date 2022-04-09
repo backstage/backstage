@@ -246,8 +246,6 @@ export async function readLdapGroups(
     groups.push(entity);
   });
 
-  console.log(groupMember);
-
   return {
     groups,
     groupMemberOf,
@@ -311,7 +309,6 @@ function mapReferencesAttr(
   if (attributeName) {
     const values = vendor.decodeStringAttribute(entry, attributeName);
     const dn = vendor.decodeStringAttribute(entry, vendor.dnAttributeName);
-    console.log(attributeName, values, dn);
     if (values && dn && dn.length === 1) {
       setter(dn[0], values);
     }
