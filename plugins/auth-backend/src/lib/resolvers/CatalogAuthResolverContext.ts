@@ -138,39 +138,4 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     });
     return { token };
   }
-  /*
-  async expandCatalogOwnership(query: { entityRefs: string[] }) {
-    const { entityRefs } = query;
-
-    const compoundRefs = entityRefs.map(ref =>
-      parseEntityRef(ref.toLocaleLowerCase('en-US'), {
-        defaultKind: 'user',
-        defaultNamespace: DEFAULT_NAMESPACE,
-      }),
-    );
-    const stringRefs = compoundRefs.map(e => stringifyEntityRef(e));
-
-    const { token } = await this.tokenManager.getToken();
-    const { items: entities } = await this.catalogApi.getEntities(
-      {
-        filter: compoundRefs.map(ref => ({
-          kind: ref.kind,
-          'metadata.namespace': ref.namespace,
-          'metadata.name': ref.name,
-        })),
-      },
-      { token },
-    );
-
-    if (compoundRefs.length !== entities.length) {
-      const found = entities.map(e => stringifyEntityRef(e));
-      const missing = stringRefs.filter(ref => !found.includes(ref));
-      throw new NotFoundError(`Entities not found for refs ${missing.join()}`);
-    }
-
-    const memberOf = entities.flatMap(e => getDefaultOwnershipEntityRefs(e));
-
-    return Array.from(new Set(memberOf));
-  }
-*/
 }
