@@ -6224,10 +6224,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/jest-when@^2.7.2":
-  version "2.7.2"
-  resolved "https://registry.npmjs.org/@types/jest-when/-/jest-when-2.7.2.tgz#619fbc5f623bcd0b29efde0e4993c7f0d50d026d"
-  integrity sha512-vOtj0cev6vO1VX7Jbfg/qvy+sfLI64STsHbKVkggK+1kd11rcMGzFpZKBxUvQfsm4JRULCBISu+qrfs7fYZFGg==
+"@types/jest-when@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.npmjs.org/@types/jest-when/-/jest-when-3.5.0.tgz#6a573cd521da131e6801f0991b4f1d4dee2ebab5"
+  integrity sha512-rNUuZ3Mn/HDzpImPXDeOtW18zqyerPoOS2aKU0zUFbirWgJ7sN7LnRv73RmbBQ/uzw28sxf/nUofxbhJ5DWB0w==
   dependencies:
     "@types/jest" "*"
 
