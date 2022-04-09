@@ -38,6 +38,10 @@ const serviceEntityPage = (
         title="Customized title for the scorecard"
         description="Small description about scorecards"
       />
+      <EntityTechInsightsScorecardContent
+        title="Show only simpleTestCheck in this card"
+        checksId={['simpleTestCheck']}
+      />
     </EntityLayout.Route>
     ...
   </EntityLayoutWrapper>
@@ -45,6 +49,8 @@ const serviceEntityPage = (
 ```
 
 It is not obligatory to pass title and description props to `EntityTechInsightsScorecardContent`. If those are left out, default values from `defaultCheckResultRenderers` in `CheckResultRenderer` will be taken, hence `Boolean scorecard` and `This card represents an overview of default boolean Backstage checks`.
+
+You can pass an array `checksId` as a prop with the [Fact Retrievers ids](../tech-insights-backend#creating-fact-retrievers) to limit which checks you want to show in this card, If you don't pass, the default value is show all checks.
 
 ## Boolean Scorecard Example
 
