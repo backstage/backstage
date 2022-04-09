@@ -55,7 +55,7 @@ describe('GitLabIntegration', () => {
   });
 });
 
-describe('replaceUrlType', () => {
+describe('replaceGitLabUrlType', () => {
   it('should replace with expected type', () => {
     expect(
       replaceGitLabUrlType(

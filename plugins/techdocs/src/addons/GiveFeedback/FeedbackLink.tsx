@@ -56,11 +56,13 @@ const getName = ({ type }: Repository) => {
 
 const getUrl = (repository: Repository, template: GiveFeedbackTemplate) => {
   const { title, body } = template;
-  const { protocol, resource, owner, name, type } = repository;
-  const url = `${protocol}://${resource}/${owner}/${name}`;
   const encodedTitle = encodeURIComponent(title);
   const encodedBody = encodeURIComponent(body);
+  const { protocol, resource, owner, name, type } = repository;
+  const encodedOwner = encodeURIComponent(owner);
+  const encodedName = encodeURIComponent(name);
 
+  const url = `${protocol}://${resource}/${encodedOwner}/${encodedName}`;
   if (type === 'github') {
     return `${url}/issues/new?title=${encodedTitle}&body=${encodedBody}`;
   }
