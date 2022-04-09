@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState, useEffect, useMemo } from 'react';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 import { useTechDocsReaderPage } from './context';
 
 /**
