@@ -16,8 +16,8 @@
 
 import { ConfigReader } from '@backstage/config';
 import {
-  BitbucketIntegration,
-  readBitbucketIntegrationConfig,
+  BitbucketCloudIntegration,
+  readBitbucketCloudIntegrationConfig,
 } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -27,78 +27,30 @@ import { setupServer } from 'msw/node';
 import os from 'os';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
-import { BitbucketUrlReader } from './BitbucketUrlReader';
+import { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
-import { getVoidLogger } from '../logging';
 
-const logger = getVoidLogger();
-
-describe('BitbucketUrlReader.factory', () => {
-  it('only apply integration configs not inherited from bitbucketCloud or bitbucketServer', () => {
-    const config = new ConfigReader({
-      integrations: {
-        bitbucket: [],
-        bitbucketCloud: [
-          {
-            username: 'username',
-            appPassword: 'password',
-          },
-        ],
-        bitbucketServer: [
-          {
-            host: 'bitbucket-server.local',
-            token: 'test-token',
-          },
-        ],
-      },
-    });
-    const treeResponseFactory = DefaultReadTreeResponseFactory.create({
-      config: config,
-    });
-
-    const tuples = BitbucketUrlReader.factory({
-      config,
-      logger,
-      treeResponseFactory,
-    });
-
-    expect(tuples).toHaveLength(0);
-  });
+const treeResponseFactory = DefaultReadTreeResponseFactory.create({
+  config: new ConfigReader({}),
 });
 
-describe('BitbucketUrlReader', () => {
-  const treeResponseFactory = DefaultReadTreeResponseFactory.create({
-    config: new ConfigReader({}),
-  });
-
-  const bitbucketProcessor = new BitbucketUrlReader(
-    new BitbucketIntegration(
-      readBitbucketIntegrationConfig(
-        new ConfigReader({
-          host: 'bitbucket.org',
-          apiBaseUrl: 'https://api.bitbucket.org/2.0',
-        }),
-      ),
+const reader = new BitbucketCloudUrlReader(
+  new BitbucketCloudIntegration(
+    readBitbucketCloudIntegrationConfig(
+      new ConfigReader({
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        username: 'username',
+        appPassword: 'password',
+      }),
     ),
-    logger,
-    { treeResponseFactory },
-  );
+  ),
+  { treeResponseFactory },
+);
 
-  const hostedBitbucketProcessor = new BitbucketUrlReader(
-    new BitbucketIntegration(
-      readBitbucketIntegrationConfig(
-        new ConfigReader({
-          host: 'bitbucket.mycompany.net',
-          apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
-        }),
-      ),
-    ),
-    logger,
-    { treeResponseFactory },
-  );
+const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
 
-  const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-
+describe('BitbucketCloudUrlReader', () => {
   beforeEach(() => {
     mockFs({
       [tmpDir]: mockFs.directory(),
@@ -128,7 +80,7 @@ describe('BitbucketUrlReader', () => {
         ),
       );
 
-      const result = await bitbucketProcessor.readUrl(
+      const result = await reader.readUrl(
         'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
       );
       const buffer = await result.buffer();
@@ -149,7 +101,7 @@ describe('BitbucketUrlReader', () => {
       );
 
       await expect(
-        bitbucketProcessor.readUrl(
+        reader.readUrl(
           'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
           { etag: 'matching-etag-value' },
         ),
@@ -173,7 +125,7 @@ describe('BitbucketUrlReader', () => {
         ),
       );
 
-      const result = await bitbucketProcessor.readUrl(
+      const result = await reader.readUrl(
         'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
         { etag: 'previous-etag-value' },
       );
@@ -186,9 +138,9 @@ describe('BitbucketUrlReader', () => {
   describe('read', () => {
     it('rejects unknown targets', async () => {
       await expect(
-        bitbucketProcessor.read('https://not.bitbucket.com/apa'),
+        reader.read('https://not.bitbucket.com/apa'),
       ).rejects.toThrow(
-        'Incorrect URL: https://not.bitbucket.com/apa, Error: Invalid Bitbucket URL or file path',
+        'Incorrect URL: https://not.bitbucket.com/apa, Error: Invalid Bitbucket Cloud URL or file path',
       );
     });
   });
@@ -199,10 +151,6 @@ describe('BitbucketUrlReader', () => {
         __dirname,
         '__fixtures__/bitbucket-repo-with-commit-hash.tar.gz',
       ),
-    );
-
-    const privateBitbucketRepoBuffer = fs.readFileSync(
-      path.resolve(__dirname, '__fixtures__/bitbucket-server-repo.tar.gz'),
     );
 
     beforeEach(() => {
@@ -243,34 +191,11 @@ describe('BitbucketUrlReader', () => {
               }),
             ),
         ),
-        rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename=backstage-mock.tgz',
-              ),
-              ctx.body(privateBitbucketRepoBuffer),
-            ),
-        ),
-        rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
-              }),
-            ),
-        ),
       );
     });
 
     it('returns the wanted files from an archive', async () => {
-      const response = await bitbucketProcessor.readTree(
+      const response = await reader.readTree(
         'https://bitbucket.org/backstage/mock/src/master',
       );
 
@@ -287,7 +212,7 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('creates a directory with the wanted files', async () => {
-      const response = await bitbucketProcessor.readTree(
+      const response = await reader.readTree(
         'https://bitbucket.org/backstage/mock',
       );
 
@@ -301,23 +226,8 @@ describe('BitbucketUrlReader', () => {
       ).resolves.toBe('# Test\n');
     });
 
-    it('uses private bitbucket host', async () => {
-      const response = await hostedBitbucketProcessor.readTree(
-        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs?at=some-branch',
-      );
-
-      expect(response.etag).toBe('12ab34cd56ef');
-
-      const files = await response.files();
-
-      expect(files.length).toBe(1);
-      const indexMarkdownFile = await files[0].content();
-
-      expect(indexMarkdownFile.toString()).toBe('# Test\n');
-    });
-
     it('returns the wanted files from an archive with a subpath', async () => {
-      const response = await bitbucketProcessor.readTree(
+      const response = await reader.readTree(
         'https://bitbucket.org/backstage/mock/src/master/docs',
       );
 
@@ -332,7 +242,7 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('creates a directory with the wanted files with a subpath', async () => {
-      const response = await bitbucketProcessor.readTree(
+      const response = await reader.readTree(
         'https://bitbucket.org/backstage/mock/src/master/docs',
       );
 
@@ -345,17 +255,16 @@ describe('BitbucketUrlReader', () => {
 
     it('throws a NotModifiedError when given a etag in options', async () => {
       const fnBitbucket = async () => {
-        await bitbucketProcessor.readTree(
-          'https://bitbucket.org/backstage/mock',
-          { etag: '12ab34cd56ef' },
-        );
+        await reader.readTree('https://bitbucket.org/backstage/mock', {
+          etag: '12ab34cd56ef',
+        });
       };
 
       await expect(fnBitbucket).rejects.toThrow(NotModifiedError);
     });
 
     it('should not throw a NotModifiedError when given an outdated etag in options', async () => {
-      const response = await bitbucketProcessor.readTree(
+      const response = await reader.readTree(
         'https://bitbucket.org/backstage/mock',
         { etag: 'outdatedetag123abc' },
       );
@@ -414,7 +323,7 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('works for the naive case', async () => {
-      const result = await bitbucketProcessor.search(
+      const result = await reader.search(
         'https://bitbucket.org/backstage/mock/src/master/**/index.*',
       );
       expect(result.etag).toBe('12ab34cd56ef');
@@ -428,7 +337,7 @@ describe('BitbucketUrlReader', () => {
     });
 
     it('works in nested folders', async () => {
-      const result = await bitbucketProcessor.search(
+      const result = await reader.search(
         'https://bitbucket.org/backstage/mock/src/master/docs/index.*',
       );
       expect(result.etag).toBe('12ab34cd56ef');
@@ -443,79 +352,8 @@ describe('BitbucketUrlReader', () => {
 
     it('throws NotModifiedError when same etag', async () => {
       await expect(
-        bitbucketProcessor.search(
+        reader.search(
           'https://bitbucket.org/backstage/mock/src/master/**/index.*',
-          { etag: '12ab34cd56ef' },
-        ),
-      ).rejects.toThrow(NotModifiedError);
-    });
-  });
-
-  describe('search private', () => {
-    const privateBitbucketRepoBuffer = fs.readFileSync(
-      path.resolve(__dirname, '__fixtures__/bitbucket-server-repo.tar.gz'),
-    );
-
-    beforeEach(() => {
-      worker.use(
-        rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename=backstage-mock.tgz',
-              ),
-              ctx.body(privateBitbucketRepoBuffer),
-            ),
-        ),
-        rest.get(
-          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
-              }),
-            ),
-        ),
-      );
-    });
-
-    it('works for the naive case', async () => {
-      const result = await hostedBitbucketProcessor.search(
-        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/**/index.*?at=master',
-      );
-      expect(result.etag).toBe('12ab34cd56ef');
-      expect(result.files.length).toBe(1);
-      expect(result.files[0].url).toBe(
-        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.md?at=master',
-      );
-      await expect(result.files[0].content()).resolves.toEqual(
-        Buffer.from('# Test\n'),
-      );
-    });
-
-    it('works in nested folders', async () => {
-      const result = await hostedBitbucketProcessor.search(
-        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.*?at=master',
-      );
-      expect(result.etag).toBe('12ab34cd56ef');
-      expect(result.files.length).toBe(1);
-      expect(result.files[0].url).toBe(
-        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.md?at=master',
-      );
-      await expect(result.files[0].content()).resolves.toEqual(
-        Buffer.from('# Test\n'),
-      );
-    });
-
-    it('throws NotModifiedError when same etag', async () => {
-      await expect(
-        hostedBitbucketProcessor.search(
-          'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/**/index.*?at=master',
           { etag: '12ab34cd56ef' },
         ),
       ).rejects.toThrow(NotModifiedError);

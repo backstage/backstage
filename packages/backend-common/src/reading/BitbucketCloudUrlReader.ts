@@ -16,11 +16,11 @@
 
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
-  BitbucketIntegration,
-  getBitbucketDefaultBranch,
-  getBitbucketDownloadUrl,
-  getBitbucketFileFetchUrl,
-  getBitbucketRequestOptions,
+  BitbucketCloudIntegration,
+  getBitbucketCloudDefaultBranch,
+  getBitbucketCloudDownloadUrl,
+  getBitbucketCloudFileFetchUrl,
+  getBitbucketCloudRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
 import fetch, { Response } from 'node-fetch';
@@ -28,7 +28,6 @@ import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -42,46 +41,31 @@ import {
 } from './types';
 
 /**
- * Implements a {@link UrlReader} for files from Bitbucket v1 and v2 APIs, such
- * as the one exposed by Bitbucket Cloud itself.
+ * Implements a {@link UrlReader} for files from Bitbucket Cloud.
  *
  * @public
- * @deprecated in favor of BitbucketCloudUrlReader and BitbucketServerUrlReader
  */
-export class BitbucketUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
+export class BitbucketCloudUrlReader implements UrlReader {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
-    return integrations.bitbucket
-      .list()
-      .filter(
-        item =>
-          !integrations.bitbucketCloud.byHost(item.config.host) &&
-          !integrations.bitbucketServer.byHost(item.config.host),
-      )
-      .map(integration => {
-        const reader = new BitbucketUrlReader(integration, logger, {
-          treeResponseFactory,
-        });
-        const predicate = (url: URL) => url.host === integration.config.host;
-        return { reader, predicate };
+    return integrations.bitbucketCloud.list().map(integration => {
+      const reader = new BitbucketCloudUrlReader(integration, {
+        treeResponseFactory,
       });
+      const predicate = (url: URL) => url.host === integration.config.host;
+      return { reader, predicate };
+    });
   };
 
   constructor(
-    private readonly integration: BitbucketIntegration,
-    logger: Logger,
+    private readonly integration: BitbucketCloudIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, token, username, appPassword } = integration.config;
-    const replacement =
-      host === 'bitbucket.org' ? 'bitbucketCloud' : 'bitbucketServer';
-    logger.warn(
-      `[Deprecated] Please migrate from "integrations.bitbucket" to "integrations.${replacement}".`,
-    );
+    const { host, username, appPassword } = integration.config;
 
-    if (!token && username && !appPassword) {
+    if (username && !appPassword) {
       throw new Error(
-        `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
+        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
     }
   }
@@ -96,8 +80,13 @@ export class BitbucketUrlReader implements UrlReader {
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
     const { etag, signal } = options ?? {};
-    const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
-    const requestOptions = getBitbucketRequestOptions(this.integration.config);
+    const bitbucketUrl = getBitbucketCloudFileFetchUrl(
+      url,
+      this.integration.config,
+    );
+    const requestOptions = getBitbucketCloudRequestOptions(
+      this.integration.config,
+    );
 
     let response: Response;
     try {
@@ -147,24 +136,24 @@ export class BitbucketUrlReader implements UrlReader {
       throw new NotModifiedError();
     }
 
-    const downloadUrl = await getBitbucketDownloadUrl(
+    const downloadUrl = await getBitbucketCloudDownloadUrl(
       url,
       this.integration.config,
     );
-    const archiveBitbucketResponse = await fetch(
+    const archiveResponse = await fetch(
       downloadUrl,
-      getBitbucketRequestOptions(this.integration.config),
+      getBitbucketCloudRequestOptions(this.integration.config),
     );
-    if (!archiveBitbucketResponse.ok) {
-      const message = `Failed to read tree from ${url}, ${archiveBitbucketResponse.status} ${archiveBitbucketResponse.statusText}`;
-      if (archiveBitbucketResponse.status === 404) {
+    if (!archiveResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${archiveResponse.status} ${archiveResponse.statusText}`;
+      if (archiveResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
     return await this.deps.treeResponseFactory.fromTarArchive({
-      stream: archiveBitbucketResponse.body as unknown as Readable,
+      stream: archiveResponse.body as unknown as Readable,
       subpath: filepath,
       etag: lastCommitShortHash,
       filter: options?.filter,
@@ -200,31 +189,27 @@ export class BitbucketUrlReader implements UrlReader {
   }
 
   toString() {
-    const { host, token, username, appPassword } = this.integration.config;
-    let authed = Boolean(token);
-    if (!authed) {
-      authed = Boolean(username && appPassword);
-    }
-    return `bitbucket{host=${host},authed=${authed}}`;
+    const { host, username, appPassword } = this.integration.config;
+    const authed = Boolean(username && appPassword);
+    return `bitbucketCloud{host=${host},authed=${authed}}`;
   }
 
   private async getLastCommitShortHash(url: string): Promise<string> {
-    const { resource, name: repoName, owner: project, ref } = parseGitUrl(url);
+    const { name: repoName, owner: project, ref } = parseGitUrl(url);
 
     let branch = ref;
     if (!branch) {
-      branch = await getBitbucketDefaultBranch(url, this.integration.config);
+      branch = await getBitbucketCloudDefaultBranch(
+        url,
+        this.integration.config,
+      );
     }
 
-    const isHosted = resource === 'bitbucket.org';
-    // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222
-    const commitsApiUrl = isHosted
-      ? `${this.integration.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`
-      : `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits`;
+    const commitsApiUrl = `${this.integration.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
 
     const commitsResponse = await fetch(
       commitsApiUrl,
-      getBitbucketRequestOptions(this.integration.config),
+      getBitbucketCloudRequestOptions(this.integration.config),
     );
     if (!commitsResponse.ok) {
       const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;
@@ -235,24 +220,13 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     const commits = await commitsResponse.json();
-    if (isHosted) {
-      if (
-        commits &&
-        commits.values &&
-        commits.values.length > 0 &&
-        commits.values[0].hash
-      ) {
-        return commits.values[0].hash.substring(0, 12);
-      }
-    } else {
-      if (
-        commits &&
-        commits.values &&
-        commits.values.length > 0 &&
-        commits.values[0].id
-      ) {
-        return commits.values[0].id.substring(0, 12);
-      }
+    if (
+      commits &&
+      commits.values &&
+      commits.values.length > 0 &&
+      commits.values[0].hash
+    ) {
+      return commits.values[0].hash.substring(0, 12);
     }
 
     throw new Error(`Failed to read response from ${commitsApiUrl}`);
