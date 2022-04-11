@@ -1,5 +1,8 @@
 site_name: e2e Fixture Documentation
 site_description: Documentation used for end-to-end tests of TechDocs in Backstage.
+repo_url: https://github.com/backstage/backstage
+edit_uri: edit/master/cypress/fixtures/docs
+
 nav:
   - Home: index.md
   - Sub-page 1: sub-page-one.md

@@ -68,6 +68,7 @@ import {
   TechDocsIndexPage,
   TechDocsReaderPage,
   techdocsPlugin,
+  GiveFeedbackAddon,
 } from '@backstage/plugin-techdocs';
 import {
   UserSettingsPage,
@@ -93,13 +94,6 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
-import {
-  ExampleContent,
-  ExampleHeader,
-  ExamplePrimarySidebar,
-  ExampleSecondarySidebar,
-  ExampleSubHeader,
-} from './components/techdocs/ExampleAddons';
 
 const app = createApp({
   apis,
@@ -188,11 +182,7 @@ const routes = (
     >
       {techDocsPage}
       <TechDocsAddons>
-        <ExampleHeader />
-        <ExampleSubHeader />
-        <ExamplePrimarySidebar />
-        <ExampleSecondarySidebar />
-        <ExampleContent />
+        <GiveFeedbackAddon />
       </TechDocsAddons>
     </Route>
     <Route
