@@ -19,7 +19,7 @@ import { useOutlet, useParams } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { TECHDOCS_ADDONS_WRAPPER_KEY } from '@backstage/techdocs-addons';
+import { TECHDOCS_ADDONS_WRAPPER_KEY } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPageRenderFunction } from '../../../types';
 

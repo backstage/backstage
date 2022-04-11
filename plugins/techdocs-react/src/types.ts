@@ -68,7 +68,7 @@ export enum TechDocsAddonLocations {
    * the react component that would be rendered in place of all instances of
    * the markdown illustrated above.
    *
-   * The `@backstage/techdocs-addons` plugin would need to be updated to, in
+   * The `@backstage/plugin-techdocs-react` package would need to be updated to, in
    * cases where such addons had been registered, find all instances of the
    * rendered markdown (e.g. `<a href="{entityRef}">CatalogEntityCard</a>`) and
    * replace them with react portals to the addon component.

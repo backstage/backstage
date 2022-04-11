@@ -8,7 +8,7 @@ To customize the standalone TechDocs reader page experience, update your `/packa
 
 ```diff
 import { TechDocsIndexPage, TechDocsReaderPage } from '@backstage/plugin-techdocs';
-+ import { TechDocsAddons } from '@backstage/techdocs-addons';
++ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 + import { SomeAddon } from '@backstage/plugin-some-plugin';
 
 // ...
@@ -30,7 +30,7 @@ To customize the TechDocs reader experience on the Catalog entity page, update y
 
 ```diff
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-+ import { TechDocsAddons } from '@backstage/techdocs-addons';
++ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 + import { SomeAddon } from '@backstage/plugin-some-plugin';
 
 // ...

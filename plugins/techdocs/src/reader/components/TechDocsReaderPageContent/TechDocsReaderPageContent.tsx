@@ -23,7 +23,7 @@ import { StylesProvider, jssPreset } from '@material-ui/styles';
 import {
   useTechDocsAddons,
   TechDocsAddonLocations as locations,
-} from '@backstage/techdocs-addons';
+} from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Content, Progress } from '@backstage/core-components';
 

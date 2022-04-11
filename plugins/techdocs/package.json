@@ -46,7 +46,7 @@
     "@backstage/plugin-catalog-react": "^1.0.1-next.2",
     "@backstage/plugin-catalog": "^1.1.0-next.2",
     "@backstage/plugin-search": "^0.7.5-next.0",
-    "@backstage/techdocs-addons": "^0.0.0",
+    "@backstage/plugin-techdocs-react": "^0.0.0",
     "@backstage/version-bridge": "^1.0.0",
     "@backstage/theme": "^0.2.15",
     "@material-ui/core": "^4.12.2",

@@ -27,7 +27,7 @@ import {
   createTechDocsAddon,
   TechDocsAddons,
   TechDocsAddonLocations,
-} from '@backstage/techdocs-addons';
+} from '@backstage/plugin-techdocs-react';
 import { createApp } from '@backstage/app-defaults';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';

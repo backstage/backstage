@@ -21,7 +21,7 @@ import { Box, Toolbar, ToolbarProps, withStyles } from '@material-ui/core';
 import {
   TechDocsAddonLocations as locations,
   useTechDocsAddons,
-} from '@backstage/techdocs-addons';
+} from '@backstage/plugin-techdocs-react';
 
 /**
  * Renders the reader page subheader.

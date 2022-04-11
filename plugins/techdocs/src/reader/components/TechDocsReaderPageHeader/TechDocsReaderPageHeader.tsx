@@ -23,7 +23,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import {
   TechDocsAddonLocations as locations,
   useTechDocsAddons,
-} from '@backstage/techdocs-addons';
+} from '@backstage/plugin-techdocs-react';
 import {
   EntityRefLink,
   EntityRefLinks,

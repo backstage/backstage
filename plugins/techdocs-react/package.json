@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/techdocs-addons",
-  "description": "TechDocs Addons Framework",
+  "name": "@backstage/plugin-techdocs-react",
+  "description": "Shared frontend utilities for TechDocs and Addons",
   "version": "0.0.0",
   "private": false,
   "publishConfig": {
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/techdocs-addons"
+    "directory": "plugins/techdocs-react"
   },
   "keywords": [
     "backstage",
