@@ -4369,7 +4369,7 @@
     "@microsoft/tsdoc-config" "~0.15.2"
     "@rushstack/node-core-library" "3.45.0"
 
-"@microsoft/api-extractor-model@7.16.0", "@microsoft/api-extractor-model@^7.16.0":
+"@microsoft/api-extractor-model@7.16.0":
   version "7.16.0"
   resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.16.0.tgz#3db7360897115f26a857f1f684fb5af82b0ef9f6"
   integrity sha512-0FOrbNIny8mzBrzQnSIkEjAXk0JMSnPmWYxt3ZDTPVg9S8xIPzB6lfgTg9+Mimu0RKCpGKBpd+v2WcR5vGzyUQ==
@@ -4377,6 +4377,15 @@
     "@microsoft/tsdoc" "0.13.2"
     "@microsoft/tsdoc-config" "~0.15.2"
     "@rushstack/node-core-library" "3.45.1"
+
+"@microsoft/api-extractor-model@^7.16.0":
+  version "7.16.1"
+  resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.16.1.tgz#f6e53614e90c8a6be47bad5b91d49cc6d8c5c2bf"
+  integrity sha512-+1mlvy/ji+mUuH7WdVZ6fTo/aCKfS6m37aAFVOFWLfkMvmR+I9SjPfiv9qOg83If7GOrk2HPiHHibv6kA80VTg==
+  dependencies:
+    "@microsoft/tsdoc" "0.13.2"
+    "@microsoft/tsdoc-config" "~0.15.2"
+    "@rushstack/node-core-library" "3.45.2"
 
 "@microsoft/api-extractor@^7.19.4":
   version "7.19.4"
@@ -5259,6 +5268,21 @@
   version "3.45.1"
   resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.45.1.tgz#787361b61a48d616eb4b059641721a3dc138f001"
   integrity sha512-BwdssTNe007DNjDBxJgInHg8ePytIPyT0La7ZZSQZF9+rSkT42AygXPGvbGsyFfEntjr4X37zZSJI7yGzL16cQ==
+  dependencies:
+    "@types/node" "12.20.24"
+    colors "~1.2.1"
+    fs-extra "~7.0.1"
+    import-lazy "~4.0.0"
+    jju "~1.4.0"
+    resolve "~1.17.0"
+    semver "~7.3.0"
+    timsort "~0.3.0"
+    z-schema "~5.0.2"
+
+"@rushstack/node-core-library@3.45.2":
+  version "3.45.2"
+  resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.45.2.tgz#68fc89c5bea4007359fa4ff203bf3eca27037f40"
+  integrity sha512-MJKdB6mxOoIkks3htGVCo7aiTzllm2I6Xua+KbTSb0cp7rBp8gTCOF/4d8R4HFMwpRdEdwzKgqMM6k9rAK73iw==
   dependencies:
     "@types/node" "12.20.24"
     colors "~1.2.1"
