@@ -26,7 +26,7 @@ class TestPermissionPolicy implements PermissionPolicy {
 
 ## What's in a policy?
 
-Let's break this down a bit further. The request object of type [PolicyQuery](https://backstage.io/docs/reference/plugin-permission-node.policyquery) is a simple wrapper around [the Permission object](https://backstage.io/docs/reference/plugin-permission-common.permission). This permission object encapsulates information about the action that the user is attemping to perform (See [the Concepts page](./concepts.md) for more details).
+Let's break this down a bit further. The request object of type [PolicyQuery](https://backstage.io/docs/reference/plugin-permission-node.policyquery) is a simple wrapper around [the Permission object](https://backstage.io/docs/reference/plugin-permission-common.permission). This permission object encapsulates information about the action that the user is attempting to perform (See [the Concepts page](./concepts.md) for more details).
 
 In the policy above, we are checking to see if the provided action is a catalog entity delete action, which is the permission that the catalog plugin authors have created to represent the action of unregistering a catalog entity. If this is the case, we return a [Definitive Policy Decision](https://backstage.io/docs/reference/plugin-permission-common.definitivepolicydecision) of DENY. In all other cases, we return ALLOW (resulting in an allow-by-default behavior).
 
@@ -45,12 +45,15 @@ Let's change the policy to the following:
   import {
   AuthorizeResult,
   PolicyDecision,
-+ isResourcePermission,
++ isPermission,
 } from '@backstage/plugin-permission-common';
 + import {
 +   catalogConditions,
 +   createCatalogConditionalDecision,
 + } from '@backstage/plugin-catalog-backend';
++ import {
++   catalogEntityDeletePermission,
++ } from '@backstage/plugin-catalog-common';
 
   ...
 
@@ -60,109 +63,84 @@ Let's change the policy to the following:
 +     request: PolicyQuery,
 +     user?: BackstageIdentityResponse,
 +    ): Promise<PolicyDecision> {
-+     if (isResourcePermission(request.permission, 'catalog-entity')) {
-        if (request.permission.name === 'catalog.entity.delete') {
--         return {
--           result: AuthorizeResult.DENY,
--         };
-+         return createCatalogConditionalDecision(
-+           request.permission,
-+           catalogConditions.isEntityOwner(
-+             user?.identity.ownershipEntityRefs ?? [],
-+           ),
-+         );
-        }
-+     }
-
-      return { result: AuthorizeResult.ALLOW };
-    }
-  }
-```
-
-Let's walk through the new code that we just added. Inside of the if statement, instead of returning a Definitive Policy Decision of DENY, we now return a [Conditional Policy Decision](https://backstage.io/docs/reference/plugin-permission-common.conditionalpolicydecision) (See the [Concepts page](./concepts.md) for more details). This is a way for policies to defer the evaluation of the decision back to the plugin which owns the permission. This allows the framework to support cases in which the policy does not have all the information required to make a decision.
-
-In the policy above, there's no way for the handle method to determine whether the user who is trying to unregister the entity is the owner of that entity. So we use the `createCatalogConditionalDecision` helper provided by the catalog backend to craft a conditional decision, which allows us to tell the catalog backend that it should only return ALLOW if the user owns the entity. Keep in mind that, in order to return a Conditional Policy Decision, the permission needs to be of type [ResourcePermission](https://backstage.io/docs/reference/plugin-permission-common.resourcepermission): the [isResourcePermission](https://backstage.io/docs/reference/plugin-permission-common.isresourcepermission) method guarantees the correct type in the scope of the condition.
-
-The `catalogConditions` object contains various conditions that the catalog plug authors have provided for us to use in authoring our policy. Thankfully, they have provided the `isEntityOwner` rule, which is exactly what we need.
-
-The `isEntityOwner` rule needs a list of claims as a parameter, and the second argument to our `handle` method provides us with a `BackstageIdentityResponse` object, from which we can grab the user's `ownershipEntityRefs`. We provide an empty array as a fallback since the user may be anonymous.
-
-You should now be able to see in your Backstage app that the unregister entity button is enabled for entities that you own, but disabled for all other entities!
-
-### Custom conditions
-
-In addition to the conditions provided by the catalog plugin, you can write your own conditions for the catalog (or for any plugin that implements permissions, for that matter). This is done by using the [`createConditionFactory` helper](https://backstage.io/docs/reference/plugin-permission-node.createconditionfactory) provided by the `@backstage/plugin-permission-node` package.
-
-## Resource types
-
-Now let's say we would also like to restrict users from viewing catalog entities that they do not own, just like we did for unregistering entities. One way to achieve this may be to simply duplicate our if statement and check for the `catalog.entity.read` permission:
-
-```diff
-  async handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
-  ): Promise<PolicyDecision> {
-    if (isResourcePermission(request.permission, 'catalog-entity')) {
-      if (request.permission.name === 'catalog.entity-delete') {
-        return createCatalogConditionalDecision(
-          request.permission,
-          catalogConditions.isEntityOwner(
-            user?.identity.ownershipEntityRefs ?? [],
-          ),
-        );
-      }
-
-+     if (request.permission.name === 'catalog.entity.read') {
+-     if (request.permission.name === 'catalog.entity.delete') {
++     if (isPermission(request.permission, catalogEntityDeletePermission)) {
+-       return {
+-         result: AuthorizeResult.DENY,
+-       };
 +       return createCatalogConditionalDecision(
 +         request.permission,
 +         catalogConditions.isEntityOwner(
 +           user?.identity.ownershipEntityRefs ?? [],
 +         ),
 +       );
-+     }
+      }
+
+      return { result: AuthorizeResult.ALLOW };
     }
-    return { result: AuthorizeResult.ALLOW };
   }
 ```
 
-If you choose to write your policy this way, it will certainly work! You should be able to verify this by saving this policy and seeing that the catalog now only shows the entities that you own. However, you can imagine that as policies grow to handle many different permissions, these conditionals can quickly become repetitive. We can author this same policy in a more scalable way by using permission attributes.
+Let's walk through the new code that we just added.
+
+Instead of returning an Definitive Policy Decision, we use factory methods to construct a [Conditional Policy Decision](https://backstage.io/docs/reference/plugin-permission-common.conditionalpolicydecision) (See the [Concepts page](./concepts.md) for more details). Since the policy doesn't have enough information to determine if `user` is the entity owner, this criteria is encapsulated within the conditional decision. However, `createCatalogConditionalDecision` will not compile unless `request.permission` is a catalog entity [`ResourcePermission`](https://backstage.io/docs/reference/plugin-permission-common.resourcepermission). This type constraint ensures that policies return conditional decisions that are compatible with the requested permission. To address this, we use [`isPermission`](https://backstage.io/docs/reference/plugin-permission-common.ispermission) to ["narrow"](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) the type of `request.permission` to `ResourcePermission<'catalog-entity'>`. This matches the runtime behavior that was in place before, but you'll notice that the type of `request.permission` has changed within the scope of that `if` statement.
+
+The `catalogConditions` object contains all of the rules defined by the catalog plugin. These rules can be combined to form a [`PermissionCriteria`](https://backstage.io/docs/reference/plugin-permission-common.permissioncriteria) object, but for this case we only need to use the `isEntityOwner` rule. This rule accepts a list of entity refs that represent User identity and Group membership used to determine ownership. The second argument to `PermissionPolicy#handle` provides us with a `BackstageIdentityResponse` object, from which we can grab the user's `ownershipEntityRefs`. We provide an empty array as a fallback since the user may be anonymous.
+
+You should now be able to see in your Backstage app that the unregister entity button is enabled for entities that you own, but disabled for all other entities!
+
+## Resource types
+
+Now let's say we want to prevent all actions on catalog entities unless performed by the owner. One way to achieve this may be to simply update the `if` statement and check for each permission. If you choose to write your policy this way, it will certainly work! However, it may be difficult to maintain as the policy grows, and it may not be obvious if certain permissions are left out. We can author this same policy in a more scalable way by checking the resource type of the requested permission.
 
 ```diff
+import {
+  AuthorizeResult,
+  PolicyDecision,
+- isPermission,
++ isResourcePermission,
+} from '@backstage/plugin-permission-common';
+ import {
+   catalogConditions,
+   createCatalogConditionalDecision,
+ } from '@backstage/plugin-catalog-backend';
+- import {
+-   catalogEntityDeletePermission,
+- } from '@backstage/plugin-catalog-common';
+
+...
+
+class TestPermissionPolicy implements PermissionPolicy {
   async handle(
     request: PolicyQuery,
     user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
-    if (isResourcePermission(request.permission, 'catalog-entity')) {
--     if (request.permission.name === 'catalog.entity-delete') {
-+     if (
-+       request.permission.attributes.action === 'delete' ||
-+       request.permission.attributes.action === 'read'
-+     ) {
-        return createCatalogConditionalDecision(
-          request.permission,
-          catalogConditions.isEntityOwner(
-            user?.identity.ownershipEntityRefs ?? [],
-          ),
-        );
-      }
-
--     if (request.permission.name === 'catalog.entity.read') {
--       return createCatalogConditionalDecision(
--         request.permission,
--         catalogConditions.isEntityOwner(
--           user?.identity.ownershipEntityRefs ?? [],
--         ),
--       );
--     }
+-   if (isPermission(request.permission, catalogEntityDeletePermission)) {
++   if (isResourcePermission(request.permission, 'catalog-entity')) {
+      return createCatalogConditionalDecision(
+        request.permission,
+        catalogConditions.isEntityOwner(
+          user?.identity.ownershipEntityRefs ?? [],
+        ),
+      );
     }
+
     return { result: AuthorizeResult.ALLOW };
   }
 ```
 
-In this example, we use the `action` permission attribute to catch all authorization requests that have to do with `read` and `delete` permissions. Now, you should be able to see the same functionality as before (only see the catalog entities that you own) - success!
+In this example, we use [`isResourcePermission`](https://backstage.io/docs/reference/plugin-permission-common.isresourcepermission) to match all permissions with a resource type of `catalog-entity`. Just like `isPermission`, this helper will "narrow" the type of `request.permission` and enable the use of `createCatalogConditionalDecision`. In addition to the behavior you observed before, you should also see that catalog entities are no longer visible unless you are the owner - success!
 
-_Note:_ Notice that while the `catalogEntityDeletePermission` and the `catalogEntityReadPermission` used here have the `'catalog-entity'` resource type, the [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49) does not have a resource type associated with it, as it does not make sense to apply conditions to an entity that has not yet been created.
+_Note:_ Some catalog permissions do not have the `'catalog-entity'` resource type, such as [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49). In those cases, a definitive decision is required because conditions can't be applied to an entity that does not exist yet.
+
+## Custom conditions
+
+In addition to the conditions provided by the catalog plugin, you can write your own conditions for the catalog (or for any plugin that implements permissions, for that matter). To write a custom condition you must do the following:
+
+1. Implement a new [`PermissionRule`](https://backstage.io/docs/reference/plugin-permission-node.permissionrule).
+2. Register this rule with the plugin backend that owns the resource. New rules are added to the catalog plugin via [`CatalogBuilder#addPermissionRules`](https://github.com/backstage/backstage/blob/1f873a0908d73888892b30faca9a79dfcf908ad1/plugins/catalog-backend/src/service/CatalogBuilder.ts#L344), but each plugin may define its own API for this functionality.
+3. Use the [`createConditionFactory`](https://backstage.io/docs/reference/plugin-permission-node.createconditionfactory) helper to integrate with your conditional policy decisions.
 
 ## Conclusion
 
-Through a combination of permissions and conditions, you should be able to author a policy that works for your instance of Backstage and your organzation. As the ecosystem around permissions in Backstage become more mature, you may be able to choose from other authorization packages instead of writing your own policy. If you're interested in more detailed descriptions of the concepts that comprise the permission framework, check out the [Concepts page](./concepts.md).
+Through a combination of permissions and conditions, you should be able to author a policy that works for your instance of Backstage and your organization. As the ecosystem around permissions in Backstage matures, you may be able to choose from other authorization packages instead of writing your own policy. If you're interested in more detailed descriptions of the concepts that comprise the permission framework, check out the [Concepts page](./concepts.md).
