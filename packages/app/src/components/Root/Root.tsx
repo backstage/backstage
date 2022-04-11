@@ -46,6 +46,8 @@ import {
   SidebarPage,
   SidebarScrollWrapper,
   SidebarSpace,
+  SidebarSubmenu,
+  SidebarSubmenuItem,
 } from '@backstage/core-components';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
@@ -85,7 +87,7 @@ const SidebarLogo = () => {
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
-    <Sidebar>
+    <Sidebar disableExpandOnHover>
       <SidebarLogo />
       <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
         <SidebarSearchModal />
@@ -100,6 +102,25 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           icon={GroupIcon}
         />
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+        <SidebarItem icon={ExtensionIcon} text="Catalog">
+          <SidebarSubmenu title="Catalog">
+            <SidebarSubmenuItem
+              icon={ExtensionIcon}
+              to="catalog"
+              title="Test"
+            />
+            <SidebarSubmenuItem
+              icon={ExtensionIcon}
+              to="catalog"
+              title="Test1"
+            />
+            <SidebarSubmenuItem
+              icon={ExtensionIcon}
+              to="catalog"
+              title="Test2"
+            />
+          </SidebarSubmenu>
+        </SidebarItem>
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
