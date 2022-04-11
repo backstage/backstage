@@ -19,7 +19,6 @@ import React, {
   memo,
   Dispatch,
   SetStateAction,
-  createContext,
   useContext,
   useState,
 } from 'react';
@@ -27,6 +26,10 @@ import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 
 import { useApi } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 
 import { techdocsApiRef } from '../../../api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
@@ -78,15 +81,26 @@ export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   entityName: { kind: '', name: '', namespace: '' },
 };
 
-export const TechDocsReaderPageContext = createContext<TechDocsReaderPageValue>(
-  defaultTechDocsReaderPageValue,
-);
+export const TechDocsReaderPageContext = createVersionedContext<{
+  1: TechDocsReaderPageValue;
+}>('techdocs-reader-page-context');
 /**
  * Hook used to get access to shared state between reader page components.
  * @public
  */
 export const useTechDocsReaderPage = () => {
-  return useContext(TechDocsReaderPageContext);
+  const versionedContext = useContext(TechDocsReaderPageContext);
+
+  if (versionedContext === undefined) {
+    return defaultTechDocsReaderPageValue;
+  }
+
+  const context = versionedContext.atVersion(1);
+  if (context === undefined) {
+    throw new Error('No context found for version 1.');
+  }
+
+  return context;
 };
 
 /**
@@ -143,9 +157,10 @@ export const TechDocsReaderPageProvider = memo(
       subtitle,
       setSubtitle,
     };
+    const versionedValue = createVersionedValueMap({ 1: value });
 
     return (
-      <TechDocsReaderPageContext.Provider value={value}>
+      <TechDocsReaderPageContext.Provider value={versionedValue}>
         {children instanceof Function ? children(value) : children}
       </TechDocsReaderPageContext.Provider>
     );
