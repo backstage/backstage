@@ -23,6 +23,9 @@ import CodeIcon from '@material-ui/icons/Code';
 import {
   TechDocsAddonLocations as locations,
   useTechDocsAddons,
+  useTechDocsReaderPage,
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
 } from '@backstage/plugin-techdocs-react';
 import {
   EntityRefLink,
@@ -33,10 +36,7 @@ import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
 import { Header, HeaderLabel } from '@backstage/core-components';
 import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
-import { useTechDocsReaderPage } from '../TechDocsReaderPage';
-
 import { rootRouteRef } from '../../../routes';
-import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
 
 const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
@@ -44,7 +44,7 @@ const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
  * Props for {@link TechDocsReaderPageHeader}
  *
  * @public
- * @deprecated No need to pass down properties anymore. The component consumes data from `TechDocsReaderPageContext` instead. Use the {@link useTechDocsReaderPage} hook for custom header.
+ * @deprecated No need to pass down properties anymore. The component consumes data from `TechDocsReaderPageContext` instead. Use the {@link @backstage/plugin-techdocs-react#useTechDocsReaderPage} hook for custom header.
  */
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
   entityRef?: CompoundEntityRef;

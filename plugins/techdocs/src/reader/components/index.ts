@@ -17,16 +17,12 @@
 export type {
   TechDocsReaderPageProps,
   TechDocsReaderLayoutProps,
-  TechDocsReaderPageValue,
   TechDocsReaderPageProviderProps,
   TechDocsReaderPageProviderRenderFunction,
 } from './TechDocsReaderPage';
 export {
-  useShadowRoot,
-  useShadowRootElements,
   useEntityMetadata,
   useTechDocsMetadata,
-  useTechDocsReaderPage,
   TechDocsReaderLayout,
   TechDocsReaderPageProvider,
 } from './TechDocsReaderPage';

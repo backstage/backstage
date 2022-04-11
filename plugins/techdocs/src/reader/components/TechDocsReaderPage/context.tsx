@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import React, {
-  ReactNode,
-  memo,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useState,
-} from 'react';
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import React, { ReactNode, memo, useState } from 'react';
+import useAsync from 'react-use/lib/useAsync';
 
 import { useApi } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
-  createVersionedContext,
-  createVersionedValueMap,
-} from '@backstage/version-bridge';
+  TechDocsReaderPageValue,
+  defaultTechDocsReaderPageValue,
+  TechDocsReaderPageContext,
+  useTechDocsReaderPage,
+} from '@backstage/plugin-techdocs-react';
+import { createVersionedValueMap } from '@backstage/version-bridge';
 
 import { techdocsApiRef } from '../../../api';
-import { TechDocsEntityMetadata, TechDocsMetadata } from '../../../types';
 
 const areEntityNamesEqual = (
   prevEntityName: CompoundEntityRef,
@@ -48,59 +43,6 @@ const areEntityNamesEqual = (
     return false;
   }
   return true;
-};
-
-/**
- * @public type for the value of the TechDocsReaderPageContext
- */
-
-export type TechDocsReaderPageValue = {
-  metadata: AsyncState<TechDocsMetadata>;
-  entityName: CompoundEntityRef;
-  entityMetadata: AsyncState<TechDocsEntityMetadata>;
-  shadowRoot?: ShadowRoot;
-  setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
-  title: string;
-  setTitle: Dispatch<SetStateAction<string>>;
-  subtitle: string;
-  setSubtitle: Dispatch<SetStateAction<string>>;
-  /**
-   * @deprecated property can be passed down directly to the `TechDocsReaderPageContent` instead.
-   */
-  onReady?: () => void;
-};
-
-export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
-  title: '',
-  subtitle: '',
-  setTitle: () => {},
-  setSubtitle: () => {},
-  setShadowRoot: () => {},
-  metadata: { loading: true },
-  entityMetadata: { loading: true },
-  entityName: { kind: '', name: '', namespace: '' },
-};
-
-export const TechDocsReaderPageContext = createVersionedContext<{
-  1: TechDocsReaderPageValue;
-}>('techdocs-reader-page-context');
-/**
- * Hook used to get access to shared state between reader page components.
- * @public
- */
-export const useTechDocsReaderPage = () => {
-  const versionedContext = useContext(TechDocsReaderPageContext);
-
-  if (versionedContext === undefined) {
-    return defaultTechDocsReaderPageValue;
-  }
-
-  const context = versionedContext.atVersion(1);
-  if (context === undefined) {
-    throw new Error('No context found for version 1.');
-  }
-
-  return context;
 };
 
 /**

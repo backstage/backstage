@@ -23,12 +23,12 @@ import { StylesProvider, jssPreset } from '@material-ui/styles';
 import {
   useTechDocsAddons,
   TechDocsAddonLocations as locations,
+  useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Content, Progress } from '@backstage/core-components';
 
 import { TechDocsSearch } from '../../../search';
-import { useTechDocsReaderPage } from '../TechDocsReaderPage';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 
 import { useTechDocsReaderDom } from './dom';
@@ -50,7 +50,7 @@ const useStyles = makeStyles({
  */
 export type TechDocsReaderPageContentProps = {
   /**
-   * @deprecated No need to pass down entityRef as property anymore. Consumes the entityName from `TechDocsReaderPageContext`. Use the {@link useTechDocsReaderPage} hook for custom reader page content.
+   * @deprecated No need to pass down entityRef as property anymore. Consumes the entityName from `TechDocsReaderPageContext`. Use the {@link @backstage/plugin-techdocs-react#useTechDocsReaderPage} hook for custom reader page content.
    */
   entityRef?: CompoundEntityRef;
   /**

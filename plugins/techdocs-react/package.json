@@ -37,20 +37,26 @@
     "@backstage/catalog-model": "^1.0.1-next.1",
     "@backstage/core-components": "^0.9.3-next.1",
     "@backstage/core-plugin-api": "^1.0.0",
+    "@backstage/version-bridge": "^1.0.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/styles": "^4.11.0",
     "jss": "~10.8.2",
+    "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
-    "react-router-dom": "6.0.0-beta.0"
+    "react-router-dom": "6.0.0-beta.0",
+    "react-use": "^17.3.2"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0",
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^13.0.0",
     "@testing-library/react-hooks": "^7.0.2",
-    "@backstage/test-utils": "^1.0.1-next.1"
+    "@backstage/plugin-techdocs": "^1.0.1-next.2",
+    "@backstage/test-utils": "^1.0.1-next.1",
+    "@backstage/theme": "^0.2.15"
   },
   "files": [
     "dist"

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+} from '@backstage/plugin-techdocs-react';
 
 /**
  * Helper function that gives the children of {@link TechDocsReaderPage} access to techdocs and entity metadata
@@ -34,22 +38,3 @@ export type TechDocsReaderPageRenderFunction = ({
    */
   onReady?: () => void;
 }) => JSX.Element;
-
-/**
- * Metadata for TechDocs page
- *
- * @public
- */
-export type TechDocsMetadata = {
-  site_name: string;
-  site_description: string;
-};
-
-/**
- * Metadata for TechDocs Entity
- *
- * @public
- */
-export type TechDocsEntityMetadata = Entity & {
-  locationMetadata?: { type: string; target: string };
-};

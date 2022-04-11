@@ -15,6 +15,26 @@
  */
 
 import { ComponentType } from 'react';
+import { Entity } from '@backstage/catalog-model';
+
+/**
+ * Metadata for TechDocs page
+ *
+ * @public
+ */
+export type TechDocsMetadata = {
+  site_name: string;
+  site_description: string;
+};
+
+/**
+ * Metadata for TechDocs Entity
+ *
+ * @public
+ */
+export type TechDocsEntityMetadata = Entity & {
+  locationMetadata?: { type: string; target: string };
+};
 
 /**
  * Locations for which TechDocs addons may be declared and rendered.

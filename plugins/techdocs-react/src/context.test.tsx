@@ -13,24 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-hooks';
 
 import { ThemeProvider } from '@material-ui/core';
 
 import { lightTheme } from '@backstage/theme';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { TechDocsMetadata } from '@backstage/plugin-techdocs-react';
-
-import { techdocsApiRef } from '../../../api';
-
 import {
-  useEntityMetadata,
-  useTechDocsMetadata,
+  techdocsApiRef,
   TechDocsReaderPageProvider,
-} from './context';
+} from '@backstage/plugin-techdocs';
+
+import { useTechDocsReaderPage } from './context';
+import { TechDocsMetadata } from './types';
+
+const mockShadowRoot = () => {
+  const div = document.createElement('div');
+  const shadowRoot = div.attachShadow({ mode: 'open' });
+  shadowRoot.innerHTML = '<h1>Shadow DOM Mock</h1>';
+  return shadowRoot;
+};
 
 const mockEntityMetadata: Entity = {
   apiVersion: 'v1',
@@ -74,50 +78,52 @@ const wrapper = ({
   </ThemeProvider>
 );
 
-describe('context', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+describe('useTechDocsReaderPage', () => {
+  it('should set title', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTechDocsReaderPage(),
+      { wrapper },
+    );
+
+    expect(result.current.title).toBe('');
+
+    act(() => result.current.setTitle('test site title'));
+
+    await waitForNextUpdate();
+
+    expect(result.current.title).toBe('test site title');
   });
 
-  describe('useEntityMetadata', () => {
-    it('should return loading state', async () => {
-      const { result } = renderHook(() => useEntityMetadata());
+  it('should set subtitle', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTechDocsReaderPage(),
+      { wrapper },
+    );
 
-      await expect(result.current.loading).toEqual(true);
-    });
+    expect(result.current.subtitle).toBe('');
 
-    it('should return expected entity values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useEntityMetadata(),
-        { wrapper },
-      );
+    act(() => result.current.setSubtitle('test site subtitle'));
 
-      await waitForNextUpdate();
+    await waitForNextUpdate();
 
-      expect(result.current.value).toBeDefined();
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.value).toMatchObject(mockEntityMetadata);
-    });
+    expect(result.current.subtitle).toBe('test site subtitle');
   });
 
-  describe('useTechDocsMetadata', () => {
-    it('should return loading state', async () => {
-      const { result } = renderHook(() => useTechDocsMetadata());
+  it('should set shadow root', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useTechDocsReaderPage(),
+      { wrapper },
+    );
 
-      await expect(result.current.loading).toEqual(true);
-    });
+    // mock shadowroot
+    const shadowRoot = mockShadowRoot();
 
-    it('should return expected techdocs metadata values', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useTechDocsMetadata(),
-        { wrapper },
-      );
+    act(() => result.current.setShadowRoot(shadowRoot));
 
-      await waitForNextUpdate();
+    await waitForNextUpdate();
 
-      expect(result.current.value).toBeDefined();
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.value).toMatchObject(mockTechDocsMetadata);
-    });
+    expect(result.current.shadowRoot?.innerHTML).toBe(
+      '<h1>Shadow DOM Mock</h1>',
+    );
   });
 });

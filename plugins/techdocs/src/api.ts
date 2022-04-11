@@ -15,7 +15,10 @@
  */
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
+import {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+} from '@backstage/plugin-techdocs-react';
 import { createApiRef } from '@backstage/core-plugin-api';
 
 /**

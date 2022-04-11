@@ -21,9 +21,9 @@ import React, {
   ReactNode,
 } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
 import { useReaderState, ReaderState } from '../useReaderState';
-import { useTechDocsReaderPage } from '../TechDocsReaderPage';
 
 const TechDocsReaderContext = createContext<ReaderState>({} as ReaderState);
 

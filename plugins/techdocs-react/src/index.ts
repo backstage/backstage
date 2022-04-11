@@ -15,7 +15,7 @@
  */
 
 /**
- * Package encapsulating the TechDocs Addon framework.
+ * Package encapsulating utilities to be shared by frontend TechDocs plugins.
  *
  * @packageDocumentation
  */
@@ -26,5 +26,20 @@ export {
   TechDocsAddons,
   TECHDOCS_ADDONS_WRAPPER_KEY,
 } from './addons';
+export {
+  defaultTechDocsReaderPageValue,
+  TechDocsReaderPageContext,
+  useTechDocsReaderPage,
+} from './context';
+export type { TechDocsReaderPageValue } from './context';
+export {
+  useShadowRoot,
+  useShadowRootElements,
+  useShadowRootSelection,
+} from './hooks';
 export { TechDocsAddonLocations } from './types';
-export type { TechDocsAddonOptions } from './types';
+export type {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+  TechDocsAddonOptions,
+} from './types';

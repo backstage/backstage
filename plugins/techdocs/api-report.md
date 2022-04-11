@@ -6,14 +6,13 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsync';
+import { AsyncState } from 'react-use/lib/useAsyncFn';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CommonProps } from '@material-ui/core/OverridableComponent';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { CSSProperties } from '@material-ui/styles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -21,10 +20,12 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { SetStateAction } from 'react';
 import { StyledComponentProps } from '@material-ui/core';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
+import { TechDocsEntityMetadata } from '@backstage/plugin-techdocs-react';
+import { TechDocsMetadata } from '@backstage/plugin-techdocs-react';
+import { TechDocsReaderPageValue } from '@backstage/plugin-techdocs-react';
 import { ToolbarTypeMap } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -253,21 +254,7 @@ export type TechDocsCustomHomeProps = {
 };
 
 // @public
-export type TechDocsEntityMetadata = Entity & {
-  locationMetadata?: {
-    type: string;
-    target: string;
-  };
-};
-
-// @public
 export const TechDocsIndexPage: () => JSX.Element;
-
-// @public
-export type TechDocsMetadata = {
-  site_name: string;
-  site_description: string;
-};
 
 // @public
 export const TechdocsPage: () => JSX.Element;
@@ -917,20 +904,6 @@ export const TechDocsReaderPageSubheader: React_2.ComponentType<
 >;
 
 // @public
-export type TechDocsReaderPageValue = {
-  metadata: AsyncState<TechDocsMetadata>;
-  entityName: CompoundEntityRef;
-  entityMetadata: AsyncState<TechDocsEntityMetadata>;
-  shadowRoot?: ShadowRoot;
-  setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
-  title: string;
-  setTitle: Dispatch<SetStateAction<string>>;
-  subtitle: string;
-  setSubtitle: Dispatch<SetStateAction<string>>;
-  onReady?: () => void;
-};
-
-// @public
 export const TechDocsReaderProvider: ({
   children,
 }: TechDocsReaderProviderProps) => JSX.Element;
@@ -1031,18 +1004,5 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 export const useEntityMetadata: () => AsyncState<TechDocsEntityMetadata>;
 
 // @public
-export const useShadowRoot: () => ShadowRoot | undefined;
-
-// @public
-export const useShadowRootElements: <
-  TReturnedElement extends HTMLElement = HTMLElement,
->(
-  selectors: string[],
-) => TReturnedElement[];
-
-// @public
 export const useTechDocsMetadata: () => AsyncState<TechDocsMetadata>;
-
-// @public
-export const useTechDocsReaderPage: () => TechDocsReaderPageValue;
 ```

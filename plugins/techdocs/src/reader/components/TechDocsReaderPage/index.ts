@@ -20,4 +20,3 @@ export type {
   TechDocsReaderLayoutProps,
 } from './TechDocsReaderPage';
 export * from './context';
-export * from './hooks';

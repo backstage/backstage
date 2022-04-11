@@ -22,9 +22,12 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
+import {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+} from '@backstage/plugin-techdocs-react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
-import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 /**
  * API to talk to `techdocs-backend`.
