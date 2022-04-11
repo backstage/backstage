@@ -64,6 +64,7 @@ describe('util functionality', () => {
         branchType: 'master',
         duration: 0,
         requestedAt: new Date('2022-03-30T13:03:09.846Z'),
+        triggeredBy: 'internal',
         stages: [],
       },
     ]);

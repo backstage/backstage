@@ -13,11 +13,11 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "common-library"
+    "role": "frontend-plugin-module"
   },
   "keywords": [
     "backstage",
-    "cicd statestics",
+    "cicd statistics",
     "gitlab"
   ],
   "scripts": {
