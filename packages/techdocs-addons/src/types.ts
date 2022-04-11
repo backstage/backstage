@@ -15,11 +15,10 @@
  */
 
 import { ComponentType } from 'react';
-import { AsyncState } from 'react-use/lib/useAsyncFn';
 
 /**
  * Locations for which TechDocs addons may be declared and rendered.
- * @public
+ * @alpha
  */
 export enum TechDocsAddonLocations {
   /**
@@ -79,16 +78,10 @@ export enum TechDocsAddonLocations {
 
 /**
  * Options for creating a TechDocs addon.
- * @public
+ * @alpha
  */
 export type TechDocsAddonOptions<TAddonProps = {}> = {
   name: string;
   location: TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
-
-/**
- * Common response envelope for addon-related hooks.
- * @public
- */
-export type TechDocsAddonAsyncMetadata<TValue> = AsyncState<TValue | undefined>;

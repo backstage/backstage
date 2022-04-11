@@ -32,5 +32,6 @@ export {
 } from './TechDocsReaderPage';
 export * from './TechDocsReaderPageHeader';
 export * from './TechDocsReaderPageContent';
+export * from './TechDocsReaderPageSubheader';
 export * from './TechDocsStateIndicator';
 export type { ReaderState, ContentStateTypes } from './useReaderState';

@@ -2,15 +2,14 @@
 '@backstage/plugin-techdocs': minor
 ---
 
-TechDocs now supports a new method of customization: addons!
+TechDocs supports a new, experimental method of customization: addons!
 
 To customize the standalone TechDocs reader page experience, update your `/packages/app/src/App.tsx` in the following way:
 
 ```diff
 import { TechDocsIndexPage, TechDocsReaderPage } from '@backstage/plugin-techdocs';
-+ import { TechDocsAddons } from '@backstage/plugin-techdocs-addons';
++ import { TechDocsAddons } from '@backstage/techdocs-addons';
 + import { SomeAddon } from '@backstage/plugin-some-plugin';
-- import { techDocsPage } from './components/techdocs/TechDocsPage';
 
 // ...
 
@@ -19,7 +18,6 @@ import { TechDocsIndexPage, TechDocsReaderPage } from '@backstage/plugin-techdoc
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
     >
--      {techDocsPage}
 +      <TechDocsAddons>
 +        <SomeAddon />
 +      </TechDocsAddons>
@@ -32,7 +30,7 @@ To customize the TechDocs reader experience on the Catalog entity page, update y
 
 ```diff
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-+ import { TechDocsAddons } from '@backstage/plugin-techdocs-addons';
++ import { TechDocsAddons } from '@backstage/techdocs-addons';
 + import { SomeAddon } from '@backstage/plugin-some-plugin';
 
 // ...

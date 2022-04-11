@@ -104,7 +104,10 @@ import {
   isRollbarAvailable,
 } from '@backstage/plugin-rollbar';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
-import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
+import {
+  EntityTechdocsContent,
+  GiveFeedbackAddon,
+} from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
@@ -139,13 +142,6 @@ import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 import { TechDocsAddons } from '@backstage/techdocs-addons';
-import {
-  ExampleContent,
-  ExampleHeader,
-  ExamplePrimarySidebar,
-  ExampleSecondarySidebar,
-  ExampleSubHeader,
-} from '../techdocs/ExampleAddons';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -407,11 +403,7 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/docs" title="Docs">
       <EntityTechdocsContent>
         <TechDocsAddons>
-          <ExampleHeader />
-          <ExampleSubHeader />
-          <ExamplePrimarySidebar />
-          <ExampleSecondarySidebar />
-          <ExampleContent />
+          <GiveFeedbackAddon />
         </TechDocsAddons>
       </EntityTechdocsContent>
     </EntityLayout.Route>
@@ -482,11 +474,7 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/docs" title="Docs">
       <EntityTechdocsContent>
         <TechDocsAddons>
-          <ExampleHeader />
-          <ExampleSubHeader />
-          <ExamplePrimarySidebar />
-          <ExampleSecondarySidebar />
-          <ExampleContent />
+          <GiveFeedbackAddon />
         </TechDocsAddons>
       </EntityTechdocsContent>
     </EntityLayout.Route>
@@ -529,11 +517,7 @@ const defaultEntityPage = (
     <EntityLayout.Route path="/docs" title="Docs">
       <EntityTechdocsContent>
         <TechDocsAddons>
-          <ExampleHeader />
-          <ExampleSubHeader />
-          <ExamplePrimarySidebar />
-          <ExampleSecondarySidebar />
-          <ExampleContent />
+          <GiveFeedbackAddon />
         </TechDocsAddons>
       </EntityTechdocsContent>
     </EntityLayout.Route>

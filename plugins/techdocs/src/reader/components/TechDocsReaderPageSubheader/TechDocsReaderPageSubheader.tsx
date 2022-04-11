@@ -23,6 +23,11 @@ import {
   useTechDocsAddons,
 } from '@backstage/techdocs-addons';
 
+/**
+ * Renders the reader page subheader.
+ * Please use the Tech Docs add-ons to customize it
+ * @public
+ */
 export const TechDocsReaderPageSubheader = withStyles(theme => ({
   root: {
     gridArea: 'pageSubheader',
