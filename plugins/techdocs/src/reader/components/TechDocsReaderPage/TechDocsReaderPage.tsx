@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children } from 'react';
+import React, { ReactNode, ReactChild, Children } from 'react';
 import { useOutlet, useParams } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
-import { getComponentData } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { TECHDOCS_ADDONS_WRAPPER_KEY } from '@backstage/techdocs-addons';
 
@@ -30,12 +29,50 @@ import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
 
 import { TechDocsReaderPageProvider } from './context';
 
+type Extension = ReactChild & {
+  type: {
+    __backstage_data: {
+      map: Map<string, boolean>;
+    };
+  };
+};
+
+/**
+ * Props for {@link TechDocsReaderPageLayout}
+ * @public
+ */
+export type TechDocsReaderPageLayoutProps = {
+  /**
+   * Show or hide the header, defaults to true.
+   */
+  withHeader?: boolean;
+  /**
+   * Show or hide the content search bar, defaults to true.
+   */
+  withSearch?: boolean;
+};
+
+/**
+ * Default TechDocs reader page structure composed with a header and content
+ * @public
+ */
+export const TechDocsReaderPageLayout = ({
+  withSearch,
+  withHeader = true,
+}: TechDocsReaderPageLayoutProps) => {
+  return (
+    <Page themeId="documentation">
+      {withHeader && <TechDocsReaderPageHeader />}
+      <TechDocsReaderPageSubheader />
+      <TechDocsReaderPageContent withSearch={withSearch} />
+    </Page>
+  );
+};
+
 /**
  * @public
  */
 export type TechDocsReaderPageProps = {
-  withHeader?: boolean;
-  withSearch?: boolean;
   entityRef?: CompoundEntityRef;
   children?: TechDocsReaderPageRenderFunction | ReactNode;
 };
@@ -45,8 +82,6 @@ export type TechDocsReaderPageProps = {
  * @public
  */
 export const TechDocsReaderPage = ({
-  withHeader = true,
-  withSearch = true,
   entityRef,
   children,
 }: TechDocsReaderPageProps) => {
@@ -55,26 +90,20 @@ export const TechDocsReaderPage = ({
   const outlet = useOutlet();
   const entityName = entityRef ?? { kind, name, namespace };
 
-  // children is only going to be defined if no "element" prop is provided to the route
   if (!children) {
-    // the children of the outlet will always just be one component
-    // therefore we need to support either custom reader page OR addons (using our default reader page) and not both
-    const outletChildrenList = Children.toArray(outlet?.props.children);
+    const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
-    const hasAddons = outletChildrenList.find(node => {
-      return getComponentData(node, TECHDOCS_ADDONS_WRAPPER_KEY);
+    const page = childrenList.find(child => {
+      const { type } = child as Extension;
+      return !type?.__backstage_data?.map?.get(TECHDOCS_ADDONS_WRAPPER_KEY);
     });
 
-    return hasAddons || !outletChildrenList.length ? (
-      <TechDocsReaderPageProvider entityName={entityName}>
-        <Page themeId="documentation">
-          {withHeader && <TechDocsReaderPageHeader />}
-          <TechDocsReaderPageSubheader />
-          <TechDocsReaderPageContent withSearch={withSearch} />
-        </Page>
-      </TechDocsReaderPageProvider>
-    ) : (
-      (outlet?.props.children as JSX.Element)
+    return (
+      (page as JSX.Element) || (
+        <TechDocsReaderPageProvider entityName={entityName}>
+          <TechDocsReaderPageLayout />
+        </TechDocsReaderPageProvider>
+      )
     );
   }
 

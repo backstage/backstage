@@ -19,8 +19,7 @@ import React from 'react';
 import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
 
 import { TechDocsReaderPage } from './plugin';
-import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
-import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
+import { TechDocsReaderPageLayout } from './reader/components/TechDocsReaderPage';
 
 type EntityPageDocsProps = { entity: Entity };
 
@@ -29,8 +28,7 @@ export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
 
   return (
     <TechDocsReaderPage entityRef={entityRef}>
-      <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent withSearch={false} />
+      <TechDocsReaderPageLayout withSearch={false} />
     </TechDocsReaderPage>
   );
 };

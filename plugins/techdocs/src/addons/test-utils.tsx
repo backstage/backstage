@@ -23,7 +23,7 @@ import React, { ReactElement, Fragment } from 'react';
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
 import { screen } from 'testing-library__dom';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Route, Routes } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { act, render } from '@testing-library/react';
 
 import {
@@ -31,10 +31,11 @@ import {
   TestApiProvider,
   TestApiProviderProps,
 } from '@backstage/test-utils';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { TechDocsAddons } from '@backstage/techdocs-addons';
 
 import { TechDocsEntityMetadata, TechDocsMetadata } from '../types';
 import { TechDocsReaderPage } from '../reader/components/TechDocsReaderPage';
-import { TechDocsAddons } from '@backstage/techdocs-addons';
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -43,6 +44,7 @@ type RecursivePartial<T> = {
 type Apis = TestApiProviderProps<any>['apis'];
 
 export type TechDocsAddonsBuilder = {
+  layout: ReactElement | null;
   dom: ReactElement;
   entity: RecursivePartial<TechDocsEntityMetadata>;
   metadata: RecursivePartial<TechDocsMetadata>;
@@ -52,6 +54,7 @@ export type TechDocsAddonsBuilder = {
 };
 
 const defaultOptions: TechDocsAddonsBuilder = {
+  layout: null,
   dom: <></>,
   entity: {},
   metadata: {},
@@ -91,6 +94,11 @@ export class TechDocsAddonBuilder {
     this.addons = addons;
   }
 
+  withLayout(layout: ReactElement) {
+    this.options.layout = layout;
+    return this;
+  }
+
   withApis(apis: Apis) {
     const refs = apis.map(([ref]) => ref);
     this.options.apis = this.options.apis
@@ -120,6 +128,7 @@ export class TechDocsAddonBuilder {
   }
 
   build() {
+    const layout = this.options.layout;
     const apis = [...this.options.apis];
     const entityName = {
       namespace:
@@ -140,24 +149,26 @@ export class TechDocsAddonBuilder {
       '*': this.options.path,
     });
 
-    return wrapInTestApp(
-      <TestApiProvider apis={apis}>
-        <Routes>
-          <Route
-            path="*"
-            element={
-              <TechDocsReaderPage withSearch={false} withHeader={false} />
-            }
-          >
-            <TechDocsAddons>
-              {this.addons.map((addon, index) => (
-                <Fragment key={index}>{addon}</Fragment>
-              ))}
-            </TechDocsAddons>
-          </Route>
-        </Routes>
-      </TestApiProvider>,
-    );
+    const TechDocsAddonsPage = () => {
+      return (
+        <TestApiProvider apis={apis}>
+          <FlatRoutes>
+            <Route path="/" element={<TechDocsReaderPage />}>
+              {/* Custom page */}
+              {layout && <TechDocsReaderPage>{layout}</TechDocsReaderPage>}
+              <TechDocsAddons>
+                {this.addons.map((addon, index) => (
+                  <Fragment key={index}>{addon}</Fragment>
+                ))}
+              </TechDocsAddons>
+            </Route>
+          </FlatRoutes>
+        </TestApiProvider>
+      );
+    };
+
+    // Will render <Route path="*" element{<TechDocsAddonsPage />} />
+    return wrapInTestApp(<TechDocsAddonsPage />);
   }
 
   render(): typeof screen & { shadowRoot: ShadowRoot | null } {

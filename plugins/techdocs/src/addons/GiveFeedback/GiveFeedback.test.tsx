@@ -20,6 +20,7 @@ import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { TechDocsReaderPageLayout } from '../../reader/components';
 import { GiveFeedbackAddon } from '../../plugin';
 import { techdocsApiRef } from '../../api';
 
@@ -67,6 +68,9 @@ describe('GiveFeedback', () => {
       await TechDocsAddonBuilder.buildAddonsInTechDocs([
         <GiveFeedbackAddon debounceTime={0} />,
       ])
+        .withLayout(
+          <TechDocsReaderPageLayout withHeader={false} withSearch={false} />,
+        )
         .withDom(
           <html lang="en">
             <head />
