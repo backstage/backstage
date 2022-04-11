@@ -20,8 +20,8 @@ import {
   HomePageToolkit,
   HomePageCompanyLogo,
   HomePageStarredEntities,
-} from '../plugin';
-import { wrapInTestApp, TestApiProvider} from '@backstage/test-utils';
+} from '@backstage/plugin-home';
+import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { Content, Page, InfoCard } from '@backstage/core-components';
 import {
   starredEntitiesApiRef,
@@ -32,10 +32,9 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import {
   HomePageSearchBar,
-  SearchContextProvider,
-  searchApiRef,
   searchPlugin,
 } from '@backstage/plugin-search';
+import { searchApiRef, SearchContextProvider } from '@backstage/plugin-search-react';
 import { HomePageStackOverflowQuestions } from '@backstage/plugin-stack-overflow';
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { ComponentType } from 'react';
@@ -54,10 +53,7 @@ export default {
         <>
           <TestApiProvider
             apis={[
-              [
-                starredEntitiesApiRef,
-                starredEntitiesApi,
-              ],
+              [starredEntitiesApiRef, starredEntitiesApi],
               [searchApiRef, { query: () => Promise.resolve({ results: [] }) }],
               [
                 configApiRef,
