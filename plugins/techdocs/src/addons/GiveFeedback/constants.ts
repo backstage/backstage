@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-export {
-  readGitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
-} from './config';
-export type { GitLabIntegrationConfig } from './config';
-export { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
-export { GitLabIntegration, replaceGitLabUrlType } from './GitLabIntegration';
+export const ADDON_FEEDBACK_CONTAINER_ID = 'techdocs-give-feedback';
+export const ADDON_FEEDBACK_CONTAINER_SELECTOR = `#${ADDON_FEEDBACK_CONTAINER_ID}`;
+export const PAGE_EDIT_LINK_SELECTOR = '[title^="Edit this page"]';
+export const PAGE_FEEDBACK_LINK_SELECTOR = '[title^="Leave feedback for"]';
+export const PAGE_MAIN_CONTENT_SELECTOR =
+  '[data-md-component="main"] .md-content';
