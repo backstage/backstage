@@ -132,8 +132,7 @@ In order to test the logic above, the integrators of your backstage instance nee
 +   PolicyQuery,
   } from '@backstage/plugin-permission-node';
 
-- class TestPermissionPolicy implements PermissionPolicy
-+ class TestPermissionPolicy implements PermissionPolicy {
+  class TestPermissionPolicy implements PermissionPolicy {
 -   async handle(): Promise<PolicyDecision> {
 +   async handle(
 +     request: PolicyQuery,
