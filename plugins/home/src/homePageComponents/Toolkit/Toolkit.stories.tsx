@@ -20,7 +20,7 @@ import { Grid } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { ComponentAccordion } from '../../componentRenderers';
 import { HomePageToolkit } from '../../plugin';
-import { TemplateBackstageLogoIcon } from '../../templates';
+import { TemplateBackstageLogoIcon } from '../../assets';
 
 export default {
   title: 'Plugins/Home/Components/Toolkit',

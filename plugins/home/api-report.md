@@ -119,11 +119,24 @@ export const SettingsModal: (props: {
   children: JSX.Element;
 }) => JSX.Element;
 
+// Warning: (ae-missing-release-tag) "TemplateBackstageLogo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TemplateBackstageLogo: (props: {
+  classes: Classes;
+}) => JSX.Element;
+
+// Warning: (ae-missing-release-tag) "TemplateBackstageLogoIcon" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const TemplateBackstageLogoIcon: () => JSX.Element;
+
 // @public
 export const WelcomeTitle: () => JSX.Element;
 
 // Warnings were encountered during analysis:
 //
+// src/assets/TemplateBackstageLogo.d.ts:7:5 - (ae-forgotten-export) The symbol "Classes" needs to be exported by the entry point index.d.ts
 // src/extensions.d.ts:6:5 - (ae-forgotten-export) The symbol "RendererProps" needs to be exported by the entry point index.d.ts
 // src/extensions.d.ts:27:5 - (ae-forgotten-export) The symbol "ComponentParts" needs to be exported by the entry point index.d.ts
 ```
