@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ApiProvider } from '@backstage/core-app-api';
-import { searchApiRef } from '@backstage/plugin-search';
+import { searchApiRef } from '@backstage/plugin-search-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import {
   act,

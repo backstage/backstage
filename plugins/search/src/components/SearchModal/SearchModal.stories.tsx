@@ -18,7 +18,7 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { Button } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
-import { SearchApiProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchApiProviderForStorybook } from '@backstage/plugin-search-react';
 import { SearchModal } from './SearchModal';
 import { useSearchModal } from './useSearchModal';
 
@@ -57,9 +57,9 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
-        <SearchApiProvider mockedResults={mockResults}>
+        <SearchApiProviderForStorybook mockedResults={mockResults}>
           <Story />
-        </SearchApiProvider>,
+        </SearchApiProviderForStorybook>,
         { mountedRoutes: { '/search': rootRouteRef } },
       ),
   ],
