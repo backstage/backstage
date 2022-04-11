@@ -15,38 +15,49 @@
  */
 
 import { Config } from '@backstage/config';
-import { ClusterDetails } from '../types/types';
+import { Duration } from 'luxon';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 
-export const getCombinedClusterDetails = async (
+class CombinedClustersSupplier implements KubernetesClustersSupplier {
+  constructor(readonly clusterSuppliers: KubernetesClustersSupplier[]) {}
+
+  async getClusters(): Promise<ClusterDetails[]> {
+    return await Promise.all(
+      this.clusterSuppliers.map(supplier => supplier.getClusters()),
+    )
+      .then(res => {
+        return res.flat();
+      })
+      .catch(e => {
+        throw e;
+      });
+  }
+}
+
+export const getCombinedClusterSupplier = (
   rootConfig: Config,
-): Promise<ClusterDetails[]> => {
-  return Promise.all(
-    rootConfig
-      .getConfigArray('kubernetes.clusterLocatorMethods')
-      .map(clusterLocatorMethod => {
-        const type = clusterLocatorMethod.getString('type');
-        switch (type) {
-          case 'config':
-            return ConfigClusterLocator.fromConfig(
-              clusterLocatorMethod,
-            ).getClusters();
-          case 'gke':
-            return GkeClusterLocator.fromConfig(
-              clusterLocatorMethod,
-            ).getClusters();
-          default:
-            throw new Error(
-              `Unsupported kubernetes.clusterLocatorMethods: "${type}"`,
-            );
-        }
-      }),
-  )
-    .then(res => {
-      return res.flat();
-    })
-    .catch(e => {
-      throw e;
+  refreshInterval: Duration | undefined = undefined,
+): KubernetesClustersSupplier => {
+  const clusterSuppliers = rootConfig
+    .getConfigArray('kubernetes.clusterLocatorMethods')
+    .map(clusterLocatorMethod => {
+      const type = clusterLocatorMethod.getString('type');
+      switch (type) {
+        case 'config':
+          return ConfigClusterLocator.fromConfig(clusterLocatorMethod);
+        case 'gke':
+          return GkeClusterLocator.fromConfig(
+            clusterLocatorMethod,
+            refreshInterval,
+          );
+        default:
+          throw new Error(
+            `Unsupported kubernetes.clusterLocatorMethods: "${type}"`,
+          );
+      }
     });
+
+  return new CombinedClustersSupplier(clusterSuppliers);
 };

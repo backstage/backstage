@@ -17,10 +17,10 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { getCombinedClusterDetails } from '../cluster-locator';
+import { Duration } from 'luxon';
+import { getCombinedClusterSupplier } from '../cluster-locator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import {
-  ClusterDetails,
   KubernetesObjectTypes,
   ServiceLocatorMethod,
   CustomResource,
@@ -50,7 +50,6 @@ export interface KubernetesEnvironment {
  */
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
-  clusterDetails: ClusterDetails[];
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;
@@ -60,6 +59,9 @@ export type KubernetesBuilderReturn = Promise<{
 
 export class KubernetesBuilder {
   private clusterSupplier?: KubernetesClustersSupplier;
+  private defaultClusterRefreshInterval: Duration = Duration.fromObject({
+    minutes: 60,
+  });
   private objectsProvider?: KubernetesObjectsProvider;
   private fetcher?: KubernetesFetcher;
   private serviceLocator?: KubernetesServiceLocator;
@@ -91,13 +93,13 @@ export class KubernetesBuilder {
 
     const fetcher = this.fetcher ?? this.buildFetcher();
 
-    const clusterSupplier = this.clusterSupplier ?? this.buildClusterSupplier();
-
-    const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
+    const clusterSupplier =
+      this.clusterSupplier ??
+      this.buildClusterSupplier(this.defaultClusterRefreshInterval);
 
     const serviceLocator =
       this.serviceLocator ??
-      this.buildServiceLocator(this.getServiceLocatorMethod(), clusterDetails);
+      this.buildServiceLocator(this.getServiceLocatorMethod(), clusterSupplier);
 
     const objectsProvider =
       this.objectsProvider ??
@@ -109,10 +111,9 @@ export class KubernetesBuilder {
         objectTypesToFetch: this.getObjectTypesToFetch(),
       });
 
-    const router = this.buildRouter(objectsProvider, clusterDetails);
+    const router = this.buildRouter(objectsProvider, clusterSupplier);
 
     return {
-      clusterDetails,
       clusterSupplier,
       customResources,
       fetcher,
@@ -124,6 +125,11 @@ export class KubernetesBuilder {
 
   public setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier) {
     this.clusterSupplier = clusterSupplier;
+    return this;
+  }
+
+  public setDefaultClusterRefreshInterval(refreshInterval: Duration) {
+    this.defaultClusterRefreshInterval = refreshInterval;
     return this;
   }
 
@@ -161,13 +167,11 @@ export class KubernetesBuilder {
     return customResources;
   }
 
-  protected buildClusterSupplier(): KubernetesClustersSupplier {
+  protected buildClusterSupplier(
+    refreshInterval: Duration,
+  ): KubernetesClustersSupplier {
     const config = this.env.config;
-    return {
-      getClusters() {
-        return getCombinedClusterDetails(config);
-      },
-    };
+    return getCombinedClusterSupplier(config, refreshInterval);
   }
 
   protected buildObjectsProvider(
@@ -185,13 +189,13 @@ export class KubernetesBuilder {
 
   protected buildServiceLocator(
     method: ServiceLocatorMethod,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator {
     switch (method) {
       case 'multiTenant':
-        return this.buildMultiTenantServiceLocator(clusterDetails);
+        return this.buildMultiTenantServiceLocator(clusterSupplier);
       case 'http':
-        return this.buildHttpServiceLocator(clusterDetails);
+        return this.buildHttpServiceLocator(clusterSupplier);
       default:
         throw new Error(
           `Unsupported kubernetes.clusterLocatorMethod "${method}"`,
@@ -200,20 +204,20 @@ export class KubernetesBuilder {
   }
 
   protected buildMultiTenantServiceLocator(
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator {
-    return new MultiTenantServiceLocator(clusterDetails);
+    return new MultiTenantServiceLocator(clusterSupplier);
   }
 
   protected buildHttpServiceLocator(
-    _clusterDetails: ClusterDetails[],
+    _clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator {
     throw new Error('not implemented');
   }
 
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
@@ -236,6 +240,7 @@ export class KubernetesBuilder {
     });
 
     router.get('/clusters', async (_, res) => {
+      const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
       res.json({
         items: clusterDetails.map(cd => ({
           name: cd.name,

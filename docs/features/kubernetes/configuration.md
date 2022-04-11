@@ -57,6 +57,10 @@ This is an array used to determine where to retrieve cluster configuration from.
 
 Valid cluster locator methods are:
 
+- [`config`](#config)
+- [`gke`](#gke)
+- [custom `KubernetesClustersSupplier`](#custom-kubernetesclusterssupplier)
+
 #### `config`
 
 This cluster locator method will read cluster information from your app-config
@@ -260,6 +264,12 @@ automatically configured in order to expose the GKE dashboard from the
 Kubernetes plugin.
 
 Defaults to `false`.
+
+#### Custom `KubernetesClustersSupplier`
+
+If the configuration-based cluster locators do not work for your use-case,
+it is also possible to implement a
+[custom `KubernetesClustersSupplier`](installation.md#custom-cluster-discovery).
 
 ### `customResources` (optional)
 

@@ -4,6 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { Duration } from 'luxon';
 import express from 'express';
 import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
@@ -85,18 +86,20 @@ export class KubernetesBuilder {
   // (undocumented)
   build(): KubernetesBuilderReturn;
   // (undocumented)
-  protected buildClusterSupplier(): KubernetesClustersSupplier;
+  protected buildClusterSupplier(
+    refreshInterval: Duration,
+  ): KubernetesClustersSupplier;
   // (undocumented)
   protected buildCustomResources(): CustomResource[];
   // (undocumented)
   protected buildFetcher(): KubernetesFetcher;
   // (undocumented)
   protected buildHttpServiceLocator(
-    _clusterDetails: ClusterDetails[],
+    _clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   protected buildMultiTenantServiceLocator(
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   protected buildObjectsProvider(
@@ -105,12 +108,12 @@ export class KubernetesBuilder {
   // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
     method: ServiceLocatorMethod,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   static createBuilder(env: KubernetesEnvironment): KubernetesBuilder;
@@ -127,6 +130,8 @@ export class KubernetesBuilder {
   // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
+  setDefaultClusterRefreshInterval(refreshInterval: Duration): this;
+  // (undocumented)
   setFetcher(fetcher?: KubernetesFetcher): this;
   // (undocumented)
   setObjectsProvider(objectsProvider?: KubernetesObjectsProvider): this;
@@ -137,7 +142,6 @@ export class KubernetesBuilder {
 // @public
 export type KubernetesBuilderReturn = Promise<{
   router: express.Router;
-  clusterDetails: ClusterDetails[];
   clusterSupplier: KubernetesClustersSupplier;
   customResources: CustomResource[];
   fetcher: KubernetesFetcher;
@@ -149,7 +153,6 @@ export type KubernetesBuilderReturn = Promise<{
 //
 // @public (undocumented)
 export interface KubernetesClustersSupplier {
-  // (undocumented)
   getClusters(): Promise<ClusterDetails[]>;
 }
 
