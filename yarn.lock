@@ -4347,38 +4347,20 @@
   dependencies:
     "@types/gapi.client" "*"
 
-"@microsoft/api-documenter@^7.17.0":
-  version "7.17.0"
-  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.17.0.tgz#7d2b7775b37775fc7491b94cb5fa13ee8271fcc3"
-  integrity sha512-rIZcfDkBsWsflvN1n0tVgIUdivV7slBIsN0WyK8gUG1MjK7dv+rbAB5QPLhg3dPvbXLgPLanJCFwoO2yFdxs+A==
+"@microsoft/api-documenter@^7.17.5":
+  version "7.17.5"
+  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.17.5.tgz#cdaec54ad04d66b6f4c6f797f4120ff8c844a82d"
+  integrity sha512-zyJS3qORQP33S8EU0YPZb/JLIbMoslzj1bg8VmgfYCnxhX+3/FmlrTqDCwA9h2TR4bu1r7aQ26AfjUbBUz9+EA==
   dependencies:
-    "@microsoft/api-extractor-model" "7.16.0"
+    "@microsoft/api-extractor-model" "7.16.1"
     "@microsoft/tsdoc" "0.13.2"
-    "@rushstack/node-core-library" "3.45.1"
-    "@rushstack/ts-command-line" "4.10.7"
+    "@rushstack/node-core-library" "3.45.2"
+    "@rushstack/ts-command-line" "4.10.8"
     colors "~1.2.1"
     js-yaml "~3.13.1"
     resolve "~1.17.0"
 
-"@microsoft/api-extractor-model@7.15.3":
-  version "7.15.3"
-  resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.15.3.tgz#cf76deeeb2733d974da678f530c2dbaceb18a065"
-  integrity sha512-NkSjolmSI7NGvbdz0Y7kjQfdpD+j9E5CwXTxEyjDqxd10MI7GXV8DnAsQ57GFJcgHKgTjf2aUnYfMJ9w3aMicw==
-  dependencies:
-    "@microsoft/tsdoc" "0.13.2"
-    "@microsoft/tsdoc-config" "~0.15.2"
-    "@rushstack/node-core-library" "3.45.0"
-
-"@microsoft/api-extractor-model@7.16.0":
-  version "7.16.0"
-  resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.16.0.tgz#3db7360897115f26a857f1f684fb5af82b0ef9f6"
-  integrity sha512-0FOrbNIny8mzBrzQnSIkEjAXk0JMSnPmWYxt3ZDTPVg9S8xIPzB6lfgTg9+Mimu0RKCpGKBpd+v2WcR5vGzyUQ==
-  dependencies:
-    "@microsoft/tsdoc" "0.13.2"
-    "@microsoft/tsdoc-config" "~0.15.2"
-    "@rushstack/node-core-library" "3.45.1"
-
-"@microsoft/api-extractor-model@^7.16.0":
+"@microsoft/api-extractor-model@7.16.1", "@microsoft/api-extractor-model@^7.16.1":
   version "7.16.1"
   resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.16.1.tgz#f6e53614e90c8a6be47bad5b91d49cc6d8c5c2bf"
   integrity sha512-+1mlvy/ji+mUuH7WdVZ6fTo/aCKfS6m37aAFVOFWLfkMvmR+I9SjPfiv9qOg83If7GOrk2HPiHHibv6kA80VTg==
@@ -4387,17 +4369,17 @@
     "@microsoft/tsdoc-config" "~0.15.2"
     "@rushstack/node-core-library" "3.45.2"
 
-"@microsoft/api-extractor@^7.19.4":
-  version "7.19.4"
-  resolved "https://registry.npmjs.org/@microsoft/api-extractor/-/api-extractor-7.19.4.tgz#95d43d410a1dfb28a02062c4693bcb9c52afe9eb"
-  integrity sha512-iehC6YA3DGJvxTUaK7HUtQmP6hAQU07+Q/OR8TG4dVR6KpqCi9UPEVk8AgCvQkiK+6FbVEFQTx0qLuYk4EeuHg==
+"@microsoft/api-extractor@^7.21.2":
+  version "7.21.2"
+  resolved "https://registry.npmjs.org/@microsoft/api-extractor/-/api-extractor-7.21.2.tgz#0f524e7e1cf7b000924772fb8f6b5f60cf42fba8"
+  integrity sha512-m0+YPaXVou01O/V9swugZG7Gn4mw6HSWY+uisf0j2JPRZcoEDyoYe4hg0ERKXOEf0hByOnMLT28nQ82v8ig9Yw==
   dependencies:
-    "@microsoft/api-extractor-model" "7.15.3"
+    "@microsoft/api-extractor-model" "7.16.1"
     "@microsoft/tsdoc" "0.13.2"
     "@microsoft/tsdoc-config" "~0.15.2"
-    "@rushstack/node-core-library" "3.45.0"
-    "@rushstack/rig-package" "0.3.7"
-    "@rushstack/ts-command-line" "4.10.6"
+    "@rushstack/node-core-library" "3.45.2"
+    "@rushstack/rig-package" "0.3.9"
+    "@rushstack/ts-command-line" "4.10.8"
     colors "~1.2.1"
     lodash "~4.17.15"
     resolve "~1.17.0"
@@ -4425,10 +4407,15 @@
     jju "~1.4.0"
     resolve "~1.19.0"
 
-"@microsoft/tsdoc@0.13.2", "@microsoft/tsdoc@^0.13.2":
+"@microsoft/tsdoc@0.13.2":
   version "0.13.2"
   resolved "https://registry.npmjs.org/@microsoft/tsdoc/-/tsdoc-0.13.2.tgz#3b0efb6d3903bd49edb073696f60e90df08efb26"
   integrity sha512-WrHvO8PDL8wd8T2+zBGKrMwVL5IyzR3ryWUsl0PXgEV0QHup4mTLi0QcATefGI6Gx9Anu7vthPyyyLpY0EpiQg==
+
+"@microsoft/tsdoc@^0.14.1":
+  version "0.14.1"
+  resolved "https://registry.npmjs.org/@microsoft/tsdoc/-/tsdoc-0.14.1.tgz#155ef21065427901994e765da8a0ba0eaae8b8bd"
+  integrity sha512-6Wci+Tp3CgPt/B9B0a3J4s3yMgLNSku6w5TV6mN+61C71UqsRBv2FUibBf3tPGlNxebgPHMEUzKpb1ggE8KCKw==
 
 "@mswjs/cookies@^0.1.6", "@mswjs/cookies@^0.1.7":
   version "0.1.7"
@@ -5249,36 +5236,6 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
-"@rushstack/node-core-library@3.45.0":
-  version "3.45.0"
-  resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.45.0.tgz#8c86b39271b6d84260b1e70db87e1e265b54f620"
-  integrity sha512-YMuIJl19vQT1+g/OU9mLY6T5ZBT9uDlmeXExDQACpGuxTJW+LHNbk/lRX+eCApQI2eLBlaL4U68r3kZlqwbdmw==
-  dependencies:
-    "@types/node" "12.20.24"
-    colors "~1.2.1"
-    fs-extra "~7.0.1"
-    import-lazy "~4.0.0"
-    jju "~1.4.0"
-    resolve "~1.17.0"
-    semver "~7.3.0"
-    timsort "~0.3.0"
-    z-schema "~5.0.2"
-
-"@rushstack/node-core-library@3.45.1":
-  version "3.45.1"
-  resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.45.1.tgz#787361b61a48d616eb4b059641721a3dc138f001"
-  integrity sha512-BwdssTNe007DNjDBxJgInHg8ePytIPyT0La7ZZSQZF9+rSkT42AygXPGvbGsyFfEntjr4X37zZSJI7yGzL16cQ==
-  dependencies:
-    "@types/node" "12.20.24"
-    colors "~1.2.1"
-    fs-extra "~7.0.1"
-    import-lazy "~4.0.0"
-    jju "~1.4.0"
-    resolve "~1.17.0"
-    semver "~7.3.0"
-    timsort "~0.3.0"
-    z-schema "~5.0.2"
-
 "@rushstack/node-core-library@3.45.2":
   version "3.45.2"
   resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.45.2.tgz#68fc89c5bea4007359fa4ff203bf3eca27037f40"
@@ -5294,28 +5251,18 @@
     timsort "~0.3.0"
     z-schema "~5.0.2"
 
-"@rushstack/rig-package@0.3.7":
-  version "0.3.7"
-  resolved "https://registry.npmjs.org/@rushstack/rig-package/-/rig-package-0.3.7.tgz#3fa564b1d129d28689dd4309502792b15e84bf81"
-  integrity sha512-pzMsTSeTC8IiZ6EJLr53gGMvhT4oLWH+hxD7907cHyWuIUlEXFtu/2pK25vUQT13nKp5DJCWxXyYoGRk/h6rtA==
+"@rushstack/rig-package@0.3.9":
+  version "0.3.9"
+  resolved "https://registry.npmjs.org/@rushstack/rig-package/-/rig-package-0.3.9.tgz#5e10ada5a8348f886b6ebe3eed436492d6ccf70c"
+  integrity sha512-z3Oxpfb4n9mGXwseX+ifpkmUf9B8Fy8oieVwg8eFgpCbzllkgOwEiwLKEnRWVQ8owFcd46NCKz+7ICH35CRsAw==
   dependencies:
     resolve "~1.17.0"
     strip-json-comments "~3.1.1"
 
-"@rushstack/ts-command-line@4.10.6":
-  version "4.10.6"
-  resolved "https://registry.npmjs.org/@rushstack/ts-command-line/-/ts-command-line-4.10.6.tgz#5669e481e4339ceb4e1428183eb0937d3bc3841b"
-  integrity sha512-Y3GkUag39sTIlukDg9mUp8MCHrrlJ27POrBNRQGc/uF+VVgX8M7zMzHch5zP6O1QVquWgD7Engdpn2piPYaS/g==
-  dependencies:
-    "@types/argparse" "1.0.38"
-    argparse "~1.0.9"
-    colors "~1.2.1"
-    string-argv "~0.3.1"
-
-"@rushstack/ts-command-line@4.10.7":
-  version "4.10.7"
-  resolved "https://registry.npmjs.org/@rushstack/ts-command-line/-/ts-command-line-4.10.7.tgz#21e3757a756cbd4f7eeab8f89ec028a64d980efc"
-  integrity sha512-CjS+DfNXUSO5Ab2wD1GBGtUTnB02OglRWGqfaTcac9Jn45V5MeUOsq/wA8wEeS5Y/3TZ2P1k+IWdVDiuOFP9Og==
+"@rushstack/ts-command-line@4.10.8":
+  version "4.10.8"
+  resolved "https://registry.npmjs.org/@rushstack/ts-command-line/-/ts-command-line-4.10.8.tgz#f4bec690e7f4838e6f91028d8a557e67c3a75f68"
+  integrity sha512-G7CQYY/m3aZU5fVxbebv35yDeua7sSumrDAB2pJp0d60ZEsxGkUQW8771CeMcGWwSKqT9PxPzKpmIakiWv54sA==
   dependencies:
     "@types/argparse" "1.0.38"
     argparse "~1.0.9"
