@@ -21,7 +21,11 @@ type Classes = {
   path: string;
 };
 
-export const TemplateBackstageLogo = (props: { classes: Classes }) => {
+type TemplateBackstageLogoProps = {
+  classes: Classes;
+};
+
+export const TemplateBackstageLogo = (props: TemplateBackstageLogoProps) => {
   return (
     <svg
       className={props.classes.svg}

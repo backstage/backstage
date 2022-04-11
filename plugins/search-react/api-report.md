@@ -29,11 +29,6 @@ export function SearchApiProviderForStorybook(
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
-// Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export const SearchContext: React_2.Context<SearchContextValue | undefined>;
-
 // @public (undocumented)
 export const SearchContextProvider: ({
   initialState,
@@ -49,7 +44,7 @@ export const SearchContextProviderForStorybook: (
   props: ComponentProps<typeof SearchContextProvider> & QueryResultProps,
 ) => JSX.Element;
 
-// @public
+// @public (undocumented)
 export type SearchContextState = {
   term: string;
   types: string[];
@@ -57,6 +52,8 @@ export type SearchContextState = {
   pageCursor?: string;
 };
 
+// Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export const useSearch: () => SearchContextValue;
 

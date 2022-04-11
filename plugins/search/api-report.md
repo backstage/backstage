@@ -81,7 +81,6 @@ export type HomePageSearchBarProps = Partial<
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
 // Warning: (ae-missing-release-tag) "SearchApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -90,7 +89,6 @@ export interface SearchApi {
   query(query: SearchQuery): Promise<SearchResultSet>;
 }
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
 // Warning: (ae-missing-release-tag) "searchApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -140,7 +138,6 @@ export const SearchBarNext: ({
 // @public
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
 // Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)

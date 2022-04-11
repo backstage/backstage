@@ -52,7 +52,7 @@ export type SearchContextState = {
 };
 
 /**
- * @deprecated import from "@backstage/plugin-search-react" instead
+ * @deprecated import from `@backstage/plugin-search-react` instead
  */
 export const SearchContext = createContext<SearchContextValue | undefined>(
   undefined,
@@ -66,7 +66,7 @@ const searchInitialState: SearchContextState = {
 };
 
 /**
- * @deprecated import from "@backstage/plugin-search-react" instead
+ * @deprecated import from `@backstage/plugin-search-react` instead
  */
 export const SearchContextProvider = ({
   initialState = searchInitialState,

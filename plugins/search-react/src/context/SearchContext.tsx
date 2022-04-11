@@ -40,7 +40,6 @@ type SearchContextValue = {
 } & SearchContextState;
 
 /**
- * The initial state of `SearchContextProvider`.
  *
  * @public
  */
@@ -58,6 +57,10 @@ export const SearchContext = createContext<SearchContextValue | undefined>(
   undefined,
 );
 
+/**
+ * The initial state of `SearchContextProvider`.
+ *
+ */
 const searchInitialState: SearchContextState = {
   term: '',
   pageCursor: undefined,

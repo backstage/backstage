@@ -25,14 +25,14 @@ import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
 import qs from 'qs';
 
 /**
- * @deprecated import from "@backstage/plugin-search-react" instead
+ * @deprecated import from `@backstage/plugin-search-react` instead
  */
 export const searchApiRef = createApiRef<SearchApi>({
   id: 'plugin.search.queryservice',
 });
 
 /**
- * @deprecated import from "@backstage/plugin-search-react" instead
+ * @deprecated import from `@backstage/plugin-search-react` instead
  */
 export interface SearchApi {
   query(query: SearchQuery): Promise<SearchResultSet>;

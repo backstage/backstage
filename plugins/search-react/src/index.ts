@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-export * from './api';
-export * from './context';
+export { searchApiRef } from './api';
+export type { SearchApi } from './api';
+export {
+  SearchContextProvider,
+  useSearch,
+  SearchContextProviderForStorybook,
+  SearchApiProviderForStorybook,
+} from './context';
+export type { SearchContextState } from './context';
