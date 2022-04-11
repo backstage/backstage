@@ -115,7 +115,7 @@ That's it! Now your plugin is fully configured. Let's try to test the logic by d
 
 ## Test the authorized create endpoint
 
-Before running this step, please make sure you followed the steps described in [Getting started](../getting-started) section.
+Before running this step, please make sure you followed the steps described in [Getting started](../getting-started.md) section.
 
 In order to test the logic above, the integrators of your backstage instance need to change their permission policy to return `DENY` for our newly-created permission:
 
