@@ -104,10 +104,7 @@ import {
   isRollbarAvailable,
 } from '@backstage/plugin-rollbar';
 import { EntitySentryContent } from '@backstage/plugin-sentry';
-import {
-  EntityTechdocsContent,
-  GiveFeedbackAddon,
-} from '@backstage/plugin-techdocs';
+import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import BadgeIcon from '@material-ui/icons/CallToAction';
@@ -141,7 +138,6 @@ import {
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
-import { TechDocsAddons } from '@backstage/techdocs-addons';
 
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
@@ -401,11 +397,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent>
-        <TechDocsAddons>
-          <GiveFeedbackAddon />
-        </TechDocsAddons>
-      </EntityTechdocsContent>
+      <EntityTechdocsContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -472,11 +464,7 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent>
-        <TechDocsAddons>
-          <GiveFeedbackAddon />
-        </TechDocsAddons>
-      </EntityTechdocsContent>
+      <EntityTechdocsContent />
     </EntityLayout.Route>
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
@@ -515,11 +503,7 @@ const defaultEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent>
-        <TechDocsAddons>
-          <GiveFeedbackAddon />
-        </TechDocsAddons>
-      </EntityTechdocsContent>
+      <EntityTechdocsContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">

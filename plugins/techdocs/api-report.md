@@ -9,7 +9,6 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CommonProps } from '@material-ui/core/OverridableComponent';
-import { ComponentType } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { CSSProperties } from '@material-ui/styles';
@@ -157,26 +156,6 @@ export type EntityListDocsTableProps = {
 export const EntityTechdocsContent: (props: {
   children?: ReactNode;
 }) => JSX.Element;
-
-// @public
-export const GiveFeedbackAddon: ComponentType<GiveFeedbackProps>;
-
-// @public (undocumented)
-export type GiveFeedbackProps = {
-  debounceTime?: number;
-  templateBuilder?: GiveFeedbackTemplateBuilder;
-};
-
-// @public (undocumented)
-export type GiveFeedbackTemplate = {
-  title: string;
-  body: string;
-};
-
-// @public (undocumented)
-export type GiveFeedbackTemplateBuilder = (
-  selection: Selection,
-) => GiveFeedbackTemplate;
 
 // @public
 export const isTechDocsAvailable: (entity: Entity) => boolean;

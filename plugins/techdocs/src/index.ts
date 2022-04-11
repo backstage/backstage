@@ -24,7 +24,6 @@ export * from './types';
 export * from './api';
 export * from './client';
 export * from './reader';
-export * from './addons';
 export * from './search';
 export * from './home';
 export {
@@ -35,6 +34,5 @@ export {
   TechDocsReaderPage,
   techdocsPlugin as plugin,
   techdocsPlugin,
-  GiveFeedbackAddon,
 } from './plugin';
 export * from './Router';

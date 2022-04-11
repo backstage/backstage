@@ -30,11 +30,6 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { GiveFeedback, GiveFeedbackProps } from './addons/GiveFeedback';
-import {
-  createTechDocsAddon,
-  TechDocsAddonLocations,
-} from '@backstage/techdocs-addons';
 
 /**
  * The Backstage plugin that renders technical documentation for your components
@@ -153,19 +148,5 @@ export const TechDocsReaderPage = techdocsPlugin.provide(
         m => m.TechDocsReaderPage,
       ),
     mountPoint: rootDocsRouteRef,
-  }),
-);
-
-/**
- * TechDocs addon that lets you select text and open GitHub/Gitlab issues
- *
- * @public
- */
-
-export const GiveFeedbackAddon = techdocsPlugin.provide(
-  createTechDocsAddon<GiveFeedbackProps>({
-    name: 'GiveFeedback',
-    location: TechDocsAddonLocations.CONTENT,
-    component: GiveFeedback,
   }),
 );
