@@ -156,7 +156,10 @@
       {
         "type": "subcategory",
         "label": "Gerrit",
-        "ids": ["integrations/gerrit/locations"]
+        "ids": [
+          "integrations/gerrit/locations",
+          "integrations/gerrit/discovery"
+        ]
       },
       {
         "type": "subcategory",

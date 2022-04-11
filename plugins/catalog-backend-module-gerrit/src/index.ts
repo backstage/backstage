@@ -13,16 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { GerritIntegration } from './GerritIntegration';
-export {
-  readGerritIntegrationConfig,
-  readGerritIntegrationConfigs,
-} from './config';
-export {
-  getGerritFileContentsApiUrl,
-  getGerritProjectsApiUrl,
-  getGerritRequestOptions,
-  parseGerritJsonResponse,
-} from './core';
 
-export type { GerritIntegrationConfig } from './config';
+export { GerritEntityProvider } from './providers/GerritEntityProvider';
