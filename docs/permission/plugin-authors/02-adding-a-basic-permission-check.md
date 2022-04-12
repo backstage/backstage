@@ -131,6 +131,8 @@ In order to test the logic above, the integrators of your backstage instance nee
     PermissionPolicy,
 +   PolicyQuery,
   } from '@backstage/plugin-permission-node';
++ import { isPermission } from '@backstage/plugin-permission-common';
++ import { todosListCreate } from '@internal/plugin-todo-list-backend';
 
   class TestPermissionPolicy implements PermissionPolicy {
 -   async handle(): Promise<PolicyDecision> {
@@ -138,7 +140,7 @@ In order to test the logic above, the integrators of your backstage instance nee
 +     request: PolicyQuery,
 +     user?: BackstageIdentityResponse,
 +   ): Promise<PolicyDecision> {
-+     if (request.permission.name === 'todos.list.create') {
++     if (isPermission(request.permission, todosListCreate)) {
 +       return {
 +         result: AuthorizeResult.DENY,
 +       };
