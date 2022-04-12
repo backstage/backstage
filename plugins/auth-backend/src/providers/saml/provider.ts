@@ -215,7 +215,7 @@ export const saml = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their nameID to the entity name.
      */
-    byNameId(): SignInResolver<SamlAuthResult> {
+    nameIdMatchingUserEntityName(): SignInResolver<SamlAuthResult> {
       return async (info, ctx) => {
         const id = info.result.fullProfile.nameID;
 
@@ -239,6 +239,7 @@ export const createSamlProvider = saml.create;
 
 /**
  * @public
- * @deprecated Use `providers.saml.resolvers.byNameId()` instead.
+ * @deprecated Use `providers.saml.resolvers.nameIdMatchingUserEntityName()` instead.
  */
-export const samlNameIdEntityNameSignInResolver = saml.resolvers.byNameId();
+export const samlNameIdEntityNameSignInResolver =
+  saml.resolvers.nameIdMatchingUserEntityName();

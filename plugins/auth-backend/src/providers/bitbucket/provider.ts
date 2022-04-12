@@ -273,7 +273,7 @@ export const bitbucket = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their username to the `bitbucket.org/username` annotation.
      */
-    lookupUsernameAnnotation(): SignInResolver<OAuthResult> {
+    usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { result } = info;
 
@@ -291,7 +291,7 @@ export const bitbucket = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their user ID to the `bitbucket.org/user-id` annotation.
      */
-    lookupUserIdAnnotation(): SignInResolver<OAuthResult> {
+    userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { result } = info;
 
@@ -317,14 +317,14 @@ export const createBitbucketProvider = bitbucket.create;
 
 /**
  * @public
- * @deprecated Use `providers.bitbucket.resolvers.lookupUsernameAnnotation()` instead.
+ * @deprecated Use `providers.bitbucket.resolvers.usernameMatchingUserEntityAnnotation()` instead.
  */
 export const bitbucketUsernameSignInResolver =
-  bitbucket.resolvers.lookupUsernameAnnotation();
+  bitbucket.resolvers.usernameMatchingUserEntityAnnotation();
 
 /**
  * @public
- * @deprecated Use `providers.bitbucket.resolvers.lookupUserIdAnnotation()` instead.
+ * @deprecated Use `providers.bitbucket.resolvers.userIdMatchingUserEntityAnnotation()` instead.
  */
 export const bitbucketUserIdSignInResolver =
-  bitbucket.resolvers.lookupUserIdAnnotation();
+  bitbucket.resolvers.userIdMatchingUserEntityAnnotation();

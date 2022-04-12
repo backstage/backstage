@@ -367,7 +367,7 @@ export const github = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their GitHub username to the entity name.
      */
-    byUsername: (): SignInResolver<GithubOAuthResult> => {
+    usernameMatchingUserEntityName: (): SignInResolver<GithubOAuthResult> => {
       return async (info, ctx) => {
         const { fullProfile } = info.result;
 

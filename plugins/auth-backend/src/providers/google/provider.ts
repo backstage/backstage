@@ -247,11 +247,11 @@ export const google = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their email local part to the entity name.
      */
-    byEmailLocalPart: () => commonByEmailLocalPartResolver,
+    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
     /**
      * Looks up the user by matching their email to the `google.com/email` annotation.
      */
-    lookupEmailAnnotation(): SignInResolver<OAuthResult> {
+    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { profile } = info;
 
@@ -277,7 +277,7 @@ export const createGoogleProvider = google.create;
 
 /**
  * @public
- * @deprecated Use `providers.google.resolvers.lookupEmailAnnotation()` instead.
+ * @deprecated Use `providers.google.resolvers.emailMatchingUserEntityAnnotation()` instead.
  */
 export const googleEmailSignInResolver =
-  google.resolvers.lookupEmailAnnotation();
+  google.resolvers.emailMatchingUserEntityAnnotation();

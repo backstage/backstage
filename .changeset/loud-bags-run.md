@@ -53,7 +53,8 @@ export default async function createPlugin(
       ...defaultAuthProviderFactories,
       google: providers.google.create({
         signIn: {
-          resolver: providers.google.resolvers.lookupEmailAnnotation(),
+          resolver:
+            providers.google.resolvers.emailMatchingUserEntityAnnotation(),
         },
       }),
     },

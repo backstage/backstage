@@ -277,7 +277,7 @@ export const okta = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their email to the `okta.com/email` annotation.
      */
-    lookupEmailAnnotation(): SignInResolver<OAuthResult> {
+    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { profile } = info;
 
@@ -303,6 +303,7 @@ export const createOktaProvider = okta.create;
 
 /**
  * @public
- * @deprecated Use `providers.okta.resolvers.lookupEmailAnnotation()` instead.
+ * @deprecated Use `providers.okta.resolvers.emailMatchingUserEntityAnnotation()` instead.
  */
-export const oktaEmailSignInResolver = okta.resolvers.lookupEmailAnnotation();
+export const oktaEmailSignInResolver =
+  okta.resolvers.emailMatchingUserEntityAnnotation();

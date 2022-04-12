@@ -40,7 +40,7 @@ export default async function createPlugin(
       //       It is here for demo purposes only.
       github: providers.github.create({
         signIn: {
-          resolver: providers.github.resolvers.byUsername(),
+          resolver: providers.github.resolvers.usernameMatchingUserEntityName(),
         },
       }),
       gitlab: providers.gitlab.create({
@@ -56,22 +56,26 @@ export default async function createPlugin(
       }),
       microsoft: providers.microsoft.create({
         signIn: {
-          resolver: providers.microsoft.resolvers.lookupEmailAnnotation(),
+          resolver:
+            providers.microsoft.resolvers.emailMatchingUserEntityAnnotation(),
         },
       }),
       google: providers.google.create({
         signIn: {
-          resolver: providers.google.resolvers.byEmailLocalPart(),
+          resolver:
+            providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
         },
       }),
       okta: providers.okta.create({
         signIn: {
-          resolver: providers.okta.resolvers.lookupEmailAnnotation(),
+          resolver:
+            providers.okta.resolvers.emailMatchingUserEntityAnnotation(),
         },
       }),
       bitbucket: providers.bitbucket.create({
         signIn: {
-          resolver: providers.bitbucket.resolvers.lookupUsernameAnnotation(),
+          resolver:
+            providers.bitbucket.resolvers.usernameMatchingUserEntityAnnotation(),
         },
       }),
       onelogin: providers.onelogin.create({

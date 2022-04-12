@@ -273,7 +273,7 @@ export const microsoft = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their email to the `microsoft.com/email` annotation.
      */
-    lookupEmailAnnotation(): SignInResolver<OAuthResult> {
+    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
       return async (info, ctx) => {
         const { profile } = info;
 
@@ -299,7 +299,7 @@ export const createMicrosoftProvider = microsoft.create;
 
 /**
  * @public
- * @deprecated Use `providers.microsoft.resolvers.lookupEmailAnnotation()` instead.
+ * @deprecated Use `providers.microsoft.resolvers.emailMatchingUserEntityAnnotation()` instead.
  */
 export const microsoftEmailSignInResolver =
-  microsoft.resolvers.lookupEmailAnnotation();
+  microsoft.resolvers.emailMatchingUserEntityAnnotation();

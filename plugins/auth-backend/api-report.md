@@ -811,8 +811,8 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
-      lookupUsernameAnnotation(): SignInResolver<OAuthResult>;
-      lookupUserIdAnnotation(): SignInResolver<OAuthResult>;
+      usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
+      userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
   gcpIap: Readonly<{
@@ -839,7 +839,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
-      byUsername: () => SignInResolver<GithubOAuthResult>;
+      usernameMatchingUserEntityName: () => SignInResolver<GithubOAuthResult>;
     }>;
   }>;
   gitlab: Readonly<{
@@ -871,8 +871,8 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
-      byEmailLocalPart: () => SignInResolver<unknown>;
-      lookupEmailAnnotation(): SignInResolver<OAuthResult>;
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
   microsoft: Readonly<{
@@ -889,7 +889,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
-      lookupEmailAnnotation(): SignInResolver<OAuthResult>;
+      emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
   oauth2: Readonly<{
@@ -945,7 +945,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
-      lookupEmailAnnotation(): SignInResolver<OAuthResult>;
+      emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
   onelogin: Readonly<{
@@ -977,7 +977,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
-      byNameId(): SignInResolver<SamlAuthResult>;
+      nameIdMatchingUserEntityName(): SignInResolver<SamlAuthResult>;
     }>;
   }>;
 }>;

@@ -38,7 +38,7 @@ describe('GithubAuthProvider', () => {
         token: `token-for-user:${entityRef.name}`,
       })),
     } as unknown as AuthResolverContext,
-    signInResolver: github.resolvers.byUsername(),
+    signInResolver: github.resolvers.usernameMatchingUserEntityName(),
     authHandler: async ({ fullProfile }) => ({
       profile: makeProfileInfo(fullProfile),
     }),
