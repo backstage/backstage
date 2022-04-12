@@ -43,18 +43,9 @@ const permissionCriteriaSchema: z.ZodSchema<
       resourceType: z.string(),
       params: z.array(z.unknown()),
     })
-    .strict()
-    .or(
-      z
-        .object({ anyOf: z.array(permissionCriteriaSchema).nonempty() })
-        .strict(),
-    )
-    .or(
-      z
-        .object({ allOf: z.array(permissionCriteriaSchema).nonempty() })
-        .strict(),
-    )
-    .or(z.object({ not: permissionCriteriaSchema }).strict()),
+    .or(z.object({ anyOf: z.array(permissionCriteriaSchema).nonempty() }))
+    .or(z.object({ allOf: z.array(permissionCriteriaSchema).nonempty() }))
+    .or(z.object({ not: permissionCriteriaSchema })),
 );
 
 const authorizePermissionResponseSchema: z.ZodSchema<AuthorizePermissionResponse> =
