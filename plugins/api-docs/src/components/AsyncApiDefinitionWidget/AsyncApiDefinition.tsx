@@ -146,7 +146,112 @@ type Props = {
   definition: string;
 };
 
+// packages/app/src/apis.tsx
+
+// import { ApiEntity } from '@backstage/catalog-model';
+// import {
+//   ApiDefinitionWidget,
+//   apiDocsConfigRef,
+//   defaultDefinitionWidgets,
+// } from '@backstage/plugin-api-docs';
+// import { SqlRenderer } from '...';
+
+// ...
+
+export const apis: AnyApiFactory[] = [
+  // ...
+
+  createApiFactory({
+    api: apiDocsConfigRef,
+    deps: {},
+    factory: () => {
+      // load the default widgets
+      const definitionWidgets = defaultDefinitionWidgets();
+      return {
+        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+          if (apiEntity.spec.type === 'asyncapi') {
+            return {
+              type: 'asyncapi',
+              title: 'AsyncAPI',
+              rawLanguage: 'yaml',
+              component: definition => (
+                <AsyncApiDefinitionWidget definition={definition} />
+              ),
+            } as ApiDefinitionWidget;
+          }
+
+          // fallback to the defaults
+          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
+        },
+      };
+    },
+  }),
+];
+
+const fetchResolver = {
+  order: 199,
+  canReadValue: false,
+  // canRead: /^https?:\/\/[^\s$.?#].[^\s]*$/,
+  canRead(file: any) {
+    if ((this.canReadValue as any) instanceof Boolean) {
+      return this.canReadValue;
+    }
+    return file.url.match(new RegExp(this.canReadValue as unknown as string));
+  },
+  fetchOptions: {},
+
+  async read(file: any) {
+    const response = await fetch(file.url, {
+      ...this.fetchOptions,
+    });
+    return response.text();
+  },
+};
+
+// export const AsyncApiDefinitionWidget = ({ definition }: Props) => {
+//   // const classes = useStyles();
+//   const configApi = useApi(configApiRef);
+
+//   const globalConfig =            configApi.getOptional<JsonObject>('apiDocs.asyncApi.parserConfig') || {};
+//   const fetchResolverConfig =     configApi.getOptional<JsonObject>('apiDocs.asyncApi.fetcherConfig') || {};
+//   const config = {
+//     ...globalConfig,
+//     ...{
+//       parserOptions: {
+//         resolve:
+//         { fetch:
+//           { ...fetchResolver, ...fetchResolverConfig } },
+//       },
+//     },
+//   };
+
+//   { parserOptions:
+//     { resolve:
+//       { fetch: fetchResolver } }}
+
+//   return (
+//     <div className={classes.root}>
+//       <AsyncApi schema={definition} config={config} />
+//     </div>
+//   );
+// };
+
 export const AsyncApiDefinition = ({ definition }: Props): JSX.Element => {
+  const configApi = useApi(configApiRef);
+
+  const globalConfig =
+    configApi.getOptional<JsonObject>('apiDocs.asyncApi.parserConfig') || {};
+  const fetchResolverConfig =
+    configApi.getOptional<JsonObject>('apiDocs.asyncApi.fetcherConfig') || {};
+  const config = {
+    ...globalConfig,
+    ...{
+      parserOptions: {
+        resolve: { fetch: { ...fetchResolver, ...fetchResolverConfig } },
+      },
+    },
+  };
+
   const classes = useStyles();
   const theme = useTheme();
   const classNames = `${classes.root} ${
@@ -155,7 +260,7 @@ export const AsyncApiDefinition = ({ definition }: Props): JSX.Element => {
 
   return (
     <div className={classNames}>
-      <AsyncApi schema={definition} />
+      <AsyncApi schema={definition} config={config} />
     </div>
   );
 };
