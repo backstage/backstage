@@ -85,4 +85,9 @@ backend:
 +      # ssl:
 +      #   ca: # if you have a CA file and want to verify it you can uncomment this section
 +      #     $file: <file-path>/ca/server.crt      
+<<<<<<< HEAD
 ```
+=======
+```
+  
+>>>>>>> 3e223b4dfb (Moved the reference doc link up,  Signed-off-by: Sharad Pattanshetti <sharad.pattanshetti@gmail.com>)
