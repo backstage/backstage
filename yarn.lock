@@ -14205,6 +14205,13 @@ ignore-walk@^4.0.1:
   dependencies:
     minimatch "^3.0.4"
 
+ignore-walk@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npmjs.org/ignore-walk/-/ignore-walk-5.0.1.tgz#5f199e23e1288f518d90358d461387788a154776"
+  integrity sha512-yemi4pMf51WKT7khInJqAvsIGzoqYXblnsz0ql8tM+yi1EKYTY1evX4NAbJrLL/Aanr2HyZeluqU+Oi7MGHokw==
+  dependencies:
+    minimatch "^5.0.1"
+
 ignore@^3.3.5:
   version "3.3.10"
   resolved "https://registry.npmjs.org/ignore/-/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"
@@ -17920,7 +17927,7 @@ minimatch@3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimatch@5.0.1, minimatch@^5.0.0:
+minimatch@5.0.1, minimatch@^5.0.0, minimatch@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/minimatch/-/minimatch-5.0.1.tgz#fb9022f7528125187c92bd9e9b6366be1cf3415b"
   integrity sha512-nLDxIFRyhDblz3qMuq+SoRZED4+miJ/G+tdDrjkkkRnjAsBexeGpgjLEQ0blJy7rHhR2b93rhQY4SvyWu9v03g==
@@ -18580,10 +18587,10 @@ normalize-url@^6.0.1:
   resolved "https://registry.npmjs.org/normalize-url/-/normalize-url-6.1.0.tgz#40d0885b535deffe3f3147bec877d05fe4c5668a"
   integrity sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==
 
-npm-bundled@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.1.1.tgz#1edd570865a94cdb1bc8220775e29466c9fb234b"
-  integrity sha512-gqkfgGePhTpAEgUsGEgcq1rqPXA+tv/aVBlgEzfXwA1yiUJF7xtEt3CtVwOjNYQOVknDk0F20w58Fnm3EtG0fA==
+npm-bundled@^1.1.1, npm-bundled@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.1.2.tgz#944c78789bd739035b70baa2ca5cc32b8d860bc1"
+  integrity sha512-x5DHup0SuyQcmL3s7Rx/YQ8sbw/Hzg0rj48eN0dV7hf5cmQq5PXIeioroH3raV1QC1yh3uTYuMThvEQF3iKgGQ==
   dependencies:
     npm-normalize-package-bin "^1.0.1"
 
@@ -18640,6 +18647,16 @@ npm-packlist@^3.0.0:
     glob "^7.1.6"
     ignore-walk "^4.0.1"
     npm-bundled "^1.1.1"
+    npm-normalize-package-bin "^1.0.1"
+
+npm-packlist@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-5.0.0.tgz#74795ebbbf91bd5a2db6ecff4d6fe1f1c1a07e11"
+  integrity sha512-uU20UwM4Hogfab1Q7htJbhcyafM9lGHxOrDjkKvR2S3z7Ds0uRaESk0cXctczk+ABT4DZWNwjB10xlurFdEwZg==
+  dependencies:
+    glob "^7.2.0"
+    ignore-walk "^5.0.1"
+    npm-bundled "^1.1.2"
     npm-normalize-package-bin "^1.0.1"
 
 npm-pick-manifest@^6.0.0, npm-pick-manifest@^6.1.0, npm-pick-manifest@^6.1.1:
