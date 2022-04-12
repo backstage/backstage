@@ -66,7 +66,7 @@ export const TechDocsReaderPageContext: Context<
   | undefined
 >;
 
-// @alpha
+// @public
 export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
   entityName: CompoundEntityRef;

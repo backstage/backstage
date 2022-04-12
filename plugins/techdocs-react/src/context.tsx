@@ -23,7 +23,7 @@ import { createVersionedContext } from '@backstage/version-bridge';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 /**
- * @alpha type for the value of the TechDocsReaderPageContext
+ * @public type for the value of the TechDocsReaderPageContext
  */
 export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
