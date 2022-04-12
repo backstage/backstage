@@ -2202,7 +2202,7 @@
     delay "^5.0.0"
     ky "0.28.7"
 
-"@gitbeaker/core@^35.5.0", "@gitbeaker/core@^35.6.0":
+"@gitbeaker/core@^35.6.0":
   version "35.6.0"
   resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-35.6.0.tgz#c46e15986081ef1e647434c450964eed5fb0e390"
   integrity sha512-ZhaDUs/4BxHODfjRkVmwkWxZVaFIpYduxaj28+J+4FH9X93WZp0IsyT4szcFM7FwAbRW2+ZvGeEfw4NQwgB/RA==
@@ -2215,17 +2215,17 @@
     xcase "^2.0.1"
 
 "@gitbeaker/node@^35.1.0":
-  version "35.5.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-35.5.0.tgz#9cb38c6532cf8cb32e0de7fa8dac6327adaca471"
-  integrity sha512-gjGSqnNLNz4aP28dX8Cy97n7MtGUaSewoc+oJAkPDgpA0y4gWhgxpzEEwXrhhPsQA4Cxig0CLpPHMTi1Q1fVvg==
+  version "35.6.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-35.6.0.tgz#7dffaf2de5df822ccc835d12129efe3e52c49302"
+  integrity sha512-cJBxZdh8elrdLA8V4yEdISGinycESNaIO8JEIyAhemsovqv29XCJ40A9TBA4RlKNjkKVyVSN23BvcZimgqZSzA==
   dependencies:
-    "@gitbeaker/core" "^35.5.0"
-    "@gitbeaker/requester-utils" "^35.5.0"
+    "@gitbeaker/core" "^35.6.0"
+    "@gitbeaker/requester-utils" "^35.6.0"
     delay "^5.0.0"
     got "11.8.3"
     xcase "^2.0.1"
 
-"@gitbeaker/requester-utils@^35.5.0", "@gitbeaker/requester-utils@^35.6.0":
+"@gitbeaker/requester-utils@^35.6.0":
   version "35.6.0"
   resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-35.6.0.tgz#41e5008f64f5910b3c0793488a2a41b23c9f081f"
   integrity sha512-5IVzv1gO626qaC7CEV7LUG68IHgEjWovIHXQsbI9MraxhrI9eSV5/l/81Povv7tJlni7u8OnARPU7bmxlXlx7g==
