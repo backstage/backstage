@@ -35,13 +35,13 @@ export const TechDocsReaderPageSubheader = withStyles(theme => ({
     minHeight: 'auto',
     padding: theme.spacing(3, 3, 0),
   },
-}))(({ ...rest }: ToolbarProps) => {
+}))(({ toolbarProps }: { toolbarProps?: ToolbarProps }) => {
   const addons = useTechDocsAddons();
 
   if (!addons.renderComponentsByLocation(locations.SUBHEADER)) return null;
 
   return (
-    <Toolbar {...rest}>
+    <Toolbar {...toolbarProps}>
       {addons.renderComponentsByLocation(locations.SUBHEADER) && (
         <Box
           display="flex"
