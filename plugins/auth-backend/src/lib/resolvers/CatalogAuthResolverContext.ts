@@ -42,7 +42,9 @@ import { CatalogIdentityClient } from '../catalog';
 export function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =
     entity.relations
-      ?.filter(r => r.type === RELATION_MEMBER_OF)
+      ?.filter(
+        r => r.type === RELATION_MEMBER_OF && r.targetRef.startsWith('group:'),
+      )
       .map(r => r.targetRef) ?? [];
 
   return Array.from(new Set([stringifyEntityRef(entity), ...membershipRefs]));
