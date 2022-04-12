@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { matchRoutes, useLocation } from 'react-router-dom';
 import {
   useAnalytics,
@@ -22,12 +22,6 @@ import {
   CommonAnalyticsContext,
   RouteRef,
 } from '@backstage/core-plugin-api';
-import { routeObjectCollector } from './collectors';
-import {
-  childDiscoverer,
-  routeElementDiscoverer,
-  traverseElementTree,
-} from '../extensions/traversal';
 import { BackstageRouteObject } from './types';
 
 /**
@@ -97,19 +91,12 @@ const TrackNavigation = ({
  * Logs a "navigate" event with appropriate plugin-level analytics context
  * attributes each time the user navigates to a page.
  */
-export const RouteTracker = ({ tree }: { tree: React.ReactNode }) => {
+export const RouteTracker = ({
+  routeObjects,
+}: {
+  routeObjects: BackstageRouteObject[];
+}) => {
   const { pathname, search, hash } = useLocation();
-  // todo(iamEAP): Work this into the existing traversal and make the data
-  // available on the provider. Then grab from app instance on the router.
-  const { routeObjects } = useMemo(() => {
-    return traverseElementTree({
-      root: tree,
-      discoverers: [childDiscoverer, routeElementDiscoverer],
-      collectors: {
-        routeObjects: routeObjectCollector,
-      },
-    });
-  }, [tree]);
 
   return (
     <AnalyticsContext attributes={getExtensionContext(pathname, routeObjects)}>
