@@ -86,4 +86,3 @@ backend:
 +      #   ca: # if you have a CA file and want to verify it you can uncomment this section
 +      #     $file: <file-path>/ca/server.crt      
 ```
-  
