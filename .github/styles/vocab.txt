@@ -39,6 +39,7 @@ Changesets
 chanwit
 Chanwit
 ci
+CI/CD
 classname
 cli
 cloudbuild
