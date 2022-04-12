@@ -21,8 +21,6 @@ export type {
   TechDocsReaderPageProviderRenderFunction,
 } from './TechDocsReaderPage';
 export {
-  useEntityMetadata,
-  useTechDocsMetadata,
   TechDocsReaderLayout,
   TechDocsReaderPageProvider,
 } from './TechDocsReaderPage';

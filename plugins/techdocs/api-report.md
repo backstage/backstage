@@ -6,7 +6,6 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsyncFn';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -22,8 +21,8 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { StyledComponentProps } from '@material-ui/core';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
-import { TechDocsEntityMetadata } from '@backstage/plugin-techdocs-react';
-import { TechDocsMetadata } from '@backstage/plugin-techdocs-react';
+import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
+import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPageValue } from '@backstage/plugin-techdocs-react';
 import { ToolbarProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
@@ -215,9 +214,9 @@ export interface TechDocsApi {
   // (undocumented)
   getEntityMetadata(
     entityId: CompoundEntityRef,
-  ): Promise<TechDocsEntityMetadata>;
+  ): Promise<TechDocsEntityMetadata_2>;
   // (undocumented)
-  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
+  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata_2>;
 }
 
 // @public
@@ -238,8 +237,8 @@ export class TechDocsClient implements TechDocsApi {
   getApiOrigin(): Promise<string>;
   getEntityMetadata(
     entityId: CompoundEntityRef,
-  ): Promise<TechDocsEntityMetadata>;
-  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
+  ): Promise<TechDocsEntityMetadata_2>;
+  getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata_2>;
 }
 
 // @public
@@ -252,8 +251,14 @@ export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
 };
 
+// @public @deprecated (undocumented)
+export type TechDocsEntityMetadata = TechDocsEntityMetadata_2;
+
 // @public
 export const TechDocsIndexPage: () => JSX.Element;
+
+// @public @deprecated (undocumented)
+export type TechDocsMetadata = TechDocsMetadata_2;
 
 // @public
 export const TechdocsPage: () => JSX.Element;
@@ -325,8 +330,8 @@ export const TechDocsReaderPageHeader: (
 // @public @deprecated
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
   entityRef?: CompoundEntityRef;
-  entityMetadata?: TechDocsEntityMetadata;
-  techDocsMetadata?: TechDocsMetadata;
+  entityMetadata?: TechDocsEntityMetadata_2;
+  techDocsMetadata?: TechDocsMetadata_2;
 }>;
 
 // @public (undocumented)
@@ -357,8 +362,8 @@ export type TechDocsReaderPageRenderFunction = ({
   entityMetadataValue,
   entityRef,
 }: {
-  techdocsMetadataValue?: TechDocsMetadata | undefined;
-  entityMetadataValue?: TechDocsEntityMetadata | undefined;
+  techdocsMetadataValue?: TechDocsMetadata_2 | undefined;
+  entityMetadataValue?: TechDocsEntityMetadata_2 | undefined;
   entityRef: CompoundEntityRef;
   onReady?: () => void;
 }) => JSX.Element;
@@ -470,10 +475,4 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }
-
-// @public
-export const useEntityMetadata: () => AsyncState<TechDocsEntityMetadata>;
-
-// @public
-export const useTechDocsMetadata: () => AsyncState<TechDocsMetadata>;
 ```

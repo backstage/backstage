@@ -113,9 +113,9 @@ export const TechDocsReaderPageProvider = memo(
 );
 
 /**
- * Hook for use within TechDocs addons to retrieve Entity Metadata for the
- * current TechDocs site.
- * @public
+ * Hook for sub-components to retrieve Entity Metadata for the current TechDocs
+ * site.
+ * @internal
  */
 export const useEntityMetadata = () => {
   const { entityMetadata } = useTechDocsReaderPage();
@@ -123,9 +123,9 @@ export const useEntityMetadata = () => {
 };
 
 /**
- * Hook for use within TechDocs addons to retrieve TechDocs Metadata for the
- * current TechDocs site.
- * @public
+ * Hook for sub-components to retrieve TechDocs Metadata for the current
+ * TechDocs site.
+ * @internal
  */
 export const useTechDocsMetadata = () => {
   const { metadata } = useTechDocsReaderPage();
