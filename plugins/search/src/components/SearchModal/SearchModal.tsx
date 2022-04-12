@@ -37,6 +37,16 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
 
+/**
+ * @public
+ **/
+export interface SearchModalChildrenProps {
+  /**
+   * A function that should be invoked when navigating away from the modal.
+   */
+  toggleModal: () => void;
+}
+
 export interface SearchModalProps {
   /**
    * If true, it renders the modal.
@@ -54,6 +64,11 @@ export interface SearchModalProps {
    * should be closed.
    */
   toggleModal: () => void;
+  /**
+   * A function that returns custom content to render in the search modal in
+   * place of the default.
+   */
+  children?: (props: SearchModalChildrenProps) => JSX.Element;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -152,6 +167,7 @@ export const SearchModal = ({
   open = true,
   hidden,
   toggleModal,
+  children,
 }: SearchModalProps) => {
   const classes = useStyles();
 
@@ -169,7 +185,9 @@ export const SearchModal = ({
     >
       {open && (
         <SearchContextProvider>
-          <Modal toggleModal={toggleModal} />
+          {(children && children({ toggleModal })) ?? (
+            <Modal toggleModal={toggleModal} />
+          )}
         </SearchContextProvider>
       )}
     </Dialog>

@@ -211,12 +211,19 @@ export const SearchModal: ({
   open,
   hidden,
   toggleModal,
+  children,
 }: SearchModalProps) => JSX.Element;
+
+// @public (undocumented)
+export interface SearchModalChildrenProps {
+  toggleModal: () => void;
+}
 
 // Warning: (ae-missing-release-tag) "SearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface SearchModalProps {
+  children?: (props: SearchModalChildrenProps) => JSX.Element;
   hidden?: boolean;
   open?: boolean;
   toggleModal: () => void;
@@ -313,6 +320,7 @@ export const SidebarSearchModal: (
 // @public (undocumented)
 export type SidebarSearchModalProps = {
   icon?: IconComponent;
+  children?: (props: SearchModalChildrenProps) => JSX.Element;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarSearchProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

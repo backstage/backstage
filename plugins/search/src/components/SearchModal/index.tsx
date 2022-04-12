@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 export { SearchModal } from './SearchModal';
-export type { SearchModalProps } from './SearchModal';
+export type { SearchModalChildrenProps, SearchModalProps } from './SearchModal';
 export { useSearchModal } from './useSearchModal';
