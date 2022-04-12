@@ -151,7 +151,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
 ## Test the authorized update endpoint
 
-Now let's go back to the permission policy's handle function (which would normally be written by your adopters) and try to authorize our new permission.
+Now let's go back to the permission policy's handle function (which would normally be written by your integrators) and try to authorize our new permission.
 
 Let's edit `packages/backend/src/plugins/permission.ts`:
 
