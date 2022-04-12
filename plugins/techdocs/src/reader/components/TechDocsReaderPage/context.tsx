@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import {
-  TechDocsReaderPage,
-  TechDocsReaderPageHeader,
-  TechDocsReaderPageSubheader,
-  TechDocsReaderPageContent,
-} from '@backstage/plugin-techdocs';
-import React from 'react';
+import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
-const DefaultTechDocsPage = () => {
-  return (
-    <TechDocsReaderPage>
-      <TechDocsReaderPageHeader />
-      <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent />
-    </TechDocsReaderPage>
-  );
+/**
+ * Hook for sub-components to retrieve Entity Metadata for the current TechDocs
+ * site.
+ * @internal
+ */
+export const useEntityMetadata = () => {
+  const { entityMetadata } = useTechDocsReaderPage();
+  return entityMetadata;
 };
 
-export const techDocsPage = <DefaultTechDocsPage />;
+/**
+ * Hook for sub-components to retrieve TechDocs Metadata for the current
+ * TechDocs site.
+ * @internal
+ */
+export const useTechDocsMetadata = () => {
+  const { metadata } = useTechDocsReaderPage();
+  return metadata;
+};

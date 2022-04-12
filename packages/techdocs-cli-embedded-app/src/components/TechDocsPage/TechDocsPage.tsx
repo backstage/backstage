@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-import React, {
-  FC,
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-} from 'react';
+import React, { useState } from 'react';
 
 import { Theme, makeStyles } from '@material-ui/core';
 
-import { ThemeProvider, Box, Tooltip, IconButton } from '@material-ui/core';
+import { Box, Tooltip, IconButton } from '@material-ui/core';
 import LightIcon from '@material-ui/icons/Brightness7';
 import DarkIcon from '@material-ui/icons/Brightness4';
 
-import { lightTheme, darkTheme } from '@backstage/theme';
-import { CompoundEntityRef } from '@backstage/catalog-model';
-
-import { Content } from '@backstage/core-components';
+import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
 
 import {
-  Reader,
   TechDocsReaderPage,
   TechDocsReaderPageHeader,
+  TechDocsReaderPageContent,
 } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -60,44 +51,12 @@ enum Themes {
   DARK = 'dark',
 }
 
-type TechDocsThemeValue = {
-  theme: Themes;
-  toggleTheme: () => void;
-};
-
-const TechDocsThemeContext = createContext<TechDocsThemeValue>({
-  theme: Themes.LIGHT,
-  toggleTheme: () => {},
-});
-
-const TechdocsThemeProvider: FC = ({ children }) => {
-  const [theme, setTheme] = useState<Themes>(Themes.LIGHT);
-
-  const toggleTheme = useCallback(() => {
-    setTheme(prevTheme =>
-      prevTheme === Themes.LIGHT ? Themes.DARK : Themes.LIGHT,
-    );
-  }, [setTheme]);
-
-  const value = { theme, toggleTheme };
-
-  const themes = {
-    [Themes.LIGHT]: lightTheme,
-    [Themes.DARK]: darkTheme,
-  };
-
-  return (
-    <TechDocsThemeContext.Provider value={value}>
-      <ThemeProvider theme={themes[theme]}>{children}</ThemeProvider>
-    </TechDocsThemeContext.Provider>
-  );
-};
-
-const useTechDocsTheme = () => useContext(TechDocsThemeContext);
-
-const TechDocsThemeToggle = () => {
+export const TechDocsThemeToggle = () => {
+  const appThemeApi = useApi(appThemeApiRef);
   const classes = useStyles();
-  const { theme, toggleTheme } = useTechDocsTheme();
+  const [theme, setTheme] = useState<Themes>(
+    (appThemeApi.getActiveThemeId() as Themes) || Themes.LIGHT,
+  );
 
   const themes = {
     [Themes.LIGHT]: {
@@ -112,10 +71,18 @@ const TechDocsThemeToggle = () => {
 
   const { title, icon: Icon } = themes[theme];
 
+  const handleSetTheme = () => {
+    setTheme(prevTheme => {
+      const newTheme = prevTheme === Themes.LIGHT ? Themes.DARK : Themes.LIGHT;
+      appThemeApi.setActiveThemeId(newTheme);
+      return newTheme;
+    });
+  };
+
   return (
     <Box display="flex" alignItems="center" mr={2}>
       <Tooltip title={title} arrow>
-        <IconButton size="small" onClick={toggleTheme}>
+        <IconButton size="small" onClick={handleSetTheme}>
           <Icon className={classes.headerIcon} />
         </IconButton>
       </Tooltip>
@@ -123,47 +90,13 @@ const TechDocsThemeToggle = () => {
   );
 };
 
-const TechDocsPageContent = ({
-  onReady,
-  entityRef,
-}: {
-  entityRef: CompoundEntityRef;
-  onReady: () => void;
-}) => {
-  const classes = useStyles();
-
-  return (
-    <Content className={classes.content} data-testid="techdocs-content">
-      <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
-    </Content>
-  );
-};
-
 const DefaultTechDocsPage = () => {
-  const techDocsMetadata = {
-    site_name: 'Live preview environment',
-    site_description: '',
-  };
-
   return (
     <TechDocsReaderPage>
-      {({ entityRef, onReady }) => (
-        <>
-          <TechDocsReaderPageHeader
-            entityRef={entityRef}
-            techDocsMetadata={techDocsMetadata}
-          >
-            <TechDocsThemeToggle />
-          </TechDocsReaderPageHeader>
-          <TechDocsPageContent entityRef={entityRef} onReady={onReady} />
-        </>
-      )}
+      <TechDocsReaderPageHeader />
+      <TechDocsReaderPageContent withSearch={false} />
     </TechDocsReaderPage>
   );
 };
 
-export const techDocsPage = (
-  <TechdocsThemeProvider>
-    <DefaultTechDocsPage />
-  </TechdocsThemeProvider>
-);
+export const techDocsPage = <DefaultTechDocsPage />;

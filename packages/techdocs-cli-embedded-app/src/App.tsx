@@ -16,20 +16,27 @@
 
 import React from 'react';
 import { Navigate, Route } from 'react-router';
-import { createApp } from '@backstage/app-defaults';
-import { FlatRoutes } from '@backstage/core-app-api';
-import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 import {
   DefaultTechDocsHome,
   TechDocsIndexPage,
   TechDocsReaderPage,
+  techdocsPlugin,
 } from '@backstage/plugin-techdocs';
+import {
+  createTechDocsAddonExtension,
+  TechDocsAddons,
+  TechDocsAddonLocations,
+} from '@backstage/plugin-techdocs-react';
+import { createApp } from '@backstage/app-defaults';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { CatalogEntityPage } from '@backstage/plugin-catalog';
+
 import { apis } from './apis';
-import { Root } from './components/Root';
-import { techDocsPage } from './components/TechDocsPage';
 import * as plugins from './plugins';
 import { configLoader } from './config';
+import { Root } from './components/Root';
+import { techDocsPage, TechDocsThemeToggle } from './components/TechDocsPage';
 
 const app = createApp({
   apis,
@@ -39,6 +46,14 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
+
+const ThemeToggleAddon = techdocsPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'ThemeToggleAddon',
+    component: TechDocsThemeToggle,
+    location: TechDocsAddonLocations.Header,
+  }),
+);
 
 const routes = (
   <FlatRoutes>
@@ -56,6 +71,9 @@ const routes = (
       element={<TechDocsReaderPage />}
     >
       {techDocsPage}
+      <TechDocsAddons>
+        <ThemeToggleAddon />
+      </TechDocsAddons>
     </Route>
   </FlatRoutes>
 );

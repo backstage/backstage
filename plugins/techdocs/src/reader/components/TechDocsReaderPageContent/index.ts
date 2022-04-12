@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-export type {
-  TechDocsReaderPageProps,
-  TechDocsReaderLayoutProps,
-} from './TechDocsReaderPage';
-export { TechDocsReaderLayout } from './TechDocsReaderPage';
-export * from './TechDocsReaderPageHeader';
-export * from './TechDocsReaderPageContent';
-export * from './TechDocsReaderPageSubheader';
-export * from './TechDocsStateIndicator';
-export type { ReaderState, ContentStateTypes } from './useReaderState';
+export { TechDocsReaderPageContent, Reader } from './TechDocsReaderPageContent';
+export type { TechDocsReaderPageContentProps } from './TechDocsReaderPageContent';
+export * from './context';
+export * from './dom';

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,45 +14,84 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
+import Helmet from 'react-helmet';
+
+import { Skeleton } from '@material-ui/lab';
 import CodeIcon from '@material-ui/icons/Code';
 
-import { useRouteRef } from '@backstage/core-plugin-api';
-import { Header, HeaderLabel } from '@backstage/core-components';
-import { CompoundEntityRef, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  TechDocsAddonLocations as locations,
+  useTechDocsAddons,
+  useTechDocsReaderPage,
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+} from '@backstage/plugin-techdocs-react';
 import {
   EntityRefLink,
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
+import { RELATION_OWNED_BY, CompoundEntityRef } from '@backstage/catalog-model';
+import { Header, HeaderLabel } from '@backstage/core-components';
+import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from '../../routes';
-import { TechDocsEntityMetadata, TechDocsMetadata } from '../../types';
+import { rootRouteRef } from '../../../routes';
+
+const skeleton = <Skeleton animation="wave" variant="text" height={40} />;
 
 /**
  * Props for {@link TechDocsReaderPageHeader}
  *
  * @public
+ * @deprecated No need to pass down properties anymore. The component consumes data from `TechDocsReaderPageContext` instead. Use the {@link @backstage/plugin-techdocs-react#useTechDocsReaderPage} hook for custom header.
  */
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
-  entityRef: CompoundEntityRef;
+  entityRef?: CompoundEntityRef;
   entityMetadata?: TechDocsEntityMetadata;
   techDocsMetadata?: TechDocsMetadata;
 }>;
 
 /**
- * Component responsible for rendering a Header with metadata on TechDocs reader page.
- *
+ * Renders the reader page header.
+ * This component does not accept props, please use
+ * the Tech Docs add-ons to customize it
  * @public
  */
 export const TechDocsReaderPageHeader = (
   props: TechDocsReaderPageHeaderProps,
 ) => {
-  const { entityRef, entityMetadata, techDocsMetadata, children } = props;
-  const { name } = entityRef;
+  const { children } = props;
+  const addons = useTechDocsAddons();
+  const configApi = useApi(configApiRef);
 
-  const { site_name: siteName, site_description: siteDescription } =
-    techDocsMetadata || {};
+  const {
+    title,
+    setTitle,
+    subtitle,
+    setSubtitle,
+    entityRef,
+    metadata: { value: metadata },
+    entityMetadata: { value: entityMetadata },
+  } = useTechDocsReaderPage();
+
+  useEffect(() => {
+    if (!metadata) return;
+    setTitle(prevTitle => {
+      const { site_name } = metadata;
+      return prevTitle || site_name;
+    });
+    setSubtitle(prevSubtitle => {
+      let { site_description } = metadata;
+      if (!site_description || site_description === 'None') {
+        site_description = 'Home';
+      }
+      return prevSubtitle || site_description;
+    });
+  }, [metadata, setTitle, setSubtitle]);
+
+  const appTitle = configApi.getOptional('app.title') || 'Backstage';
+  const tabTitle = [subtitle, title, appTitle].filter(Boolean).join(' | ');
 
   const { locationMetadata, spec } = entityMetadata || {};
   const lifecycle = spec?.lifecycle;
@@ -109,16 +148,17 @@ export const TechDocsReaderPageHeader = (
 
   return (
     <Header
-      title={siteName ? siteName : '.'}
-      pageTitleOverride={siteName || name}
-      subtitle={
-        siteDescription && siteDescription !== 'None' ? siteDescription : ''
-      }
-      type="Docs"
+      type="Documentation"
       typeLink={docsRootLink}
+      title={title || skeleton}
+      subtitle={subtitle || skeleton}
     >
+      <Helmet titleTemplate="%s">
+        <title>{tabTitle}</title>
+      </Helmet>
       {labels}
       {children}
+      {addons.renderComponentsByLocation(locations.Header)}
     </Header>
   );
 };

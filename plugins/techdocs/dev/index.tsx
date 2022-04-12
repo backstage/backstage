@@ -19,7 +19,7 @@ import { NotFoundError } from '@backstage/errors';
 import React from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
-  Reader,
+  TechDocsReaderPageContent,
   SyncResult,
   TechDocsStorageApi,
   techdocsStorageApiRef,
@@ -30,6 +30,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { TechDocsReaderPageProvider } from '@backstage/plugin-techdocs-react';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 // used so each route can provide it's own implementation in the constructor of the react component
@@ -112,13 +113,15 @@ function createPage({
 
     render() {
       return (
-        <Reader
+        <TechDocsReaderPageProvider
           entityRef={{
             kind: 'Component',
             namespace: 'default',
             name: 'my-docs',
           }}
-        />
+        >
+          <TechDocsReaderPageContent />
+        </TechDocsReaderPageProvider>
       );
     }
   }

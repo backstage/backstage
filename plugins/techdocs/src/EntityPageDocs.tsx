@@ -15,21 +15,22 @@
  */
 
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
-import { Reader } from './reader';
-import { toLowerMaybe } from './helpers';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
-export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
-  const config = useApi(configApiRef);
+import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
+
+import { TechDocsReaderPage } from './plugin';
+import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
+import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
+
+type EntityPageDocsProps = { entity: Entity };
+
+export const EntityPageDocs = ({ entity }: EntityPageDocsProps) => {
+  const entityRef = getCompoundEntityRef(entity);
+
   return (
-    <Reader
-      withSearch={false}
-      entityRef={{
-        namespace: toLowerMaybe(entity.metadata.namespace ?? 'default', config),
-        kind: toLowerMaybe(entity.kind, config),
-        name: toLowerMaybe(entity.metadata.name, config),
-      }}
-    />
+    <TechDocsReaderPage entityRef={entityRef}>
+      <TechDocsReaderPageSubheader />
+      <TechDocsReaderPageContent withSearch={false} />
+    </TechDocsReaderPage>
   );
 };
