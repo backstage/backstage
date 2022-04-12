@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import React, {
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import usePrevious from 'react-use/lib/usePrevious';
-import { searchApiRef } from '../../apis';
+import { searchApiRef } from '../api';
 
 type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
@@ -40,7 +40,6 @@ type SearchContextValue = {
 } & SearchContextState;
 
 /**
- * The initial state of `SearchContextProvider`.
  *
  * @public
  */
@@ -52,12 +51,16 @@ export type SearchContextState = {
 };
 
 /**
- * @deprecated import from `@backstage/plugin-search-react` instead
+ * @public
  */
 export const SearchContext = createContext<SearchContextValue | undefined>(
   undefined,
 );
 
+/**
+ * The initial state of `SearchContextProvider`.
+ *
+ */
 const searchInitialState: SearchContextState = {
   term: '',
   pageCursor: undefined,
@@ -66,7 +69,7 @@ const searchInitialState: SearchContextState = {
 };
 
 /**
- * @deprecated import from `@backstage/plugin-search-react` instead
+ * @public
  */
 export const SearchContextProvider = ({
   initialState = searchInitialState,
@@ -133,7 +136,7 @@ export const SearchContextProvider = ({
 };
 
 /**
- * @deprecated import from "@backstage/plugin-search-react" instead
+ * @public
  */
 export const useSearch = () => {
   const context = useContext(SearchContext);

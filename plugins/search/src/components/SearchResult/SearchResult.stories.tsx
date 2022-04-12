@@ -19,7 +19,8 @@ import { List, ListItem } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { MemoryRouter } from 'react-router';
 import { DefaultResultListItem } from '../DefaultResultListItem';
-import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+
+import { SearchContextProviderForStorybook } from '@backstage/plugin-search-react';
 import { SearchResult } from './SearchResult';
 
 const mockResults = {
@@ -57,9 +58,9 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) => (
       <MemoryRouter>
-        <SearchContextProvider mockedResults={mockResults}>
+        <SearchContextProviderForStorybook mockedResults={mockResults}>
           <Story />
-        </SearchContextProvider>
+        </SearchContextProviderForStorybook>
       </MemoryRouter>
     ),
   ],
