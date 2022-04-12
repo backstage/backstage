@@ -50,6 +50,8 @@ codeblocks
 Codecov
 codehilite
 Codehilite
+codescene
+CodeScene
 codemod
 codemods
 codeowners
