@@ -2224,21 +2224,6 @@
     qs "^6.10.1"
     xcase "^2.0.1"
 
-"@google-cloud/common@^3.8.1":
-  version "3.10.0"
-  resolved "https://registry.npmjs.org/@google-cloud/common/-/common-3.10.0.tgz#454d1155bb512109cd83c6183aabbd39f9aabda7"
-  integrity sha512-XMbJYMh/ZSaZnbnrrOFfR/oQrb0SxG4qh6hDisWCoEbFcBHV0qHQo4uXfeMCzolx2Mfkh6VDaOGg+hyJsmxrlw==
-  dependencies:
-    "@google-cloud/projectify" "^2.0.0"
-    "@google-cloud/promisify" "^2.0.0"
-    arrify "^2.0.1"
-    duplexify "^4.1.1"
-    ent "^2.2.0"
-    extend "^3.0.2"
-    google-auth-library "^7.14.0"
-    retry-request "^4.2.2"
-    teeny-request "^7.0.0"
-
 "@google-cloud/container@^3.0.0":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@google-cloud/container/-/container-3.0.0.tgz#b28d086152ac19f22f2574b7e0a39774379fb885"
@@ -2275,12 +2260,12 @@
   integrity sha512-d4VSA86eL/AFTe5xtyZX+ePUjE8dIFu2T8zmdeNBSa5/kNgXPCx/o/wbFNHAGLJdGnk1vddRuMESD9HbOC8irw==
 
 "@google-cloud/storage@^5.6.0", "@google-cloud/storage@^5.8.0":
-  version "5.18.3"
-  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.18.3.tgz#becacb909b2abf4bb54500a0efd65ceb51ef8eab"
-  integrity sha512-573qJ0ECoy3nkY5YaMWcVf4/46n/zdvfNgAyjaLQywl/eL38uxDhs7YVJd3pcgslaMUwKKsd/eD3St+Pq2iPew==
+  version "5.19.1"
+  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.19.1.tgz#7252c4eb65e6014bf525a76f3af0774caa3a946d"
+  integrity sha512-bRTf/AD00+lPTamJdpihXC3AFtAnJFWNh/zQAor972VpuATF7u4V1anwWp0V6rKuKE3BwNM+xWxuuW/nAwEgTA==
   dependencies:
-    "@google-cloud/common" "^3.8.1"
     "@google-cloud/paginator" "^3.0.7"
+    "@google-cloud/projectify" "^2.0.0"
     "@google-cloud/promisify" "^2.0.0"
     abort-controller "^3.0.0"
     arrify "^2.0.0"
@@ -2289,17 +2274,20 @@
     configstore "^5.0.0"
     date-and-time "^2.0.0"
     duplexify "^4.0.0"
+    ent "^2.2.0"
     extend "^3.0.2"
     gaxios "^4.0.0"
     get-stream "^6.0.0"
-    google-auth-library "^7.0.0"
+    google-auth-library "^7.14.1"
     hash-stream-validation "^0.2.2"
     mime "^3.0.0"
     mime-types "^2.0.8"
     p-limit "^3.0.1"
     pumpify "^2.0.0"
+    retry-request "^4.2.2"
     snakeize "^0.1.0"
     stream-events "^1.0.4"
+    teeny-request "^7.1.3"
     xdg-basedir "^4.0.0"
 
 "@graphiql/toolkit@^0.4.3":
@@ -13433,7 +13421,7 @@ globby@^7.1.1:
     pify "^3.0.0"
     slash "^1.0.0"
 
-google-auth-library@^7.0.0, google-auth-library@^7.14.0, google-auth-library@^7.6.1:
+google-auth-library@^7.14.1, google-auth-library@^7.6.1:
   version "7.14.1"
   resolved "https://registry.npmjs.org/google-auth-library/-/google-auth-library-7.14.1.tgz#e3483034162f24cc71b95c8a55a210008826213c"
   integrity sha512-5Rk7iLNDFhFeBYc3s8l1CqzbEBcdhwR193RlD4vSNFajIcINKI8W8P0JLmBpwymHqqWbX34pJDQu39cSy/6RsA==
@@ -14043,7 +14031,7 @@ http-parser-js@>=0.5.1:
   resolved "https://registry.npmjs.org/http-parser-js/-/http-parser-js-0.5.3.tgz#01d2709c79d41698bb01d4decc5e9da4e4a033d9"
   integrity sha512-t7hjvef/5HEK7RWTdUzVUhl8zkEu+LlaE0IYzdMuvbSDipxBRpOn4Uhw8ZyECEa808iVT8XCjzo6xmYt4CiLZg==
 
-http-proxy-agent@^4.0.0, http-proxy-agent@^4.0.1:
+http-proxy-agent@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/http-proxy-agent/-/http-proxy-agent-4.0.1.tgz#8a8c8ef7f5932ccf953c296ca8291b95aa74aa3a"
   integrity sha512-k0zdNgqWTGA6aeIRVpvfVob4fL52dTfaehylg0Y4UvSySvOq/Y+BOyPrgpUrA7HylqvU8vIZGsRuXmspskV0Tg==
@@ -23718,12 +23706,12 @@ tdigest@^0.1.1:
     react-router-dom "6.0.0-beta.0"
     react-use "^17.2.4"
 
-teeny-request@^7.0.0:
-  version "7.0.1"
-  resolved "https://registry.npmjs.org/teeny-request/-/teeny-request-7.0.1.tgz#bdd41fdffea5f8fbc0d29392cb47bec4f66b2b4c"
-  integrity sha512-sasJmQ37klOlplL4Ia/786M5YlOcoLGQyq2TE4WHSRupbAuDaQW0PfVxV4MtdBtRJ4ngzS+1qim8zP6Zp35qCw==
+teeny-request@^7.1.3:
+  version "7.2.0"
+  resolved "https://registry.npmjs.org/teeny-request/-/teeny-request-7.2.0.tgz#41347ece068f08d741e7b86df38a4498208b2633"
+  integrity sha512-SyY0pek1zWsi0LRVAALem+avzMLc33MKW/JLLakdP4s9+D7+jHcy5x6P+h94g2QNZsAqQNfX5lsbd3WSeJXrrw==
   dependencies:
-    http-proxy-agent "^4.0.0"
+    http-proxy-agent "^5.0.0"
     https-proxy-agent "^5.0.0"
     node-fetch "^2.6.1"
     stream-events "^1.0.5"
