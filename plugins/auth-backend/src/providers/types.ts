@@ -18,7 +18,7 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
+import { CatalogApi, GetEntitiesRequest } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import {
   BackstageIdentityResponse,
@@ -26,9 +26,42 @@ import {
 } from '@backstage/plugin-auth-node';
 import express from 'express';
 import { Logger } from 'winston';
-import { TokenIssuer } from '../identity/types';
+import { TokenIssuer, TokenParams } from '../identity/types';
 import { OAuthStartRequest } from '../lib/oauth/types';
 import { CatalogIdentityClient } from '../lib/catalog';
+import { Entity } from '@backstage/catalog-model';
+
+/**
+ * A query for a single user in the catalog.
+ *
+ * If `entityRef` is used, the default kind is `'User'`.
+ *
+ * If `annotations` are used, all annotations must be present and
+ * match the provided value exactly. Only entities of kind `'User'` will be considered.
+ *
+ * If `filter` are used they are passed on as they are to the `CatalogApi`.
+ *
+ * Regardless of the query method, the query must match exactly one entity
+ * in the catalog, or an error will be thrown.
+ *
+ * @public
+ */
+export type AuthResolverCatalogUserQuery =
+  | {
+      entityRef:
+        | string
+        | {
+            kind?: string;
+            namespace?: string;
+            name: string;
+          };
+    }
+  | {
+      annotations: Record<string, string>;
+    }
+  | {
+      filter: Exclude<GetEntitiesRequest['filter'], undefined>;
+    };
 
 /**
  * The context that is used for auth processing.
@@ -36,9 +69,36 @@ import { CatalogIdentityClient } from '../lib/catalog';
  * @public
  */
 export type AuthResolverContext = {
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
+  /** @deprecated Will be removed from the context, access it via a closure instead if needed */
   logger: Logger;
+  /** @deprecated Use the `issueToken` method instead */
+  tokenIssuer: TokenIssuer;
+  /** @deprecated Use the `findCatalogUser` and `signInWithCatalogUser` methods instead, and the `getDefaultOwnershipEntityRefs` helper */
+  catalogIdentityClient: CatalogIdentityClient;
+
+  /**
+   * Issues a Backstage token using the provided parameters.
+   */
+  issueToken(params: TokenParams): Promise<{ token: string }>;
+
+  /**
+   * Finds a single user in the catalog using the provided query.
+   *
+   * See {@link AuthResolverCatalogUserQuery} for details.
+   */
+  findCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+  ): Promise<{ entity: Entity }>;
+
+  /**
+   * Finds a single user in the catalog using the provided query, and then
+   * issues an identity for that user using default ownership resolution.
+   *
+   * See {@link AuthResolverCatalogUserQuery} for details.
+   */
+  signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+  ): Promise<BackstageSignInResult>;
 };
 
 /**
@@ -54,6 +114,7 @@ export type CookieConfigurer = (ctx: {
   callbackUrl: string;
 }) => { domain: string; path: string; secure: boolean };
 
+/** @public */
 export type AuthProviderConfig = {
   /**
    * The protocol://domain[:port] where the app is hosted. This is used to construct the
@@ -143,6 +204,9 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
+/**
+ * @deprecated This type is deprecated and will be removed in a future release.
+ */
 export type AuthProviderFactoryOptions = {
   providerId: string;
   globalConfig: AuthProviderConfig;
@@ -154,10 +218,24 @@ export type AuthProviderFactoryOptions = {
   catalogApi: CatalogApi;
 };
 
-export type AuthProviderFactory = (
-  options: AuthProviderFactoryOptions,
-) => AuthProviderRouteHandlers;
+export type AuthProviderFactory = (options: {
+  providerId: string;
+  globalConfig: AuthProviderConfig;
+  config: Config;
+  logger: Logger;
+  resolverContext: AuthResolverContext;
 
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  tokenManager: TokenManager;
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  tokenIssuer: TokenIssuer;
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  discovery: PluginEndpointDiscovery;
+  /** @deprecated This field has been deprecated and needs to be passed directly to the auth provider instead */
+  catalogApi: CatalogApi;
+}) => AuthProviderRouteHandlers;
+
+/** @public */
 export type AuthResponse<ProviderInfo> = {
   providerInfo: ProviderInfo;
   profile: ProfileInfo;
@@ -245,6 +323,7 @@ export type AuthHandler<TAuthResult> = (
   context: AuthResolverContext,
 ) => Promise<AuthHandlerResult>;
 
+/** @public */
 export type StateEncoder = (
   req: OAuthStartRequest,
 ) => Promise<{ encodedState: string }>;

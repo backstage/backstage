@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import {
   Client,
@@ -43,13 +39,11 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  AuthProviderFactory,
+  AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
-import { Logger } from 'winston';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken?: string;
@@ -76,9 +70,7 @@ export type Options = OAuthProviderOptions & {
   tokenSignedResponseAlg?: string;
   signInResolver?: SignInResolver<OidcAuthResult>;
   authHandler: AuthHandler<OidcAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
@@ -88,9 +80,7 @@ export class OidcAuthProvider implements OAuthHandlers {
 
   private readonly signInResolver?: SignInResolver<OidcAuthResult>;
   private readonly authHandler: AuthHandler<OidcAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {
     this.implementation = this.setupStrategy(options);
@@ -98,9 +88,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     this.prompt = options.prompt;
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
@@ -186,12 +174,7 @@ export class OidcAuthProvider implements OAuthHandlers {
   // Use this function to grab the user profile info from the token
   // Then populate the profile with it
   private async handleResult(result: OidcAuthResult): Promise<OAuthResponse> {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
     const response: OAuthResponse = {
       providerInfo: {
         idToken: result.tokenset.id_token,
@@ -207,7 +190,7 @@ export class OidcAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -215,122 +198,80 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const oidcDefaultSignInResolver: SignInResolver<OidcAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-
-  const userId = profile.email.split('@')[0];
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
 /**
- * OIDC provider callback options. An auth handler and a sign in resolver
- * can be passed while creating a OIDC provider.
- *
- * authHandler : called after sign in was successful, a new object must be returned which includes a profile
- * signInResolver: called after sign in was successful, expects to return a new {@link @backstage/plugin-auth-node#BackstageSignInResult}
- *
- * Both options are optional. There is fallback for authHandler where the default handler expect an e-mail explicitly
- * otherwise it throws an error
- *
  * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type OidcProviderOptions = {
   authHandler?: AuthHandler<OidcAuthResult>;
 
   signIn?: {
-    resolver?: SignInResolver<OidcAuthResult>;
+    resolver: SignInResolver<OidcAuthResult>;
   };
 };
 
-export const createOidcProvider = (
-  options?: OidcProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-      const metadataUrl = envConfig.getString('metadataUrl');
-      const tokenSignedResponseAlg = envConfig.getOptionalString(
-        'tokenSignedResponseAlg',
-      );
-      const scope = envConfig.getOptionalString('scope');
-      const prompt = envConfig.getOptionalString('prompt');
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
+/**
+ * Auth provider integration for generic OpenID Connect auth
+ *
+ * @public
+ */
+export const oidc = createAuthProviderIntegration({
+  create(options?: {
+    authHandler?: AuthHandler<OidcAuthResult>;
 
-      const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ userinfo }) => ({
-            profile: {
-              displayName: userinfo.name,
-              email: userinfo.email,
-              picture: userinfo.picture,
-            },
-          });
-      const signInResolverFn =
-        options?.signIn?.resolver ?? oidcDefaultSignInResolver;
-      const signInResolver: SignInResolver<OidcAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
+    signIn?: {
+      resolver: SignInResolver<OidcAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const metadataUrl = envConfig.getString('metadataUrl');
+        const tokenSignedResponseAlg = envConfig.getOptionalString(
+          'tokenSignedResponseAlg',
+        );
+        const scope = envConfig.getOptionalString('scope');
+        const prompt = envConfig.getOptionalString('prompt');
+
+        const authHandler: AuthHandler<OidcAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ userinfo }) => ({
+              profile: {
+                displayName: userinfo.name,
+                email: userinfo.email,
+                picture: userinfo.picture,
+              },
+            });
+
+        const provider = new OidcAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          tokenSignedResponseAlg,
+          metadataUrl,
+          scope,
+          prompt,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          resolverContext,
         });
 
-      const provider = new OidcAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        tokenSignedResponseAlg,
-        metadataUrl,
-        scope,
-        prompt,
-        signInResolver,
-        authHandler,
-        logger,
-        tokenIssuer,
-        catalogIdentityClient,
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.oidc.create` instead
+ */
+export const createOidcProvider = oidc.create;

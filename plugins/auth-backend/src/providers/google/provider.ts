@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
 import {
   encodeState,
   OAuthAdapter,
@@ -43,12 +37,13 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  AuthProviderFactory,
   AuthHandler,
+  AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
-import { Logger } from 'winston';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { commonByEmailLocalPartResolver } from '../resolvers';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -57,26 +52,20 @@ type PrivateInfo = {
 type Options = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class GoogleAuthProvider implements OAuthHandlers {
-  private readonly _strategy: GoogleStrategy;
+  private readonly strategy: GoogleStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {
-    this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
-    this._strategy = new GoogleStrategy(
+    this.signInResolver = options.signInResolver;
+    this.resolverContext = options.resolverContext;
+    this.strategy = new GoogleStrategy(
       {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
@@ -109,7 +98,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
-    return await executeRedirectStrategy(req, this._strategy, {
+    return await executeRedirectStrategy(req, this.strategy, {
       accessType: 'offline',
       prompt: 'consent',
       scope: req.scope,
@@ -121,7 +110,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
     const { result, privateInfo } = await executeFrameHandlerStrategy<
       OAuthResult,
       PrivateInfo
-    >(req, this._strategy);
+    >(req, this.strategy);
 
     return {
       response: await this.handleResult(result),
@@ -132,12 +121,12 @@ export class GoogleAuthProvider implements OAuthHandlers {
   async refresh(req: OAuthRefreshRequest) {
     const { accessToken, refreshToken, params } =
       await executeRefreshTokenStrategy(
-        this._strategy,
+        this.strategy,
         req.refreshToken,
         req.scope,
       );
     const fullProfile = await executeFetchUserProfileStrategy(
-      this._strategy,
+      this.strategy,
       accessToken,
     );
 
@@ -152,12 +141,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -175,7 +159,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -183,69 +167,10 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 }
 
-export const googleEmailSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Google profile contained no email');
-  }
-
-  const entity = await ctx.catalogIdentityClient.findUser({
-    annotations: {
-      'google.com/email': profile.email,
-    },
-  });
-
-  const claims = getEntityClaims(entity);
-  const token = await ctx.tokenIssuer.issueToken({ claims });
-
-  return { id: entity.metadata.name, entity, token };
-};
-
-const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Google profile contained no email');
-  }
-
-  let userId: string;
-  try {
-    const entity = await ctx.catalogIdentityClient.findUser({
-      annotations: {
-        'google.com/email': profile.email,
-      },
-    });
-    userId = entity.metadata.name;
-  } catch (error) {
-    ctx.logger.warn(
-      `Failed to look up user, ${error}, falling back to allowing login based on email pattern, this will probably break in the future`,
-    );
-    userId = profile.email.split('@')[0];
-  }
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type GoogleProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -260,67 +185,99 @@ export type GoogleProviderOptions = {
     /**
      * Maps an auth result to a Backstage identity for the user.
      */
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
-export const createGoogleProvider = (
-  options?: GoogleProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+/**
+ * Auth provider integration for Google auth
+ *
+ * @public
+ */
+export const google = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? googleDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
+        const provider = new GoogleAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          resolverContext,
         });
 
-      const provider = new GoogleAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        signInResolver,
-        authHandler,
-        tokenIssuer,
-        catalogIdentityClient,
-        logger,
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email local part to the entity name.
+     */
+    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the `google.com/email` annotation.
+     */
+    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
+      return async (info, ctx) => {
+        const { profile } = info;
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+        if (!profile.email) {
+          throw new Error('Google profile contained no email');
+        }
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'google.com/email': profile.email,
+          },
+        });
+      };
+    },
+  },
+});
+
+/**
+ * @public
+ * @deprecated Use `providers.google.create` instead.
+ */
+export const createGoogleProvider = google.create;
+
+/**
+ * @public
+ * @deprecated Use `providers.google.resolvers.emailMatchingUserEntityAnnotation()` instead.
+ */
+export const googleEmailSignInResolver =
+  google.resolvers.emailMatchingUserEntityAnnotation();

@@ -15,20 +15,18 @@
  */
 
 import express from 'express';
-import { Logger } from 'winston';
 import { AuthenticationError } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   AuthHandler,
   SignInResolver,
-  AuthProviderFactory,
   AuthProviderRouteHandlers,
   AuthResponse,
+  AuthResolverContext,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
 import { JWT } from 'jose';
-import { TokenIssuer } from '../../identity/types';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
@@ -51,9 +49,8 @@ export type OAuth2ProxyResult<JWTPayload> = {
 };
 
 /**
- * Options for the oauth2-proxy provider factory
- *
  * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type Oauth2ProxyProviderOptions<JWTPayload> = {
   /**
@@ -73,28 +70,22 @@ export type Oauth2ProxyProviderOptions<JWTPayload> = {
 };
 
 interface Options<JWTPayload> {
-  logger: Logger;
+  resolverContext: AuthResolverContext;
   signInResolver: SignInResolver<OAuth2ProxyResult<JWTPayload>>;
   authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
 }
 
 export class Oauth2ProxyAuthProvider<JWTPayload>
   implements AuthProviderRouteHandlers
 {
-  private readonly logger: Logger;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly resolverContext: AuthResolverContext;
   private readonly signInResolver: SignInResolver<
     OAuth2ProxyResult<JWTPayload>
   >;
   private readonly authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
-  private readonly tokenIssuer: TokenIssuer;
 
   constructor(options: Options<JWTPayload>) {
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
-    this.tokenIssuer = options.tokenIssuer;
+    this.resolverContext = options.resolverContext;
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
   }
@@ -106,17 +97,10 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
   async refresh(req: express.Request, res: express.Response): Promise<void> {
     try {
       const result = this.getResult(req);
-
       const response = await this.handleResult(result);
-
       res.json(response);
     } catch (e) {
-      this.logger.error(
-        `Exception occurred during ${OAUTH2_PROXY_JWT_HEADER} refresh`,
-        e,
-      );
-      res.status(401);
-      res.end();
+      throw new AuthenticationError('Refresh failed', e);
     }
   }
 
@@ -127,20 +111,14 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
   private async handleResult(
     result: OAuth2ProxyResult<JWTPayload>,
   ): Promise<AuthResponse<{ accessToken: string }>> {
-    const ctx = {
-      logger: this.logger,
-      tokenIssuer: this.tokenIssuer,
-      catalogIdentityClient: this.catalogIdentityClient,
-    };
-
-    const { profile } = await this.authHandler(result, ctx);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const backstageSignInResult = await this.signInResolver(
       {
         result,
         profile,
       },
-      ctx,
+      this.resolverContext,
     );
 
     return {
@@ -174,26 +152,41 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
 }
 
 /**
- * Factory function for oauth2-proxy auth provider
+ * Auth provider integration for oauth2-proxy auth
  *
  * @public
  */
-export const createOauth2ProxyProvider =
-  <JWTPayload>(
-    options: Oauth2ProxyProviderOptions<JWTPayload>,
-  ): AuthProviderFactory =>
-  ({ catalogApi, logger, tokenIssuer, tokenManager }) => {
-    const signInResolver = options.signIn.resolver;
-    const authHandler = options.authHandler;
-    const catalogIdentityClient = new CatalogIdentityClient({
-      catalogApi,
-      tokenManager,
-    });
-    return new Oauth2ProxyAuthProvider<JWTPayload>({
-      logger,
-      signInResolver,
-      authHandler,
-      tokenIssuer,
-      catalogIdentityClient,
-    });
-  };
+export const oauth2Proxy = createAuthProviderIntegration({
+  create<JWTPayload>(options: {
+    /**
+     * Configure an auth handler to generate a profile for the user.
+     */
+    authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
+
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuth2ProxyResult<JWTPayload>>;
+    };
+  }) {
+    return ({ resolverContext }) => {
+      const signInResolver = options.signIn.resolver;
+      const authHandler = options.authHandler;
+      return new Oauth2ProxyAuthProvider<JWTPayload>({
+        resolverContext,
+        signInResolver,
+        authHandler,
+      });
+    };
+  },
+});
+
+/**
+ * @public
+ * @deprecated Use `providers.oauth2Proxy.create` instead
+ */
+export const createOauth2ProxyProvider = oauth2Proxy.create;

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as OAuth2Strategy } from 'passport-oauth2';
@@ -42,13 +38,11 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  AuthProviderFactory,
+  AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
-import { Logger } from 'winston';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -57,12 +51,10 @@ type PrivateInfo = {
 export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
   authorizationUrl: string;
   tokenUrl: string;
   scope?: string;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
   includeBasicAuth?: boolean;
 };
 
@@ -70,16 +62,12 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   private readonly _strategy: OAuth2Strategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: OAuth2AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
 
     this._strategy = new OAuth2Strategy(
       {
@@ -167,12 +155,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -190,7 +173,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -202,109 +185,77 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   }
 }
 
-export const oAuth2DefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-
-  const userId = profile.email.split('@')[0];
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type OAuth2ProviderOptions = {
   authHandler?: AuthHandler<OAuthResult>;
 
   signIn?: {
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
-export const createOAuth2Provider = (
-  options?: OAuth2ProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-      const authorizationUrl = envConfig.getString('authorizationUrl');
-      const tokenUrl = envConfig.getString('tokenUrl');
-      const scope = envConfig.getOptionalString('scope');
-      const includeBasicAuth = envConfig.getOptionalBoolean('includeBasicAuth');
-      const disableRefresh =
-        envConfig.getOptionalBoolean('disableRefresh') ?? false;
+/**
+ * Auth provider integration for generic OAuth2 auth
+ *
+ * @public
+ */
+export const oauth2 = createAuthProviderIntegration({
+  create(options?: {
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
+    signIn?: {
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const authorizationUrl = envConfig.getString('authorizationUrl');
+        const tokenUrl = envConfig.getString('tokenUrl');
+        const scope = envConfig.getOptionalString('scope');
+        const includeBasicAuth =
+          envConfig.getOptionalBoolean('includeBasicAuth');
+        const disableRefresh =
+          envConfig.getOptionalBoolean('disableRefresh') ?? false;
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? oAuth2DefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
+        const provider = new OAuth2AuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          authorizationUrl,
+          tokenUrl,
+          scope,
+          includeBasicAuth,
+          resolverContext,
         });
 
-      const provider = new OAuth2AuthProvider({
-        clientId,
-        clientSecret,
-        tokenIssuer,
-        catalogIdentityClient,
-        callbackUrl,
-        signInResolver,
-        authHandler,
-        authorizationUrl,
-        tokenUrl,
-        scope,
-        logger,
-        includeBasicAuth,
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.oauth2.create` instead
+ */
+export const createOAuth2Provider = oauth2.create;

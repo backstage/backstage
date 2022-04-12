@@ -37,22 +37,18 @@ import {
 } from '../../lib/passport';
 import {
   AuthHandler,
-  AuthProviderFactory,
+  AuthResolverContext,
   RedirectInfo,
   SignInResolver,
 } from '../types';
 import express from 'express';
-import { TokenIssuer } from '../../identity';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { Logger } from 'winston';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 export type AtlassianAuthProviderOptions = OAuthProviderOptions & {
   scopes: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export const atlassianDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
@@ -66,14 +62,10 @@ export class AtlassianAuthProvider implements OAuthHandlers {
   private readonly _strategy: AtlassianStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: AtlassianAuthProviderOptions) {
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
-    this.tokenIssuer = options.tokenIssuer;
+    this.resolverContext = options.resolverContext;
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
 
@@ -120,12 +112,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -143,7 +130,7 @@ export class AtlassianAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -174,6 +161,10 @@ export class AtlassianAuthProvider implements OAuthHandlers {
   }
 }
 
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type AtlassianProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -189,51 +180,59 @@ export type AtlassianProviderOptions = {
   };
 };
 
-export const createAtlassianProvider = (
-  options?: AtlassianProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const scopes = envConfig.getString('scopes');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+/**
+ * Auth provider integration for atlassian auth
+ *
+ * @public
+ */
+export const atlassian = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const scopes = envConfig.getString('scopes');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+
+        const authHandler: AuthHandler<OAuthResult> =
+          options?.authHandler ?? atlassianDefaultAuthHandler;
+
+        const provider = new AtlassianAuthProvider({
+          clientId,
+          clientSecret,
+          scopes,
+          callbackUrl,
+          authHandler,
+          signInResolver: options?.signIn?.resolver,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      const authHandler: AuthHandler<OAuthResult> =
-        options?.authHandler ?? atlassianDefaultAuthHandler;
-
-      const provider = new AtlassianAuthProvider({
-        clientId,
-        clientSecret,
-        scopes,
-        callbackUrl,
-        authHandler,
-        signInResolver: options?.signIn?.resolver,
-        catalogIdentityClient,
-        logger,
-        tokenIssuer,
-      });
-
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.atlassian.create` instead
+ */
+export const createAtlassianProvider = atlassian.create;

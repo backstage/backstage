@@ -22,7 +22,11 @@ export interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
-/** Parameters used to issue new ID Tokens */
+/**
+ * Parameters used to issue new ID Tokens
+ *
+ * @public
+ */
 export type TokenParams = {
   /** The claims that will be embedded within the token */
   claims: {
@@ -33,8 +37,12 @@ export type TokenParams = {
   };
 };
 
+// TODO(Rugvip): This should at least be made internal
 /**
  * A TokenIssuer is able to issue verifiable ID Tokens on demand.
+ *
+ * @public
+ * @deprecated This interface is deprecated and will be removed in a future release.
  */
 export type TokenIssuer = {
   /**

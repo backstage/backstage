@@ -38,13 +38,11 @@ import {
 } from '../../lib/passport';
 import {
   RedirectInfo,
-  AuthProviderFactory,
   AuthHandler,
   SignInResolver,
+  AuthResolverContext,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
-import { Logger } from 'winston';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -54,25 +52,19 @@ export type Auth0AuthProviderOptions = OAuthProviderOptions & {
   domain: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class Auth0AuthProvider implements OAuthHandlers {
   private readonly _strategy: Auth0Strategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Auth0AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
     this._strategy = new Auth0Strategy(
       {
         clientID: options.clientId,
@@ -149,12 +141,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -172,7 +159,7 @@ export class Auth0AuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -180,19 +167,10 @@ export class Auth0AuthProvider implements OAuthHandlers {
   }
 }
 
-const defaultSignInResolver: SignInResolver<OAuthResult> = async info => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile does not contain an email');
-  }
-
-  const id = profile.email.split('@')[0];
-
-  return { id, token: '' };
-};
-
-/** @public */
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type Auth0ProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -211,58 +189,68 @@ export type Auth0ProviderOptions = {
   };
 };
 
-/** @public */
-export const createAuth0Provider = (
-  options?: Auth0ProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const domain = envConfig.getString('domain');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+/**
+ * Auth provider integration for auth0 auth
+ *
+ * @public
+ */
+export const auth0 = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const domain = envConfig.getString('domain');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
+
+        const signInResolver = options?.signIn?.resolver;
+
+        const provider = new Auth0AuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          domain,
+          authHandler,
+          signInResolver,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: true,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
-
-      const signInResolver = options?.signIn?.resolver ?? defaultSignInResolver;
-
-      const provider = new Auth0AuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        domain,
-        authHandler,
-        signInResolver,
-        tokenIssuer,
-        catalogIdentityClient,
-        logger,
-      });
-
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: true,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.auth0.create` instead.
+ */
+export const createAuth0Provider = auth0.create;

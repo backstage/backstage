@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import passport from 'passport';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient, getEntityClaims } from '../../lib/catalog';
 import {
   encodeState,
   OAuthAdapter,
@@ -43,11 +37,12 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import {
-  AuthProviderFactory,
   AuthHandler,
   RedirectInfo,
   SignInResolver,
+  AuthResolverContext,
 } from '../types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
 
@@ -58,9 +53,8 @@ type PrivateInfo = {
 type Options = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
+  resolverContext: AuthResolverContext;
   authorizationUrl?: string;
   tokenUrl?: string;
 };
@@ -69,16 +63,14 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
   private readonly _strategy: MicrosoftStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
   private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
     this.logger = options.logger;
-    this.catalogIdentityClient = options.catalogIdentityClient;
+    this.resolverContext = options.resolverContext;
 
     this._strategy = new MicrosoftStrategy(
       {
@@ -147,12 +139,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     const photo = await this.getUserPhoto(result.accessToken);
     result.fullProfile.photos = photo ? [{ value: photo }] : undefined;
 
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -170,87 +157,39 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
     return response;
   }
 
-  private getUserPhoto(accessToken: string): Promise<string | undefined> {
-    return new Promise(resolve => {
-      fetch('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+  private async getUserPhoto(accessToken: string): Promise<string | undefined> {
+    try {
+      const res = await fetch(
+        'https://graph.microsoft.com/v1.0/me/photos/48x48/$value',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-      })
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => {
-          const imageUrl = `data:image/jpeg;base64,${Buffer.from(
-            arrayBuffer,
-          ).toString('base64')}`;
-          resolve(imageUrl);
-        })
-        .catch(error => {
-          this.logger.warn(
-            `Could not retrieve user profile photo from Microsoft Graph API: ${error}`,
-          );
-          // User profile photo is optional, ignore errors and resolve undefined
-          resolve(undefined);
-        });
-    });
+      );
+      const data = await res.buffer();
+
+      return `data:image/jpeg;base64,${data.toString('base64')}`;
+    } catch (error) {
+      this.logger.warn(
+        `Could not retrieve user profile photo from Microsoft Graph API: ${error}`,
+      );
+      return undefined;
+    }
   }
 }
 
-export const microsoftEmailSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Microsoft profile contained no email');
-  }
-
-  const entity = await ctx.catalogIdentityClient.findUser({
-    annotations: {
-      'microsoft.com/email': profile.email,
-    },
-  });
-
-  const claims = getEntityClaims(entity);
-  const token = await ctx.tokenIssuer.issueToken({ claims });
-
-  return { id: entity.metadata.name, entity, token };
-};
-
-export const microsoftDefaultSignInResolver: SignInResolver<
-  OAuthResult
-> = async (info, ctx) => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('Profile contained no email');
-  }
-
-  const userId = profile.email.split('@')[0];
-
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: userId,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id: userId, token };
-};
-
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type MicrosoftProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -265,73 +204,102 @@ export type MicrosoftProviderOptions = {
     /**
      * Maps an auth result to a Backstage identity for the user.
      */
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
-export const createMicrosoftProvider = (
-  options?: MicrosoftProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const tenantId = envConfig.getString('tenantId');
+/**
+ * Auth provider integration for Microsoft auth
+ *
+ * @public
+ */
+export const microsoft = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-      const authorizationUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`;
-      const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, logger, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const tenantId = envConfig.getString('tenantId');
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+        const authorizationUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`;
+        const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? microsoftDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
+        const provider = new MicrosoftAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          authorizationUrl,
+          tokenUrl,
+          authHandler,
+          signInResolver: options?.signIn?.resolver,
           logger,
+          resolverContext,
         });
 
-      const provider = new MicrosoftAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        authorizationUrl,
-        tokenUrl,
-        authHandler,
-        signInResolver,
-        catalogIdentityClient,
-        logger,
-        tokenIssuer,
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+  resolvers: {
+    /**
+     * Looks up the user by matching their email to the `microsoft.com/email` annotation.
+     */
+    emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
+      return async (info, ctx) => {
+        const { profile } = info;
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+        if (!profile.email) {
+          throw new Error('Microsoft profile contained no email');
+        }
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'microsoft.com/email': profile.email,
+          },
+        });
+      };
+    },
+  },
+});
+
+/**
+ * @public
+ * @deprecated Use `providers.microsoft.create` instead
+ */
+export const createMicrosoftProvider = microsoft.create;
+
+/**
+ * @public
+ * @deprecated Use `providers.microsoft.resolvers.emailMatchingUserEntityAnnotation()` instead.
+ */
+export const microsoftEmailSignInResolver =
+  microsoft.resolvers.emailMatchingUserEntityAnnotation();

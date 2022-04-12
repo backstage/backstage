@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import express from 'express';
 import { Strategy as GitlabStrategy } from 'passport-gitlab2';
-import { Logger } from 'winston';
 import {
   executeRedirectStrategy,
   executeFrameHandlerStrategy,
@@ -31,9 +26,9 @@ import {
 } from '../../lib/passport';
 import {
   RedirectInfo,
-  AuthProviderFactory,
   SignInResolver,
   AuthHandler,
+  AuthResolverContext,
 } from '../types';
 import {
   OAuthAdapter,
@@ -46,8 +41,7 @@ import {
   encodeState,
   OAuthResult,
 } from '../../lib/oauth';
-import { TokenIssuer } from '../../identity';
-import { CatalogIdentityClient } from '../../lib/catalog';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -57,37 +51,20 @@ export type GitlabAuthProviderOptions = OAuthProviderOptions & {
   baseUrl: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
-export const gitlabDefaultSignInResolver: SignInResolver<OAuthResult> = async (
-  info,
-  ctx,
-) => {
-  const { profile, result } = info;
+export const gitlabUsernameEntityNameSignInResolver: SignInResolver<
+  OAuthResult
+> = async (info, ctx) => {
+  const { result } = info;
 
-  let id = result.fullProfile.id;
-
-  if (profile.email) {
-    id = profile.email.split('@')[0];
+  const id = result.fullProfile.username;
+  if (!id) {
+    throw new Error(`GitLab user profile does not contain a username`);
   }
 
-  const entityRef = stringifyEntityRef({
-    kind: 'User',
-    namespace: DEFAULT_NAMESPACE,
-    name: id,
-  });
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: entityRef,
-      ent: [entityRef],
-    },
-  });
-
-  return { id, token };
+  return ctx.signInWithCatalogUser({ entityRef: { name: id } });
 };
 
 export const gitlabDefaultAuthHandler: AuthHandler<OAuthResult> = async ({
@@ -101,14 +78,10 @@ export class GitlabAuthProvider implements OAuthHandlers {
   private readonly _strategy: GitlabStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: GitlabAuthProviderOptions) {
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
-    this.tokenIssuer = options.tokenIssuer;
+    this.resolverContext = options.resolverContext;
     this.authHandler = options.authHandler;
     this.signInResolver = options.signInResolver;
 
@@ -179,12 +152,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult): Promise<OAuthResponse> {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -202,7 +170,7 @@ export class GitlabAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -210,6 +178,10 @@ export class GitlabAuthProvider implements OAuthHandlers {
   }
 }
 
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type GitlabProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -227,67 +199,65 @@ export type GitlabProviderOptions = {
    * the catalog for a single user entity that has a matching `microsoft.com/email` annotation.
    */
   signIn?: {
-    resolver?: SignInResolver<OAuthResult>;
+    resolver: SignInResolver<OAuthResult>;
   };
 };
 
-export const createGitlabProvider = (
-  options?: GitlabProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const audience = envConfig.getOptionalString('audience');
-      const baseUrl = audience || 'https://gitlab.com';
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+/**
+ * Auth provider integration for GitLab auth
+ *
+ * @public
+ */
+export const gitlab = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const audience = envConfig.getOptionalString('audience');
+        const baseUrl = audience || 'https://gitlab.com';
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-      const authHandler: AuthHandler<OAuthResult> =
-        options?.authHandler ?? gitlabDefaultAuthHandler;
+        const authHandler: AuthHandler<OAuthResult> =
+          options?.authHandler ?? gitlabDefaultAuthHandler;
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? gitlabDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<OAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
+        const provider = new GitlabAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          baseUrl,
+          authHandler,
+          signInResolver: options?.signIn?.resolver,
+          resolverContext,
         });
 
-      const provider = new GitlabAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        baseUrl,
-        authHandler,
-        signInResolver,
-        catalogIdentityClient,
-        logger,
-        tokenIssuer,
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.gitlab.create` instead
+ */
+export const createGitlabProvider = gitlab.create;
