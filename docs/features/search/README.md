@@ -24,15 +24,12 @@ Backstage ecosystem.
 
 ## Project roadmap
 
-| Version                       | Description                                                                                                                                                            |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backstage Search Pre-Alpha ✅ | Search Frontend letting you search through the entities of the software catalog. [See Pre-Alpha Use Cases.](#backstage-search-pre-alpha)                               |
-| Backstage Search Alpha ✅     | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See Alpha Use Cases](#backstage-search-alpha). |
-| Backstage Search Beta ✅      | At least one production-ready search engine that supports the same use-cases as in the alpha. [See Beta Use Cases](#backstage-search-beta).                            |
-| [Backstage Search GA ⌛][ga]  | A stable Search API for plugin developers to add search to their plugins, and app integrators to expose that to their users. [See GA Use Cases](#backstage-search-ga). |
-
-[beta]: https://github.com/backstage/backstage/milestone/27
-[ga]: https://github.com/backstage/backstage/milestone/28
+| Version                       | Description                                                                                                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Backstage Search Pre-Alpha ✅ | Search Frontend letting you search through the entities of the software catalog. [See Pre-Alpha Use Cases.](#backstage-search-pre-alpha)                                 |
+| Backstage Search Alpha ✅     | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See Alpha Use Cases](#backstage-search-alpha).   |
+| Backstage Search Beta ✅      | At least one production-ready search engine that supports the same use-cases as in the alpha. [See Beta Use Cases](#backstage-search-beta).                              |
+| [Backstage Search 1.0 ⌛]     | A stable Search API for plugin developers to add search to their plugins, and app integrators to expose that to their users. [See 1.0 Use Cases](#backstage-search-1.0). |
 
 ## Use Cases
 
@@ -82,9 +79,9 @@ are met, and can be deployed using a production-ready search engine.
   search engine according to my organization's needs, but a sensible default
   query should be in place so that I am not required to do so.
 
-#### Backstage Search GA
+#### Backstage Search 1.0
 
-We will consider Backstage Search to be generally available (GA) when the above
+We will consider Backstage Search to be 1.0 when the above
 use-cases are met, and an ecosystem of search-enabled plugins are available and
 stable.
 
@@ -113,22 +110,26 @@ search engines.
 
 ## Plugins Integrated with Search
 
-| Plugin                                                         | Support Status |
-| -------------------------------------------------------------- | -------------- |
-| Catalog                                                        | ✅             |
-| [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents) | ✅             |
+| Plugin                                                                                                                                                 | Support Status |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
+| Catalog                                                                                                                                                | ✅             |
+| [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents)                                                                                         | ✅             |
+| [Stack Overflow](https://github.com/backstage/backstage/blob/master/plugins/stack-overflow-backend/README.md#index-stack-overflow-questions-to-search) | ✅             |
 
 [Reach out to us](#get-involved) if you want to chat about support for more
 plugins integrated to search.
 
 ## Tech Stack
 
-| Stack           | Location                              |
-| --------------- | ------------------------------------- |
-| Frontend Plugin | @backstage/plugin-search              |
-| Backend Plugin  | @backstage/plugin-search-backend      |
-| Indexer Plugin  | @backstage/plugin-search-backend-node |
-| Common Code     | @backstage/plugin-search-common       |
+| Stack                     | Location                                              |
+| ------------------------- | ----------------------------------------------------- |
+| Frontend Plugin           | @backstage/plugin-search                              |
+| Frontend Plugin Library   | @backstage/plugin-search-react                        |
+| Isomorphic Plugin Library | @backstage/plugin-search-common                       |
+| Backend Plugin            | @backstage/plugin-search-backend                      |
+| Backend Plugin Library    | @backstage/plugin-search-backend-node                 |
+| Backend Plugin Module     | @backstage/plugin-search-backend-module-elasticsearch |
+| Backend Plugin Module     | @backstage/plugin-search-backend-module-pg            |
 
 ## Get Involved
 
