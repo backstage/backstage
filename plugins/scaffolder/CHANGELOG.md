@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder
 
+## 1.1.0-next.3
+
+### Minor Changes
+
+- 6331ec1ebc: Added a context menu to the scaffolder page that provides links to the template editor and actions reference. These links and the presence of the context menu can be toggled through the `contextMenu` prop of the scaffolder page.
+- 8fad3b6ef5: The Template Preview page has been renamed to Template Editor, and is not available at the `/edit` path instead. There is a redirect in place from `/preview`.
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 946af407db: Changed input label for owner field in GitlabRepoPicker
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/integration-react@1.0.1-next.2
+  - @backstage/plugin-catalog-react@1.0.1-next.3
+  - @backstage/plugin-permission-react@0.4.0-next.1
+  - @backstage/integration@1.1.0-next.2
+
 ## 1.0.1-next.2
 
 ### Patch Changes

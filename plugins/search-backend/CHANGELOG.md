@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend
 
+## 0.5.0-next.2
+
+### Patch Changes
+
+- 3c8cfaaa80: Use `PermissionEvaluator` instead of `PermissionAuthorizer`, which is now deprecated.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0-next.1
+  - @backstage/plugin-permission-node@0.6.0-next.2
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/plugin-search-backend-node@0.6.0-next.1
+
 ## 0.5.0-next.1
 
 ### Patch Changes

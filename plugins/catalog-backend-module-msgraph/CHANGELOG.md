@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.3.1-next.2
+
+### Patch Changes
+
+- 85fc53df95: Now plugin configuration accept a new optional parameter `groupSelect` which allow the client to fetch defined fields from the ms-graph api.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0-next.3
+
 ## 0.3.1-next.1
 
 ### Patch Changes

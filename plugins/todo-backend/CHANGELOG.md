@@ -1,5 +1,14 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.28-next.2
+
+### Patch Changes
+
+- 5da036264b: Fix method to get source-location.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/integration@1.1.0-next.2
+
 ## 0.1.28-next.1
 
 ### Patch Changes

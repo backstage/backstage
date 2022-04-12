@@ -1,5 +1,29 @@
 # example-backend
 
+## 0.2.70-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.13.0-next.2
+  - @backstage/plugin-catalog-backend@1.1.0-next.3
+  - @backstage/plugin-kafka-backend@0.2.24-next.1
+  - @backstage/plugin-search-backend@0.5.0-next.2
+  - @backstage/plugin-permission-common@0.6.0-next.1
+  - @backstage/plugin-permission-node@0.6.0-next.2
+  - @backstage/plugin-jenkins-backend@0.1.20-next.2
+  - @backstage/plugin-todo-backend@0.1.28-next.2
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/plugin-kubernetes-backend@0.5.0-next.1
+  - @backstage/plugin-search-backend-node@0.6.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-rails@0.3.6-next.2
+  - @backstage/integration@1.1.0-next.2
+  - @backstage/plugin-techdocs-backend@1.1.0-next.2
+  - example-app@0.2.70-next.2
+  - @backstage/plugin-search-backend-module-elasticsearch@0.1.3-next.1
+  - @backstage/plugin-search-backend-module-pg@0.3.2-next.1
+  - @backstage/plugin-app-backend@0.3.31-next.1
+
 ## 0.2.70-next.1
 
 ### Patch Changes

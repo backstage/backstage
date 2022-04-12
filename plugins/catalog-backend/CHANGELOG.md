@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.0-next.3
+
+### Patch Changes
+
+- 23646e51a5: Use new `PermissionEvaluator#authorizeConditional` method when retrieving permission conditions.
+- 48405ed232: Added `spec.profile.displayName` to search index for Group kinds
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0-next.1
+  - @backstage/plugin-permission-node@0.6.0-next.2
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/integration@1.1.0-next.2
+
 ## 1.1.0-next.2
 
 ### Minor Changes

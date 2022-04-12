@@ -1,5 +1,13 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.24-next.1
+
+### Patch Changes
+
+- f26cf63878: build(deps-dev): bump `@types/jest-when` from 2.7.2 to 3.5.0
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+
 ## 0.2.24-next.0
 
 ### Patch Changes
