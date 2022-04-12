@@ -146,18 +146,6 @@ type Props = {
   definition: string;
 };
 
-// packages/app/src/apis.tsx
-
-// import { ApiEntity } from '@backstage/catalog-model';
-// import {
-//   ApiDefinitionWidget,
-//   apiDocsConfigRef,
-//   defaultDefinitionWidgets,
-// } from '@backstage/plugin-api-docs';
-// import { SqlRenderer } from '...';
-
-// ...
-
 export const apis: AnyApiFactory[] = [
   // ...
 
@@ -207,34 +195,6 @@ const fetchResolver = {
     return response.text();
   },
 };
-
-// export const AsyncApiDefinitionWidget = ({ definition }: Props) => {
-//   // const classes = useStyles();
-//   const configApi = useApi(configApiRef);
-
-//   const globalConfig =            configApi.getOptional<JsonObject>('apiDocs.asyncApi.parserConfig') || {};
-//   const fetchResolverConfig =     configApi.getOptional<JsonObject>('apiDocs.asyncApi.fetcherConfig') || {};
-//   const config = {
-//     ...globalConfig,
-//     ...{
-//       parserOptions: {
-//         resolve:
-//         { fetch:
-//           { ...fetchResolver, ...fetchResolverConfig } },
-//       },
-//     },
-//   };
-
-//   { parserOptions:
-//     { resolve:
-//       { fetch: fetchResolver } }}
-
-//   return (
-//     <div className={classes.root}>
-//       <AsyncApi schema={definition} config={config} />
-//     </div>
-//   );
-// };
 
 export const AsyncApiDefinition = ({ definition }: Props): JSX.Element => {
   const configApi = useApi(configApiRef);
