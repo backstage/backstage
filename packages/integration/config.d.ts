@@ -109,6 +109,11 @@ export interface Config {
        */
       baseUrl?: string;
       /**
+       * The base url for cloning repos.
+       * @visibility frontend
+       */
+      cloneUrl?: string;
+      /**
        * The username to use for authenticated requests.
        * @visibility secret
        */
