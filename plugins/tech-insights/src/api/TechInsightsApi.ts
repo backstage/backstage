@@ -47,7 +47,7 @@ export interface TechInsightsApi {
   getAllChecks(): Promise<Check[]>;
   runChecks(
     entityParams: CompoundEntityRef,
-    checks?: Check[],
+    checks?: string[],
   ): Promise<CheckResult[]>;
   runBulkChecks(
     entities: CompoundEntityRef[],

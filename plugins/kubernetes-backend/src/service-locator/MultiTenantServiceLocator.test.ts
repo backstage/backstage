@@ -19,7 +19,9 @@ import { MultiTenantServiceLocator } from './MultiTenantServiceLocator';
 
 describe('MultiTenantConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
-    const sut = new MultiTenantServiceLocator([]);
+    const sut = new MultiTenantServiceLocator({
+      getClusters: async () => [],
+    });
 
     const result = await sut.getClustersByServiceId('ignored');
 
@@ -27,14 +29,18 @@ describe('MultiTenantConfigClusterLocator', () => {
   });
 
   it('one clusters returns one cluster details', async () => {
-    const sut = new MultiTenantServiceLocator([
-      {
-        name: 'cluster1',
-        url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
-        serviceAccountToken: '12345',
+    const sut = new MultiTenantServiceLocator({
+      getClusters: async () => {
+        return [
+          {
+            name: 'cluster1',
+            url: 'http://localhost:8080',
+            authProvider: 'serviceAccount',
+            serviceAccountToken: '12345',
+          },
+        ];
       },
-    ]);
+    });
 
     const result = await sut.getClustersByServiceId('ignored');
 
@@ -49,19 +55,23 @@ describe('MultiTenantConfigClusterLocator', () => {
   });
 
   it('two clusters returns two cluster details', async () => {
-    const sut = new MultiTenantServiceLocator([
-      {
-        name: 'cluster1',
-        serviceAccountToken: 'token',
-        url: 'http://localhost:8080',
-        authProvider: 'serviceAccount',
+    const sut = new MultiTenantServiceLocator({
+      getClusters: async () => {
+        return [
+          {
+            name: 'cluster1',
+            serviceAccountToken: 'token',
+            url: 'http://localhost:8080',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'cluster2',
+            url: 'http://localhost:8081',
+            authProvider: 'google',
+          },
+        ];
       },
-      {
-        name: 'cluster2',
-        url: 'http://localhost:8081',
-        authProvider: 'google',
-      },
-    ]);
+    });
 
     const result = await sut.getClustersByServiceId('ignored');
 

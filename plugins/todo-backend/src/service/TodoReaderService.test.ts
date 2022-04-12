@@ -310,7 +310,7 @@ describe('TodoReaderService', () => {
     });
   });
 
-  it('should throw if entity does not have a location', async () => {
+  it('should not throw if entity does not have a location', async () => {
     const todoReader = mockTodoReader([]);
     const catalogClient = mockCatalogClient({
       ...mockEntity,
@@ -320,9 +320,8 @@ describe('TodoReaderService', () => {
 
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
-        name: 'InputError',
-        message:
-          'No entity location annotation found for component:default/my-component',
+        name: 'Error',
+        message: "Entity 'component:default/my-component' is missing location",
       }),
     );
   });
@@ -334,7 +333,8 @@ describe('TodoReaderService', () => {
       metadata: {
         ...mockEntity.metadata,
         annotations: {
-          ['backstage.io/managed-by-location']: 'file:../info.yaml',
+          ['backstage.io/managed-by-location']:
+            'file:../managed-by-location.yaml',
         },
       },
     });
@@ -343,7 +343,7 @@ describe('TodoReaderService', () => {
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
         name: 'InputError',
-        message: `Invalid entity location type for component:default/my-component, got 'file'`,
+        message: `Invalid entity location type for component:default/my-component, got 'file' for location ../managed-by-location.yaml`,
       }),
     );
   });
@@ -355,7 +355,7 @@ describe('TodoReaderService', () => {
       metadata: {
         ...mockEntity.metadata,
         annotations: {
-          ['backstage.io/source-location']: 'file:../info.yaml',
+          ['backstage.io/source-location']: 'file:../source-location.yaml',
         },
       },
     });
@@ -364,7 +364,7 @@ describe('TodoReaderService', () => {
     await expect(service.listTodos({ entity: entityName })).rejects.toEqual(
       expect.objectContaining({
         name: 'InputError',
-        message: `Invalid entity source location type for component:default/my-component, got 'file'`,
+        message: `Invalid entity location type for component:default/my-component, got 'file' for location ../source-location.yaml`,
       }),
     );
   });

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ import { ApiProvider } from '@backstage/core-app-api';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 import { TestApiRegistry } from '@backstage/test-utils';
 import React, { ComponentProps, PropsWithChildren } from 'react';
-import { searchApiRef } from '../../apis';
+import { searchApiRef } from '../api';
 import { SearchContextProvider as RealSearchContextProvider } from './SearchContext';
 
 type QueryResultProps = {
@@ -26,7 +26,7 @@ type QueryResultProps = {
 
 /**
  * Utility context provider only for use in Storybook stories. You should use
- * the real `<SearchContextProvider>` exported by `@backstage/plugin-search` in
+ * the real `<SearchContextProvider>` exported by `@backstage/plugin-search-react` in
  * your app instead of this! In some cases (like the search page) it may
  * already be provided on your behalf.
  */
@@ -40,6 +40,10 @@ export const SearchContextProvider = (
   );
 };
 
+/**
+ * Utility api provider only for use in Storybook stories.
+ *
+ */
 export function SearchApiProvider(props: PropsWithChildren<QueryResultProps>) {
   const { mockedResults, children } = props;
   const query: any = () => Promise.resolve(mockedResults || {});

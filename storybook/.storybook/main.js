@@ -6,6 +6,7 @@ const WebpackPluginFailBuildOnWarning = require('./webpack-plugin-fail-build-on-
  */
 const BACKSTAGE_CORE_STORIES = [
   'packages/core-components',
+  'packages/app',
   'plugins/org',
   'plugins/search',
   'plugins/home',

@@ -15,7 +15,10 @@
  */
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { SearchContextProvider, useSearch } from '@backstage/plugin-search';
+import {
+  SearchContextProvider,
+  useSearch,
+} from '@backstage/plugin-search-react';
 import {
   makeStyles,
   CircularProgress,

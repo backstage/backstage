@@ -26,14 +26,16 @@ import { techInsightsApiRef } from '../../api/TechInsightsApi';
 export const ScorecardsOverview = ({
   title,
   description,
+  checksId,
 }: {
   title?: string;
   description?: string;
+  checksId?: string[];
 }) => {
   const api = useApi(techInsightsApiRef);
   const { namespace, kind, name } = useParams();
   const { value, loading, error } = useAsync(
-    async () => await api.runChecks({ namespace, kind, name }),
+    async () => await api.runChecks({ namespace, kind, name }, checksId),
   );
 
   if (loading) {
