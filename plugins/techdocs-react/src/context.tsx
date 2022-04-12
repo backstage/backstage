@@ -14,20 +14,45 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction, useContext } from 'react';
-import { AsyncState } from 'react-use/lib/useAsync';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+  memo,
+  ReactNode,
+} from 'react';
+import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 
-import { CompoundEntityRef } from '@backstage/catalog-model';
-import { createVersionedContext } from '@backstage/version-bridge';
+import {
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 
+import { useApi } from '@backstage/core-plugin-api';
+
+import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
+
+const areEntityRefsEqual = (
+  prevEntityRef: CompoundEntityRef,
+  nextEntityRef: CompoundEntityRef,
+) => {
+  return (
+    stringifyEntityRef(prevEntityRef) === stringifyEntityRef(nextEntityRef)
+  );
+};
 
 /**
  * @public type for the value of the TechDocsReaderPageContext
  */
 export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
-  entityName: CompoundEntityRef;
+  entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
   setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
@@ -52,15 +77,80 @@ export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   setShadowRoot: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
-  entityName: { kind: '', name: '', namespace: '' },
+  entityRef: { kind: '', name: '', namespace: '' },
+};
+
+const TechDocsReaderPageContext = createVersionedContext<{
+  1: TechDocsReaderPageValue;
+}>('techdocs-reader-page-context');
+
+/**
+ * render function for {@link TechDocsReaderPageProvider}
+ *
+ * @public
+ */
+export type TechDocsReaderPageProviderRenderFunction = (
+  value: TechDocsReaderPageValue,
+) => JSX.Element;
+
+/**
+ * Props for {@link TechDocsReaderPageProvider}
+ *
+ * @public
+ */
+export type TechDocsReaderPageProviderProps = {
+  entityRef: CompoundEntityRef;
+  children: TechDocsReaderPageProviderRenderFunction | ReactNode;
 };
 
 /**
- * @alpha
+ * A context to store the reader page state
+ * @public
  */
-export const TechDocsReaderPageContext = createVersionedContext<{
-  1: TechDocsReaderPageValue;
-}>('techdocs-reader-page-context');
+export const TechDocsReaderPageProvider = memo(
+  ({ entityRef, children }: TechDocsReaderPageProviderProps) => {
+    const techdocsApi = useApi(techdocsApiRef);
+
+    const metadata = useAsync(async () => {
+      return techdocsApi.getTechDocsMetadata(entityRef);
+    }, [entityRef]);
+
+    const entityMetadata = useAsync(async () => {
+      return techdocsApi.getEntityMetadata(entityRef);
+    }, [entityRef]);
+
+    const [title, setTitle] = useState(defaultTechDocsReaderPageValue.title);
+    const [subtitle, setSubtitle] = useState(
+      defaultTechDocsReaderPageValue.subtitle,
+    );
+    const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
+      defaultTechDocsReaderPageValue.shadowRoot,
+    );
+
+    const value = {
+      metadata,
+      entityRef,
+      entityMetadata,
+      shadowRoot,
+      setShadowRoot,
+      title,
+      setTitle,
+      subtitle,
+      setSubtitle,
+    };
+    const versionedValue = createVersionedValueMap({ 1: value });
+
+    return (
+      <TechDocsReaderPageContext.Provider value={versionedValue}>
+        {children instanceof Function ? children(value) : children}
+      </TechDocsReaderPageContext.Provider>
+    );
+  },
+  (prevProps, nextProps) => {
+    return areEntityRefsEqual(prevProps.entityRef, nextProps.entityRef);
+  },
+);
+
 /**
  * Hook used to get access to shared state between reader page components.
  * @alpha

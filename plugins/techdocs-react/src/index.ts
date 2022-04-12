@@ -22,16 +22,22 @@
 
 export {
   useTechDocsAddons,
-  createTechDocsAddon,
+  createTechDocsAddonExtension,
   TechDocsAddons,
   TECHDOCS_ADDONS_WRAPPER_KEY,
 } from './addons';
+export { techdocsApiRef } from './api';
+export type { TechDocsApi } from './api';
 export {
   defaultTechDocsReaderPageValue,
-  TechDocsReaderPageContext,
+  TechDocsReaderPageProvider,
   useTechDocsReaderPage,
 } from './context';
-export type { TechDocsReaderPageValue } from './context';
+export type {
+  TechDocsReaderPageProviderProps,
+  TechDocsReaderPageProviderRenderFunction,
+  TechDocsReaderPageValue,
+} from './context';
 export {
   useShadowRoot,
   useShadowRootElements,

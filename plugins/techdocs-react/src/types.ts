@@ -40,34 +40,34 @@ export type TechDocsEntityMetadata = Entity & {
  * Locations for which TechDocs addons may be declared and rendered.
  * @alpha
  */
-export enum TechDocsAddonLocations {
+export const TechDocsAddonLocations = Object.freeze({
   /**
    * These addons fill up the header from the right, on the same line as the
    * title.
    */
-  HEADER = 'header',
+  Header: 'Header',
 
   /**
    * These addons appear below the header and above all content; tooling addons
    * can be inserted for convenience.
    */
-  SUBHEADER = 'subheader',
+  Subheader: 'Subheader',
 
   /**
    * These addons appear left of the content and above the navigation.
    */
-  PRIMARY_SIDEBAR = 'primary sidebar',
+  PrimarySidebar: 'PrimarySidebar',
 
   /**
    * These addons appear right of the content and above the table of contents.
    */
-  SECONDARY_SIDEBAR = 'secondary sidebar',
+  SecondarySidebar: 'SecondarySidebar',
 
   /**
    * A virtual location which allows mutation of all content within the shadow
    * root by transforming DOM nodes. These addons should return null on render.
    */
-  CONTENT = 'content',
+  Content: 'Content',
 
   /**
    * todo(backstage/community): This is a proposed virtual location which would
@@ -97,8 +97,8 @@ export enum TechDocsAddonLocations {
    * addon, then replace them with component instances of the addon component,
    * passing any attributes from the tag as props to the component.
    */
-  // COMPONENT = 'component',
-}
+  // Component: 'Component',
+} as const);
 
 /**
  * Options for creating a TechDocs addon.
@@ -106,6 +106,6 @@ export enum TechDocsAddonLocations {
  */
 export type TechDocsAddonOptions<TAddonProps = {}> = {
   name: string;
-  location: TechDocsAddonLocations;
+  location: keyof typeof TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };

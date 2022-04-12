@@ -21,12 +21,9 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import {
-  techdocsApiRef,
-  TechDocsReaderPageProvider,
-} from '@backstage/plugin-techdocs';
 
-import { useTechDocsReaderPage } from './context';
+import { techdocsApiRef } from './api';
+import { useTechDocsReaderPage, TechDocsReaderPageProvider } from './context';
 import { TechDocsMetadata } from './types';
 
 const mockShadowRoot = () => {
@@ -59,19 +56,19 @@ const techdocsApiMock = {
 };
 
 const wrapper = ({
-  entityName = {
+  entityRef = {
     kind: mockEntityMetadata.kind,
     name: mockEntityMetadata.metadata.name,
     namespace: mockEntityMetadata.metadata.namespace!!,
   },
   children,
 }: {
-  entityName?: CompoundEntityRef;
+  entityRef?: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
     <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
-      <TechDocsReaderPageProvider entityName={entityName}>
+      <TechDocsReaderPageProvider entityRef={entityRef}>
         {children}
       </TechDocsReaderPageProvider>
     </TestApiProvider>

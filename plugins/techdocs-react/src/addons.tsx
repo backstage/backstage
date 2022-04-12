@@ -51,7 +51,7 @@ const getDataKeyByName = (name: string) => {
  * Create a TechDocs addon.
  * @alpha
  */
-export function createTechDocsAddon<TComponentProps>(
+export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<ComponentType<TComponentProps>> {
   const { name, component: TechDocsAddon } = options;
@@ -67,7 +67,10 @@ export function createTechDocsAddon<TComponentProps>(
   });
 }
 
-const getTechDocsAddonByName = (collection: ElementCollection, key: string) => {
+const getTechDocsAddonByName = (
+  collection: ElementCollection,
+  key: string,
+): JSX.Element | undefined => {
   return collection.selectByComponentData({ key }).getElements()[0];
 };
 
@@ -118,7 +121,7 @@ export const useTechDocsAddons = () => {
   );
 
   const renderComponentsByLocation = useCallback(
-    (location: TechDocsAddonLocations) => {
+    (location: keyof typeof TechDocsAddonLocations) => {
       const data = options.filter(option => option.location === location);
       return data.length ? data.map(findAddonByData) : null;
     },

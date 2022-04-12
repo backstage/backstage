@@ -37,19 +37,22 @@ export const TechDocsReaderPageSubheader = withStyles(theme => ({
   },
 }))(({ toolbarProps }: { toolbarProps?: ToolbarProps }) => {
   const addons = useTechDocsAddons();
+  const subheaderAddons = addons.renderComponentsByLocation(
+    locations.Subheader,
+  );
 
-  if (!addons.renderComponentsByLocation(locations.SUBHEADER)) return null;
+  if (!subheaderAddons) return null;
 
   return (
     <Toolbar {...toolbarProps}>
-      {addons.renderComponentsByLocation(locations.SUBHEADER) && (
+      {subheaderAddons && (
         <Box
           display="flex"
           justifyContent="flex-end"
           width="100%"
           flexWrap="wrap"
         >
-          {addons.renderComponentsByLocation(locations.SUBHEADER)}
+          {subheaderAddons}
         </Box>
       )}
     </Toolbar>

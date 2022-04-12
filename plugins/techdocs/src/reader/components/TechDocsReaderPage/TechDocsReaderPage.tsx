@@ -19,15 +19,16 @@ import { useOutlet, useParams } from 'react-router-dom';
 
 import { Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { TECHDOCS_ADDONS_WRAPPER_KEY } from '@backstage/plugin-techdocs-react';
+import {
+  TECHDOCS_ADDONS_WRAPPER_KEY,
+  TechDocsReaderPageProvider,
+} from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPageRenderFunction } from '../../../types';
 
 import { TechDocsReaderPageContent } from '../TechDocsReaderPageContent';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
 import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
-
-import { TechDocsReaderPageProvider } from './context';
 
 type Extension = ReactChild & {
   type: {
@@ -81,14 +82,11 @@ export type TechDocsReaderPageProps = {
  * An addon-aware implementation of the TechDocsReaderPage.
  * @public
  */
-export const TechDocsReaderPage = ({
-  entityRef,
-  children,
-}: TechDocsReaderPageProps) => {
+export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   const { kind, name, namespace } = useParams();
+  const { children, entityRef = { kind, name, namespace } } = props;
 
   const outlet = useOutlet();
-  const entityName = entityRef ?? { kind, name, namespace };
 
   if (!children) {
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
@@ -100,7 +98,7 @@ export const TechDocsReaderPage = ({
 
     return (
       (page as JSX.Element) || (
-        <TechDocsReaderPageProvider entityName={entityName}>
+        <TechDocsReaderPageProvider entityRef={entityRef}>
           <TechDocsReaderLayout />
         </TechDocsReaderPageProvider>
       )
@@ -108,12 +106,12 @@ export const TechDocsReaderPage = ({
   }
 
   return (
-    <TechDocsReaderPageProvider entityName={entityName}>
+    <TechDocsReaderPageProvider entityRef={entityRef}>
       {({ metadata, entityMetadata, onReady }) => (
         <Page themeId="documentation">
           {children instanceof Function
             ? children({
-                entityRef: entityName,
+                entityRef,
                 techdocsMetadataValue: metadata.value,
                 entityMetadataValue: entityMetadata.value,
                 onReady,

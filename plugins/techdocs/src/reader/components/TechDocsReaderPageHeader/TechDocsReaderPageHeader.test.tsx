@@ -21,12 +21,13 @@ import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  techdocsApiRef,
+  TechDocsReaderPageProvider,
+} from '@backstage/plugin-techdocs-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-import { techdocsApiRef } from '../../../api';
 import { rootRouteRef } from '../../../routes';
-
-import { TechDocsReaderPageProvider } from '../TechDocsReaderPage';
 
 import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
 
@@ -60,19 +61,19 @@ const techdocsApiMock = {
 };
 
 const Wrapper = ({
-  entityName = {
+  entityRef = {
     kind: mockEntityMetadata.kind,
     name: mockEntityMetadata.metadata.name,
     namespace: mockEntityMetadata.metadata.namespace!!,
   },
   children,
 }: {
-  entityName?: CompoundEntityRef;
+  entityRef?: CompoundEntityRef;
   children: React.ReactNode;
 }) => (
   <ThemeProvider theme={lightTheme}>
     <TestApiProvider apis={[[techdocsApiRef, techdocsApiMock]]}>
-      <TechDocsReaderPageProvider entityName={entityName}>
+      <TechDocsReaderPageProvider entityRef={entityRef}>
         {children}
       </TechDocsReaderPageProvider>
     </TestApiProvider>

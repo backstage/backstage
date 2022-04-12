@@ -62,8 +62,8 @@ export const TechDocsReaderProvider = ({
   children,
 }: TechDocsReaderProviderProps) => {
   const { '*': path = '' } = useParams();
-  const { entityName } = useTechDocsReaderPage();
-  const { kind, namespace, name } = entityName;
+  const { entityRef } = useTechDocsReaderPage();
+  const { kind, namespace, name } = entityRef;
   const value = useReaderState(kind, namespace, name, path);
 
   return (

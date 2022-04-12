@@ -17,13 +17,8 @@
 export type {
   TechDocsReaderPageProps,
   TechDocsReaderLayoutProps,
-  TechDocsReaderPageProviderProps,
-  TechDocsReaderPageProviderRenderFunction,
 } from './TechDocsReaderPage';
-export {
-  TechDocsReaderLayout,
-  TechDocsReaderPageProvider,
-} from './TechDocsReaderPage';
+export { TechDocsReaderLayout } from './TechDocsReaderPage';
 export * from './TechDocsReaderPageHeader';
 export * from './TechDocsReaderPageContent';
 export * from './TechDocsReaderPageSubheader';

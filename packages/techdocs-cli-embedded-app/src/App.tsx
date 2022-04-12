@@ -24,7 +24,7 @@ import {
   techdocsPlugin,
 } from '@backstage/plugin-techdocs';
 import {
-  createTechDocsAddon,
+  createTechDocsAddonExtension,
   TechDocsAddons,
   TechDocsAddonLocations,
 } from '@backstage/plugin-techdocs-react';
@@ -48,10 +48,10 @@ const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
 
 const ThemeToggleAddon = techdocsPlugin.provide(
-  createTechDocsAddon({
+  createTechDocsAddonExtension({
     name: 'ThemeToggleAddon',
     component: TechDocsThemeToggle,
-    location: TechDocsAddonLocations.HEADER,
+    location: TechDocsAddonLocations.Header,
   }),
 );
 

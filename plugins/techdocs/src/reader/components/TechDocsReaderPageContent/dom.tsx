@@ -75,7 +75,7 @@ export const useTechDocsReaderDom = (
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const techdocsSanitizer = useApi(configApiRef);
-  const { namespace = '', kind = '', name = '' } = entityRef;
+  const { namespace, kind, name } = entityRef;
   const { state, path, content: rawPage } = useTechDocsReader();
   const isDarkTheme = theme.palette.type === 'dark';
 

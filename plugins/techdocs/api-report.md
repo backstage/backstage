@@ -23,7 +23,6 @@ import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
-import { TechDocsReaderPageValue } from '@backstage/plugin-techdocs-react';
 import { ToolbarProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -207,7 +206,7 @@ export interface TabConfig {
 // @public
 export type TabsConfig = TabConfig[];
 
-// @public
+// @public @deprecated
 export interface TechDocsApi {
   // (undocumented)
   getApiOrigin(): Promise<string>;
@@ -219,7 +218,7 @@ export interface TechDocsApi {
   getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata_2>;
 }
 
-// @public
+// @public @deprecated
 export const techdocsApiRef: ApiRef<TechDocsApi>;
 
 // @public
@@ -305,10 +304,9 @@ export type TechDocsReaderLayoutProps = {
 };
 
 // @public
-export const TechDocsReaderPage: ({
-  entityRef,
-  children,
-}: TechDocsReaderPageProps) => JSX.Element;
+export const TechDocsReaderPage: (
+  props: TechDocsReaderPageProps,
+) => JSX.Element;
 
 // @public
 export const TechDocsReaderPageContent: (
@@ -339,22 +337,6 @@ export type TechDocsReaderPageProps = {
   entityRef?: CompoundEntityRef;
   children?: TechDocsReaderPageRenderFunction | ReactNode;
 };
-
-// @public
-export const TechDocsReaderPageProvider: React_2.MemoExoticComponent<
-  ({ entityName, children }: TechDocsReaderPageProviderProps) => JSX.Element
->;
-
-// @public
-export type TechDocsReaderPageProviderProps = {
-  entityName: CompoundEntityRef;
-  children: TechDocsReaderPageProviderRenderFunction | ReactNode;
-};
-
-// @public
-export type TechDocsReaderPageProviderRenderFunction = (
-  value: TechDocsReaderPageValue,
-) => JSX.Element;
 
 // @public
 export type TechDocsReaderPageRenderFunction = ({

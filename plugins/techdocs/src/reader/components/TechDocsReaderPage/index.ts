@@ -19,8 +19,3 @@ export type {
   TechDocsReaderPageProps,
   TechDocsReaderLayoutProps,
 } from './TechDocsReaderPage';
-export { TechDocsReaderPageProvider } from './context';
-export type {
-  TechDocsReaderPageProviderProps,
-  TechDocsReaderPageProviderRenderFunction,
-} from './context';

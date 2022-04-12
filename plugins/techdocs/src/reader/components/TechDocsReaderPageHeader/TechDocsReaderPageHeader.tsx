@@ -70,7 +70,7 @@ export const TechDocsReaderPageHeader = (
     setTitle,
     subtitle,
     setSubtitle,
-    entityName,
+    entityRef,
     metadata: { value: metadata },
     entityMetadata: { value: entityMetadata },
   } = useTechDocsReaderPage();
@@ -109,7 +109,7 @@ export const TechDocsReaderPageHeader = (
         value={
           <EntityRefLink
             color="inherit"
-            entityRef={entityName}
+            entityRef={entityRef}
             defaultKind="Component"
           />
         }
@@ -158,7 +158,7 @@ export const TechDocsReaderPageHeader = (
       </Helmet>
       {labels}
       {children}
-      {addons.renderComponentsByLocation(locations.HEADER)}
+      {addons.renderComponentsByLocation(locations.Header)}
     </Header>
   );
 };

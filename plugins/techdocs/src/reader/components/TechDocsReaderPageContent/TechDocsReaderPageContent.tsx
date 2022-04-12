@@ -72,8 +72,8 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const { withSearch = true, onReady } = props;
     const classes = useStyles();
     const addons = useTechDocsAddons();
-    const { entityName, shadowRoot, setShadowRoot } = useTechDocsReaderPage();
-    const dom = useTechDocsReaderDom(entityName);
+    const { entityRef, shadowRoot, setShadowRoot } = useTechDocsReaderPage();
+    const dom = useTechDocsReaderDom(entityRef);
 
     const [jss, setJss] = useState(
       create({
@@ -138,7 +138,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
           </Grid>
           {withSearch && (
             <Grid className={classes.search} xs="auto" item>
-              <TechDocsSearch entityId={entityName} />
+              <TechDocsSearch entityId={entityRef} />
             </Grid>
           )}
           <Grid xs={12} item>
@@ -146,13 +146,13 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
             <StylesProvider jss={jss} sheetsManager={new Map()}>
               <div ref={ref} data-testid="techdocs-native-shadowroot" />
               <Portal container={primarySidebarAddonLocation}>
-                {addons.renderComponentsByLocation(locations.PRIMARY_SIDEBAR)}
+                {addons.renderComponentsByLocation(locations.PrimarySidebar)}
               </Portal>
               <Portal container={contentElement}>
-                {addons.renderComponentsByLocation(locations.CONTENT)}
+                {addons.renderComponentsByLocation(locations.Content)}
               </Portal>
               <Portal container={secondarySidebarAddonLocation}>
-                {addons.renderComponentsByLocation(locations.SECONDARY_SIDEBAR)}
+                {addons.renderComponentsByLocation(locations.SecondarySidebar)}
               </Portal>
             </StylesProvider>
           </Grid>
