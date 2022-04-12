@@ -1,5 +1,14 @@
 # @backstage/backend-common
 
+## 0.13.2-next.2
+
+### Patch Changes
+
+- 19f6c6c32a: The backend will no longer fail to start up when configured secrets do not match the configuration schema.
+- Updated dependencies
+  - @backstage/config-loader@1.1.0-next.1
+  - @backstage/integration@1.1.0-next.2
+
 ## 0.13.2-next.1
 
 ### Patch Changes

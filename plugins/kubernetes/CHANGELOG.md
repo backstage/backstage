@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.4-next.2
+
+### Patch Changes
+
+- 82e2ae6ff6: build(deps): bump `cronstrue` from 1.125.0 to 2.2.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.3
+
 ## 0.6.4-next.1
 
 ### Patch Changes

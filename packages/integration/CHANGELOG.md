@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.1.0-next.2
+
+### Patch Changes
+
+- d26e1b0146: Exported `replaceGitLabUrlType` from package
+
 ## 1.1.0-next.1
 
 ### Minor Changes

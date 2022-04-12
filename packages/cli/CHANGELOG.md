@@ -1,5 +1,30 @@
 # @backstage/cli
 
+## 0.17.0-next.3
+
+### Patch Changes
+
+- e80ecad93c: Bump the `rushstack` api generator libraries to their latest versions
+- 3c26b2edb5: build(deps): bump `npm-packlist` from 3.0.0 to 5.0.0
+- f512554910: Updated the plugin template to install version 14 of `@testing-library/user-event`.
+
+  To apply this change to your own project, update the `devDependencies` section in your `package.json` files:
+
+  ```diff
+   "devDependencies": {
+     ... omitted dev dependencies ...
+  -   "@testing-library/user-event": "^13.1.8",
+  +   "@testing-library/user-event": "^14.0.0",
+      ... omitted dev dependencies ...
+   }
+  ```
+
+- df7862cfa6: Fixed a bug were the `react-hot-loader` transform was being applied to backend development builds.
+- 230ad0826f: Bump to using `@types/node` v16
+- 0383cd0228: The `versions:*` commands no longer warns about duplicate plugin libraries, such as `@backstage/plugin-catalog-common`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.0-next.1
+
 ## 0.17.0-next.2
 
 ### Patch Changes

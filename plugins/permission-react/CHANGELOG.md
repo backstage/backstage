@@ -1,5 +1,14 @@
 # @backstage/plugin-permission-react
 
+## 0.4.0-next.1
+
+### Patch Changes
+
+- 322b69e46a: **BREAKING:** Make `IdentityPermissionApi#authorize` typing more strict, using `AuthorizePermissionRequest` and `AuthorizePermissionResponse`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/plugin-permission-common@0.6.0-next.1
+
 ## 0.4.0-next.0
 
 ### Minor Changes

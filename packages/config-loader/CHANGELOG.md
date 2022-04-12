@@ -1,5 +1,15 @@
 # @backstage/config-loader
 
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 19f6c6c32a: Added `ignoreSchemaErrors` to `schema.process`.
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+
 ## 1.0.1-next.0
 
 ### Patch Changes
