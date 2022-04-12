@@ -357,8 +357,8 @@ annotations:
 
 #### Adding the namespace annotation
 
-Additionally entities can have the `backstage.io/kubernetes-namespace` annotation to use namespaced
-lookups instead of the default cluster wide lookups.
+Entities can have the `backstage.io/kubernetes-namespace` annotation, this will cause the entity's Kubernetes resources
+to by looked up via that namespace.
 
 ```yaml
 annotations:
