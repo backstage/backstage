@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-replaceGitLabUrlType exported from package
+Exported `replaceGitLabUrlType` from package

@@ -80,17 +80,17 @@ export type TechDocsReaderPageValue = {
   onReady?: () => void;
 };
 
-// @public
+// @alpha
 export const useShadowRoot: () => ShadowRoot | undefined;
 
-// @public
+// @alpha
 export const useShadowRootElements: <
   TReturnedElement extends HTMLElement = HTMLElement,
 >(
   selectors: string[],
 ) => TReturnedElement[];
 
-// @public
+// @alpha
 export const useShadowRootSelection: (wait?: number) => Selection | null;
 
 // @alpha
