@@ -72,6 +72,7 @@ backend:
 +      port: ${POSTGRES_PORT}
 +      user: ${POSTGRES_USER}
 +      password: ${POSTGRES_PASSWORD}
++    # Refer to Tarn docs for default values on PostgreSQL pool configuration - https://github.com/Vincit/tarn.js
 +    knexConfig:
 +      pool: 
 +        min: 3
@@ -83,8 +84,6 @@ backend:
 +      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
 +      # ssl:
 +      #   ca: # if you have a CA file and want to verify it you can uncomment this section
-+      #     $file: <file-path>/ca/server.crt
-+      #
-+      # Refer to Tarn docs for default values on PostgreSQL pool configuration - https://github.com/Vincit/tarn.js
++      #     $file: <file-path>/ca/server.crt      
 ```
   
