@@ -76,11 +76,14 @@ export enum TechDocsAddonLocations {
    * attributes provided on that element, for example:
    *
    * ```md
+   * ## For Fun
+   * <TechDocsAddon>CatGif</TechDocsAddon>
+   *
    * ## Component Metadata
-   * [CatalogEntityCard](default:component/some-component-name)
+   * <TechDocsAddon entityRef="default:component/some-component-name">CatalogEntityCard</TechDocsAddon>
    *
    * ## System Metadata
-   * [CatalogEntityCard](default:system/some-system-name)
+   * <TechDocsAddon entityRef="default:system/some-system-name">CatalogEntityCard</TechDocsAddon>
    * ```
    *
    * Could correspond to a TechDocs addon named `CatalogEntityCard` with
@@ -90,8 +93,9 @@ export enum TechDocsAddonLocations {
    *
    * The `@backstage/plugin-techdocs-react` package would need to be updated to, in
    * cases where such addons had been registered, find all instances of the
-   * rendered markdown (e.g. `<a href="{entityRef}">CatalogEntityCard</a>`) and
-   * replace them with react portals to the addon component.
+   * the `<TechDocsAddon>` tag whose `textContent` corresponded with the name of the
+   * addon, then replace them with component instances of the addon component,
+   * passing any attributes from the tag as props to the component.
    */
   // COMPONENT = 'component',
 }
