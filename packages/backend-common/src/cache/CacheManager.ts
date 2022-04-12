@@ -16,7 +16,6 @@
 
 import { Config } from '@backstage/config';
 import Keyv from 'keyv';
-// @ts-expect-error
 import KeyvMemcache from 'keyv-memcache';
 // @ts-expect-error
 import KeyvRedis from '@keyv/redis';
