@@ -90,7 +90,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
 
     if ('entityRef' in query) {
       const entityRef = parseEntityRef(query.entityRef, {
-        defaultKind: 'user',
+        defaultKind: 'User',
         defaultNamespace: DEFAULT_NAMESPACE,
       });
       result = await this.catalogApi.getEntityByRef(entityRef, { token });
