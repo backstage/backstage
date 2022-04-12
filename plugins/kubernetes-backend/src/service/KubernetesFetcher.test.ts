@@ -515,12 +515,12 @@ describe('KubernetesFetcher', () => {
       },
       objectTypesToFetch: OBJECTS_TO_FETCH,
       labelSelector: '',
-      namespace: "some-namespace",
+      namespace: 'some-namespace',
       customResources: [],
     });
 
     const mockCall = clientMock.listNamespacedCustomObject.mock.calls[0];
-    const namespace = mockCall[2]
-    expect(namespace).toBe("some-namespace");
+    const namespace = mockCall[2];
+    expect(namespace).toBe('some-namespace');
   });
 });

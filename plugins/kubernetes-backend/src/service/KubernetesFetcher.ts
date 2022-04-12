@@ -97,7 +97,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           params.labelSelector ||
             `backstage.io/kubernetes-id=${params.serviceId}`,
           toFetch.objectType,
-          params.namespace
+          params.namespace,
         ).catch(this.captureKubernetesErrorsRethrowOthers.bind(this));
       });
 
@@ -139,39 +139,21 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     resource: ObjectToFetch,
     labelSelector: string,
     objectType: KubernetesObjectTypes,
-    namespace?: string
+    namespace?: string,
   ): Promise<FetchResponse> {
     const customObjects =
       this.kubernetesClientProvider.getCustomObjectsClient(clusterDetails);
 
-      customObjects.addInterceptor((requestOptions: any) => {
-        requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
-      });
+    customObjects.addInterceptor((requestOptions: any) => {
+      requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
+    });
 
-    if(namespace){
+    if (namespace) {
       return customObjects
-      .listNamespacedCustomObject(
-        resource.group,
-        resource.apiVersion,
-        namespace,
-        resource.plural,
-        '',
-        false,
-        '',
-        '',
-        labelSelector,
-      )
-      .then(r => {
-        return {
-          type: objectType,
-          resources: (r.body as any).items,
-        };
-      });
-    } else {
-      return customObjects
-        .listClusterCustomObject(
+        .listNamespacedCustomObject(
           resource.group,
           resource.apiVersion,
+          namespace,
           resource.plural,
           '',
           false,
@@ -186,5 +168,22 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           };
         });
     }
+    return customObjects
+      .listClusterCustomObject(
+        resource.group,
+        resource.apiVersion,
+        resource.plural,
+        '',
+        false,
+        '',
+        '',
+        labelSelector,
+      )
+      .then(r => {
+        return {
+          type: objectType,
+          resources: (r.body as any).items,
+        };
+      });
   }
 }
