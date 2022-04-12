@@ -9,6 +9,7 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -28,6 +29,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   getInstance(opt: {
     entityRef: CompoundEntityRef;
     jobFullName?: string;
+    backstageToken?: string;
   }): Promise<JenkinsInfo>;
   // (undocumented)
   static readonly NEW_JENKINS_ANNOTATION = 'jenkins.io/job-full-name';
@@ -68,6 +70,7 @@ export interface JenkinsInfoProvider {
   getInstance(options: {
     entityRef: CompoundEntityRef;
     jobFullName?: string;
+    backstageToken?: string;
   }): Promise<JenkinsInfo>;
 }
 
@@ -96,6 +99,6 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissions?: PermissionAuthorizer;
+  permissions?: PermissionEvaluator | PermissionAuthorizer;
 }
 ```

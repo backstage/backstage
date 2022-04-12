@@ -25,7 +25,7 @@ import React from 'react';
 import { TechDocsStorageApi, techdocsStorageApiRef } from '../../api';
 import { Reader } from './Reader';
 import { ApiProvider } from '@backstage/core-app-api';
-import { searchApiRef } from '@backstage/plugin-search';
+import { searchApiRef } from '@backstage/plugin-search-react';
 
 jest.mock('react-router-dom', () => {
   const actual = jest.requireActual('react-router-dom');

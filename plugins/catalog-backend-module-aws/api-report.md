@@ -7,8 +7,11 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
+import { EntityProvider } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
+import { TaskRunner } from '@backstage/backend-tasks';
 import { UrlReader } from '@backstage/backend-common';
 
 // @public
@@ -42,5 +45,23 @@ export class AwsS3DiscoveryProcessor implements CatalogProcessor {
     emit: CatalogProcessorEmit,
     parser: CatalogProcessorParser,
   ): Promise<boolean>;
+}
+
+// @public
+export class AwsS3EntityProvider implements EntityProvider {
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    configRoot: Config,
+    options: {
+      logger: Logger;
+      schedule: TaskRunner;
+    },
+  ): AwsS3EntityProvider[];
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  refresh(logger: Logger): Promise<void>;
 }
 ```

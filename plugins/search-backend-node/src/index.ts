@@ -36,6 +36,8 @@ export type {
 export * from './indexing';
 export * from './test-utils';
 
+export type { ScheduleTaskParameters } from './Scheduler';
+
 /**
  * @deprecated Import from @backstage/plugin-search-common instead
  */

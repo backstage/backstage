@@ -110,7 +110,7 @@ jobs:
         continue-on-error: true
 
       - name: prettier
-        run: yarn prettier:check '!ADOPTERS.md'
+        run: yarn prettier:check
 
       - name: lock
         run: yarn lock:check
@@ -136,6 +136,9 @@ jobs:
 
       - name: verify doc links
         run: node scripts/verify-links.js
+
+      - name: verify local dependency ranges
+        run: node scripts/verify-local-dependencies.js
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}

@@ -34,9 +34,11 @@ export type CheckResultRenderer = {
 export const EntityTechInsightsScorecardContent: ({
   title,
   description,
+  checksId,
 }: {
   title?: string | undefined;
   description?: string | undefined;
+  checksId?: string[] | undefined;
 }) => JSX.Element;
 
 // @public
@@ -58,7 +60,7 @@ export interface TechInsightsApi {
   // (undocumented)
   runChecks(
     entityParams: CompoundEntityRef,
-    checks?: Check[],
+    checks?: string[],
   ): Promise<CheckResult[]>;
 }
 

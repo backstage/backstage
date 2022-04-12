@@ -211,8 +211,10 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     if (optionalCacheKey) {
       return crypto.createPublicKey(optionalCacheKey);
     }
-    const keyText: string = await fetch(
-      `https://public-keys.auth.elb.${this.region}.amazonaws.com/${keyId}`,
+    const keyText = await fetch(
+      `https://public-keys.auth.elb.${encodeURIComponent(
+        this.region,
+      )}.amazonaws.com/${encodeURIComponent(keyId)}`,
     ).then(response => response.text());
     const keyValue = crypto.createPublicKey(keyText);
     this.keyCache.set(keyId, keyValue.export({ format: 'pem', type: 'spki' }));

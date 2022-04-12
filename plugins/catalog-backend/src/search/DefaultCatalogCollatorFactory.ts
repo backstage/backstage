@@ -23,11 +23,7 @@ import {
   CatalogClient,
   GetEntitiesRequest,
 } from '@backstage/catalog-client';
-import {
-  Entity,
-  stringifyEntityRef,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import {
@@ -36,6 +32,7 @@ import {
 } from '@backstage/plugin-catalog-common';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
+import { getDocumentText } from './util';
 
 /** @public */
 export type DefaultCatalogCollatorFactoryOptions = {
@@ -100,24 +97,6 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     return formatted.toLowerCase();
   }
 
-  private isUserEntity(entity: Entity): entity is UserEntity {
-    return entity.kind.toLocaleUpperCase('en-US') === 'USER';
-  }
-
-  private getDocumentText(entity: Entity): string {
-    let documentText = entity.metadata.description || '';
-    if (this.isUserEntity(entity)) {
-      if (entity.spec?.profile?.displayName && documentText) {
-        // combine displayName and description
-        const displayName = entity.spec?.profile?.displayName;
-        documentText = displayName.concat(' : ', documentText);
-      } else {
-        documentText = entity.spec?.profile?.displayName || documentText;
-      }
-    }
-    return documentText;
-  }
-
   private async *execute(): AsyncGenerator<CatalogEntityDocument> {
     const { token } = await this.tokenManager.getToken();
     let entitiesRetrieved = 0;
@@ -150,7 +129,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
             kind: entity.kind,
             name: entity.metadata.name,
           }),
-          text: this.getDocumentText(entity),
+          text: getDocumentText(entity),
           componentType: entity.spec?.type?.toString() || 'other',
           type: entity.spec?.type?.toString() || 'other',
           namespace: entity.metadata.namespace || 'default',

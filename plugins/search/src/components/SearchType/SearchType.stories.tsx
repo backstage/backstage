@@ -19,7 +19,7 @@ import CatalogIcon from '@material-ui/icons/MenuBook';
 import DocsIcon from '@material-ui/icons/Description';
 import UsersGroupsIcon from '@material-ui/icons/Person';
 import React, { ComponentType } from 'react';
-import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchContextProviderForStorybook } from '@backstage/plugin-search-react';
 import { SearchType } from './SearchType';
 
 export default {
@@ -27,13 +27,13 @@ export default {
   component: SearchType,
   decorators: [
     (Story: ComponentType<{}>) => (
-      <SearchContextProvider>
+      <SearchContextProviderForStorybook>
         <Grid container direction="row">
           <Grid item xs={4}>
             <Story />
           </Grid>
         </Grid>
-      </SearchContextProvider>
+      </SearchContextProviderForStorybook>
     ),
   ],
 };

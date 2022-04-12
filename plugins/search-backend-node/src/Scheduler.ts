@@ -14,29 +14,38 @@
  * limitations under the License.
  */
 
+import { AbortController } from 'node-abort-controller';
 import { Logger } from 'winston';
-import { runPeriodically } from './runPeriodically';
+import { TaskFunction, TaskRunner } from '@backstage/backend-tasks';
 
 type TaskEnvelope = {
-  task: Function;
-  interval: number;
+  task: TaskFunction;
+  scheduledRunner: TaskRunner;
 };
 
 /**
- * TODO: coordination, error handling
+ * @public ScheduleTaskParameters
  */
+export interface ScheduleTaskParameters {
+  id: string;
+  task: TaskFunction;
+  scheduledRunner: TaskRunner;
+}
 
 /**
  * @beta
  */
 export class Scheduler {
   private logger: Logger;
-  private schedule: TaskEnvelope[];
-  private runningTasks: Function[] = [];
+  private schedule: { [id: string]: TaskEnvelope };
+  private abortController: AbortController;
+  private isRunning: boolean;
 
   constructor({ logger }: { logger: Logger }) {
     this.logger = logger;
-    this.schedule = [];
+    this.schedule = {};
+    this.abortController = new AbortController();
+    this.isRunning = false;
   }
 
   /**
@@ -44,13 +53,18 @@ export class Scheduler {
    * When running the tasks, the scheduler waits at least for the time specified
    * in the interval once the task was completed, before running it again.
    */
-  addToSchedule(task: Function, interval: number) {
-    if (this.runningTasks.length) {
+  addToSchedule({ id, task, scheduledRunner }: ScheduleTaskParameters) {
+    if (this.isRunning) {
       throw new Error(
         'Cannot add task to schedule that has already been started.',
       );
     }
-    this.schedule.push({ task, interval });
+
+    if (this.schedule[id]) {
+      throw new Error(`Task with id ${id} already exists.`);
+    }
+
+    this.schedule[id] = { task, scheduledRunner };
   }
 
   /**
@@ -58,8 +72,14 @@ export class Scheduler {
    */
   start() {
     this.logger.info('Starting all scheduled search tasks.');
-    this.schedule.forEach(({ task, interval }) => {
-      this.runningTasks.push(runPeriodically(() => task(), interval));
+    this.isRunning = true;
+    Object.keys(this.schedule).forEach(id => {
+      const { task, scheduledRunner } = this.schedule[id];
+      scheduledRunner.run({
+        id,
+        fn: task,
+        signal: this.abortController.signal,
+      });
     });
   }
 
@@ -68,9 +88,7 @@ export class Scheduler {
    */
   stop() {
     this.logger.info('Stopping all scheduled search tasks.');
-    this.runningTasks.forEach(cancel => {
-      cancel();
-    });
-    this.runningTasks = [];
+    this.abortController.abort();
+    this.isRunning = false;
   }
 }

@@ -29,7 +29,7 @@ import React, { ComponentType } from 'react';
 import { rootRouteRef } from '../../plugin';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchBar } from '../SearchBar';
-import { SearchApiProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchApiProviderForStorybook } from '@backstage/plugin-search-react';
 import { SearchModal } from './SearchModal';
 import { SearchResult } from '../SearchResult';
 import { SearchResultPager } from '../SearchResultPager';
@@ -71,9 +71,9 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(
-        <SearchApiProvider mockedResults={mockResults}>
+        <SearchApiProviderForStorybook mockedResults={mockResults}>
           <Story />
-        </SearchApiProvider>,
+        </SearchApiProviderForStorybook>,
         { mountedRoutes: { '/search': rootRouteRef } },
       ),
   ],

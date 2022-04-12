@@ -21,3 +21,4 @@
  */
 
 export * from './processors';
+export * from './providers';

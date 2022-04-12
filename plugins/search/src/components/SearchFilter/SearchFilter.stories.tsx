@@ -16,7 +16,7 @@
 
 import { Grid, Paper } from '@material-ui/core';
 import React, { ComponentType } from 'react';
-import { SearchContextProvider } from '../SearchContext/SearchContextForStorybook.stories';
+import { SearchContextProviderForStorybook } from '@backstage/plugin-search-react';
 import { SearchFilter } from './SearchFilter';
 
 export default {
@@ -24,13 +24,13 @@ export default {
   component: SearchFilter,
   decorators: [
     (Story: ComponentType<{}>) => (
-      <SearchContextProvider>
+      <SearchContextProviderForStorybook>
         <Grid container direction="row">
           <Grid item xs={4}>
             <Story />
           </Grid>
         </Grid>
-      </SearchContextProvider>
+      </SearchContextProviderForStorybook>
     ),
   ],
 };

@@ -51,6 +51,9 @@ export type SearchContextState = {
   pageCursor?: string;
 };
 
+/**
+ * @deprecated import from `@backstage/plugin-search-react` instead
+ */
 export const SearchContext = createContext<SearchContextValue | undefined>(
   undefined,
 );
@@ -62,6 +65,9 @@ const searchInitialState: SearchContextState = {
   types: [],
 };
 
+/**
+ * @deprecated import from `@backstage/plugin-search-react` instead
+ */
 export const SearchContextProvider = ({
   initialState = searchInitialState,
   children,
@@ -126,6 +132,9 @@ export const SearchContextProvider = ({
   );
 };
 
+/**
+ * @deprecated import from "@backstage/plugin-search-react" instead
+ */
 export const useSearch = () => {
   const context = useContext(SearchContext);
   if (context === undefined) {

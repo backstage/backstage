@@ -83,7 +83,7 @@ export const Router: () => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "SearchApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface SearchApi {
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
@@ -91,7 +91,7 @@ export interface SearchApi {
 
 // Warning: (ae-missing-release-tag) "searchApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
 // @public (undocumented)
@@ -140,7 +140,7 @@ export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 // Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const SearchContextProvider: ({
   initialState,
   children,
@@ -330,10 +330,11 @@ export type SidebarSearchProps = {
   icon?: IconComponent;
 };
 
+// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
 // Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const useSearch: () => SearchContextValue;
 
 // @public

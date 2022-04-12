@@ -95,18 +95,13 @@ export function useUnregisterEntityDialogState(
     );
   }, [catalogApi, entity]);
 
-  // Unregisters the underlying location and removes all of the entities that
-  // are spawned from it. Can only ever be called when the prerequisites have
-  // finished loading successfully, and if there was a matching location.
+  // Unregisters the underlying location which will remove all of the entities that are spawned from
+  // it. Can only ever be called when the prerequisites have finished loading successfully, and if
+  // there was a matching location.
   const unregisterLocation = useCallback(
     async function unregisterLocationFn() {
-      const { location, colocatedEntities } = prerequisites.value!;
+      const { location } = prerequisites.value!;
       await catalogApi.removeLocationById(location!.id);
-      await Promise.allSettled(
-        colocatedEntities.map(e =>
-          catalogApi.removeEntityByUid(e.metadata.uid!),
-        ),
-      );
     },
     [catalogApi, prerequisites],
   );

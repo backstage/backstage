@@ -256,6 +256,18 @@ The Backstage CLI is in a category of its own and is depended on by virtually
 all other packages. It's not a library in itself though, and must always be a
 development dependency only.
 
+### Deciding where you place your code
+
+It can sometimes be difficult to decide where to place your plugin code. For example
+should it go directly in the `-backend` plugin package or in the `-node` package?
+As a rule of thumb you should try to keep the exposure of your code as low
+as possible. If it doesn't need to be public API, it's best to avoid. If you don't
+need it to be used by other plugins, then keep it directly in the plugin packages.
+
+Below is a chart to help you decide where to place your code.
+
+![Package decision](../assets/architecture-overview/package-decision.drawio.svg)
+
 ## Databases
 
 As we have seen, both the `lighthouse-audit-service` and `catalog-backend`

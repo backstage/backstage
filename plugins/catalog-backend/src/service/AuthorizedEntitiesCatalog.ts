@@ -22,7 +22,7 @@ import {
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
-  PermissionAuthorizer,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import {
@@ -39,13 +39,13 @@ import { basicEntityFilter } from './request/basicEntityFilter';
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   constructor(
     private readonly entitiesCatalog: EntitiesCatalog,
-    private readonly permissionApi: PermissionAuthorizer,
+    private readonly permissionApi: PermissionEvaluator,
     private readonly transformConditions: ConditionTransformer<EntityFilter>,
   ) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const authorizeDecision = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
         { token: request?.authorizationToken },
       )
@@ -78,7 +78,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     options?: { authorizationToken?: string },
   ): Promise<void> {
     const authorizeResponse = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityDeletePermission }],
         { token: options?.authorizationToken },
       )
@@ -155,7 +155,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
 
   async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
     const authorizeDecision = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
         { token: request?.authorizationToken },
       )

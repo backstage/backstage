@@ -16,6 +16,20 @@ export type AnyOfCriteria<TQuery> = {
 };
 
 // @public
+export type AuthorizePermissionRequest =
+  | {
+      permission: Exclude<Permission, ResourcePermission>;
+      resourceRef?: never;
+    }
+  | {
+      permission: ResourcePermission;
+      resourceRef: string;
+    };
+
+// @public
+export type AuthorizePermissionResponse = DefinitivePolicyDecision;
+
+// @public
 export type AuthorizeRequestOptions = {
   token?: string;
 };
@@ -79,6 +93,11 @@ export type EvaluatePermissionResponseBatch =
   PermissionMessageBatch<EvaluatePermissionResponse>;
 
 // @public
+export type EvaluatorRequestOptions = {
+  token?: string;
+};
+
+// @public
 export type IdentifiedPermissionMessage<T> = T & {
   id: string;
 };
@@ -120,7 +139,7 @@ export type PermissionAttributes = {
   action?: 'create' | 'read' | 'update' | 'delete';
 };
 
-// @public
+// @public @deprecated
 export interface PermissionAuthorizer {
   // (undocumented)
   authorize(
@@ -138,12 +157,16 @@ export type PermissionBase<TType extends string, TFields extends object> = {
 } & TFields;
 
 // @public
-export class PermissionClient implements PermissionAuthorizer {
+export class PermissionClient implements PermissionEvaluator {
   constructor(options: { discovery: DiscoveryApi; config: Config });
   authorize(
-    queries: EvaluatePermissionRequest[],
-    options?: AuthorizeRequestOptions,
-  ): Promise<EvaluatePermissionResponse[]>;
+    requests: AuthorizePermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]>;
+  authorizeConditional(
+    queries: QueryPermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<QueryPermissionResponse[]>;
 }
 
 // @public
@@ -164,6 +187,18 @@ export type PermissionCriteria<TQuery> =
   | TQuery;
 
 // @public
+export interface PermissionEvaluator {
+  authorize(
+    requests: AuthorizePermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]>;
+  authorizeConditional(
+    requests: QueryPermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<QueryPermissionResponse[]>;
+}
+
+// @public
 export type PermissionMessageBatch<T> = {
   items: IdentifiedPermissionMessage<T>[];
 };
@@ -174,6 +209,15 @@ export type PolicyDecision =
   | ConditionalPolicyDecision;
 
 // @public
+export type QueryPermissionRequest = {
+  permission: ResourcePermission;
+  resourceRef?: never;
+};
+
+// @public
+export type QueryPermissionResponse = PolicyDecision;
+
+// @public
 export type ResourcePermission<TResourceType extends string = string> =
   PermissionBase<
     'resource',
@@ -181,4 +225,9 @@ export type ResourcePermission<TResourceType extends string = string> =
       resourceType: TResourceType;
     }
   >;
+
+// @public
+export function toPermissionEvaluator(
+  permissionAuthorizer: PermissionAuthorizer,
+): PermissionEvaluator;
 ```

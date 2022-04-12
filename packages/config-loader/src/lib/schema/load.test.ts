@@ -275,5 +275,12 @@ describe('loadConfigSchema', () => {
     ).toThrow(
       "Config must have required property 'x a' { missingProperty=x a } at /other",
     );
+
+    expect(
+      schema.process([{ data: { other: {} }, context: 'test' }], {
+        visibility: ['frontend'],
+        ignoreSchemaErrors: true,
+      }),
+    ).toEqual([{ data: {}, context: 'test' }]);
   });
 });

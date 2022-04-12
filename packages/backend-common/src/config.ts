@@ -41,7 +41,7 @@ const updateRedactionList = (
 ) => {
   const secretAppConfigs = schema.process(configs, {
     visibility: ['secret'],
-    withDeprecatedKeys: true,
+    ignoreSchemaErrors: true,
   });
   const secretConfig = ConfigReader.fromConfigs(secretAppConfigs);
   const values = new Set<string>();

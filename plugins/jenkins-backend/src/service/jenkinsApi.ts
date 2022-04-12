@@ -25,7 +25,7 @@ import type {
 } from '../types';
 import {
   AuthorizeResult,
-  PermissionAuthorizer,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 import { NotAllowedError } from '@backstage/errors';
@@ -64,7 +64,7 @@ export class JenkinsApiImpl {
                    ${JenkinsApiImpl.jobTreeSpec}
                  ]{0,50}`;
 
-  constructor(private readonly permissionApi?: PermissionAuthorizer) {}
+  constructor(private readonly permissionApi?: PermissionEvaluator) {}
 
   /**
    * Get a list of projects for the given JenkinsInfo.

@@ -118,6 +118,11 @@ export type ConfigSchemaProcessingOptions = {
   visibility?: ConfigVisibility[];
 
   /**
+   * When set to `true`, any schema errors in the provided configuration will be ignored.
+   */
+  ignoreSchemaErrors?: boolean;
+
+  /**
    * A transform function that can be used to transform primitive configuration values
    * during validation. The value returned from the transform function will be used
    * instead of the original value. If the transform returns `undefined`, the value

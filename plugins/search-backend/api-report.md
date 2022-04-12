@@ -8,6 +8,7 @@ import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import express from 'express';
 import { Logger } from 'winston';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
 // Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -21,7 +22,7 @@ export function createRouter(options: RouterOptions): Promise<express.Router>;
 export type RouterOptions = {
   engine: SearchEngine;
   types: Record<string, DocumentTypeInfo>;
-  permissions: PermissionAuthorizer;
+  permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
   logger: Logger;
 };

@@ -226,7 +226,7 @@ export async function createBackendConfig(
   // See frontend config
   const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
 
-  const { loaders } = transforms(options);
+  const { loaders } = transforms({ ...options, isBackend: true });
 
   const runScriptNodeArgs = new Array<string>();
   if (options.inspectEnabled) {

@@ -17,8 +17,8 @@
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { PermissionApi } from './PermissionApi';
 import {
-  EvaluatePermissionRequest,
-  EvaluatePermissionResponse,
+  AuthorizePermissionRequest,
+  AuthorizePermissionResponse,
   PermissionClient,
 } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
@@ -45,8 +45,8 @@ export class IdentityPermissionApi implements PermissionApi {
   }
 
   async authorize(
-    request: EvaluatePermissionRequest,
-  ): Promise<EvaluatePermissionResponse> {
+    request: AuthorizePermissionRequest,
+  ): Promise<AuthorizePermissionResponse> {
     const response = await this.permissionClient.authorize(
       [request],
       await this.identityApi.getCredentials(),

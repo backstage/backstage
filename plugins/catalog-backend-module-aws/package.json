@@ -34,14 +34,17 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.13.2-next.1",
+    "@backstage/backend-tasks": "^0.3.0-next.1",
     "@backstage/catalog-model": "^1.0.1-next.0",
     "@backstage/config": "^1.0.0",
     "@backstage/errors": "^1.0.0",
+    "@backstage/integration": "^1.1.0-next.1",
     "@backstage/plugin-catalog-backend": "^1.1.0-next.1",
     "@backstage/types": "^1.0.0",
     "aws-sdk": "^2.840.0",
     "lodash": "^4.17.21",
     "p-limit": "^3.0.2",
+    "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
