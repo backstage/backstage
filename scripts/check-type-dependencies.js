@@ -73,6 +73,16 @@ function shouldCheckTypes(pkg) {
   );
 }
 
+function findAllDeps(declSrc) {
+  const importedDeps = (declSrc.match(/from '.*'/g) || [])
+    .map(match => match.replace(/from '(.*)'/, '$1'))
+    .filter(n => !n.startsWith('.'));
+  const referencedDeps = (declSrc.match(/types=".*"/g) || [])
+    .map(match => match.replace(/types="(.*)"/, '$1'))
+    .filter(n => !n.startsWith('.'));
+  return Array.from(new Set([...importedDeps, ...referencedDeps]));
+}
+
 /**
  * Scan index.d.ts for imports and return errors for any dependency that's
  * missing or incorrect in package.json
@@ -82,9 +92,7 @@ function checkTypes(pkg) {
     resolvePath(pkg.dir, 'dist/index.d.ts'),
     'utf8',
   );
-  const allDeps = (typeDecl.match(/from '.*'/g) || [])
-    .map(match => match.replace(/from '(.*)'/, '$1'))
-    .filter(n => !n.startsWith('.'));
+  const allDeps = findAllDeps(typeDecl);
   const deps = Array.from(new Set(allDeps));
 
   const errors = [];
