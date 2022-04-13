@@ -79,7 +79,9 @@ function findAllDeps(declSrc) {
     .filter(n => !n.startsWith('.'));
   const referencedDeps = (declSrc.match(/types=".*"/g) || [])
     .map(match => match.replace(/types="(.*)"/, '$1'))
-    .filter(n => !n.startsWith('.'));
+    .filter(n => !n.startsWith('.'))
+    // We allow references to these without an explicit dependency.
+    .filter(n => !['node', 'react'].includes(n));
   return Array.from(new Set([...importedDeps, ...referencedDeps]));
 }
 
