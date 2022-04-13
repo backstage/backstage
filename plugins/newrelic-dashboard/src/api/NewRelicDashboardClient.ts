@@ -29,10 +29,18 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
-    this.discoveryApi = options.discoveryApi;
-    this.fetchApi = options.fetchApi;
+  constructor({
+    discoveryApi,
+    fetchApi,
+  }: {
+    discoveryApi: DiscoveryApi;
+    fetchApi: FetchApi;
+    baseUrl?: string;
+  }) {
+    this.discoveryApi = discoveryApi;
+    this.fetchApi = fetchApi;
   }
+  
 
   private async callApi<T>(
     query: string,
