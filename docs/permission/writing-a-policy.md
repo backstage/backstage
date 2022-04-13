@@ -133,14 +133,6 @@ In this example, we use [`isResourcePermission`](https://backstage.io/docs/refer
 
 _Note:_ Some catalog permissions do not have the `'catalog-entity'` resource type, such as [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49). In those cases, a definitive decision is required because conditions can't be applied to an entity that does not exist yet.
 
-## Custom conditions
-
-In addition to the conditions provided by the catalog plugin, you can write your own conditions for the catalog (or for any plugin that implements permissions, for that matter). To write a custom condition you must do the following:
-
-1. Implement a new [`PermissionRule`](https://backstage.io/docs/reference/plugin-permission-node.permissionrule).
-2. Register this rule with the plugin backend that owns the resource. New rules are added to the catalog plugin via [`CatalogBuilder#addPermissionRules`](https://github.com/backstage/backstage/blob/1f873a0908d73888892b30faca9a79dfcf908ad1/plugins/catalog-backend/src/service/CatalogBuilder.ts#L344), but each plugin may define its own API for this functionality.
-3. Use the [`createConditionFactory`](https://backstage.io/docs/reference/plugin-permission-node.createconditionfactory) helper to integrate with your conditional policy decisions.
-
 ## Conclusion
 
 Through a combination of permissions and conditions, you should be able to author a policy that works for your instance of Backstage and your organization. As the ecosystem around permissions in Backstage matures, you may be able to choose from other authorization packages instead of writing your own policy. If you're interested in more detailed descriptions of the concepts that comprise the permission framework, check out the [Concepts page](./concepts.md).

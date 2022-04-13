@@ -258,6 +258,7 @@
       "permission/concepts",
       "permission/getting-started",
       "permission/writing-a-policy",
+      "permission/custom-rules",
       {
         "type": "subcategory",
         "label": "Tutorial: using Permissions in your plugin",
