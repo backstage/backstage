@@ -17,8 +17,11 @@
 import { JsonObject } from '@backstage/types';
 import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 import React, {
-  createContext,
   PropsWithChildren,
   useCallback,
   useContext,
@@ -50,12 +53,29 @@ export type SearchContextState = {
   pageCursor?: string;
 };
 
+// TODO(@backstage/techdocs-core): stop export this publicly when deprecating the context in @backstage/plugin-techdocs.
 /**
  * @public
  */
-export const SearchContext = createContext<SearchContextValue | undefined>(
-  undefined,
-);
+export const SearchContext = createVersionedContext<{
+  1: SearchContextValue;
+}>('search-context');
+
+/**
+ * @public
+ */
+export const useSearch = () => {
+  const context = useContext(SearchContext);
+  if (!context) {
+    throw new Error('useSearch must be used within a SearchContextProvider');
+  }
+
+  const value = context.atVersion(1);
+  if (!value) {
+    throw new Error('No context for version 1 found');
+  }
+  return value;
+};
 
 /**
  * The initial state of `SearchContextProvider`.
@@ -128,20 +148,11 @@ export const SearchContextProvider = ({
     fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,
   };
 
+  const versionedValue = createVersionedValueMap({ 1: value });
+
   return (
     <AnalyticsContext attributes={{ searchTypes: types.sort().join(',') }}>
-      <SearchContext.Provider value={value} children={children} />
+      <SearchContext.Provider value={versionedValue} children={children} />
     </AnalyticsContext>
   );
-};
-
-/**
- * @public
- */
-export const useSearch = () => {
-  const context = useContext(SearchContext);
-  if (context === undefined) {
-    throw new Error('useSearch must be used within a SearchContextProvider');
-  }
-  return context;
 };

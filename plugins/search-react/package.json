@@ -34,6 +34,7 @@
     "@backstage/plugin-search-common": "^0.3.3-next.1",
     "@backstage/core-plugin-api": "^1.0.1-next.0",
     "@backstage/core-app-api": "^1.0.1-next.1",
+    "@backstage/version-bridge": "^1.0.0",
     "react-use": "^17.3.2",
     "@backstage/types": "^1.0.0"
   },
