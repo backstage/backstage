@@ -56,9 +56,9 @@ directly for development.
 
 The Backstage App is now ready to start up with a PostgreSQL backing database.
 
-### Override default PostgreSQL Database Pool Configuration 
+### Override default PostgreSQL Database Pool Configuration
 
-If you want to override the default connection pool settings then use the below configuration: 
+If you want to override the default connection pool settings then use the below configuration:
 
 ```diff
 backend:
@@ -74,7 +74,7 @@ backend:
 +      password: ${POSTGRES_PASSWORD}
 +    # Refer to Tarn docs for default values on PostgreSQL pool configuration - https://github.com/Vincit/tarn.js
 +    knexConfig:
-+      pool: 
++      pool:
 +        min: 3
 +        max: 12
 +        acquireTimeoutMillis: 60000
@@ -84,10 +84,6 @@ backend:
 +      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
 +      # ssl:
 +      #   ca: # if you have a CA file and want to verify it you can uncomment this section
-+      #     $file: <file-path>/ca/server.crt      
-<<<<<<< HEAD
++      #     $file: <file-path>/ca/server.crt   
 ```
-=======
-```
-  
->>>>>>> 3e223b4dfb (Moved the reference doc link up,  Signed-off-by: Sharad Pattanshetti <sharad.pattanshetti@gmail.com>)
+
