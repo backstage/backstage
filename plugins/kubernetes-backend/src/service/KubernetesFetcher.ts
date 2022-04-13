@@ -97,6 +97,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           params.labelSelector ||
             `backstage.io/kubernetes-id=${params.serviceId}`,
           toFetch.objectType,
+          params.namespace,
         ).catch(this.captureKubernetesErrorsRethrowOthers.bind(this));
       });
 
@@ -138,6 +139,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     resource: ObjectToFetch,
     labelSelector: string,
     objectType: KubernetesObjectTypes,
+    namespace?: string,
   ): Promise<FetchResponse> {
     const customObjects =
       this.kubernetesClientProvider.getCustomObjectsClient(clusterDetails);
@@ -146,6 +148,26 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       requestOptions.uri = requestOptions.uri.replace('/apis//v1/', '/api/v1/');
     });
 
+    if (namespace) {
+      return customObjects
+        .listNamespacedCustomObject(
+          resource.group,
+          resource.apiVersion,
+          namespace,
+          resource.plural,
+          '',
+          false,
+          '',
+          '',
+          labelSelector,
+        )
+        .then(r => {
+          return {
+            type: objectType,
+            resources: (r.body as any).items,
+          };
+        });
+    }
     return customObjects
       .listClusterCustomObject(
         resource.group,

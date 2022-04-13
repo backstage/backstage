@@ -355,6 +355,16 @@ annotations:
   'backstage.io/kubernetes-id': dice-roller
 ```
 
+#### Adding the namespace annotation
+
+Entities can have the `backstage.io/kubernetes-namespace` annotation, this will cause the entity's Kubernetes resources
+to by looked up via that namespace.
+
+```yaml
+annotations:
+  'backstage.io/kubernetes-namespace': dice-space
+```
+
 #### Labeling Kubernetes components
 
 In order for Kubernetes components to show up in the software catalog as a part

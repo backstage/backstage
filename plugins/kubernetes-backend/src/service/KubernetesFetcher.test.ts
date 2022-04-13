@@ -42,6 +42,7 @@ describe('KubernetesFetcher', () => {
     jest.resetAllMocks();
     clientMock = {
       listClusterCustomObject: jest.fn(),
+      listNamespacedCustomObject: jest.fn(),
       addInterceptor: jest.fn(),
     };
 
@@ -478,5 +479,48 @@ describe('KubernetesFetcher', () => {
     const actualSelector = mockCall[mockCall.length - 1];
     const expectedSelector = 'backstage.io/kubernetes-id=some-service';
     expect(actualSelector).toBe(expectedSelector);
+  });
+  it('should use namespace if provided', async () => {
+    clientMock.listNamespacedCustomObject.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'pod-name',
+            },
+          },
+        ],
+      },
+    });
+
+    clientMock.listNamespacedCustomObject.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'service-name',
+            },
+          },
+        ],
+      },
+    });
+
+    await sut.fetchObjectsForService({
+      serviceId: 'some-service',
+      clusterDetails: {
+        name: 'cluster1',
+        url: 'http://localhost:9999',
+        serviceAccountToken: 'token',
+        authProvider: 'serviceAccount',
+      },
+      objectTypesToFetch: OBJECTS_TO_FETCH,
+      labelSelector: '',
+      namespace: 'some-namespace',
+      customResources: [],
+    });
+
+    const mockCall = clientMock.listNamespacedCustomObject.mock.calls[0];
+    const namespace = mockCall[2];
+    expect(namespace).toBe('some-namespace');
   });
 });

@@ -245,6 +245,8 @@ export interface ObjectFetchParams {
   // (undocumented)
   labelSelector: string;
   // (undocumented)
+  namespace?: string;
+  // (undocumented)
   objectTypesToFetch: Set<ObjectToFetch>;
   // (undocumented)
   serviceId: string;
