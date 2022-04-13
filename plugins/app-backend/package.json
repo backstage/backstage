@@ -43,7 +43,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "10.0.1",
     "helmet": "^5.0.2",
-    "knex": "^1.0.6",
+    "knex": "^1.0.2",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "winston": "^3.2.1",

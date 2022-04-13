@@ -225,7 +225,7 @@ export class Stitcher {
       .onConflict('entity_id')
       .merge(['final_entity', 'hash']);
 
-    if (rowsChanged === 0) {
+    if (rowsChanged.length === 0) {
       this.logger.debug(
         `Entity ${entityRef} is already processed, skipping write.`,
       );
