@@ -22,6 +22,7 @@ import {
   Entity,
   stringifyEntityRef,
   UserEntity,
+  GroupEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -97,9 +98,13 @@ export class DefaultCatalogCollator {
     return entity.kind.toLocaleUpperCase('en-US') === 'USER';
   }
 
+  private isGroupEntity(entity: Entity): entity is GroupEntity {
+    return entity.kind.toLocaleUpperCase('en-US') === 'GROUP';
+  }
+
   private getDocumentText(entity: Entity): string {
     let documentText = entity.metadata.description || '';
-    if (this.isUserEntity(entity)) {
+    if (this.isUserEntity(entity) || this.isGroupEntity(entity)) {
       if (entity.spec?.profile?.displayName && documentText) {
         // combine displayName and description
         const displayName = entity.spec?.profile?.displayName;
