@@ -18,7 +18,7 @@ import {
   DashboardSnapshotSummary,
   NewRelicDashboardApi,
 } from './NewRelicDashboardApi';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { DashboardEntity } from '../types/DashboardEntity';
 import { DashboardSnapshot } from '../types/DashboardSnapshot';
 import { getDashboardParentGuidQuery } from '../queries/getDashboardParentGuidQuery';
@@ -27,27 +27,19 @@ import { ResponseError } from '@backstage/errors';
 
 export class NewRelicDashboardClient implements NewRelicDashboardApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
-  constructor({
-    discoveryApi,
-    identityApi,
-  }: {
-    discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
-    baseUrl?: string;
-  }) {
-    this.discoveryApi = discoveryApi;
-    this.identityApi =  identityApi;
+  private readonly fetchApi: FetchApi;
+
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
+    this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
   }
 
   private async callApi<T>(
     query: string,
     variables: { [key in string]: string | number },
   ): Promise<T | undefined> {
-    const { token } = await this.identityApi.getCredentials();
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', `Bearer ${token}`); 
     const graphql = JSON.stringify({
       query: query,
       variables: variables,
@@ -62,7 +54,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
     const apiUrl = `${await this.discoveryApi.getBaseUrl(
       'proxy',
     )}/newrelic/api/graphql`;
-    const response = await fetch(apiUrl, requestOptions);
+    const response = await this.fetchApi.fetch(apiUrl, requestOptions);
     if (response.status === 200) {
       return (await response.json()) as T;
     }

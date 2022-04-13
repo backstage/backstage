@@ -19,7 +19,7 @@ import {
   createApiFactory,
   discoveryApiRef,
   createComponentExtension,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { newRelicDashboardApiRef, NewRelicDashboardClient } from './api';
 import { rootRouteRef } from './routes';
@@ -32,11 +32,15 @@ export const newRelicDashboardPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: newRelicDashboardApiRef,
-      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ configApi, discoveryApi, identityApi }) =>
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ configApi, discoveryApi, fetchApi }) =>
         new NewRelicDashboardClient({
           discoveryApi,
-          identityApi,
+          fetchApi,
           baseUrl: configApi.getOptionalString('newrelicdashboard.baseUrl'),
         }),
     }),
