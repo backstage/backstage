@@ -40,7 +40,6 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
     this.discoveryApi = discoveryApi;
     this.fetchApi = fetchApi;
   }
-  
 
   private async callApi<T>(
     query: string,
