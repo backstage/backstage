@@ -326,8 +326,9 @@ in the package registry, and will update entries both in `yarn.lock` and
 Usage: backstage-cli versions:bump [options]
 
 Options:
-  -h, --help  display help for command
-  -p, --pattern Override glob for matching packages to upgrade
+  -h, --help        display help for command
+  --pattern &lt;glob&gt;  Override glob for matching packages to upgrade
+  --release &lt;version|next|main&gt; Bump to a specific Backstage release line or version (default: "main")
 ```
 
 ## versions:check
