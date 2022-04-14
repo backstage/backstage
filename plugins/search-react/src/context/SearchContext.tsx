@@ -53,11 +53,7 @@ export type SearchContextState = {
   pageCursor?: string;
 };
 
-// TODO(@backstage/techdocs-core): stop export this publicly when deprecating the context in @backstage/plugin-techdocs.
-/**
- * @public
- */
-export const SearchContext = createVersionedContext<{
+const SearchContext = createVersionedContext<{
   1: SearchContextValue;
 }>('search-context');
 
@@ -72,7 +68,7 @@ export const useSearch = () => {
 
   const value = context.atVersion(1);
   if (!value) {
-    throw new Error('No context for version 1 found');
+    throw new Error('No SearchContext v1 found');
   }
   return value;
 };
