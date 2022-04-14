@@ -162,20 +162,11 @@ The `techDocsPage` is a default techdocs reader page which lives in
 having to set anything up.
 
 ```tsx
-<TechDocsPage>
-  {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
-    <>
-      <TechDocsPageHeader
-        techDocsMetadata={techdocsMetadataValue}
-        entityMetadata={entityMetadataValue}
-        entityRef={entityRef}
-      />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<TechDocsReaderPage>
+  <TechDocsReaderPageHeader />
+  <TechDocsReaderPageSubheader />
+  <TechDocsReaderPageContent />
+</TechDocsReaderPage>
 ```
 
 If you would like to compose your own `techDocsPage`, you can do so by replacing
@@ -183,42 +174,30 @@ the children of TechDocsPage with something else. Maybe you are _just_
 interested in replacing the Header:
 
 ```tsx
-<TechDocsPage>
-  {({ entityRef, onReady }) => (
-    <>
-      <Header type="documentation" title="Custom Header" />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<TechDocsReaderPage>
+  <Header type="documentation" title="Custom Header" />
+  <TechDocsReaderPageContent />
+</TechDocsReaderPage>
 ```
 
 Or maybe you want to disable the in-context search
 
 ```tsx
-<TechDocsPage>
-  {({ entityRef, onReady }) => (
-    <>
-      <Header type="documentation" title="Custom Header" />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<TechDocsReaderPage>
+  <Header type="documentation" title="Custom Header" />
+  <TechDocsReaderPageContent withSearch={false} />
+</TechDocsReaderPage>
 ```
 
 Or maybe you want to replace the entire TechDocs Page.
 
 ```tsx
-<TechDocsPage>
+<TechDocsReaderPage>
   <Header type="documentation" title="Custom Header" />
   <Content data-testid="techdocs-content">
     <p>my own content</p>
   </Content>
-</TechDocsPage>
+</TechDocsReaderPage>
 ```
 
 ## How to migrate from TechDocs Alpha to Beta
