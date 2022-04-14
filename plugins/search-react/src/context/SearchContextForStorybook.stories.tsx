@@ -18,35 +18,54 @@ import { SearchResultSet } from '@backstage/plugin-search-common';
 import { TestApiRegistry } from '@backstage/test-utils';
 import React, { ComponentProps, PropsWithChildren } from 'react';
 import { searchApiRef } from '../api';
-import { SearchContextProvider as RealSearchContextProvider } from './SearchContext';
+import { SearchContextProvider } from './SearchContext';
 
-type QueryResultProps = {
+/**
+ * Props for {@link SearchApiProviderForStorybook}
+ * @public
+ */
+export type SearchApiProviderForStorybookProps = ComponentProps<
+  typeof SearchContextProvider
+> & {
   mockedResults?: SearchResultSet;
 };
+
+/**
+ * Props for {@link SearchContextProviderForStorybook}
+ * @public
+ */
+export type SearchContextProviderForStorybookProps = PropsWithChildren<{
+  mockedResults?: SearchResultSet;
+}>;
+
+/**
+ * Utility api provider only for use in Storybook stories.
+ *
+ * @public
+ */
+export function SearchApiProviderForStorybook(
+  props: SearchApiProviderForStorybookProps,
+) {
+  const { mockedResults, children } = props;
+  const query: any = () => Promise.resolve(mockedResults || {});
+  const apiRegistry = TestApiRegistry.from([searchApiRef, { query }]);
+  return <ApiProvider apis={apiRegistry} children={children} />;
+}
 
 /**
  * Utility context provider only for use in Storybook stories. You should use
  * the real `<SearchContextProvider>` exported by `@backstage/plugin-search-react` in
  * your app instead of this! In some cases (like the search page) it may
  * already be provided on your behalf.
+ *
+ * @public
  */
-export const SearchContextProvider = (
-  props: ComponentProps<typeof RealSearchContextProvider> & QueryResultProps,
+export const SearchContextProviderForStorybook = (
+  props: SearchContextProviderForStorybookProps,
 ) => {
   return (
-    <SearchApiProvider {...props}>
-      <RealSearchContextProvider children={props.children} />
-    </SearchApiProvider>
+    <SearchApiProviderForStorybook {...props}>
+      <SearchContextProvider children={props.children} />
+    </SearchApiProviderForStorybook>
   );
 };
-
-/**
- * Utility api provider only for use in Storybook stories.
- *
- */
-export function SearchApiProvider(props: PropsWithChildren<QueryResultProps>) {
-  const { mockedResults, children } = props;
-  const query: any = () => Promise.resolve(mockedResults || {});
-  const apiRegistry = TestApiRegistry.from([searchApiRef, { query }]);
-  return <ApiProvider apis={apiRegistry} children={children} />;
-}
