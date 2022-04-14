@@ -88,6 +88,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { TodoListCommonPage } from 'plugin-todo-list-common';
 
 const app = createApp({
   apis,
@@ -220,6 +221,7 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
+    <Route path="/todo-list-common" element={<TodoListCommonPage />} />
   </FlatRoutes>
 );
 

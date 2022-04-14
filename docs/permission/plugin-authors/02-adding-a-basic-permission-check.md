@@ -10,31 +10,32 @@ For this tutorial, we'll use a basic permission check to authorize the `create` 
 
 We'll start by creating a new permission, and then we'll use the permission api to call `authorize` with it during todo creation.
 
-## Setup
+## Creating a new permission
+
+Let's navigate to the file `plugins/todo-list-common/src/permissions.ts` and add our first permission:
+
+```diff
+  import { createPermission } from '@backstage/plugin-permission-common';
+
+- export const tempExamplePermission = createPermission({
+-   name: 'temp.example.noop',
+-   attributes: {},
++ export const todoListCreate = createPermission({
++   name: 'todo.list.create',
++   attributes: { action: 'create' },
+  });
+```
+
+For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`). For the actual plugins that you author, we recommend exporting all permissions from your plugin, so that Backstage integrators can import them when writing policies.
+
+## Authorizing using the new permission
 
 Install the following module:
 
 ```
 $ yarn workspace @internal/plugin-todo-list-backend \
-  add @backstage/plugin-permission-common
+  add @backstage/plugin-permission-common @internal/plugin-todo-list-common
 ```
-
-## Creating a new permission
-
-Let's create a new file `plugins/todo-list-backend/src/service/permissions.ts` with the following content:
-
-```typescript
-import { createPermission } from '@backstage/plugin-permission-common';
-
-export const todosListCreate = createPermission({
-  name: 'todos.list.create',
-  attributes: { action: 'create' },
-});
-```
-
-We recommend exporting all permissions from your plugin, so that Backstage integrators can import them when writing policies.
-
-## Authorizing using the new permission
 
 Edit `plugins/todo-list-backend/src/service/router.ts`:
 
@@ -44,7 +45,7 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
 - import { InputError } from '@backstage/errors';
 + import { InputError, NotAllowedError } from '@backstage/errors';
 + import { PermissionEvaluator, AuthorizeResult } from '@backstage/plugin-permission-common';
-+ import { todosListCreate } from './permissions';
++ import { todoListCreate } from '@internal/plugin-todo-list-common';
 
 ...
 
@@ -69,7 +70,7 @@ Edit `plugins/todo-list-backend/src/service/router.ts`:
       const user = token ? await identity.authenticate(token) : undefined;
       author = user?.identity.userEntityRef;
 +     const decision = (
-+       await permissions.authorize([{ permission: todosListCreate }], {
++       await permissions.authorize([{ permission: todoListCreate }], {
 +       token,
 +       })
 +     )[0];
@@ -132,7 +133,7 @@ In order to test the logic above, the integrators of your backstage instance nee
 +   PolicyQuery,
   } from '@backstage/plugin-permission-node';
 + import { isPermission } from '@backstage/plugin-permission-common';
-+ import { todosListCreate } from '@internal/plugin-todo-list-backend';
++ import { todoListCreate } from '@internal/plugin-todo-list-common';
 
   class TestPermissionPolicy implements PermissionPolicy {
 -   async handle(): Promise<PolicyDecision> {
@@ -140,7 +141,7 @@ In order to test the logic above, the integrators of your backstage instance nee
 +     request: PolicyQuery,
 +     user?: BackstageIdentityResponse,
 +   ): Promise<PolicyDecision> {
-+     if (isPermission(request.permission, todosListCreate)) {
++     if (isPermission(request.permission, todoListCreate)) {
 +       return {
 +         result: AuthorizeResult.DENY,
 +       };
