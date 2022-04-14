@@ -40,7 +40,7 @@ export async function createRouter(
   const { jenkinsInfoProvider, permissions, logger } = options;
 
   let permissionEvaluator: PermissionEvaluator | undefined;
-  if (permissions && 'query' in permissions) {
+  if (permissions && 'authorizeConditional' in permissions) {
     permissionEvaluator = permissions as PermissionEvaluator;
   } else {
     logger.warn(
