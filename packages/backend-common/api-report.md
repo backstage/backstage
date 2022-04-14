@@ -175,7 +175,7 @@ export class Contexts {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-): Knex<any, any[]>;
+): Knex<any, Record<string, any>[]>;
 
 // @public
 export function createRootLogger(

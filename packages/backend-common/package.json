@@ -64,7 +64,7 @@
     "keyv": "^4.0.3",
     "keyv-memcache": "^1.2.5",
     "@keyv/redis": "^2.2.3",
-    "knex": "^1.0.6",
+    "knex": "^1.0.2",
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
     "luxon": "^2.0.2",
