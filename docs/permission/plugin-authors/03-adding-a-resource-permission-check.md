@@ -9,36 +9,32 @@ When performing updates (or other operations) on specific [resources](../concept
 // TODO(vinzscam): remind that the plugin used in this tutorial is bringing its own types to backstage.
 // for plugins relying on external entities (like catalog entities) please follow [link] tutorial.
 
-## Creating a new permission
+## Creating the update permission
 
-Let's add a new permission to the file `plugins/todo-list-backend/src/service/permissions.ts` from [the previous step](./02-adding-a-basic-permission-check.md).
+Let's add a new permission to the file `plugins/todo-list-backend/src/service/permissions.ts` from [the previous section](./02-adding-a-basic-permission-check.md).
 
 ```diff
-import { Permission } from '@backstage/plugin-permission-common';
+  import { createPermission } from '@backstage/plugin-permission-common';
 
-+export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
++ export const TODO_LIST_RESOURCE_TYPE = 'todo-item';
 +
-export const todosListCreate: Permission = {
-  name: 'todos.list.create',
-  attributes: {
-    action: 'create',
-  },
-};
+  export const todosListCreate = createPermission({
+    name: 'todos.list.create',
+    attributes: { action: 'create' },
+  });
 +
-+export const todosListUpdate: Permission = {
-+  name: 'todos.list.update',
-+  attributes: {
-+    action: 'update',
-+  },
-+  resourceType: TODO_LIST_RESOURCE_TYPE,
-+};
++ export const todosListUpdate = createPermission({
++   name: 'todos.list.update',
++   attributes: { action: 'update' },
++   resourceType: TODO_LIST_RESOURCE_TYPE,
++ });
 ```
 
-Notice that unlike `todosListCreate`, the `todosListUpdate` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever value you like as the resource type, as long as you use the same value consistently for each type of resource.
+Notice that unlike `todosListCreate`, the `todosListUpdate` permission contains a `resourceType` field. This field indicates to the permission framework that this permission is intended to be authorized in the context of a resource with type `'todo-item'`. You can use whatever string you like as the resource type, as long as you use the same value consistently for each type of resource.
 
-## Authorizing using the new permission
+## Setting up authorization for the update permission
 
-To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a similar way as in the previous step.
+To start, let's edit `plugins/todo-list-backend/src/service/router.ts` in the same manner as we did in the previous section:
 
 ```diff
 - import { todosListCreate } from './permissions';
@@ -62,60 +58,18 @@ To start with, let's edit `plugins/todo-list-backend/src/service/router.ts` in a
 +         },
 +       )
 +     )[0];
-
++
 +     if (decision.result !== AuthorizeResult.ALLOW) {
 +       throw new NotAllowedError('Unauthorized');
 +     }
-+
+
       res.json(update(req.body));
     });
 ```
 
-**Important:** Notice that we are passing an extra `resourceRef` object, containing the `id` of the todo we want to authorize.
+**Important:** Notice that we are passing an extra `resourceRef` field, with the `id` of the todo item as the value.
 
-This enables decisions based on characteristics of the resource, but it's important to note that to enable authorizing multiple resources at once, **the resourceRef is not passed to PermissionPolicy#handle**. Instead, policies must return a _conditional decision_.
-
-Before diving into the extra steps needed for supporting conditional decisions, let's go back to the permission policy's handle function used by your adopters and try to authorize our new permission.
-
-Let's edit `packages/backend/src/plugins/permission.ts`
-
-```diff
-    if (request.permission.name === 'todos.list.create') {
-      return {
-        result: AuthorizeResult.DENY,
-      };
-    }
-+   if (request.permission.resourceType === 'todo-item') {
-+     if (request.permission.attributes.action === 'update') {
-+       return {
-+         result: AuthorizeResult.CONDITIONAL,
-+         pluginId: 'todolist',
-+         resourceType: 'todo-item',
-+         conditions: {
-+           rule: 'IS_OWNER',
-+           params: [user?.identity.userEntityRef],
-+         },
-+       };
-+     }
-+   }
-    return {
-      result: AuthorizeResult.ALLOW,
-    };
-```
-
-This is what happens when a _Conditional Decision_ is returned. We are saying:
-
-> Hey permission framework, I can't make a decision alone. Please go to the plugin with id `todolist` and ask it to apply these conditions.
-
-Now if we try to edit an item from the UI, we should spot the following error in the backend's console:
-
-```
-backstage error Unexpected response from plugin upstream when applying conditions.
-Expected 200 but got 404 - Not Found type=errorHandler stack=Error:
-Unexpected response from plugin upstream when applying conditions. Expected 200 but got 404 - Not Found
-```
-
-This happens because our plugin should have exposed a specific endpoint, used by the permission framework to apply conditional decisions. The new endpoint should also be able to support some conditions. In our case, `IS_OWNER` is the only type of condition we want to support. You can add as many built-in conditions as you like to your plugin, and you can also allow Backstage integrators to supply more conditions when starting your backend if you want.
+This enables decisions based on characteristics of the resource, but it's important to note that policy authors will not have access to the resource ref inside of their permission policies. Instead, the policies will return conditional decisions, which we need to now support in our plugin.
 
 ## Adding support for conditional decisions
 
@@ -139,6 +93,7 @@ const createTodoListPermissionRule = makeCreatePermissionRule<
 export const isOwner = createTodoListPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the todo belongs to the user',
+  resourceType: 'todo-item',
   apply: (resource: Todo, userId: string) => {
     return resource.author === userId;
   },
@@ -158,7 +113,7 @@ export const rules = { isOwner };
 We have created a new `isOwner` rule, which is going to be automatically used by the permission framework whenever a conditional response is returned in response to an authorized request with an attached `resourceRef`.
 Specifically, the `apply` function is used to understand whether the passed resource should be authorized or not.
 
-Let's skip the `toQuery` function for now.
+Let's skip the `toQuery` function for now, we'll come back to that in the next section.
 
 Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/service/router.ts`. This uses the `createPermissionIntegrationRouter` helper to add the APIs needed by the permission framework to your plugin. You'll need to supply:
 
@@ -170,8 +125,7 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 + import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 - import { add, getAll, update } from './todos';
 + import { add, getAll, getTodo, update } from './todos';
-- import { todosListCreate, todosListUpdate } from './permissions';
-+ import { todosListCreate, todosListUpdate, TODO_LIST_RESOURCE_TYPE } from './permissions';
++ import { TODO_LIST_RESOURCE_TYPE } from './permissions';
 + import { rules } from './rules';
 
   export async function createRouter(
@@ -197,4 +151,52 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
 ## Test the authorized update endpoint
 
-To check that everything works as expected, you should see an error in the UI whenever you try to edit an item that wasn’t created by you.
+Now let's go back to the permission policy's handle function (which would normally be written by your adopters) and try to authorize our new permission.
+
+Let's edit `packages/backend/src/plugins/permission.ts`:
+
+```diff
+  import {
+    BackstageIdentityResponse,
+    IdentityClient
+  } from '@backstage/plugin-auth-node';
+  import {
+    PermissionPolicy,
+    PolicyQuery,
+  } from '@backstage/plugin-permission-node';
+  import { isPermission } from '@backstage/plugin-permission-common';
+- import { todosListCreate } from '@internal/plugin-todo-list';
++ import {
++   todosListCreate,
++   todosListUpdate,
++   TODO_LIST_RESOURCE_TYPE,
++ } from '@internal/plugin-todo-list';
+
+...
+
+    if (isPermission(request.permission, todosListCreate)) {
+      return {
+        result: AuthorizeResult.DENY,
+      };
+    }
++   if (isPermission(request.permission, todosListUpdate)) {
++     return {
++       result: AuthorizeResult.CONDITIONAL,
++       pluginId: 'todolist',
++       resourceType: TODO_LIST_RESOURCE_TYPE,
++       conditions: {
++         rule: 'IS_OWNER',
++         params: [user?.identity.userEntityRef],
++       },
++     };
++   }
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+```
+
+For any incoming update requests, we now return a _Conditional Decision_. We are saying:
+
+> Hey permission framework, I can't make a decision alone. Please go to the plugin with id `todolist` and ask it to apply these conditions.
+
+To check that everything works as expected, you should now see an error in the UI whenever you try to edit an item that wasn’t created by you. Success!
