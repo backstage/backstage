@@ -10,30 +10,34 @@ The rest of this page is focused on adding the `todo-list` and `todo-list-backen
 
 ## Setup for the Tutorial
 
-We will use a "Todo list" feature, composed of the `todo-list` and `todo-list-backend` plugins.
+We will use a "Todo list" feature, composed of the `todo-list` and `todo-list-backend` plugins, as well as their dependency, `todo-list-common`.
 
 The source code is available here:
 
 - [todo-list](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list)
 - [todo-list-backend](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list-backend)
+- [todo-list-common](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list-common)
 
-1.  Copy-paste the two folders into the plugins folder of your backstage application repository or run the following script from the root of your backstage application:
+1.  Copy-paste the three folders into the plugins folder of your backstage application repository or run the following script from the root of your backstage application:
 
     ```bash
     $ curl https://codeload.github.com/backstage/backstage/zip/refs/heads/master | \
         tar -C plugins --strip-components=1 -xv \
         backstage-master/contrib/plugins/todo-list \
-        backstage-master/contrib/plugins/todo-list-backend
+        backstage-master/contrib/plugins/todo-list-backend \
+        backstage-master/contrib/plugins/todo-list-common
     ```
 
     Your application structure should look something like this:
+
+    // TODO: UPDATE THIS IMAGE
 
     ![backstage application files structure](../../assets/permission/permission-tutorial-backstage-application-initial-structure.png)
 
 2.  add the frontend and backend plugins as dependencies of your Backstage app and backend respectively:
 
     ```
-    $ yarn workspace backend add @internal/plugin-todo-list-backend@^1.0.0
+    $ yarn workspace backend add @internal/plugin-todo-list-backend@^1.0.0 @internal/plugin-todo-list-common@^1.0.0
     $ yarn workspace app add @internal/plugin-todo-list@^1.0.0
     ```
 
