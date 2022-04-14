@@ -156,6 +156,15 @@ Now let's go back to the permission policy's handle function (which would normal
 Let's edit `packages/backend/src/plugins/permission.ts`:
 
 ```diff
+  import {
+    BackstageIdentityResponse,
+    IdentityClient
+  } from '@backstage/plugin-auth-node';
+  import {
+    PermissionPolicy,
+    PolicyQuery,
+  } from '@backstage/plugin-permission-node';
+  import { isPermission } from '@backstage/plugin-permission-common';
 - import { todosListCreate } from '@internal/plugin-todo-list';
 + import {
 +   todosListCreate,
