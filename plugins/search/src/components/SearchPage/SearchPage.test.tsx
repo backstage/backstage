@@ -17,7 +17,7 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { useLocation, useOutlet } from 'react-router';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 
 jest.mock('react-router', () => ({
@@ -33,8 +33,8 @@ const setTypesMock = jest.fn();
 const setFiltersMock = jest.fn();
 const setPageCursorMock = jest.fn();
 
-jest.mock('../SearchContext', () => ({
-  ...jest.requireActual('../SearchContext'),
+jest.mock('@backstage/plugin-search-react', () => ({
+  ...jest.requireActual('@backstage/plugin-search-react'),
   SearchContextProvider: jest
     .fn()
     .mockImplementation(({ children }) => children),
@@ -51,7 +51,7 @@ jest.mock('../SearchContext', () => ({
 }));
 
 jest.mock('../LegacySearchPage', () => ({
-  ...jest.requireActual('../SearchContext'),
+  ...jest.requireActual('@backstage/plugin-search-react'),
   LegacySearchPage: jest.fn().mockReturnValue('LegacySearchPageMock'),
 }));
 

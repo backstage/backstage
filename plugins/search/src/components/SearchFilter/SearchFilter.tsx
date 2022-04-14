@@ -30,7 +30,7 @@ import {
   AutocompleteFilter,
   SearchAutocompleteFilterProps,
 } from './SearchFilter.Autocomplete';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 
 const useStyles = makeStyles({

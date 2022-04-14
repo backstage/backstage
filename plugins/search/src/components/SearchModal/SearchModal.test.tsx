@@ -21,7 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../plugin';
-import { searchApiRef } from '../../apis';
+import { searchApiRef } from '@backstage/plugin-search-react';
 
 import { SearchModal } from './SearchModal';
 

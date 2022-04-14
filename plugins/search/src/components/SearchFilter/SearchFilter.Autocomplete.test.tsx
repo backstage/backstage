@@ -18,8 +18,11 @@ import { TestApiProvider } from '@backstage/test-utils';
 import { screen, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { searchApiRef } from '../../apis';
-import { SearchContextProvider, useSearch } from '../SearchContext';
+import {
+  SearchContextProvider,
+  useSearch,
+  searchApiRef,
+} from '@backstage/plugin-search-react';
 import { SearchFilter } from './SearchFilter';
 
 const SearchContextFilterSpy = ({ name }: { name: string }) => {

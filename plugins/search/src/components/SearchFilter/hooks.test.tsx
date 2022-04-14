@@ -17,9 +17,12 @@ import React from 'react';
 import { ApiProvider } from '@backstage/core-app-api';
 import { TestApiRegistry } from '@backstage/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
-import { SearchContextProvider, useSearch } from '../SearchContext';
+import {
+  SearchContextProvider,
+  useSearch,
+  searchApiRef,
+} from '@backstage/plugin-search-react';
 import { useDefaultFilterValue, useAsyncFilterValues } from './hooks';
-import { searchApiRef } from '../../apis';
 
 jest.useFakeTimers();
 

@@ -31,7 +31,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { SearchBar } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
-import { SearchContextProvider, useSearch } from '../SearchContext';
+import {
+  SearchContextProvider,
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
