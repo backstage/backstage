@@ -34,7 +34,7 @@ The source code is available here:
 
     ![backstage application files structure](../../assets/permission/permission-tutorial-backstage-application-initial-structure.png)
 
-2.  add the frontend and backend plugins as dependencies of your Backstage app and backend respectively:
+2.  Add the frontend and backend plugins as dependencies of your Backstage app and backend respectively:
 
     ```
     $ yarn workspace backend add @internal/plugin-todo-list-backend@^1.0.0 @internal/plugin-todo-list-common@^1.0.0
