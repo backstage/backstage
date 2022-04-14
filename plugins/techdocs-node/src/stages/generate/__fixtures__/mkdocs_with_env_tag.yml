@@ -1,0 +1,1 @@
+site_name: !ENV [SITE_NAME, OTHER_NAME, 'My default site name']
