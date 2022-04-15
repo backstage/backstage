@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import { NotificationApiForwarder } from '@backstage/core-app-api';
 import {
   storageApiRef,
   errorApiRef,
   createApiFactory,
+  notificationApiRef,
 } from '@backstage/core-plugin-api';
 import { MockErrorApi, MockStorageApi } from './apis';
 
 export const mockApis = [
   createApiFactory(errorApiRef, new MockErrorApi()),
   createApiFactory(storageApiRef, MockStorageApi.create()),
+  createApiFactory(notificationApiRef, new NotificationApiForwarder()),
 ];

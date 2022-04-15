@@ -16,57 +16,104 @@
 
 import React from 'react';
 import { AlertDisplay } from './AlertDisplay';
-import { alertApiRef } from '@backstage/core-plugin-api';
-import { AlertApiForwarder } from '@backstage/core-app-api';
+import { Notification, notificationApiRef } from '@backstage/core-plugin-api';
+import { ApiProvider } from '@backstage/core-app-api';
 import Observable from 'zen-observable';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  renderWithEffects,
+  TestApiProvider,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 
 const TEST_MESSAGE = 'TEST_MESSAGE';
-
+const alertNotification: Notification = {
+  kind: 'alert',
+  metadata: {
+    severity: 'info',
+    message: TEST_MESSAGE,
+    title: 'Alert message',
+    uuid: '123',
+    timestamp: 2302,
+  },
+};
 describe('<AlertDisplay />', () => {
   it('renders without exploding', async () => {
-    const { queryByText } = await renderInTestApp(
-      <TestApiProvider apis={[[alertApiRef, new AlertApiForwarder()]]}>
+    const apis = TestApiRegistry.from([
+      notificationApiRef,
+      {
+        post() {},
+        notification$() {
+          return Observable.of({});
+        },
+      },
+    ]);
+
+    const { queryByText } = await renderWithEffects(
+      <ApiProvider apis={apis}>
         <AlertDisplay />
-      </TestApiProvider>,
+      </ApiProvider>,
     );
     expect(queryByText(TEST_MESSAGE)).not.toBeInTheDocument();
   });
 
   it('renders with message', async () => {
-    const { queryByText } = await renderInTestApp(
-      <TestApiProvider
-        apis={[
-          [
-            alertApiRef,
-            {
-              post() {},
-              alert$() {
-                return Observable.of({ message: TEST_MESSAGE });
-              },
-            },
-          ],
-        ]}
-      >
+    const apis = TestApiRegistry.from([
+      notificationApiRef,
+      {
+        post() {},
+        notification$() {
+          return Observable.of(alertNotification);
+        },
+      },
+    ]);
+    const { queryByText } = await renderWithEffects(
+      <ApiProvider apis={apis}>
         <AlertDisplay />
-      </TestApiProvider>,
+      </ApiProvider>,
     );
 
     expect(queryByText(TEST_MESSAGE)).toBeInTheDocument();
   });
 
   describe('with multiple messages', () => {
+    const notification1: Notification = {
+      kind: 'alert',
+      metadata: {
+        severity: 'info',
+        message: 'message one',
+        title: 'Alert message 1',
+        uuid: '123',
+        timestamp: 2302,
+      },
+    };
+    const notification2: Notification = {
+      kind: 'alert',
+      metadata: {
+        severity: 'info',
+        message: 'message two',
+        title: 'Alert message 2',
+        uuid: '100',
+        timestamp: 2100,
+      },
+    };
+    const notification3: Notification = {
+      kind: 'alert',
+      metadata: {
+        severity: 'info',
+        message: 'message three',
+        title: 'Alert message 3',
+        uuid: '80',
+        timestamp: 2000,
+      },
+    };
     const apis = [
       [
-        alertApiRef,
+        notificationApiRef,
         {
           post() {},
-          alert$() {
-            return Observable.of(
-              { message: 'message one' },
-              { message: 'message two' },
-              { message: 'message three' },
-            );
+          notification$() {
+            return Observable.of(notification1, notification2, notification3);
           },
         },
       ] as const,

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { LocalStorageFeatureFlags, NoOpAnalyticsApi } from '../apis';
+import {
+  LocalStorageFeatureFlags,
+  NoOpAnalyticsApi,
+  NotificationApiForwarder,
+} from '../apis';
 import {
   MockAnalyticsApi,
   renderWithEffects,
@@ -34,6 +38,7 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  notificationApiRef,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
@@ -42,6 +47,10 @@ describe('Integration Test', () => {
   const noOpAnalyticsApi = createApiFactory(
     analyticsApiRef,
     new NoOpAnalyticsApi(),
+  );
+  const notificationApiFactory = createApiFactory(
+    notificationApiRef,
+    new NotificationApiForwarder(),
   );
   const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
   const plugin1RouteRef2 = createRouteRef({ id: 'ref-1-2' });
@@ -167,7 +176,7 @@ describe('Integration Test', () => {
 
   it('runs happy paths', async () => {
     const app = new AppManager({
-      apis: [noOpAnalyticsApi],
+      apis: [noOpAnalyticsApi, notificationApiFactory],
       defaultApis: [],
       themes: [
         {
@@ -222,7 +231,7 @@ describe('Integration Test', () => {
 
   it('runs happy paths without optional routes', async () => {
     const app = new AppManager({
-      apis: [noOpAnalyticsApi],
+      apis: [noOpAnalyticsApi, notificationApiFactory],
       defaultApis: [],
       themes: [
         {
@@ -270,6 +279,7 @@ describe('Integration Test', () => {
 
     const apis = [
       noOpAnalyticsApi,
+      notificationApiFactory,
       createApiFactory({
         api: featureFlagsApiRef,
         deps: { configApi: configApiRef },
@@ -333,6 +343,7 @@ describe('Integration Test', () => {
 
     const apis = [
       noOpAnalyticsApi,
+      notificationApiFactory,
       createApiFactory({
         api: featureFlagsApiRef,
         deps: { configApi: configApiRef },
@@ -417,7 +428,10 @@ describe('Integration Test', () => {
 
   it('should track route changes via analytics api', async () => {
     const mockAnalyticsApi = new MockAnalyticsApi();
-    const apis = [createApiFactory(analyticsApiRef, mockAnalyticsApi)];
+    const apis = [
+      createApiFactory(analyticsApiRef, mockAnalyticsApi),
+      notificationApiFactory,
+    ];
     const app = new AppManager({
       apis,
       defaultApis: [],
@@ -480,7 +494,7 @@ describe('Integration Test', () => {
 
   it('should throw some error when the route has duplicate params', () => {
     const app = new AppManager({
-      apis: [],
+      apis: [notificationApiFactory],
       defaultApis: [],
       themes: [
         {
@@ -530,7 +544,7 @@ describe('Integration Test', () => {
 
   it('should throw an error when required external plugin routes are not bound', () => {
     const app = new AppManager({
-      apis: [],
+      apis: [notificationApiFactory],
       defaultApis: [],
       themes: [
         {
