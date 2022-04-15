@@ -11843,9 +11843,9 @@ eslint-plugin-import@^2.25.4:
     tsconfig-paths "^3.12.0"
 
 eslint-plugin-jest@^26.1.2:
-  version "26.1.2"
-  resolved "https://registry.npmjs.org/eslint-plugin-jest/-/eslint-plugin-jest-26.1.2.tgz#0f1a15c62889fffc3f78a773749d672f1bedb15f"
-  integrity sha512-1bXCoRODPkGN06n9KAMls4Jm0eyS+0Q/LWcIxhqWR2ycV0Z7lnx2c10idk4dtFIJY5xStgiIr5snC6/rxcXpbw==
+  version "26.1.4"
+  resolved "https://registry.npmjs.org/eslint-plugin-jest/-/eslint-plugin-jest-26.1.4.tgz#8e3410093ff4439d0c3a371add5bf9e05623a57a"
+  integrity sha512-wgqxujmqc2qpvZqMFWCh6Cniqc8lWpapvXt9j/19DmBDqeDaYhJrSRezYR1SKyemvjx+9e9kny/dgRahraHImA==
   dependencies:
     "@typescript-eslint/utils" "^5.10.0"
 
@@ -12071,11 +12071,6 @@ event-source-polyfill@1.0.25:
   version "1.0.25"
   resolved "https://registry.npmjs.org/event-source-polyfill/-/event-source-polyfill-1.0.25.tgz#d8bb7f99cb6f8119c2baf086d9f6ee0514b6d9c8"
   integrity sha512-hQxu6sN1Eq4JjoI7ITdQeGGUN193A2ra83qC0Ltm9I2UJVAten3OFVN6k5RX4YWeCS0BoC8xg/5czOCIHVosQg==
-
-event-source-polyfill@^1.0.25:
-  version "1.0.26"
-  resolved "https://registry.npmjs.org/event-source-polyfill/-/event-source-polyfill-1.0.26.tgz#86c04d088ef078279168eefa028f928fec5059a4"
-  integrity sha512-IwDLs9fUTcGAyacHBeS53T8wcEkDyDn0UP4tfQqJ4wQP8AyH0mszuQf2ULTylnpI0sMquzJ4usrNV7+uztwI9A==
 
 event-stream@=3.3.4:
   version "3.3.4"
