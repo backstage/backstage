@@ -92,14 +92,16 @@ Some of the following items are coming soon and some are potential ideas.
 
 ## Tech stack
 
-| Stack                                           | Location                                                 |
-| ----------------------------------------------- | -------------------------------------------------------- |
-| Frontend Plugin                                 | [`@backstage/plugin-techdocs`][techdocs/frontend]        |
-| Backend Plugin                                  | [`@backstage/plugin-techdocs-backend`][techdocs/backend] |
-| CLI (for local development and generating docs) | [`@techdocs/cli`][techdocs/cli]                          |
-| Docker Container (for generating docs)          | [`techdocs-container`][techdocs/container]               |
+| Stack                                           | Location                                                        |
+| ----------------------------------------------- | --------------------------------------------------------------- |
+| Frontend Plugin                                 | [`@backstage/plugin-techdocs`][techdocs/frontend]               |
+| Frontend Plugin Library                         | [`@backstage/plugin-techdocs-react`][techdocs/frontend-library] |
+| Backend Plugin                                  | [`@backstage/plugin-techdocs-backend`][techdocs/backend]        |
+| CLI (for local development and generating docs) | [`@techdocs/cli`][techdocs/cli]                                 |
+| Docker Container (for generating docs)          | [`techdocs-container`][techdocs/container]                      |
 
 [techdocs/frontend]: https://github.com/backstage/backstage/blob/master/plugins/techdocs
+[techdocs/frontend-library]: https://github.com/backstage/backstage/blob/master/plugins/techdocs-react
 [techdocs/backend]: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend
 [techdocs/container]: https://github.com/backstage/techdocs-container
 [techdocs/cli]: https://github.com/backstage/techdocs-cli
