@@ -97,11 +97,9 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
     });
 
     return (
-      (page as JSX.Element) || (
-        <TechDocsReaderPageProvider entityRef={entityRef}>
-          <TechDocsReaderLayout />
-        </TechDocsReaderPageProvider>
-      )
+      <TechDocsReaderPageProvider entityRef={entityRef}>
+        {(page as JSX.Element) || <TechDocsReaderLayout />}
+      </TechDocsReaderPageProvider>
     );
   }
 
