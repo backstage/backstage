@@ -155,6 +155,7 @@ jobs:
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run test --since origin/master -- --coverage --runInBand
         env:
+          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
@@ -166,6 +167,7 @@ jobs:
           yarn lerna -- run test -- --coverage --runInBand
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
         env:
+          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
