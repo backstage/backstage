@@ -213,6 +213,7 @@ export async function runWorkerQueueThreads<TItem, TResult, TData>(
   return results;
 }
 
+/* istanbul ignore next */
 function workerQueueThread(
   workerFuncFactory: (
     data: unknown,
@@ -313,6 +314,7 @@ export async function runWorkerThreads<TResult, TData, TMessage>(
   );
 }
 
+/* istanbul ignore next */
 function workerThread(
   workerFunc: (
     data: unknown,
