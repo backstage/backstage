@@ -26,7 +26,7 @@ Let's navigate to the file `plugins/todo-list-common/src/permissions.ts` and add
   });
 ```
 
-For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`). For the actual plugins that you author, we recommend exporting all permissions from your plugin, so that Backstage integrators can import them when writing policies.
+For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`). For the actual plugins that you author, you must export any permission authorized by the plugin so Backstage integrators can import them when writing policies.
 
 ## Authorizing using the new permission
 
