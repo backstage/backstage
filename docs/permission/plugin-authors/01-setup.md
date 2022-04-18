@@ -28,13 +28,9 @@ The source code is available here:
         backstage-master/contrib/plugins/todo-list-common
     ```
 
-    Your application structure should look something like this:
+    The `plugins` directory of your project should now include `todo-list`, `todo-list-backend`, and `todo-list-common`.
 
-    // TODO: UPDATE THIS IMAGE
-
-    ![backstage application files structure](../../assets/permission/permission-tutorial-backstage-application-initial-structure.png)
-
-2.  Add the frontend and backend plugins as dependencies of your Backstage app and backend respectively:
+2.  Add these packages as dependencies for your Backstage app:
 
     ```
     $ yarn workspace backend add @internal/plugin-todo-list-backend@^1.0.0 @internal/plugin-todo-list-common@^1.0.0
