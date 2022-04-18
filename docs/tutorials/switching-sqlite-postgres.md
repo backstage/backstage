@@ -84,6 +84,5 @@ backend:
 +      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
 +      # ssl:
 +      #   ca: # if you have a CA file and want to verify it you can uncomment this section
-+      #     $file: <file-path>/ca/server.crt   
++      #     $file: <file-path>/ca/server.crt
 ```
-
