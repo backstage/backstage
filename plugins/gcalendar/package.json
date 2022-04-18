@@ -36,10 +36,7 @@
     "luxon": "^2.3.0",
     "material-ui-popup-state": "^1.9.3",
     "react-query": "^3.34.16",
-    "react-use": "^17.2.4",
-    "@types/gapi": "^0.0.41",
-    "@types/gapi.auth2": "^0.0.56",
-    "@types/gapi.client.calendar": "^3.0.10"
+    "react-use": "^17.2.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"
@@ -57,7 +54,10 @@
     "@types/node": "^16.11.26",
     "@types/sanitize-html": "^2.6.2",
     "cross-fetch": "^3.1.5",
-    "msw": "^0.35.0"
+    "msw": "^0.35.0",
+    "@types/gapi": "^0.0.41",
+    "@types/gapi.auth2": "^0.0.56",
+    "@types/gapi.client.calendar": "^3.0.10"
   },
   "files": [
     "dist"
