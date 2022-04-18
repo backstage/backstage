@@ -132,7 +132,3 @@ class TestPermissionPolicy implements PermissionPolicy {
 In this example, we use [`isResourcePermission`](https://backstage.io/docs/reference/plugin-permission-common.isresourcepermission) to match all permissions with a resource type of `catalog-entity`. Just like `isPermission`, this helper will "narrow" the type of `request.permission` and enable the use of `createCatalogConditionalDecision`. In addition to the behavior you observed before, you should also see that catalog entities are no longer visible unless you are the owner - success!
 
 _Note:_ Some catalog permissions do not have the `'catalog-entity'` resource type, such as [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49). In those cases, a definitive decision is required because conditions can't be applied to an entity that does not exist yet.
-
-## Conclusion
-
-Through a combination of permissions and conditions, you should be able to author a policy that works for your instance of Backstage and your organization. As the ecosystem around permissions in Backstage matures, you may be able to choose from other authorization packages instead of writing your own policy. If you're interested in more detailed descriptions of the concepts that comprise the permission framework, check out the [Concepts page](./concepts.md).
