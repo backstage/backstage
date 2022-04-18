@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-/// <reference types="gapi.auth2" />
-/// <reference types="gapi.client.calendar" />
+/// <reference types="@maxim_mazurok/gapi.client.calendar" />
 
 export type GCalendarList = gapi.client.calendar.CalendarList;
 
