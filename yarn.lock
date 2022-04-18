@@ -12072,11 +12072,6 @@ event-source-polyfill@1.0.25:
   resolved "https://registry.npmjs.org/event-source-polyfill/-/event-source-polyfill-1.0.25.tgz#d8bb7f99cb6f8119c2baf086d9f6ee0514b6d9c8"
   integrity sha512-hQxu6sN1Eq4JjoI7ITdQeGGUN193A2ra83qC0Ltm9I2UJVAten3OFVN6k5RX4YWeCS0BoC8xg/5czOCIHVosQg==
 
-event-source-polyfill@^1.0.25:
-  version "1.0.26"
-  resolved "https://registry.npmjs.org/event-source-polyfill/-/event-source-polyfill-1.0.26.tgz#86c04d088ef078279168eefa028f928fec5059a4"
-  integrity sha512-IwDLs9fUTcGAyacHBeS53T8wcEkDyDn0UP4tfQqJ4wQP8AyH0mszuQf2ULTylnpI0sMquzJ4usrNV7+uztwI9A==
-
 event-stream@=3.3.4:
   version "3.3.4"
   resolved "https://registry.npmjs.org/event-stream/-/event-stream-3.3.4.tgz#4ab4c9a0f5a54db9338b4c34d86bfce8f4b35571"
@@ -20899,9 +20894,9 @@ react-debounce-input@=3.2.4:
     prop-types "^15.7.2"
 
 react-dev-utils@^12.0.0-next.60:
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/react-dev-utils/-/react-dev-utils-12.0.0.tgz#4eab12cdb95692a077616770b5988f0adf806526"
-  integrity sha512-xBQkitdxozPxt1YZ9O1097EJiVpwHr9FoAuEVURCKV0Av8NBERovJauzP7bo1ThvuhZ4shsQ1AJiu4vQpoT1AQ==
+  version "12.0.1"
+  resolved "https://registry.npmjs.org/react-dev-utils/-/react-dev-utils-12.0.1.tgz#ba92edb4a1f379bd46ccd6bcd4e7bc398df33e73"
+  integrity sha512-84Ivxmr17KjUupyqzFode6xKhjwuEJDROWKJy/BthkL7Wn6NJ8h4WE6k/exAv6ImS+0oZLRRW5j/aINMHyeGeQ==
   dependencies:
     "@babel/code-frame" "^7.16.0"
     address "^1.1.2"
@@ -20922,7 +20917,7 @@ react-dev-utils@^12.0.0-next.60:
     open "^8.4.0"
     pkg-up "^3.1.0"
     prompts "^2.4.2"
-    react-error-overlay "^6.0.10"
+    react-error-overlay "^6.0.11"
     recursive-readdir "^2.2.2"
     shell-quote "^1.7.3"
     strip-ansi "^6.0.1"
@@ -20949,10 +20944,10 @@ react-error-boundary@^3.1.0:
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-react-error-overlay@^6.0.10:
-  version "6.0.10"
-  resolved "https://registry.npmjs.org/react-error-overlay/-/react-error-overlay-6.0.10.tgz#0fe26db4fa85d9dbb8624729580e90e7159a59a6"
-  integrity sha512-mKR90fX7Pm5seCOfz8q9F+66VCc1PGsWSBxKbITjfKVQHMNF2zudxHnMdJiB1fRCb+XsbQV9sO9DCkgsMQgBIA==
+react-error-overlay@^6.0.11:
+  version "6.0.11"
+  resolved "https://registry.npmjs.org/react-error-overlay/-/react-error-overlay-6.0.11.tgz#92835de5841c5cf08ba00ddd2d677b6d17ff9adb"
+  integrity sha512-/6UZ2qgEyH2aqzYZgQPxEnz33NJ2gNsnHA2o5+o4wW9bLM/JYQitNP9xPhsXwC08hMMovfGe/8retsdDsczPRg==
 
 react-fast-compare@^3.1.1:
   version "3.2.0"
