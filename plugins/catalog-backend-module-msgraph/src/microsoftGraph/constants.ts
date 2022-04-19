@@ -15,6 +15,13 @@
  */
 
 /**
+ * The (primary) user email. Also used by the Microsoft auth provider to resolve the User entity.
+ *
+ * @public
+ */
+export const MICROSOFT_EMAIL_ANNOTATION = 'microsoft.com/email';
+
+/**
  * The tenant id used by the Microsoft Graph API
  *
  * @public
