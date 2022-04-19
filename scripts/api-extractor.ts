@@ -257,6 +257,7 @@ const NO_WARNING_PACKAGES = [
   'plugins/scaffolder-common',
   'plugins/search-backend-node',
   'plugins/search-common',
+  'plugins/search-react',
   'plugins/techdocs',
   'plugins/techdocs-backend',
   'plugins/techdocs-node',

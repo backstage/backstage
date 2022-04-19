@@ -18,31 +18,40 @@ export interface SearchApi {
   query(query: SearchQuery): Promise<SearchResultSet>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "QueryResultProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "SearchApiProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function SearchApiProviderForStorybook(
-  props: PropsWithChildren<QueryResultProps>,
+  props: SearchApiProviderForStorybookProps,
 ): JSX.Element;
+
+// @public
+export type SearchApiProviderForStorybookProps = ComponentProps<
+  typeof SearchContextProvider
+> & {
+  mockedResults?: SearchResultSet;
+};
 
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
 
-// @public (undocumented)
-export const SearchContextProvider: ({
-  initialState,
-  children,
-}: React_2.PropsWithChildren<{
-  initialState?: SearchContextState | undefined;
-}>) => JSX.Element;
+// @public
+export const SearchContextProvider: (
+  props: SearchContextProviderProps,
+) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const SearchContextProviderForStorybook: (
-  props: ComponentProps<typeof SearchContextProvider> & QueryResultProps,
+  props: SearchContextProviderForStorybookProps,
 ) => JSX.Element;
+
+// @public
+export type SearchContextProviderForStorybookProps = PropsWithChildren<{
+  mockedResults?: SearchResultSet;
+}>;
+
+// @public
+export type SearchContextProviderProps = PropsWithChildren<{
+  initialState?: SearchContextState;
+}>;
 
 // @public (undocumented)
 export type SearchContextState = {
@@ -52,10 +61,17 @@ export type SearchContextState = {
   pageCursor?: string;
 };
 
-// Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export const useSearch: () => SearchContextValue;
+export type SearchContextValue = {
+  result: AsyncState<SearchResultSet>;
+  setTerm: React_2.Dispatch<React_2.SetStateAction<string>>;
+  setTypes: React_2.Dispatch<React_2.SetStateAction<string[]>>;
+  setFilters: React_2.Dispatch<React_2.SetStateAction<JsonObject>>;
+  setPageCursor: React_2.Dispatch<React_2.SetStateAction<string | undefined>>;
+  fetchNextPage?: React_2.DispatchWithoutAction;
+  fetchPreviousPage?: React_2.DispatchWithoutAction;
+} & SearchContextState;
 
-// (No @packageDocumentation comment for this package)
+// @public
+export const useSearch: () => SearchContextValue;
 ```
