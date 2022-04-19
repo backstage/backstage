@@ -50,11 +50,7 @@ const getQueryParams = (
     owners,
     user: 'all',
   };
-  const queryParams = qs.stringify({
-    filters,
-  });
-
-  return queryParams;
+  return qs.stringify({ filters }, { arrayFormat: 'repeat' });
 };
 
 const getOwnersEntityRef = (owner: Entity): string[] => {
