@@ -15,15 +15,13 @@
  */
 
 jest.mock('jose', () => ({
-  JWT: {
-    decode: jest.fn(),
-  },
+  decodeJwt: jest.fn(),
 }));
 jest.mock('@backstage/catalog-client');
 
 import { AuthenticationError } from '@backstage/errors';
 import express from 'express';
-import { JWT } from 'jose';
+import * as jose from 'jose';
 import { Logger } from 'winston';
 import { AuthHandler, AuthResolverContext, SignInResolver } from '../types';
 import {
@@ -45,12 +43,14 @@ describe('Oauth2ProxyAuthProvider', () => {
   let authHandler: jest.MockedFunction<AuthHandler<OAuth2ProxyResult<any>>>;
   let mockResponse: jest.Mocked<express.Response>;
   let mockRequest: jest.Mocked<express.Request>;
-  let JWTMock: jest.Mocked<typeof JWT>;
+  let mockJwtDecode: jest.MockedFunction<typeof jose.decodeJwt>;
 
   beforeEach(() => {
     jest.resetAllMocks();
 
-    JWTMock = JWT as jest.Mocked<typeof JWT>;
+    mockJwtDecode = jose.decodeJwt as jest.MockedFunction<
+      typeof jose.decodeJwt
+    >;
     authHandler = jest.fn();
     signInResolver = jest.fn();
     logger = { error: jest.fn() } as unknown as jest.Mocked<Logger>;
@@ -120,7 +120,7 @@ describe('Oauth2ProxyAuthProvider', () => {
       await provider.refresh(mockRequest, mockResponse);
 
       expect(mockRequest.header).toBeCalledWith(OAUTH2_PROXY_JWT_HEADER);
-      expect(JWTMock.decode).toHaveBeenCalledWith('token');
+      expect(mockJwtDecode).toHaveBeenCalledWith('token');
       expect(mockResponse.json).toHaveBeenCalled();
     });
 
@@ -136,7 +136,7 @@ describe('Oauth2ProxyAuthProvider', () => {
         token: mockToken,
       });
       authHandler.mockResolvedValue({ profile: profile });
-      JWTMock.decode.mockReturnValue(decodedToken as any);
+      mockJwtDecode.mockReturnValue(decodedToken as any);
 
       await provider.refresh(mockRequest, mockResponse);
 
@@ -191,7 +191,7 @@ describe('Oauth2ProxyAuthProvider', () => {
       await handler.refresh!(mockRequest, mockResponse);
 
       expect(mockRequest.header).toBeCalledWith(OAUTH2_PROXY_JWT_HEADER);
-      expect(JWTMock.decode).toHaveBeenCalledWith('token');
+      expect(mockJwtDecode).toHaveBeenCalledWith('token');
       expect(mockResponse.json).toHaveBeenCalled();
     });
   });

@@ -17,7 +17,7 @@ import { getVoidLogger } from '../logging/voidLogger';
 import { ConfigReader } from '@backstage/config';
 import { ServerTokenManager } from './ServerTokenManager';
 import { Logger } from 'winston';
-import { JWK } from 'jose';
+import * as jose from 'jose';
 import { TokenManager } from './types';
 
 const emptyConfig = new ConfigReader({});
@@ -204,7 +204,7 @@ describe('ServerTokenManager', () => {
     });
 
     describe('NODE_ENV === development', () => {
-      const generateSyncSpy = jest.spyOn(JWK, 'generateSync');
+      const generateSecretSpy = jest.spyOn(jose, 'generateSecret');
 
       beforeEach(() => {
         (process.env as any).NODE_ENV = 'development';
@@ -214,26 +214,30 @@ describe('ServerTokenManager', () => {
         jest.clearAllMocks();
       });
 
-      it('should generate a key if no config is provided', () => {
-        ServerTokenManager.fromConfig(emptyConfig, { logger });
-
-        expect(generateSyncSpy).toHaveBeenCalledWith('oct', 192);
+      it('should generate a key if no config is provided', async () => {
+        const tokenManager = ServerTokenManager.fromConfig(emptyConfig, {
+          logger,
+        });
+        const token = await tokenManager.getToken();
+        expect(token).toBeDefined();
+        expect(generateSecretSpy).toHaveBeenCalledWith('HS256');
       });
 
-      it('should generate a key if no keys are provided in the configuration', () => {
-        ServerTokenManager.fromConfig(
+      it('should generate a key if no keys are provided in the configuration', async () => {
+        const tokenManager = ServerTokenManager.fromConfig(
           new ConfigReader({
             backend: { auth: { keys: [] } },
           }),
           { logger },
         );
-
-        expect(generateSyncSpy).toHaveBeenCalledWith('oct', 192);
+        const token = await tokenManager.getToken();
+        expect(token).toBeDefined();
+        expect(generateSecretSpy).toHaveBeenCalledWith('HS256');
       });
 
       it('should use provided secrets if config is provided', () => {
         ServerTokenManager.fromConfig(configWithSecret, { logger });
-        expect(generateSyncSpy).not.toHaveBeenCalled();
+        expect(generateSecretSpy).not.toHaveBeenCalled();
       });
     });
   });
