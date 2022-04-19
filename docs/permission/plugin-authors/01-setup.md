@@ -105,10 +105,6 @@ Now if you start your application you should be able to reach the `/todo-list` p
 
 ---
 
-// TODO(vinzscam): split the tutorial in two parts:
-// - plugins relying on external entities
-// - plugins owning their own entities
-
 ## Integrate the new plugin
 
 If you play with the UI, you will notice that it is possible to perform a few actions:
