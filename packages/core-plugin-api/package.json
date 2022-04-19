@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-plugin-api",
   "description": "Core API used by Backstage plugins",
-  "version": "1.0.1-next.0",
+  "version": "1.0.1",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -35,7 +35,7 @@
   "dependencies": {
     "@backstage/config": "^1.0.0",
     "@backstage/types": "^1.0.0",
-    "@backstage/version-bridge": "^1.0.0",
+    "@backstage/version-bridge": "^1.0.1",
     "history": "^5.0.0",
     "prop-types": "^15.7.2",
     "react-router-dom": "6.0.0-beta.0",
@@ -46,9 +46,9 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.0-next.3",
-    "@backstage/core-app-api": "^1.0.1-next.1",
-    "@backstage/test-utils": "^1.0.1-next.2",
+    "@backstage/cli": "^0.17.0",
+    "@backstage/core-app-api": "^1.0.1",
+    "@backstage/test-utils": "^1.0.1",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/react-hooks": "^8.0.0",

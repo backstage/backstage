@@ -1,5 +1,93 @@
 # @backstage/plugin-techdocs
 
+## 1.1.0
+
+### Minor Changes
+
+- ace749b785: TechDocs supports a new, experimental method of customization: addons!
+
+  To customize the standalone TechDocs reader page experience, update your `/packages/app/src/App.tsx` in the following way:
+
+  ```diff
+  import { TechDocsIndexPage, TechDocsReaderPage } from '@backstage/plugin-techdocs';
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import { SomeAddon } from '@backstage/plugin-some-plugin';
+
+  // ...
+
+      <Route path="/docs" element={<TechDocsIndexPage />} />
+      <Route
+        path="/docs/:namespace/:kind/:name/*"
+        element={<TechDocsReaderPage />}
+      >
+  +      <TechDocsAddons>
+  +        <SomeAddon />
+  +      </TechDocsAddons>
+      </Route>
+
+  // ...
+  ```
+
+  To customize the TechDocs reader experience on the Catalog entity page, update your `packages/app/src/components/catalog/EntityPage.tsx` in the following way:
+
+  ```diff
+  import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import { SomeAddon } from '@backstage/plugin-some-plugin';
+
+  // ...
+
+    <EntityLayoutWrapper>
+      <EntityLayout.Route path="/" title="Overview">
+        {overviewContent}
+      </EntityLayout.Route>
+
+      <EntityLayout.Route path="/docs" title="Docs">
+  -      <EntityTechDocsContent />
+  +      <EntityTechdocsContent>
+  +        <TechDocsAddons>
+  +          <SomeAddon />
+  +        </TechDocsAddons>
+  +      </EntityTechdocsContent>
+      </EntityLayout.Route>
+    </EntityLayoutWrapper>
+
+  // ...
+  ```
+
+  If you do not wish to customize your TechDocs reader experience in this way at this time, no changes are necessary!
+
+### Patch Changes
+
+- ab230a433f: imports from `@backstage/plugin-search-react` instead of `@backstage/plugin-search`
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- f0fb9153b7: Fix broken query selectors on techdocs
+- 9975ff9852: Applied the fix from version 1.0.1 of this package, which is part of the v1.0.2 release of Backstage.
+- 3ba256c389: Fixed a bug preventing custom TechDocs reader page implementations from rendering without being double-wrapped in the `<TechDocsReaderPage />` component.
+- fe53fe97d7: Fix permalink scrolling for anchors where the id starts with a number.
+- 0152c0de22: Some documentation layout tweaks:
+
+  - drawer toggle margins
+  - code block margins
+  - sidebar drawer width
+  - inner content width
+  - footer link width
+  - sidebar table of contents scroll
+
+- 3ba256c389: Fixed a bug that caused addons in the `Subheader` location to break the default TechDocs reader page layout.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-app-api@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/plugin-search-react@0.1.0
+  - @backstage/plugin-techdocs-react@0.1.0
+  - @backstage/integration-react@1.0.1
+
 ## 1.1.0-next.3
 
 ### Minor Changes

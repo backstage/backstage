@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.4.2
+
+### Patch Changes
+
+- ebc0aef2c6: Changed relationship creation in LDAP data processor to leverage entityRefs instead of metadata.name
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0
+  - @backstage/backend-tasks@0.3.0
+  - @backstage/catalog-model@1.0.1
+
 ## 0.4.2-next.1
 
 ### Patch Changes

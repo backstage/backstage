@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-node
 
+## 1.1.0
+
+### Minor Changes
+
+- bcf1a2496c: Removed an undocumented, broken behavior where `README.md` files would be copied to `index.md` if it did not exist, leading to broken links in the TechDocs UI.
+
+### Patch Changes
+
+- 9fa68705bf: The default container version used to generate TechDocs content is now `v1.0.2`.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/backend-common@0.13.2
+
 ## 1.1.0-next.2
 
 ### Minor Changes

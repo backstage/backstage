@@ -1,5 +1,35 @@
 # @backstage/plugin-catalog-react
 
+## 1.0.1
+
+### Patch Changes
+
+- 0ffd88a90e: Prevent permissions with types other than `ResourcePermission<'catalog-entity'>` from being used with the `useEntityPermission` hook.
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 4af82967f4: Decouple tags picker from backend entities
+
+  `EntityTagPicker` fetches all the tags independently and it doesn't require all the entities to be available client side.
+
+- 4be0d1e777: Changed catalog filter components to only pay attention to query parameters relevant to the component.
+- 5d5fdbe541: Columns in CatalogTable now change depending on the entity kind, ensuring only relevant columns are displayed.
+- 863e7bcb7b: Updated the "unregister location" behavior in `UnregisterEntityDialog`. Removed unnecessary entity deletion requests that were sent after successfully deleting a location.
+- 37b04b5a5e: Removed broken link from Labels section of entity inspector.
+- a496cee4d1: Add support for string refs to the `EntityRefLinks` component
+- d34900af81: Added a new `NextScaffolderRouter` which will eventually replace the exiting router
+- 99063c39ae: Minor API report cleanup
+- 4431873583: Update `usePermission` usage.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/plugin-permission-react@0.4.0
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/version-bridge@1.0.1
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/catalog-client@1.0.1
+
 ## 1.0.1-next.3
 
 ### Patch Changes

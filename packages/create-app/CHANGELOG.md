@@ -1,5 +1,227 @@
 # @backstage/create-app
 
+## 0.4.26
+
+### Patch Changes
+
+- 1691c6c5c2: Made `User` and `Group` entity kinds not permitted by the default
+  `catalog.rules` config.
+
+  The effect of this is that after creating a new Backstage repository, its
+  catalog no longer permits regular users to register `User` or `Group` entities
+  using the Backstage interface. Additionally, if you have config locations that
+  result in `User` or `Group` entities, you need to add those kinds to its own
+  specific rules:
+
+  ```yaml
+  catalog:
+    locations:
+      # This applies for example to url type locations
+      - type: url
+        target: https://example.com/org.yaml
+        rules:
+          - allow: [User, Group]
+      # But also note that this applies to ALL org location types!
+      - type: github-org
+        target: https://github.com/my-org-name
+        rules:
+          - allow: [User, Group]
+  ```
+
+  This rule change does NOT affect entity providers, only things that are emitted
+  by entity processors.
+
+  We recommend that this change is applied to your own Backstage repository, since
+  it makes it impossible for regular end users to affect your org data through
+  e.g. YAML files. To do so, remove the two kinds from the default rules in your config:
+
+  ```diff
+   catalog:
+     rules:
+  -    - allow: [Component, System, API, Group, User, Resource, Location]
+  +    - allow: [Component, System, API, Resource, Location]
+  ```
+
+  And for any location that in any way results in org data being ingested, add the corresponding rule to it:
+
+  ```diff
+   catalog:
+     locations:
+       - type: github-org
+         target: https://github.com/my-org-name
+  +      rules:
+  +        - allow: [User, Group]
+  ```
+
+- 0e911394d2: Remove the `knex` package that is installed in the `packages/backend` as it's provided by the `@backstage/*` packages for you automatically. You can make the following change in your `packages/backend/package.json` if you wish to apply this change.
+
+  ```diff
+      "lint": "backstage-cli package lint",
+      "test": "backstage-cli package test",
+      "clean": "backstage-cli package clean",
+  -   "migrate:create": "knex migrate:make -x ts"
+  ```
+
+  ```diff
+      "express": "^4.17.1",
+      "express-promise-router": "^4.1.0",
+  -   "knex": "^0.21.6",
+      "pg": "^8.3.0",
+  ```
+
+- 520e21aaea: imports `useSearch` hook from new `@backstage/plugin-search-react` package.
+
+  To upgrade existing Apps:
+
+  1. Change the import to the following:
+
+  `packages/app/src/components/search/SearchPage.tsx`
+
+  ```diff
+  import {
+  ...
+  SearchType,
+  - useSearch,
+  } from '@backstage/plugin-search';
+  +import { useSearch } from '@backstage/plugin-search-react';
+  ```
+
+  2. Add `@backstage/plugin-search-react` as a dependency to the app.
+
+- 43759dd789: Removed `@octokit/rest` and `@gitbeaker/node` from backend dependencies as these are unused in the default app.
+
+  To apply these changes to your existing app, remove the following lines from the `dependencies` section of `packages/backend/package.json`
+
+  ```diff
+       "@backstage/plugin-techdocs-backend": "^1.0.0",
+  -    "@gitbeaker/node": "^34.6.0",
+  -    "@octokit/rest": "^18.5.3",
+  ```
+
+- e838a7060a: Add type resolutions for `@types/react` and `types/react-dom`.
+
+  The reason for this is the usage of `"@types/react": "*"` as a dependency which is very common practice in react packages. This recently resolves to react 18 which introduces several breaking changes in both internal and external packages.
+
+  To apply these changes to your existing installation, add a resolutions block to your `package.json`
+
+  ```json
+    "resolutions": {
+      "@types/react": "^17",
+      "@types/react-dom": "^17"
+    },
+  ```
+
+  If your existing app depends on react 16, use this resolution block instead.
+
+  ```json
+    "resolutions": {
+      "@types/react": "^16",
+      "@types/react-dom": "^16"
+    },
+  ```
+
+- 0a63e99a26: **BREAKING**: `IndexBuilder.addCollator()` now requires a `schedule` parameter (replacing `defaultRefreshIntervalSeconds`) which is expected to be a `TaskRunner` that is configured with the desired search indexing schedule for the given collator.
+
+  `Scheduler.addToSchedule()` now takes a new parameter object (`ScheduleTaskParameters`) with two new options `id` and `scheduledRunner` in addition to the migrated `task` argument.
+
+  NOTE: The search backend plugin now creates a dedicated database for coordinating indexing tasks.
+
+  To make this change to an existing app, make the following changes to `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  +import { Duration } from 'luxon';
+
+  /* ... */
+
+  +  const schedule = env.scheduler.createScheduledTaskRunner({
+  +    frequency: Duration.fromObject({ minutes: 10 }),
+  +    timeout: Duration.fromObject({ minutes: 15 }),
+  +    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +  });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     const { scheduler } = await indexBuilder.build();
+  -  setTimeout(() => scheduler.start(), 3000);
+  +  scheduler.start();
+  /* ... */
+  ```
+
+  NOTE: For scenarios where the `lunr` search engine is used in a multi-node configuration, a non-distributed `TaskRunner` like the following should be implemented to ensure consistency across nodes (alternatively, you can configure
+  the search plugin to use a non-distributed DB such as [SQLite](https://backstage.io/docs/tutorials/configuring-plugin-databases#postgresql-and-sqlite-3)):
+
+  ```diff
+  +import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+
+  /* ... */
+
+  +  const schedule: TaskRunner = {
+  +    run: async (task: TaskInvocationDefinition) => {
+  +      const startRefresh = async () => {
+  +        while (!task.signal?.aborted) {
+  +          try {
+  +            await task.fn(task.signal);
+  +          } catch {
+  +            // ignore intentionally
+  +          }
+  +
+  +          await new Promise(resolve => setTimeout(resolve, 600 * 1000));
+  +        }
+  +      };
+  +      startRefresh();
+  +    },
+  +  };
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+  /* ... */
+  ```
+
+- c07d9f9e1c: Add helpful README.md files in the original `packages` and `plugins` folders
+- 230ad0826f: Bump to using `@types/node` v16
+- 1882dbda2b: Accept `PermissionEvaluator` instead of the deprecated `PermissionAuthorizer`.
+
+  Apply the following to `packages/backend/src/types.ts`:
+
+  ```diff
+  - import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+  + import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+
+    export type PluginEnvironment = {
+      ...
+      discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
+      scheduler: PluginTaskScheduler;
+  -   permissions: PermissionAuthorizer;
+  +   permissions: PermissionEvaluator;
+    };
+  ```
+
+- e80cca164d: Tweaked `.eslintrc.js` files in the template to avoid having them apply during development. This change does not affect create apps.
+
 ## 0.4.26-next.2
 
 ### Patch Changes
