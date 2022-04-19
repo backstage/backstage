@@ -16,7 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { useAnalytics } from '@backstage/core-plugin-api';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 
 /**
  * Capture search event on term change.

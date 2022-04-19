@@ -18,11 +18,11 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 import { SearchResultPager } from './SearchResultPager';
 
-jest.mock('../SearchContext', () => ({
-  ...jest.requireActual('../SearchContext'),
+jest.mock('@backstage/plugin-search-react', () => ({
+  ...jest.requireActual('@backstage/plugin-search-react'),
   useSearch: jest.fn().mockReturnValue({
     result: {},
   }),

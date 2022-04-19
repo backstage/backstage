@@ -21,7 +21,7 @@ import {
   AutocompleteGetTagProps,
   AutocompleteRenderInputParams,
 } from '@material-ui/lab';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 import { SearchFilterComponentProps } from './SearchFilter';
 

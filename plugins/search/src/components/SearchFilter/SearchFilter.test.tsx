@@ -19,7 +19,7 @@ import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SearchFilter } from './SearchFilter';
 
-import { SearchContextProvider } from '../SearchContext';
+import { SearchContextProvider } from '@backstage/plugin-search-react';
 import { useApi } from '@backstage/core-plugin-api';
 
 jest.mock('@backstage/core-plugin-api', () => ({

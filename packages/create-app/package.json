@@ -85,6 +85,7 @@
     "@backstage/plugin-scaffolder": "",
     "@backstage/plugin-scaffolder-backend": "",
     "@backstage/plugin-search": "",
+    "@backstage/plugin-search-react": "",
     "@backstage/plugin-search-backend": "",
     "@backstage/plugin-search-backend-module-pg": "",
     "@backstage/plugin-search-backend-node": "",
