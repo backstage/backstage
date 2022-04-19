@@ -16,7 +16,7 @@
 
 import { createPlugin } from '@backstage/core-plugin-api';
 import {
-  createTechDocsAddon,
+  createTechDocsAddonExtension,
   TechDocsAddonLocations,
 } from '@backstage/plugin-techdocs-react';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
@@ -38,9 +38,9 @@ export const techdocsAddonsContribPlugin = createPlugin({
  */
 
 export const ReportIssue = techdocsAddonsContribPlugin.provide(
-  createTechDocsAddon<ReportIssueProps>({
+  createTechDocsAddonExtension<ReportIssueProps>({
     name: 'ReportIssue',
-    location: TechDocsAddonLocations.CONTENT,
+    location: TechDocsAddonLocations.Content,
     component: ReportIssueAddon,
   }),
 );

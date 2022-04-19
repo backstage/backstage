@@ -36,7 +36,7 @@
   "dependencies": {
     "@backstage/core-components": "^0.9.3-next.1",
     "@backstage/core-plugin-api": "^1.0.0",
-    "@backstage/integration": "^1.0.0",
+    "@backstage/integration": "^1.1.0-next.2",
     "@backstage/integration-react": "^1.0.1-next.1",
     "@backstage/plugin-techdocs-react": "^0.1.0-next.0",
     "@backstage/theme": "^0.2.15",
