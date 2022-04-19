@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 1.1.0
+
+### Minor Changes
+
+- 6331ec1ebc: Added a context menu to the scaffolder page that provides links to the template editor and actions reference. These links and the presence of the context menu can be toggled through the `contextMenu` prop of the scaffolder page.
+- 8fad3b6ef5: The Template Preview page has been renamed to Template Editor, and is not available at the `/edit` path instead. There is a redirect in place from `/preview`.
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 946af407db: Changed input label for owner field in GitlabRepoPicker
+- 230ad0826f: Bump to using `@types/node` v16
+- d34900af81: Added a new `NextScaffolderRouter` which will eventually replace the exiting router
+- 9975ff9852: Applied the fix from version 1.0.1 of this package, which is part of the v1.0.2 release of Backstage.
+- 4431873583: Update `usePermission` usage.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/plugin-permission-react@0.4.0
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/integration-react@1.0.1
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/catalog-client@1.0.1
+  - @backstage/plugin-scaffolder-common@1.0.1
+
 ## 1.1.0-next.3
 
 ### Minor Changes

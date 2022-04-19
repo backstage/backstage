@@ -1,5 +1,61 @@
 # example-app
 
+## 0.2.70
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.0
+  - @backstage/plugin-home@0.4.20
+  - @backstage/plugin-techdocs@1.1.0
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/cli@0.17.0
+  - @backstage/plugin-scaffolder@1.1.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-kubernetes@0.6.4
+  - @backstage/core-app-api@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/plugin-catalog-graph@0.2.16
+  - @backstage/plugin-catalog-import@0.8.7
+  - @backstage/plugin-kafka@0.3.4
+  - @backstage/plugin-lighthouse@0.3.4
+  - @backstage/plugin-rollbar@0.4.4
+  - @backstage/plugin-search-react@0.1.0
+  - @backstage/plugin-search@0.8.0
+  - @backstage/integration-react@1.0.1
+  - @backstage/plugin-airbrake@0.3.4
+  - @backstage/plugin-apache-airflow@0.1.12
+  - @backstage/plugin-api-docs@0.8.4
+  - @backstage/plugin-azure-devops@0.1.20
+  - @backstage/plugin-badges@0.2.28
+  - @backstage/plugin-catalog@1.1.0
+  - @backstage/plugin-circleci@0.3.4
+  - @backstage/plugin-cloudbuild@0.3.4
+  - @backstage/plugin-code-coverage@0.1.31
+  - @backstage/plugin-cost-insights@0.11.26
+  - @backstage/plugin-explore@0.3.35
+  - @backstage/plugin-gcalendar@0.3.0
+  - @backstage/plugin-gcp-projects@0.3.23
+  - @backstage/plugin-github-actions@0.5.4
+  - @backstage/plugin-gocd@0.1.10
+  - @backstage/plugin-graphiql@0.2.36
+  - @backstage/plugin-jenkins@0.7.3
+  - @backstage/plugin-newrelic@0.3.22
+  - @backstage/plugin-org@0.5.4
+  - @backstage/plugin-pagerduty@0.3.31
+  - @backstage/plugin-sentry@0.3.42
+  - @backstage/plugin-shortcuts@0.2.5
+  - @backstage/plugin-stack-overflow@0.1.0
+  - @backstage/plugin-tech-insights@0.2.0
+  - @backstage/plugin-tech-radar@0.5.11
+  - @backstage/plugin-todo@0.2.6
+  - @backstage/plugin-user-settings@0.4.3
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/app-defaults@1.0.1
+  - @backstage/plugin-newrelic-dashboard@0.1.12
+
 ## 0.2.70-next.2
 
 ### Patch Changes

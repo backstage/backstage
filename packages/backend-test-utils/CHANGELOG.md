@@ -1,5 +1,14 @@
 # @backstage/backend-test-utils
 
+## 0.1.23
+
+### Patch Changes
+
+- 0654c87cf2: `TestDatabases.create` will no longer set up an `afterAll` test handler if no databases are supported.
+- Updated dependencies
+  - @backstage/cli@0.17.0
+  - @backstage/backend-common@0.13.2
+
 ## 0.1.23-next.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/config-loader
 
+## 1.1.0
+
+### Minor Changes
+
+- 19f6c6c32a: Added `ignoreSchemaErrors` to `schema.process`.
+
+### Patch Changes
+
+- e0a51384ac: build(deps): bump `ajv` from 7.0.3 to 8.10.0
+- 230ad0826f: Bump to using `@types/node` v16
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+
 ## 1.1.0-next.1
 
 ### Minor Changes

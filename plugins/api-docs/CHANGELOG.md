@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.8.4
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- ae321bd414: build(deps): bump `@asyncapi/react-component`
+- 230ad0826f: Bump to using `@types/node` v16
+- 1c8ebf7af2: Add dedicated gRPC api definition widget
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/plugin-catalog@1.1.0
+
 ## 0.8.4-next.3
 
 ### Patch Changes
