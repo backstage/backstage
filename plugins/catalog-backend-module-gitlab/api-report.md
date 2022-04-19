@@ -9,7 +9,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { UserEntity } from '@backstage/catalog-model';
 
@@ -19,7 +19,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
     },
   ): GitLabDiscoveryProcessor;
   // (undocumented)
@@ -36,7 +36,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 export class GitLabOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
-    logger: Logger_2;
+    logger: Logger;
     integrations: ScmIntegrations;
     providerConfigs: GitLabOrgProviderConfig[];
   });
@@ -47,7 +47,7 @@ export class GitLabOrgEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       id: string;
-      logger: Logger_2;
+      logger: Logger;
     },
   ): GitLabOrgEntityProvider;
   // (undocumented)
