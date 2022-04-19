@@ -66,7 +66,7 @@
     "passport-github2": "^0.1.12",
     "passport-gitlab2": "^5.0.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-microsoft": "^0.1.0",
+    "passport-microsoft": "^1.0.0",
     "passport-oauth2": "^1.6.1",
     "passport-okta-oauth": "^0.0.1",
     "passport-onelogin-oauth": "^0.0.1",
