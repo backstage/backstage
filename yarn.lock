@@ -12053,7 +12053,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@roadiehq/backstage-plugin-travis-ci" "^2.0.0"
     history "^5.0.0"
     prop-types "^15.7.2"
-    react "^17.0.2"
+    react "^18.0.0"
     react-dom "^17.0.2"
     react-hot-loader "^4.13.0"
     react-router "6.0.0-beta.0"
@@ -21084,13 +21084,12 @@ react-window@^1.8.6:
     "@babel/runtime" "^7.0.0"
     memoize-one ">=3.1.1 <6"
 
-react@^17.0.2:
-  version "17.0.2"
-  resolved "https://registry.npmjs.org/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
-  integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
+react@^18.0.0:
+  version "18.0.0"
+  resolved "https://registry.npmjs.org/react/-/react-18.0.0.tgz#b468736d1f4a5891f38585ba8e8fb29f91c3cb96"
+  integrity sha512-x+VL6wbT4JRVPm7EGxXhZ8w8LTROaxPXOqhlGyVSrv0sB1jkyFGgXxJ8LVoPRLvPR6/CIZGFmfzqUa2NYeMr2A==
   dependencies:
     loose-envify "^1.1.0"
-    object-assign "^4.1.1"
 
 read-cmd-shim@^2.0.0:
   version "2.0.0"
@@ -23601,7 +23600,7 @@ tdigest@^0.1.1:
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     history "^5.0.0"
-    react "^17.0.2"
+    react "^18.0.0"
     react-dom "^17.0.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
