@@ -1,5 +1,15 @@
 # @backstage/core-plugin-api
 
+## 1.0.1
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/version-bridge@1.0.1
+
 ## 1.0.1-next.0
 
 ### Patch Changes

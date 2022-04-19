@@ -1,5 +1,22 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.4
+
+### Patch Changes
+
+- 82e2ae6ff6: build(deps): bump `cronstrue` from 1.125.0 to 2.2.0
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 1023ee6353: export kubernetes components
+- 230ad0826f: Bump to using `@types/node` v16
+- f616d99f6f: Fix division by zero in currentToDeclaredResourceToPerc when pod resources weren't set
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/plugin-kubernetes-common@0.2.9
+
 ## 0.6.4-next.2
 
 ### Patch Changes

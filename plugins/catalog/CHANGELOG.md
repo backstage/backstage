@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog
 
+## 1.1.0
+
+### Minor Changes
+
+- bdc61b4002: Expose 'initalFilter' through initialKind prop on Catalog Page.
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 2a3cac4c60: Corrected replacements for depreciated FilteredEntityLayout items
+- f6d2694092: Added tableOptions property to CatalogTable and DefaultCatalogPage to support customization of the Catalog Table. Related issue #10453
+- 5d5fdbe541: Columns in CatalogTable now change depending on the entity kind, ensuring only relevant columns are displayed.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/integration-react@1.0.1
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/catalog-client@1.0.1
+
 ## 1.1.0-next.3
 
 ### Patch Changes

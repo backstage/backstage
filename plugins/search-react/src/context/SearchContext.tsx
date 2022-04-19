@@ -32,7 +32,11 @@ import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import usePrevious from 'react-use/lib/usePrevious';
 import { searchApiRef } from '../api';
 
-type SearchContextValue = {
+/**
+ *
+ * @public
+ */
+export type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
   setTerm: React.Dispatch<React.SetStateAction<string>>;
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
@@ -59,6 +63,8 @@ const SearchContext = createVersionedContext<{
 
 /**
  * @public
+ *
+ * React hook which provides the search context
  */
 export const useSearch = () => {
   const context = useContext(SearchContext);
@@ -85,12 +91,21 @@ const searchInitialState: SearchContextState = {
 };
 
 /**
+ * Props for {@link SearchContextProvider}
+ *
  * @public
  */
-export const SearchContextProvider = ({
-  initialState = searchInitialState,
-  children,
-}: PropsWithChildren<{ initialState?: SearchContextState }>) => {
+export type SearchContextProviderProps = PropsWithChildren<{
+  initialState?: SearchContextState;
+}>;
+
+/**
+ * @public
+ *
+ * Search context provider which gives you access to shared state between search components
+ */
+export const SearchContextProvider = (props: SearchContextProviderProps) => {
+  const { initialState = searchInitialState, children } = props;
   const searchApi = useApi(searchApiRef);
   const [pageCursor, setPageCursor] = useState<string | undefined>(
     initialState.pageCursor,

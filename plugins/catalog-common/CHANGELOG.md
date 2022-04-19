@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.1
+
+### Patch Changes
+
+- ada4446733: Use `createPermission` helper when creating permissions.
+- 8c8bee47f4: Add `@alpha` `CatalogEntityPermission` convenience type, available for import from `@backstage/plugin-catalog-common/alpha`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/search-common@0.3.3
+
 ## 1.0.1-next.1
 
 ### Patch Changes

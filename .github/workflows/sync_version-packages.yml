@@ -16,7 +16,7 @@ jobs:
       - name: Install Dependencies
         run: yarn --frozen-lockfile
       - name: Create Release Pull Request
-        uses: changesets/action@master
+        uses: backstage/changesets-action@v2
         with:
           # Calls out to `changeset version`, but also runs prettier
           version: yarn release

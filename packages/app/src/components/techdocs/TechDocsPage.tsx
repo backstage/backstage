@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import { Page } from '@backstage/core-components';
 import {
-  TechDocsReaderPage,
   TechDocsReaderPageHeader,
   TechDocsReaderPageSubheader,
   TechDocsReaderPageContent,
 } from '@backstage/plugin-techdocs';
-import React from 'react';
 
 const DefaultTechDocsPage = () => {
   return (
-    <TechDocsReaderPage>
+    <Page themeId="documentation">
       <TechDocsReaderPageHeader />
       <TechDocsReaderPageSubheader />
       <TechDocsReaderPageContent />
-    </TechDocsReaderPage>
+    </Page>
   );
 };
 

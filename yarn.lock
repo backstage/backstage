@@ -75,7 +75,7 @@
   dependencies:
     "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
 
-"@asyncapi/parser@^1.14.0":
+"@asyncapi/parser@^1.14.1":
   version "1.14.1"
   resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.14.1.tgz#2f474f9d5ba1ce5b144e487fd956c0809ab11a9e"
   integrity sha512-ZsNQc/HXmGDrxkYBRrGou/JrWn+FLHYdQQI0WPOylSL+LNfaWtLlIcYwbcj61l+jLLFqIe0DK/yZbmjxm0ydqw==
@@ -90,19 +90,19 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@1.0.0-next.34":
-  version "1.0.0-next.34"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.34.tgz#8922fa7f315730694ce1e5ab95a9a9307a39931a"
-  integrity sha512-4ZkF3vsKjaAaZ2qIPLfkmw73vCrop+qF2krPtAFSmk4wy8B+uMRK9bsObrf+QUSj4gSIQHezznMIZKAU91JTQw==
+"@asyncapi/react-component@1.0.0-next.36":
+  version "1.0.0-next.36"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.36.tgz#81b2099381f8e77d175a6e04933299f2dd24d97b"
+  integrity sha512-2ruMfFHCJGnIlbmB/x1qBcg9eLhqDUSzWs7OjSoVPEoJQgtyFGy+Wkow7Liu0cYwPFJJfHCu+VOvLVKXmUUTxw==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.3.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
-    "@asyncapi/parser" "^1.14.0"
+    "@asyncapi/parser" "^1.14.1"
     highlight.js "^10.7.2"
     isomorphic-dompurify "^0.13.0"
-    marked "^4.0.10"
-    openapi-sampler "^1.1.0"
-    use-resize-observer "^7.0.0"
+    marked "^4.0.14"
+    openapi-sampler "^1.2.1"
+    use-resize-observer "^8.0.0"
 
 "@asyncapi/specs@^2.13.0":
   version "2.13.0"
@@ -1455,165 +1455,6 @@
   dependencies:
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
-
-"@backstage/catalog-client@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-1.0.0.tgz#05f9ee3b771ca17e4800f5116d63bd183fe0c4d6"
-  integrity sha512-m2FiV9+gQElYrZMICFpr3Dj7H34as9Jly1onF/yFhKi4DSovZpgemTG6I0KQuNuEwmrqYTkTd6kDDYvpUis9Ow==
-  dependencies:
-    "@backstage/catalog-model" "^1.0.0"
-    "@backstage/errors" "^1.0.0"
-    cross-fetch "^3.1.5"
-
-"@backstage/catalog-model@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-1.0.0.tgz#0aa8694a3182aaf4232725842da751bf5f78bd68"
-  integrity sha512-hjvTzs+P1/TG42FhX6jJvRIBbYZJC0vE9Qqn9MTb4n8vaoZuBT5jYTnK6K80gpEyNfbznpD5vsE8ss5lmzWz+Q==
-  dependencies:
-    "@backstage/config" "^1.0.0"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/types" "^1.0.0"
-    ajv "^7.0.3"
-    json-schema "^0.4.0"
-    lodash "^4.17.21"
-    uuid "^8.0.0"
-
-"@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.2":
-  version "0.9.2"
-  resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.2.tgz#9a3d79a15039256bbc007e5daa08c983050e0238"
-  integrity sha512-kh0FB0FmjC55W+xSEkKrAc7D6hvbYLY7N1UUd6M4VBghYXD61Y8RrJFKmBM3bAfPgYaryQNjYgA0BsoTo53PJA==
-  dependencies:
-    "@backstage/config" "^1.0.0"
-    "@backstage/core-plugin-api" "^1.0.0"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/theme" "^0.2.15"
-    "@material-table/core" "^3.1.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    "@react-hookz/web" "^13.0.0"
-    "@types/react-sparklines" "^1.7.0"
-    "@types/react-text-truncate" "^0.14.0"
-    ansi-regex "^6.0.1"
-    classnames "^2.2.6"
-    d3-selection "^3.0.0"
-    d3-shape "^3.0.0"
-    d3-zoom "^3.0.0"
-    dagre "^0.8.5"
-    history "^5.0.0"
-    immer "^9.0.1"
-    lodash "^4.17.21"
-    pluralize "^8.0.0"
-    prop-types "^15.7.2"
-    qs "^6.9.4"
-    rc-progress "3.2.4"
-    react-helmet "6.1.0"
-    react-hook-form "^7.12.2"
-    react-markdown "^8.0.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^15.4.5"
-    react-text-truncate "^0.18.0"
-    react-use "^17.3.2"
-    react-virtualized-auto-sizer "^1.0.6"
-    react-window "^1.8.6"
-    remark-gfm "^3.0.1"
-    zen-observable "^0.8.15"
-    zod "^3.11.6"
-
-"@backstage/core-plugin-api@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-1.0.0.tgz#2f12a92e93323f66ff722878facf468a95562171"
-  integrity sha512-A1Xz6CcrRyUjoSdrhd0AWKgeATFITRwsjgi4CoVUny+wWgqU7gQ2mo42LtOmcaBRdUJz6AhRQn4IhKN/2T3G/A==
-  dependencies:
-    "@backstage/config" "^1.0.0"
-    "@backstage/types" "^1.0.0"
-    "@backstage/version-bridge" "^1.0.0"
-    history "^5.0.0"
-    prop-types "^15.7.2"
-    react-router-dom "6.0.0-beta.0"
-    zen-observable "^0.8.15"
-
-"@backstage/integration-react@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@backstage/integration-react/-/integration-react-1.0.0.tgz#8075e65c6b5387631d27a9c242e7a4fff6f92417"
-  integrity sha512-htL4Ovm4Thg07IQ7OM18ydUUWGDiTFUn0ozUcNoYQHXdmYtONHpc4/W+THWOYC+0VYdTBSEKz9JidSMsFs3EGQ==
-  dependencies:
-    "@backstage/config" "^1.0.0"
-    "@backstage/core-components" "^0.9.2"
-    "@backstage/core-plugin-api" "^1.0.0"
-    "@backstage/integration" "^1.0.0"
-    "@backstage/theme" "^0.2.15"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    react-use "^17.2.4"
-
-"@backstage/integration@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@backstage/integration/-/integration-1.0.0.tgz#e307cfddea014bfb0eb2281a5ae25ea0b742e9cf"
-  integrity sha512-DpEoSCQyurLSNGLAAfZzwb8IGEoxm6po6ZkKq9Gt9I63NbLhixBEnCcoPbm5+ld4MVNwg+FgzIoktsjdBt3JIw==
-  dependencies:
-    "@backstage/config" "^1.0.0"
-    "@octokit/auth-app" "^3.4.0"
-    "@octokit/rest" "^18.5.3"
-    cross-fetch "^3.1.5"
-    git-url-parse "^11.6.0"
-    lodash "^4.17.21"
-    luxon "^2.0.2"
-
-"@backstage/plugin-catalog-react@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-1.0.0.tgz#4f42c070ffe5c9690e45a5288e18bacd8d4e0e66"
-  integrity sha512-F4HwGPD2/U6D219ivXRaRSsKUwOHrA5+yb+d6kHG0T+N5WdcBEhBv6a2bypGjkEEu/7oeTbQKjK2CKIGMlwbPA==
-  dependencies:
-    "@backstage/catalog-client" "^1.0.0"
-    "@backstage/catalog-model" "^1.0.0"
-    "@backstage/core-components" "^0.9.2"
-    "@backstage/core-plugin-api" "^1.0.0"
-    "@backstage/errors" "^1.0.0"
-    "@backstage/integration" "^1.0.0"
-    "@backstage/plugin-permission-common" "^0.5.3"
-    "@backstage/plugin-permission-react" "^0.3.4"
-    "@backstage/theme" "^0.2.15"
-    "@backstage/types" "^1.0.0"
-    "@backstage/version-bridge" "^1.0.0"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.57"
-    classnames "^2.2.6"
-    jwt-decode "^3.1.0"
-    lodash "^4.17.21"
-    qs "^6.9.4"
-    react-router "6.0.0-beta.0"
-    react-use "^17.2.4"
-    yaml "^1.10.0"
-    zen-observable "^0.8.15"
-
-"@backstage/plugin-permission-common@^0.5.3":
-  version "0.5.3"
-  resolved "https://registry.npmjs.org/@backstage/plugin-permission-common/-/plugin-permission-common-0.5.3.tgz#a1a4446e603584f2c82763745051f75f4a942eb1"
-  integrity sha512-zppDsNZEK9ffgXbf/Zx0sw4ffuOVOEvBZlft1+Oph2rO4+uN7dmCLMRRcKsYeNQ6/F50e6BMyNWpPZQDR/JQsA==
-  dependencies:
-    "@backstage/config" "^1.0.0"
-    "@backstage/errors" "^1.0.0"
-    cross-fetch "^3.1.5"
-    uuid "^8.0.0"
-    zod "^3.11.6"
-
-"@backstage/plugin-permission-react@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.npmjs.org/@backstage/plugin-permission-react/-/plugin-permission-react-0.3.4.tgz#e769dc1489c35d9c924234c0764a584558891716"
-  integrity sha512-S8s1cvCZFmxP4Dn5V9fOls31s4V1rgx3YUXqHSkgLatYHOXczf+GM/c5rdGLQyOb/+Hb+MQqaPAkojvSxNliow==
-  dependencies:
-    "@backstage/config" "^1.0.0"
-    "@backstage/core-plugin-api" "^1.0.0"
-    "@backstage/plugin-permission-common" "^0.5.3"
-    cross-fetch "^3.1.5"
-    react-router "6.0.0-beta.0"
-    react-use "^17.2.4"
-    swr "^1.1.2"
 
 "@balena/dockerignore@^1.0.2":
   version "1.0.2"
@@ -5210,9 +5051,9 @@
     "@rollup/pluginutils" "^3.0.8"
 
 "@rollup/plugin-node-resolve@^13.0.0":
-  version "13.1.3"
-  resolved "https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-13.1.3.tgz#2ed277fb3ad98745424c1d2ba152484508a92d79"
-  integrity sha512-BdxNk+LtmElRo5d06MGY4zoepyrXX1tkzX2hrnPEZ53k78GuOMWLqmJDGIIOPwVRIFZrLQOo+Yr6KtCuLIA0AQ==
+  version "13.2.1"
+  resolved "https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-13.2.1.tgz#cdee815cf02c180ff0a42536ca67a8f67e299f84"
+  integrity sha512-btX7kzGvp1JwShQI9V6IM841YKNPYjKCvUbNrQ2EcVYbULtUd/GH6wZ/qdqH13j9pOHBER+EZXNN2L8RSJhVRA==
   dependencies:
     "@rollup/pluginutils" "^3.1.0"
     "@types/resolve" "1.17.1"
@@ -5365,9 +5206,9 @@
   integrity sha512-pR9hptdnu39FCofS9y4SbLRJOgGNhBsX6N24HD3LxbLnVedSF2kpqMmgaBw3W2T932oXSrJlf5nsCePWVsUTjQ==
 
 "@spotify/prettier-config@^13.0.0":
-  version "13.0.0"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.0.tgz#ff6372cedf7e97e2e8a2d96c5ec12aa32cca3dbf"
-  integrity sha512-Hl3zgj67zaYejjLQLq0h0DlDMaI62EppO30AcStpLZNihjfwnFeS2+/gamiRHAnLki3P8bXaZVYwOV5NYNGQfw==
+  version "13.0.1"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.1.tgz#0fdceb3d4ab543259ce6adc0ec1d10e34898b812"
+  integrity sha512-oVd4hjx2+y0MeUdk1l+ItwVLwlrDlvTlGwXBWMMzPYc7DLyxuxFvDfoHGkAQkrikfAgtdnzxrW6u9a8ywUqdfw==
 
 "@sucrase/jest-plugin@^2.1.1":
   version "2.2.0"
@@ -6640,9 +6481,9 @@
     "@types/react" "*"
 
 "@types/recursive-readdir@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@types/recursive-readdir/-/recursive-readdir-2.2.0.tgz#b39cd5474fd58ea727fe434d5c68b7a20ba9121c"
-  integrity sha512-HGk753KRu2N4mWduovY4BLjYq4jTOL29gV2OfGdGxHcPSWGFkC5RRIdk+VTs5XmYd7MVAD+JwKrcb5+5Y7FOCg==
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/@types/recursive-readdir/-/recursive-readdir-2.2.1.tgz#330f5ec0b73e8aeaf267a6e056884e393f3543a3"
+  integrity sha512-Xd+Ptc4/F2ueInqy5yK2FI5FxtwwbX2+VZpcg+9oYsFJVen8qQKGapCr+Bi5wQtHU1cTXT8s+07lo/nKPgu8Gg==
   dependencies:
     "@types/node" "*"
 
@@ -6972,9 +6813,9 @@
     "@types/node" "*"
 
 "@types/xml2js@*", "@types/xml2js@^0.4.7":
-  version "0.4.9"
-  resolved "https://registry.npmjs.org/@types/xml2js/-/xml2js-0.4.9.tgz#a38267d8c2fe121c96922b12ee3bd89a58a6e20e"
-  integrity sha512-CHiCKIihl1pychwR2RNX5mAYmJDACgFVCMT5OArMaO3erzwXVcBqPcusr+Vl8yeeXukxZqtF8mZioqX+mpjjdw==
+  version "0.4.11"
+  resolved "https://registry.npmjs.org/@types/xml2js/-/xml2js-0.4.11.tgz#bf46a84ecc12c41159a7bd9cf51ae84129af0e79"
+  integrity sha512-JdigeAKmCyoJUiQljjr7tQG3if9NkqGUgwEUqBvV0N7LM4HyQk7UXCnusRa1lnvXAEYJ8mw8GtZWioagNztOwA==
   dependencies:
     "@types/node" "*"
 
@@ -7047,13 +6888,13 @@
     eslint-utils "^3.0.0"
 
 "@typescript-eslint/parser@^5.9.0":
-  version "5.17.0"
-  resolved "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-5.17.0.tgz#7def77d5bcd8458d12d52909118cf3f0a45f89d5"
-  integrity sha512-aRzW9Jg5Rlj2t2/crzhA2f23SIYFlF9mchGudyP0uiD6SenIxzKoLjwzHbafgHn39dNV/TV7xwQkLfFTZlJ4ig==
+  version "5.19.0"
+  resolved "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-5.19.0.tgz#05e587c1492868929b931afa0cb5579b0f728e75"
+  integrity sha512-yhktJjMCJX8BSBczh1F/uY8wGRYrBeyn84kH6oyqdIJwTGKmzX5Qiq49LRQ0Jh0LXnWijEziSo6BRqny8nqLVQ==
   dependencies:
-    "@typescript-eslint/scope-manager" "5.17.0"
-    "@typescript-eslint/types" "5.17.0"
-    "@typescript-eslint/typescript-estree" "5.17.0"
+    "@typescript-eslint/scope-manager" "5.19.0"
+    "@typescript-eslint/types" "5.19.0"
+    "@typescript-eslint/typescript-estree" "5.19.0"
     debug "^4.3.2"
 
 "@typescript-eslint/scope-manager@5.17.0":
@@ -7063,6 +6904,14 @@
   dependencies:
     "@typescript-eslint/types" "5.17.0"
     "@typescript-eslint/visitor-keys" "5.17.0"
+
+"@typescript-eslint/scope-manager@5.19.0":
+  version "5.19.0"
+  resolved "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-5.19.0.tgz#97e59b0bcbcb54dbcdfba96fc103b9020bbe9cb4"
+  integrity sha512-Fz+VrjLmwq5fbQn5W7cIJZ066HxLMKvDEmf4eu1tZ8O956aoX45jAuBB76miAECMTODyUxH61AQM7q4/GOMQ5g==
+  dependencies:
+    "@typescript-eslint/types" "5.19.0"
+    "@typescript-eslint/visitor-keys" "5.19.0"
 
 "@typescript-eslint/scope-manager@5.9.0":
   version "5.9.0"
@@ -7086,6 +6935,11 @@
   resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.17.0.tgz#861ec9e669ffa2aa9b873dd4d28d9b1ce26d216f"
   integrity sha512-AgQ4rWzmCxOZLioFEjlzOI3Ch8giDWx8aUDxyNw9iOeCvD3GEYAB7dxWGQy4T/rPVe8iPmu73jPHuaSqcjKvxw==
 
+"@typescript-eslint/types@5.19.0":
+  version "5.19.0"
+  resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.19.0.tgz#12d3d600d754259da771806ee8b2c842d3be8d12"
+  integrity sha512-zR1ithF4Iyq1wLwkDcT+qFnhs8L5VUtjgac212ftiOP/ZZUOCuuF2DeGiZZGQXGoHA50OreZqLH5NjDcDqn34w==
+
 "@typescript-eslint/types@5.9.0":
   version "5.9.0"
   resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.9.0.tgz#e5619803e39d24a03b3369506df196355736e1a3"
@@ -7098,6 +6952,19 @@
   dependencies:
     "@typescript-eslint/types" "5.17.0"
     "@typescript-eslint/visitor-keys" "5.17.0"
+    debug "^4.3.2"
+    globby "^11.0.4"
+    is-glob "^4.0.3"
+    semver "^7.3.5"
+    tsutils "^3.21.0"
+
+"@typescript-eslint/typescript-estree@5.19.0":
+  version "5.19.0"
+  resolved "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-5.19.0.tgz#fc987b8f62883f9ea6a5b488bdbcd20d33c0025f"
+  integrity sha512-dRPuD4ocXdaE1BM/dNR21elSEUPKaWgowCA0bqJ6YbYkvtrPVEvZ+zqcX5a8ECYn3q5iBSSUcBBD42ubaOp0Hw==
+  dependencies:
+    "@typescript-eslint/types" "5.19.0"
+    "@typescript-eslint/visitor-keys" "5.19.0"
     debug "^4.3.2"
     globby "^11.0.4"
     is-glob "^4.0.3"
@@ -7135,6 +7002,14 @@
   integrity sha512-6K/zlc4OfCagUu7Am/BD5k8PSWQOgh34Nrv9Rxe2tBzlJ7uOeJ/h7ugCGDCeEZHT6k2CJBhbk9IsbkPI0uvUkA==
   dependencies:
     "@typescript-eslint/types" "5.17.0"
+    eslint-visitor-keys "^3.0.0"
+
+"@typescript-eslint/visitor-keys@5.19.0":
+  version "5.19.0"
+  resolved "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.19.0.tgz#c84ebc7f6c744707a361ca5ec7f7f64cd85b8af6"
+  integrity sha512-Ym7zZoMDZcAKWsULi2s7UMLREdVQdScPQ/fKWMYefarCztWlHPFVJo8racf8R0Gc8FAEJ2eD4of8As1oFtnQlQ==
+  dependencies:
+    "@typescript-eslint/types" "5.19.0"
     eslint-visitor-keys "^3.0.0"
 
 "@typescript-eslint/visitor-keys@5.9.0":
@@ -7449,16 +7324,6 @@ ajv@^6.10.0, ajv@^6.10.1, ajv@^6.12.2, ajv@^6.12.4, ajv@^6.12.5, ajv@^6.5.5, ajv
     fast-deep-equal "^3.1.1"
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.4.1"
-    uri-js "^4.2.2"
-
-ajv@^7.0.3:
-  version "7.2.4"
-  resolved "https://registry.npmjs.org/ajv/-/ajv-7.2.4.tgz#8e239d4d56cf884bccca8cca362f508446dc160f"
-  integrity sha512-nBeQgg/ZZA3u3SYxyaDvpvDtgZ/EZPF547ARgZBrG9Bhu1vKDwAIjtIf+sDtJUKa2zOcEbmRLBRSyMraS/Oy1A==
-  dependencies:
-    fast-deep-equal "^3.1.1"
-    json-schema-traverse "^1.0.0"
-    require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
 ajv@^8.0.0, ajv@^8.10.0, ajv@^8.8.0:
@@ -10381,9 +10246,9 @@ cypress-plugin-snapshots@^1.4.4:
     unidiff "1.0.2"
 
 cypress@^9.5.0:
-  version "9.5.3"
-  resolved "https://registry.npmjs.org/cypress/-/cypress-9.5.3.tgz#7c56b50fc1f1aa69ef10b271d895aeb4a1d7999e"
-  integrity sha512-ItelIVmqMTnKYbo1JrErhsGgQGjWOxCpHT1TfMvwnIXKXN/OSlPjEK7rbCLYDZhejQL99PmUqul7XORI24Ik0A==
+  version "9.5.4"
+  resolved "https://registry.npmjs.org/cypress/-/cypress-9.5.4.tgz#49d9272f62eba12f2314faf29c2a865610e87550"
+  integrity sha512-6AyJAD8phe7IMvOL4oBsI9puRNOWxZjl8z1lgixJMcgJ85JJmyKeP6uqNA0dI1z14lmJ7Qklf2MOgP/xdAqJ/Q==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
@@ -11580,75 +11445,75 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
-esbuild-android-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-android-64/-/esbuild-android-64-0.14.29.tgz#c0960c84c9b832bade20831515e89d32549d4769"
-  integrity sha512-tJuaN33SVZyiHxRaVTo1pwW+rn3qetJX/SRuc/83rrKYtyZG0XfsQ1ao1nEudIt9w37ZSNXR236xEfm2C43sbw==
+esbuild-android-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-android-64/-/esbuild-android-64-0.14.36.tgz#fc5f95ce78c8c3d790fa16bc71bd904f2bb42aa1"
+  integrity sha512-jwpBhF1jmo0tVCYC/ORzVN+hyVcNZUWuozGcLHfod0RJCedTDTvR4nwlTXdx1gtncDqjk33itjO+27OZHbiavw==
 
-esbuild-android-arm64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-android-arm64/-/esbuild-android-arm64-0.14.29.tgz#8eceb3abe5abde5489d6a5cbe6a7c1044f71115f"
-  integrity sha512-D74dCv6yYnMTlofVy1JKiLM5JdVSQd60/rQfJSDP9qvRAI0laPXIG/IXY1RG6jobmFMUfL38PbFnCqyI/6fPXg==
+esbuild-android-arm64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-android-arm64/-/esbuild-android-arm64-0.14.36.tgz#44356fbb9f8de82a5cdf11849e011dfb3ad0a8a8"
+  integrity sha512-/hYkyFe7x7Yapmfv4X/tBmyKnggUmdQmlvZ8ZlBnV4+PjisrEhAvC3yWpURuD9XoB8Wa1d5dGkTsF53pIvpjsg==
 
-esbuild-darwin-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.14.29.tgz#26f3f14102310ecb8f2d9351c5b7a47a60d2cc8a"
-  integrity sha512-+CJaRvfTkzs9t+CjGa0Oa28WoXa7EeLutQhxus+fFcu0MHhsBhlmeWHac3Cc/Sf/xPi1b2ccDFfzGYJCfV0RrA==
+esbuild-darwin-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.14.36.tgz#3d9324b21489c70141665c2e740d6e84f16f725d"
+  integrity sha512-kkl6qmV0dTpyIMKagluzYqlc1vO0ecgpviK/7jwPbRDEv5fejRTaBBEE2KxEQbTHcLhiiDbhG7d5UybZWo/1zQ==
 
-esbuild-darwin-arm64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-darwin-arm64/-/esbuild-darwin-arm64-0.14.29.tgz#6d2d89dfd937992649239711ed5b86e51b13bd89"
-  integrity sha512-5Wgz/+zK+8X2ZW7vIbwoZ613Vfr4A8HmIs1XdzRmdC1kG0n5EG5fvKk/jUxhNlrYPx1gSY7XadQ3l4xAManPSw==
+esbuild-darwin-arm64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-darwin-arm64/-/esbuild-darwin-arm64-0.14.36.tgz#2a8040c2e465131e5281034f3c72405e643cb7b2"
+  integrity sha512-q8fY4r2Sx6P0Pr3VUm//eFYKVk07C5MHcEinU1BjyFnuYz4IxR/03uBbDwluR6ILIHnZTE7AkTUWIdidRi1Jjw==
 
-esbuild-freebsd-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-freebsd-64/-/esbuild-freebsd-64-0.14.29.tgz#2cb41a0765d0040f0838280a213c81bbe62d6394"
-  integrity sha512-VTfS7Bm9QA12JK1YXF8+WyYOfvD7WMpbArtDj6bGJ5Sy5xp01c/q70Arkn596aGcGj0TvQRplaaCIrfBG1Wdtg==
+esbuild-freebsd-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-freebsd-64/-/esbuild-freebsd-64-0.14.36.tgz#d82c387b4d01fe9e8631f97d41eb54f2dbeb68a3"
+  integrity sha512-Hn8AYuxXXRptybPqoMkga4HRFE7/XmhtlQjXFHoAIhKUPPMeJH35GYEUWGbjteai9FLFvBAjEAlwEtSGxnqWww==
 
-esbuild-freebsd-arm64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-freebsd-arm64/-/esbuild-freebsd-arm64-0.14.29.tgz#e1b79fbb63eaeff324cf05519efa7ff12ce4586a"
-  integrity sha512-WP5L4ejwLWWvd3Fo2J5mlXvG3zQHaw5N1KxFGnUc4+2ZFZknP0ST63i0IQhpJLgEJwnQpXv2uZlU1iWZjFqEIg==
+esbuild-freebsd-arm64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-freebsd-arm64/-/esbuild-freebsd-arm64-0.14.36.tgz#e8ce2e6c697da6c7ecd0cc0ac821d47c5ab68529"
+  integrity sha512-S3C0attylLLRiCcHiJd036eDEMOY32+h8P+jJ3kTcfhJANNjP0TNBNL30TZmEdOSx/820HJFgRrqpNAvTbjnDA==
 
-esbuild-linux-32@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-32/-/esbuild-linux-32-0.14.29.tgz#a4a5a0b165b15081bc3227986e10dd4943edb7d6"
-  integrity sha512-4myeOvFmQBWdI2U1dEBe2DCSpaZyjdQtmjUY11Zu2eQg4ynqLb8Y5mNjNU9UN063aVsCYYfbs8jbken/PjyidA==
+esbuild-linux-32@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-32/-/esbuild-linux-32-0.14.36.tgz#a4a261e2af91986ea62451f2db712a556cb38a15"
+  integrity sha512-Eh9OkyTrEZn9WGO4xkI3OPPpUX7p/3QYvdG0lL4rfr73Ap2HAr6D9lP59VMF64Ex01LhHSXwIsFG/8AQjh6eNw==
 
-esbuild-linux-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.14.29.tgz#4c450088c84f8bfd22c51d116f59416864b85481"
-  integrity sha512-iaEuLhssReAKE7HMwxwFJFn7D/EXEs43fFy5CJeA4DGmU6JHh0qVJD2p/UP46DvUXLRKXsXw0i+kv5TdJ1w5pg==
+esbuild-linux-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.14.36.tgz#4a9500f9197e2c8fcb884a511d2c9d4c2debde72"
+  integrity sha512-vFVFS5ve7PuwlfgoWNyRccGDi2QTNkQo/2k5U5ttVD0jRFaMlc8UQee708fOZA6zTCDy5RWsT5MJw3sl2X6KDg==
 
-esbuild-linux-arm64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-arm64/-/esbuild-linux-arm64-0.14.29.tgz#d1a23993b26cb1f63f740329b2fc09218e498bd1"
-  integrity sha512-KYf7s8wDfUy+kjKymW3twyGT14OABjGHRkm9gPJ0z4BuvqljfOOUbq9qT3JYFnZJHOgkr29atT//hcdD0Pi7Mw==
+esbuild-linux-arm64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-arm64/-/esbuild-linux-arm64-0.14.36.tgz#c91c21e25b315464bd7da867365dd1dae14ca176"
+  integrity sha512-24Vq1M7FdpSmaTYuu1w0Hdhiqkbto1I5Pjyi+4Cdw5fJKGlwQuw+hWynTcRI/cOZxBcBpP21gND7W27gHAiftw==
 
-esbuild-linux-arm@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-arm/-/esbuild-linux-arm-0.14.29.tgz#a7e2fea558525eab812b1fe27d7a2659cd1bb723"
-  integrity sha512-OXa9D9QL1hwrAnYYAHt/cXAuSCmoSqYfTW/0CEY0LgJNyTxJKtqc5mlwjAZAvgyjmha0auS/sQ0bXfGf2wAokQ==
+esbuild-linux-arm@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-arm/-/esbuild-linux-arm-0.14.36.tgz#90e23bca2e6e549affbbe994f80ba3bb6c4d934a"
+  integrity sha512-NhgU4n+NCsYgt7Hy61PCquEz5aevI6VjQvxwBxtxrooXsxt5b2xtOUXYZe04JxqQo+XZk3d1gcr7pbV9MAQ/Lg==
 
-esbuild-linux-mips64le@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-mips64le/-/esbuild-linux-mips64le-0.14.29.tgz#e708c527f0785574e400828cdbed3d9b17b5ddff"
-  integrity sha512-05jPtWQMsZ1aMGfHOvnR5KrTvigPbU35BtuItSSWLI2sJu5VrM8Pr9Owym4wPvA4153DFcOJ1EPN/2ujcDt54g==
+esbuild-linux-mips64le@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-mips64le/-/esbuild-linux-mips64le-0.14.36.tgz#40e11afb08353ff24709fc89e4db0f866bc131d2"
+  integrity sha512-hZUeTXvppJN+5rEz2EjsOFM9F1bZt7/d2FUM1lmQo//rXh1RTFYzhC0txn7WV0/jCC7SvrGRaRz0NMsRPf8SIA==
 
-esbuild-linux-ppc64le@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-ppc64le/-/esbuild-linux-ppc64le-0.14.29.tgz#0137d1b38beae36a57176ef45e90740e734df502"
-  integrity sha512-FYhBqn4Ir9xG+f6B5VIQVbRuM4S6qwy29dDNYFPoxLRnwTEKToIYIUESN1qHyUmIbfO0YB4phG2JDV2JDN9Kgw==
+esbuild-linux-ppc64le@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-ppc64le/-/esbuild-linux-ppc64le-0.14.36.tgz#9e8a588c513d06cc3859f9dcc52e5fdfce8a1a5e"
+  integrity sha512-1Bg3QgzZjO+QtPhP9VeIBhAduHEc2kzU43MzBnMwpLSZ890azr4/A9Dganun8nsqD/1TBcqhId0z4mFDO8FAvg==
 
-esbuild-linux-riscv64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-riscv64/-/esbuild-linux-riscv64-0.14.29.tgz#a2f73235347a58029dcacf0fb91c9eb8bebc8abb"
-  integrity sha512-eqZMqPehkb4nZcffnuOpXJQdGURGd6GXQ4ZsDHSWyIUaA+V4FpMBe+5zMPtXRD2N4BtyzVvnBko6K8IWWr36ew==
+esbuild-linux-riscv64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-riscv64/-/esbuild-linux-riscv64-0.14.36.tgz#e578c09b23b3b97652e60e3692bfda628b541f06"
+  integrity sha512-dOE5pt3cOdqEhaufDRzNCHf5BSwxgygVak9UR7PH7KPVHwSTDAZHDoEjblxLqjJYpc5XaU9+gKJ9F8mp9r5I4A==
 
-esbuild-linux-s390x@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-linux-s390x/-/esbuild-linux-s390x-0.14.29.tgz#0f7310ff1daec463ead9b9e26b7aa083a9f9f1ee"
-  integrity sha512-o7EYajF1rC/4ho7kpSG3gENVx0o2SsHm7cJ5fvewWB/TEczWU7teDgusGSujxCYcMottE3zqa423VTglNTYhjg==
+esbuild-linux-s390x@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-linux-s390x/-/esbuild-linux-s390x-0.14.36.tgz#3c9dab40d0d69932ffded0fd7317bb403626c9bc"
+  integrity sha512-g4FMdh//BBGTfVHjF6MO7Cz8gqRoDPzXWxRvWkJoGroKA18G9m0wddvPbEqcQf5Tbt2vSc1CIgag7cXwTmoTXg==
 
 esbuild-loader@^2.18.0:
   version "2.18.0"
@@ -11662,61 +11527,61 @@ esbuild-loader@^2.18.0:
     tapable "^2.2.0"
     webpack-sources "^2.2.0"
 
-esbuild-netbsd-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-netbsd-64/-/esbuild-netbsd-64-0.14.29.tgz#ba9a0d9cb8aed73b684825126927f75d4fe44ff9"
-  integrity sha512-/esN6tb6OBSot6+JxgeOZeBk6P8V/WdR3GKBFeFpSqhgw4wx7xWUqPrdx4XNpBVO7X4Ipw9SAqgBrWHlXfddww==
+esbuild-netbsd-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-netbsd-64/-/esbuild-netbsd-64-0.14.36.tgz#e27847f6d506218291619b8c1e121ecd97628494"
+  integrity sha512-UB2bVImxkWk4vjnP62ehFNZ73lQY1xcnL5ZNYF3x0AG+j8HgdkNF05v67YJdCIuUJpBuTyCK8LORCYo9onSW+A==
 
-esbuild-openbsd-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-openbsd-64/-/esbuild-openbsd-64-0.14.29.tgz#36dbe2c32d899106791b5f3af73f359213f71b8a"
-  integrity sha512-jUTdDzhEKrD0pLpjmk0UxwlfNJNg/D50vdwhrVcW/D26Vg0hVbthMfb19PJMatzclbK7cmgk1Nu0eNS+abzoHw==
+esbuild-openbsd-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-openbsd-64/-/esbuild-openbsd-64-0.14.36.tgz#c94c04c557fae516872a586eae67423da6d2fabb"
+  integrity sha512-NvGB2Chf8GxuleXRGk8e9zD3aSdRO5kLt9coTQbCg7WMGXeX471sBgh4kSg8pjx0yTXRt0MlrUDnjVYnetyivg==
 
-esbuild-sunos-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-sunos-64/-/esbuild-sunos-64-0.14.29.tgz#e5f857c121441ec63bf9b399a2131409a7d344e5"
-  integrity sha512-EfhQN/XO+TBHTbkxwsxwA7EfiTHFe+MNDfxcf0nj97moCppD9JHPq48MLtOaDcuvrTYOcrMdJVeqmmeQ7doTcg==
+esbuild-sunos-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-sunos-64/-/esbuild-sunos-64-0.14.36.tgz#9b79febc0df65a30f1c9bd63047d1675511bf99d"
+  integrity sha512-VkUZS5ftTSjhRjuRLp+v78auMO3PZBXu6xl4ajomGenEm2/rGuWlhFSjB7YbBNErOchj51Jb2OK8lKAo8qdmsQ==
 
-esbuild-windows-32@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-windows-32/-/esbuild-windows-32-0.14.29.tgz#9c2f1ab071a828f3901d1d79d205982a74bdda6e"
-  integrity sha512-uoyb0YAJ6uWH4PYuYjfGNjvgLlb5t6b3zIaGmpWPOjgpr1Nb3SJtQiK4YCPGhONgfg2v6DcJgSbOteuKXhwqAw==
+esbuild-windows-32@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-windows-32/-/esbuild-windows-32-0.14.36.tgz#910d11936c8d2122ffdd3275e5b28d8a4e1240ec"
+  integrity sha512-bIar+A6hdytJjZrDxfMBUSEHHLfx3ynoEZXx/39nxy86pX/w249WZm8Bm0dtOAByAf4Z6qV0LsnTIJHiIqbw0w==
 
-esbuild-windows-64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-windows-64/-/esbuild-windows-64-0.14.29.tgz#85fbce7c2492521896451b98d649a7db93e52667"
-  integrity sha512-X9cW/Wl95QjsH8WUyr3NqbmfdU72jCp71cH3pwPvI4CgBM2IeOUDdbt6oIGljPu2bf5eGDIo8K3Y3vvXCCTd8A==
+esbuild-windows-64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-windows-64/-/esbuild-windows-64-0.14.36.tgz#21b4ce8b42a4efc63f4b58ec617f1302448aad26"
+  integrity sha512-+p4MuRZekVChAeueT1Y9LGkxrT5x7YYJxYE8ZOTcEfeUUN43vktSn6hUNsvxzzATrSgq5QqRdllkVBxWZg7KqQ==
 
-esbuild-windows-arm64@0.14.29:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild-windows-arm64/-/esbuild-windows-arm64-0.14.29.tgz#0aa7a9a1bc43a63350bcf574d94b639176f065b5"
-  integrity sha512-+O/PI+68fbUZPpl3eXhqGHTGK7DjLcexNnyJqtLZXOFwoAjaXlS5UBCvVcR3o2va+AqZTj8o6URaz8D2K+yfQQ==
+esbuild-windows-arm64@0.14.36:
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild-windows-arm64/-/esbuild-windows-arm64-0.14.36.tgz#ba21546fecb7297667d0052d00150de22c044b24"
+  integrity sha512-fBB4WlDqV1m18EF/aheGYQkQZHfPHiHJSBYzXIo8yKehek+0BtBwo/4PNwKGJ5T0YK0oc8pBKjgwPbzSrPLb+Q==
 
 esbuild@^0.14.1, esbuild@^0.14.10, esbuild@^0.14.6:
-  version "0.14.29"
-  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.14.29.tgz#24ad09c0674cbcb4aa2fe761485524eb1f6b1419"
-  integrity sha512-SQS8cO8xFEqevYlrHt6exIhK853Me4nZ4aMW6ieysInLa0FMAL+AKs87HYNRtR2YWRcEIqoXAHh+Ytt5/66qpg==
+  version "0.14.36"
+  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.14.36.tgz#0023a73eab57886ac5605df16ee421e471a971b3"
+  integrity sha512-HhFHPiRXGYOCRlrhpiVDYKcFJRdO0sBElZ668M4lh2ER0YgnkLxECuFe7uWCf23FrcLc59Pqr7dHkTqmRPDHmw==
   optionalDependencies:
-    esbuild-android-64 "0.14.29"
-    esbuild-android-arm64 "0.14.29"
-    esbuild-darwin-64 "0.14.29"
-    esbuild-darwin-arm64 "0.14.29"
-    esbuild-freebsd-64 "0.14.29"
-    esbuild-freebsd-arm64 "0.14.29"
-    esbuild-linux-32 "0.14.29"
-    esbuild-linux-64 "0.14.29"
-    esbuild-linux-arm "0.14.29"
-    esbuild-linux-arm64 "0.14.29"
-    esbuild-linux-mips64le "0.14.29"
-    esbuild-linux-ppc64le "0.14.29"
-    esbuild-linux-riscv64 "0.14.29"
-    esbuild-linux-s390x "0.14.29"
-    esbuild-netbsd-64 "0.14.29"
-    esbuild-openbsd-64 "0.14.29"
-    esbuild-sunos-64 "0.14.29"
-    esbuild-windows-32 "0.14.29"
-    esbuild-windows-64 "0.14.29"
-    esbuild-windows-arm64 "0.14.29"
+    esbuild-android-64 "0.14.36"
+    esbuild-android-arm64 "0.14.36"
+    esbuild-darwin-64 "0.14.36"
+    esbuild-darwin-arm64 "0.14.36"
+    esbuild-freebsd-64 "0.14.36"
+    esbuild-freebsd-arm64 "0.14.36"
+    esbuild-linux-32 "0.14.36"
+    esbuild-linux-64 "0.14.36"
+    esbuild-linux-arm "0.14.36"
+    esbuild-linux-arm64 "0.14.36"
+    esbuild-linux-mips64le "0.14.36"
+    esbuild-linux-ppc64le "0.14.36"
+    esbuild-linux-riscv64 "0.14.36"
+    esbuild-linux-s390x "0.14.36"
+    esbuild-netbsd-64 "0.14.36"
+    esbuild-openbsd-64 "0.14.36"
+    esbuild-sunos-64 "0.14.36"
+    esbuild-windows-32 "0.14.36"
+    esbuild-windows-64 "0.14.36"
+    esbuild-windows-arm64 "0.14.36"
 
 escalade@^3.1.1:
   version "3.1.1"
@@ -11843,9 +11708,9 @@ eslint-plugin-import@^2.25.4:
     tsconfig-paths "^3.12.0"
 
 eslint-plugin-jest@^26.1.2:
-  version "26.1.2"
-  resolved "https://registry.npmjs.org/eslint-plugin-jest/-/eslint-plugin-jest-26.1.2.tgz#0f1a15c62889fffc3f78a773749d672f1bedb15f"
-  integrity sha512-1bXCoRODPkGN06n9KAMls4Jm0eyS+0Q/LWcIxhqWR2ycV0Z7lnx2c10idk4dtFIJY5xStgiIr5snC6/rxcXpbw==
+  version "26.1.4"
+  resolved "https://registry.npmjs.org/eslint-plugin-jest/-/eslint-plugin-jest-26.1.4.tgz#8e3410093ff4439d0c3a371add5bf9e05623a57a"
+  integrity sha512-wgqxujmqc2qpvZqMFWCh6Cniqc8lWpapvXt9j/19DmBDqeDaYhJrSRezYR1SKyemvjx+9e9kny/dgRahraHImA==
   dependencies:
     "@typescript-eslint/utils" "^5.10.0"
 
@@ -12124,59 +11989,59 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     safe-buffer "^5.1.1"
 
 "example-app@link:packages/app":
-  version "0.2.70-next.2"
+  version "0.2.70"
   dependencies:
-    "@backstage/app-defaults" "^1.0.1-next.2"
-    "@backstage/catalog-model" "^1.0.1-next.0"
-    "@backstage/cli" "^0.17.0-next.3"
+    "@backstage/app-defaults" "^1.0.1"
+    "@backstage/catalog-model" "^1.0.1"
+    "@backstage/cli" "^0.17.0"
     "@backstage/config" "^1.0.0"
-    "@backstage/core-app-api" "^1.0.1-next.1"
-    "@backstage/core-components" "^0.9.3-next.2"
-    "@backstage/core-plugin-api" "^1.0.1-next.0"
-    "@backstage/integration-react" "^1.0.1-next.2"
-    "@backstage/plugin-airbrake" "^0.3.4-next.1"
-    "@backstage/plugin-apache-airflow" "^0.1.12-next.1"
-    "@backstage/plugin-api-docs" "^0.8.4-next.3"
-    "@backstage/plugin-azure-devops" "^0.1.20-next.1"
-    "@backstage/plugin-badges" "^0.2.28-next.1"
-    "@backstage/plugin-catalog" "^1.1.0-next.3"
-    "@backstage/plugin-catalog-common" "^1.0.1-next.1"
-    "@backstage/plugin-catalog-graph" "^0.2.16-next.3"
-    "@backstage/plugin-catalog-import" "^0.8.7-next.2"
-    "@backstage/plugin-catalog-react" "^1.0.1-next.3"
-    "@backstage/plugin-circleci" "^0.3.4-next.1"
-    "@backstage/plugin-cloudbuild" "^0.3.4-next.1"
-    "@backstage/plugin-code-coverage" "^0.1.31-next.1"
-    "@backstage/plugin-cost-insights" "^0.11.26-next.1"
-    "@backstage/plugin-explore" "^0.3.35-next.1"
-    "@backstage/plugin-gcalendar" "^0.3.0-next.2"
-    "@backstage/plugin-gcp-projects" "^0.3.23-next.1"
-    "@backstage/plugin-github-actions" "^0.5.4-next.2"
-    "@backstage/plugin-gocd" "^0.1.10-next.2"
-    "@backstage/plugin-graphiql" "^0.2.36-next.2"
-    "@backstage/plugin-home" "^0.4.20-next.3"
-    "@backstage/plugin-jenkins" "^0.7.3-next.1"
-    "@backstage/plugin-kafka" "^0.3.4-next.1"
-    "@backstage/plugin-kubernetes" "^0.6.4-next.2"
-    "@backstage/plugin-lighthouse" "^0.3.4-next.1"
-    "@backstage/plugin-newrelic" "^0.3.22-next.1"
-    "@backstage/plugin-newrelic-dashboard" "^0.1.12-next.1"
-    "@backstage/plugin-org" "^0.5.4-next.3"
-    "@backstage/plugin-pagerduty" "0.3.31-next.1"
-    "@backstage/plugin-permission-react" "^0.4.0-next.1"
-    "@backstage/plugin-rollbar" "^0.4.4-next.1"
-    "@backstage/plugin-scaffolder" "^1.1.0-next.3"
-    "@backstage/plugin-search" "^0.7.5-next.1"
-    "@backstage/plugin-search-common" "^0.3.3-next.1"
-    "@backstage/plugin-search-react" "^0.1.0-next.0"
-    "@backstage/plugin-sentry" "^0.3.42-next.2"
-    "@backstage/plugin-shortcuts" "^0.2.5-next.1"
-    "@backstage/plugin-stack-overflow" "^0.1.0-next.1"
-    "@backstage/plugin-tech-insights" "^0.2.0-next.1"
-    "@backstage/plugin-tech-radar" "^0.5.11-next.2"
-    "@backstage/plugin-techdocs" "^1.1.0-next.3"
-    "@backstage/plugin-todo" "^0.2.6-next.1"
-    "@backstage/plugin-user-settings" "^0.4.3-next.1"
+    "@backstage/core-app-api" "^1.0.1"
+    "@backstage/core-components" "^0.9.3"
+    "@backstage/core-plugin-api" "^1.0.1"
+    "@backstage/integration-react" "^1.0.1"
+    "@backstage/plugin-airbrake" "^0.3.4"
+    "@backstage/plugin-apache-airflow" "^0.1.12"
+    "@backstage/plugin-api-docs" "^0.8.4"
+    "@backstage/plugin-azure-devops" "^0.1.20"
+    "@backstage/plugin-badges" "^0.2.28"
+    "@backstage/plugin-catalog" "^1.1.0"
+    "@backstage/plugin-catalog-common" "^1.0.1"
+    "@backstage/plugin-catalog-graph" "^0.2.16"
+    "@backstage/plugin-catalog-import" "^0.8.7"
+    "@backstage/plugin-catalog-react" "^1.0.1"
+    "@backstage/plugin-circleci" "^0.3.4"
+    "@backstage/plugin-cloudbuild" "^0.3.4"
+    "@backstage/plugin-code-coverage" "^0.1.31"
+    "@backstage/plugin-cost-insights" "^0.11.26"
+    "@backstage/plugin-explore" "^0.3.35"
+    "@backstage/plugin-gcalendar" "^0.3.0"
+    "@backstage/plugin-gcp-projects" "^0.3.23"
+    "@backstage/plugin-github-actions" "^0.5.4"
+    "@backstage/plugin-gocd" "^0.1.10"
+    "@backstage/plugin-graphiql" "^0.2.36"
+    "@backstage/plugin-home" "^0.4.20"
+    "@backstage/plugin-jenkins" "^0.7.3"
+    "@backstage/plugin-kafka" "^0.3.4"
+    "@backstage/plugin-kubernetes" "^0.6.4"
+    "@backstage/plugin-lighthouse" "^0.3.4"
+    "@backstage/plugin-newrelic" "^0.3.22"
+    "@backstage/plugin-newrelic-dashboard" "^0.1.12"
+    "@backstage/plugin-org" "^0.5.4"
+    "@backstage/plugin-pagerduty" "0.3.31"
+    "@backstage/plugin-permission-react" "^0.4.0"
+    "@backstage/plugin-rollbar" "^0.4.4"
+    "@backstage/plugin-scaffolder" "^1.1.0"
+    "@backstage/plugin-search" "^0.8.0"
+    "@backstage/plugin-search-common" "^0.3.3"
+    "@backstage/plugin-search-react" "^0.1.0"
+    "@backstage/plugin-sentry" "^0.3.42"
+    "@backstage/plugin-shortcuts" "^0.2.5"
+    "@backstage/plugin-stack-overflow" "^0.1.0"
+    "@backstage/plugin-tech-insights" "^0.2.0"
+    "@backstage/plugin-tech-radar" "^0.5.11"
+    "@backstage/plugin-techdocs" "^1.1.0"
+    "@backstage/plugin-todo" "^0.2.6"
+    "@backstage/plugin-user-settings" "^0.4.3"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
@@ -15919,10 +15784,10 @@ json-parse-even-better-errors@^2.3.0, json-parse-even-better-errors@^2.3.1:
   resolved "https://registry.npmjs.org/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz#7c47805a94319928e05777405dc12e1f7a4ee02d"
   integrity sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==
 
-json-pointer@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.npmjs.org/json-pointer/-/json-pointer-0.6.1.tgz#3c6caa6ac139e2599f5a1659d39852154015054d"
-  integrity sha512-3OvjqKdCBvH41DLpV4iSt6v2XhZXV1bPB4OROuknvUXI7ZQNofieCPkmE26stEJ9zdQuvIxDHCuYhfgxFAAs+Q==
+json-pointer@0.6.2:
+  version "0.6.2"
+  resolved "https://registry.npmjs.org/json-pointer/-/json-pointer-0.6.2.tgz#f97bd7550be5e9ea901f8c9264c9d436a22a93cd"
+  integrity sha512-vLWcKbOaXlO+jvRy4qNd+TI1QUPZzfJj1tpJ3vAXDych5XJf93ftpUKe5pKCrzyIIwgBJcOcCVRUfqQP25afBw==
   dependencies:
     foreach "^2.0.4"
 
@@ -17239,10 +17104,10 @@ markdown-table@^3.0.0:
   resolved "https://registry.npmjs.org/markdown-table/-/markdown-table-3.0.1.tgz#88c48957aaf2a8014ccb2ba026776a1d736fe3dc"
   integrity sha512-CBbaYXKSGnE1uLRpKA1SWgIRb2PQrpkllNWpZtZe6VojOJ4ysqiq7/2glYcmKsOYN09QgH/HEBX5hIshAeiK6A==
 
-marked@^4.0.10:
-  version "4.0.10"
-  resolved "https://registry.npmjs.org/marked/-/marked-4.0.10.tgz#423e295385cc0c3a70fa495e0df68b007b879423"
-  integrity sha512-+QvuFj0nGgO970fySghXGmuw+Fd0gD2x3+MqCWLIPf5oxdv1Ka6b2q+z9RP01P/IaKPMEramy+7cNy/Lw8c3hw==
+marked@^4.0.14:
+  version "4.0.14"
+  resolved "https://registry.npmjs.org/marked/-/marked-4.0.14.tgz#7a3a5fa5c80580bac78c1ed2e3b84d7bd6fc3870"
+  integrity sha512-HL5sSPE/LP6U9qKgngIIPTthuxC0jrfxpYMZ3LdGDD3vTnLs59m2Z7r6+LNDR3ToqEQdkKd6YaaEfJhodJmijQ==
 
 match-sorter@^6.0.2:
   version "6.3.1"
@@ -18984,13 +18849,13 @@ open@^8.0.0, open@^8.0.9, open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-openapi-sampler@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/openapi-sampler/-/openapi-sampler-1.1.1.tgz#7bba7000a03cd8a4630bfbe5b3ef258990c78400"
-  integrity sha512-WAFsl5SPYuhQwaMTDFOcKhnEY1G1rmamrMiPmJdqwfl1lr81g63/befcsN9BNi0w5/R0L+hfcUj13PANEBeLgg==
+openapi-sampler@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/openapi-sampler/-/openapi-sampler-1.2.1.tgz#2ca9eea527f8f2ddb32c3ae1dda31afd8bf0833f"
+  integrity sha512-mHrYmyvcLD0qrfqPkPRBAL2z16hGT2rW0d0B7nklfoTcc3pmkJLkSZlKSeFgerUM41E5c7jlxf0Y19xrM7mWQQ==
   dependencies:
     "@types/json-schema" "^7.0.7"
-    json-pointer "^0.6.1"
+    json-pointer "0.6.2"
 
 openid-client@^4.1.1:
   version "4.9.0"
@@ -19552,13 +19417,13 @@ passport-google-oauth20@^2.0.0:
   dependencies:
     passport-oauth2 "1.x.x"
 
-passport-microsoft@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/passport-microsoft/-/passport-microsoft-0.1.0.tgz#dc72c1a38b294d74f4dc55fe93f52e25cb9aa5b4"
-  integrity sha512-0giBDgE1fnR5X84zJZkQ11hnKVrzEgViwRO6RGsormK9zTxFQmN/UHMTDbIpvhk989VqALewB6Pk1R5vNr3GHw==
+passport-microsoft@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/passport-microsoft/-/passport-microsoft-1.0.0.tgz#78954cf3201fdce61beeb6587a3b158f8e9db86c"
+  integrity sha512-L1JHeCbSObSZZXiG7jU2KoKie6nzZLwGt38HXz1GasKrsCQdOnf5kH8ltV4BWNUfBL2Pt1csWn1iuBSerprrcg==
   dependencies:
-    passport-oauth2 "1.2.0"
-    pkginfo "0.2.x"
+    passport-oauth2 "1.6.1"
+    pkginfo "0.4.x"
 
 passport-oauth1@1.x.x:
   version "1.1.0"
@@ -19569,16 +19434,7 @@ passport-oauth1@1.x.x:
     passport-strategy "1.x.x"
     utils-merge "1.x.x"
 
-passport-oauth2@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/passport-oauth2/-/passport-oauth2-1.2.0.tgz#49613a3eca85c7a1e65bf1019e2b6b80a10c8ac2"
-  integrity sha1-SWE6PsqFx6HmW/EBnitrgKEMisI=
-  dependencies:
-    oauth "0.9.x"
-    passport-strategy "1.x.x"
-    uid2 "0.0.x"
-
-passport-oauth2@1.x.x, passport-oauth2@^1.1.2, passport-oauth2@^1.4.0, passport-oauth2@^1.6.1:
+passport-oauth2@1.6.1, passport-oauth2@1.x.x, passport-oauth2@^1.1.2, passport-oauth2@^1.4.0, passport-oauth2@^1.6.1:
   version "1.6.1"
   resolved "https://registry.npmjs.org/passport-oauth2/-/passport-oauth2-1.6.1.tgz#c5aee8f849ce8bd436c7f81d904a3cd1666f181b"
   integrity sha512-ZbV43Hq9d/SBSYQ22GOiglFsjsD1YY/qdiptA+8ej+9C1dL1TVB+mBE5kDH/D4AJo50+2i8f4bx0vg4/yDDZCQ==
@@ -19973,6 +19829,11 @@ pkginfo@0.2.x:
   version "0.2.3"
   resolved "https://registry.npmjs.org/pkginfo/-/pkginfo-0.2.3.tgz#7239c42a5ef6c30b8f328439d9b9ff71042490f8"
   integrity sha1-cjnEKl72wwuPMoQ52bn/cQQkkPg=
+
+pkginfo@0.4.x:
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/pkginfo/-/pkginfo-0.4.1.tgz#b5418ef0439de5425fc4995042dced14fb2a84ff"
+  integrity sha1-tUGO8EOd5UJfxJlQQtztFPsqhP8=
 
 pluralize@^8.0.0:
   version "8.0.0"
@@ -23720,20 +23581,20 @@ tdigest@^0.1.1:
     bintrees "1.0.1"
 
 "techdocs-cli-embedded-app@link:packages/techdocs-cli-embedded-app":
-  version "0.2.69-next.2"
+  version "0.2.69"
   dependencies:
-    "@backstage/app-defaults" "^1.0.1-next.2"
-    "@backstage/catalog-model" "^1.0.1-next.0"
-    "@backstage/cli" "^0.17.0-next.3"
+    "@backstage/app-defaults" "^1.0.1"
+    "@backstage/catalog-model" "^1.0.1"
+    "@backstage/cli" "^0.17.0"
     "@backstage/config" "^1.0.0"
-    "@backstage/core-app-api" "^1.0.1-next.1"
-    "@backstage/core-components" "^0.9.3-next.2"
-    "@backstage/core-plugin-api" "^1.0.1-next.0"
-    "@backstage/integration-react" "^1.0.1-next.2"
-    "@backstage/plugin-catalog" "^1.1.0-next.3"
-    "@backstage/plugin-techdocs" "^1.1.0-next.3"
-    "@backstage/plugin-techdocs-react" "^0.1.0-next.0"
-    "@backstage/test-utils" "^1.0.1-next.2"
+    "@backstage/core-app-api" "^1.0.1"
+    "@backstage/core-components" "^0.9.3"
+    "@backstage/core-plugin-api" "^1.0.1"
+    "@backstage/integration-react" "^1.0.1"
+    "@backstage/plugin-catalog" "^1.1.0"
+    "@backstage/plugin-techdocs" "^1.1.0"
+    "@backstage/plugin-techdocs-react" "^0.1.0"
+    "@backstage/test-utils" "^1.0.1"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -24782,10 +24643,10 @@ use-memo-one@^1.1.1:
   resolved "https://registry.npmjs.org/use-memo-one/-/use-memo-one-1.1.1.tgz#39e6f08fe27e422a7d7b234b5f9056af313bd22c"
   integrity sha512-oFfsyun+bP7RX8X2AskHNTxu+R3QdE/RC5IefMbqptmACAA/gfol1KDD5KRzPsGMa62sWxGZw+Ui43u6x4ddoQ==
 
-use-resize-observer@^7.0.0:
-  version "7.1.0"
-  resolved "https://registry.npmjs.org/use-resize-observer/-/use-resize-observer-7.1.0.tgz#709ea7540fbe0a60ceae41ee2bef933d7782e4d4"
-  integrity sha512-6DGWOnZpjAGP/MtslGg7OunZptyueQduMi0i8DC5nVKXtJ8Bdt0wR/1tSxugFRndzYCi/jtD+SlNs5PK8ijvXQ==
+use-resize-observer@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.npmjs.org/use-resize-observer/-/use-resize-observer-8.0.0.tgz#69bd80c1ddd94f3758563fe107efb25fed85067a"
+  integrity sha512-n0iKSeiQpJCyaFh5JA0qsVLBIovsF4EIIR1G6XiBwKJN66ZrD4Oj62bjcuTAATPKiSp6an/2UZZxCf/67fk3sQ==
   dependencies:
     "@juggle/resize-observer" "^3.3.1"
 

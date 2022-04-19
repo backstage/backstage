@@ -1,5 +1,15 @@
 # @backstage/plugin-badges-backend
 
+## 0.1.25
+
+### Patch Changes
+
+- 4c93fd36ee: allow overriding `DefaultBadgeBuilder.getMarkdownCode`
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+  - @backstage/backend-common@0.13.2
+  - @backstage/catalog-client@1.0.1
+
 ## 0.1.25-next.1
 
 ### Patch Changes

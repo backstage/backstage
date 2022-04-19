@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.3.1
+
+### Patch Changes
+
+- 1691c6c5c2: Clarify that config locations that emit User and Group kinds now need to declare so in the `catalog.locations.[].rules`
+- 85fc53df95: Now plugin configuration accept a new optional parameter `groupSelect` which allow the client to fetch defined fields from the ms-graph api.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0
+  - @backstage/backend-tasks@0.3.0
+  - @backstage/catalog-model@1.0.1
+
 ## 0.3.1-next.2
 
 ### Patch Changes

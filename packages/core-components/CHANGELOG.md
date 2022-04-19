@@ -1,5 +1,22 @@
 # @backstage/core-components
 
+## 0.9.3
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 25b8e8d5b5: Add BackstageTab to overridableComponents so can override styles in a theme
+- 230ad0826f: Bump to using `@types/node` v16
+- 41fd107189: Exported `IdentityProviders` type.
+- a13604b8f7: Adding a name to the core-components Tab styles so can customise in the theme settings
+- 19648d5cf5: fix support config ref to use backstage/backstage
+- d505e43ffc: Fix highlighting of active sidebar items.
+- 72f3dfd05a: Updated ProxiedSignInPageProps docs
+- 7741e47eae: `<Sidebar />` now accepts additional props `sidebarOptions` and `submenuOptions` to allow further customization
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1
+
 ## 0.9.3-next.2
 
 ### Patch Changes

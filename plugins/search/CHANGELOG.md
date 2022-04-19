@@ -1,5 +1,41 @@
 # @backstage/plugin-search
 
+## 0.8.0
+
+### Minor Changes
+
+- 520e21aaea: The following exports has now been fully deleted from this package and can be import from `@backstage/plugin-search-react` instead.
+
+  `SearchApi` interface.
+  `searchApiRef`
+  `SearchContextProvider`
+  `useSearch`
+
+  `SearchContext` has now been fully deleted from this package and is no longer exported publicly. Use `SearchContextProvider` when access to the context is needed.
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 5c062f275e: Support customizing the content of the `SidebarSearchModal`
+- 38e01f2f70: Switch to `SearchDocument` type in `DefaultResultListItem` props
+- 230ad0826f: Bump to using `@types/node` v16
+- ab230a433f: The following exports has been moved to `@backstage/plugin-search-react` and will be removed in the next release. import from `@backstage/plugin-search-react` instead.
+
+  - `SearchApi` interface.
+  - `searchApiRef`
+  - `SearchContext`
+  - `SearchContextProvider`
+  - `useSearch`
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/plugin-search-react@0.1.0
+  - @backstage/plugin-search-common@0.3.3
+
 ## 0.7.5-next.1
 
 ### Patch Changes

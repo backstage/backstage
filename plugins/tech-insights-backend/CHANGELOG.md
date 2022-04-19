@@ -1,5 +1,42 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 231fee736b: This backend now uses the `@backstage/backend-tasks` package facilities for scheduling fact retrievers.
+
+  **BREAKING**: The `buildTechInsightsContext` function now takes an additional field in its options argument: `scheduler`. This is an instance of `PluginTaskScheduler`, which can be found in your backend initialization code's `env`.
+
+  ```diff
+   const builder = buildTechInsightsContext({
+     logger: env.logger,
+     config: env.config,
+     database: env.database,
+     discovery: env.discovery,
+  +  scheduler: env.scheduler,
+     factRetrievers: [ /* ... */ ],
+   });
+  ```
+
+### Patch Changes
+
+- 21de525ce9: Updated README.md with better install instructions
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 2fe58c7285: Improved the Tech-Insights documentation:
+
+  - `lifecycle` examples used `ttl` when it should be `timeToLive`
+  - Added list of included FactRetrievers
+  - Added full backend example using all included FactRetrievers
+  - Added boolean scorecard example image showing results of backend example
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-tech-insights-node@0.2.9
+  - @backstage/backend-common@0.13.2
+  - @backstage/catalog-client@1.0.1
+
 ## 0.3.0-next.2
 
 ### Patch Changes

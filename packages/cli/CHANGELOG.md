@@ -1,5 +1,52 @@
 # @backstage/cli
 
+## 0.17.0
+
+### Minor Changes
+
+- 1f7d4763ab: **BREAKING**: Bump the version range of `jest` from `^26.0.1` to `^27.5.1`. You can find the complete list of breaking changes [here](https://github.com/facebook/jest/releases/tag/v27.0.0).
+
+  We strongly recommend to have completed the [package role migration](https://backstage.io/docs/tutorials/package-role-migration) before upgrading to this version, as the package roles are used to automatically determine the testing environment for each package. If you instead want to set an explicit test environment for each package, you can do so for example in the `"jest"` section in `package.json`. The default test environment for all packages is now `node`, which is also the new Jest default.
+
+  Note that one of the breaking changes of Jest 27 is that the `jsdom` environment no longer includes `setImmediate` and `clearImmediate`, which means you might need to update some of your frontend packages. Another notable change is that `jest.useFakeTimers` now defaults to the `'modern'` implementation, which also mocks microtasks.
+
+### Patch Changes
+
+- e80ecad93c: Bump the `rushstack` api generator libraries to their latest versions
+- c54ce828bd: build(deps): bump `eslint-plugin-jest` from 25.3.4 to 26.1.2
+- f151dfee5a: build(deps): bump `eslint-webpack-plugin` from 2.6.0 to 3.1.1
+- 7e7ba704be: build(deps): bump `@spotify/eslint-config-base` from 12.0.0 to 13.0.0
+- ecd72391fb: build(deps): bump `@spotify/eslint-config-typescript`
+- 6a341b2d87: build(deps): bump `@spotify/eslint-config-react` from 12.0.0 to 13.0.0
+- 3c26b2edb5: build(deps): bump `npm-packlist` from 3.0.0 to 5.0.0
+- ed3551b7be: Introduced a new experimental test configuration with a number of changes. It switches the coverage provider from `v8` to the default Babel provider, along with always enabling source maps in the Sucrase transform. It also adds a custom module loader that caches both file transforms and VM script objects across all projects in a test run, which provides a big performance boost when running tests from the project root, increasing speed and reducing memory usage.
+
+  This new configuration is not enabled by default. It is enabled by setting the environment variable `BACKSTAGE_NEXT_TESTS` to a non-empty value.
+
+- 6ad0c45648: Added an experimental `package fix` command which applies automated fixes to the target package. The initial fix that is available is to add missing monorepo dependencies to the target package.
+- 5b3079694e: Stop logging "Stopped watcher" when shutting down the development backend.
+- f512554910: Updated the plugin template to install version 14 of `@testing-library/user-event`.
+
+  To apply this change to your own project, update the `devDependencies` section in your `package.json` files:
+
+  ```diff
+   "devDependencies": {
+     ... omitted dev dependencies ...
+  -   "@testing-library/user-event": "^13.1.8",
+  +   "@testing-library/user-event": "^14.0.0",
+      ... omitted dev dependencies ...
+   }
+  ```
+
+- df7862cfa6: Fixed a bug were the `react-hot-loader` transform was being applied to backend development builds.
+- 230ad0826f: Bump to using `@types/node` v16
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 948a56f401: Added a new experimental `repo list-deprecations` command, which scans the entire project for usage of deprecated APIs.
+- 4782f9e925: Fixed misleading log message during frontend plugin creation.
+- 0383cd0228: The `versions:*` commands no longer warns about duplicate plugin libraries, such as `@backstage/plugin-catalog-common`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.0
+
 ## 0.17.0-next.3
 
 ### Patch Changes
