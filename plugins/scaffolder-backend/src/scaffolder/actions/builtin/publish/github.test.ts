@@ -625,7 +625,7 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
-      requiredStatusChecks: [],
+      requiredStatusCheckContexts: [],
     });
 
     await action.handler({
@@ -643,7 +643,7 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
-      requiredStatusChecks: [],
+      requiredStatusCheckContexts: [],
     });
 
     await action.handler({
@@ -661,11 +661,11 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
-      requiredStatusChecks: [],
+      requiredStatusCheckContexts: [],
     });
   });
 
-  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requireStatusChecks', async () => {
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
@@ -685,14 +685,14 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
-      requiredStatusChecks: [],
+      requiredStatusCheckContexts: [],
     });
 
     await action.handler({
       ...mockContext,
       input: {
         ...mockContext.input,
-        requiredStatusChecks: ['statusCheck'],
+        requiredStatusCheckContexts: ['statusCheck'],
       },
     });
 
@@ -703,14 +703,14 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
-      requiredStatusChecks: ['statusCheck'],
+      requiredStatusCheckContexts: ['statusCheck'],
     });
 
     await action.handler({
       ...mockContext,
       input: {
         ...mockContext.input,
-        requiredStatusChecks: [],
+        requiredStatusCheckContexts: [],
       },
     });
 
@@ -721,7 +721,7 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
-      requiredStatusChecks: [],
+      requiredStatusCheckContexts: [],
     });
   });
 });
