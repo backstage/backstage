@@ -155,14 +155,13 @@ In order to test the logic above, the integrators of your backstage instance nee
 
 Now the frontend should show an error whenever you try to create a new Todo item.
 
-Let's flip the result back to `ALLOW`:
+Let's flip the result back to `ALLOW` before moving on.
 
 ```diff
-        if (request.permission.attributes.action === 'create') {
-          return {
--           result: AuthorizeResult.DENY,
-+           result: AuthorizeResult.ALLOW,
-          };
+  if (isPermission(request.permission, todoListCreate)) {
+    return {
+-     result: AuthorizeResult.DENY,
++     result: AuthorizeResult.ALLOW,
+    };
+  }
 ```
-
-Now the create endpoint should be enabled again.
