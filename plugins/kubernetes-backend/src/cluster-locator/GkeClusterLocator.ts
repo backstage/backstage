@@ -25,12 +25,18 @@ import {
   KubernetesClustersSupplier,
 } from '../types/types';
 
+interface MatchResourceLabelEntry {
+  key: string;
+  value: string;
+}
+
 type GkeClusterLocatorOptions = {
   projectId: string;
   region?: string;
   skipTLSVerify?: boolean;
   skipMetricsLookup?: boolean;
   exposeDashboard?: boolean;
+  matchingResourceLabels?: MatchResourceLabelEntry[],
 };
 
 export class GkeClusterLocator implements KubernetesClustersSupplier {
@@ -44,8 +50,14 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   static fromConfigWithClient(
     config: Config,
     client: container.v1.ClusterManagerClient,
-    refreshInterval: Duration | undefined = undefined,
+    refreshInterval?: Duration
   ): GkeClusterLocator {
+
+    const matchingResourceLabels: MatchResourceLabelEntry[] = config.getOptionalConfigArray('matchingResourceLabels')
+    ?.map(mrl => {
+      return { key: mrl.getString("key"), value: mrl.getString("value")}
+    }) ?? [];
+
     const options = {
       projectId: config.getString('projectId'),
       region: config.getOptionalString('region') ?? '-',
@@ -53,6 +65,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       skipMetricsLookup:
         config.getOptionalBoolean('skipMetricsLookup') ?? false,
       exposeDashboard: config.getOptionalBoolean('exposeDashboard') ?? false,
+      matchingResourceLabels
     };
     const gkeClusterLocator = new GkeClusterLocator(options, client);
     if (refreshInterval) {
@@ -91,6 +104,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       skipTLSVerify,
       skipMetricsLookup,
       exposeDashboard,
+      matchingResourceLabels
     } = this.options;
     const request = {
       parent: `projects/${projectId}/locations/${region}`,
@@ -98,7 +112,19 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
 
     try {
       const [response] = await this.client.listClusters(request);
-      this.clusterDetails = (response.clusters ?? []).map(r => ({
+      this.clusterDetails = (response.clusters ?? [])
+      .filter(r => {
+
+        return matchingResourceLabels?.every(mrl => {
+          if (!r.resourceLabels){
+            return false
+          }
+          const t = r.resourceLabels[mrl.key]
+          return t === mrl.value
+        })
+        
+      })
+      .map(r => ({
         // TODO filter out clusters which don't have name or endpoint
         name: r.name ?? 'unknown',
         url: `https://${r.endpoint ?? ''}`,
