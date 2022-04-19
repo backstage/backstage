@@ -28,6 +28,7 @@ import {
   TechDocsAddons,
   TechDocsAddonLocations,
 } from '@backstage/plugin-techdocs-react';
+import { ReportIssue } from '@backstage/plugin-techdocs-addons-contrib';
 import { createApp } from '@backstage/app-defaults';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
@@ -72,6 +73,7 @@ const routes = (
     >
       {techDocsPage}
       <TechDocsAddons>
+        <ReportIssue />
         <ThemeToggleAddon />
       </TechDocsAddons>
     </Route>
