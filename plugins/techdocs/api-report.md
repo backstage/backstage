@@ -18,7 +18,6 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
-import { StyledComponentProps } from '@material-ui/core';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
@@ -351,15 +350,11 @@ export type TechDocsReaderPageRenderFunction = ({
 }) => JSX.Element;
 
 // @public
-export const TechDocsReaderPageSubheader: React_2.ComponentType<
-  Pick<
-    {
-      toolbarProps?: ToolbarProps<'div', {}> | undefined;
-    },
-    'toolbarProps'
-  > &
-    StyledComponentProps<'root'>
->;
+export const TechDocsReaderPageSubheader: ({
+  toolbarProps,
+}: {
+  toolbarProps?: ToolbarProps<'div', {}> | undefined;
+}) => JSX.Element | null;
 
 // @public
 export const TechDocsReaderProvider: ({

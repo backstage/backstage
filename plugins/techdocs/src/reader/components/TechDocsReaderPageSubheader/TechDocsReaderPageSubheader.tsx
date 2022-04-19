@@ -16,26 +16,33 @@
 
 import React from 'react';
 
-import { Box, Toolbar, ToolbarProps, withStyles } from '@material-ui/core';
+import { Box, makeStyles, Toolbar, ToolbarProps } from '@material-ui/core';
 
 import {
   TechDocsAddonLocations as locations,
   useTechDocsAddons,
 } from '@backstage/plugin-techdocs-react';
 
-/**
- * Renders the reader page subheader.
- * Please use the Tech Docs add-ons to customize it
- * @public
- */
-export const TechDocsReaderPageSubheader = withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     gridArea: 'pageSubheader',
     flexDirection: 'column',
     minHeight: 'auto',
     padding: theme.spacing(3, 3, 0),
   },
-}))(({ toolbarProps }: { toolbarProps?: ToolbarProps }) => {
+}));
+
+/**
+ * Renders the reader page subheader.
+ * Please use the Tech Docs add-ons to customize it
+ * @public
+ */
+export const TechDocsReaderPageSubheader = ({
+  toolbarProps,
+}: {
+  toolbarProps?: ToolbarProps;
+}) => {
+  const classes = useStyles();
   const addons = useTechDocsAddons();
   const subheaderAddons = addons.renderComponentsByLocation(
     locations.Subheader,
@@ -44,7 +51,7 @@ export const TechDocsReaderPageSubheader = withStyles(theme => ({
   if (!subheaderAddons) return null;
 
   return (
-    <Toolbar {...toolbarProps}>
+    <Toolbar classes={classes} {...toolbarProps}>
       {subheaderAddons && (
         <Box
           display="flex"
@@ -57,4 +64,4 @@ export const TechDocsReaderPageSubheader = withStyles(theme => ({
       )}
     </Toolbar>
   );
-});
+};
