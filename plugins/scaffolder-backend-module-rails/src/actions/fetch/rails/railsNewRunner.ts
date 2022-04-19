@@ -57,7 +57,6 @@ export class RailsNewRunner {
     const baseCommand = 'rails';
     const baseArguments = ['new'];
     const commandExistsToRun = await commandExists(baseCommand);
-
     if (commandExistsToRun) {
       const arrayExtraArguments = railsArgumentResolver(
         workspacePath,

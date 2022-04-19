@@ -134,7 +134,7 @@ async function getProjectConfig(targetPath, displayName) {
       '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
         '@swc/jest',
         {
-          enableSourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+          sourceMaps: false, // envOptions.enableSourceMaps || envOptions.nextTests,
         },
       ],
       // '^.+\\.(t|j)sx?$': '@swc/jest',

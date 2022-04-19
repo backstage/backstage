@@ -17,12 +17,12 @@ const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
 const fetchContents = jest.fn();
 
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-backend'),
+jest.doMock('@backstage/plugin-scaffolder-backend', () => ({
+  ...require('@backstage/plugin-scaffolder-backend'),
   fetchContents,
   executeShellCommand,
 }));
-jest.mock('command-exists', () => commandExists);
+jest.doMock('command-exists', () => commandExists);
 
 import {
   getVoidLogger,

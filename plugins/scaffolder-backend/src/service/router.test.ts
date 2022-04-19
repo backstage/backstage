@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const mockAccess = jest.fn();
-
 import {
   DatabaseManager,
   getVoidLogger,
@@ -43,7 +41,9 @@ import {
 import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 
-jest.mock('fs-extra', () => ({
+const mockAccess = jest.fn();
+
+jest.doMock('fs-extra', () => ({
   access: mockAccess,
   promises: {
     access: mockAccess,

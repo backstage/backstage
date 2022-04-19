@@ -17,15 +17,14 @@
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
 
-jest.mock('@backstage/plugin-scaffolder-backend', () => ({
+jest.doMock('@backstage/plugin-scaffolder-backend', () => ({
   executeShellCommand,
 }));
-jest.mock('command-exists', () => commandExists);
-jest.mock('fs-extra');
+jest.doMock('command-exists', () => commandExists);
 
 import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
-
+import mockfs from 'mock-fs';
 import path from 'path';
 import { PassThrough } from 'stream';
 
