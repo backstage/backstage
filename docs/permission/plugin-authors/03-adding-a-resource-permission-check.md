@@ -6,9 +6,6 @@ description: Explains how to add a resource permission check to a Backstage plug
 
 When performing updates (or other operations) on specific [resources](../concepts.md#resources-and-rules), the permissions framework allows for the decision to be based on characteristics of the resource itself. This means that it's possible to write policies that (for example) allow the operation for users that own a resource, and deny the operation otherwise.
 
-// TODO(vinzscam): remind that the plugin used in this tutorial is bringing its own types to backstage.
-// for plugins relying on external entities (like catalog entities) please follow [link] tutorial.
-
 ## Creating the update permission
 
 Let's add a new permission to the file `plugins/todo-list-common/src/permissions.ts` from [the previous section](./02-adding-a-basic-permission-check.md).
@@ -156,9 +153,9 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
 
 Now let's go back to the permission policy's handle function and try to authorize our new permission.
 
-Let's edit `packages/backend/src/plugins/permission.ts`:
-
 ```diff
+  // packages/backend/src/plugins/permission.ts
+
   import {
     BackstageIdentityResponse,
     IdentityClient
@@ -179,9 +176,10 @@ Let's edit `packages/backend/src/plugins/permission.ts`:
 
     if (isPermission(request.permission, todoListCreate)) {
       return {
-        result: AuthorizeResult.DENY,
+        result: AuthorizeResult.ALLOW,
       };
     }
+
 +   if (isPermission(request.permission, todoListUpdate)) {
 +     return {
 +       result: AuthorizeResult.CONDITIONAL,
@@ -193,6 +191,7 @@ Let's edit `packages/backend/src/plugins/permission.ts`:
 +       },
 +     };
 +   }
++
     return {
       result: AuthorizeResult.ALLOW,
     };
