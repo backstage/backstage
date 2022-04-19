@@ -5365,9 +5365,9 @@
   integrity sha512-pR9hptdnu39FCofS9y4SbLRJOgGNhBsX6N24HD3LxbLnVedSF2kpqMmgaBw3W2T932oXSrJlf5nsCePWVsUTjQ==
 
 "@spotify/prettier-config@^13.0.0":
-  version "13.0.0"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.0.tgz#ff6372cedf7e97e2e8a2d96c5ec12aa32cca3dbf"
-  integrity sha512-Hl3zgj67zaYejjLQLq0h0DlDMaI62EppO30AcStpLZNihjfwnFeS2+/gamiRHAnLki3P8bXaZVYwOV5NYNGQfw==
+  version "13.0.1"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.1.tgz#0fdceb3d4ab543259ce6adc0ec1d10e34898b812"
+  integrity sha512-oVd4hjx2+y0MeUdk1l+ItwVLwlrDlvTlGwXBWMMzPYc7DLyxuxFvDfoHGkAQkrikfAgtdnzxrW6u9a8ywUqdfw==
 
 "@sucrase/jest-plugin@^2.1.1":
   version "2.2.0"
