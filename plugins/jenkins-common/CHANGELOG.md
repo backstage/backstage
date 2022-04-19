@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-common
 
+## 0.1.3
+
+### Patch Changes
+
+- ada4446733: Use `createPermission` helper when creating permissions.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/plugin-catalog-common@1.0.1
+
 ## 0.1.3-next.1
 
 ### Patch Changes

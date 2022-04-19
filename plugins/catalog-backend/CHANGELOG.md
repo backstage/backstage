@@ -1,5 +1,68 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.0
+
+### Minor Changes
+
+- 8012ac46a0: **BREAKING (alpha api):** Replace `createCatalogPolicyDecision` export with `createCatalogConditionalDecision`, which accepts a permission parameter of type `ResourcePermission<'catalog-entity'>` along with conditions. The permission passed is expected to be the handled permission in `PermissionPolicy#handle`, whose type must first be narrowed using methods like `isPermission` and `isResourcePermission`:
+
+  ```typescript
+  class TestPermissionPolicy implements PermissionPolicy {
+    async handle(
+      request: PolicyQuery<Permission>,
+      _user?: BackstageIdentityResponse,
+    ): Promise<PolicyDecision> {
+      if (
+        // Narrow type of `request.permission` to `ResourcePermission<'catalog-entity'>
+        isResourcePermission(request.permission, RESOURCE_TYPE_CATALOG_ENTITY)
+      ) {
+        return createCatalogConditionalDecision(
+          request.permission,
+          catalogConditions.isEntityOwner(
+            _user?.identity.ownershipEntityRefs ?? [],
+          ),
+        );
+      }
+
+      return {
+        result: AuthorizeResult.ALLOW,
+      };
+  ```
+
+- 8012ac46a0: **BREAKING:** Mark CatalogBuilder#addPermissionRules as @alpha.
+- fb02d2d94d: export `locationSpecToLocationEntity`
+- bf82edf4c9: Added `/validate-entity` endpoint
+
+### Patch Changes
+
+- ada4446733: Specify type of `visibilityPermission` property on collators and collator factories.
+- 1691c6c5c2: Clarify that config locations that emit User and Group kinds now need to declare so in the `catalog.locations.[].rules`
+- 8592cacfd3: Fixed an issue where sometimes entities would have stale relations "stuck" and
+  not getting removed as expected, after the other end of the relation had stopped
+  referring to them.
+- 23646e51a5: Use new `PermissionEvaluator#authorizeConditional` method when retrieving permission conditions.
+- 9fe24b0fc8: Adjust the error messages when entities fail validation, to clearly state what entity that failed it
+- 48405ed232: Added `spec.profile.displayName` to search index for Group kinds
+- 95408dbe99: Enable internal batching of very large deletions, to not run into SQL binding limits
+- 8012ac46a0: Handle changes to @alpha permission-related types.
+
+  - All exported permission rules and conditions now have a `resourceType`.
+  - `createCatalogConditionalDecision` now expects supplied conditions to have the appropriate `resourceType`.
+  - `createCatalogPermissionRule` now expects `resourceType` as part of the supplied rule object.
+  - Introduce new `CatalogPermissionRule` convenience type.
+
+- ffec894ed0: add gitlab to AnnotateScmSlugEntityProcessor
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/plugin-permission-node@0.6.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/catalog-client@1.0.1
+  - @backstage/plugin-scaffolder-common@1.0.1
+
 ## 1.1.0-next.3
 
 ### Patch Changes

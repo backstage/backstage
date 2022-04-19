@@ -20,7 +20,6 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useContext,
 } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
@@ -34,10 +33,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
 import {
-  SearchContext,
   SearchContextProvider,
   useSearch,
-} from '../SearchContext';
+} from '@backstage/plugin-search-react';
 import { TrackSearch } from '../SearchTracker';
 
 /**
@@ -51,11 +49,6 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
   onClear?: () => void;
   onSubmit?: () => void;
   onChange: (value: string) => void;
-};
-
-const useSearchContextCheck = () => {
-  const context = useContext(SearchContext);
-  return context !== undefined;
 };
 
 /**
@@ -79,7 +72,7 @@ export const SearchBarBase = ({
 }: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
   const [value, setValue] = useState<string>(defaultValue as string);
-  const hasSearchContext = useSearchContextCheck();
+  const hasSearchContext = useSearch();
 
   useEffect(() => {
     setValue(prevValue =>

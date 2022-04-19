@@ -1,5 +1,19 @@
 # @backstage/core-app-api
 
+## 1.0.1
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 3ff2bfb66e: Refactored the route collection logic to prepare for future changes and avoid duplicate element tree traversal for the analytics context.
+- a7bb762dab: fixed empty body issue for POST requests using FetchAPI with 'plugin://' prefix
+- 230ad0826f: Bump to using `@types/node` v16
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/version-bridge@1.0.1
+
 ## 1.0.1-next.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-bitbucket
 
+## 0.1.2
+
+### Patch Changes
+
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 9fed130139: split BitbucketClient into BitbucketCloudClient, BitbucketServerClient
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0
+  - @backstage/integration@1.1.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/backend-common@0.13.2
+
 ## 0.1.2-next.2
 
 ### Patch Changes

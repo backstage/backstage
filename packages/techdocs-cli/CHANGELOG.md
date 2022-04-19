@@ -1,5 +1,26 @@
 # @techdocs/cli
 
+## 1.1.0
+
+### Minor Changes
+
+- 733187987b: Removed an undocumented, broken behavior where `README.md` files would be copied to `index.md` if it did not exist, leading to broken links in the TechDocs UI.
+
+  **WARNING**: If you notice 404s in TechDocs after updating, check to make sure that all markdown files referenced in your `mkdocs.yml`s' `nav` sections exist. The following flag may be passed to the `generate` command to temporarily revert to the broken behavior.
+
+  ```sh
+  techdocs-cli generate --legacyCopyReadmeMdToIndexMd
+  ```
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+- eb470ea54c: Adds a new flag to override the entrypoint when using a custom docker image. It could be used to reuse existing images with different entrypoints.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-techdocs-node@1.1.0
+
 ## 1.1.0-next.1
 
 ### Minor Changes

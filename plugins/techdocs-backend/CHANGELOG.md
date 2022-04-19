@@ -1,5 +1,34 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.1.0
+
+### Minor Changes
+
+- 733187987b: Removed an undocumented, broken behavior where `README.md` files would be copied to `index.md` if it did not exist, leading to broken links in the TechDocs UI.
+
+  **WARNING**: If you notice 404s in TechDocs after updating, check to make sure that all markdown files referenced in your `mkdocs.yml`s' `nav` sections exist. The following configuration may be used to temporarily revert to the broken behavior.
+
+  ```yaml
+  techdocs:
+    generator:
+      mkdocs:
+        legacyCopyReadmeMdToIndexMd: true
+  ```
+
+### Patch Changes
+
+- ada4446733: Specify type of `visibilityPermission` property on collators and collator factories.
+- 7762d54200: Fixed a bug affecting those with cache enabled that would result in empty content being cached if the first attempt to load a static asset from storage were made via a `HEAD` request, rather than a `GET` request.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/plugin-techdocs-node@1.1.0
+  - @backstage/catalog-client@1.0.1
+
 ## 1.1.0-next.2
 
 ### Minor Changes

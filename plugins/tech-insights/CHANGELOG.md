@@ -1,5 +1,28 @@
 # @backstage/plugin-tech-insights
 
+## 0.2.0
+
+### Minor Changes
+
+- 567b13a84a: Add checksId option to EntityTechInsightsScorecardContent component
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- 2fe58c7285: Improved the Tech-Insights documentation:
+
+  - `lifecycle` examples used `ttl` when it should be `timeToLive`
+  - Added list of included FactRetrievers
+  - Added full backend example using all included FactRetrievers
+  - Added boolean scorecard example image showing results of backend example
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
 ## 0.2.0-next.1
 
 ### Minor Changes

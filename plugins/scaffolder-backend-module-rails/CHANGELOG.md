@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.3.6
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.1.0
+  - @backstage/integration@1.1.0
+  - @backstage/backend-common@0.13.2
+
 ## 0.3.6-next.2
 
 ### Patch Changes

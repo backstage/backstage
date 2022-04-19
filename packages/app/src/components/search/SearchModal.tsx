@@ -41,8 +41,8 @@ import {
   SearchResult,
   SearchResultPager,
   SearchType,
-  useSearch,
 } from '@backstage/plugin-search';
+import { useSearch } from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles(theme => ({

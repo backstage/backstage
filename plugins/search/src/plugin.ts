@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { SearchClient, searchApiRef } from './apis';
+import { SearchClient } from './apis';
+import { searchApiRef } from '@backstage/plugin-search-react';
 import {
   createApiFactory,
   createPlugin,

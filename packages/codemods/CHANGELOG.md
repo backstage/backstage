@@ -1,5 +1,11 @@
 # @backstage/codemods
 
+## 0.1.37
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+
 ## 0.1.37-next.0
 
 ### Patch Changes

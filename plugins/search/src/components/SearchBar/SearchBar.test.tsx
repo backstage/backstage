@@ -17,13 +17,15 @@
 import React from 'react';
 import { screen, render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SearchContextProvider } from '../SearchContext';
-
-import { SearchBar } from './SearchBar';
 import { configApiRef, analyticsApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { searchApiRef } from '../../apis';
 import { MockAnalyticsApi, TestApiRegistry } from '@backstage/test-utils';
+import {
+  SearchContextProvider,
+  searchApiRef,
+} from '@backstage/plugin-search-react';
+
+import { SearchBar } from './SearchBar';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),

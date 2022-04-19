@@ -1,5 +1,19 @@
 # @backstage/plugin-permission-react
 
+## 0.4.0
+
+### Minor Changes
+
+- 5bdcb8c45d: **BREAKING**: More restrictive typing for `usePermission` hook and `PermissionedRoute` component. It's no longer possible to pass a `resourceRef` unless the permission is of type `ResourcePermission`.
+
+### Patch Changes
+
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- 322b69e46a: **BREAKING:** Make `IdentityPermissionApi#authorize` typing more strict, using `AuthorizePermissionRequest` and `AuthorizePermissionResponse`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/core-plugin-api@1.0.1
+
 ## 0.4.0-next.1
 
 ### Patch Changes

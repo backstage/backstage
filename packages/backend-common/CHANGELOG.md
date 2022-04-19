@@ -1,5 +1,25 @@
 # @backstage/backend-common
 
+## 0.13.2
+
+### Patch Changes
+
+- 19f6c6c32a: The backend will no longer fail to start up when configured secrets do not match the configuration schema.
+- b7436743cb: Added the GerritUrlReader that implements "readUrl".
+- 3ef123bbf0: Support external ID when assuming roles in S3 integration
+
+  In order to assume a role created by a 3rd party as external
+  ID is needed. This change adds an optional field to the s3
+  integration configuration and consumes that in the AwsS3UrlReader.
+
+- bae9359032: The logger returned from `getVoidLogger` is now uses a silenced console transport instead.
+- 3ff0e79654: Tweaked the `UrlReader` multiplexer so that it uses the more helpful `NotAllowedError` messaging for all methods.
+- 12608f8ba8: Add `@types/webpack-env` to dependencies.
+- f9f512559b: Updated the visibility of database connection fields in config to be secret
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/config-loader@1.1.0
+
 ## 0.13.2-next.2
 
 ### Patch Changes

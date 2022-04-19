@@ -1,5 +1,16 @@
 # @backstage/app-defaults
 
+## 1.0.1
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.0
+  - @backstage/core-app-api@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
 ## 1.0.1-next.2
 
 ### Patch Changes

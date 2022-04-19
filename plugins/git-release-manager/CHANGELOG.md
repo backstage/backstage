@@ -1,5 +1,17 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.17
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
 ## 0.3.17-next.2
 
 ### Patch Changes

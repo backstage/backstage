@@ -1,5 +1,25 @@
 # @backstage/plugin-search-backend
 
+## 0.5.0
+
+### Minor Changes
+
+- 94ccd772d4: **BREAKING**: The `authorization` property is no longer returned on search results when queried. Note: this will only result in a breaking change if you have custom code in your frontend that relies on the `authorization.resourceRef` property on documents.
+
+### Patch Changes
+
+- 30f9884359: Check for non-resource permissions when authorizing result-by-result in AuthorizedSearchEngine.
+- 3c8cfaaa80: Use `PermissionEvaluator` instead of `PermissionAuthorizer`, which is now deprecated.
+- 62ee65422c: Use new `IndexableResultSet` type as return type of query method in `SearchEngine` implementation.
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/plugin-permission-node@0.6.0
+  - @backstage/plugin-auth-node@0.2.0
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-search-backend-node@0.6.0
+
 ## 0.5.0-next.2
 
 ### Patch Changes

@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Tab, Tabs } from '@material-ui/core';
 

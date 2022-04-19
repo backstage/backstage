@@ -1,5 +1,16 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.26
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
 ## 0.11.26-next.1
 
 ### Patch Changes

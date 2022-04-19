@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.26-next.2",
+  "version": "0.4.26",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -85,6 +85,7 @@
     "@backstage/plugin-scaffolder": "",
     "@backstage/plugin-scaffolder-backend": "",
     "@backstage/plugin-search": "",
+    "@backstage/plugin-search-react": "",
     "@backstage/plugin-search-backend": "",
     "@backstage/plugin-search-backend-module-pg": "",
     "@backstage/plugin-search-backend-node": "",

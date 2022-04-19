@@ -1,5 +1,18 @@
 # @backstage/test-utils
 
+## 1.0.1
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.0
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/core-app-api@1.0.1
+  - @backstage/core-plugin-api@1.0.1
+
 ## 1.0.1-next.2
 
 ### Patch Changes
