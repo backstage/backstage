@@ -235,7 +235,7 @@ That's settled. This information will be leveraged by other plugins.
 Some helpful links, for if you want to learn more about:
 
 - [Other available integrations](../integrations/)
-- [Using GitHub Apps instead of a Personal Access Token](../plugins/github-apps.md#docsNav)
+- [Using GitHub Apps instead of a Personal Access Token](../integrations/github/github-apps.md#docsNav)
 
 ### Explore what we've done so far
 

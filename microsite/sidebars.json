@@ -164,7 +164,8 @@
         "ids": [
           "integrations/github/locations",
           "integrations/github/discovery",
-          "integrations/github/org"
+          "integrations/github/org",
+          "integrations/github/github-apps"
         ]
       },
       {
@@ -202,7 +203,6 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/github-apps",
           "plugins/url-reader"
         ]
       },
