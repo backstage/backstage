@@ -2124,9 +2124,9 @@
   integrity sha512-d4VSA86eL/AFTe5xtyZX+ePUjE8dIFu2T8zmdeNBSa5/kNgXPCx/o/wbFNHAGLJdGnk1vddRuMESD9HbOC8irw==
 
 "@google-cloud/storage@^5.6.0", "@google-cloud/storage@^5.8.0":
-  version "5.19.1"
-  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.19.1.tgz#7252c4eb65e6014bf525a76f3af0774caa3a946d"
-  integrity sha512-bRTf/AD00+lPTamJdpihXC3AFtAnJFWNh/zQAor972VpuATF7u4V1anwWp0V6rKuKE3BwNM+xWxuuW/nAwEgTA==
+  version "5.19.2"
+  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.19.2.tgz#d65ecba0165ee3beca096b24a6058f41fee71e35"
+  integrity sha512-0saiMeQkDALf9pvDD1rDZGV5aktUbnIWjm9jYiFKlxiMROJhODzaaltvyKg5oY6ujHv7Fzc5pzQVFo3R8vENpw==
   dependencies:
     "@google-cloud/paginator" "^3.0.7"
     "@google-cloud/projectify" "^2.0.0"
