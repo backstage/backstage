@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,24 @@ import { ThemeProvider } from '@material-ui/core';
 
 import { lightTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   techdocsApiRef,
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-import { rootRouteRef } from '../../../routes';
+const useTechDocsReaderDom = jest.fn();
+jest.mock('./dom', () => ({
+  ...jest.requireActual('./dom'),
+  useTechDocsReaderDom,
+}));
+const useReaderState = jest.fn();
+jest.mock('../useReaderState', () => ({
+  ...jest.requireActual('../useReaderState'),
+  useReaderState,
+}));
 
-import { TechDocsReaderPageHeader } from './TechDocsReaderPageHeader';
+import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -80,94 +88,93 @@ const Wrapper = ({
   </ThemeProvider>
 );
 
-describe('<TechDocsReaderPageHeader />', () => {
-  it('should render a techdocs page header', async () => {
+describe('<TechDocsReaderPageContent />', () => {
+  it('should render techdocs page content', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
 
     await act(async () => {
       const rendered = await renderInTestApp(
         <Wrapper>
-          <TechDocsReaderPageHeader />
+          <TechDocsReaderPageContent withSearch={false} />
         </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
-        },
-      );
-
-      expect(rendered.container.innerHTML).toContain('header');
-
-      await waitFor(() => {
-        expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
-      });
-
-      expect(rendered.getByText('test-site-desc')).toBeDefined();
-    });
-  });
-
-  it('should render a techdocs page header even if metadata is not loaded', async () => {
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
-        },
-      );
-
-      expect(rendered.container.innerHTML).toContain('header');
-    });
-  });
-
-  it('should not render a techdocs page header if entity metadata is missing', async () => {
-    getEntityMetadata.mockResolvedValue(undefined);
-
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
-        },
-      );
-
-      await waitFor(() => {
-        expect(rendered.container.innerHTML).not.toContain('header');
-      });
-    });
-  });
-
-  it('should render a link back to the component page', async () => {
-    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-
-    await act(async () => {
-      const rendered = await renderInTestApp(
-        <Wrapper>
-          <TechDocsReaderPageHeader />
-        </Wrapper>,
-        {
-          mountedRoutes: {
-            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
-            '/docs': rootRouteRef,
-          },
-        },
       );
 
       await waitFor(() => {
         expect(
-          rendered.getByRole('link', { name: 'test:test-namespace/test-name' }),
-        ).toHaveAttribute('href', '/catalog/test-namespace/test/test-name');
+          rendered.getByTestId('techdocs-native-shadowroot'),
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('should render progress if there is no dom and reader state is checking', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(undefined);
+    useReaderState.mockReturnValue({ state: 'CHECKING' });
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          rendered.queryByTestId('techdocs-native-shadowroot'),
+        ).not.toBeInTheDocument();
+        expect(rendered.getByRole('progressbar')).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('should not render techdocs content if entity metadata is missing', async () => {
+    getEntityMetadata.mockResolvedValue(undefined);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          rendered.queryByTestId('techdocs-native-shadowroot'),
+        ).not.toBeInTheDocument();
+        expect(
+          rendered.getByText('ERROR 404: PAGE NOT FOUND'),
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('should render 404 if there is no dom and reader state is not found', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(undefined);
+    useReaderState.mockReturnValue({ state: 'CONTENT_NOT_FOUND' });
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageContent withSearch={false} />
+        </Wrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          rendered.queryByTestId('techdocs-native-shadowroot'),
+        ).not.toBeInTheDocument();
+        expect(
+          rendered.getByText('ERROR 404: Documentation not found'),
+        ).toBeInTheDocument();
       });
     });
   });

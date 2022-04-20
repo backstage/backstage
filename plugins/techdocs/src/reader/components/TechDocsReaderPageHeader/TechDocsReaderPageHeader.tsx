@@ -72,7 +72,7 @@ export const TechDocsReaderPageHeader = (
     setSubtitle,
     entityRef,
     metadata: { value: metadata },
-    entityMetadata: { value: entityMetadata },
+    entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
   } = useTechDocsReaderPage();
 
   useEffect(() => {
@@ -145,6 +145,10 @@ export const TechDocsReaderPageHeader = (
       ) : null}
     </>
   );
+
+  // If there is no entity metadata, there's no reason to show the header.
+  if (entityMetadataLoading === false && entityMetadata === undefined)
+    return null;
 
   return (
     <Header

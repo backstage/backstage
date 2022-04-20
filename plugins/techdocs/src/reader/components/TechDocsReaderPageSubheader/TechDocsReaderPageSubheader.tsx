@@ -21,6 +21,7 @@ import { Box, makeStyles, Toolbar, ToolbarProps } from '@material-ui/core';
 import {
   TechDocsAddonLocations as locations,
   useTechDocsAddons,
+  useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 
 const useStyles = makeStyles(theme => ({
@@ -43,12 +44,18 @@ export const TechDocsReaderPageSubheader = ({
   toolbarProps?: ToolbarProps;
 }) => {
   const classes = useStyles();
+  const {
+    entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
+  } = useTechDocsReaderPage();
   const addons = useTechDocsAddons();
   const subheaderAddons = addons.renderComponentsByLocation(
     locations.Subheader,
   );
 
   if (!subheaderAddons) return null;
+
+  // No entity metadata = 404. Don't render subheader on 404.
+  if (entityMetadataLoading === false && !entityMetadata) return null;
 
   return (
     <Toolbar classes={classes} {...toolbarProps}>
