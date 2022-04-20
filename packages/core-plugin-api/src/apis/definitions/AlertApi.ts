@@ -18,10 +18,9 @@ import { createApiRef, ApiRef } from '../system';
 import { Observable } from '@backstage/types';
 
 /**
- * Deprecated. Message handled by the {@link AlertApi}.
+ * Message handled by the {@link AlertApi}.
  *
  * @public
- * @deprecated Use {@link AlertNotification} instead.
  */
 export type AlertMessage = {
   message: string;
@@ -30,10 +29,9 @@ export type AlertMessage = {
 };
 
 /**
- * Deprecated. The alert API is used to report alerts to the app, and display them to the user.
+ * The alert API is used to report alerts to the app, and display them to the user.
  *
  * @public
- * @deprecated Use {@link NotificationApi} instead.
  */
 export type AlertApi = {
   /**
@@ -48,10 +46,9 @@ export type AlertApi = {
 };
 
 /**
- * Deprecated. The {@link ApiRef} of {@link AlertApi}.
+ * The {@link ApiRef} of {@link AlertApi}.
  *
  * @public
- * @deprecated Use {@link notificationApiRef} instead.
  */
 export const alertApiRef: ApiRef<AlertApi> = createApiRef({
   id: 'core.alert',
