@@ -68,6 +68,7 @@
     "@react-hookz/web": "^13.0.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
+    "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
     "zen-observable": "^0.8.15",
     "zod": "^3.11.6"

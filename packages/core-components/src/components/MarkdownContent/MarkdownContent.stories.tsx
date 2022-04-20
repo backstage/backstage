@@ -44,7 +44,8 @@ const markdownGithubFlavored =
   '## Tasklist\n' +
   '\n' +
   '* [ ] to do\n' +
-  '* [x] done';
+  '* [x] done \n' +
+  '<blockquote> Its dangerous to go alone! <a>Take this</a></blockquote>\n';
 
 const markdown =
   '# Choreas Iovis\n' +
@@ -117,4 +118,8 @@ export const MarkdownContentCommonMark = () => (
 
 export const MarkdownContentGithubFlavoredCommonMark = () => (
   <MarkdownContent content={markdownGithubFlavored} dialect="gfm" />
+);
+
+export const MarkdownContentGithubFlavoredWithTrustedHTML = () => (
+  <MarkdownContent content={markdownGithubFlavored} dialect="gfm" html />
 );
