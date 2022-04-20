@@ -198,6 +198,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -228,6 +229,7 @@ describe('publish:github', () => {
       defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -275,6 +277,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -319,7 +322,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
