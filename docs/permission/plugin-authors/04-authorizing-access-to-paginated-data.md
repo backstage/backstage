@@ -33,7 +33,7 @@ To avoid this situation, the permissions framework has support for filtering ite
 
 ## Creating the read permission
 
-Let's add another permission to for the plugin.
+Let's add another permission to the plugin.
 
 ```diff
   // plugins/todo-list-backend/src/service/permissions.ts
