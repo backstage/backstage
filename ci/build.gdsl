@@ -1,0 +1,59 @@
+@Library('jenkins-shared-library@master') _
+
+pipeline {
+    agent {
+        label 'common'
+    }
+    options {
+        ansiColor('xterm')
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timeout(time: 90, unit: 'MINUTES')
+    }
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: "${env.BRANCH_NAME}", description: 'The git branch of backstage to build')
+    }
+    environment {
+        AWS_ECR_REGION = 'eu-west-1'
+        AWS_ACCOUNT_ID = '489098123993'
+        APPLICATION_REPO = "https://github.com/bluegroundltd/backstage.git"
+        DOCKER_REGISTRY_BASE = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_ECR_REGION}.amazonaws.com"
+        DOCKER_REGISTRY = "${env.DOCKER_REGISTRY_BASE}/bluegroundltd/backstage"
+    }
+    stages {
+        stage('Build config server') {
+            steps {
+                script {
+                    gradleExecute ":build"
+                }
+            }
+        }
+        stage('Build Push Config Server Docker Image') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        env.GIT_TAG = "master"
+                    } else {
+                        env.GIT_COMMIT_HASH = getGitCommitHash()
+                        env.GIT_COMMIT_SHORT = env.GIT_COMMIT_HASH.substring(0, 7)
+                        env.GIT_TAG = env.GIT_COMMIT_SHORT
+                    }
+                    withECRDockerRegistry(env.AWS_ECR_REGION, env.DOCKER_REGISTRY) {
+                        buildTagAndPushDockerImage("./", env.DOCKER_REGISTRY, env.GIT_TAG)
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            deleteDir()
+        }
+    }
+}
+
+def buildTagAndPushDockerImage(path, ecrRepoName, tag) {
+    buildDockerImage(path, ecrRepoName, tag)
+    sh "docker push ${ecrRepoName}:${tag}"
+}
+
