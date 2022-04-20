@@ -114,15 +114,12 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       const [response] = await this.client.listClusters(request);
       this.clusterDetails = (response.clusters ?? [])
       .filter(r => {
-
         return matchingResourceLabels?.every(mrl => {
           if (!r.resourceLabels){
             return false
           }
-          const t = r.resourceLabels[mrl.key]
-          return t === mrl.value
+          return r.resourceLabels[mrl.key] === mrl.value
         })
-        
       })
       .map(r => ({
         // TODO filter out clusters which don't have name or endpoint
