@@ -35,5 +35,15 @@ export default async (org: string) => {
       'This file contains sensitive credentials, it should not be committed to version control and handled with care!',
     ),
   );
-  // TODO: log instructions on how to use the newly created app configuration.
+  console.log(
+    "Here's an example on how to update the integrations section in app-config.yaml",
+  );
+  console.log(
+    chalk.green(`
+integrations:
+  github:
+    - host: github.com
+      apps:
+        - $include: ${fileName}`),
+  );
 };
