@@ -51,10 +51,22 @@ integrations:
 };
 
 async function verifyGithubOrg(org: string): Promise<void> {
-  const response = await fetch(
-    `https://api.github.com/orgs/${encodeURIComponent(org)}`,
-  );
-  if (!response.ok) {
+  let response;
+
+  try {
+    response = await fetch(
+      `https://api.github.com/orgs/${encodeURIComponent(org)}`,
+    );
+  } catch (e) {
+    console.log(
+      chalk.yellow(
+        'Warning: Unable to verify existence of GitHub organization. ',
+        e,
+      ),
+    );
+  }
+
+  if (response?.status === 404) {
     throw new Error(
       `GitHub organization '${org}' does not exist. Please verify the name and try again.`,
     );
