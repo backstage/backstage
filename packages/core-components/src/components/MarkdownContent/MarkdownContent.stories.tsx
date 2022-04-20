@@ -121,5 +121,5 @@ export const MarkdownContentGithubFlavoredCommonMark = () => (
 );
 
 export const MarkdownContentGithubFlavoredWithTrustedHTML = () => (
-  <MarkdownContent content={markdownGithubFlavored} dialect="gfm" html />
+  <MarkdownContent content={markdownGithubFlavored} dialect="gfm" trustedHtml />
 );
