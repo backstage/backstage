@@ -36,7 +36,7 @@ type GkeClusterLocatorOptions = {
   skipTLSVerify?: boolean;
   skipMetricsLookup?: boolean;
   exposeDashboard?: boolean;
-  matchingResourceLabels?: MatchResourceLabelEntry[],
+  matchingResourceLabels?: MatchResourceLabelEntry[];
 };
 
 export class GkeClusterLocator implements KubernetesClustersSupplier {
@@ -50,13 +50,12 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
   static fromConfigWithClient(
     config: Config,
     client: container.v1.ClusterManagerClient,
-    refreshInterval?: Duration
+    refreshInterval?: Duration,
   ): GkeClusterLocator {
-
-    const matchingResourceLabels: MatchResourceLabelEntry[] = config.getOptionalConfigArray('matchingResourceLabels')
-    ?.map(mrl => {
-      return { key: mrl.getString("key"), value: mrl.getString("value")}
-    }) ?? [];
+    const matchingResourceLabels: MatchResourceLabelEntry[] =
+      config.getOptionalConfigArray('matchingResourceLabels')?.map(mrl => {
+        return { key: mrl.getString('key'), value: mrl.getString('value') };
+      }) ?? [];
 
     const options = {
       projectId: config.getString('projectId'),
@@ -65,7 +64,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       skipMetricsLookup:
         config.getOptionalBoolean('skipMetricsLookup') ?? false,
       exposeDashboard: config.getOptionalBoolean('exposeDashboard') ?? false,
-      matchingResourceLabels
+      matchingResourceLabels,
     };
     const gkeClusterLocator = new GkeClusterLocator(options, client);
     if (refreshInterval) {
@@ -104,7 +103,7 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
       skipTLSVerify,
       skipMetricsLookup,
       exposeDashboard,
-      matchingResourceLabels
+      matchingResourceLabels,
     } = this.options;
     const request = {
       parent: `projects/${projectId}/locations/${region}`,
@@ -113,32 +112,32 @@ export class GkeClusterLocator implements KubernetesClustersSupplier {
     try {
       const [response] = await this.client.listClusters(request);
       this.clusterDetails = (response.clusters ?? [])
-      .filter(r => {
-        return matchingResourceLabels?.every(mrl => {
-          if (!r.resourceLabels){
-            return false
-          }
-          return r.resourceLabels[mrl.key] === mrl.value
-        })
-      })
-      .map(r => ({
-        // TODO filter out clusters which don't have name or endpoint
-        name: r.name ?? 'unknown',
-        url: `https://${r.endpoint ?? ''}`,
-        authProvider: 'google',
-        skipTLSVerify,
-        skipMetricsLookup,
-        ...(exposeDashboard
-          ? {
-              dashboardApp: 'gke',
-              dashboardParameters: {
-                projectId,
-                region,
-                clusterName: r.name,
-              },
+        .filter(r => {
+          return matchingResourceLabels?.every(mrl => {
+            if (!r.resourceLabels) {
+              return false;
             }
-          : {}),
-      }));
+            return r.resourceLabels[mrl.key] === mrl.value;
+          });
+        })
+        .map(r => ({
+          // TODO filter out clusters which don't have name or endpoint
+          name: r.name ?? 'unknown',
+          url: `https://${r.endpoint ?? ''}`,
+          authProvider: 'google',
+          skipTLSVerify,
+          skipMetricsLookup,
+          ...(exposeDashboard
+            ? {
+                dashboardApp: 'gke',
+                dashboardParameters: {
+                  projectId,
+                  region,
+                  clusterName: r.name,
+                },
+              }
+            : {}),
+        }));
       this.hasClusterDetails = true;
     } catch (e) {
       throw new ForwardedError(

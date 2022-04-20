@@ -210,15 +210,15 @@ describe('GkeClusterLocator', () => {
               name: 'some-cluster',
               endpoint: '1.2.3.4',
               resourceLabels: {
-                "foo": "bar"
-              }
+                foo: 'bar',
+              },
             },
             {
               name: 'some-other-cluster',
               endpoint: '6.7.8.9',
               resourceLabels: {
-                "something": "other"
-              }
+                something: 'other',
+              },
             },
           ],
         },
@@ -265,15 +265,15 @@ describe('GkeClusterLocator', () => {
               name: 'some-cluster',
               endpoint: '1.2.3.4',
               resourceLabels: {
-                "foo": "bar"
-              }
+                foo: 'bar',
+              },
             },
             {
               name: 'some-other-cluster',
               endpoint: '6.7.8.9',
               resourceLabels: {
-                "something": "other"
-              }
+                something: 'other',
+              },
             },
           ],
         },
@@ -285,10 +285,10 @@ describe('GkeClusterLocator', () => {
         region: 'some-region',
         matchingResourceLabels: [
           {
-            key: "foo",
-            value: "bar"
-          }
-        ]
+            key: 'foo',
+            value: 'bar',
+          },
+        ],
       });
 
       const sut = GkeClusterLocator.fromConfigWithClient(config, {
