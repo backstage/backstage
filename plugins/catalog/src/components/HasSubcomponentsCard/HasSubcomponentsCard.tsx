@@ -15,6 +15,7 @@
  */
 
 import { RELATION_HAS_PART } from '@backstage/catalog-model';
+import { InfoCardVariants } from '@backstage/core-components';
 import React from 'react';
 import {
   asComponentEntities,
@@ -24,7 +25,7 @@ import {
 
 /** @public */
 export interface HasSubcomponentsCardProps {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 export function HasSubcomponentsCard(props: HasSubcomponentsCardProps) {
