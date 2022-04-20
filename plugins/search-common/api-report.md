@@ -55,7 +55,19 @@ export interface Result<TDocument extends SearchDocument> {
   // (undocumented)
   document: TDocument;
   // (undocumented)
+  highlight?: ResultHighlight;
+  // (undocumented)
   type: string;
+}
+
+// @beta
+export interface ResultHighlight {
+  // (undocumented)
+  fields: {
+    [field: string]: string;
+  };
+  postTag: string;
+  preTag: string;
 }
 
 // @beta (undocumented)

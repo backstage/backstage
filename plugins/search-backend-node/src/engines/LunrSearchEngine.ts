@@ -22,6 +22,7 @@ import {
   SearchEngine,
 } from '@backstage/plugin-search-common';
 import lunr from 'lunr';
+import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
@@ -51,10 +52,15 @@ export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
   protected logger: Logger;
+  protected highlightPreTag: string;
+  protected highlightPostTag: string;
 
   constructor({ logger }: { logger: Logger }) {
     this.logger = logger;
     this.docStore = {};
+    const uuidTag = uuid();
+    this.highlightPreTag = `<${uuidTag}>`;
+    this.highlightPostTag = `</${uuidTag}>`;
   }
 
   protected translator: QueryTranslator = ({
@@ -198,9 +204,20 @@ export class LunrSearchEngine implements SearchEngine {
 
     // Translate results into IndexableResultSet
     const realResultSet: IndexableResultSet = {
-      results: results.slice(offset, offset + pageSize).map(d => {
-        return { type: d.type, document: this.docStore[d.result.ref] };
-      }),
+      results: results.slice(offset, offset + pageSize).map(d => ({
+        type: d.type,
+        document: this.docStore[d.result.ref],
+        highlight: {
+          preTag: this.highlightPreTag,
+          postTag: this.highlightPostTag,
+          fields: parseHighlightFields({
+            preTag: this.highlightPreTag,
+            postTag: this.highlightPostTag,
+            doc: this.docStore[d.result.ref],
+            positionMetadata: d.result.matchData.metadata as any,
+          }),
+        },
+      })),
       nextPageCursor,
       previousPageCursor,
     };
@@ -221,4 +238,53 @@ export function decodePageCursor(pageCursor?: string): { page: number } {
 
 export function encodePageCursor({ page }: { page: number }): string {
   return Buffer.from(`${page}`, 'utf-8').toString('base64');
+}
+
+type ParseHighlightFieldsProps = {
+  preTag: string;
+  postTag: string;
+  doc: any;
+  positionMetadata: {
+    [term: string]: {
+      [field: string]: {
+        position: number[][];
+      };
+    };
+  };
+};
+
+export function parseHighlightFields({
+  preTag,
+  postTag,
+  doc,
+  positionMetadata,
+}: ParseHighlightFieldsProps): { [field: string]: string } {
+  // Merge the field positions across all query terms
+  const highlightFieldPositions = Object.values(positionMetadata).reduce(
+    (fieldPositions, metadata) => {
+      Object.keys(metadata).map(fieldKey => {
+        fieldPositions[fieldKey] = fieldPositions[fieldKey] ?? [];
+        fieldPositions[fieldKey].push(...metadata[fieldKey].position);
+      });
+
+      return fieldPositions;
+    },
+    {} as { [field: string]: number[][] },
+  );
+
+  return Object.fromEntries(
+    Object.entries(highlightFieldPositions).map(([field, positions]) => {
+      positions.sort((a, b) => b[0] - a[0]);
+
+      const highlightedField = positions.reduce((content, pos) => {
+        return (
+          `${content.substring(0, pos[0])}${preTag}` +
+          `${content.substring(pos[0], pos[0] + pos[1])}` +
+          `${postTag}${content.substring(pos[0] + pos[1])}`
+        );
+      }, doc[field]);
+
+      return [field, highlightedField];
+    }),
+  );
 }

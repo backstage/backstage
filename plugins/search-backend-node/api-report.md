@@ -82,6 +82,10 @@ export class LunrSearchEngine implements SearchEngine {
   // (undocumented)
   getIndexer(type: string): Promise<LunrSearchEngineIndexer>;
   // (undocumented)
+  protected highlightPostTag: string;
+  // (undocumented)
+  protected highlightPreTag: string;
+  // (undocumented)
   protected logger: Logger;
   // (undocumented)
   protected lunrIndices: Record<string, lunr_2.Index>;

@@ -49,7 +49,6 @@
     "qs": "^6.9.4",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
-    "react-text-truncate": "^0.18.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
