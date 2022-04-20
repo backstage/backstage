@@ -103,6 +103,44 @@ export class RollbarApi {
     );
   }
 
+  async updateItem(
+    projectId: number,
+    itemId: number,
+    body: { assigned_user_id: string; }
+  ) {
+    const accessToken = await this.getAccessTokenByProjectId(projectId);
+    return this.patch(`/item/${itemId}`,
+      body,
+      accessToken,
+    )
+  }
+
+  private async getAccessTokenByProjectId(projectId: number) {
+    const projectMap = await this.getProjectMap();
+    const project = Object.entries(projectMap).map(([_key, value]) => value).find((value) => value.id === projectId)
+
+    return project?.accessToken
+  }
+
+  private async patch<T>(url: string, body: { assigned_user_id: string; }, accessToken?: string) {
+    const fullUrl = buildUrl(url);
+
+    if (this.logger) {
+      this.logger.info(`Calling Rollbar REST API, ${fullUrl}`);
+    }
+
+    return fetch(
+      fullUrl,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+        ...getRequestHeaders(accessToken || this.accessToken || ''),
+      },
+    )
+      .then(response => response.json())
+      .then(json => camelcaseKeys<T>(json?.result, {deep: true}));
+  }
+
   private async get<T>(url: string, accessToken?: string) {
     const fullUrl = buildUrl(url);
 

@@ -138,6 +138,7 @@ rollbar:
   organization: my-company
   # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
   accountToken: my-rollbar-account-token
+  assign: true
 
 lighthouse:
   baseUrl: http://localhost:3003
