@@ -57,7 +57,7 @@ export class AwsS3EntityProvider implements EntityProvider {
     // Even though the awsS3 integration allows a config array
     // there is no *real* support for multiple configs.
     // Usually, there will be just the integration for the default host.
-    // In case, a config custom endpoint is used, the host from this endpoint
+    // In case, a custom endpoint is used, the host from this endpoint
     // will be extracted and used as host (e.g., localhost when used with LocalStack)
     // and the default integration will be added as second integration.
     // In this case, we still want the first one though, but have no means to select it
@@ -80,7 +80,7 @@ export class AwsS3EntityProvider implements EntityProvider {
 
   private constructor(
     private readonly config: AwsS3Config,
-    private readonly integration: AwsS3Integration,
+    integration: AwsS3Integration,
     logger: Logger,
     schedule: TaskRunner,
   ) {
@@ -196,16 +196,8 @@ export class AwsS3EntityProvider implements EntityProvider {
 
   private createObjectUrl(key: string): string {
     const bucketName = this.config.bucketName;
-    const endpoint = this.integration.config.endpoint;
+    const endpoint = this.s3.endpoint.href;
 
-    if (endpoint) {
-      if (endpoint.startsWith(`https://${bucketName}.`)) {
-        return `${endpoint}/${key}`;
-      }
-
-      return `${endpoint}/${bucketName}/${key}`;
-    }
-
-    return `https://${bucketName}.s3.${this.config.region}.amazonaws.com/${key}`;
+    return encodeURI(`${endpoint}${bucketName}/${key}`);
   }
 }
