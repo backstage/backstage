@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { Command, OptionValues } from 'commander';
 import { paths } from '../lib/paths';
 import { runCheck } from '../lib/run';
 
@@ -27,14 +27,14 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
   return false;
 }
 
-export default async (cmd: Command) => {
+export default async (_opts: OptionValues, cmd: Command) => {
   // all args are forwarded to jest
   let parent = cmd;
   while (parent.parent) {
     parent = parent.parent;
   }
-  const rawArgs = parent.rawArgs as string[];
-  const args = rawArgs.slice(rawArgs.indexOf('test') + 1);
+  const allArgs = parent.args as string[];
+  const args = allArgs.slice(allArgs.indexOf('test') + 1);
 
   // Only include our config if caller isn't passing their own config
   if (!includesAnyOf(args, '-c', '--config')) {

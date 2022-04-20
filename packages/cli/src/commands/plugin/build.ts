@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   await buildPackage({
     outputs: new Set([Output.esm, Output.types]),
-    minify: cmd.minify,
-    useApiExtractor: cmd.experimentalTypeBuild,
+    minify: opts.minify,
+    useApiExtractor: opts.experimentalTypeBuild,
   });
 };

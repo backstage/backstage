@@ -15,20 +15,20 @@
  */
 
 import fs from 'fs-extra';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { buildBundle } from '../../lib/bundler';
 import { getEnvironmentParallelism } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   await buildBundle({
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
-    statsJsonEnabled: cmd.stats,
+    statsJsonEnabled: opts.stats,
     ...(await loadCliConfig({
-      args: cmd.config,
+      args: opts.config,
       fromPackage: name,
     })),
   });

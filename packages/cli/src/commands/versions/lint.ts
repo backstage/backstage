@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { Lockfile } from '../../lib/versioning';
 import { paths } from '../../lib/paths';
 import partition from 'lodash/partition';
@@ -47,7 +47,7 @@ export const forbiddenDuplicatesFilter = (name: string) =>
   FORBID_DUPLICATES.some(pattern => pattern.test(name)) &&
   !ALLOW_DUPLICATES.some(pattern => pattern.test(name));
 
-export default async (cmd: Command) => {
+export default async (cmd: OptionValues) => {
   const fix = Boolean(cmd.fix);
 
   let success = true;

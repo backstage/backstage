@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CommanderStatic } from 'commander';
+import { Command } from 'commander';
 import { run } from './run';
 
-export function registerCommands(program: CommanderStatic) {
+export function registerCommands(program: Command) {
   program.command('run').description('Run e2e tests').action(run);
 }

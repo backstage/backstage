@@ -15,11 +15,11 @@
  */
 
 import fs from 'fs-extra';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { paths } from '../../lib/paths';
 import { serveBackend } from '../../lib/bundler/backend';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   // Cleaning dist/ before we start the dev process helps work around an issue
   // where we end up with the entrypoint executing multiple times, causing
   // a port bind conflict among other things.
@@ -27,9 +27,9 @@ export default async (cmd: Command) => {
 
   const waitForExit = await serveBackend({
     entry: 'src/index',
-    checksEnabled: cmd.check,
-    inspectEnabled: cmd.inspect,
-    inspectBrkEnabled: cmd.inspectBrk,
+    checksEnabled: opts.check,
+    inspectEnabled: opts.inspect,
+    inspectBrkEnabled: opts.inspectBrk,
   });
 
   await waitForExit();

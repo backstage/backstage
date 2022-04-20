@@ -15,18 +15,18 @@
  */
 
 import fs from 'fs-extra';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   const waitForExit = await serveBundle({
     entry: 'dev/index',
-    checksEnabled: cmd.check,
+    checksEnabled: opts.check,
     ...(await loadCliConfig({
-      args: cmd.config,
+      args: opts.config,
       fromPackage: name,
       withFilteredKeys: true,
     })),

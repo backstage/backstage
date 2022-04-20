@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-import program from 'commander';
+import { program } from 'commander';
 import { exitWithError } from './lib/errors';
 import { version } from '../package.json';
 import createApp from './createApp';

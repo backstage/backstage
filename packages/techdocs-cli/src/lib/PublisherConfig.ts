@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 
 type Publisher = keyof typeof PublisherConfig['configFactories'];
 type PublisherConfiguration = {
@@ -45,11 +45,11 @@ export class PublisherConfig {
    * Note: This assumes that proper credentials are set in Environment
    * variables for the respective GCS/AWS clients to work.
    */
-  static getValidConfig(cmd: Command): ConfigReader {
-    const publisherType = cmd.publisherType;
+  static getValidConfig(opts: OptionValues): ConfigReader {
+    const publisherType = opts.publisherType;
 
     if (!PublisherConfig.isKnownPublisher(publisherType)) {
-      throw new Error(`Unknown publisher type ${cmd.publisherType}`);
+      throw new Error(`Unknown publisher type ${opts.publisherType}`);
     }
 
     return new ConfigReader({
@@ -61,9 +61,9 @@ export class PublisherConfig {
         },
       },
       techdocs: {
-        publisher: PublisherConfig.configFactories[publisherType](cmd),
+        publisher: PublisherConfig.configFactories[publisherType](opts),
         legacyUseCaseSensitiveTripletPaths:
-          cmd.legacyUseCaseSensitiveTripletPaths,
+          opts.legacyUseCaseSensitiveTripletPaths,
       },
     });
   }
@@ -80,16 +80,20 @@ export class PublisherConfig {
   /**
    * Retrieve valid AWS S3 configuration based on the command.
    */
-  private static getValidAwsS3Config(cmd: Command): PublisherConfiguration {
+  private static getValidAwsS3Config(
+    opts: OptionValues,
+  ): PublisherConfiguration {
     return {
       type: 'awsS3',
       awsS3: {
-        bucketName: cmd.storageName,
-        ...(cmd.awsBucketRootPath && { bucketRootPath: cmd.awsBucketRootPath }),
-        ...(cmd.awsRoleArn && { credentials: { roleArn: cmd.awsRoleArn } }),
-        ...(cmd.awsEndpoint && { endpoint: cmd.awsEndpoint }),
-        ...(cmd.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
-        ...(cmd.awsS3sse && { sse: cmd.awsS3sse }),
+        bucketName: opts.storageName,
+        ...(opts.awsBucketRootPath && {
+          bucketRootPath: opts.awsBucketRootPath,
+        }),
+        ...(opts.awsRoleArn && { credentials: { roleArn: opts.awsRoleArn } }),
+        ...(opts.awsEndpoint && { endpoint: opts.awsEndpoint }),
+        ...(opts.awsS3ForcePathStyle && { s3ForcePathStyle: true }),
+        ...(opts.awsS3sse && { sse: opts.awsS3sse }),
       },
     };
   }
@@ -97,8 +101,10 @@ export class PublisherConfig {
   /**
    * Retrieve valid Azure Blob Storage configuration based on the command.
    */
-  private static getValidAzureConfig(cmd: Command): PublisherConfiguration {
-    if (!cmd.azureAccountName) {
+  private static getValidAzureConfig(
+    opts: OptionValues,
+  ): PublisherConfiguration {
+    if (!opts.azureAccountName) {
       throw new Error(
         `azureBlobStorage requires --azureAccountName to be specified`,
       );
@@ -107,10 +113,10 @@ export class PublisherConfig {
     return {
       type: 'azureBlobStorage',
       azureBlobStorage: {
-        containerName: cmd.storageName,
+        containerName: opts.storageName,
         credentials: {
-          accountName: cmd.azureAccountName,
-          accountKey: cmd.azureAccountKey,
+          accountName: opts.azureAccountName,
+          accountKey: opts.azureAccountKey,
         },
       },
     };
@@ -119,12 +125,16 @@ export class PublisherConfig {
   /**
    * Retrieve valid GCS configuration based on the command.
    */
-  private static getValidGoogleGcsConfig(cmd: Command): PublisherConfiguration {
+  private static getValidGoogleGcsConfig(
+    opts: OptionValues,
+  ): PublisherConfiguration {
     return {
       type: 'googleGcs',
       googleGcs: {
-        bucketName: cmd.storageName,
-        ...(cmd.gcsBucketRootPath && { bucketRootPath: cmd.gcsBucketRootPath }),
+        bucketName: opts.storageName,
+        ...(opts.gcsBucketRootPath && {
+          bucketRootPath: opts.gcsBucketRootPath,
+        }),
       },
     };
   }
@@ -133,14 +143,14 @@ export class PublisherConfig {
    * Retrieves valid OpenStack Swift configuration based on the command.
    */
   private static getValidOpenStackSwiftConfig(
-    cmd: Command,
+    opts: OptionValues,
   ): PublisherConfiguration {
     const missingParams = [
       'osCredentialId',
       'osSecret',
       'osAuthUrl',
       'osSwiftUrl',
-    ].filter((param: string) => !cmd[param]);
+    ].filter((param: string) => !opts[param]);
 
     if (missingParams.length) {
       throw new Error(
@@ -153,13 +163,13 @@ export class PublisherConfig {
     return {
       type: 'openStackSwift',
       openStackSwift: {
-        containerName: cmd.storageName,
+        containerName: opts.storageName,
         credentials: {
-          id: cmd.osCredentialId,
-          secret: cmd.osSecret,
+          id: opts.osCredentialId,
+          secret: opts.osSecret,
         },
-        authUrl: cmd.osAuthUrl,
-        swiftUrl: cmd.osSwiftUrl,
+        authUrl: opts.osAuthUrl,
+        swiftUrl: opts.osSwiftUrl,
       },
     };
   }

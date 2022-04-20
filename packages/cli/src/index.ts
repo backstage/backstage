@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-import program from 'commander';
+import { program } from 'commander';
 import chalk from 'chalk';
 import { exitWithError } from './lib/errors';
 import { version } from './lib/version';

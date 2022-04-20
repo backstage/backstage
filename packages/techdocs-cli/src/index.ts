@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import program from 'commander';
+import { program } from 'commander';
 import { registerCommands } from './commands';
 import { version } from '../package.json';
 
