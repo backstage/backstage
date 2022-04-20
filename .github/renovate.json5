@@ -8,5 +8,10 @@
       groupName: 'Spotify web-scripts monorepo packages',
       rangeStrategy: 'replace',
     },
+    {
+      matchSourceUrlPrefixes: ['https://github.com/microsoft/rushstack'],
+      groupName: 'API Extractor / Rush Stack monorepo packages',
+      rangeStrategy: 'replace',
+    },
   ],
 }
