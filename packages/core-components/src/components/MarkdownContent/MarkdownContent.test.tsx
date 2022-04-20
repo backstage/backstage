@@ -62,4 +62,22 @@ describe('<MarkdownContent />', () => {
     expect(fp2).toBeInTheDocument();
     expect(rendered.getByText(');', { selector: 'span' })).toBeInTheDocument();
   });
+  it('Render MarkdownContent component with trusted HTML content', async () => {
+    const rendered = await renderWithEffects(
+      wrapInTestApp(
+        <MarkdownContent
+          content={
+            '```<blockquote>\n May not look like much but got it where it counts.\n </blockquote>\n```'
+          }
+          dialect="gfm"
+          html
+        />,
+      ),
+    );
+    expect(
+      rendered.getByText('May not look like much but got it where it counts.', {
+        selector: 'blockquote',
+      }),
+    ).toBeInTheDocument();
+  });
 });

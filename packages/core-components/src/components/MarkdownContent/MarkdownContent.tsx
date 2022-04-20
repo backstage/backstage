@@ -16,6 +16,7 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import ReactMarkdown, { Options } from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import gfm from 'remark-gfm';
 import React from 'react';
 import { BackstageTheme } from '@backstage/theme';
@@ -67,6 +68,7 @@ const useStyles = makeStyles<BackstageTheme>(
 type Props = {
   content: string;
   dialect?: 'gfm' | 'common-mark';
+  html?: boolean;
   linkTarget?: Options['linkTarget'];
 };
 
@@ -88,14 +90,17 @@ const components: Options['components'] = {
  * MarkdownContent
  * --
  * Renders markdown with the default dialect [gfm - GitHub flavored Markdown](https://github.github.com/gfm/) to backstage theme styled HTML.
+ * Pass html to activate [rehypeRaw](https://github.com/remarkjs/react-markdown#appendix-a-html-in-markdown) styling that will render any inlined HTML in gfm.
+ * demo of remark-gfm and rehype-raw working together and separate available [here](https://remarkjs.github.io/react-markdown/)
  * If you just want to render to plain [CommonMark](https://commonmark.org/), set the dialect to `'common-mark'`
  */
 export function MarkdownContent(props: Props) {
-  const { content, dialect = 'gfm', linkTarget } = props;
+  const { content, dialect = 'gfm', linkTarget, html = false } = props;
   const classes = useStyles();
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
+      rehypePlugins={html ? [rehypeRaw] : []}
       className={classes.markdown}
       children={content}
       components={components}
