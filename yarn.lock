@@ -5196,9 +5196,9 @@
   integrity sha512-BrnexUcUQkp6XUw8HWSmE4LpWtJGgEC6A7vrSkgpgKJtZaYkpw8O+Xnk60DA266ecbFHYbQD6ngqKHlvjNB+pA==
 
 "@spotify/eslint-config-react@^13.0.0":
-  version "13.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-13.0.0.tgz#95584dd5f698c5ccb550e712cad68e9451003579"
-  integrity sha512-zVdD+C+vHz73pgYuDi0K+/yzW5w0Zk7GJA28GhUPaTSSdUGRs+TJwofBp1ZvDHDrROVh4yyNyBc332xE9Yuo1Q==
+  version "13.0.1"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-react/-/eslint-config-react-13.0.1.tgz#f309f5d3c53ef1e2c7c6ce05f76ee681970112c3"
+  integrity sha512-gyC0CtJ2H9K57HyQG5/RcMsJiB6qmVbBHOHWukZcPLfYtwkK201kgMjHrVfJXoSN+mJxcWhDVPxqe+eA7LHshQ==
 
 "@spotify/eslint-config-typescript@^13.0.0":
   version "13.0.0"
