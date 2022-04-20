@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.1
+
+### Patch Changes
+
+- 777f2125ac: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+
 ## 1.1.0
 
 ### Minor Changes

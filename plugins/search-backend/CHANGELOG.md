@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend
 
+## 0.5.1
+
+### Patch Changes
+
+- 777f2125ac: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+
 ## 0.5.0
 
 ### Minor Changes
