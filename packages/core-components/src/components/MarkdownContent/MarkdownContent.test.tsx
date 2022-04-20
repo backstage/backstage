@@ -70,7 +70,7 @@ describe('<MarkdownContent />', () => {
             '```<blockquote>\n May not look like much but got it where it counts.\n </blockquote>\n```'
           }
           dialect="gfm"
-          html
+          trustedHtml
         />,
       ),
     );
