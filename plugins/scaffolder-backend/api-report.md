@@ -230,6 +230,7 @@ export function createPublishGithubAction(options: {
   allowMergeCommit?: boolean | undefined;
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  requiredStatusCheckContexts?: string[] | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | {
