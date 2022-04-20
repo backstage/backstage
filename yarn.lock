@@ -5201,9 +5201,9 @@
   integrity sha512-zVdD+C+vHz73pgYuDi0K+/yzW5w0Zk7GJA28GhUPaTSSdUGRs+TJwofBp1ZvDHDrROVh4yyNyBc332xE9Yuo1Q==
 
 "@spotify/eslint-config-typescript@^13.0.0":
-  version "13.0.0"
-  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-13.0.0.tgz#908a51e05de7ec9d2e3b136f9831e0ddb36c7f89"
-  integrity sha512-pR9hptdnu39FCofS9y4SbLRJOgGNhBsX6N24HD3LxbLnVedSF2kpqMmgaBw3W2T932oXSrJlf5nsCePWVsUTjQ==
+  version "13.0.1"
+  resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-13.0.1.tgz#47801a66d5569074a110f4422eba60aafc6bd7f8"
+  integrity sha512-1wLQFyN2H2v+rn/mytA2PGzmGxOmdZdcKBpNyW+4z0qJydpvavp2SeBj/X+FEbwKoYBoUdG9QLr40eLQh1ZHZA==
 
 "@spotify/prettier-config@^13.0.0":
   version "13.0.1"
