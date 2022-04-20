@@ -2,4 +2,11 @@
   labels: ['dependencies'],
   extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
   rangeStrategy: 'update-lockfile',
+  packageRules: [
+    {
+      matchSourceUrlPrefixes: ['https://github.com/spotify/web-scripts'],
+      groupName: 'Spotify web-scripts monorepo packages',
+      rangeStrategy: 'replace',
+    },
+  ],
 }
