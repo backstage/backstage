@@ -21896,9 +21896,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     inherits "^2.0.1"
 
 rollup-plugin-dts@^4.0.1:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-4.2.0.tgz#f7ae4646f5b3aec07560bc341c0dc4a85f8a0dff"
-  integrity sha512-lx6irWVhz/x4//tIqRhzk4FOqGQ0n37ZM2wpPCn4uafl/EmiV92om7ZdAsq7Bzho6C+Xh5GfsyuP9H+Udv72Lg==
+  version "4.2.1"
+  resolved "https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-4.2.1.tgz#c17968a0f7c5ae70a9e0ab37e715f3ef63da01c7"
+  integrity sha512-eaxQZNUJ5iQcxNGlpJ1CUgG4OSVqWjDZ3nNSWBIoGrpcote2aNphSe1RJOaSYkb8dwn3o+rYm1vvld/5z3EGSQ==
   dependencies:
     magic-string "^0.26.1"
   optionalDependencies:
