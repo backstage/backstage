@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { techdocsModuleAddonsContribPlugin } from './plugin';
 
-/**
- * A plugin for contributed TechDocs Addons.
- *
- * @packageDocumentation
- */
-
-export { techdocsAddonsContribPlugin, ReportIssue } from './plugin';
-export type {
-  ReportIssueProps,
-  ReportIssueTemplate,
-  ReportIssueTemplateBuilder,
-} from './ReportIssue';
+describe('techdocs-addons-contrib', () => {
+  it('should export plugin', () => {
+    expect(techdocsModuleAddonsContribPlugin).toBeDefined();
+  });
+});

@@ -1,6 +1,6 @@
 {
-  "name": "@backstage/plugin-techdocs-addons-contrib",
-  "description": "Plugin for contributed TechDocs Addons",
+  "name": "@backstage/plugin-techdocs-module-addons-contrib",
+  "description": "Plugin module for contributed TechDocs Addons",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -12,7 +12,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin-module"
   },
   "homepage": "https://backstage.io",
   "repository": {

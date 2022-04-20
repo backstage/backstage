@@ -27,8 +27,8 @@ import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
  * @public
  */
 
-export const techdocsAddonsContribPlugin = createPlugin({
-  id: 'techdocsAddonsContrib',
+export const techdocsModuleAddonsContribPlugin = createPlugin({
+  id: 'techdocsModuleAddonsContrib',
 });
 
 /**
@@ -37,7 +37,7 @@ export const techdocsAddonsContribPlugin = createPlugin({
  * @public
  */
 
-export const ReportIssue = techdocsAddonsContribPlugin.provide(
+export const ReportIssue = techdocsModuleAddonsContribPlugin.provide(
   createTechDocsAddonExtension<ReportIssueProps>({
     name: 'ReportIssue',
     location: TechDocsAddonLocations.Content,

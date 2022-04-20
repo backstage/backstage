@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs-addons-contrib': minor
+'@backstage/plugin-techdocs-module-addons-contrib': minor
 ---
 
 A package for contributed TechDocs addons.
