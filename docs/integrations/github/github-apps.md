@@ -1,6 +1,6 @@
 ---
 id: github-apps
-title: GitHub Apps for Backend Authentication
+title: GitHub Apps
 description: Configure GitHub Apps for Backend Authentication
 ---
 
@@ -13,6 +13,8 @@ the OAuth apps and their respective scopes.
 
 ## Caveats
 
+- This authentication method is built for authenticating towards
+  organization repositories and not towards personal repositories.
 - It's not possible to have multiple Backstage GitHub Apps installed in the same
   GitHub organization, to be handled by Backstage. We currently don't check
   through all the registered GitHub Apps to see which ones are installed for a
@@ -25,7 +27,7 @@ the OAuth apps and their respective scopes.
   want for github.com but it's recommended to make your application public for
   GitHub Enterprise in order to share application across your GHE organizations.
 
-A GitHub app created with `backstage-cli create-github-app` will have read
+A GitHub app created with the cli will have read
 access by default. You have to manually update the GitHub App settings in GitHub
 to grant the app more permissions if needed.
 
@@ -35,8 +37,12 @@ You can use the `backstage-cli` to create a GitHub App using a manifest file
 that we provide. This gives us a way to automate some of the work required to
 create a GitHub app.
 
+```console
+yarn backstage-cli create-github-app <github org>
+```
+
 You can read more about the
-[`backstage-cli create-github-app` method](../local-dev/cli-commands.md#create-github-app).
+[`backstage-cli create-github-app`](../../local-dev/cli-commands.md#create-github-app) command.
 
 Once you've gone through the CLI command, it should produce a YAML file in the
 root of the project which you can then use as an `include` in your

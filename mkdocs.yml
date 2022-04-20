@@ -105,6 +105,7 @@ nav:
           - Locations: 'integrations/github/locations.md'
           - Discovery: 'integrations/github/discovery.md'
           - Org Data: 'integrations/github/org.md'
+          - GitHub Apps: 'integrations/github/github-apps.md'
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
@@ -126,7 +127,6 @@ nav:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
           - Call existing API: 'plugins/call-existing-api.md'
-          - GitHub Apps for Backend Authentication: 'plugins/github-apps.md'
           - URL Reader: 'plugins/url-reader.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
