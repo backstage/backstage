@@ -19,11 +19,13 @@ import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
+import fetch from 'node-fetch';
 
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
 export default async (org: string) => {
+  await verifyGithubOrg(org);
   const { slug, name, ...config } = await GithubCreateAppServer.run({ org });
 
   const fileName = `github-app-${slug}-credentials.yaml`;
@@ -47,3 +49,14 @@ integrations:
         - $include: ${fileName}`),
   );
 };
+
+async function verifyGithubOrg(org: string): Promise<void> {
+  const response = await fetch(
+    `https://api.github.com/orgs/${encodeURIComponent(org)}`,
+  );
+  if (!response.ok) {
+    throw new Error(
+      `GitHub organization '${org}' does not exist. Please verify the name and try again.`,
+    );
+  }
+}
