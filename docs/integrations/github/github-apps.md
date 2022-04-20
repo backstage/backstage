@@ -1,6 +1,6 @@
 ---
 id: github-apps
-title: GitHub Apps for Backend Authentication
+title: GitHub Apps
 description: Configure GitHub Apps for Backend Authentication
 ---
 

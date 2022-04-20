@@ -105,7 +105,7 @@ nav:
           - Locations: 'integrations/github/locations.md'
           - Discovery: 'integrations/github/discovery.md'
           - Org Data: 'integrations/github/org.md'
-          - GitHub Apps for Backend Authentication: 'integrations/github/github-apps.md'
+          - GitHub Apps: 'integrations/github/github-apps.md'
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
