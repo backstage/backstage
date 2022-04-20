@@ -233,8 +233,8 @@ For example:
   skipMetricsLookup: false # optional
   exposeDashboard: false # optional
   matchingResourceLabels: # optional
-    - key: "environment"
-      value: "production"
+    - key: 'environment'
+      value: 'production'
 ```
 
 Will configure the Kubernetes plugin to connect to all GKE clusters in the
@@ -275,7 +275,6 @@ Defaults to `false`.
 
 Array of key value labels used to filter out clusters which don't have the matching
 [resource labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels).
-
 
 #### Custom `KubernetesClustersSupplier`
 
