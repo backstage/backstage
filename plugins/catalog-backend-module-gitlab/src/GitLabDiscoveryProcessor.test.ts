@@ -15,14 +15,16 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
-import { GitLabProject } from './lib';
+import { GitLabProjectResponse } from './lib';
 
 const server = setupServer();
+setupRequestMockHandlers(server);
 
 const PROJECTS_URL = 'https://gitlab.fake/api/v4/projects';
 const GROUP_PROJECTS_URL =
@@ -44,7 +46,7 @@ const GROUP_LOCATION: LocationSpec = {
 function setupFakeServer(
   url: string,
   callback: (request: { page: number; include_subgroups: boolean }) => {
-    data: GitLabProject[];
+    data: GitLabProjectResponse[];
     nextPage?: number;
   },
 ) {
@@ -106,13 +108,10 @@ function getProcessor(config?: any): GitLabDiscoveryProcessor {
 
 describe('GitlabDiscoveryProcessor', () => {
   beforeAll(() => {
-    server.listen();
     jest.useFakeTimers('modern');
     jest.setSystemTime(new Date('2001-01-01T12:34:56Z'));
   });
-  afterEach(() => server.resetHandlers());
   afterAll(() => {
-    server.close();
     jest.useRealTimers();
   });
 
@@ -358,7 +357,7 @@ describe('GitlabDiscoveryProcessor', () => {
       delete config.integrations;
       await expect(
         getProcessor(config).readLocation(PROJECT_LOCATION, false, _ => {}),
-      ).rejects.toThrow(/no GitLab integration/);
+      ).rejects.toThrow(/No GitLab integration/);
     });
 
     it('location type', async () => {

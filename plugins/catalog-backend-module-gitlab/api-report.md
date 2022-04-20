@@ -8,9 +8,10 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
-import { ScmIntegrations } from '@backstage/integration';
+import { TaskRunner } from '@backstage/backend-tasks';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -32,38 +33,77 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @alpha
+// @public
+export type GitLabGroupResponse = {
+  id: number;
+  web_url: string;
+  name: string;
+  path: string;
+  description: string;
+  full_name: string;
+  full_path: string;
+  created_at: string;
+  parent_id: number | null;
+};
+
+// @public
 export class GitLabOrgEntityProvider implements EntityProvider {
-  constructor(options: {
-    id: string;
-    logger: Logger;
-    integrations: ScmIntegrations;
-    providerConfigs: GitLabOrgProviderConfig[];
-  });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
   static fromConfig(
     configRoot: Config,
-    options: {
-      id: string;
-      logger: Logger;
-    },
+    options: GitLabOrgEntityProviderOptions,
   ): GitLabOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  read(): Promise<void>;
+  read(options?: { logger?: Logger }): Promise<void>;
 }
 
-// Warning: (ae-forgotten-export) The symbol "GitLabUserResponse" needs to be exported by the entry point index.d.ts
-//
 // @public
-export type UserTransformer = (
-  user: GitLabUserResponse,
-) => Promise<UserEntity | undefined>;
+export interface GitLabOrgEntityProviderOptions {
+  groupTransformer?: GroupTransformer;
+  id: string;
+  logger: Logger;
+  schedule: 'manual' | TaskRunner;
+  target: string | string[];
+  userTransformer?: UserTransformer;
+}
 
-// Warnings were encountered during analysis:
-//
-// src/GitLabOrgEntityProvider.d.ts:22:9 - (ae-forgotten-export) The symbol "GitLabOrgProviderConfig" needs to be exported by the entry point index.d.ts
+// @public
+export type GitLabUserResponse = {
+  id: number;
+  name: string;
+  username: string;
+  state: string;
+  avatar_url: string;
+  web_url: string;
+  created_at: string;
+  job_title: string;
+  public_email?: string;
+  email?: string;
+  bot?: boolean;
+  bio?: string;
+  location?: string;
+  skype?: string;
+  linkedin?: string;
+  twitter?: string;
+  website_url?: string;
+  organization?: string;
+  followers?: number;
+  following?: number;
+};
+
+// @public
+export type GroupTransformer = (options: {
+  group: GitLabGroupResponse;
+  defaultTransformer: (group: GitLabGroupResponse) => GroupEntity | undefined;
+}) => Promise<GroupEntity | undefined>;
+
+// @public
+export type UserTransformer = (options: {
+  user: GitLabUserResponse;
+  defaultTransformer: (user: GitLabUserResponse) => UserEntity | undefined;
+}) => Promise<UserEntity | undefined>;
 ```

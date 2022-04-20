@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  CacheClient,
-  CacheManager,
-  PluginCacheManager,
-} from '@backstage/backend-common';
+import { CacheManager, PluginCacheManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import {
-  ScmIntegrationRegistry,
-  ScmIntegrations,
-} from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
@@ -31,38 +24,34 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
-import { GitLabClient, GitLabProject, paginated } from './lib';
+import { GitLabClient, GitLabProjectResponse } from './lib';
 
 /**
  * Extracts repositories out of an GitLab instance.
+ *
  * @public
  */
 export class GitLabDiscoveryProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrationRegistry;
-  private readonly logger: Logger;
-  private readonly cache: CacheClient;
-
   static fromConfig(config: Config, options: { logger: Logger }) {
     const integrations = ScmIntegrations.fromConfig(config);
+    const client = new GitLabClient({ integrations, logger: options.logger });
     const pluginCache =
       CacheManager.fromConfig(config).forPlugin('gitlab-discovery');
 
     return new GitLabDiscoveryProcessor({
-      ...options,
-      integrations,
+      client,
       pluginCache,
+      logger: options.logger,
     });
   }
 
-  private constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    pluginCache: PluginCacheManager;
-    logger: Logger;
-  }) {
-    this.integrations = options.integrations;
-    this.cache = options.pluginCache.getClient();
-    this.logger = options.logger;
-  }
+  private constructor(
+    private readonly options: {
+      client: GitLabClient;
+      pluginCache: PluginCacheManager;
+      logger: Logger;
+    },
+  ) {}
 
   getProcessorName(): string {
     return 'GitLabDiscoveryProcessor';
@@ -77,26 +66,15 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
-    const { group, host, branch, catalogPath } = parseUrl(location.target);
+    this.options.logger.debug(
+      `Reading GitLab projects from ${location.target}`,
+    );
 
-    const integration = this.integrations.gitlab.byUrl(`https://${host}`);
-    if (!integration) {
-      throw new Error(
-        `There is no GitLab integration that matches ${host}. Please add a configuration entry for it under integrations.gitlab`,
-      );
-    }
-
-    const client = new GitLabClient({
-      config: integration.config,
-      logger: this.logger,
-    });
+    const { branch, catalogPath } = parseUrl(location.target);
     const startTimestamp = Date.now();
-    this.logger.debug(`Reading GitLab projects from ${location.target}`);
 
-    const projects = paginated(options => client.listProjects(options), {
-      group,
+    const projects = this.options.client.listProjects(location.target, {
       last_activity_after: await this.updateLastActivity(),
-      page: 1,
     });
 
     const res: Result = {
@@ -136,7 +114,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     }
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    this.logger.debug(
+    this.options.logger.debug(
       `Read ${res.scanned} GitLab repositories in ${duration} seconds`,
     );
 
@@ -144,16 +122,17 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   }
 
   private async updateLastActivity(): Promise<string | undefined> {
+    const cache = this.options.pluginCache.getClient();
     const cacheKey = `processors/${this.getProcessorName()}/last-activity`;
-    const lastActivity = await this.cache.get(cacheKey);
-    await this.cache.set(cacheKey, new Date().toISOString());
+    const lastActivity = await cache.get(cacheKey);
+    await cache.set(cacheKey, new Date().toISOString());
     return lastActivity as string | undefined;
   }
 }
 
 type Result = {
   scanned: number;
-  matches: GitLabProject[];
+  matches: GitLabProjectResponse[];
 };
 
 /*

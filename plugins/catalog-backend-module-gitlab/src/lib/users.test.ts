@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { getVoidLogger } from '@backstage/backend-common';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { ConfigReader } from '@backstage/config';
+import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { rest } from 'msw';
 import { setupServer, SetupServerApi } from 'msw/node';
-
-import { ConfigReader } from '@backstage/config';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { readGitLabIntegrationConfig } from '@backstage/integration';
-import { getVoidLogger } from '@backstage/backend-common';
-
 import { GitLabClient } from './client';
-import { getGroupMembers, getInstanceUsers, readUsers } from './users';
 import { UserTransformer } from './types';
+import { getGroupMembers, getInstanceUsers, readUsers } from './users';
 
 const server = setupServer();
 setupRequestMockHandlers(server);
@@ -94,72 +93,6 @@ function setupFakeGroupMembers(
                 },
               ]
             : []),
-        ]),
-      );
-    }),
-  );
-}
-
-function setupFakeInstanceUsers(srv: SetupServerApi) {
-  srv.use(
-    rest.get(`${MOCK_CONFIG.apiBaseUrl}/users`, (_, res, ctx) => {
-      return res(
-        ctx.set('x-next-page', ''),
-        ctx.json([
-          // only primary email
-          {
-            id: 1,
-            name: 'User One',
-            username: 'user.one',
-            state: 'active',
-            avatar_url: 'https://example.com/avatar/1',
-            web_url: 'https://example.com/user.one',
-            created_at: '2021-12-01T10:00:00.000Z',
-            bot: false,
-            public_email: null,
-            job_title: '',
-            email: 'user.one@example.com',
-          },
-          // only public email
-          {
-            id: 2,
-            name: 'User Two',
-            username: 'user.two',
-            state: 'active',
-            avatar_url: 'https://example.com/avatar/2',
-            web_url: 'https://example.com/user.two',
-            created_at: '2021-12-01T10:00:00.000Z',
-            bot: false,
-            public_email: 'user.two.public@example.com',
-            job_title: '',
-          },
-          // both public and primary email
-          {
-            id: 3,
-            name: 'User Three',
-            username: 'user.three',
-            state: 'active',
-            avatar_url: 'https://example.com/avatar/3',
-            web_url: 'https://example.com/user.three',
-            created_at: '2021-12-01T10:00:00.000Z',
-            bot: false,
-            public_email: 'user.three.public@example.com',
-            email: 'user.three.primary@example.com',
-            job_title: '',
-          },
-          // bot user
-          {
-            id: 4,
-            name: 'Project Bot User',
-            username: 'project_4_bot',
-            state: 'active',
-            avatar_url: 'https://example.com/avatar/4',
-            web_url: 'https://example.com/project_4_bot',
-            created_at: '2021-12-01T10:00:00.000Z',
-            bot: true,
-            public_email: 'project4_bot@example.com',
-            job_title: '',
-          },
         ]),
       );
     }),
@@ -287,58 +220,5 @@ describe('getInstanceUsers', () => {
       'spec.profile.email',
       'user.three.primary@example.com',
     );
-  });
-});
-
-describe('readUsers', () => {
-  const client = new GitLabClient({
-    config: MOCK_CONFIG,
-    logger: getVoidLogger(),
-  });
-
-  it('should throw error if target and client are mismatched', async () => {
-    await expect(
-      readUsers(client, 'https://wrong.host.example.com', {}),
-    ).rejects.toThrowError();
-  });
-
-  it('should get instance users if target matches baseUrl', async () => {
-    setupFakeInstanceUsers(server);
-
-    await expect(
-      readUsers(client, 'https://example.com/', {}),
-    ).resolves.toHaveLength(3);
-  });
-
-  it('should use transformer for instance users', async () => {
-    setupFakeInstanceUsers(server);
-    const mockTransformer = jest.fn() as jest.MockedFunction<UserTransformer>;
-
-    await expect(
-      readUsers(client, 'https://example.com/', {
-        transformer: mockTransformer,
-      }),
-    ).resolves.toHaveLength(0);
-    expect(mockTransformer).toHaveBeenCalledTimes(4); // once for each user
-  });
-
-  it('should get users via group if target is a group under baseUrl', async () => {
-    setupFakeGroupMembers(server, 'testgroup/subgroup', true);
-
-    await expect(
-      readUsers(client, 'https://example.com/testgroup/subgroup', {}),
-    ).resolves.toHaveLength(2);
-  });
-
-  it('should use transformer for users ingested via group', async () => {
-    setupFakeGroupMembers(server, 'testgroup/subgroup', true);
-    const mockTransformer = jest.fn() as jest.MockedFunction<UserTransformer>;
-
-    await expect(
-      readUsers(client, 'https://example.com/testgroup/subgroup', {
-        transformer: mockTransformer,
-      }),
-    ).resolves.toHaveLength(0);
-    expect(mockTransformer).toHaveBeenCalledTimes(2);
   });
 });

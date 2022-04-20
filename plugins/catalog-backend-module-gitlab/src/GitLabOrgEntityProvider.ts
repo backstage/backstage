@@ -13,100 +13,205 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
+
+import { TaskRunner } from '@backstage/backend-tasks';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
-
+import * as uuid from 'uuid';
+import { Logger } from 'winston';
 import {
   GitLabClient,
-  getGroups,
+  GroupTransformer,
+  readGroups,
   readUsers,
-  groupByIntegrationConfig,
-  readGitLabOrgProviderConfig,
-  GitLabOrgProviderConfig,
+  UserTransformer,
 } from './lib';
 
 /**
- * Extracts teams and users out of GitLab group or GitLab EE instance.
+ * Options for {@link GitLabOrgEntityProvider}.
  *
- * @alpha
+ * @public
+ */
+export interface GitLabOrgEntityProviderOptions {
+  /**
+   * A unique, stable identifier for this provider.
+   *
+   * @example "production"
+   */
+  id: string;
+
+  /**
+   * The URLs of some GitLab groups or subgroup namespaces.
+   *
+   * @remarks
+   *
+   * Each should be the URL of a GitLab target to get org data from.
+   *
+   * Please see the GitLab documentation for more information on namespaces:
+   * https://docs.gitlab.com/ee/user/group/#namespaces
+   *
+   * Examples:
+   * - https://gitlab.com/gitlab-org/delivery
+   * - https://self-hosted.example.com/group/subgroup
+   */
+  target: string | string[];
+
+  /**
+   * The logger to use.
+   */
+  logger: Logger;
+
+  /**
+   * The refresh schedule to use.
+   *
+   * @remarks
+   *
+   * If you pass in 'manual', you are responsible for calling the `read` method
+   * manually at some interval.
+   *
+   * But more commonly you will pass in the result of
+   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * to enable automatic scheduling of tasks.
+   */
+  schedule: 'manual' | TaskRunner;
+
+  /**
+   * The function that transforms a user entry in GitLab to an entity.
+   */
+  userTransformer?: UserTransformer;
+
+  /**
+   * The function that transforms a group entry in GitLab to an entity.
+   */
+  groupTransformer?: GroupTransformer;
+}
+
+/**
+ * Extracts teams and users out of GitLab or a GitLab EE instance.
+ *
+ * @public
  */
 export class GitLabOrgEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
+  private scheduleFn?: () => Promise<void>;
 
   static fromConfig(
     configRoot: Config,
-    options: {
-      id: string;
-      logger: Logger;
-    },
+    options: GitLabOrgEntityProviderOptions,
   ) {
     const integrations = ScmIntegrations.fromConfig(configRoot);
 
-    const providerConfigs = readGitLabOrgProviderConfig(configRoot);
-    if (providerConfigs.length === 0) {
-      throw new Error(
-        'There are no providers configured for gitlab-org, nothing will be ingested. ' +
-          'Please add configuration under the gitlabOrg key.',
-      );
-    }
-
-    return new GitLabOrgEntityProvider({
+    const result = new GitLabOrgEntityProvider({
       id: options.id,
+      targets: [options.target].flat(),
+      client: new GitLabClient({
+        integrations,
+        logger: options.logger,
+      }),
       logger: options.logger,
-      integrations,
-      providerConfigs,
+      userTransformer: options.userTransformer,
+      groupTransformer: options.groupTransformer,
     });
+
+    result.schedule(options.schedule);
+
+    return result;
   }
 
   constructor(
-    private options: {
+    private readonly options: {
       id: string;
+      targets: string[];
+      client: GitLabClient;
       logger: Logger;
-      integrations: ScmIntegrations;
-      providerConfigs: GitLabOrgProviderConfig[];
+      userTransformer?: UserTransformer;
+      groupTransformer?: GroupTransformer;
     },
   ) {}
 
   getProviderName(): string {
-    return `gitlab-org:${this.options.id}`;
+    return `GitLabOrgEntityProvider:${this.options.id}`;
   }
 
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
+    await this.scheduleFn?.();
   }
 
-  async read() {
+  async read(options?: { logger?: Logger }) {
     if (!this.connection) {
-      throw new Error(
-        `The ${this.getProviderName()} provider is not initialized, EntityProviderConnection missing.`,
+      throw new Error(`${this.getProviderName()} not initialized`);
+    }
+
+    const logger = options?.logger ?? this.options.logger;
+
+    const entities = new Array<Entity>();
+    for (const target of this.options.targets) {
+      await this.readTarget(target, logger, entities);
+    }
+
+    await this.connection.applyMutation({
+      type: 'full',
+      entities: entities.map(entity => ({
+        locationKey: `gitlab-org-provider:${this.options.id}`,
+        entity: entity,
+      })),
+    });
+  }
+
+  private async readTarget(target: string, logger: Logger, output: Entity[]) {
+    try {
+      logger.info(`Reading users and groups from ${target}`);
+
+      const users = await readUsers(this.options.client, target, {
+        userTransformer: this.options.userTransformer,
+      });
+      const groups = await readGroups(this.options.client, target, {
+        userTransformer: this.options.userTransformer,
+        groupTransformer: this.options.groupTransformer,
+      });
+
+      logger.info(
+        `Read ${users.length} users and ${groups.length} groups from ${target}`,
       );
-    }
-    const providers = groupByIntegrationConfig(
-      this.options.integrations.gitlab.byUrl,
-      this.options.providerConfigs,
-    );
-    for (const [clientConfig, providerConfigs] of providers) {
-      for (const config of providerConfigs) {
-        const client = new GitLabClient({
-          logger: this.options.logger,
-          config: clientConfig,
-        });
 
-        if (config.users.ingest) {
-          this.options.logger.debug(`Ingesting users from ${config.target}`);
-          await readUsers(client, config.target, {});
-        }
-
-        if (config.groups.ingest) {
-          this.options.logger.debug(`Ingesting groups from ${config.target}`);
-          await getGroups(client, '', config.groups.delimiter);
-        }
-      }
+      output.push(...users);
+      output.push(...groups);
+    } catch (e) {
+      logger.warn(`Failed to read ${target}, ${stringifyError(e)}`);
+      return;
     }
+  }
+
+  private schedule(schedule: GitLabOrgEntityProviderOptions['schedule']) {
+    if (schedule === 'manual') {
+      return;
+    }
+
+    this.scheduleFn = async () => {
+      const id = `${this.getProviderName()}:refresh`;
+      await schedule.run({
+        id,
+        fn: async () => {
+          const logger = this.options.logger.child({
+            class: GitLabOrgEntityProvider.prototype.constructor.name,
+            taskId: id,
+            taskInstanceId: uuid.v4(),
+          });
+
+          try {
+            await this.read({ logger });
+          } catch (error) {
+            logger.error(error);
+          }
+        },
+      });
+    };
   }
 }

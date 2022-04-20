@@ -15,6 +15,7 @@
  */
 
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
+import { GitLabOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -24,7 +25,20 @@ export default async function createPlugin(
 ): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
   builder.addProcessor(new ScaffolderEntitiesProcessor());
+  builder.addEntityProvider(
+    GitLabOrgEntityProvider.fromConfig(env.config, {
+      id: 'a',
+      target: 'https://gitlab.com/backstage-test-imports', // 'https://gitlab.com/backstage-test-imports/subgroup1',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        initialDelay: { seconds: 3 },
+        frequency: { seconds: 1000 },
+        timeout: { seconds: 30 },
+      }),
+    }),
+  );
   const { processingEngine, router } = await builder.build();
   await processingEngine.start();
+
   return router;
 }

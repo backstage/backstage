@@ -13,99 +13,69 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-
 import { GitLabOrgEntityProvider } from './GitLabOrgEntityProvider';
-import { readUsers, getGroups } from './lib';
-
-jest.mock('./lib', () => {
-  const actualGitLab = jest.requireActual('./lib');
-  return {
-    ...actualGitLab,
-    readUsers: jest.fn(),
-    getInstanceUsers: jest.fn(),
-    getGroups: jest.fn(),
-  };
-});
-
-function mockConfig() {
-  return new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.example.com',
-          token: 'test-token',
-          apiBaseUrl: 'https://gitlab.example.com/api/v4',
-        },
-        {
-          host: 'gitlab.com',
-          token: 'test-token',
-        },
-      ],
-    },
-    gitlabOrg: {
-      providers: [
-        {
-          target: 'https://gitlab.example.com',
-        },
-        {
-          target: 'https://gitlab.com/group',
-        },
-      ],
-    },
-  });
-}
+import { GitLabClient, readGroups, readUsers } from './lib';
 
 describe('GitLabOrgEntityProvider', () => {
+  const logger = getVoidLogger();
+  const mockClient = {
+    listProjects: jest.fn(),
+    listGroups: jest.fn(),
+    listUsers: jest.fn(),
+  };
+  const client = mockClient as unknown as GitLabClient;
+
   describe('getProviderName', () => {
     it('should provide its suffixed name', () => {
-      const processor = GitLabOrgEntityProvider.fromConfig(mockConfig(), {
+      const processor = new GitLabOrgEntityProvider({
         id: 'test',
-        logger: getVoidLogger(),
+        targets: [],
+        client,
+        logger,
       });
-
-      expect(processor.getProviderName()).toEqual('gitlab-org:test');
-    });
-  });
-
-  describe('fromConfig', () => {
-    it('should error if gitlab org provider config is missing', () => {
-      expect(() => {
-        GitLabOrgEntityProvider.fromConfig(new ConfigReader({}), {
-          id: 'test',
-          logger: getVoidLogger(),
-        });
-      }).toThrowError();
+      expect(processor.getProviderName()).toEqual(
+        'GitLabOrgEntityProvider:test',
+      );
     });
   });
 
   describe('read', () => {
-    it('missing connection should error', async () => {
-      const provider = GitLabOrgEntityProvider.fromConfig(mockConfig(), {
+    it('should pass along client errors', async () => {
+      const provider = new GitLabOrgEntityProvider({
         id: 'test',
-        logger: getVoidLogger(),
+        targets: [],
+        client,
+        logger,
       });
-      await expect(provider.read()).rejects.toThrowError();
+      await provider.connect({
+        applyMutation: jest.fn(),
+      } as any);
+      mockClient.listGroups.mockRejectedValue('BOO');
+      await expect(provider.read()).rejects.toThrowError('BOO');
     });
 
     it('should handle targets with user ingestion enabled', async () => {
-      const provider = GitLabOrgEntityProvider.fromConfig(mockConfig(), {
+      const provider = new GitLabOrgEntityProvider({
         id: 'test',
-        logger: getVoidLogger(),
+        targets: [],
+        client,
+        logger,
       });
       await provider.connect({
         applyMutation: jest.fn(),
       });
-
       await provider.read();
       expect(readUsers).toBeCalled();
     });
 
     it('should handle targets with group ingestion enabled', async () => {
-      const provider = GitLabOrgEntityProvider.fromConfig(mockConfig(), {
+      const provider = new GitLabOrgEntityProvider({
         id: 'test',
-        logger: getVoidLogger(),
+        targets: [],
+        client,
+        logger,
       });
       const mockApplyMutation = jest.fn();
       await provider.connect({
@@ -113,7 +83,7 @@ describe('GitLabOrgEntityProvider', () => {
       });
 
       await provider.read();
-      expect(getGroups).toBeCalled();
+      expect(readGroups).toBeCalled();
     });
   });
 });

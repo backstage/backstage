@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import fetch, { RequestInit, Response } from 'node-fetch';
-import { merge } from 'lodash';
+import { InputError } from '@backstage/errors';
 import {
   getGitLabRequestOptions,
-  GitLabIntegrationConfig,
+  GitLabIntegration,
+  ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { merge } from 'lodash';
+import fetch, { RequestInit, Response } from 'node-fetch';
 import { Logger } from 'winston';
+import {
+  GitLabProjectResponse,
+  GitLabGroupResponse,
+  GitLabUserResponse,
+} from './types';
+import { parseGroupUrl } from './url';
 
 export type ListOptions = {
   [key: string]: string | number | boolean | undefined;
@@ -35,63 +43,134 @@ export type PagedResponse<T> = {
 };
 
 export class GitLabClient {
-  readonly baseUrl: string;
-  private readonly config: GitLabIntegrationConfig;
-  private readonly logger: Logger;
+  constructor(
+    private readonly options: {
+      integrations: ScmIntegrationRegistry;
+      logger: Logger;
+    },
+  ) {}
 
-  constructor(options: { config: GitLabIntegrationConfig; logger: Logger }) {
-    this.config = options.config;
-    this.logger = options.logger;
-    this.baseUrl = options.config.baseUrl;
-  }
+  listProjects(
+    targetUrl: string,
+    options?: {
+      last_activity_after?: string;
+    },
+  ): AsyncGenerator<GitLabProjectResponse> {
+    const integration = this.getIntegration(targetUrl);
 
-  /**
-   * Indicates whether the client is for a SaaS or self managed GitLab instance.
-   */
-  isSelfManaged(): boolean {
-    return this.config.host !== 'gitlab.com';
-  }
-
-  async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {
-    if (options?.group) {
+    // If the target URL is a group, return the projects exposed by that group
+    const groupFullPath = parseGroupUrl(targetUrl, integration.config.baseUrl);
+    if (groupFullPath) {
       return this.pagedRequest(
-        `/groups/${encodeURIComponent(options?.group)}/projects`,
+        `/groups/${encodeURIComponent(groupFullPath)}/projects`,
+        integration,
         {
-          ...options,
+          per_page: 100,
           include_subgroups: true,
+          ...(options?.last_activity_after && {
+            last_activity_after: options.last_activity_after,
+          }),
         },
       );
     }
 
-    return this.pagedRequest(`/projects`, options);
+    // Otherwise, list all projects on the instance
+    return this.pagedRequest('/projects', integration, {
+      per_page: 100,
+      ...(options?.last_activity_after && {
+        last_activity_after: options.last_activity_after,
+      }),
+    });
+  }
+
+  listGroups(targetUrl: string): AsyncGenerator<GitLabGroupResponse> {
+    const integration = this.getIntegration(targetUrl);
+
+    // If the target URL points to a group, return that group and its descendants
+    const groupFullPath = parseGroupUrl(targetUrl, integration.config.baseUrl);
+    if (groupFullPath) {
+      return this.pagedRequest(
+        `/groups/${encodeURIComponent(groupFullPath)}/subgroups`,
+        integration,
+        { per_page: 100 },
+      );
+    }
+
+    // If the target URL just points to the instance, return all groups
+    return this.pagedRequest('/groups', integration, { per_page: 100 });
+  }
+
+  listUsers(
+    targetUrl: string,
+    options?: { inherited?: boolean; blocked?: boolean },
+  ): AsyncGenerator<GitLabUserResponse> {
+    const integration = this.getIntegration(targetUrl);
+
+    // If it is a group URL, list only the members of that group
+    const groupFullPath = parseGroupUrl(targetUrl, integration.config.baseUrl);
+    if (groupFullPath) {
+      // TODO(minnsoe): perform a second /users/:id request to enrich and match instance users
+      const inherited = options?.inherited ? '/all' : '';
+      return this.pagedRequest(
+        `/groups/${encodeURIComponent(groupFullPath)}/members${inherited}`,
+        integration,
+        {
+          per_page: 100,
+          ...(options?.blocked && { blocked: true }),
+        },
+      );
+    }
+
+    // Otherwise, list the users of the entire instance
+    if (integration.config.host === 'gitlab.com') {
+      throw new Error(
+        'Getting all GitLab instance users is only supported for self-managed hosts, not public gitlab.com.',
+      );
+    }
+    return this.pagedRequest('/users', integration, {
+      active: true,
+      per_page: 100,
+    });
   }
 
   /**
-   * Performs a request against a given paginated GitLab endpoint.
+   * Performs a series of requests against a given paginated GitLab endpoint, to
+   * get its full result set.
    *
    * This method may be used to perform authenticated REST calls against any
-   * paginated GitLab endpoint which uses X-NEXT-PAGE headers. The return value
-   * can be be used with the {@link paginated} async-generator function to yield
-   * each item from the paged request.
+   * paginated GitLab endpoint which uses X-NEXT-PAGE headers.
    *
-   * @see {@link paginated}
    * @param endpoint - The request endpoint, e.g. /projects.
-   * @param options - Request queryString options which may also include page variables.
+   * @param integration - The GitLab integration that we're communicating with
+   * @param options - Request queryString options.
    */
-  async pagedRequest<T = any>(
+  private async *pagedRequest<T = unknown>(
     endpoint: string,
+    integration: GitLabIntegration,
     options?: ListOptions,
-  ): Promise<PagedResponse<T>> {
-    const queryString = listOptionsToQueryString(options);
-    const response = await this.request(`${endpoint}${queryString}`);
-    return response.json().then(items => {
+  ): AsyncGenerator<T> {
+    const optionsCopy = { ...options };
+    do {
+      const queryString = listOptionsToQueryString(optionsCopy);
+      const response = await this.request(
+        `${integration.config.apiBaseUrl}${endpoint}${queryString}`,
+        integration,
+      );
       const nextPage = response.headers.get('x-next-page');
-
-      return {
-        items,
-        nextPage: nextPage ? Number(nextPage) : null,
-      } as PagedResponse<any>;
-    });
+      const items = await response.json();
+      if (!Array.isArray(items)) {
+        throw new Error(
+          `Expected array response from GitLab, got ${typeof items}`,
+        );
+      }
+      for (const item of items) {
+        yield item;
+      }
+      if (!nextPage) {
+        break;
+      }
+      optionsCopy.page = Number(nextPage);
+    } while (true);
   }
 
   /**
@@ -99,33 +178,44 @@ export class GitLabClient {
    *
    * This method can be used to perform authenticated calls to any GitLab
    * endpoint against the configured GitLab instance. The underlying response is
-   * returned from fetch without modiication. Request options can be overriden
+   * returned from fetch without modification. Request options can be overridden
    * as they are merged to produce the final values; passed in values take
    * precedence.
    *
    * If a request response is not okay, this method will throw an error.
    *
    * @param endpoint - The request endpoint, e.g. /user.
+   * @param integration - The GitLab integration that we're communicating with
    * @param init - Optional request options which may set or override values.
    */
-  async request(endpoint: string, init?: RequestInit): Promise<Response> {
-    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
-
-    this.logger.debug(`Fetching: ${request.toString()}`);
+  private async request(
+    endpoint: string,
+    integration: GitLabIntegration,
+    init?: RequestInit,
+  ): Promise<Response> {
+    this.options.logger.debug(`Fetching: ${endpoint}`);
     const response = await fetch(
-      request.toString(),
-      merge(getGitLabRequestOptions(this.config), init),
+      endpoint,
+      merge(getGitLabRequestOptions(integration.config), init),
     );
 
     if (!response.ok) {
       throw new Error(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-          response.status
-        } - ${response.statusText}`,
+        `Unexpected response when fetching ${endpoint}. Expected 200 but got ${response.status} - ${response.statusText}`,
       );
     }
 
     return response;
+  }
+
+  private getIntegration(url: string): GitLabIntegration {
+    const integration = this.options.integrations.gitlab.byUrl(url);
+    if (!integration) {
+      throw new InputError(
+        `No GitLab integration found for URL ${url}, Please add a configuration entry for it under integrations.gitlab.`,
+      );
+    }
+    return integration;
   }
 }
 
@@ -147,31 +237,5 @@ function listOptionsToQueryString(options?: ListOptions): string {
     }
   }
   const query = search.toString();
-  return query === '' ? '' : `?${query}`;
-}
-
-/**
- * Advances through each page and provides each item from a paginated request.
- *
- * The async generator function yields each item from repeated calls to the
- * provided request function. The generator walks through each available page by
- * setting the page key in the options passed into the request function and
- * making repeated calls until there are no more pages.
- *
- * @see {@link pagedRequest}
- * @param request - Function which returns a PagedResponse to walk through.
- * @param options - Initial ListOptions for the request function.
- */
-export async function* paginated<T = any>(
-  request: (options: ListOptions) => Promise<PagedResponse<T>>,
-  options: ListOptions,
-) {
-  let res;
-  do {
-    res = await request(options);
-    options.page = res.nextPage;
-    for (const item of res.items) {
-      yield item;
-    }
-  } while (res.nextPage);
+  return query ? `?${query}` : '';
 }
