@@ -25,6 +25,7 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
+import CardMembershipIcon from '@material-ui/icons/CardMembership';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -102,22 +103,22 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           icon={GroupIcon}
         />
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-        <SidebarItem icon={ExtensionIcon} text="Catalog">
+        <SidebarItem icon={CardMembershipIcon} text="Catalog">
           <SidebarSubmenu title="Catalog">
             <SidebarSubmenuItem
-              icon={ExtensionIcon}
+              icon={CardMembershipIcon}
               to="catalog"
-              title="Test"
+              title="Catalog One"
             />
             <SidebarSubmenuItem
-              icon={ExtensionIcon}
+              icon={CardMembershipIcon}
               to="catalog"
-              title="Test1"
+              title="Catalog Two"
             />
             <SidebarSubmenuItem
-              icon={ExtensionIcon}
+              icon={CardMembershipIcon}
               to="catalog"
-              title="Test2"
+              title="Catalog Three"
             />
           </SidebarSubmenu>
         </SidebarItem>
