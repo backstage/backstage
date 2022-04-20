@@ -32,8 +32,14 @@ import { PAGE_EDIT_LINK_SELECTOR } from './constants';
 const resolveBlobUrl = (url: string, type: string) => {
   if (type === 'github') {
     return replaceGitHubUrlType(url, 'blob');
+  } else if (type === 'gitlab') {
+    return replaceGitLabUrlType(url, 'blob');
   }
-  return replaceGitLabUrlType(url, 'blob');
+  // eslint-disable-next-line no-console
+  console.error(
+    `Invalid SCM type ${type} found in ReportIssue addon for URL ${url}!`,
+  );
+  return url;
 };
 
 export const getTitle = (selection: Selection) => {
