@@ -24,6 +24,7 @@ import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import { MicrosoftGraphClient } from './client';
 import {
+  MICROSOFT_EMAIL_ANNOTATION,
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
   MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
@@ -57,6 +58,7 @@ export async function defaultUserTransformer(
     metadata: {
       name,
       annotations: {
+        [MICROSOFT_EMAIL_ANNOTATION]: user.mail!,
         [MICROSOFT_GRAPH_USER_ID_ANNOTATION]: user.id!,
       },
     },

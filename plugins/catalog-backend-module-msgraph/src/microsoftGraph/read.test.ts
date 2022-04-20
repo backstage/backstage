@@ -96,6 +96,7 @@ describe('read microsoft graph', () => {
           metadata: {
             annotations: {
               'graph.microsoft.com/user-id': 'userid',
+              'microsoft.com/email': 'user.name@example.com',
             },
             name: 'user.name_example.com',
           },
@@ -146,6 +147,7 @@ describe('read microsoft graph', () => {
           metadata: {
             annotations: {
               'graph.microsoft.com/user-id': 'userid',
+              'microsoft.com/email': 'user.name@example.com',
             },
             name: 'user.name_example.com',
           },
@@ -263,6 +265,7 @@ describe('read microsoft graph', () => {
           metadata: {
             annotations: {
               'graph.microsoft.com/user-id': 'userid',
+              'microsoft.com/email': 'user.name@example.com',
             },
             name: 'user.name_example.com',
           },
@@ -339,6 +342,7 @@ describe('read microsoft graph', () => {
           metadata: {
             annotations: {
               'graph.microsoft.com/user-id': 'userid',
+              'microsoft.com/email': 'user.name@example.com',
             },
             name: 'user.name_example.com',
           },
