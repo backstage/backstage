@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ScorecardsOverview } from './ScorecardsOverview';
+export { ScorecardsCard } from './ScorecardsCard';
