@@ -66,16 +66,14 @@ describe('<MarkdownContent />', () => {
     const rendered = await renderWithEffects(
       wrapInTestApp(
         <MarkdownContent
-          content={
-            '```<blockquote>\n May not look like much but got it where it counts.\n </blockquote>\n```'
-          }
+          content="```<blockquote> May not look like much but got it where it counts</blockquote>```"
           dialect="gfm"
           trustedHtml
         />,
       ),
     );
     expect(
-      rendered.getByText('May not look like much but got it where it counts.', {
+      rendered.getByText('May not look like much but got it where it counts', {
         selector: 'blockquote',
       }),
     ).toBeInTheDocument();
