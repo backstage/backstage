@@ -23,8 +23,7 @@ Navigate to your new Backstage application directory. And then to your
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-techdocs
+yarn add --cwd packages/app @backstage/plugin-techdocs
 ```
 
 Once the package has been installed, you need to import the plugin in your app.
@@ -65,8 +64,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-techdocs-backend
+yarn add --cwd packages/backend @backstage/plugin-techdocs-backend
 ```
 
 Create a file called `techdocs.ts` inside `packages/backend/src/plugins/` and
@@ -81,18 +79,16 @@ import {
   Publisher,
 } from '@backstage/plugin-techdocs-backend';
 import Docker from 'dockerode';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  config,
-  discovery,
-  reader,
-}: PluginEnvironment) {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   // Preparers are responsible for fetching source files for documentation.
-  const preparers = await Preparers.fromConfig(config, {
-    logger,
-    reader,
+  const preparers = await Preparers.fromConfig(env.config, {
+    logger: env.logger,
+    reader: env.reader,
   });
 
   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
@@ -100,17 +96,17 @@ export default async function createPlugin({
   const containerRunner = new DockerContainerRunner({ dockerClient });
 
   // Generators are used for generating documentation sites.
-  const generators = await Generators.fromConfig(config, {
-    logger,
+  const generators = await Generators.fromConfig(env.config, {
+    logger: env.logger,
     containerRunner,
   });
 
   // Publisher is used for
   // 1. Publishing generated files to storage
   // 2. Fetching files from storage and passing them to TechDocs frontend.
-  const publisher = await Publisher.fromConfig(config, {
-    logger,
-    discovery,
+  const publisher = await Publisher.fromConfig(env.config, {
+    logger: env.logger,
+    discovery: env.discovery,
   });
 
   // checks if the publisher is working and logs the result
@@ -120,9 +116,10 @@ export default async function createPlugin({
     preparers,
     generators,
     publisher,
-    logger,
-    config,
-    discovery,
+    logger: env.logger,
+    config: env.config,
+    discovery: env.discovery,
+    cache: env.cache,
   });
 }
 ```
@@ -230,7 +227,7 @@ You can do so by including the following lines in the last step of your
 
 ```Dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install mkdocs-techdocs-core==0.2.2
+RUN pip3 install mkdocs-techdocs-core==1.0.1
 ```
 
 Please be aware that the version requirement could change, you need to check our

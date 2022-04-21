@@ -16,4 +16,4 @@
 
 export { createGithubActionsDispatchAction } from './githubActionsDispatch';
 export { createGithubWebhookAction } from './githubWebhook';
-export { OctokitProvider } from './OctokitProvider';
+export { createGithubIssuesLabelAction } from './githubIssuesLabel';

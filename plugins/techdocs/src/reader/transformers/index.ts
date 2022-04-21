@@ -16,6 +16,7 @@
 
 export * from './addBaseUrl';
 export * from './addGitFeedbackLink';
+export * from './addSidebarToggle';
 export * from './rewriteDocLinks';
 export * from './addLinkClickListener';
 export * from './copyToClipboard';

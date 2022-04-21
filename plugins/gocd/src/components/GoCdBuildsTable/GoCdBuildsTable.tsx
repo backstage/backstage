@@ -22,6 +22,7 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import {
   GoCdBuildResult,
   GoCdBuildResultStatus,
+  toBuildResultStatus,
   PipelineHistory,
   Pipeline,
 } from '../../api/gocdApi.model';
@@ -157,23 +158,6 @@ const renderError = (error: Error): JSX.Element => {
   return <Alert severity="error">{error.message}</Alert>;
 };
 
-const toStageStatus = (status: string): GoCdBuildResultStatus => {
-  switch (status.toLocaleLowerCase('en-US')) {
-    case 'passed':
-      return GoCdBuildResultStatus.successful;
-    case 'failed':
-      return GoCdBuildResultStatus.error;
-    case 'aborted':
-      return GoCdBuildResultStatus.aborted;
-    case 'building':
-      return GoCdBuildResultStatus.running;
-    case 'pending':
-      return GoCdBuildResultStatus.pending;
-    default:
-      return GoCdBuildResultStatus.aborted;
-  }
-};
-
 const toBuildResults = (
   entity: Entity,
   builds: Pipeline[],
@@ -185,7 +169,7 @@ const toBuildResults = (
     id: build.counter,
     source: `${entitySourceLocation}/commit/${build.build_cause?.material_revisions[0]?.modifications[0].revision}`,
     stages: build.stages.map(s => ({
-      status: toStageStatus(s.status),
+      status: toBuildResultStatus(s.status),
       text: s.name,
     })),
     buildSlug: `${build.name}/${build.counter}`,
@@ -244,9 +228,11 @@ export const GoCdBuildsTable = (props: GoCdBuildsProps): JSX.Element => {
             search: true,
             searchAutoFocus: true,
             debounceInterval: 800,
-            paging: false,
+            paging: true,
+            padding: 'dense',
+            pageSizeOptions: [5, 10, 20, 50],
             showFirstLastPageButtons: false,
-            pageSize: 10,
+            pageSize: 20,
           }}
           columns={columns}
           data={

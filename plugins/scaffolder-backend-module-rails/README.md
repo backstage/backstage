@@ -13,9 +13,9 @@ You need to configure the action in your backend:
 
 ## From your Backstage root directory
 
-```
-cd packages/backend
-yarn add @backstage/plugin-scaffolder-backend-module-rails
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-rails
 ```
 
 Configure the action (you can check
@@ -26,26 +26,26 @@ see all options):
 const actions = [
   createFetchRailsAction({
     integrations,
-    reader,
+    reader: env.reader,
     containerRunner,
   }),
 ];
 
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
   actions,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 
 After that you can use the action in your template:
 
 ```yaml
-apiVersion: backstage.io/v1beta2
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: rails-demo
@@ -171,10 +171,10 @@ spec:
       input:
         url: ./template
         values:
-          name: '{{ parameters.name }}'
-          owner: '{{ parameters.owner }}'
-          system: '{{ parameters.system }}'
-          railsArguments: '{{ json parameters.railsArguments }}'
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+          system: ${{ parameters.system }}
+          railsArguments: ${{ parameters.railsArguments }}
 
     - name: Write Catalog information
       action: catalog:write
@@ -183,33 +183,34 @@ spec:
           apiVersion: 'backstage.io/v1alpha1'
           kind: Component
           metadata:
-            name: '{{ parameters.name }}'
+            name: ${{ parameters.name }}
             annotations:
-              github.com/project-slug: '{{ projectSlug parameters.repoUrl }}'
+              github.com/project-slug: ${{ parameters.repoUrl | projectSlug }}
           spec:
             type: service
             lifecycle: production
-            owner: '{{ parameters.owner }}'
+            owner: ${{ parameters.owner }}
 
     - id: publish
-      if: '{{ not parameters.dryRun }}'
+      if: ${{ parameters.dryRun !== true }}
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
-        description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        allowedHosts:
+          - github.com
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
 
     - id: register
-      if: '{{ not parameters.dryRun }}'
+      if: ${{ parameters.dryRun !== true }}
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
     - name: Results
-      if: '{{ parameters.dryRun }}'
+      if: ${{ parameters.dryRun }}
       action: debug:log
       input:
         listWorkspace: true
@@ -217,10 +218,10 @@ spec:
   output:
     links:
       - title: Repository
-        url: '{{ steps.publish.output.remoteUrl }}'
+        url: ${{ steps.publish.output.remoteUrl }}
       - title: Open in catalog
-        icon: 'catalog'
-        entityRef: '{{ steps.register.output.entityRef }}'
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
 ```
 
 ### What you need to run that action
@@ -240,8 +241,8 @@ steps:
       url: ./template
       imageName: repository/rails:tag
       values:
-        name: '{{ parameters.name }}'
-        owner: '{{ parameters.owner }}'
-        system: '{{ parameters.system }}'
-        railsArguments: '{{ json parameters.railsArguments }}'
+        name: ${{ parameters.name }}
+        owner: ${{ parameters.owner }}
+        system: ${{ parameters.system }}
+        railsArguments: ${{ parameters.railsArguments }}
 ```

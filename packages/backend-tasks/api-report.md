@@ -7,21 +7,15 @@ import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { Config } from '@backstage/config';
 import { DatabaseManager } from '@backstage/backend-common';
 import { Duration } from 'luxon';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
-  scheduleTask(task: TaskDefinition): Promise<void>;
-}
-
-// @public
-export interface TaskDefinition {
-  fn: TaskFunction;
-  frequency: Duration;
-  id: string;
-  initialDelay?: Duration;
-  signal?: AbortSignal_2;
-  timeout: Duration;
+  createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
+  scheduleTask(
+    task: TaskScheduleDefinition & TaskInvocationDefinition,
+  ): Promise<void>;
+  triggerTask(id: string): Promise<void>;
 }
 
 // @public
@@ -30,15 +24,38 @@ export type TaskFunction =
   | (() => void | Promise<void>);
 
 // @public
+export interface TaskInvocationDefinition {
+  fn: TaskFunction;
+  id: string;
+  signal?: AbortSignal_2;
+}
+
+// @public
+export interface TaskRunner {
+  run(task: TaskInvocationDefinition): Promise<void>;
+}
+
+// @public
+export interface TaskScheduleDefinition {
+  frequency:
+    | {
+        cron: string;
+      }
+    | Duration;
+  initialDelay?: Duration;
+  timeout: Duration;
+}
+
+// @public
 export class TaskScheduler {
-  constructor(databaseManager: DatabaseManager, logger: Logger_2);
+  constructor(databaseManager: DatabaseManager, logger: Logger);
   forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static fromConfig(
     config: Config,
     options?: {
       databaseManager?: DatabaseManager;
-      logger?: Logger_2;
+      logger?: Logger;
     },
   ): TaskScheduler;
 }

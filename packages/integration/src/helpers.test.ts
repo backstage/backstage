@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BitbucketIntegration } from './bitbucket';
+import { BitbucketServerIntegration } from './bitbucketServer';
 import {
   basicIntegrations,
   defaultScmResolveUrl,
@@ -24,8 +24,11 @@ import {
 describe('basicIntegrations', () => {
   describe('byUrl', () => {
     it('handles hosts without a port', () => {
-      const integration = new BitbucketIntegration({ host: 'host.com' });
-      const integrations = basicIntegrations<BitbucketIntegration>(
+      const integration = new BitbucketServerIntegration({
+        host: 'host.com',
+        apiBaseUrl: 'a',
+      });
+      const integrations = basicIntegrations<BitbucketServerIntegration>(
         [integration],
         i => i.config.host,
       );
@@ -33,8 +36,11 @@ describe('basicIntegrations', () => {
       expect(integrations.byUrl('https://host.com:8080/a')).toBeUndefined();
     });
     it('handles hosts with a port', () => {
-      const integration = new BitbucketIntegration({ host: 'host.com:8080' });
-      const integrations = basicIntegrations<BitbucketIntegration>(
+      const integration = new BitbucketServerIntegration({
+        host: 'host.com:8080',
+        apiBaseUrl: 'a',
+      });
+      const integrations = basicIntegrations<BitbucketServerIntegration>(
         [integration],
         i => i.config.host,
       );

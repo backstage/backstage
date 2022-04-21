@@ -24,7 +24,6 @@ export const entityStub: { entity: Entity } = {
       name: 'sample-service',
       description: 'Sample service',
       uid: 'g0h33dd9-56h7-835b-b63v-7x5da3j64851',
-      generation: 1,
     },
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',

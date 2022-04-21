@@ -169,24 +169,43 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           }
 
           result.completedEntity.metadata.uid = id;
+          let oldRelationSources: Set<string>;
           await this.processingDatabase.transaction(async tx => {
-            await this.processingDatabase.updateProcessedEntity(tx, {
-              id,
-              processedEntity: result.completedEntity,
-              resultHash,
-              errors: errorsString,
-              relations: result.relations,
-              deferredEntities: result.deferredEntities,
-              locationKey,
-            });
+            const { previous } =
+              await this.processingDatabase.updateProcessedEntity(tx, {
+                id,
+                processedEntity: result.completedEntity,
+                resultHash,
+                errors: errorsString,
+                relations: result.relations,
+                deferredEntities: result.deferredEntities,
+                locationKey,
+              });
+            oldRelationSources = new Set(
+              previous.relations.map(r => r.source_entity_ref),
+            );
           });
+
+          const newRelationSources = new Set<string>(
+            result.relations.map(relation =>
+              stringifyEntityRef(relation.source),
+            ),
+          );
 
           const setOfThingsToStitch = new Set<string>([
             stringifyEntityRef(result.completedEntity),
-            ...result.relations.map(relation =>
-              stringifyEntityRef(relation.source),
-            ),
           ]);
+          newRelationSources.forEach(r => {
+            if (!oldRelationSources.has(r)) {
+              setOfThingsToStitch.add(r);
+            }
+          });
+          oldRelationSources!.forEach(r => {
+            if (!newRelationSources.has(r)) {
+              setOfThingsToStitch.add(r);
+            }
+          });
+
           await this.stitcher.stitch(setOfThingsToStitch);
 
           track.markSuccessfulWithChanges(setOfThingsToStitch.size);

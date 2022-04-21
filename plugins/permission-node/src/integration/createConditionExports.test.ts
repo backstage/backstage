@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 import { createConditionExports } from './createConditionExports';
+import { createPermissionRule } from './createPermissionRule';
 
 const testIntegration = () =>
   createConditionExports({
     pluginId: 'test-plugin',
     resourceType: 'test-resource',
     rules: {
-      testRule1: {
+      testRule1: createPermissionRule({
         name: 'testRule1',
         description: 'Test rule 1',
+        resourceType: 'test-resource',
         apply: jest.fn(
           (_resource: any, _firstParam: string, _secondParam: number) => true,
         ),
@@ -32,16 +37,17 @@ const testIntegration = () =>
           query: 'testRule1',
           params: [firstParam, secondParam],
         })),
-      },
-      testRule2: {
+      }),
+      testRule2: createPermissionRule({
         name: 'testRule2',
         description: 'Test rule 2',
-        apply: jest.fn((_firstParam: object) => false),
+        resourceType: 'test-resource',
+        apply: jest.fn((_resource: any, _firstParam: object) => false),
         toQuery: jest.fn((firstParam: object) => ({
           query: 'testRule2',
           params: [firstParam],
         })),
-      },
+      }),
     },
   });
 
@@ -52,11 +58,13 @@ describe('createConditionExports', () => {
 
       expect(conditions.testRule1('a', 1)).toEqual({
         rule: 'testRule1',
+        resourceType: 'test-resource',
         params: ['a', 1],
       });
 
       expect(conditions.testRule2({ baz: 'quux' })).toEqual({
         rule: 'testRule2',
+        resourceType: 'test-resource',
         params: [{ baz: 'quux' }],
       });
     });
@@ -64,18 +72,35 @@ describe('createConditionExports', () => {
 
   describe('createPolicyDecisions', () => {
     it('wraps conditions in an object with resourceType and pluginId', () => {
-      const { createPolicyDecision } = testIntegration();
+      const { createConditionalDecision } = testIntegration();
+      const testPermission = createPermission({
+        name: 'test.permission',
+        attributes: {},
+        resourceType: 'test-resource',
+      });
 
       expect(
-        createPolicyDecision({
-          allOf: [{ rule: 'testRule1', params: ['a', 1] }],
+        createConditionalDecision(testPermission, {
+          allOf: [
+            {
+              rule: 'testRule1',
+              resourceType: 'test-resource',
+              params: ['a', 1],
+            },
+          ],
         }),
       ).toEqual({
         result: AuthorizeResult.CONDITIONAL,
         pluginId: 'test-plugin',
         resourceType: 'test-resource',
         conditions: {
-          allOf: [{ rule: 'testRule1', params: ['a', 1] }],
+          allOf: [
+            {
+              rule: 'testRule1',
+              resourceType: 'test-resource',
+              params: ['a', 1],
+            },
+          ],
         },
       });
     });

@@ -102,8 +102,7 @@ Install in your app’s package folder (`<root>/packages/app`) with:
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-<plugin-name>
+yarn add --cwd packages/app @backstage/plugin-<plugin-name>
 ```
 
 After that, you inject the plugin into the application where you want it to be exposed. Please read the documentation for the specific plugin you are installing for more information.

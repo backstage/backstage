@@ -1,4 +1,7 @@
 {
+  "releases": {
+    "Release Notes": ["releases/v1.1.0", "releases/v1.0.0"]
+  },
   "docs": {
     "Overview": [
       "overview/what-is-backstage",
@@ -7,7 +10,7 @@
       "overview/vision",
       "overview/background",
       "overview/adopting",
-      "overview/stability-index",
+      "overview/versioning-policy",
       "overview/support",
       "overview/glossary",
       "overview/logos"
@@ -22,7 +25,8 @@
         "label": "App configuration",
         "ids": [
           "getting-started/configure-app-with-plugins",
-          "getting-started/app-custom-theme"
+          "getting-started/app-custom-theme",
+          "getting-started/homepage"
         ]
       },
       "getting-started/keeping-backstage-updated",
@@ -151,11 +155,20 @@
       },
       {
         "type": "subcategory",
+        "label": "Gerrit",
+        "ids": [
+          "integrations/gerrit/locations",
+          "integrations/gerrit/discovery"
+        ]
+      },
+      {
+        "type": "subcategory",
         "label": "GitHub",
         "ids": [
           "integrations/github/locations",
           "integrations/github/discovery",
-          "integrations/github/org"
+          "integrations/github/org",
+          "integrations/github/github-apps"
         ]
       },
       {
@@ -193,7 +206,6 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/github-apps",
           "plugins/url-reader"
         ]
       },
@@ -272,6 +284,7 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-plugin",
+      "tutorials/package-role-migration",
       "tutorials/migrating-away-from-core",
       "tutorials/configuring-plugin-databases",
       "tutorials/switching-sqlite-postgres",

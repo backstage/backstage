@@ -1,7 +1,7 @@
 {
   "name": "@backstage/catalog-model",
   "description": "Types and validators that help describe the model of a Backstage Catalog",
-  "version": "0.9.10",
+  "version": "1.0.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -13,6 +13,9 @@
     "types": "dist/index.d.ts",
     "alphaTypes": "dist/index.alpha.d.ts"
   },
+  "backstage": {
+    "role": "common-library"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
@@ -23,28 +26,26 @@
     "backstage"
   ],
   "scripts": {
-    "build": "backstage-cli build --experimental-type-build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "build": "backstage-cli package build --experimental-type-build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean"
   },
   "dependencies": {
-    "@backstage/config": "^0.1.13",
-    "@backstage/errors": "^0.2.0",
-    "@backstage/types": "^0.1.1",
-    "@types/json-schema": "^7.0.5",
-    "@types/yup": "^0.29.13",
-    "ajv": "^7.0.3",
+    "@backstage/config": "^1.0.0",
+    "@backstage/errors": "^1.0.0",
+    "@backstage/types": "^1.0.0",
+    "ajv": "^8.10.0",
     "json-schema": "^0.4.0",
     "lodash": "^4.17.21",
-    "uuid": "^8.0.0",
-    "yup": "^0.32.9"
+    "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.13.1-next.0",
+    "@backstage/cli": "^0.17.0",
     "@types/jest": "^26.0.7",
+    "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.151",
     "yaml": "^1.9.2"
   },

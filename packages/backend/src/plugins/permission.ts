@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  PermissionPolicy,
+  AuthorizeResult,
   PolicyDecision,
-} from '@backstage/plugin-permission-node';
+} from '@backstage/plugin-permission-common';
+import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -35,14 +35,14 @@ class AllowAllPermissionPolicy implements PermissionPolicy {
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const { logger, discovery } = env;
   return await createRouter({
-    logger,
-    discovery,
+    config: env.config,
+    logger: env.logger,
+    discovery: env.discovery,
     policy: new AllowAllPermissionPolicy(),
-    identity: new IdentityClient({
-      discovery,
-      issuer: await discovery.getExternalBaseUrl('auth'),
+    identity: IdentityClient.create({
+      discovery: env.discovery,
+      issuer: await env.discovery.getExternalBaseUrl('auth'),
     }),
   });
 }

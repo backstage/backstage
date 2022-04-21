@@ -57,10 +57,24 @@ public GitHub, for which we can infer them). The `apiBaseUrl` will always be
 preferred over the other if a `token` is given, otherwise `rawBaseUrl` will be
 preferred.
 
+### Token scopes
+
+When creating a personal access token on GitHub, you must select scopes to
+define the level of access for the token. The scopes required vary depending on
+your use of the integration:
+
+- Reading software components:
+  - `repo`
+- Reading organization data:
+  - `read:org`
+  - `read:user`
+  - `user:email`
+- Publishing software templates:
+  - `repo`
+  - `workflow` (if templates include GitHub workflows)
+
 ## Authentication with GitHub Apps
 
-Alternatively, Backstage can use GitHub Apps for backend authentication. This
-has higher rate limits, and a clearer authorization model. See [github-apps] for
+Alternatively for GitHub organizations, Backstage can use GitHub Apps for backend authentication. This
+has higher rate limits, and a clearer authorization model. See [github-apps](github-apps.md) for
 how to set this up.
-
-[github-apps]: ../../plugins/github-apps.md

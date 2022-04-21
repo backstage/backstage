@@ -35,9 +35,7 @@ const mockEntity = {
 
 describe('TechDocsStorageClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/techdocs';
-  const configApi = new MockConfigApi({
-    techdocs: { requestUrl: 'http://backstage:9191/api/techdocs' },
-  });
+  const configApi = new MockConfigApi({});
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
   const identityApi: jest.Mocked<IdentityApi> = {
     getCredentials: jest.fn(),
@@ -223,7 +221,7 @@ describe('TechDocsStorageClient', () => {
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop
-      await new Promise(setImmediate);
+      await new Promise(r => setTimeout(r));
 
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;
@@ -250,7 +248,7 @@ describe('TechDocsStorageClient', () => {
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
       // flush the event loop
-      await new Promise(setImmediate);
+      await new Promise(r => setTimeout(r));
 
       const instance = MockedEventSource.mock
         .instances[0] as jest.Mocked<EventSource>;

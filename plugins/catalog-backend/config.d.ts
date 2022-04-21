@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/config';
-
 export interface Config {
   /**
    * Configuration options for the catalog plugin.
@@ -107,84 +105,5 @@ export interface Config {
         allow: Array<string>;
       }>;
     }>;
-
-    /**
-     * List of processor-specific options and attributes
-     */
-    processors?: {
-      /**
-       * GithubOrgReaderProcessor configuration
-       *
-       * @deprecated Configure a GitHub integration instead.
-       */
-      githubOrg?: {
-        /**
-         * The configuration parameters for each single GitHub org provider.
-         */
-        providers: Array<{
-          /**
-           * The prefix of the target that this matches on, e.g.
-           * "https://github.com", with no trailing slash.
-           */
-          target: string;
-          /**
-           * The base URL of the API of this provider, e.g.
-           * "https://api.github.com", with no trailing slash.
-           *
-           * May be omitted specifically for GitHub; then it will be deduced.
-           */
-          apiBaseUrl?: string;
-          /**
-           * The authorization token to use for requests to this provider.
-           *
-           * If no token is specified, anonymous access is used.
-           *
-           * @visibility secret
-           */
-          token?: string;
-        }>;
-      };
-
-      /**
-       * GithubMultiOrgReaderProcessor configuration
-       */
-      githubMultiOrg?: {
-        /**
-         * The configuration parameters for each GitHub org to process.
-         */
-        orgs: Array<{
-          /**
-           * The name of the GitHub org to process.
-           */
-          name: string;
-          /**
-           * The namespace of the group created for this org.
-           *
-           * Defaults to org name if omitted.
-           */
-          groupNamespace?: string;
-
-          /**
-           * The namespace of the users created from this org.
-           *
-           * Defaults to empty string if omitted.
-           */
-          userNamespace?: string;
-        }>;
-      };
-
-      /**
-       * AwsOrganizationCloudAccountProcessor configuration
-       */
-      awsOrganization?: {
-        provider: {
-          /**
-           * The role to be assumed by this processor
-           *
-           */
-          roleArn?: string;
-        };
-      };
-    };
   };
 }

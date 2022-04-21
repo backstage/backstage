@@ -7,4 +7,3 @@ backend:
 
 techdocs:
   builder: 'external'
-  requestUrl: http://localhost:3000/api

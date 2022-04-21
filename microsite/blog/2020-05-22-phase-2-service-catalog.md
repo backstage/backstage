@@ -1,5 +1,6 @@
 ---
-title: 'Starting Phase 2: The Service Catalog'
+# prettier-ignore
+title: "Starting Phase 2: The Service Catalog"
 author: Stefan Ålund, Spotify
 authorURL: http://twitter.com/stalund
 authorImageURL: https://pbs.twimg.com/profile_images/121166861/6919c047c0d0edaace78c3009b28e917-user-full-200-130.generated_400x400.jpg

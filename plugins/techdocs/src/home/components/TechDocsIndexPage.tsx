@@ -16,10 +16,10 @@
 
 import React from 'react';
 import { useOutlet } from 'react-router';
-import { LegacyTechDocsHome } from './LegacyTechDocsHome';
+import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 
 export const TechDocsIndexPage = () => {
   const outlet = useOutlet();
 
-  return outlet || <LegacyTechDocsHome />;
+  return outlet || <DefaultTechDocsHome />;
 };

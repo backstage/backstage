@@ -4,14 +4,17 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AuthorizeDecision } from '@backstage/plugin-permission-common';
-import { AuthorizeQuery } from '@backstage/plugin-permission-common';
+import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
+import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { ComponentProps } from 'react';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
+import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ReactElement } from 'react';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Route } from 'react-router';
 
 // @public (undocumented)
@@ -24,7 +27,9 @@ export type AsyncPermissionResult = {
 // @public
 export class IdentityPermissionApi implements PermissionApi {
   // (undocumented)
-  authorize(request: AuthorizeQuery): Promise<AuthorizeDecision>;
+  authorize(
+    request: AuthorizePermissionRequest,
+  ): Promise<AuthorizePermissionResponse>;
   // (undocumented)
   static create(options: {
     config: Config;
@@ -35,7 +40,9 @@ export class IdentityPermissionApi implements PermissionApi {
 
 // @public
 export type PermissionApi = {
-  authorize(request: AuthorizeQuery): Promise<AuthorizeDecision>;
+  authorize(
+    request: EvaluatePermissionRequest,
+  ): Promise<EvaluatePermissionResponse>;
 };
 
 // @public
@@ -44,17 +51,31 @@ export const permissionApiRef: ApiRef<PermissionApi>;
 // @public
 export const PermissionedRoute: (
   props: ComponentProps<typeof Route> & {
-    permission: Permission;
-    resourceRef?: string;
     errorComponent?: ReactElement | null;
-  },
+  } & (
+      | {
+          permission: Exclude<Permission, ResourcePermission>;
+          resourceRef?: never;
+        }
+      | {
+          permission: ResourcePermission;
+          resourceRef: string | undefined;
+        }
+    ),
 ) => JSX.Element;
 
 // @public
-export const usePermission: (
-  permission: Permission,
-  resourceRef?: string | undefined,
-) => AsyncPermissionResult;
+export function usePermission(
+  input:
+    | {
+        permission: Exclude<Permission, ResourcePermission>;
+        resourceRef?: never;
+      }
+    | {
+        permission: ResourcePermission;
+        resourceRef: string | undefined;
+      },
+): AsyncPermissionResult;
 
 // (No @packageDocumentation comment for this package)
 ```

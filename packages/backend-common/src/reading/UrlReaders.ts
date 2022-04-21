@@ -19,7 +19,10 @@ import { Config } from '@backstage/config';
 import { ReaderFactory, UrlReader } from './types';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 import { AzureUrlReader } from './AzureUrlReader';
+import { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
+import { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
+import { GerritUrlReader } from './GerritUrlReader';
 import { GithubUrlReader } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -81,7 +84,10 @@ export class UrlReaders {
       config,
       factories: factories.concat([
         AzureUrlReader.factory,
+        BitbucketCloudUrlReader.factory,
+        BitbucketServerUrlReader.factory,
         BitbucketUrlReader.factory,
+        GerritUrlReader.factory,
         GithubUrlReader.factory,
         GitlabUrlReader.factory,
         GoogleGcsUrlReader.factory,

@@ -18,6 +18,8 @@ import { JenkinsApiImpl } from './jenkinsApi';
 import jenkins from 'jenkins';
 import { JenkinsInfo } from './jenkinsInfoProvider';
 import { JenkinsBuild, JenkinsProject } from '../types';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 jest.mock('jenkins');
 const mockedJenkinsClient = {
@@ -32,6 +34,7 @@ const mockedJenkinsClient = {
 const mockedJenkins = jenkins as jest.Mocked<any>;
 mockedJenkins.mockReturnValue(mockedJenkinsClient);
 
+const resourceRef = 'component:default/example-component';
 const jobFullName = 'example-jobName/foo';
 const buildNumber = 19;
 const jenkinsInfo: JenkinsInfo = {
@@ -40,8 +43,17 @@ const jenkinsInfo: JenkinsInfo = {
   jobFullName: 'example-jobName',
 };
 
+const fakePermissionApi = {
+  authorize: jest.fn().mockResolvedValue([
+    {
+      result: AuthorizeResult.ALLOW,
+    },
+  ]),
+  authorizeConditional: jest.fn(),
+};
+
 describe('JenkinsApi', () => {
-  const jenkinsApi = new JenkinsApiImpl();
+  const jenkinsApi = new JenkinsApiImpl(fakePermissionApi);
 
   describe('getProjects', () => {
     const project: JenkinsProject = {
@@ -322,7 +334,7 @@ describe('JenkinsApi', () => {
         const result = await jenkinsApi.getProjects(jenkinsInfo);
 
         expect(result).toHaveLength(1);
-        // TODO: I am really just asserting the previous behaviour wth no understanding here.
+        // TODO: I am really just asserting the previous behaviour with no understanding here.
         // In my 2 Jenkins instances, 1 returns a lot of different and confusing BuildData sections and 1 returns none ☹️
         expect(result[0].lastBuild!.source).toEqual({
           branchName: 'master',
@@ -337,6 +349,216 @@ describe('JenkinsApi', () => {
       it('finds test report', async () => {
         mockedJenkinsClient.job.get.mockResolvedValueOnce({
           jobs: [projectWithScmActions],
+        });
+
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].lastBuild!.tests).toEqual({
+          total: 635,
+          passed: 632,
+          skipped: 1,
+          failed: 2,
+          testUrl:
+            'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/testReport/',
+        });
+      });
+    });
+    describe('augmented with null values', () => {
+      const projectWithScmActionsAndNulls: JenkinsProject = {
+        actions: [
+          {},
+          {},
+          {},
+          {},
+          {
+            _class: 'jenkins.scm.api.metadata.ContributorMetadataAction',
+            contributor: 'testuser',
+            contributorDisplayName: 'Mr. T User',
+            contributorEmail: null,
+          },
+          {},
+          {
+            _class: 'jenkins.scm.api.metadata.ObjectMetadataAction',
+            objectDescription: '',
+            objectDisplayName: 'Add LICENSE, CoC etc',
+            objectUrl: 'https://github.com/backstage/backstage/pull/1',
+          },
+          {},
+          {},
+          {
+            _class: 'com.cloudbees.plugins.credentials.ViewCredentialsAction',
+            stores: {},
+          },
+        ],
+        displayName: 'Example Build',
+        fullDisplayName: 'Example jobName » Example Build',
+        fullName: 'example-jobName/exampleBuild',
+        inQueue: false,
+        lastBuild: {
+          actions: [
+            {
+              _class: 'hudson.model.CauseAction',
+              causes: [
+                {
+                  _class: 'jenkins.branch.BranchIndexingCause',
+                  shortDescription: 'Branch indexing',
+                },
+              ],
+            },
+            null,
+            {},
+            {},
+            {
+              _class: 'org.jenkinsci.plugins.workflow.cps.EnvActionImpl',
+              environment: {},
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+              _class: 'hudson.plugins.git.util.BuildData',
+              buildsByBranchName: {
+                'PR-1': {
+                  _class: 'hudson.plugins.git.util.Build',
+                  buildNumber: 5,
+                  buildResult: null,
+                  marked: {
+                    SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                    branch: [
+                      {
+                        SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                        name: 'PR-1',
+                      },
+                    ],
+                  },
+                  revision: {
+                    SHA1: '6c6b34c0fb91cf077a01fe62d3e8e996b4ea5861',
+                    branch: [
+                      {
+                        SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                        name: 'PR-1',
+                      },
+                    ],
+                  },
+                },
+              },
+              lastBuiltRevision: {
+                SHA1: '6c6b34c0fb91cf077a01fe62d3e8e996b4ea5861',
+                branch: [
+                  {
+                    SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                    name: 'PR-1',
+                  },
+                ],
+              },
+              remoteUrls: ['https://github.com/backstage/backstage.git'],
+              scmName: '',
+            },
+            {
+              _class: 'hudson.plugins.git.util.BuildData',
+              buildsByBranchName: {
+                master: {
+                  _class: 'hudson.plugins.git.util.Build',
+                  buildNumber: 5,
+                  buildResult: null,
+                  marked: {
+                    SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                    branch: [
+                      {
+                        SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                        name: 'master',
+                      },
+                    ],
+                  },
+                  revision: {
+                    SHA1: '6c6b34c0fb91cf077a01fe62d3e8e996b4ea5861',
+                    branch: [
+                      {
+                        SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                        name: 'master',
+                      },
+                    ],
+                  },
+                },
+              },
+              lastBuiltRevision: {
+                SHA1: '6c6b34c0fb91cf077a01fe62d3e8e996b4ea5861',
+                branch: [
+                  {
+                    SHA1: '14d31bde346fcad64ab939f82d195db36701cfcb',
+                    name: 'master',
+                  },
+                ],
+              },
+              remoteUrls: ['https://github.com/backstage/backstage.git'],
+              scmName: '',
+            },
+            {},
+            {},
+            {
+              _class: 'hudson.tasks.junit.TestResultAction',
+              failCount: 2,
+              skipCount: 1,
+              totalCount: 635,
+              urlName: 'testReport',
+            },
+            {},
+            {},
+            {
+              _class:
+                'org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction',
+              restartEnabled: false,
+              restartableStages: [],
+            },
+            {},
+          ],
+          timestamp: 1,
+          building: false,
+          duration: 10,
+          result: 'success',
+          displayName: '#7',
+          fullDisplayName: 'Example jobName » Example Build #7',
+          url: 'https://jenkins.example.com/job/example-jobName/job/exampleBuild/7/',
+          number: 7,
+        },
+      };
+
+      it('augments project', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValueOnce({
+          jobs: [projectWithScmActionsAndNulls],
+        });
+
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].status).toEqual('success');
+      });
+      it('augments  build', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValueOnce({
+          jobs: [projectWithScmActionsAndNulls],
+        });
+
+        const result = await jenkinsApi.getProjects(jenkinsInfo);
+
+        expect(result).toHaveLength(1);
+        // TODO: I am really just asserting the previous behaviour with no understanding here.
+        // In my 2 Jenkins instances, 1 returns a lot of different and confusing BuildData sections and 1 returns none ☹️
+        expect(result[0].lastBuild!.source).toEqual({
+          branchName: 'master',
+          commit: {
+            hash: '14d31bde',
+          },
+          url: 'https://github.com/backstage/backstage/pull/1',
+          displayName: 'Add LICENSE, CoC etc',
+          author: 'Mr. T User',
+        });
+      });
+      it('finds test report', async () => {
+        mockedJenkinsClient.job.get.mockResolvedValueOnce({
+          jobs: [projectWithScmActionsAndNulls],
         });
 
         const result = await jenkinsApi.getProjects(jenkinsInfo);
@@ -403,8 +625,36 @@ describe('JenkinsApi', () => {
     );
   });
   it('buildProject', async () => {
-    await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
+    await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef);
 
+    expect(mockedJenkins).toHaveBeenCalledWith({
+      baseUrl: jenkinsInfo.baseUrl,
+      headers: jenkinsInfo.headers,
+      promisify: true,
+    });
+    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobFullName);
+  });
+
+  it('buildProject should fail if it does not have required permissions', async () => {
+    fakePermissionApi.authorize.mockResolvedValueOnce([
+      {
+        result: AuthorizeResult.DENY,
+      },
+    ]);
+
+    await expect(() =>
+      jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef),
+    ).rejects.toThrow(NotAllowedError);
+  });
+
+  it('buildProject should succeed if it have required permissions', async () => {
+    fakePermissionApi.authorize.mockResolvedValueOnce([
+      {
+        result: AuthorizeResult.ALLOW,
+      },
+    ]);
+
+    await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef);
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,
       headers: jenkinsInfo.headers,
@@ -415,7 +665,7 @@ describe('JenkinsApi', () => {
 
   it('buildProject with crumbIssuer option', async () => {
     const info: JenkinsInfo = { ...jenkinsInfo, crumbIssuer: true };
-    await jenkinsApi.buildProject(info, jobFullName);
+    await jenkinsApi.buildProject(info, jobFullName, resourceRef);
 
     expect(mockedJenkins).toHaveBeenCalledWith({
       baseUrl: jenkinsInfo.baseUrl,

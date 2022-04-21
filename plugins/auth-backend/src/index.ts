@@ -21,8 +21,7 @@
  */
 
 export * from './service/router';
-export { IdentityClient } from './identity';
-export type { TokenIssuer } from './identity';
+export type { TokenIssuer, TokenParams } from './identity';
 export * from './providers';
 
 // flow package provides 2 functions
@@ -33,3 +32,5 @@ export * from './lib/flow';
 export * from './lib/oauth';
 
 export * from './lib/catalog';
+
+export { getDefaultOwnershipEntityRefs } from './lib/resolvers';

@@ -26,13 +26,21 @@ import {
  * A Bitbucket based integration.
  *
  * @public
+ * @deprecated replaced by the integrations bitbucketCloud and bitbucketServer.
  */
 export class BitbucketIntegration implements ScmIntegration {
   static factory: ScmIntegrationsFactory<BitbucketIntegration> = ({
     config,
   }) => {
     const configs = readBitbucketIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
+      config.getOptionalConfigArray('integrations.bitbucket') ?? [
+        // if integrations.bitbucket was not used assume the use was migrated to the new configs
+        // and backport for the deprecated integration to be usable for other parts of the system
+        // until these got migrated
+        ...(config.getOptionalConfigArray('integrations.bitbucketCloud') ?? []),
+        ...(config.getOptionalConfigArray('integrations.bitbucketServer') ??
+          []),
+      ],
     );
     return basicIntegrations(
       configs.map(c => new BitbucketIntegration(c)),
@@ -60,17 +68,21 @@ export class BitbucketIntegration implements ScmIntegration {
     lineNumber?: number;
   }): string {
     const resolved = defaultScmResolveUrl(options);
-
-    // Bitbucket line numbers use the syntax #example.txt-42, rather than #L42
-    if (options.lineNumber) {
-      const url = new URL(resolved);
-
-      const filename = url.pathname.split('/').slice(-1)[0];
-      url.hash = `${filename}-${options.lineNumber}`;
-      return url.toString();
+    if (!options.lineNumber) {
+      return resolved;
     }
 
-    return resolved;
+    const url = new URL(resolved);
+
+    if (this.integrationConfig.host === 'bitbucket.org') {
+      // Bitbucket Cloud uses the syntax #lines-{start}[:{end}][,...]
+      url.hash = `lines-${options.lineNumber}`;
+    } else {
+      // Bitbucket Server uses the syntax #{start}[-{end}][,...]
+      url.hash = `${options.lineNumber}`;
+    }
+
+    return url.toString();
   }
 
   resolveEditUrl(url: string): string {

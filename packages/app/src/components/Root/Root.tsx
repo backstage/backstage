@@ -35,10 +35,7 @@ import {
   Settings as SidebarSettings,
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
-import {
-  SidebarSearchModal,
-  SearchContextProvider,
-} from '@backstage/plugin-search';
+import { SidebarSearchModal } from '@backstage/plugin-search';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 import {
   Sidebar,
@@ -52,6 +49,9 @@ import {
   SidebarSpace,
 } from '@backstage/core-components';
 import { SidebarNotifications } from '@backstage/plugin-user-notifications';
+import { MyGroupsSidebarItem } from '@backstage/plugin-org';
+import GroupIcon from '@material-ui/icons/People';
+import { SearchModal } from '../search/SearchModal';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -91,14 +91,19 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     <Sidebar>
       <SidebarLogo />
       <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-        <SearchContextProvider>
-          <SidebarSearchModal />
-        </SearchContextProvider>
+        <SidebarSearchModal>
+          {({ toggleModal }) => <SearchModal toggleModal={toggleModal} />}
+        </SidebarSearchModal>
       </SidebarGroup>
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
         <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+        <MyGroupsSidebarItem
+          singularTitle="My Squad"
+          pluralTitle="My Squads"
+          icon={GroupIcon}
+        />
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={LayersIcon} to="explore" text="Explore" />

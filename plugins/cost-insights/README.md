@@ -17,8 +17,7 @@ Learn more with the Backstage blog post [New Cost Insights plugin: The engineer'
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-cost-insights
+yarn add --cwd packages/app @backstage/plugin-cost-insights
 ```
 
 ## Setup
@@ -91,7 +90,7 @@ To expose the plugin to your users, you can integrate the `cost-insights` route 
        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
        <SidebarDivider />
        <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-  +    <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
++      <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
      </SidebarGroup>
      {/* End global nav */}
      <SidebarDivider />

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   DiscoveryApi,
@@ -22,9 +22,12 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
+import {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+} from '@backstage/plugin-techdocs-react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
-import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 /**
  * API to talk to `techdocs-backend`.
@@ -47,10 +50,7 @@ export class TechDocsClient implements TechDocsApi {
   }
 
   async getApiOrigin(): Promise<string> {
-    return (
-      this.configApi.getOptionalString('techdocs.requestUrl') ??
-      (await this.discoveryApi.getBaseUrl('techdocs'))
-    );
+    return await this.discoveryApi.getBaseUrl('techdocs');
   }
 
   /**
@@ -62,7 +62,9 @@ export class TechDocsClient implements TechDocsApi {
    *
    * @param entityId - Object containing entity data like name, namespace, etc.
    */
-  async getTechDocsMetadata(entityId: EntityName): Promise<TechDocsMetadata> {
+  async getTechDocsMetadata(
+    entityId: CompoundEntityRef,
+  ): Promise<TechDocsMetadata> {
     const { kind, namespace, name } = entityId;
 
     const apiOrigin = await this.getApiOrigin();
@@ -84,7 +86,7 @@ export class TechDocsClient implements TechDocsApi {
    * @param entityId - Object containing entity data like name, namespace, etc.
    */
   async getEntityMetadata(
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
   ): Promise<TechDocsEntityMetadata> {
     const { kind, namespace, name } = entityId;
 
@@ -124,10 +126,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   }
 
   async getApiOrigin(): Promise<string> {
-    return (
-      this.configApi.getOptionalString('techdocs.requestUrl') ??
-      (await this.discoveryApi.getBaseUrl('techdocs'))
-    );
+    return await this.discoveryApi.getBaseUrl('techdocs');
   }
 
   async getStorageUrl(): Promise<string> {
@@ -149,7 +148,10 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
    * @returns HTML content of the docs page as string
    * @throws Throws error when the page is not found.
    */
-  async getEntityDocs(entityId: EntityName, path: string): Promise<string> {
+  async getEntityDocs(
+    entityId: CompoundEntityRef,
+    path: string,
+  ): Promise<string> {
     const { kind, namespace, name } = entityId;
 
     const storageUrl = await this.getStorageUrl();
@@ -190,7 +192,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
    * @throws Throws error on error from sync endpoint in Techdocs Backend
    */
   async syncEntityDocs(
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     logHandler: (line: string) => void = () => {},
   ): Promise<SyncResult> {
     const { kind, namespace, name } = entityId;
@@ -243,7 +245,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
   async getBaseUrl(
     oldBaseUrl: string,
-    entityId: EntityName,
+    entityId: CompoundEntityRef,
     path: string,
   ): Promise<string> {
     const { kind, namespace, name } = entityId;

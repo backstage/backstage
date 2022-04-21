@@ -1,5 +1,105 @@
 # @backstage/plugin-graphiql
 
+## 0.2.36
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- 99063c39ae: Minor API report cleanup
+- Updated dependencies
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
+## 0.2.36-next.2
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+
+## 0.2.36-next.1
+
+### Patch Changes
+
+- 99063c39ae: Minor API report cleanup
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+
+## 0.2.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.0
+
+## 0.2.35
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+
+## 0.2.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1
+
+## 0.2.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1-next.0
+
+## 0.2.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.2.31
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/theme@0.2.15
+
+## 0.2.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+
+## 0.2.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+
 ## 0.2.29
 
 ### Patch Changes

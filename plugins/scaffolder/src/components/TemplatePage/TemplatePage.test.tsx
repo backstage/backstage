@@ -23,9 +23,14 @@ import { ThemeProvider } from '@material-ui/core';
 import { act, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router';
-import { ScaffolderApi, scaffolderApiRef } from '../../api';
+import { scaffolderApiRef } from '../../api';
+import { ScaffolderApi } from '../../types';
 import { rootRouteRef } from '../../routes';
 import { TemplatePage } from './TemplatePage';
+import {
+  featureFlagsApiRef,
+  FeatureFlagsApi,
+} from '@backstage/core-plugin-api';
 
 import { ApiProvider } from '@backstage/core-app-api';
 import { errorApiRef } from '@backstage/core-plugin-api';
@@ -48,11 +53,63 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   listActions: jest.fn(),
 };
 
+const featureFlagsApiMock: jest.Mocked<FeatureFlagsApi> = {
+  isActive: jest.fn(),
+  registerFlag: jest.fn(),
+  getRegisteredFlags: jest.fn(),
+  save: jest.fn(),
+};
+
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
+
+const schemaMockValue = {
+  title: 'my-schema',
+  steps: [
+    {
+      title: 'Fill in some steps',
+      schema: {
+        title: 'Fill in some steps',
+        'backstage:featureFlag': 'experimental-feature',
+        properties: {
+          name: {
+            title: 'Name',
+            type: 'string',
+            'backstage:featureFlag': 'should-show-some-stuff-first-option',
+          },
+          description: {
+            title: 'Description',
+            type: 'string',
+            description: 'A description for the component',
+          },
+          owner: {
+            title: 'Owner',
+            type: 'string',
+            description: 'Owner of the component',
+          },
+        },
+        type: 'object',
+      },
+    },
+    {
+      title: 'Send data',
+      schema: {
+        title: 'Send data',
+        properties: {
+          user: {
+            title: 'User',
+            type: 'string',
+          },
+        },
+        type: 'object',
+      },
+    },
+  ],
+};
 
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [errorApiRef, errorApiMock],
+  [featureFlagsApiRef, featureFlagsApiMock],
 );
 
 describe('TemplatePage', () => {
@@ -196,5 +253,33 @@ describe('TemplatePage', () => {
     // Go to the final page
     fireEvent.click(await findByText('Next step'));
     expect(await findByText('Reset')).toBeInTheDocument();
+  });
+
+  it('should display a section or property based on a feature flag', async () => {
+    featureFlagsApiMock.isActive.mockImplementation(flag => {
+      if (flag === 'experimental-feature') {
+        return true;
+      }
+      return false;
+    });
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
+      schemaMockValue,
+    );
+
+    const { queryByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <TemplatePage />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create/actions': rootRouteRef,
+        },
+      },
+    );
+
+    expect(await queryByText('Name')).not.toBeInTheDocument();
+    expect(await queryByText('Description')).toBeInTheDocument();
+    expect(await queryByText('Owner')).toBeInTheDocument();
+    expect(await queryByText('Send data')).toBeInTheDocument();
   });
 });

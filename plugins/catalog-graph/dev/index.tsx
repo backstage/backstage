@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CatalogListResponse } from '@backstage/catalog-client';
+import { GetEntitiesResponse } from '@backstage/catalog-client';
 import {
   Entity,
-  EntityName,
-  ENTITY_DEFAULT_NAMESPACE,
+  CompoundEntityRef,
+  DEFAULT_NAMESPACE,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CONSUMES_API,
@@ -42,6 +42,7 @@ import {
   catalogGraphPlugin,
   EntityCatalogGraphCard,
 } from '../src';
+import { CatalogEntityPage } from '@backstage/plugin-catalog';
 
 type DataRelation = [string, string, string];
 type DataEntity = [string, string, DataRelation[]];
@@ -117,7 +118,12 @@ const entities = (
       name,
     },
     relations: relations.map(([type, k, n]) => ({
-      target: { kind: k, name: n, namespace: ENTITY_DEFAULT_NAMESPACE },
+      target: { kind: k, name: n, namespace: DEFAULT_NAMESPACE },
+      targetRef: stringifyEntityRef({
+        kind: k,
+        namespace: DEFAULT_NAMESPACE,
+        name: n,
+      }),
       type,
     })),
   };
@@ -133,10 +139,14 @@ createDevApp()
     deps: {},
     factory() {
       return {
-        async getEntityByName(name: EntityName): Promise<Entity | undefined> {
-          return entities[stringifyEntityRef(name)];
+        async getEntityByRef(
+          ref: string | CompoundEntityRef,
+        ): Promise<Entity | undefined> {
+          return entities[
+            typeof ref === 'string' ? ref : stringifyEntityRef(ref)
+          ];
         },
-        async getEntities(): Promise<CatalogListResponse<Entity>> {
+        async getEntities(): Promise<GetEntitiesResponse> {
           return { items: Object.values(entities) };
         },
       } as Partial<CatalogApi> as unknown as CatalogApi;
@@ -162,6 +172,12 @@ createDevApp()
     ),
   })
   .addPage({
+    path: '/catalog-graph',
     element: <CatalogGraphPage />,
+  })
+  .addPage({
+    path: '/catalog/:kind/:namespace/:name',
+    element: <CatalogEntityPage />,
+    title: 'MockComponent',
   })
   .render();

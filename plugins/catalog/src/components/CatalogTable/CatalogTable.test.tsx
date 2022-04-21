@@ -15,23 +15,20 @@
  */
 
 import {
-  EDIT_URL_ANNOTATION,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_VIEW_URL,
   Entity,
-  VIEW_URL_ANNOTATION,
 } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
   entityRouteRef,
-  DefaultStarredEntitiesApi,
   MockEntityListContextProvider,
   starredEntitiesApiRef,
   UserListFilter,
+  EntityKindFilter,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
-import {
-  MockStorageApi,
-  renderInTestApp,
-  TestApiRegistry,
-} from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
@@ -57,7 +54,7 @@ const entities: Entity[] = [
 describe('CatalogTable component', () => {
   const mockApis = TestApiRegistry.from([
     starredEntitiesApiRef,
-    new DefaultStarredEntitiesApi({ storageApi: MockStorageApi.create() }),
+    new MockStarredEntitiesApi(),
   ]);
 
   beforeEach(() => {
@@ -123,7 +120,7 @@ describe('CatalogTable component', () => {
       kind: 'Component',
       metadata: {
         name: 'component1',
-        annotations: { [EDIT_URL_ANNOTATION]: 'https://other.place' },
+        annotations: { [ANNOTATION_EDIT_URL]: 'https://other.place' },
       },
     };
 
@@ -155,7 +152,7 @@ describe('CatalogTable component', () => {
       kind: 'Component',
       metadata: {
         name: 'component1',
-        annotations: { [VIEW_URL_ANNOTATION]: 'https://other.place' },
+        annotations: { [ANNOTATION_VIEW_URL]: 'https://other.place' },
       },
     };
 
@@ -180,4 +177,126 @@ describe('CatalogTable component', () => {
 
     expect(window.open).toHaveBeenCalledWith('https://other.place', '_blank');
   });
+
+  it.each([
+    {
+      kind: 'api',
+      expectedColumns: [
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ],
+    },
+    {
+      kind: 'component',
+      expectedColumns: [
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ],
+    },
+    {
+      kind: 'domain',
+      expectedColumns: ['Name', 'Owner', 'Description', 'Tags', 'Actions'],
+    },
+    {
+      kind: 'group',
+      expectedColumns: ['Name', 'Type', 'Description', 'Tags', 'Actions'],
+    },
+    {
+      kind: 'location',
+      expectedColumns: ['Name', 'Type', 'Description', 'Tags', 'Actions'],
+    },
+    {
+      kind: 'resource',
+      expectedColumns: [
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ],
+    },
+    {
+      kind: 'system',
+      expectedColumns: ['Name', 'Owner', 'Description', 'Tags', 'Actions'],
+    },
+    {
+      kind: 'template',
+      expectedColumns: ['Name', 'Type', 'Description', 'Tags', 'Actions'],
+    },
+    {
+      kind: 'user',
+      expectedColumns: ['Name', 'Description', 'Tags', 'Actions'],
+    },
+    {
+      kind: 'custom',
+      expectedColumns: [
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ],
+    },
+    {
+      kind: null,
+      expectedColumns: [
+        'Name',
+        'System',
+        'Owner',
+        'Type',
+        'Lifecycle',
+        'Description',
+        'Tags',
+        'Actions',
+      ],
+    },
+  ])(
+    'should render correct columns with kind filter $kind',
+    async ({ kind, expectedColumns }) => {
+      const { getAllByRole } = await renderInTestApp(
+        <ApiProvider apis={mockApis}>
+          <MockEntityListContextProvider
+            value={{
+              entities,
+              filters: {
+                kind: kind ? new EntityKindFilter(kind) : undefined,
+              },
+            }}
+          >
+            <CatalogTable />
+          </MockEntityListContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+
+      const columnHeader = getAllByRole('button').filter(
+        c => c.tagName === 'SPAN',
+      );
+      const columnHeaderLabels = columnHeader.map(c => c.textContent);
+      expect(columnHeaderLabels).toEqual(expectedColumns);
+    },
+    20_000,
+  );
 });

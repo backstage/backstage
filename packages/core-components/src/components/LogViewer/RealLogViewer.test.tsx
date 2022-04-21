@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import UserEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import { RealLogViewer } from './RealLogViewer';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -48,31 +48,30 @@ describe('RealLogViewer', () => {
     expect(rendered.getByText('Derp')).toBeInTheDocument();
     expect(rendered.getByText('Foo Foo')).toBeInTheDocument();
 
-    UserEvent.tab();
-    UserEvent.keyboard('Foo');
-
+    await userEvent.tab();
+    await userEvent.keyboard('Foo');
     expect(rendered.getByText('1/3')).toBeInTheDocument();
-    UserEvent.keyboard('{enter}');
+    await userEvent.keyboard('{enter}');
     expect(rendered.getByText('2/3')).toBeInTheDocument();
-    UserEvent.keyboard('{enter}');
+    await userEvent.keyboard('{enter}');
     expect(rendered.getByText('3/3')).toBeInTheDocument();
-    UserEvent.keyboard('{enter}');
+    await userEvent.keyboard('{enter}');
     expect(rendered.getByText('1/3')).toBeInTheDocument();
-    UserEvent.keyboard('{shift}{enter}{/shift}');
+    await userEvent.keyboard('{shift>}{enter}{/shift}');
     expect(rendered.getByText('3/3')).toBeInTheDocument();
 
     expect(rendered.queryByText('Some Log Line')).toBeInTheDocument();
-    UserEvent.keyboard('{meta}{enter}{/meta}');
+    await userEvent.keyboard('{meta>}{enter}{/meta}');
     expect(rendered.queryByText('Some Log Line')).not.toBeInTheDocument();
-    UserEvent.keyboard('{meta}{enter}{/meta}');
+    await userEvent.keyboard('{meta>}{enter}{/meta}');
     expect(rendered.queryByText('Some Log Line')).toBeInTheDocument();
 
     // Tab down to line #2 and click
-    UserEvent.tab();
-    UserEvent.tab();
-    UserEvent.tab();
-    UserEvent.click(document.activeElement!);
-    UserEvent.click(rendered.getByTestId('copy-button'));
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.click(document.activeElement!);
+    await userEvent.click(rendered.getByTestId('copy-button'));
 
     expect(copyToClipboard).toHaveBeenCalledWith('Derp');
   });

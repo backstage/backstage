@@ -91,6 +91,10 @@ describe('DefaultCatalogProcessingEngine', () => {
           },
         ],
       });
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    db.updateProcessedEntity.mockResolvedValue({
+      previous: { relations: [] },
+    });
 
     await engine.start();
     await waitForExpect(() => {
@@ -153,6 +157,10 @@ describe('DefaultCatalogProcessingEngine', () => {
           },
         ],
       });
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    db.updateProcessedEntity.mockImplementation(async () => ({
+      previous: { relations: [] },
+    }));
 
     await engine.start();
     await waitForExpect(() => {
@@ -213,6 +221,10 @@ describe('DefaultCatalogProcessingEngine', () => {
         items: [{ ...refreshState, resultHash: 'NOT RIGHT' }],
       })
       .mockResolvedValue({ items: [] });
+    db.updateProcessedEntity.mockImplementation(async () => ({
+      previous: { relations: [] },
+    }));
+
     await engine.start();
 
     await waitForExpect(() => {
@@ -285,6 +297,10 @@ describe('DefaultCatalogProcessingEngine', () => {
         items: [refreshState],
       })
       .mockResolvedValue({ items: [] });
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    db.updateProcessedEntity.mockImplementation(async () => ({
+      previous: { relations: [] },
+    }));
 
     await waitForExpect(() => {
       expect(db.updateEntityCache).toBeCalledTimes(1);
@@ -317,6 +333,117 @@ describe('DefaultCatalogProcessingEngine', () => {
       state: {},
     });
 
+    await engine.stop();
+  });
+
+  it('should stitch both the previous and new sources when relations change', async () => {
+    const engine = new DefaultCatalogProcessingEngine(
+      getVoidLogger(),
+      db,
+      orchestrator,
+      stitcher,
+      () => hash,
+      100,
+    );
+
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+
+    const entity = {
+      apiVersion: '1',
+      kind: 'k',
+      metadata: { name: 'me', namespace: 'ns' },
+    };
+    const processableEntity = {
+      entityRef: 'foo',
+      id: '1',
+      unprocessedEntity: entity,
+      resultHash: '',
+      state: [] as any,
+      nextUpdateAt: DateTime.now(),
+      lastDiscoveryAt: DateTime.now(),
+    };
+
+    db.listParents.mockResolvedValue({ entityRefs: [] });
+    db.getProcessableEntities
+      .mockResolvedValueOnce({
+        items: [processableEntity],
+      })
+      .mockResolvedValueOnce({
+        items: [processableEntity],
+      });
+    db.updateProcessedEntity
+      .mockImplementationOnce(async () => ({
+        previous: { relations: [] },
+      }))
+      .mockImplementationOnce(async () => ({
+        previous: {
+          relations: [
+            {
+              originating_entity_id: '',
+              type: 't',
+              source_entity_ref: 'k:ns/other1',
+              target_entity_ref: 'k:ns/me',
+            },
+            {
+              originating_entity_id: '',
+              type: 't',
+              source_entity_ref: 'k:ns/other2',
+              target_entity_ref: 'k:ns/me',
+            },
+          ],
+        },
+      }));
+
+    orchestrator.process
+      .mockResolvedValueOnce({
+        ok: true,
+        completedEntity: entity,
+        relations: [
+          {
+            type: 't',
+            source: { kind: 'k', namespace: 'ns', name: 'other1' },
+            target: { kind: 'k', namespace: 'ns', name: 'me' },
+          },
+          {
+            type: 't',
+            source: { kind: 'k', namespace: 'ns', name: 'other2' },
+            target: { kind: 'k', namespace: 'ns', name: 'me' },
+          },
+        ],
+        errors: [],
+        deferredEntities: [],
+        state: {},
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        completedEntity: entity,
+        relations: [
+          {
+            type: 't',
+            source: { kind: 'k', namespace: 'ns', name: 'other2' },
+            target: { kind: 'k', namespace: 'ns', name: 'me' },
+          },
+          {
+            type: 't',
+            source: { kind: 'k', namespace: 'ns', name: 'other3' },
+            target: { kind: 'k', namespace: 'ns', name: 'me' },
+          },
+        ],
+        errors: [],
+        deferredEntities: [],
+        state: {},
+      });
+
+    await engine.start();
+    await waitForExpect(() => {
+      expect(stitcher.stitch).toBeCalledTimes(2);
+    });
+    expect([...stitcher.stitch.mock.calls[0][0]]).toEqual(
+      expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other2']),
+    );
+    expect([...stitcher.stitch.mock.calls[1][0]]).toEqual(
+      expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other3']),
+    );
     await engine.stop();
   });
 });

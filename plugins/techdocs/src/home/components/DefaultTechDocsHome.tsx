@@ -23,31 +23,35 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import {
-  EntityListContainer,
-  FilterContainer,
-  FilteredEntityLayout,
-} from '@backstage/plugin-catalog';
-import {
+  CatalogFilterLayout,
   EntityListProvider,
   EntityOwnerPicker,
   EntityTagPicker,
   UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import { EntityListDocsTable } from './EntityListDocsTable';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
-import { DocsTableRow } from './types';
+import { DocsTableRow, EntityListDocsTable } from './Tables';
 
-export const DefaultTechDocsHome = ({
-  initialFilter = 'all',
-  columns,
-  actions,
-}: {
+/**
+ * Props for {@link DefaultTechDocsHome}
+ *
+ * @public
+ */
+export type DefaultTechDocsHomeProps = {
   initialFilter?: UserListFilterKind;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
-}) => {
+};
+
+/**
+ * Component which renders a default documentation landing page.
+ *
+ * @public
+ */
+export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
+  const { initialFilter = 'all', columns, actions } = props;
   return (
     <TechDocsPageWrapper>
       <Content>
@@ -57,17 +61,17 @@ export const DefaultTechDocsHome = ({
           </SupportButton>
         </ContentHeader>
         <EntityListProvider>
-          <FilteredEntityLayout>
-            <FilterContainer>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
               <TechDocsPicker />
               <UserListPicker initialFilter={initialFilter} />
               <EntityOwnerPicker />
               <EntityTagPicker />
-            </FilterContainer>
-            <EntityListContainer>
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
               <EntityListDocsTable actions={actions} columns={columns} />
-            </EntityListContainer>
-          </FilteredEntityLayout>
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
         </EntityListProvider>
       </Content>
     </TechDocsPageWrapper>

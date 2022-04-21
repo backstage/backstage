@@ -4,20 +4,28 @@
 
 ```ts
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
-import { JsonValue } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
-import * as yup from 'yup';
 
 // @alpha
 export interface AlphaEntity extends Entity {
   status?: EntityStatus;
 }
 
-// @public @deprecated
-export const analyzeLocationSchema: yup.SchemaOf<{
-  location: LocationSpec;
-}>;
+// @public
+export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
+
+// @public
+export const ANNOTATION_LOCATION = 'backstage.io/managed-by-location';
+
+// @public
+export const ANNOTATION_ORIGIN_LOCATION =
+  'backstage.io/managed-by-origin-location';
+
+// @public
+export const ANNOTATION_SOURCE_LOCATION = 'backstage.io/source-location';
+
+// @public
+export const ANNOTATION_VIEW_URL = 'backstage.io/view-url';
 
 // @public
 interface ApiEntityV1alpha1 extends Entity {
@@ -43,6 +51,7 @@ export const apiEntityV1alpha1Validator: KindValidator;
 // @public
 export class CommonValidatorFunctions {
   static isJsonSafe(value: unknown): boolean;
+  static isNonEmptyString(value: unknown): value is string;
   static isValidDnsLabel(value: unknown): boolean;
   static isValidDnsSubdomain(value: unknown): boolean;
   static isValidPrefixAndOrSuffix(
@@ -51,17 +60,12 @@ export class CommonValidatorFunctions {
     isValidPrefix: (value: string) => boolean,
     isValidSuffix: (value: string) => boolean,
   ): boolean;
+  // @deprecated
   static isValidString(value: unknown): boolean;
+  // @deprecated
   static isValidTag(value: unknown): boolean;
   static isValidUrl(value: unknown): boolean;
 }
-
-// @public
-export function compareEntityToRef(
-  entity: Entity,
-  ref: EntityRef | EntityName,
-  context?: EntityRefContext,
-): boolean;
 
 // @public
 interface ComponentEntityV1alpha1 extends Entity {
@@ -88,6 +92,16 @@ export { ComponentEntityV1alpha1 };
 export const componentEntityV1alpha1Validator: KindValidator;
 
 // @public
+export type CompoundEntityRef = {
+  kind: string;
+  namespace: string;
+  name: string;
+};
+
+// @public
+export const DEFAULT_NAMESPACE = 'default';
+
+// @public
 export class DefaultNamespaceEntityPolicy implements EntityPolicy {
   constructor(namespace?: string);
   // (undocumented)
@@ -112,9 +126,6 @@ export { DomainEntityV1alpha1 };
 export const domainEntityV1alpha1Validator: KindValidator;
 
 // @public
-export const EDIT_URL_ANNOTATION = 'backstage.io/edit-url';
-
-// @public
 export type Entity = {
   apiVersion: string;
   kind: string;
@@ -122,16 +133,6 @@ export type Entity = {
   spec?: JsonObject;
   relations?: EntityRelation[];
 };
-
-// @public
-export const ENTITY_DEFAULT_NAMESPACE = 'default';
-
-// @public
-export const ENTITY_META_GENERATED_FIELDS: readonly [
-  'uid',
-  'etag',
-  'generation',
-];
 
 // @public
 export type EntityEnvelope = {
@@ -149,9 +150,6 @@ export function entityEnvelopeSchemaValidator<
 >(schema?: unknown): (data: unknown) => T;
 
 // @public
-export function entityHasChanges(previous: Entity, next: Entity): boolean;
-
-// @public
 export function entityKindSchemaValidator<T extends Entity>(
   schema: unknown,
 ): (data: unknown) => T | false;
@@ -167,7 +165,6 @@ export type EntityLink = {
 export type EntityMeta = JsonObject & {
   uid?: string;
   etag?: string;
-  generation?: number;
   name: string;
   namespace?: string;
   title?: string;
@@ -176,13 +173,6 @@ export type EntityMeta = JsonObject & {
   annotations?: Record<string, string>;
   tags?: string[];
   links?: EntityLink[];
-};
-
-// @public
-export type EntityName = {
-  kind: string;
-  namespace: string;
-  name: string;
 };
 
 // @public
@@ -197,31 +187,9 @@ export type EntityPolicy = {
 };
 
 // @public
-export type EntityRef =
-  | string
-  | {
-      kind?: string;
-      namespace?: string;
-      name: string;
-    };
-
-// @public
-export type EntityRefContext = {
-  defaultKind?: string;
-  defaultNamespace?: string;
-};
-
-// @public
 export type EntityRelation = {
   type: string;
-  target: EntityName;
-};
-
-// @public
-export type EntityRelationSpec = {
-  source: EntityName;
-  type: string;
-  target: EntityName;
+  targetRef: string;
 };
 
 // @public
@@ -253,16 +221,7 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
 }
 
 // @public
-export function generateEntityEtag(): string;
-
-// @public
-export function generateEntityUid(): string;
-
-// @public
-export function generateUpdatedEntity(previous: Entity, next: Entity): Entity;
-
-// @public
-export function getEntityName(entity: Entity): EntityName;
+export function getCompoundEntityRef(entity: Entity): CompoundEntityRef;
 
 // @public
 export function getEntitySourceLocation(entity: Entity): {
@@ -296,11 +255,6 @@ export { GroupEntityV1alpha1 };
 export const groupEntityV1alpha1Validator: KindValidator;
 
 // @public
-export type JSONSchema = JSONSchema7 & {
-  [key in string]?: JsonValue;
-};
-
-// @public
 export type KindValidator = {
   check(entity: Entity): Promise<boolean>;
 };
@@ -326,15 +280,6 @@ export class KubernetesValidatorFunctions {
 }
 
 // @public
-type Location_2 = {
-  id: string;
-} & LocationSpec;
-export { Location_2 as Location };
-
-// @public
-export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
-
-// @public
 interface LocationEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
@@ -354,19 +299,6 @@ export { LocationEntityV1alpha1 };
 // @public
 export const locationEntityV1alpha1Validator: KindValidator;
 
-// @public @deprecated
-export const locationSchema: yup.SchemaOf<Location_2>;
-
-// @public
-export type LocationSpec = {
-  type: string;
-  target: string;
-  presence?: 'optional' | 'required';
-};
-
-// @public @deprecated
-export const locationSpecSchema: yup.SchemaOf<LocationSpec>;
-
 // @public
 export function makeValidator(overrides?: Partial<Validators>): Validators;
 
@@ -378,50 +310,22 @@ export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
 }
 
 // @public
-export const ORIGIN_LOCATION_ANNOTATION =
-  'backstage.io/managed-by-origin-location';
-
-// @public
-export function parseEntityName(
-  ref: EntityRef,
-  context?: EntityRefContext,
-): EntityName;
-
-// @public
 export function parseEntityRef(
-  ref: EntityRef,
+  ref:
+    | string
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
   context?: {
-    defaultKind: string;
-    defaultNamespace: string;
+    defaultKind?: string;
+    defaultNamespace?: string;
   },
-): EntityName;
+): CompoundEntityRef;
 
 // @public
-export function parseEntityRef(
-  ref: EntityRef,
-  context?: {
-    defaultKind: string;
-  },
-): {
-  kind: string;
-  namespace?: string;
-  name: string;
-};
-
-// @public
-export function parseEntityRef(
-  ref: EntityRef,
-  context?: {
-    defaultNamespace: string;
-  },
-): {
-  kind?: string;
-  namespace: string;
-  name: string;
-};
-
-// @public
-export function parseLocationReference(ref: string): {
+export function parseLocationRef(ref: string): {
   type: string;
   target: string;
 };
@@ -479,6 +383,7 @@ interface ResourceEntityV1alpha1 extends Entity {
     type: string;
     owner: string;
     dependsOn?: string[];
+    dependencyOf?: string[];
     system?: string;
   };
 }
@@ -494,20 +399,6 @@ export class SchemaValidEntityPolicy implements EntityPolicy {
   enforce(entity: Entity): Promise<Entity>;
 }
 
-// @public @deprecated
-export function serializeEntityRef(
-  ref:
-    | Entity
-    | {
-        kind?: string;
-        namespace?: string;
-        name: string;
-      },
-): EntityRef;
-
-// @public
-export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';
-
 // @public
 export function stringifyEntityRef(
   ref:
@@ -520,7 +411,7 @@ export function stringifyEntityRef(
 ): string;
 
 // @public
-export function stringifyLocationReference(ref: {
+export function stringifyLocationRef(ref: {
   type: string;
   target: string;
 }): string;
@@ -544,33 +435,6 @@ export { SystemEntityV1alpha1 };
 export const systemEntityV1alpha1Validator: KindValidator;
 
 // @public
-export interface TemplateEntityV1beta2 extends Entity {
-  // (undocumented)
-  apiVersion: 'backstage.io/v1beta2';
-  // (undocumented)
-  kind: 'Template';
-  // (undocumented)
-  spec: {
-    type: string;
-    parameters?: JsonObject | JsonObject[];
-    steps: Array<{
-      id?: string;
-      name?: string;
-      action: string;
-      input?: JsonObject;
-      if?: string | boolean;
-    }>;
-    output?: {
-      [name: string]: string;
-    };
-    owner?: string;
-  };
-}
-
-// @public
-export const templateEntityV1beta2Validator: KindValidator;
-
-// @public
 interface UserEntityV1alpha1 extends Entity {
   // (undocumented)
   apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
@@ -583,7 +447,7 @@ interface UserEntityV1alpha1 extends Entity {
       email?: string;
       picture?: string;
     };
-    memberOf: string[];
+    memberOf?: string[];
   };
 }
 export { UserEntityV1alpha1 as UserEntity };
@@ -604,7 +468,4 @@ export type Validators = {
   isValidAnnotationValue(value: unknown): boolean;
   isValidTag(value: unknown): boolean;
 };
-
-// @public
-export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
 ```

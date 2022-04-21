@@ -61,7 +61,7 @@ export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {
     const transitiveMemberOf = new Set<string>();
 
     const todo = [
-      ...user.spec.memberOf,
+      ...(user.spec.memberOf ?? []),
       ...groups
         .filter(g => g.spec.members?.includes(user.metadata.name))
         .map(g => g.metadata.name),

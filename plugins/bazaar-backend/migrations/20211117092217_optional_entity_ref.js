@@ -15,7 +15,7 @@
  */
 
 exports.up = async function up(knex) {
-  if (knex.client.config.client === 'sqlite3') {
+  if (knex.client.config.client.includes('sqlite3')) {
     await knex.schema.dropTable('metadata');
     await knex.schema.createTable('metadata', table => {
       table.increments('id').comment('Automatically generated unique ID');
@@ -93,7 +93,7 @@ exports.up = async function up(knex) {
 };
 
 exports.down = async function down(knex) {
-  if (knex.client.config.client === 'sqlite3') {
+  if (knex.client.config.client.includes('sqlite3')) {
     await knex.schema.dropTable('metadata');
     await knex.schema.createTable('metadata', table => {
       table

@@ -1,5 +1,513 @@
 # @backstage/plugin-auth-backend
 
+## 0.13.0
+
+### Minor Changes
+
+- 15d3a3c39a: **BREAKING**: All sign-in resolvers must now return a `token` in their sign-in result. Returning an `id` is no longer supported.
+- c5aeaf339d: **BREAKING**: All auth providers have had their default sign-in resolvers removed. This means that if you want to use a particular provider for sign-in, you must provide an explicit sign-in resolver. For more information on how to configure sign-in resolvers, see the [sign-in resolver documentation](https://backstage.io/docs/auth/identity-resolver).
+
+### Patch Changes
+
+- c5aeaf339d: **DEPRECATION**: The `AuthProviderFactoryOptions` type has been deprecated, as the options are now instead inlined in the `AuthProviderFactory` type. This will make it possible to more easily introduce new options in the future without a possibly breaking change.
+- 794f7542b6: Updated openid-client from 4.1.2 to 5.1.3
+- c5aeaf339d: **DEPRECATION**: The `getEntityClaims` helper has been deprecated, with `getDefaultOwnershipEntityRefs` being added to replace it.
+- de231e5b06: Declare oauth2 `clientSecret` with visibility secret
+- c5aeaf339d: **DEPRECATION**: All `create<Provider>Provider` and `<provider>*SignInResolver` have been deprecated. Instead, a single `providers` object is exported which contains all built-in auth providers.
+
+  If you have a setup that currently looks for example like this:
+
+  ```ts
+  import {
+    createRouter,
+    defaultAuthProviderFactories,
+    createGoogleProvider,
+    googleEmailSignInResolver,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: createGoogleProvider({
+          signIn: {
+            resolver: googleEmailSignInResolver,
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+  You would migrate it to something like this:
+
+  ```ts
+  import {
+    createRouter,
+    providers,
+    defaultAuthProviderFactories,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: providers.google.create({
+          signIn: {
+            resolver:
+              providers.google.resolvers.emailMatchingUserEntityAnnotation(),
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+- 2cc1d1b235: Applied the fix from version 0.12.3 of this package, which is part of the v1.0.1 release of Backstage.
+- c5aeaf339d: **DEPRECATION** The `AuthResolverContext` has received a number of changes, which is the context used by auth handlers and sign-in resolvers.
+
+  The following fields deprecated: `logger`, `tokenIssuer`, `catalogIdentityClient`. If you need to access the `logger`, you can do so through a closure instead. The `tokenIssuer` has been replaced with an `issueToken` method, which is available directory on the context. The `catalogIdentityClient` has been replaced by the `signInWithCatalogUser` method, as well as the lower level `findCatalogUser` method and `getDefaultOwnershipEntityRefs` helper.
+
+  It should be possible to migrate most sign-in resolvers to more or less only use `signInWithCatalogUser`, for example an email lookup resolver like this one:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+
+    const claims = getEntityClaims(entity);
+    const token = await ctx.tokenIssuer.issueToken({ claims });
+
+    return { id: entity.metadata.name, entity, token };
+  };
+  ```
+
+  can be migrated to the following:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    return ctx.signInWithCatalogUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+  };
+  ```
+
+  While a direct entity name lookup using a user ID might look like this:
+
+  ```ts
+  async ({ result: { fullProfile } }, ctx) => {
+    return ctx.signInWithCatalogUser({
+      entityRef: {
+        name: fullProfile.userId,
+      },
+    });
+  };
+  ```
+
+  If you want more control over the way that users are looked up, ownership is assigned, or tokens are issued, you can use a combination of the `findCatalogUser`, `getDefaultOwnershipEntityRefs`, and `issueToken` instead.
+
+- f4cdf4cac1: Defensively encode URL parameters when fetching ELB keys
+- 6ee04078e1: **DEPRECATION**: The `tokenIssuer` option for `OAuthAdapter` is no longer needed and has been deprecated.
+- a45bce06e3: Handle trailing slashes on GitHub `enterpriseInstanceUrl` settings
+- 45f7a261c7: Bumped passport-microsoft to resolve CVE-2021-41580
+- c5aeaf339d: Added exports of the following types: `AuthProviderConfig`, `StateEncoder`, `TokenParams`, `AwsAlbResult`.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-auth-node@0.2.0
+  - @backstage/backend-common@0.13.2
+  - @backstage/catalog-client@1.0.1
+
+## 0.13.0-next.2
+
+### Minor Changes
+
+- c5aeaf339d: **BREAKING**: All auth providers have had their default sign-in resolvers removed. This means that if you want to use a particular provider for sign-in, you must provide an explicit sign-in resolver. For more information on how to configure sign-in resolvers, see the [sign-in resolver documentation](https://backstage.io/docs/auth/identity-resolver).
+
+### Patch Changes
+
+- c5aeaf339d: **DEPRECATION**: The `AuthProviderFactoryOptions` type has been deprecated, as the options are now instead inlined in the `AuthProviderFactory` type. This will make it possible to more easily introduce new options in the future without a possibly breaking change.
+- 794f7542b6: Updated openid-client from 4.1.2 to 5.1.3
+- c5aeaf339d: **DEPRECATION**: The `getEntityClaims` helper has been deprecated, with `getDefaultOwnershipEntityRefs` being added to replace it.
+- de231e5b06: Declare oauth2 `clientSecret` with visibility secret
+- c5aeaf339d: **DEPRECATION**: All `create<Provider>Provider` and `<provider>*SignInResolver` have been deprecated. Instead, a single `providers` object is exported which contains all built-in auth providers.
+
+  If you have a setup that currently looks for example like this:
+
+  ```ts
+  import {
+    createRouter,
+    defaultAuthProviderFactories,
+    createGoogleProvider,
+    googleEmailSignInResolver,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: createGoogleProvider({
+          signIn: {
+            resolver: googleEmailSignInResolver,
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+  You would migrate it to something like this:
+
+  ```ts
+  import {
+    createRouter,
+    providers,
+    defaultAuthProviderFactories,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: providers.google.create({
+          signIn: {
+            resolver:
+              providers.google.resolvers.emailMatchingUserEntityAnnotation(),
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+- c5aeaf339d: **DEPRECATION** The `AuthResolverContext` has received a number of changes, which is the context used by auth handlers and sign-in resolvers.
+
+  The following fields deprecated: `logger`, `tokenIssuer`, `catalogIdentityClient`. If you need to access the `logger`, you can do so through a closure instead. The `tokenIssuer` has been replaced with an `issueToken` method, which is available directory on the context. The `catalogIdentityClient` has been replaced by the `signInWithCatalogUser` method, as well as the lower level `findCatalogUser` method and `getDefaultOwnershipEntityRefs` helper.
+
+  It should be possible to migrate most sign-in resolvers to more or less only use `signInWithCatalogUser`, for example an email lookup resolver like this one:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+
+    const claims = getEntityClaims(entity);
+    const token = await ctx.tokenIssuer.issueToken({ claims });
+
+    return { id: entity.metadata.name, entity, token };
+  };
+  ```
+
+  can be migrated to the following:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    return ctx.signInWithCatalogUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+  };
+  ```
+
+  While a direct entity name lookup using a user ID might look like this:
+
+  ```ts
+  async ({ result: { fullProfile } }, ctx) => {
+    return ctx.signInWithCatalogUser({
+      entityRef: {
+        name: fullProfile.userId,
+      },
+    });
+  };
+  ```
+
+  If you want more control over the way that users are looked up, ownership is assigned, or tokens are issued, you can use a combination of the `findCatalogUser`, `getDefaultOwnershipEntityRefs`, and `issueToken` instead.
+
+- f4cdf4cac1: Defensively encode URL parameters when fetching ELB keys
+- c5aeaf339d: Added exports of the following types: `AuthProviderConfig`, `StateEncoder`, `TokenParams`, `AwsAlbResult`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+
+## 0.13.0-next.1
+
+### Patch Changes
+
+- a45bce06e3: Handle trailing slashes on GitHub `enterpriseInstanceUrl` settings
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.1
+
+## 0.13.0-next.0
+
+### Minor Changes
+
+- 15d3a3c39a: **BREAKING**: All sign-in resolvers must now return a `token` in their sign-in result. Returning an `id` is no longer supported.
+
+### Patch Changes
+
+- 2cc1d1b235: Applied the fix from version 0.12.3 of this package, which is part of the v1.0.1 release of Backstage.
+- 6ee04078e1: **DEPRECATION**: The `tokenIssuer` option for `OAuthAdapter` is no longer needed and has been deprecated.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-auth-node@0.2.0-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+
+## 0.12.3
+
+### Patch Changes
+
+- Fix migrations to do the right thing on sqlite databases, and reapply the column type fix for those who are _not_ on sqlite databases.
+
+  Reconstruction of #10317 in the form of a patch release instead.
+
+## 0.12.2
+
+### Patch Changes
+
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-auth-node@0.1.6
+
+## 0.12.1
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- bf95bb806c: Remove usages of now-removed `CatalogApi.getEntityByName`
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/catalog-client@0.9.0
+  - @backstage/plugin-auth-node@0.1.5
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- bf95bb806c: Remove usages of now-removed `CatalogApi.getEntityByName`
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+  - @backstage/plugin-auth-node@0.1.5-next.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 0c8ba31d72: **BREAKING**: The `TokenFactory.issueToken` used by custom sign-in resolvers now ensures that the sub claim given is a full entity reference of the format `<kind>:<namespace>/<name>`. Any existing custom sign-in resolver functions that do not supply a full entity reference must be updated.
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-auth-node@0.1.4
+
+## 0.11.0
+
+### Minor Changes
+
+- 3884bf0348: **BREAKING**: The default sign-in resolvers for all providers, if you choose to
+  use them, now emit the token `sub` and `ent` claims on the standard,
+  all-lowercase form, instead of the mixed-case form. The mixed-case form causes
+  problems for implementations that naively do string comparisons on refs. The end
+  result is that you may for example see your Backstage token `sub` claim now
+  become `'user:default/my-id'` instead of `'user:default/My-ID'`.
+
+  On a related note, specifically the SAML provider now correctly issues both
+  `sub` and `ent` claims, and on the full entity ref form instead of the short
+  form with only the ID.
+
+  **NOTE**: For a long time, it has been strongly recommended that you provide
+  your own sign-in resolver instead of using the builtin ones, and that will
+  become mandatory in the future.
+
+### Patch Changes
+
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-auth-node@0.1.3
+
+## 0.10.2
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+  - @backstage/plugin-auth-node@0.1.2
+
+## 0.10.1
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- a31559d1f5: Bump `passport-oauth2` to version 1.6.1
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 1433045c08: Removed unused `helmet` dependency.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-auth-node@0.1.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.10.0
+
+### Minor Changes
+
+- 08fcda13ef: The `callbackUrl` option of `OAuthAdapter` is now required.
+- 6bc86fcf2d: The following breaking changes were made, which may imply specifically needing
+  to make small adjustments in your custom auth providers.
+
+  - **BREAKING**: Moved `IdentityClient`, `BackstageSignInResult`,
+    `BackstageIdentityResponse`, and `BackstageUserIdentity` to
+    `@backstage/plugin-auth-node`.
+  - **BREAKING**: Removed deprecated type `BackstageIdentity`, please use
+    `BackstageSignInResult` from `@backstage/plugin-auth-node` instead.
+
+  While moving over, `IdentityClient` was also changed in the following ways:
+
+  - **BREAKING**: Made `IdentityClient.listPublicKeys` private. It was only used
+    in tests, and should not be part of the API surface of that class.
+  - **BREAKING**: Removed the static `IdentityClient.getBearerToken`. It is now
+    replaced by `getBearerTokenFromAuthorizationHeader` from
+    `@backstage/plugin-auth-node`.
+  - **BREAKING**: Removed the constructor. Please use the `IdentityClient.create`
+    static method instead.
+
+  Since the `IdentityClient` interface is marked as experimental, this is a
+  breaking change without a deprecation period.
+
+  In your auth providers, you may need to update your imports and usages as
+  follows (example code; yours may be slightly different):
+
+  ````diff
+  -import { IdentityClient } from '@backstage/plugin-auth-backend';
+  +import {
+  +  IdentityClient,
+  +  getBearerTokenFromAuthorizationHeader
+  +} from '@backstage/plugin-auth-node';
+
+     // ...
+
+  -  const identity = new IdentityClient({
+  +  const identity = IdentityClient.create({
+       discovery,
+       issuer: await discovery.getExternalBaseUrl('auth'),
+     });```
+
+     // ...
+
+     const token =
+  -     IdentityClient.getBearerToken(req.headers.authorization) ||
+  +     getBearerTokenFromAuthorizationHeader(req.headers.authorization) ||
+        req.cookies['token'];
+  ````
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 3396bc5973: Enabled refresh for the Atlassian provider.
+- 08fcda13ef: Added a new `cookieConfigurer` option to `AuthProviderConfig` that makes it possible to override the default logic for configuring OAuth provider cookies.
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-auth-node@0.1.0
+
+## 0.10.0-next.0
+
+### Minor Changes
+
+- 08fcda13ef: The `callbackUrl` option of `OAuthAdapter` is now required.
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 3396bc5973: Enabled refresh for the Atlassian provider.
+- 08fcda13ef: Added a new `cookieConfigurer` option to `AuthProviderConfig` that makes it possible to override the default logic for configuring OAuth provider cookies.
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.9.0
 
 ### Minor Changes

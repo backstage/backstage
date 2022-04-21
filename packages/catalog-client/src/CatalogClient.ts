@@ -16,13 +16,10 @@
 
 import {
   Entity,
-  EntityName,
-  Location,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  CompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
-  stringifyLocationReference,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import crossFetch from 'cross-fetch';
@@ -31,43 +28,43 @@ import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
-  CatalogEntitiesRequest,
-  CatalogListResponse,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
   CatalogRequestOptions,
-  CatalogEntityAncestorsRequest,
-  CatalogEntityAncestorsResponse,
+  GetEntityAncestorsRequest,
+  GetEntityAncestorsResponse,
+  Location,
+  GetEntityFacetsRequest,
+  GetEntityFacetsResponse,
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { FetchApi } from './types/fetch';
 
 /**
- * A frontend and backend compatible client for communicating with the Backstage Catalog.
+ * A frontend and backend compatible client for communicating with the Backstage
+ * software catalog.
  *
  * @public
- * */
+ */
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi; fetchApi?: FetchApi }) {
+  constructor(options: {
+    discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
+    fetchApi?: { fetch: typeof fetch };
+  }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi || { fetch: crossFetch };
   }
 
   /**
-   * Gets the Ancestors of an Entity.
-   *
-   * @param request - A request type for retrieving Entity ancestors.
-   * @param options - An object with your preferred options.
-   *
-   * @returns A CatalogEntityAncestorsResponse.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.getEntityAncestors}
    */
   async getEntityAncestors(
-    request: CatalogEntityAncestorsRequest,
+    request: GetEntityAncestorsRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogEntityAncestorsResponse> {
+  ): Promise<GetEntityAncestorsResponse> {
     const { kind, namespace, name } = parseEntityRef(request.entityRef);
     return await this.requestRequired(
       'GET',
@@ -79,14 +76,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * Gets a Location by Id.
-   *
-   * @param id - A string containing the Id.
-   * @param options - An object with your preferred options.
-   *
-   * @returns A {@link catalog-model#Location_2}.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.getLocationById}
    */
   async getLocationById(
     id: string,
@@ -100,28 +90,20 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * Gets a set of Entities.
-   *
-   * @param request - A request type for retrieving an Entity.
-   * @param options - An object with your preferred options.
-   *
-   * @returns A CatalogListResponse.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.getEntities}
    */
   async getEntities(
-    request?: CatalogEntitiesRequest,
+    request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
-  ): Promise<CatalogListResponse<Entity>> {
+  ): Promise<GetEntitiesResponse> {
     const { filter = [], fields = [], offset, limit, after } = request ?? {};
-    const filterItems = [filter].flat();
     const params: string[] = [];
 
     // filter param can occur multiple times, for example
     // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
     // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
     // the "inner array" defined within a `filter` param corresponds to "allOf" filters
-    for (const filterItem of filterItems) {
+    for (const filterItem of [filter].flat()) {
       const filterParts: string[] = [];
       for (const [key, value] of Object.entries(filterItem)) {
         for (const v of [value].flat()) {
@@ -187,17 +169,31 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * Gets a given Entity based on a provided name.
-   *
-   * @param compoundName - A string containing the name.
-   * @param options - An object with your preferred options.
-   *
-   * @returns An {@link catalog-model#Entity}.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.getEntityByRef}
+   */
+  async getEntityByRef(
+    entityRef: string | CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Entity | undefined> {
+    const { kind, namespace, name } = parseEntityRef(entityRef);
+    return this.requestOptional(
+      'GET',
+      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
+        namespace,
+      )}/${encodeURIComponent(name)}`,
+      options,
+    );
+  }
+
+  // NOTE(freben): When we deprecate getEntityByName from the interface, we may
+  // still want to leave this implementation in place for quite some time
+  // longer, to minimize the risk for breakages. Suggested date for removal:
+  // August 2022
+  /**
+   * @deprecated Use getEntityByRef instead
    */
   async getEntityByName(
-    compoundName: EntityName,
+    compoundName: CompoundEntityRef,
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;
@@ -211,12 +207,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * Refreshes an Entity.
-   *
-   * @param entityRef - A string containing the entityREf
-   * @param options - An object with your preferred options.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.refreshEntity}
    */
   async refreshEntity(entityRef: string, options?: CatalogRequestOptions) {
     const response = await this.fetchApi.fetch(
@@ -237,17 +228,51 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * Adds a location.
-   *
-   * @param options - An object with your preferred options.
-   * @param AddLocationRequest - A request object for adding locations.
-   *
-   * @returns An AddLocationResponse
-   *
-   * @public
+   * {@inheritdoc CatalogApi.getEntityFacets}
+   */
+  async getEntityFacets(
+    request: GetEntityFacetsRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntityFacetsResponse> {
+    const { filter = [], facets } = request;
+    const params: string[] = [];
+
+    // filter param can occur multiple times, for example
+    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
+    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
+    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
+    for (const filterItem of [filter].flat()) {
+      const filterParts: string[] = [];
+      for (const [key, value] of Object.entries(filterItem)) {
+        for (const v of [value].flat()) {
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(encodeURIComponent(key));
+          } else if (typeof v === 'string') {
+            filterParts.push(
+              `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
+            );
+          }
+        }
+      }
+
+      if (filterParts.length) {
+        params.push(`filter=${filterParts.join(',')}`);
+      }
+    }
+
+    for (const facet of facets) {
+      params.push(`facet=${encodeURIComponent(facet)}`);
+    }
+
+    const query = params.length ? `?${params.join('&')}` : '';
+    return await this.requestOptional('GET', `/entity-facets${query}`, options);
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.addLocation}
    */
   async addLocation(
-    { type = 'url', target, dryRun, presence }: AddLocationRequest,
+    { type = 'url', target, dryRun }: AddLocationRequest,
     options?: CatalogRequestOptions,
   ): Promise<AddLocationResponse> {
     const response = await this.fetchApi.fetch(
@@ -260,7 +285,7 @@ export class CatalogClient implements CatalogApi {
           ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
         },
         method: 'POST',
-        body: JSON.stringify({ type, target, presence }),
+        body: JSON.stringify({ type, target }),
       },
     );
 
@@ -282,24 +307,12 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   *  Gets an origin Location By Entity.
-   *
-   * @param entity - An Entity
-   * @param options - An object with your preferred options.
-   *
-   * @returns A {@link catalog-model#Location_2}.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.getLocationByRef}
    */
-  async getOriginLocationByEntity(
-    entity: Entity,
+  async getLocationByRef(
+    locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    const locationCompound =
-      entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
-    if (!locationCompound) {
-      return undefined;
-    }
     const all: { data: Location }[] = await this.requestRequired(
       'GET',
       '/locations',
@@ -307,44 +320,11 @@ export class CatalogClient implements CatalogApi {
     );
     return all
       .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationReference(l));
+      .find(l => locationRef === stringifyLocationRef(l));
   }
 
   /**
-   * Gets a Location by Entity.
-   *
-   * @param entity - An Entity
-   * @param options - An object with your preferred options.
-   *
-   * @returns A {@link catalog-model#Location_2}.
-   *
-   * @public
-   */
-  async getLocationByEntity(
-    entity: Entity,
-    options?: CatalogRequestOptions,
-  ): Promise<Location | undefined> {
-    const locationCompound = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-    if (!locationCompound) {
-      return undefined;
-    }
-    const all: { data: Location }[] = await this.requestRequired(
-      'GET',
-      '/locations',
-      options,
-    );
-    return all
-      .map(r => r.data)
-      .find(l => locationCompound === stringifyLocationReference(l));
-  }
-
-  /**
-   * Removes a location as identified by Id.
-   *
-   * @param id - A string containing the Id
-   * @param options - An object with your preferred options.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.removeLocationById}
    */
   async removeLocationById(
     id: string,
@@ -358,12 +338,7 @@ export class CatalogClient implements CatalogApi {
   }
 
   /**
-   * Removes an Entity as identified by Uid.
-   *
-   * @param uid - A string containing the Uid
-   * @param options - An object with your preferred options.
-   *
-   * @public
+   * {@inheritdoc CatalogApi.removeEntityByUid}
    */
   async removeEntityByUid(
     uid: string,

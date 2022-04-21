@@ -1,5 +1,4 @@
 name: E2E Test Linux
-
 on:
   pull_request:
     paths-ignore:
@@ -72,8 +71,7 @@ jobs:
       # End of yarn setup
 
       - run: yarn tsc
-      - name: yarn build
-        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
+      - run: yarn backstage-cli repo build
       - name: run E2E test
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288

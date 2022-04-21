@@ -1,5 +1,112 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.17
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
+## 0.3.17-next.2
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/integration@1.1.0-next.2
+
+## 0.3.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+
+## 0.3.16
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/integration@1.0.0
+
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1-next.0
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/integration@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/integration@0.7.5
+
+## 0.3.12
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/integration@0.7.3
+  - @backstage/theme@0.2.15
+
+## 0.3.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+
+## 0.3.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+
 ## 0.3.10
 
 ### Patch Changes

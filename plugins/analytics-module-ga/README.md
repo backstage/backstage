@@ -47,6 +47,19 @@ app:
       trackingId: UA-0000000-0
 ```
 
+4. Update CSP in your `app-config.yaml`:
+
+The following is the minimal content security policy required to load scripts from GA.
+
+```yaml
+backend:
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
+    # Add these two lines below
+    script-src: ["'self'", "'unsafe-eval'", 'https://www.google-analytics.com']
+    img-src: ["'self'", 'data:', 'https://www.google-analytics.com']
+```
+
 ## Configuration
 
 In order to be able to analyze usage of your Backstage instance _by plugin_, we

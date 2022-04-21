@@ -1,5 +1,175 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.4.2
+
+### Patch Changes
+
+- ebc0aef2c6: Changed relationship creation in LDAP data processor to leverage entityRefs instead of metadata.name
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0
+  - @backstage/backend-tasks@0.3.0
+  - @backstage/catalog-model@1.0.1
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.0-next.1
+  - @backstage/backend-tasks@0.3.0-next.1
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-catalog-backend@1.0.1-next.0
+  - @backstage/backend-tasks@0.2.2-next.0
+
+## 0.4.1
+
+### Patch Changes
+
+- 132189e466: Updated the code to handle User kind `spec.memberOf` now being optional.
+- a6c367d937: Add config support for LDAP search options.
+- 74375be2c6: Updated to no longer rely on the `RecursivePartial` export from `@backstage/plugin-catalog-backend`.
+- e949d68059: Made sure to move the catalog-related github and ldap config into their right places
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.0.0
+  - @backstage/backend-tasks@0.2.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 9461f73643: **BREAKING**: Added a `schedule` field to `LdapOrgEntityProvider.fromConfig`, which is required. If you want to retain the old behavior of scheduling the provider manually, you can set it to the string value `'manual'`. But you may want to leverage the ability to instead pass in the recurring task schedule information directly. This will allow you to simplify your backend setup code to not need an intermediate variable and separate scheduling code at the bottom.
+
+  All things said, a typical setup might now look as follows:
+
+  ```diff
+   // packages/backend/src/plugins/catalog.ts
+  +import { Duration } from 'luxon';
+  +import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+  +  // The target parameter below needs to match the ldap.providers.target
+  +  // value specified in your app-config.
+  +  builder.addEntityProvider(
+  +    LdapOrgEntityProvider.fromConfig(env.config, {
+  +      id: 'our-ldap-master',
+  +      target: 'ldaps://ds.example.net',
+  +      logger: env.logger,
+  +      schedule: env.scheduler.createScheduledTaskRunner({
+  +        frequency: Duration.fromObject({ minutes: 60 }),
+  +        timeout: Duration.fromObject({ minutes: 15 }),
+  +      }),
+  +    }),
+  +  );
+  ```
+
+### Patch Changes
+
+- f751e84572: Ignore search referrals instead of throwing an error.
+- Updated dependencies
+  - @backstage/backend-tasks@0.2.0
+  - @backstage/plugin-catalog-backend@0.24.0
+  - @backstage/catalog-model@0.13.0
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 9461f73643: **BREAKING**: Added a `schedule` field to `LdapOrgEntityProvider.fromConfig`, which is required. If you want to retain the old behavior of scheduling the provider manually, you can set it to the string value `'manual'`. But you may want to leverage the ability to instead pass in the recurring task schedule information directly. This will allow you to simplify your backend setup code to not need an intermediate variable and separate scheduling code at the bottom.
+
+  All things said, a typical setup might now look as follows:
+
+  ```diff
+   // packages/backend/src/plugins/catalog.ts
+  +import { Duration } from 'luxon';
+  +import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+  +  // The target parameter below needs to match the ldap.providers.target
+  +  // value specified in your app-config.
+  +  builder.addEntityProvider(
+  +    LdapOrgEntityProvider.fromConfig(env.config, {
+  +      id: 'our-ldap-master',
+  +      target: 'ldaps://ds.example.net',
+  +      logger: env.logger,
+  +      schedule: env.scheduler.createScheduledTaskRunner({
+  +        frequency: Duration.fromObject({ minutes: 60 }),
+  +        timeout: Duration.fromObject({ minutes: 15 }),
+  +      }),
+  +    }),
+  +  );
+  ```
+
+### Patch Changes
+
+- f751e84572: Ignore search referrals instead of throwing an error.
+- Updated dependencies
+  - @backstage/backend-tasks@0.2.0-next.0
+  - @backstage/plugin-catalog-backend@0.24.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+
+## 0.3.15
+
+### Patch Changes
+
+- 83a83381b0: Use the new `processingResult` export from the catalog backend
+- 66aa05c23c: Fixed bug in Catalog LDAP module to acknowledge page events to continue receiving entries if pagePause=true
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/plugin-catalog-backend@0.23.0
+
+## 0.3.14
+
+### Patch Changes
+
+- ed09ad8093: Updated usage of the `LocationSpec` type from `@backstage/catalog-model`, which is deprecated.
+- 25e97e7242: Minor wording update
+- df61ca71dd: Implemented required `getProcessorName` method for catalog processor.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.22.0
+  - @backstage/catalog-model@0.11.0
+
+## 0.3.13
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 244d24ebc4: Import `Location` from the `@backstage/catalog-client` package.
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.4
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.3
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@0.21.3-next.0
+
 ## 0.3.11
 
 ### Patch Changes

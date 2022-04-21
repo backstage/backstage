@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const Illo = () => {
+export function Illo() {
   const classes = useStyles();
   return (
     <img
@@ -43,4 +43,4 @@ export const Illo = () => {
       alt="Illustration on entity not found page"
     />
   );
-};
+}

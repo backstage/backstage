@@ -95,6 +95,7 @@ const { render, renderCompat } = (() => {
 })();
 `;
 
+/** @public */
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
 export interface SecureTemplaterOptions {

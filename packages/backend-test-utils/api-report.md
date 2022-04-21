@@ -9,6 +9,13 @@ import { Knex } from 'knex';
 export function isDockerDisabledForTests(): boolean;
 
 // @public
+export function setupRequestMockHandlers(worker: {
+  listen: (t: any) => void;
+  close: () => void;
+  resetHandlers: () => void;
+}): void;
+
+// @public
 export type TestDatabaseId =
   | 'POSTGRES_13'
   | 'POSTGRES_9'

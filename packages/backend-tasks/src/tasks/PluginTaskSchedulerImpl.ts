@@ -17,8 +17,15 @@
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { TaskWorker } from './TaskWorker';
-import { PluginTaskScheduler, TaskDefinition } from './types';
+import {
+  PluginTaskScheduler,
+  TaskInvocationDefinition,
+  TaskRunner,
+  TaskScheduleDefinition,
+} from './types';
 import { validateId } from './util';
+import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 
 /**
  * Implements the actual task management.
@@ -29,22 +36,57 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     private readonly logger: Logger,
   ) {}
 
-  async scheduleTask(task: TaskDefinition): Promise<void> {
+  async triggerTask(id: string): Promise<void> {
+    const knex = await this.databaseFactory();
+
+    // check if task exists
+    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .select(knex.raw(1))
+      .where('id', '=', id);
+    if (rows.length !== 1) {
+      throw new NotFoundError(`Task ${id} does not exist`);
+    }
+
+    const updatedRows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .where('id', '=', id)
+      .whereNull('current_run_ticket')
+      .update({
+        next_run_start_at: knex.fn.now(),
+      });
+    if (updatedRows < 1) {
+      throw new ConflictError(`Task ${id} is currently running`);
+    }
+  }
+
+  async scheduleTask(
+    task: TaskScheduleDefinition & TaskInvocationDefinition,
+  ): Promise<void> {
     validateId(task.id);
 
     const knex = await this.databaseFactory();
-
     const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
+
     await worker.start(
       {
-        version: 1,
+        version: 2,
+        cadence:
+          'cron' in task.frequency
+            ? task.frequency.cron
+            : task.frequency.toISO(),
         initialDelayDuration: task.initialDelay?.toISO(),
-        recurringAtMostEveryDuration: task.frequency.toISO(),
         timeoutAfterDuration: task.timeout.toISO(),
       },
       {
         signal: task.signal,
       },
     );
+  }
+
+  createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner {
+    return {
+      run: async task => {
+        await this.scheduleTask({ ...task, ...schedule });
+      },
+    };
   }
 }

@@ -17,7 +17,7 @@
 import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
 import {
   AlphaEntity,
-  parseEntityRef,
+  EntityRelation,
   EntityStatusItem,
 } from '@backstage/catalog-model';
 import { SerializedError, stringifyError } from '@backstage/errors';
@@ -183,9 +183,9 @@ export class Stitcher {
     );
     entity.relations = uniqueRelationRows
       .filter(row => row.relationType /* exclude null row, if relevant */)
-      .map(row => ({
+      .map<EntityRelation>(row => ({
         type: row.relationType!,
-        target: parseEntityRef(row.relationTarget!),
+        targetRef: row.relationTarget!,
       }));
     if (statusItems.length) {
       entity.status = {
@@ -202,7 +202,6 @@ export class Stitcher {
     }
 
     entity.metadata.uid = entityId;
-    entity.metadata.generation = 1;
     if (!entity.metadata.etag) {
       // If the original data source did not have its own etag handling,
       // use the hash as a good-quality etag
@@ -210,11 +209,11 @@ export class Stitcher {
     }
 
     // This may throw if the entity is invalid, so we call it before
-    // the final_entites write, even though we may end up not needing
+    // the final_entities write, even though we may end up not needing
     // to write the search index.
     const searchEntries = buildEntitySearch(entityId, entity);
 
-    const rowsChanged = await this.database<DbFinalEntitiesRow>(
+    const amountOfRowsChanged = await this.database<DbFinalEntitiesRow>(
       'final_entities',
     )
       .update({
@@ -226,7 +225,7 @@ export class Stitcher {
       .onConflict('entity_id')
       .merge(['final_entity', 'hash']);
 
-    if (rowsChanged.length === 0) {
+    if (amountOfRowsChanged === 0) {
       this.logger.debug(
         `Entity ${entityRef} is already processed, skipping write.`,
       );

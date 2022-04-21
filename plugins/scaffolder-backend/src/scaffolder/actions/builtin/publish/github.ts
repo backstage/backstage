@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
@@ -22,36 +21,46 @@ import {
   enableBranchProtectionOnDefaultRepoBranch,
   initRepoAndPush,
 } from '../helpers';
-import { getRepoSourceDirectory } from './util';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
-import { OctokitProvider } from '../github/OctokitProvider';
-import { assertError } from '@backstage/errors';
+import { assertError, InputError } from '@backstage/errors';
+import { getOctokitOptions } from '../github/helpers';
+import { Octokit } from 'octokit';
 
-type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-type Collaborator = { access: Permission; username: string };
-
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to GitHub.
+ *
+ * @public
+ */
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
-  const octokitProvider = new OctokitProvider(
-    integrations,
-    githubCredentialsProvider ||
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
-  );
 
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
     access?: string;
     defaultBranch?: string;
+    deleteBranchOnMerge?: boolean;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
+    allowRebaseMerge?: boolean;
+    allowSquashMerge?: boolean;
+    allowMergeCommit?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
-    repoVisibility: 'private' | 'internal' | 'public';
-    collaborators: Collaborator[];
+    requiredStatusCheckContexts?: string[];
+    repoVisibility?: 'private' | 'internal' | 'public';
+    collaborators?: Array<{
+      username: string;
+      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+    }>;
     token?: string;
     topics?: string[];
   }>({
@@ -83,6 +92,15 @@ export function createPublishGithubAction(options: {
               'Require an approved review in PR including files with a designated Code Owner',
             type: 'boolean',
           },
+          requiredStatusCheckContexts: {
+            title: 'Required Status Check Contexts',
+            description:
+              'The list of status checks to require in order to merge into this branch',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
           repoVisibility: {
             title: 'Repository Visibility',
             type: 'string',
@@ -92,6 +110,41 @@ export function createPublishGithubAction(options: {
             title: 'Default Branch',
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
+          },
+          deleteBranchOnMerge: {
+            title: 'Delete Branch On Merge',
+            type: 'boolean',
+            description: `Delete the branch after merging the PR. The default value is 'false'`,
+          },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
+          },
+          allowMergeCommit: {
+            title: 'Allow Merge Commits',
+            type: 'boolean',
+            description: `Allow merge commits. The default value is 'true'`,
+          },
+          allowSquashMerge: {
+            title: 'Allow Squash Merges',
+            type: 'boolean',
+            description: `Allow squash merges. The default value is 'true'`,
+          },
+          allowRebaseMerge: {
+            title: 'Allow Rebase Merges',
+            type: 'boolean',
+            description: `Allow rebase merges. The default value is 'true'`,
           },
           sourcePath: {
             title: 'Source Path',
@@ -153,17 +206,35 @@ export function createPublishGithubAction(options: {
         description,
         access,
         requireCodeOwnerReviews = false,
+        requiredStatusCheckContexts = [],
         repoVisibility = 'private',
         defaultBranch = 'master',
+        deleteBranchOnMerge = false,
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
+        allowMergeCommit = true,
+        allowSquashMerge = true,
+        allowRebaseMerge = true,
         collaborators,
         topics,
         token: providedToken,
       } = ctx.input;
 
-      const { client, token, owner, repo } = await octokitProvider.getOctokit(
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
+      const octokitOptions = await getOctokitOptions({
+        integrations,
+        credentialsProvider: githubCredentialsProvider,
+        token: providedToken,
         repoUrl,
-        { token: providedToken },
-      );
+      });
+
+      const client = new Octokit(octokitOptions);
 
       const user = await client.rest.users.getByUsername({
         username: owner,
@@ -177,11 +248,19 @@ export function createPublishGithubAction(options: {
               private: repoVisibility === 'private',
               visibility: repoVisibility,
               description: description,
+              delete_branch_on_merge: deleteBranchOnMerge,
+              allow_merge_commit: allowMergeCommit,
+              allow_squash_merge: allowSquashMerge,
+              allow_rebase_merge: allowRebaseMerge,
             })
           : client.rest.repos.createForAuthenticatedUser({
               name: repo,
               private: repoVisibility === 'private',
               description: description,
+              delete_branch_on_merge: deleteBranchOnMerge,
+              allow_merge_commit: allowMergeCommit,
+              allow_squash_merge: allowSquashMerge,
+              allow_rebase_merge: allowRebaseMerge,
             });
 
       const { data: newRepo } = await repoCreationPromise;
@@ -243,8 +322,12 @@ export function createPublishGithubAction(options: {
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       await initRepoAndPush({
@@ -253,12 +336,12 @@ export function createPublishGithubAction(options: {
         defaultBranch,
         auth: {
           username: 'x-access-token',
-          password: token,
+          password: octokitOptions.auth,
         },
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 
@@ -270,6 +353,7 @@ export function createPublishGithubAction(options: {
           logger: ctx.logger,
           defaultBranch,
           requireCodeOwnerReviews,
+          requiredStatusCheckContexts,
         });
       } catch (e) {
         assertError(e);

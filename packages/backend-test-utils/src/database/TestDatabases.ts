@@ -91,9 +91,11 @@ export class TestDatabases {
 
     const databases = new TestDatabases(supportedIds);
 
-    afterAll(async () => {
-      await databases.shutdown();
-    });
+    if (supportedIds.length > 0) {
+      afterAll(async () => {
+        await databases.shutdown();
+      });
+    }
 
     return databases;
   }
@@ -182,6 +184,7 @@ export class TestDatabases {
         return this.initPostgres(properties);
       case 'mysql2':
         return this.initMysql(properties);
+      case 'better-sqlite3':
       case 'sqlite3':
         return this.initSqlite(properties);
       default:
@@ -240,13 +243,13 @@ export class TestDatabases {
   }
 
   private async initSqlite(
-    _properties: TestDatabaseProperties,
+    properties: TestDatabaseProperties,
   ): Promise<Instance> {
     const databaseManager = DatabaseManager.fromConfig(
       new ConfigReader({
         backend: {
           database: {
-            client: 'sqlite3',
+            client: properties.driver,
             connection: ':memory:',
           },
         },

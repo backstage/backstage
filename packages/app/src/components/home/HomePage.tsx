@@ -22,9 +22,11 @@ import {
   WelcomeTitle,
   HeaderWorldClock,
   ClockConfig,
+  HomePageStarredEntities,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
+import { HomePageCalendar } from '@backstage/plugin-gcalendar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
@@ -47,7 +49,7 @@ const clockConfigs: ClockConfig[] = [
   },
 ];
 
-export const HomePage = () => (
+export const homePage = (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
       <HeaderWorldClock clockConfigs={clockConfigs} />
@@ -99,6 +101,12 @@ export const HomePage = () => (
               },
             ]}
           />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <HomePageCalendar />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <HomePageStarredEntities />
         </Grid>
       </Grid>
     </Content>

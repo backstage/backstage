@@ -16,17 +16,18 @@ import {
 } from '@backstage/plugin-todo-backend';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  reader,
-  config,
-  discovery,
-}: PluginEnvironment): Promise<Router> {
-  const todoReader = TodoScmReader.fromConfig(config, {
-    logger,
-    reader,
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const todoReader = TodoScmReader.fromConfig(env.config, {
+    logger: env.logger,
+    reader: env.reader,
   });
-  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+  const catalogClient = new CatalogClient({
+    discoveryApi: discovery,
+  });
+
   const todoService = new TodoReaderService({
     todoReader,
     catalogClient,
@@ -51,8 +52,9 @@ async function main() {
 
 ## Scanned Files
 
-The included `TodoReaderService` and `TodoScmReader` works by reading source code of to the entity that is being viewed. The location source code is determined by the value of the [`backstage.io/source-location`
-](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiosource-location) annotation of the entity, and if that is missing it falls back to the [`backstage.io/managed-by-location `](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-location) annotation. Only `url` locations are currently supported, meaning locally configured `file` locations won't work. Also note that dot-files and folders are ignored.
+The included `TodoReaderService` and `TodoScmReader` works by getting the entity source location from the catalog.
+
+The location source code is determined automatically. In case of the source code of the component is not in the same place of the entity YAML file, you can explicitly set the value of the [`backstage.io/source-location`](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiosource-location) annotation of the entity, and if that is missing it falls back to the [`backstage.io/managed-by-location `](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-location) annotation. Only `url` locations are currently supported, meaning locally configured `file` locations won't work. Also note that dot-files and folders are ignored.
 
 ## Parser Configuration
 
@@ -66,9 +68,9 @@ import {
 
 // ...
 
-const todoReader = TodoScmReader.fromConfig(config, {
-  logger,
-  reader,
+const todoReader = TodoScmReader.fromConfig(env.config, {
+  logger: env.logger,
+  reader: env.reader,
   parser: createTodoParser({
     additionalTags: ['NOTE', 'XXX'],
   }),

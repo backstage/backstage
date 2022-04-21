@@ -20,6 +20,11 @@ const crypto = require('crypto');
 const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
 
+const envOptions = {
+  nextTests: Boolean(process.env.BACKSTAGE_NEXT_TESTS),
+  enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS),
+};
+
 const transformIgnorePattern = [
   '@material-ui',
   '@rjsf',
@@ -36,6 +41,25 @@ const transformIgnorePattern = [
   'typescript',
 ].join('|');
 
+// Provides additional config that's based on the role of the target package
+function getRoleConfig(role) {
+  switch (role) {
+    case 'frontend':
+    case 'web-library':
+    case 'common-library':
+    case 'frontend-plugin':
+    case 'frontend-plugin-module':
+      return { testEnvironment: 'jsdom' };
+    case 'cli':
+    case 'backend':
+    case 'node-library':
+    case 'backend-plugin':
+    case 'backend-plugin-module':
+    default:
+      return { testEnvironment: 'node' };
+  }
+}
+
 async function getProjectConfig(targetPath, displayName) {
   const configJsPath = path.resolve(targetPath, 'jest.config.js');
   const configTsPath = path.resolve(targetPath, 'jest.config.ts');
@@ -50,6 +74,7 @@ async function getProjectConfig(targetPath, displayName) {
   // All configs are merged together to create the final config, with longer paths taking precedence.
   // The merging of the configs is shallow, meaning e.g. all transforms are replaced if new ones are defined.
   const pkgJsonConfigs = [];
+  let closestPkgJson = undefined;
   let currentPath = targetPath;
 
   // Some sanity check to avoid infinite loop
@@ -59,6 +84,9 @@ async function getProjectConfig(targetPath, displayName) {
     if (exists) {
       try {
         const data = fs.readJsonSync(packagePath);
+        if (!closestPkgJson) {
+          closestPkgJson = data;
+        }
         if (data.jest) {
           pkgJsonConfigs.unshift(data.jest);
         }
@@ -95,25 +123,34 @@ async function getProjectConfig(targetPath, displayName) {
     ...(displayName && { displayName }),
     rootDir: path.resolve(targetPath, 'src'),
     coverageDirectory: path.resolve(targetPath, 'coverage'),
-    coverageProvider: 'v8',
+    coverageProvider: envOptions.nextTests ? undefined : 'v8',
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
 
     transform: {
-      '\\.(js|jsx|ts|tsx|mjs|cjs)$': require.resolve(
-        './jestSucraseTransform.js',
-      ),
+      '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
+        require.resolve('./jestSucraseTransform.js'),
+        {
+          enableSourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+        },
+      ],
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
       '\\.(yaml)$': require.resolve('jest-transform-yaml'),
     },
 
     // A bit more opinionated
-    testMatch: ['**/?(*.)test.{js,jsx,ts,tsx,mjs,cjs}'],
+    testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
+
+    moduleLoader: envOptions.nextTests
+      ? require.resolve('./jestCachingModuleLoader')
+      : undefined,
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
+
+    ...getRoleConfig(closestPkgJson?.backstage?.role),
   };
 
   // Use src/setupTests.ts as the default location for configuring test env
@@ -174,7 +211,10 @@ async function getRootConfig() {
       // script to determine whether a given package should be tested
       const packageData = await fs.readJson(packagePath);
       const testScript = packageData.scripts && packageData.scripts.test;
-      if (testScript && testScript.includes('backstage-cli test')) {
+      const isSupportedTestScript =
+        testScript?.includes('backstage-cli test') ||
+        testScript?.includes('backstage-cli package test');
+      if (testScript && isSupportedTestScript) {
         return await getProjectConfig(projectPath, packageData.name);
       }
 

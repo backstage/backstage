@@ -27,8 +27,9 @@ import {
 import { RouteResolver } from './RouteResolver';
 import { BackstageRouteObject } from './types';
 
-const RoutingContext =
-  createVersionedContext<{ 1: RouteResolver }>('routing-context');
+const RoutingContext = createVersionedContext<{ 1: RouteResolver }>(
+  'routing-context',
+);
 
 type ProviderProps = {
   routePaths: Map<RouteRef, string>;

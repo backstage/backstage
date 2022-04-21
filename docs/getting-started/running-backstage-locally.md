@@ -13,13 +13,14 @@ trying to contribute, follow the instructions to
 
 - Node.js
 
-First make sure you are using Node.js with an Active LTS Release, currently v14.
+First make sure you are using Node.js with an [Active LTS Release](https://nodejs.org/en/about/releases/).
 This is made easy with a version manager such as
 [nvm](https://github.com/nvm-sh/nvm) which allows for version switching.
 
 ```bash
-# Installing a new version
-nvm install 14
+# Installing current LTS release
+nvm install --lts
+> Installing latest LTS version.
 > Downloading and installing node v14.15.1...
 > Now using node v14.15.1 (npm v6.14.8)
 
@@ -66,8 +67,8 @@ terminal windows, both starting from the Backstage project root.
 In the first window, run
 
 ```bash
-cd packages/backend
-yarn start
+# From your Backstage root directory
+yarn --cwd packages/backend start
 ```
 
 That starts up a backend instance on port 7007.

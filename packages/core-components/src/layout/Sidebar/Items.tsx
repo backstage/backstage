@@ -21,17 +21,23 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Badge from '@material-ui/core/Badge';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { CreateCSSProperties } from '@material-ui/core/styles/withStyles';
+import {
+  CreateCSSProperties,
+  StyledComponentProps,
+} from '@material-ui/core/styles/withStyles';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import classnames from 'classnames';
 import React, {
+  ComponentProps,
+  ComponentType,
   forwardRef,
   KeyboardEventHandler,
   ReactNode,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import {
@@ -42,9 +48,10 @@ import {
   useResolvedPath,
 } from 'react-router-dom';
 import {
-  sidebarConfig,
   SidebarContext,
+  SidebarConfigContext,
   SidebarItemWithSubmenuContext,
+  SidebarConfig,
 } from './config';
 import {
   SidebarSubmenuItemProps,
@@ -77,15 +84,9 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
-const useStyles = makeStyles<BackstageTheme>(
-  theme => {
-    const {
-      selectedIndicatorWidth,
-      drawerWidthClosed,
-      drawerWidthOpen,
-      iconContainerWidth,
-    } = sidebarConfig;
-    return {
+const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
+  makeStyles<BackstageTheme>(
+    theme => ({
       root: {
         color: theme.palette.navigation.color,
         display: 'flex',
@@ -104,12 +105,12 @@ const useStyles = makeStyles<BackstageTheme>(
         font: 'inherit',
       },
       closed: {
-        width: drawerWidthClosed,
+        width: sidebarConfig.drawerWidthClosed,
         justifyContent: 'center',
       },
       open: {
         [theme.breakpoints.up('sm')]: {
-          width: drawerWidthOpen,
+          width: sidebarConfig.drawerWidthOpen,
         },
       },
       highlightable: {
@@ -135,7 +136,7 @@ const useStyles = makeStyles<BackstageTheme>(
       iconContainer: {
         boxSizing: 'border-box',
         height: '100%',
-        width: iconContainerWidth,
+        width: sidebarConfig.iconContainerWidth,
         marginRight: -theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
@@ -153,7 +154,7 @@ const useStyles = makeStyles<BackstageTheme>(
         padding: theme.spacing(2, 0, 2),
       },
       searchContainer: {
-        width: drawerWidthOpen - iconContainerWidth,
+        width: sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
       },
       secondaryAction: {
         width: theme.spacing(6),
@@ -182,23 +183,33 @@ const useStyles = makeStyles<BackstageTheme>(
       },
       selected: {
         '&$root': {
-          borderLeft: `solid ${selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
+          borderLeft: `solid ${sidebarConfig.selectedIndicatorWidth}px ${theme.palette.navigation.indicator}`,
           color: theme.palette.navigation.selectedColor,
         },
         '&$closed': {
-          width: drawerWidthClosed,
+          width: sidebarConfig.drawerWidthClosed,
         },
         '& $closedItemIcon': {
-          paddingRight: selectedIndicatorWidth,
+          paddingRight: sidebarConfig.selectedIndicatorWidth,
         },
         '& $iconContainer': {
-          marginLeft: -selectedIndicatorWidth,
+          marginLeft: -sidebarConfig.selectedIndicatorWidth,
         },
       },
-    };
-  },
-  { name: 'BackstageSidebarItem' },
-);
+    }),
+    { name: 'BackstageSidebarItem' },
+  );
+
+// This is a workaround for this issue https://github.com/mui/material-ui/issues/15511
+// The styling of the `selected` elements doesn't work as expected when using a prop callback.
+// Don't use this pattern unless needed
+function useMemoStyles(sidebarConfig: SidebarConfig) {
+  const useStyles = useMemo(
+    () => makeSidebarStyles(sidebarConfig),
+    [sidebarConfig],
+  );
+  return useStyles();
+}
 
 /**
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
@@ -351,7 +362,8 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     className,
     ...navLinkProps
   } = props;
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useMemoStyles(sidebarConfig);
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
@@ -424,7 +436,8 @@ const SidebarItemWithSubmenu = ({
 }: SidebarItemBaseProps & {
   children: React.ReactElement<SidebarSubmenuProps>;
 }) => {
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
@@ -504,7 +517,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   }
 
   return <SidebarItemBase {...props} ref={ref} />;
-});
+}) as (props: SidebarItemProps) => JSX.Element;
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
@@ -513,8 +526,9 @@ type SidebarSearchFieldProps = {
 };
 
 export function SidebarSearchField(props: SidebarSearchFieldProps) {
+  const { sidebarConfig } = useContext(SidebarConfigContext);
   const [input, setInput] = useState('');
-  const classes = useStyles();
+  const classes = useMemoStyles(sidebarConfig);
   const Icon = props.icon ? props.icon : SearchIcon;
 
   const search = () => {
@@ -580,7 +594,7 @@ export const SidebarSpace = styled('div')(
     flex: 1,
   },
   { name: 'BackstageSidebarSpace' },
-);
+) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
 
 export type SidebarSpacerClassKey = 'root';
 
@@ -589,7 +603,7 @@ export const SidebarSpacer = styled('div')(
     height: 8,
   },
   { name: 'BackstageSidebarSpacer' },
-);
+) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
 
 export type SidebarDividerClassKey = 'root';
 
@@ -602,7 +616,7 @@ export const SidebarDivider = styled('hr')(
     margin: '12px 0px',
   },
   { name: 'BackstageSidebarDivider' },
-);
+) as ComponentType<ComponentProps<'hr'> & StyledComponentProps<'root'>>;
 
 const styledScrollbar = (theme: Theme): CreateCSSProperties => ({
   overflowY: 'auto',
@@ -631,7 +645,7 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
     '@media (hover: none)': scrollbarStyles,
     '&:hover': scrollbarStyles,
   };
-});
+}) as ComponentType<ComponentProps<'div'> & StyledComponentProps<'root'>>;
 
 /**
  * A button which allows you to expand the sidebar when clicked.
@@ -642,7 +656,8 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
  * @public
  */
 export const SidebarExpandButton = () => {
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useMemoStyles(sidebarConfig);
   const { isOpen, setOpen } = useContext(SidebarContext);
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),

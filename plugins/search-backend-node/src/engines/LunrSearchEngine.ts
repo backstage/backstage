@@ -16,14 +16,18 @@
 
 import {
   IndexableDocument,
+  IndexableResultSet,
   SearchQuery,
-  SearchResultSet,
   QueryTranslator,
   SearchEngine,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
+import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 
+/**
+ * @beta
+ */
 export type ConcreteLunrQuery = {
   lunrQueryBuilder: lunr.Index.QueryBuilder;
   documentTypes?: string[];
@@ -35,8 +39,14 @@ type LunrResultEnvelope = {
   type: string;
 };
 
-type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
+/**
+ * @beta
+ */
+export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
+/**
+ * @beta
+ */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
@@ -58,7 +68,7 @@ export class LunrSearchEngine implements SearchEngine {
       lunrQueryBuilder: q => {
         const termToken = lunr.tokenizer(term);
 
-        // Support for typeahead seach is based on https://github.com/olivernn/lunr.js/issues/256#issuecomment-295407852
+        // Support for typeahead search is based on https://github.com/olivernn/lunr.js/issues/256#issuecomment-295407852
         // look for an exact match and apply a large positive boost
         q.term(termToken, {
           usePipeline: true,
@@ -124,33 +134,20 @@ export class LunrSearchEngine implements SearchEngine {
     this.translator = translator;
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    const lunrBuilder = new lunr.Builder();
+  async getIndexer(type: string) {
+    const indexer = new LunrSearchEngineIndexer();
 
-    lunrBuilder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
-    lunrBuilder.searchPipeline.add(lunr.stemmer);
-
-    // Make this lunr index aware of all relevant fields.
-    Object.keys(documents[0]).forEach(field => {
-      lunrBuilder.field(field);
+    indexer.on('close', () => {
+      // Once the stream is closed, build the index and store the documents in
+      // memory for later retrieval.
+      this.lunrIndices[type] = indexer.buildIndex();
+      this.docStore = { ...this.docStore, ...indexer.getDocumentStore() };
     });
 
-    // Set "location" field as reference field
-    lunrBuilder.ref('location');
-
-    documents.forEach((document: IndexableDocument) => {
-      // Add document to Lunar index
-      lunrBuilder.add(document);
-      // Store documents in memory to be able to look up document using the ref during query time
-      // This is not how you should implement your SearchEngine implementation! Do not copy!
-      this.docStore[document.location] = document;
-    });
-
-    // "Rotate" the index by simply overwriting any existing index of the same name.
-    this.lunrIndices[type] = lunrBuilder.build();
+    return indexer;
   }
 
-  async query(query: SearchQuery): Promise<SearchResultSet> {
+  async query(query: SearchQuery): Promise<IndexableResultSet> {
     const { lunrQueryBuilder, documentTypes, pageSize } = this.translator(
       query,
     ) as ConcreteLunrQuery;
@@ -199,8 +196,8 @@ export class LunrSearchEngine implements SearchEngine {
       ? encodePageCursor({ page: page - 1 })
       : undefined;
 
-    // Translate results into SearchResultSet
-    const realResultSet: SearchResultSet = {
+    // Translate results into IndexableResultSet
+    const realResultSet: IndexableResultSet = {
       results: results.slice(offset, offset + pageSize).map(d => {
         return { type: d.type, document: this.docStore[d.result.ref] };
       }),

@@ -16,8 +16,15 @@
 
 export { createPublishAzureAction } from './azure';
 export { createPublishBitbucketAction } from './bitbucket';
+export { createPublishBitbucketCloudAction } from './bitbucketCloud';
+export { createPublishBitbucketServerAction } from './bitbucketServer';
 export { createPublishFileAction } from './file';
 export { createPublishGithubAction } from './github';
 export { createPublishGithubPullRequestAction } from './githubPullRequest';
+export type {
+  CreateGithubPullRequestClientFactoryInput,
+  CreateGithubPullRequestActionOptions,
+  OctokitWithPullRequestPluginClient,
+} from './githubPullRequest';
 export { createPublishGitlabAction } from './gitlab';
 export { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';

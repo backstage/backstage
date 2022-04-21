@@ -24,9 +24,10 @@ import { PermissionRule } from '../types';
 export const createPermissionRule = <
   TResource,
   TQuery,
+  TResourceType extends string,
   TParams extends unknown[],
 >(
-  rule: PermissionRule<TResource, TQuery, TParams>,
+  rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
 ) => rule;
 
 /**
@@ -38,8 +39,8 @@ export const createPermissionRule = <
  * @public
  */
 export const makeCreatePermissionRule =
-  <TResource, TQuery>() =>
+  <TResource, TQuery, TResourceType extends string>() =>
   <TParams extends unknown[]>(
-    rule: PermissionRule<TResource, TQuery, TParams>,
+    rule: PermissionRule<TResource, TQuery, TResourceType, TParams>,
   ) =>
     createPermissionRule(rule);

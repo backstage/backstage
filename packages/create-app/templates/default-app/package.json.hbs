@@ -9,7 +9,7 @@
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "start": "yarn workspace app start",
     "start-backend": "yarn workspace backend start",
-    "build": "lerna run build",
+    "build": "backstage-cli repo build --all",
     "build-image": "yarn workspace backend build-image",
     "tsc": "tsc",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
@@ -17,8 +17,8 @@
     "diff": "lerna run diff --",
     "test": "backstage-cli test",
     "test:all": "lerna run test -- --coverage",
-    "lint": "lerna run lint --since origin/master --",
-    "lint:all": "lerna run lint --",
+    "lint": "backstage-cli repo lint --since origin/master",
+    "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
     "create-plugin": "backstage-cli create-plugin --scope internal",
     "remove-plugin": "backstage-cli remove-plugin"
@@ -36,6 +36,10 @@
     "lerna": "^4.0.0",
     "prettier": "^2.3.2",
     "typescript": "~4.5.4"
+  },
+  "resolutions": {
+    "@types/react": "^17",
+    "@types/react-dom": "^17"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

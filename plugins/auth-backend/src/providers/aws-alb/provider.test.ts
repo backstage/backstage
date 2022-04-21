@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
-import express from 'express';
-import { JWT } from 'jose';
 
+import express from 'express';
+import { jwtVerify } from 'jose';
 import {
   ALB_ACCESS_TOKEN_HEADER,
   ALB_JWT_HEADER,
   AwsAlbAuthProvider,
 } from './provider';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient } from '../../lib/catalog';
 import { makeProfileInfo } from '../../lib/passport';
+import { AuthResolverContext } from '../types';
+import { AuthenticationError } from '@backstage/errors';
 
-const jwtMock = JWT as jest.Mocked<any>;
+const jwtMock = jwtVerify as jest.Mocked<any>;
 
 const mockKey = async () => {
   return `-----BEGIN PUBLIC KEY-----
@@ -66,16 +65,6 @@ beforeEach(() => {
 });
 
 describe('AwsAlbAuthProvider', () => {
-  const tokenIssuer: TokenIssuer = {
-    listPublicKeys: jest.fn(),
-    async issueToken(params) {
-      return `token-for-${params.claims.sub}`;
-    },
-  };
-  const catalogIdentityClient: CatalogIdentityClient = {
-    findUser: jest.fn(),
-  } as unknown as CatalogIdentityClient;
-
   const mockRequest = {
     header: jest.fn(name => {
       if (name === ALB_JWT_HEADER) {
@@ -115,32 +104,26 @@ describe('AwsAlbAuthProvider', () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         }),
         signInResolver: async () => {
           return {
-            id: 'user.name',
             token:
-              'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+              'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
           };
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce(mockClaims);
+      jwtMock.mockReturnValueOnce(Promise.resolve({ payload: mockClaims }));
 
       await provider.refresh(mockRequest, mockResponse);
 
       expect(mockResponse.json).toHaveBeenCalledWith({
         backstageIdentity: {
-          id: 'user.name',
           token:
-            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
-          idToken:
-            'eyblob.eyJzdWIiOiJqaW1teW1hcmt1bSIsImVudCI6WyJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iXX0=.eyblob',
+            'eyblob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvamltbXltYXJrdW0iLCJlbnQiOlsidXNlcjpkZWZhdWx0L2ppbW15bWFya3VtIl19.eyblob',
           identity: {
             ownershipEntityRefs: ['user:default/jimmymarkum'],
             type: 'user',
@@ -165,9 +148,7 @@ describe('AwsAlbAuthProvider', () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         }),
@@ -176,18 +157,16 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      await provider.refresh(mockRequestWithoutAccessToken, mockResponse);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      await expect(
+        provider.refresh(mockRequestWithoutAccessToken, mockResponse),
+      ).rejects.toThrow(AuthenticationError);
     });
 
     it('JWT is missing', async () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         }),
@@ -196,18 +175,16 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      await provider.refresh(mockRequestWithoutJwt, mockResponse);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      await expect(
+        provider.refresh(mockRequestWithoutJwt, mockResponse),
+      ).rejects.toThrow(AuthenticationError);
     });
 
     it('JWT is invalid', async () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         }),
@@ -216,22 +193,20 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockImplementationOnce(() => {
+      jwtMock.mockImplementationOnce(() => {
         throw new Error('bad JWT');
       });
 
-      await provider.refresh(mockRequest, mockResponse);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
+        AuthenticationError,
+      );
     });
 
     it('issuer is missing', async () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         }),
@@ -240,19 +215,18 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce({});
+      jwtMock.mockReturnValueOnce({});
 
-      await provider.refresh(mockRequest, mockResponse);
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
+        AuthenticationError,
+      );
     });
 
     it('issuer is invalid', async () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         }),
@@ -261,21 +235,20 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce({
+      jwtMock.mockReturnValueOnce({
         iss: 'INVALID_ISSUE_URL',
       });
 
-      await provider.refresh(mockRequest, mockResponse);
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
+        AuthenticationError,
+      );
     });
 
     it('SignInResolver rejects', async () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async ({ fullProfile }) => ({
           profile: makeProfileInfo(fullProfile),
         }),
@@ -284,21 +257,18 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce(mockClaims);
+      jwtMock.mockReturnValueOnce(mockClaims);
 
-      await provider.refresh(mockRequest, mockResponse);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.end).toHaveBeenCalledTimes(1);
+      await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
+        AuthenticationError,
+      );
     });
 
     it('AuthHandler rejects', async () => {
       const provider = new AwsAlbAuthProvider({
         region: 'eu-west-1',
         issuer: 'ISSUER_URL',
-        logger: getVoidLogger(),
-        catalogIdentityClient,
-        tokenIssuer,
+        resolverContext: {} as AuthResolverContext,
         authHandler: async () => {
           throw new Error();
         },
@@ -307,12 +277,11 @@ describe('AwsAlbAuthProvider', () => {
         },
       });
 
-      jwtMock.verify.mockReturnValueOnce(mockClaims);
+      jwtMock.mockReturnValueOnce(mockClaims);
 
-      await provider.refresh(mockRequest, mockResponse);
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.end).toHaveBeenCalledTimes(1);
+      await expect(provider.refresh(mockRequest, mockResponse)).rejects.toThrow(
+        AuthenticationError,
+      );
     });
   });
 });

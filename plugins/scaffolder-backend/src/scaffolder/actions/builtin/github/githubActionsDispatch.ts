@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { InputError } from '@backstage/errors';
 import {
-  DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+import { Octokit } from 'octokit';
 import { createTemplateAction } from '../../createTemplateAction';
-import { OctokitProvider } from './OctokitProvider';
+import { parseRepoUrl } from '../publish/util';
+import { getOctokitOptions } from './helpers';
 
+/**
+ * Creates a new action that dispatches a GitHub Action workflow for a given branch or tag.
+ * @public
+ */
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrations;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
   const { integrations, githubCredentialsProvider } = options;
-  const octokitProvider = new OctokitProvider(
-    integrations,
-    githubCredentialsProvider ||
-      DefaultGithubCredentialsProvider.fromIntegrations(integrations),
-  );
 
   return createTemplateAction<{
     repoUrl: string;
@@ -90,9 +91,19 @@ export function createGithubActionsDispatchAction(options: {
         `Dispatching workflow ${workflowId} for repo ${repoUrl} on ${branchOrTagName}`,
       );
 
-      const { client, owner, repo } = await octokitProvider.getOctokit(
-        repoUrl,
-        { token: providedToken },
+      const { owner, repo } = parseRepoUrl(repoUrl, integrations);
+
+      if (!owner) {
+        throw new InputError('Invalid repository owner provided in repoUrl');
+      }
+
+      const client = new Octokit(
+        await getOctokitOptions({
+          integrations,
+          repoUrl,
+          credentialsProvider: githubCredentialsProvider,
+          token: providedToken,
+        }),
       );
 
       await client.rest.actions.createWorkflowDispatch({

@@ -43,6 +43,7 @@ import { EntityFilter } from '../types';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
 
+/** @public */
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
@@ -53,6 +54,7 @@ export type DefaultEntityFilters = {
   text?: EntityTextFilter;
 };
 
+/** @public */
 export type EntityListContextProps<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 > = {
@@ -91,6 +93,10 @@ export type EntityListContextProps<
   error?: Error;
 };
 
+/**
+ * Creates new context for entity listing and filtering.
+ * @public
+ */
 export const EntityListContext = createContext<
   EntityListContextProps<any> | undefined
 >(undefined);
@@ -101,6 +107,10 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   backendEntities: Entity[];
 };
 
+/**
+ * Provides entities and filters for a catalog listing.
+ * @public
+ */
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   children,
 }: PropsWithChildren<{}>) => {
@@ -185,7 +195,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         });
         const newParams = qs.stringify(
           { ...oldParams, filters: queryParams },
-          { addQueryPrefix: true },
+          { addQueryPrefix: true, arrayFormat: 'repeat' },
         );
         const newUrl = `${window.location.pathname}${newParams}`;
         // We use direct history manipulation since useSearchParams and
@@ -239,13 +249,15 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   );
 };
 
-export function useEntityListProvider<
+/**
+ * Hook for interacting with the entity list context provided by the {@link EntityListProvider}.
+ * @public
+ */
+export function useEntityList<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)
-    throw new Error(
-      'useEntityListProvider must be used within EntityListProvider',
-    );
+    throw new Error('useEntityList must be used within EntityListProvider');
   return context;
 }

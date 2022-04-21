@@ -17,18 +17,21 @@
 import React, { FC } from 'react';
 import { render } from '@testing-library/react';
 import { usePermission } from './usePermission';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 import { TestApiProvider } from '@backstage/test-utils';
 import { PermissionApi, permissionApiRef } from '../apis';
 import { SWRConfig } from 'swr';
 
-const permission = {
+const permission = createPermission({
   name: 'access.something',
-  attributes: { action: 'read' as const },
-};
+  attributes: { action: 'read' },
+});
 
 const TestComponent: FC = () => {
-  const { loading, allowed, error } = usePermission(permission);
+  const { loading, allowed, error } = usePermission({ permission });
   return (
     <div>
       {loading && 'loading'}

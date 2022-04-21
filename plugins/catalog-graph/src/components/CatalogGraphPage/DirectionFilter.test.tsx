@@ -36,8 +36,8 @@ describe('<DirectionFilter/>', () => {
 
     expect(getByText('Right to left')).toBeInTheDocument();
 
-    userEvent.click(getByTestId('select'));
-    userEvent.click(getByText('Top to bottom'));
+    await userEvent.click(getByTestId('select'));
+    await userEvent.click(getByText('Top to bottom'));
 
     await waitFor(() => {
       expect(getByText('Top to bottom')).toBeInTheDocument();

@@ -18,26 +18,16 @@ import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
-import { TaskSecrets, TemplateMetadata } from '../tasks/types';
+import { TaskSecrets } from '../tasks/types';
+import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 
-type PartialJsonObject = Partial<JsonObject>;
-type PartialJsonValue = PartialJsonObject | JsonValue | undefined;
-export type InputBase = Partial<{ [name: string]: PartialJsonValue }>;
-
-export type ActionContext<Input extends InputBase> = {
-  /**
-   * Base URL for the location of the task spec, typically the url of the source entity file.
-   */
-  baseUrl?: string;
-
+/**
+ * ActionContext is passed into scaffolder actions.
+ * @public
+ */
+export type ActionContext<Input extends JsonObject> = {
   logger: Logger;
   logStream: Writable;
-
-  /**
-   * User token forwarded from initial request, for use in subsequent api requests
-   * @deprecated use `secrets.backstageToken` instead
-   */
-  token?: string | undefined;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: Input;
@@ -48,10 +38,11 @@ export type ActionContext<Input extends InputBase> = {
    */
   createTemporaryDirectory(): Promise<string>;
 
-  metadata?: TemplateMetadata;
+  templateInfo?: TemplateInfo;
 };
 
-export type TemplateAction<Input extends InputBase> = {
+/** @public */
+export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;
   schema?: {

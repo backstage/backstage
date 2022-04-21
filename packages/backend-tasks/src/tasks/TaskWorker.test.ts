@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AbortController } from 'node-abort-controller';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
@@ -21,7 +22,7 @@ import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskWorker } from './TaskWorker';
-import { TaskSettingsV1 } from './types';
+import { TaskSettingsV2 } from './types';
 
 describe('TaskWorker', () => {
   const logger = getVoidLogger();
@@ -42,11 +43,11 @@ describe('TaskWorker', () => {
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
       );
-      const settings: TaskSettingsV1 = {
-        version: 1,
-        initialDelayDuration: Duration.fromMillis(1000).toISO(),
-        recurringAtMostEveryDuration: Duration.fromMillis(2000).toISO(),
-        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        cadence: '*/2 * * * * *',
+        initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO(),
+        timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO(),
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
@@ -62,10 +63,10 @@ describe('TaskWorker', () => {
         }),
       );
       expect(JSON.parse(row.settings_json)).toEqual({
-        version: 1,
+        version: 2,
+        cadence: '*/2 * * * * *',
         initialDelayDuration: 'PT1S',
-        recurringAtMostEveryDuration: 'PT2S',
-        timeoutAfterDuration: 'PT60S',
+        timeoutAfterDuration: 'PT1M',
       });
 
       await expect(worker.findReadyTask()).resolves.toEqual({
@@ -125,17 +126,17 @@ describe('TaskWorker', () => {
       await migrateBackendTasks(knex);
 
       const fn = jest.fn().mockRejectedValue(new Error('failed'));
-      const settings: TaskSettingsV1 = {
-        version: 1,
+      const settings: TaskSettingsV2 = {
+        version: 2,
         initialDelayDuration: undefined,
-        recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
-
-      const worker = new TaskWorker('task1', fn, knex, logger);
+      const checkFrequency = Duration.fromObject({ milliseconds: 100 });
+      const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
       worker.start(settings);
 
-      waitForExpect(() => {
+      await waitForExpect(() => {
         expect(fn).toBeCalledTimes(3);
       });
     },
@@ -151,18 +152,23 @@ describe('TaskWorker', () => {
       const fn = jest.fn(
         async () => new Promise<void>(resolve => setTimeout(resolve, 50)),
       );
-      const settings: TaskSettingsV1 = {
-        version: 1,
-        recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
       const worker = new TaskWorker('task1', fn, knex, logger);
       await worker.persistTask(settings);
-      await expect(worker.findReadyTask()).resolves.toEqual({
-        result: 'ready',
-        settings,
+
+      await waitForExpect(async () => {
+        await expect(worker.findReadyTask()).resolves.toEqual({
+          result: 'ready',
+          settings,
+        });
       });
+
       await expect(worker.tryClaimTask('ticket', settings)).resolves.toBe(true);
 
       let row = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
@@ -203,9 +209,10 @@ describe('TaskWorker', () => {
       await migrateBackendTasks(knex);
 
       const fn = jest.fn(async () => {});
-      const settings: TaskSettingsV1 = {
-        version: 1,
-        recurringAtMostEveryDuration: Duration.fromMillis(0).toISO(),
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: '* * * * * *',
         timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
       };
 
@@ -218,10 +225,14 @@ describe('TaskWorker', () => {
 
       const worker2 = new TaskWorker('task2', fn, knex, logger);
       await worker2.persistTask(settings);
-      await expect(worker2.findReadyTask()).resolves.toEqual({
-        result: 'ready',
-        settings,
+
+      await waitForExpect(async () => {
+        await expect(worker2.findReadyTask()).resolves.toEqual({
+          result: 'ready',
+          settings,
+        });
       });
+
       await knex<DbTasksRow>(DB_TASKS_TABLE).where('id', '=', 'task2').delete();
       await expect(worker2.tryClaimTask('ticket', settings)).resolves.toBe(
         false,
@@ -229,10 +240,14 @@ describe('TaskWorker', () => {
 
       const worker3 = new TaskWorker('task3', fn, knex, logger);
       await worker3.persistTask(settings);
-      await expect(worker3.findReadyTask()).resolves.toEqual({
-        result: 'ready',
-        settings,
+
+      await waitForExpect(async () => {
+        await expect(worker3.findReadyTask()).resolves.toEqual({
+          result: 'ready',
+          settings,
+        });
       });
+
       await expect(worker3.tryClaimTask('ticket', settings)).resolves.toBe(
         true,
       );
@@ -240,6 +255,60 @@ describe('TaskWorker', () => {
       await expect(worker3.tryReleaseTask('ticket', settings)).resolves.toBe(
         false,
       );
+    },
+    60_000,
+  );
+
+  it.each(databases.eachSupportedId())(
+    'respects initialDelayDuration per worker, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const abortFirst = new AbortController();
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: 'PT0.3S',
+        cadence: 'PT0.1S',
+        timeoutAfterDuration: 'PT10S',
+      };
+
+      // Start a single worker and make sure it waits and then goes to work
+      const fn1 = jest.fn(async () => {});
+      const worker1 = new TaskWorker(
+        'task1',
+        fn1,
+        knex,
+        logger,
+        Duration.fromMillis(10),
+      );
+      await worker1.start(settings, { signal: abortFirst.signal });
+
+      expect(fn1).toBeCalledTimes(0);
+      await new Promise(resolve => setTimeout(resolve, 250));
+      expect(fn1).toBeCalledTimes(0);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      expect(fn1.mock.calls.length).toBeGreaterThan(0);
+
+      // Start a second worker and make sure it waits but the first worker still works along
+      const fn2 = jest.fn();
+      const promise2 = new Promise(resolve => fn2.mockImplementation(resolve));
+      const worker2 = new TaskWorker(
+        'task1',
+        fn2,
+        knex,
+        logger,
+        Duration.fromMillis(10),
+      );
+      await worker2.start(settings);
+
+      // We eventually abort the first worker just to make sure that the second
+      // one for sure will get a go at running the task
+      setTimeout(() => abortFirst.abort(), 1000);
+
+      const before = fn1.mock.calls.length;
+      await promise2;
+      expect(fn1.mock.calls.length).toBeGreaterThan(before);
     },
     60_000,
   );

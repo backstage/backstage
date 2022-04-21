@@ -41,16 +41,16 @@ export const CustomCatalogPage = ({
             <CreateButton title="Create Component" to={createComponentLink()} />
             <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
-          <FilteredEntityLayout>
-            <FilterContainer>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTagPicker />
-            </FilterContainer>
-            <EntityListContainer>
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
               <CatalogTable columns={columns} actions={actions} />
-            </EntityListContainer>
-          </FilteredEntityLayout>
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
         </Content>
       </EntityListProvider>
     </PageWithHeader>
@@ -93,7 +93,7 @@ export type CustomFilters = DefaultEntityFilters & {
 
 To control this filter, we can create a React component that shows checkboxes
 for the security tiers. This component will make use of the
-`useEntityListProvider` hook, which accepts this extended filter type as a
+`useEntityList` hook, which accepts this extended filter type as a
 [generic](https://www.typescriptlang.org/docs/handbook/2/generics.html)
 parameter:
 
@@ -103,7 +103,7 @@ export const EntitySecurityTierPicker = () => {
   const {
     filters: { securityTiers },
     updateFilters,
-  } = useEntityListProvider<CustomFilters>();
+  } = useEntityList<CustomFilters>();
 
   // Toggles the value, depending on whether it's already selected
   function onChange(value: string) {
@@ -151,18 +151,18 @@ export const CustomCatalogPage = ({
   return (
     ...
         <EntityListProvider>
-          <FilteredEntityLayout>
-            <FilterContainer>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
               <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
 +             <EntitySecurityTierPicker />
               <EntityTagPicker />
-            <FilterContainer>
-            <EntityListContainer>
+            <CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
               <CatalogTable columns={columns} actions={actions} />
-            </EntityListContainer>
-          </FilteredEntityLayout>
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
         </EntityListProvider>
     ...
 };

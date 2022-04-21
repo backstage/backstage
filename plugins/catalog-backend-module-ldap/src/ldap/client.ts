@@ -95,7 +95,7 @@ export class LdapClient {
           }
 
           res.on('searchReference', () => {
-            reject(new Error('Unable to handle referral'));
+            this.logger.warn('Received unsupported search referral');
           });
 
           res.on('searchEntry', entry => {
@@ -104,6 +104,12 @@ export class LdapClient {
 
           res.on('error', e => {
             reject(new Error(errorString(e)));
+          });
+
+          res.on('page', (_result, cb) => {
+            if (cb) {
+              cb();
+            }
           });
 
           res.on('end', r => {
@@ -148,7 +154,7 @@ export class LdapClient {
           }
 
           res.on('searchReference', () => {
-            reject(new Error('Unable to handle referral'));
+            this.logger.warn('Received unsupported search referral');
           });
 
           res.on('searchEntry', entry => {

@@ -16,7 +16,7 @@
 
 import {
   Entity,
-  getEntityName,
+  getCompoundEntityRef,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
   stringifyEntityRef,
@@ -24,17 +24,23 @@ import {
 import { getEntityRelations } from './getEntityRelations';
 
 /**
- * Get the related entity references.
+ * Returns true if the `owner` argument is a direct owner on the `entity` argument.
+ *
+ * @alpha
+ * @remarks
+ *
+ * Note that this ownership is not the same as using the claims in the auth-resolver, it only will take into account ownership as expressed by direct entity relations.
+ * It doesn't know anything about the additional groups that a user might belong to which the claims contain.
  */
-export function isOwnerOf(owner: Entity, owned: Entity) {
+export function isOwnerOf(owner: Entity, entity: Entity) {
   const possibleOwners = new Set(
     [
       ...getEntityRelations(owner, RELATION_MEMBER_OF, { kind: 'group' }),
-      ...(owner ? [getEntityName(owner)] : []),
+      ...(owner ? [getCompoundEntityRef(owner)] : []),
     ].map(stringifyEntityRef),
   );
 
-  const owners = getEntityRelations(owned, RELATION_OWNED_BY).map(
+  const owners = getEntityRelations(entity, RELATION_OWNED_BY).map(
     stringifyEntityRef,
   );
 

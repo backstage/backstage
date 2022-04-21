@@ -18,22 +18,19 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import {
   useEntity,
+  useAsyncEntity,
   EntityProvider,
   AsyncEntityProvider,
-  EntityContext,
 } from './useEntity';
 import { Entity } from '@backstage/catalog-model';
 
-describe('EntityProvider', () => {
-  it('should provide no entity', async () => {
+describe('useEntity', () => {
+  it('should throw if no entity is provided', async () => {
     const { result } = renderHook(() => useEntity(), {
       wrapper: ({ children }) => <EntityProvider children={children} />,
     });
 
-    expect(result.current.entity).toBe(undefined);
-    expect(result.current.loading).toBe(true);
-    expect(result.current.error).toBe(undefined);
-    expect(result.current.refresh).toBe(undefined);
+    expect(result.error?.message).toMatch(/entity has not been loaded/);
   });
 
   it('should provide an entity', async () => {
@@ -45,15 +42,12 @@ describe('EntityProvider', () => {
     });
 
     expect(result.current.entity).toBe(entity);
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe(undefined);
-    expect(result.current.refresh).toBe(undefined);
   });
 });
 
-describe('AsyncEntityProvider', () => {
+describe('useAsyncEntity', () => {
   it('should provide no entity', async () => {
-    const { result } = renderHook(() => useEntity(), {
+    const { result } = renderHook(() => useAsyncEntity(), {
       wrapper: ({ children }) => (
         <AsyncEntityProvider loading={false} children={children} />
       ),
@@ -68,7 +62,7 @@ describe('AsyncEntityProvider', () => {
   it('should provide an entity', async () => {
     const entity = { kind: 'MyEntity' } as Entity;
     const refresh = () => {};
-    const { result } = renderHook(() => useEntity(), {
+    const { result } = renderHook(() => useAsyncEntity(), {
       wrapper: ({ children }) => (
         <AsyncEntityProvider
           loading={false}
@@ -87,7 +81,7 @@ describe('AsyncEntityProvider', () => {
 
   it('should provide an error', async () => {
     const error = new Error('oh no');
-    const { result } = renderHook(() => useEntity(), {
+    const { result } = renderHook(() => useAsyncEntity(), {
       wrapper: ({ children }) => (
         <AsyncEntityProvider
           loading={false}
@@ -100,41 +94,6 @@ describe('AsyncEntityProvider', () => {
     expect(result.current.entity).toBe(undefined);
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe(error);
-    expect(result.current.refresh).toBe(undefined);
-  });
-});
-
-describe('EntityContext.Provider', () => {
-  it('should provide no entity', async () => {
-    const { result } = renderHook(() => useEntity(), {
-      wrapper: ({ children }) => (
-        <EntityContext.Provider
-          value={{ loading: false }}
-          children={children}
-        />
-      ),
-    });
-
-    expect(result.current.entity).toBe(undefined);
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe(undefined);
-    expect(result.current.refresh).toBe(undefined);
-  });
-
-  it('should provide an entity', async () => {
-    const entity = { kind: 'MyEntity' } as Entity;
-    const { result } = renderHook(() => useEntity(), {
-      wrapper: ({ children }) => (
-        <EntityContext.Provider
-          value={{ entity, loading: false }}
-          children={children}
-        />
-      ),
-    });
-
-    expect(result.current.entity).toBe(entity);
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe(undefined);
     expect(result.current.refresh).toBe(undefined);
   });
 });

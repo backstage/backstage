@@ -53,7 +53,7 @@ export function Features({
   if (gitBatchInfo.error) {
     return (
       <Alert severity="error">
-        Error occured while fetching information for "{project.owner}/
+        Error occurred while fetching information for "{project.owner}/
         {project.repo}" ({gitBatchInfo.error.message})
       </Alert>
     );

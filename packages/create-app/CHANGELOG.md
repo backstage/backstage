@@ -1,5 +1,900 @@
 # @backstage/create-app
 
+## 0.4.26
+
+### Patch Changes
+
+- 1691c6c5c2: Made `User` and `Group` entity kinds not permitted by the default
+  `catalog.rules` config.
+
+  The effect of this is that after creating a new Backstage repository, its
+  catalog no longer permits regular users to register `User` or `Group` entities
+  using the Backstage interface. Additionally, if you have config locations that
+  result in `User` or `Group` entities, you need to add those kinds to its own
+  specific rules:
+
+  ```yaml
+  catalog:
+    locations:
+      # This applies for example to url type locations
+      - type: url
+        target: https://example.com/org.yaml
+        rules:
+          - allow: [User, Group]
+      # But also note that this applies to ALL org location types!
+      - type: github-org
+        target: https://github.com/my-org-name
+        rules:
+          - allow: [User, Group]
+  ```
+
+  This rule change does NOT affect entity providers, only things that are emitted
+  by entity processors.
+
+  We recommend that this change is applied to your own Backstage repository, since
+  it makes it impossible for regular end users to affect your org data through
+  e.g. YAML files. To do so, remove the two kinds from the default rules in your config:
+
+  ```diff
+   catalog:
+     rules:
+  -    - allow: [Component, System, API, Group, User, Resource, Location]
+  +    - allow: [Component, System, API, Resource, Location]
+  ```
+
+  And for any location that in any way results in org data being ingested, add the corresponding rule to it:
+
+  ```diff
+   catalog:
+     locations:
+       - type: github-org
+         target: https://github.com/my-org-name
+  +      rules:
+  +        - allow: [User, Group]
+  ```
+
+- 0e911394d2: Remove the `knex` package that is installed in the `packages/backend` as it's provided by the `@backstage/*` packages for you automatically. You can make the following change in your `packages/backend/package.json` if you wish to apply this change.
+
+  ```diff
+      "lint": "backstage-cli package lint",
+      "test": "backstage-cli package test",
+      "clean": "backstage-cli package clean",
+  -   "migrate:create": "knex migrate:make -x ts"
+  ```
+
+  ```diff
+      "express": "^4.17.1",
+      "express-promise-router": "^4.1.0",
+  -   "knex": "^0.21.6",
+      "pg": "^8.3.0",
+  ```
+
+- 520e21aaea: imports `useSearch` hook from new `@backstage/plugin-search-react` package.
+
+  To upgrade existing Apps:
+
+  1. Change the import to the following:
+
+  `packages/app/src/components/search/SearchPage.tsx`
+
+  ```diff
+  import {
+  ...
+  SearchType,
+  - useSearch,
+  } from '@backstage/plugin-search';
+  +import { useSearch } from '@backstage/plugin-search-react';
+  ```
+
+  2. Add `@backstage/plugin-search-react` as a dependency to the app.
+
+- 43759dd789: Removed `@octokit/rest` and `@gitbeaker/node` from backend dependencies as these are unused in the default app.
+
+  To apply these changes to your existing app, remove the following lines from the `dependencies` section of `packages/backend/package.json`
+
+  ```diff
+       "@backstage/plugin-techdocs-backend": "^1.0.0",
+  -    "@gitbeaker/node": "^34.6.0",
+  -    "@octokit/rest": "^18.5.3",
+  ```
+
+- e838a7060a: Add type resolutions for `@types/react` and `types/react-dom`.
+
+  The reason for this is the usage of `"@types/react": "*"` as a dependency which is very common practice in react packages. This recently resolves to react 18 which introduces several breaking changes in both internal and external packages.
+
+  To apply these changes to your existing installation, add a resolutions block to your `package.json`
+
+  ```json
+    "resolutions": {
+      "@types/react": "^17",
+      "@types/react-dom": "^17"
+    },
+  ```
+
+  If your existing app depends on react 16, use this resolution block instead.
+
+  ```json
+    "resolutions": {
+      "@types/react": "^16",
+      "@types/react-dom": "^16"
+    },
+  ```
+
+- 0a63e99a26: **BREAKING**: `IndexBuilder.addCollator()` now requires a `schedule` parameter (replacing `defaultRefreshIntervalSeconds`) which is expected to be a `TaskRunner` that is configured with the desired search indexing schedule for the given collator.
+
+  `Scheduler.addToSchedule()` now takes a new parameter object (`ScheduleTaskParameters`) with two new options `id` and `scheduledRunner` in addition to the migrated `task` argument.
+
+  NOTE: The search backend plugin now creates a dedicated database for coordinating indexing tasks.
+
+  To make this change to an existing app, make the following changes to `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  +import { Duration } from 'luxon';
+
+  /* ... */
+
+  +  const schedule = env.scheduler.createScheduledTaskRunner({
+  +    frequency: Duration.fromObject({ minutes: 10 }),
+  +    timeout: Duration.fromObject({ minutes: 15 }),
+  +    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +  });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     const { scheduler } = await indexBuilder.build();
+  -  setTimeout(() => scheduler.start(), 3000);
+  +  scheduler.start();
+  /* ... */
+  ```
+
+  NOTE: For scenarios where the `lunr` search engine is used in a multi-node configuration, a non-distributed `TaskRunner` like the following should be implemented to ensure consistency across nodes (alternatively, you can configure
+  the search plugin to use a non-distributed DB such as [SQLite](https://backstage.io/docs/tutorials/configuring-plugin-databases#postgresql-and-sqlite-3)):
+
+  ```diff
+  +import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+
+  /* ... */
+
+  +  const schedule: TaskRunner = {
+  +    run: async (task: TaskInvocationDefinition) => {
+  +      const startRefresh = async () => {
+  +        while (!task.signal?.aborted) {
+  +          try {
+  +            await task.fn(task.signal);
+  +          } catch {
+  +            // ignore intentionally
+  +          }
+  +
+  +          await new Promise(resolve => setTimeout(resolve, 600 * 1000));
+  +        }
+  +      };
+  +      startRefresh();
+  +    },
+  +  };
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+  /* ... */
+  ```
+
+- c07d9f9e1c: Add helpful README.md files in the original `packages` and `plugins` folders
+- 230ad0826f: Bump to using `@types/node` v16
+- 1882dbda2b: Accept `PermissionEvaluator` instead of the deprecated `PermissionAuthorizer`.
+
+  Apply the following to `packages/backend/src/types.ts`:
+
+  ```diff
+  - import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+  + import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+
+    export type PluginEnvironment = {
+      ...
+      discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
+      scheduler: PluginTaskScheduler;
+  -   permissions: PermissionAuthorizer;
+  +   permissions: PermissionEvaluator;
+    };
+  ```
+
+- e80cca164d: Tweaked `.eslintrc.js` files in the template to avoid having them apply during development. This change does not affect create apps.
+
+## 0.4.26-next.2
+
+### Patch Changes
+
+- 43759dd789: Removed `@octokit/rest` and `@gitbeaker/node` from backend dependencies as these are unused in the default app.
+
+  To apply these changes to your existing app, remove the following lines from the `dependencies` section of `packages/backend/package.json`
+
+  ```diff
+       "@backstage/plugin-techdocs-backend": "^1.0.0",
+  -    "@gitbeaker/node": "^34.6.0",
+  -    "@octokit/rest": "^18.5.3",
+  ```
+
+- e838a7060a: Add type resolutions for `@types/react` and `types/react-dom`.
+
+  The reason for this is the usage of `"@types/react": "*"` as a dependency which is very common practice in react packages. This recently resolves to react 18 which introduces several breaking changes in both internal and external packages.
+
+  To apply these changes to your existing installation, add a resolutions block to your `package.json`
+
+  ```json
+    "resolutions": {
+      "@types/react": "^17",
+      "@types/react-dom": "^17"
+    },
+  ```
+
+  If your existing app depends on react 16, use this resolution block instead.
+
+  ```json
+    "resolutions": {
+      "@types/react": "^16",
+      "@types/react-dom": "^16"
+    },
+  ```
+
+- 0a63e99a26: **BREAKING**: `IndexBuilder.addCollator()` now requires a `schedule` parameter (replacing `defaultRefreshIntervalSeconds`) which is expected to be a `TaskRunner` that is configured with the desired search indexing schedule for the given collator.
+
+  `Scheduler.addToSchedule()` now takes a new parameter object (`ScheduleTaskParameters`) with two new options `id` and `scheduledRunner` in addition to the migrated `task` argument.
+
+  NOTE: The search backend plugin now creates a dedicated database for coordinating indexing tasks.
+
+  To make this change to an existing app, make the following changes to `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  +import { Duration } from 'luxon';
+
+  /* ... */
+
+  +  const schedule = env.scheduler.createScheduledTaskRunner({
+  +    frequency: Duration.fromObject({ minutes: 10 }),
+  +    timeout: Duration.fromObject({ minutes: 15 }),
+  +    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +  });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     const { scheduler } = await indexBuilder.build();
+  -  setTimeout(() => scheduler.start(), 3000);
+  +  scheduler.start();
+  /* ... */
+  ```
+
+  NOTE: For scenarios where the `lunr` search engine is used in a multi-node configuration, a non-distributed `TaskRunner` like the following should be implemented to ensure consistency across nodes (alternatively, you can configure
+  the search plugin to use a non-distributed DB such as [SQLite](https://backstage.io/docs/tutorials/configuring-plugin-databases#postgresql-and-sqlite-3)):
+
+  ```diff
+  +import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+
+  /* ... */
+
+  +  const schedule: TaskRunner = {
+  +    run: async (task: TaskInvocationDefinition) => {
+  +      const startRefresh = async () => {
+  +        while (!task.signal?.aborted) {
+  +          try {
+  +            await task.fn(task.signal);
+  +          } catch {
+  +            // ignore intentionally
+  +          }
+  +
+  +          await new Promise(resolve => setTimeout(resolve, 600 * 1000));
+  +        }
+  +      };
+  +      startRefresh();
+  +    },
+  +  };
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+  /* ... */
+  ```
+
+- 230ad0826f: Bump to using `@types/node` v16
+- 1882dbda2b: Accept `PermissionEvaluator` instead of the deprecated `PermissionAuthorizer`.
+
+  Apply the following to `packages/backend/src/types.ts`:
+
+  ```diff
+  - import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+  + import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+
+    export type PluginEnvironment = {
+      ...
+      discovery: PluginEndpointDiscovery;
+      tokenManager: TokenManager;
+      scheduler: PluginTaskScheduler;
+  -   permissions: PermissionAuthorizer;
+  +   permissions: PermissionEvaluator;
+    };
+  ```
+
+## 0.4.25-next.1
+
+### Patch Changes
+
+- e80cca164d: Tweaked `.eslintrc.js` files in the template to avoid having them apply during development. This change does not affect create apps.
+
+## 0.4.25-next.0
+
+### Patch Changes
+
+- 1691c6c5c2: Made `User` and `Group` entity kinds not permitted by the default
+  `catalog.rules` config.
+
+  The effect of this is that after creating a new Backstage repository, its
+  catalog no longer permits regular users to register `User` or `Group` entities
+  using the Backstage interface. Additionally, if you have config locations that
+  result in `User` or `Group` entities, you need to add those kinds to its own
+  specific rules:
+
+  ```yaml
+  catalog:
+    locations:
+      # This applies for example to url type locations
+      - type: url
+        target: https://example.com/org.yaml
+        rules:
+          - allow: [User, Group]
+      # But also note that this applies to ALL org location types!
+      - type: github-org
+        target: https://github.com/my-org-name
+        rules:
+          - allow: [User, Group]
+  ```
+
+  This rule change does NOT affect entity providers, only things that are emitted
+  by entity processors.
+
+  We recommend that this change is applied to your own Backstage repository, since
+  it makes it impossible for regular end users to affect your org data through
+  e.g. YAML files. To do so, remove the two kinds from the default rules in your config:
+
+  ```diff
+   catalog:
+     rules:
+  -    - allow: [Component, System, API, Group, User, Resource, Location]
+  +    - allow: [Component, System, API, Resource, Location]
+  ```
+
+  And for any location that in any way results in org data being ingested, add the corresponding rule to it:
+
+  ```diff
+   catalog:
+     locations:
+       - type: github-org
+         target: https://github.com/my-org-name
+  +      rules:
+  +        - allow: [User, Group]
+  ```
+
+- 0e911394d2: Remove the `knex` package that is installed in the `packages/backend` as it's provided by the `@backstage/*` packages for you automatically. You can make the following change in your `packages/backend/package.json` if you wish to apply this change.
+
+  ```diff
+      "lint": "backstage-cli package lint",
+      "test": "backstage-cli package test",
+      "clean": "backstage-cli package clean",
+  -   "migrate:create": "knex migrate:make -x ts"
+  ```
+
+  ```diff
+      "express": "^4.17.1",
+      "express-promise-router": "^4.1.0",
+  -   "knex": "^0.21.6",
+      "pg": "^8.3.0",
+  ```
+
+- c07d9f9e1c: Add helpful README.md files in the original `packages` and `plugins` folders
+
+## 0.4.24
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- efc73db10c: The main repo has switched from `@vscode/sqlite3` to `better-sqlite3` as its preferred SQLite installation. This decision was triggered by a number of issues with the former that arose because it needs build infrastructure in place and functional in order to be installed. The main drawback of this is that the new package uses the database client ID `better-sqlite3` instead of the plain `sqlite3`.
+
+  If you want to perform the same switch in your own repository,
+
+  - Replace all of your `package.json` dependencies on `@vscode/sqlite3` with the latest version of `better-sqlite3` instead
+
+    ```diff
+     "dependencies": {
+    -  "@vscode/sqlite3": "^5.0.7",
+    +  "better-sqlite3": "^7.5.0",
+    ```
+
+  - In your app-config and tests, wherever you supply `client: 'sqlite3'`, instead supply `client: 'better-sqlite3`
+
+    ```diff
+      backend:
+        database:
+    -    client: sqlite3
+    +    client: better-sqlite3
+    ```
+
+## 0.4.23
+
+### Patch Changes
+
+- f9c7bdd899: Builtin support for cookiecutter based templates has been removed from `@backstage/plugin-scaffolder-backend`. Due to this, the `containerRunner` argument to its `createRouter` has also been removed.
+
+  If you do not use cookiecutter templates and are fine with removing support from it in your own installation, update your `packages/backend/src/plugins/scaffolder.ts` file as follows:
+
+  ```diff
+  -import { DockerContainerRunner } from '@backstage/backend-common';
+   import { CatalogClient } from '@backstage/catalog-client';
+   import { createRouter } from '@backstage/plugin-scaffolder-backend';
+  -import Docker from 'dockerode';
+   import { Router } from 'express';
+   import type { PluginEnvironment } from '../types';
+
+   export default async function createPlugin({
+     reader,
+     discovery,
+   }: PluginEnvironment): Promise<Router> {
+  -  const dockerClient = new Docker();
+  -  const containerRunner = new DockerContainerRunner({ dockerClient });
+  -
+     const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  -
+     return await createRouter({
+  -    containerRunner,
+       logger,
+       config,
+    // ...
+  ```
+
+  If you want to retain cookiecutter support, please use the `@backstage/plugin-scaffolder-backend-module-cookiecutter` package explicitly (see [its README](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-cookiecutter) for installation instructions).
+
+- 8a57b6595b: Removed the `cookiecutter-golang` template from the default `create-app` install as we no longer provide `cookiecutter` action out of the box.
+
+  You can remove the template by removing the following lines from your `app-config.yaml` under `catalog.locations`:
+
+  ```diff
+  -    - type: url
+  -      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+  -      rules:
+  -        - allow: [Template]
+  ```
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 1201383b60: Updated the template to write the Backstage release version to `backstage.json`, rather than the version of `@backstage/create-app`. This change is applied automatically when running `backstage-cli versions:bump` in the latest version of the Backstage CLI.
+- c543fe3ff2: Postgres-based search is now installed when PG is chosen as the desired database for Backstage.
+
+  There is no need to make this change in an existing Backstage backend. See [supported search engines](https://backstage.io/docs/features/search/search-engines) for details about production-ready search engines.
+
+- 55150919ed: - **BREAKING**: Support for `backstage.io/v1beta2` Software Templates has been removed. Please migrate your legacy templates to the new `scaffolder.backstage.io/v1beta3` `apiVersion` by following the [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3)
+- bde30664c4: Updated template to use package roles. To apply this change to an existing app, check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+
+  Specifically the following scripts in the root `package.json` have also been updated:
+
+  ```diff
+  -    "build": "lerna run build",
+  +    "build": "backstage-cli repo build --all",
+
+  ...
+
+  -    "lint": "lerna run lint --since origin/master --",
+  -    "lint:all": "lerna run lint --",
+  +    "lint": "backstage-cli repo lint --since origin/master",
+  +    "lint:all": "backstage-cli repo lint",
+  ```
+
+## 0.4.23-next.0
+
+### Patch Changes
+
+- f9c7bdd899: Builtin support for cookiecutter based templates has been removed from `@backstage/plugin-scaffolder-backend`. Due to this, the `containerRunner` argument to its `createRouter` has also been removed.
+
+  If you do not use cookiecutter templates and are fine with removing support from it in your own installation, update your `packages/backend/src/plugins/scaffolder.ts` file as follows:
+
+  ```diff
+  -import { DockerContainerRunner } from '@backstage/backend-common';
+   import { CatalogClient } from '@backstage/catalog-client';
+   import { createRouter } from '@backstage/plugin-scaffolder-backend';
+  -import Docker from 'dockerode';
+   import { Router } from 'express';
+   import type { PluginEnvironment } from '../types';
+
+   export default async function createPlugin({
+     reader,
+     discovery,
+   }: PluginEnvironment): Promise<Router> {
+  -  const dockerClient = new Docker();
+  -  const containerRunner = new DockerContainerRunner({ dockerClient });
+  -
+     const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  -
+     return await createRouter({
+  -    containerRunner,
+       logger,
+       config,
+    // ...
+  ```
+
+  If you want to retain cookiecutter support, please use the `@backstage/plugin-scaffolder-backend-module-cookiecutter` package explicitly (see [its README](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-cookiecutter) for installation instructions).
+
+- 8a57b6595b: Removed the `cookiecutter-golang` template from the default `create-app` install as we no longer provide `cookiecutter` action out of the box.
+
+  You can remove the template by removing the following lines from your `app-config.yaml` under `catalog.locations`:
+
+  ```diff
+  -    - type: url
+  -      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+  -      rules:
+  -        - allow: [Template]
+  ```
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 1201383b60: Updated the template to write the Backstage release version to `backstage.json`, rather than the version of `@backstage/create-app`. This change is applied automatically when running `backstage-cli versions:bump` in the latest version of the Backstage CLI.
+- c543fe3ff2: Postgres-based search is now installed when PG is chosen as the desired database for Backstage.
+
+  There is no need to make this change in an existing Backstage backend. See [supported search engines](https://backstage.io/docs/features/search/search-engines) for details about production-ready search engines.
+
+- 55150919ed: - **BREAKING**: Support for `backstage.io/v1beta2` Software Templates has been removed. Please migrate your legacy templates to the new `scaffolder.backstage.io/v1beta3` `apiVersion` by following the [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3)
+- bde30664c4: Updated template to use package roles. To apply this change to an existing app, check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+
+  Specifically the following scripts in the root `package.json` have also been updated:
+
+  ```diff
+  -    "build": "lerna run build",
+  +    "build": "backstage-cli repo build --all",
+
+  ...
+
+  -    "lint": "lerna run lint --since origin/master --",
+  -    "lint:all": "lerna run lint --",
+  +    "lint": "backstage-cli repo lint --since origin/master",
+  +    "lint:all": "backstage-cli repo lint",
+  ```
+
+## 0.4.22
+
+### Patch Changes
+
+- ee3d6c6f10: Update the template to reflect the renaming of `DocsResultListItem` to `TechDocsSearchResultListItem` from `@backstage/plugin-techdocs`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/components/search/SearchPage.tsx`:
+
+  ```diff
+  -import { DocsResultListItem } from '@backstage/plugin-techdocs';
+  +import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
+  ```
+
+  ```diff
+     case 'techdocs':
+       return (
+  -      <DocsResultListItem
+  +      <TechDocsSearchResultListItem
+           key={document.location}
+           result={document}
+         />
+  ```
+
+  The `TechDocsIndexPage` now uses `DefaultTechDocsHome` as fall back if no children is provided as `LegacyTechDocsHome` is marked as deprecated. If you do not use a custom techdocs homepage, you can therefore update your app to the following:
+
+  ```diff
+  -  <Route path="/docs" element={<TechDocsIndexPage />}>
+  -    <DefaultTechDocsHome />
+  -  </Route>
+  +  <Route path="/docs" element={<TechDocsIndexPage />} />
+  ```
+
+- 617a132871: Update import location of catalogEntityCreatePermission.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+  +import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+  ```
+
+- 022507c860: The Backstage Search Platform's indexing process has been rewritten as a stream
+  pipeline in order to improve efficiency and performance on large document sets.
+
+  To take advantage of this, upgrade to the latest version of
+  `@backstage/plugin-search-backend-node`, as well as any backend plugins whose
+  collators you are using. Then, make the following changes to your
+  `/packages/backend/src/plugins/search.ts` file:
+
+  ```diff
+  -import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+  -import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
+  +import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
+  +import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+
+  // ...
+
+    const indexBuilder = new IndexBuilder({ logger, searchEngine });
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+  -    collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
+  +    factory: DefaultCatalogCollatorFactory.fromConfig(config, { discovery }),
+    });
+
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+  -    collator: DefaultTechDocsCollator.fromConfig(config, {
+  +    factory: DefaultTechDocsCollatorFactory.fromConfig(config, {
+        discovery,
+        logger,
+      }),
+    });
+  ```
+
+  If you've written custom collators, decorators, or search engines in your
+  Backstage backend instance, you will need to re-implement them as readable,
+  transform, and writable streams respectively (including factory classes for
+  instantiating them). [A how-to guide for refactoring](https://backstage.io/docs/features/search/how-to-guides#rewriting-alpha-style-collators-for-beta)
+  existing implementations is available.
+
+## 0.4.21
+
+### Patch Changes
+
+- a686702dbe: Update the template to reflect the renaming of `CatalogResultListItem` to `CatalogSearchResultListItem` from `@backstage/plugin-catalog`.
+
+  To apply this change to an existing app, make the following change to `packages/app/src/components/search/SearchPage.tsx`:
+
+  ```diff
+  -import { CatalogResultListItem } from '@backstage/plugin-catalog';
+  +import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
+  ```
+
+  ```diff
+     case 'software-catalog':
+       return (
+  -      <CatalogResultListItem
+  +      <CatalogSearchResultListItem
+           key={document.location}
+           result={document}
+         />
+  ```
+
+- f39c1e6036: To reflect the updated `knex` and `@vscode/sqlite3` dependencies introduced with [v0.4.19](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md#0419), we update our example `Dockerfile`, adding `@vscode/sqlite3` build dependencies to the image. Further on, we updated it to the `node:16-bullseye-slim` base image.
+
+  To apply this update to an existing app, make the following change to `packages/backend/Dockerfile`:
+
+  ```diff
+  -FROM node:14-buster-slim
+  +FROM node:16-bullseye-slim
+  ```
+
+  and, _only if you are using sqlite3 in your app_:
+
+  ```diff
+  RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+  +
+  +# install sqlite3 dependencies
+  +RUN apt-get update && \
+  +   apt-get install -y libsqlite3-dev python3 cmake g++ && \
+  +   rm -rf /var/lib/apt/lists/* && \
+  +   yarn config set python /usr/bin/python3
+
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+  ```
+
+  If you are using a multi-stage Docker build for your app, please refer to the [updated examples](https://github.com/backstage/backstage/blob/master/docs/deployment/docker.md#multi-stage-build) in the documentation.
+
+## 0.4.20
+
+### Patch Changes
+
+- e725bb812f: Remove SearchContextProvider from `<Root />`
+
+  The `SidebarSearchModal` exported from `plugin-search` internally renders `SearchContextProvider`, so it can be removed from `Root.tsx`:
+
+  ```diff
+  -import {
+  -  SidebarSearchModal,
+  -  SearchContextProvider,
+  -} from '@backstage/plugin-search';
+  +import { SidebarSearchModal } from '@backstage/plugin-search';
+
+  ... omitted ...
+
+         <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+  -        <SearchContextProvider>
+  -          <SidebarSearchModal />
+  -        </SearchContextProvider>
+  +        <SidebarSearchModal />
+         </SidebarGroup>
+  ```
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/cli-common@0.1.7
+
+## 0.4.19
+
+### Patch Changes
+
+- 22f4ecb0e6: Switched the `file:` dependency for a `link:` dependency in the `backend` package. This makes sure that the `app` package is linked in rather than copied.
+
+  To apply this update to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "file:../app",
+  +    "app": "link:../app",
+       "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
+  ```
+
+- 1dd5a02e91: **BREAKING:** Updated `knex` to major version 1, which also implies changing out
+  the underlying `sqlite` implementation.
+
+  The old `sqlite3` NPM library has been abandoned by its maintainers, which has
+  led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
+  release line they have instead switched over to the [`@vscode/sqlite3`
+  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  actively maintained by Microsoft.
+
+  This means that as you update to this version of Backstage, there are two
+  breaking changes that you will have to address in your own repository:
+
+  ## Bumping `knex` itself
+
+  All `package.json` files of your repo that used to depend on a 0.x version of
+  `knex`, should now be updated to depend on the 1.x release line. This applies in
+  particular to `packages/backend`, but may also occur in backend plugins or
+  libraries.
+
+  ```diff
+  -    "knex": "^0.95.1",
+  +    "knex": "^1.0.2",
+  ```
+
+  Almost all existing database code will continue to function without modification
+  after this bump. The only significant difference that we discovered in the main
+  repo, is that the `alter()` function had a slightly different signature in
+  migration files. It now accepts an object with `alterType` and `alterNullable`
+  fields that clarify a previous grey area such that the intent of the alteration
+  is made explicit. This is caught by `tsc` and your editor if you are using the
+  `@ts-check` and `@param` syntax in your migration files
+  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  which we strongly recommend.
+
+  See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more
+  information about the `alter` syntax.
+
+  Also see the [`knex` changelog](https://knexjs.org/#changelog) for information
+  about breaking changes in the 1.x line; if you are using `RETURNING` you may
+  want to make some additional modifications in your code.
+
+  ## Switching out `sqlite3`
+
+  All `package.json` files of your repo that used to depend on `sqlite3`, should
+  now be updated to depend on `@vscode/sqlite3`. This applies in particular to
+  `packages/backend`, but may also occur in backend plugins or libraries.
+
+  ```diff
+  -    "sqlite3": "^5.0.1",
+  +    "@vscode/sqlite3": "^5.0.7",
+  ```
+
+  These should be functionally equivalent, except that the new library will have
+  addressed some long standing problems with old transitive dependencies etc.
+
+## 0.4.19-next.0
+
+### Patch Changes
+
+- 22f4ecb0e6: Switched the `file:` dependency for a `link:` dependency in the `backend` package. This makes sure that the `app` package is linked in rather than copied.
+
+  To apply this update to an existing app, make the following change to `packages/backend/package.json`:
+
+  ```diff
+     "dependencies": {
+  -    "app": "file:../app",
+  +    "app": "link:../app",
+       "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
+  ```
+
+- 1dd5a02e91: **BREAKING:** Updated `knex` to major version 1, which also implies changing out
+  the underlying `sqlite` implementation.
+
+  The old `sqlite3` NPM library has been abandoned by its maintainers, which has
+  led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
+  release line they have instead switched over to the [`@vscode/sqlite3`
+  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  actively maintained by Microsoft.
+
+  This means that as you update to this version of Backstage, there are two
+  breaking changes that you will have to address in your own repository:
+
+  ## Bumping `knex` itself
+
+  All `package.json` files of your repo that used to depend on a 0.x version of
+  `knex`, should now be updated to depend on the 1.x release line. This applies in
+  particular to `packages/backend`, but may also occur in backend plugins or
+  libraries.
+
+  ```diff
+  -    "knex": "^0.95.1",
+  +    "knex": "^1.0.2",
+  ```
+
+  Almost all existing database code will continue to function without modification
+  after this bump. The only significant difference that we discovered in the main
+  repo, is that the `alter()` function had a slightly different signature in
+  migration files. It now accepts an object with `alterType` and `alterNullable`
+  fields that clarify a previous grey area such that the intent of the alteration
+  is made explicit. This is caught by `tsc` and your editor if you are using the
+  `@ts-check` and `@param` syntax in your migration files
+  ([example](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/migrations/20220116144621_remove_legacy.js#L17)),
+  which we strongly recommend.
+
+  See the [`knex` documentation](https://knexjs.org/#Schema-alter) for more
+  information about the `alter` syntax.
+
+  Also see the [`knex` changelog](https://knexjs.org/#changelog) for information
+  about breaking changes in the 1.x line; if you are using `RETURNING` you may
+  want to make some additional modifications in your code.
+
+  ## Switching out `sqlite3`
+
+  All `package.json` files of your repo that used to depend on `sqlite3`, should
+  now be updated to depend on `@vscode/sqlite3`. This applies in particular to
+  `packages/backend`, but may also occur in backend plugins or libraries.
+
+  ```diff
+  -    "sqlite3": "^5.0.1",
+  +    "@vscode/sqlite3": "^5.0.7",
+  ```
+
+  These should be functionally equivalent, except that the new library will have
+  addressed some long standing problems with old transitive dependencies etc.
+
 ## 0.4.18
 
 ### Patch Changes
@@ -201,11 +1096,18 @@
   }
   ```
 
+The `.fromConfig` of the `DefaultCatalogCollator` also now takes a `tokenManager` as a parameter.
+
+```diff
+-   collator: DefaultCatalogCollator.fromConfig(config, { discovery }),
++   collator: DefaultCatalogCollator.fromConfig(config, { discovery, tokenManager }),
+```
+
 - a0d446c8ec: Replaced EntitySystemDiagramCard with EntityCatalogGraphCard
 
   To make this change to an existing app:
 
-  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json`
+  Add `@backstage/plugin-catalog-graph` as a `dependency` in `packages/app/package.json` or `cd packages/app && yarn add @backstage/plugin-catalog-graph`.
 
   Apply the following changes to the `packages/app/src/components/catalog/EntityPage.tsx` file:
 

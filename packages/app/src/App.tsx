@@ -65,21 +65,25 @@ import {
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
-  DefaultTechDocsHome,
   TechDocsIndexPage,
-  techdocsPlugin,
   TechDocsReaderPage,
+  techdocsPlugin,
 } from '@backstage/plugin-techdocs';
-import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import {
+  UserSettingsPage,
+  UserSettingsTab,
+} from '@backstage/plugin-user-settings';
+import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
-import { HomePage } from './components/home/HomePage';
+import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
 import { LowerCaseValuePickerFieldExtension } from './components/scaffolder/customScaffolderExtensions';
+import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
 import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
@@ -134,7 +138,7 @@ const routes = (
     <Navigate key="/" to="catalog" />
     {/* TODO(rubenl): Move this to / once its more mature and components exist */}
     <Route path="/home" element={<HomepageCompositionRoot />}>
-      <HomePage />
+      {homePage}
     </Route>
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
@@ -170,9 +174,7 @@ const routes = (
         />
       }
     />
-    <Route path="/docs" element={<TechDocsIndexPage />}>
-      <DefaultTechDocsHome />
-    </Route>
+    <Route path="/docs" element={<TechDocsIndexPage />} />
     <Route
       path="/docs/:namespace/:kind/:name/*"
       element={<TechDocsReaderPage />}
@@ -183,6 +185,7 @@ const routes = (
       path="/create"
       element={
         <ScaffolderPage
+          defaultPreviewTemplate={defaultPreviewTemplate}
           groups={[
             {
               title: 'Recommended',
@@ -219,7 +222,11 @@ const routes = (
       path="/cost-insights/labeling-jobs"
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
-    <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/settings" element={<UserSettingsPage />}>
+      <UserSettingsTab path="/advanced" title="Advanced">
+        <AdvancedSettings />
+      </UserSettingsTab>
+    </Route>
     <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
     <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
     <Route path="/notifications" element={<UserNotificationsPage />} />

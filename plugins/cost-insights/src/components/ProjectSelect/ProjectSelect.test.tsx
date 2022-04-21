@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { getByRole, waitFor } from '@testing-library/react';
-import UserEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { ProjectSelect } from './ProjectSelect';
 import { MockFilterProvider } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -52,7 +52,7 @@ describe('<ProjectSelect />', () => {
       'project-filter-select',
     );
     const button = getByRole(projectSelectContainer, 'button');
-    UserEvent.click(button);
+    await userEvent.click(button);
     await waitFor(() => rendered.getByTestId('option-all'));
 
     mockProjects.forEach(project =>

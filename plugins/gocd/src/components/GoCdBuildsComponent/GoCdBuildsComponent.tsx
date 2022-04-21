@@ -27,6 +27,7 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { gocdApiRef } from '../../plugin';
 import { GoCdBuildsTable } from '../GoCdBuildsTable/GoCdBuildsTable';
+import { GoCdBuildsInsights } from '../GoCdBuildsInsights/GoCdBuildsInsights';
 import { GoCdApiError, PipelineHistory } from '../../api/gocdApi.model';
 import { Item, Select } from '../Select';
 
@@ -120,6 +121,11 @@ export const GoCdBuildsComponent = (): JSX.Element => {
             items={getSelectionItems(rawPipelines)}
           />
         </ContentHeader>
+        <GoCdBuildsInsights
+          pipelineHistory={pipelineHistory}
+          loading={loading}
+          error={error}
+        />
         <GoCdBuildsTable
           goCdBaseUrl={config.getString('gocd.baseUrl')}
           pipelineHistory={pipelineHistory}

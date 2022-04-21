@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { act, render, waitForElement } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
@@ -51,7 +51,7 @@ describe('RadarComponent', () => {
     jest.useFakeTimers();
 
     const errorApi = { post: () => {} };
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, findByTestId } = render(
       <ThemeProvider theme={lightTheme}>
         <TestApiProvider
           apis={[
@@ -73,7 +73,7 @@ describe('RadarComponent', () => {
     });
     expect(getByTestId('progress')).toBeInTheDocument();
 
-    await waitForElement(() => queryByTestId('tech-radar-svg'));
+    await findByTestId('tech-radar-svg');
     jest.useRealTimers();
   });
 
@@ -100,7 +100,7 @@ describe('RadarComponent', () => {
       </ThemeProvider>,
     );
 
-    await waitForElement(() => !queryByTestId('progress'));
+    await waitFor(() => !queryByTestId('progress'));
 
     expect(errorApi.post).toHaveBeenCalledTimes(1);
     expect(errorApi.post).toHaveBeenCalledWith(new Error('404 Page Not Found'));

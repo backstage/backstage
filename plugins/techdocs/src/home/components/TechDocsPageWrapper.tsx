@@ -19,11 +19,22 @@ import React from 'react';
 import { PageWithHeader } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
-type Props = {
+/**
+ * Props for {@link TechDocsPageWrapper}
+ *
+ * @public
+ */
+export type TechDocsPageWrapperProps = {
   children?: React.ReactNode;
 };
 
-export const TechDocsPageWrapper = ({ children }: Props) => {
+/**
+ * Component wrapping a techdocs page with Page and Header components
+ *
+ * @public
+ */
+export const TechDocsPageWrapper = (props: TechDocsPageWrapperProps) => {
+  const { children } = props;
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `Documentation available in ${
     configApi.getOptionalString('organization.name') ?? 'Backstage'

@@ -9,11 +9,12 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-backend';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { GroupEntity } from '@backstage/catalog-model';
-import { LocationSpec } from '@backstage/catalog-model';
-import { Logger as Logger_2 } from 'winston';
+import { LocationSpec } from '@backstage/plugin-catalog-backend';
+import { Logger } from 'winston';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import * as msal from '@azure/msal-node';
 import { Response as Response_2 } from 'node-fetch';
+import { TaskRunner } from '@backstage/backend-tasks';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -49,6 +50,9 @@ export type GroupTransformer = (
 ) => Promise<GroupEntity | undefined>;
 
 // @public
+export const MICROSOFT_EMAIL_ANNOTATION = 'microsoft.com/email';
+
+// @public
 export const MICROSOFT_GRAPH_GROUP_ID_ANNOTATION =
   'graph.microsoft.com/group-id';
 
@@ -70,7 +74,10 @@ export class MicrosoftGraphClient {
     groupId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  getGroups(query?: ODataQuery): AsyncIterable<MicrosoftGraph.Group>;
+  getGroups(
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.Group>;
   getOrganization(tenantId: string): Promise<MicrosoftGraph.Organization>;
   // (undocumented)
   getUserPhoto(userId: string, sizeId?: string): Promise<string | undefined>;
@@ -78,11 +85,28 @@ export class MicrosoftGraphClient {
     userId: string,
     maxSize: number,
   ): Promise<string | undefined>;
-  getUserProfile(userId: string): Promise<MicrosoftGraph.User>;
-  getUsers(query?: ODataQuery): AsyncIterable<MicrosoftGraph.User>;
-  requestApi(path: string, query?: ODataQuery): Promise<Response_2>;
-  requestCollection<T>(path: string, query?: ODataQuery): AsyncIterable<T>;
-  requestRaw(url: string): Promise<Response_2>;
+  getUserProfile(
+    userId: string,
+    query?: ODataQuery,
+  ): Promise<MicrosoftGraph.User>;
+  getUsers(
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<MicrosoftGraph.User>;
+  requestApi(
+    path: string,
+    query?: ODataQuery,
+    headers?: Record<string, string>,
+  ): Promise<Response_2>;
+  requestCollection<T>(
+    path: string,
+    query?: ODataQuery,
+    queryMode?: 'basic' | 'advanced',
+  ): AsyncIterable<T>;
+  requestRaw(
+    url: string,
+    headers?: Record<string, string>,
+  ): Promise<Response_2>;
 }
 
 // @public
@@ -90,7 +114,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     provider: MicrosoftGraphProviderConfig;
-    logger: Logger_2;
+    logger: Logger;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
@@ -99,26 +123,30 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
   static fromConfig(
-    config: Config,
-    options: {
-      id: string;
-      target: string;
-      logger: Logger_2;
-      userTransformer?: UserTransformer;
-      groupTransformer?: GroupTransformer;
-      organizationTransformer?: OrganizationTransformer;
-    },
+    configRoot: Config,
+    options: MicrosoftGraphOrgEntityProviderOptions,
   ): MicrosoftGraphOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  read(): Promise<void>;
+  read(options?: { logger?: Logger }): Promise<void>;
+}
+
+// @public
+export interface MicrosoftGraphOrgEntityProviderOptions {
+  groupTransformer?: GroupTransformer;
+  id: string;
+  logger: Logger;
+  organizationTransformer?: OrganizationTransformer;
+  schedule: 'manual' | TaskRunner;
+  target: string;
+  userTransformer?: UserTransformer;
 }
 
 // @public
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
-    logger: Logger_2;
+    logger: Logger;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
@@ -127,12 +155,14 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
       organizationTransformer?: OrganizationTransformer;
     },
   ): MicrosoftGraphOrgReaderProcessor;
+  // (undocumented)
+  getProcessorName(): string;
   // (undocumented)
   readLocation(
     location: LocationSpec,
@@ -149,9 +179,14 @@ export type MicrosoftGraphProviderConfig = {
   clientId: string;
   clientSecret: string;
   userFilter?: string;
-  userExpand?: string[];
+  userExpand?: string;
   userGroupMemberFilter?: string;
+  userGroupMemberSearch?: string;
+  groupExpand?: string;
   groupFilter?: string;
+  groupSearch?: string;
+  groupSelect?: string[];
+  queryMode?: 'basic' | 'advanced';
 };
 
 // @public
@@ -159,9 +194,11 @@ export function normalizeEntityName(name: string): string;
 
 // @public
 export type ODataQuery = {
+  search?: string;
   filter?: string;
-  expand?: string[];
+  expand?: string;
   select?: string[];
+  count?: boolean;
 };
 
 // @public
@@ -179,14 +216,19 @@ export function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
   options: {
-    userExpand?: string[];
+    userExpand?: string;
     userFilter?: string;
+    userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
+    groupExpand?: string;
+    groupSearch?: string;
     groupFilter?: string;
+    groupSelect?: string[];
+    queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
-    logger: Logger_2;
+    logger: Logger;
   },
 ): Promise<{
   users: UserEntity[];

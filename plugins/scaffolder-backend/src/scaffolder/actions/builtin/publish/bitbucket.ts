@@ -29,9 +29,11 @@ const createBitbucketCloudRepository = async (opts: {
   workspace: string;
   project: string;
   repo: string;
-  description: string;
+  description?: string;
   repoVisibility: 'private' | 'public';
+  mainBranch: string;
   authorization: string;
+  apiBaseUrl: string;
 }) => {
   const {
     workspace,
@@ -39,7 +41,9 @@ const createBitbucketCloudRepository = async (opts: {
     repo,
     description,
     repoVisibility,
+    mainBranch,
     authorization,
+    apiBaseUrl,
   } = opts;
 
   const options: RequestInit = {
@@ -59,7 +63,7 @@ const createBitbucketCloudRepository = async (opts: {
   let response: Response;
   try {
     response = await fetch(
-      `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo}`,
+      `${apiBaseUrl}/repositories/${workspace}/${repo}`,
       options,
     );
   } catch (e) {
@@ -82,22 +86,21 @@ const createBitbucketCloudRepository = async (opts: {
     }
   }
 
-  // TODO use the urlReader to get the default branch
-  const repoContentsUrl = `${r.links.html.href}/src/master`;
+  // "mainbranch.name" cannot be set neither at create nor update of the repo
+  // the first pushed branch will be set as "main branch" then
+  const repoContentsUrl = `${r.links.html.href}/src/${mainBranch}`;
   return { remoteUrl, repoContentsUrl };
 };
 
 const createBitbucketServerRepository = async (opts: {
-  host: string;
   project: string;
   repo: string;
-  description: string;
+  description?: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
-  apiBaseUrl?: string;
+  apiBaseUrl: string;
 }) => {
   const {
-    host,
     project,
     repo,
     description,
@@ -121,8 +124,7 @@ const createBitbucketServerRepository = async (opts: {
   };
 
   try {
-    const baseUrl = apiBaseUrl ? apiBaseUrl : `https://${host}/rest/api/1.0`;
-    response = await fetch(`${baseUrl}/projects/${project}/repos`, options);
+    response = await fetch(`${apiBaseUrl}/projects/${project}/repos`, options);
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
@@ -192,6 +194,12 @@ const performEnableLFS = async (opts: {
     );
 };
 
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to Bitbucket.
+ * @public
+ * @deprecated in favor of createPublishBitbucketCloudAction and createPublishBitbucketServerAction
+ */
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -200,12 +208,15 @@ export function createPublishBitbucketAction(options: {
 
   return createTemplateAction<{
     repoUrl: string;
-    description: string;
+    description?: string;
     defaultBranch?: string;
-    repoVisibility: 'private' | 'public';
+    repoVisibility?: 'private' | 'public';
     sourcePath?: string;
-    enableLFS: boolean;
+    enableLFS?: boolean;
     token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:bitbucket',
     description:
@@ -250,6 +261,21 @@ export function createPublishBitbucketAction(options: {
             type: 'string',
             description: 'The token to use for authorization to BitBucket',
           },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
+          },
         },
       },
       output: {
@@ -267,12 +293,18 @@ export function createPublishBitbucketAction(options: {
       },
     },
     async handler(ctx) {
+      ctx.logger.warn(
+        `[Deprecated] Please migrate the use of action "publish:bitbucket" to "publish:bitbucketCloud" or "publish:bitbucketServer".`,
+      );
       const {
         repoUrl,
         description,
         defaultBranch = 'master',
         repoVisibility = 'private',
         enableLFS = false,
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -306,7 +338,11 @@ export function createPublishBitbucketAction(options: {
 
       const authorization = getAuthorizationHeader(
         ctx.input.token
-          ? { host: integrationConfig.config.host, token: ctx.input.token }
+          ? {
+              host: integrationConfig.config.host,
+              apiBaseUrl: integrationConfig.config.apiBaseUrl,
+              token: ctx.input.token,
+            }
           : integrationConfig.config,
       );
 
@@ -319,18 +355,22 @@ export function createPublishBitbucketAction(options: {
 
       const { remoteUrl, repoContentsUrl } = await createMethod({
         authorization,
-        host,
         workspace: workspace || '',
         project,
         repo,
         repoVisibility,
+        mainBranch: defaultBranch,
         description,
         apiBaseUrl,
       });
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       let auth;
@@ -357,9 +397,9 @@ export function createPublishBitbucketAction(options: {
         auth,
         defaultBranch,
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 

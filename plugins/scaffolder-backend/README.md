@@ -21,8 +21,7 @@ restoring the plugin, if you previously removed it.
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-scaffolder-backend
+yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend
 ```
 
 ### Adding the plugin to your `packages/backend`

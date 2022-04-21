@@ -36,6 +36,7 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { useEntityOwnership } from '../../hooks';
 
 const mockUser: UserEntity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -54,7 +55,7 @@ const mockConfigApi = {
 } as Partial<ConfigApi>;
 
 const mockCatalogApi = {
-  getEntityByName: () => Promise.resolve(mockUser),
+  getEntityByRef: () => Promise.resolve(mockUser),
 } as Partial<CatalogApi>;
 
 const mockIdentityApi = {
@@ -81,9 +82,9 @@ jest.mock('../../hooks', () => {
   const actual = jest.requireActual('../../hooks');
   return {
     ...actual,
-    useEntityOwnership: () => ({
+    useEntityOwnership: jest.fn(() => ({
       isOwnedEntity: mockIsOwnedEntity,
-    }),
+    })),
     useStarredEntities: () => ({
       isStarredEntity: mockIsStarredEntity,
     }),
@@ -102,7 +103,7 @@ const backendEntities: Entity[] = [
     relations: [
       {
         type: RELATION_OWNED_BY,
-        target: { kind: 'User', namespace: 'default', name: 'testUser' },
+        targetRef: 'user:default/testuser',
       },
     ],
   },
@@ -135,7 +136,7 @@ const backendEntities: Entity[] = [
     relations: [
       {
         type: RELATION_OWNED_BY,
-        target: { kind: 'User', namespace: 'default', name: 'testUser' },
+        targetRef: 'user:default/testuser',
       },
     ],
   },
@@ -296,10 +297,10 @@ describe('<UserListPicker />', () => {
   `('filter resetting for $type entities', ({ type, filterFn }) => {
     let updateFilters: jest.Mock;
 
-    const picker = ({ loading }: { loading: boolean }) => (
+    const picker = (props: { loading: boolean }) => (
       <ApiProvider apis={apis}>
         <MockEntityListContextProvider
-          value={{ backendEntities, updateFilters, loading }}
+          value={{ backendEntities, updateFilters, loading: props.loading }}
         >
           <UserListPicker initialFilter={type} />
         </MockEntityListContextProvider>
@@ -324,6 +325,19 @@ describe('<UserListPicker />', () => {
             mockIsOwnedEntity,
             mockIsStarredEntity,
           ),
+        });
+      });
+
+      it('does not reset the filter while owned entities are loading', () => {
+        const isOwnedEntity = jest.fn(() => false);
+        (useEntityOwnership as jest.Mock).mockReturnValueOnce({
+          loading: true,
+          isOwnedEntity,
+        });
+
+        render(picker({ loading: false }));
+        expect(updateFilters).not.toHaveBeenCalledWith({
+          user: new UserListFilter('all', isOwnedEntity, mockIsStarredEntity),
         });
       });
 

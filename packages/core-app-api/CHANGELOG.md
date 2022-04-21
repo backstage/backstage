@@ -1,5 +1,85 @@
 # @backstage/core-app-api
 
+## 1.0.1
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 3ff2bfb66e: Refactored the route collection logic to prepare for future changes and avoid duplicate element tree traversal for the analytics context.
+- a7bb762dab: fixed empty body issue for POST requests using FetchAPI with 'plugin://' prefix
+- 230ad0826f: Bump to using `@types/node` v16
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/version-bridge@1.0.1
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 3ff2bfb66e: Refactored the route collection logic to prepare for future changes and avoid duplicate element tree traversal for the analytics context.
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1-next.0
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- a7bb762dab: fixed empty body issue for POST requests using FetchAPI with 'plugin://' prefix
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/version-bridge@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/types@1.0.0
+
+## 0.6.0
+
+### Minor Changes
+
+- bb2bb36651: **BREAKING**: Removed the deprecated `get` method from `StorageAPI` and its implementations, this method has been replaced by the `snapshot` method. The return value from snapshot no longer includes `newValue` which has been replaced by `value`. For getting notified when a value changes, use `observe# @backstage/core-app-api.
+- f3cce3dcf7: **BREAKING**: Removed export of `GithubSession` and `SamlSession` which are only used internally.
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+- dbf84eee55: **BREAKING**: Removed the deprecated `GithubAuth.normalizeScopes` method.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.5.3
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+  - @backstage/version-bridge@0.1.2
+
 ## 0.5.2
 
 ### Patch Changes

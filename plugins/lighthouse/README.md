@@ -27,10 +27,9 @@ _It's likely you will need to [enable CORS](https://developer.mozilla.org/en-US/
 
 When you have an instance running that Backstage can hook into, first install the plugin into your app:
 
-```sh
+```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-lighthouse
+yarn add --cwd packages/app @backstage/plugin-lighthouse
 ```
 
 Modify your app routes in `App.tsx` to include the `LighthousePage` component exported from the plugin, for example:

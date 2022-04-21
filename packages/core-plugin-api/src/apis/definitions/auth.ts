@@ -367,23 +367,6 @@ export const gitlabAuthApiRef: ApiRef<
 });
 
 /**
- * Provides authentication towards Auth0 APIs.
- *
- * @remarks
- *
- * See {@link https://auth0.com/docs/scopes/current/oidc-scopes}
- * for a full list of supported scopes.
- *
- * @public
- * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
- */
-export const auth0AuthApiRef: ApiRef<
-  OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
-> = createApiRef({
-  id: 'core.auth.auth0',
-});
-
-/**
  * Provides authentication towards Microsoft APIs and identities.
  *
  * @alpha This API is **EXPERIMENTAL** and might change in the future.
@@ -402,50 +385,6 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 > = createApiRef({
   id: 'core.auth.microsoft',
-});
-
-/**
- * Provides authentication for custom identity providers.
- *
- * @public
- * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
- */
-export const oauth2ApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
-> = createApiRef({
-  id: 'core.auth.oauth2',
-});
-
-/**
- * Provides authentication for custom OpenID Connect identity providers.
- *
- * @public
- * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
- */
-export const oidcAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
-> = createApiRef({
-  id: 'core.auth.oidc',
-});
-
-/**
- * Provides authentication for SAML-based identity providers.
- *
- * @public
- * @deprecated See https://backstage.io/docs/api/deprecations#generic-auth-api-refs
- */
-export const samlAuthApiRef: ApiRef<
-  ProfileInfoApi & BackstageIdentityApi & SessionApi
-> = createApiRef({
-  id: 'core.auth.saml',
 });
 
 /**

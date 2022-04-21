@@ -116,10 +116,11 @@ const additionalFacts = [
 ];
 
 describe('Tech Insights database', () => {
+  const databases = TestDatabases.create();
   let store: TechInsightsStore;
   let testDbClient: Knex<any, unknown[]>;
   beforeAll(async () => {
-    testDbClient = await TestDatabases.create().init('SQLITE_3');
+    testDbClient = await databases.init('SQLITE_3');
 
     store = (
       await initializePersistenceContext(testDbClient, {

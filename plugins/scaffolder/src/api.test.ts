@@ -62,7 +62,9 @@ describe('api', () => {
       'dev.azure.com',
       'bitbucket.org',
     ];
-    const integrations = await apiClient.getIntegrationsList({ allowedHosts });
+    const { integrations } = await apiClient.getIntegrationsList({
+      allowedHosts,
+    });
     integrations.forEach(integration =>
       expect(allowedHosts).toContain(integration.host),
     );

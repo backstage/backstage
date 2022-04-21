@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-jest.mock('octokit');
 import { TemplateAction } from '../../types';
 import { createGithubActionsDispatchAction } from './githubActionsDispatch';
 
@@ -26,6 +25,21 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
+
+const mockOctokit = {
+  rest: {
+    actions: {
+      createWorkflowDispatch: jest.fn(),
+    },
+  },
+};
+jest.mock('octokit', () => ({
+  Octokit: class {
+    constructor() {
+      return mockOctokit;
+    }
+  },
+}));
 
 describe('github:actions:dispatch', () => {
   const config = new ConfigReader({
@@ -54,8 +68,6 @@ describe('github:actions:dispatch', () => {
     createTemporaryDirectory: jest.fn(),
   };
 
-  const { mockGithubClient } = require('octokit');
-
   beforeEach(() => {
     jest.resetAllMocks();
     githubCredentialsProvider =
@@ -67,7 +79,7 @@ describe('github:actions:dispatch', () => {
   });
 
   it('should call the githubApis for creating WorkflowDispatch without an input object', async () => {
-    mockGithubClient.rest.actions.createWorkflowDispatch.mockResolvedValue({
+    mockOctokit.rest.actions.createWorkflowDispatch.mockResolvedValue({
       data: {
         foo: 'bar',
       },
@@ -82,7 +94,7 @@ describe('github:actions:dispatch', () => {
     await action.handler(ctx);
 
     expect(
-      mockGithubClient.rest.actions.createWorkflowDispatch,
+      mockOctokit.rest.actions.createWorkflowDispatch,
     ).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
@@ -92,7 +104,7 @@ describe('github:actions:dispatch', () => {
   });
 
   it('should call the githubApis for creating WorkflowDispatch with an input object', async () => {
-    mockGithubClient.rest.actions.createWorkflowDispatch.mockResolvedValue({
+    mockOctokit.rest.actions.createWorkflowDispatch.mockResolvedValue({
       data: {
         foo: 'bar',
       },
@@ -108,7 +120,7 @@ describe('github:actions:dispatch', () => {
     await action.handler(ctx);
 
     expect(
-      mockGithubClient.rest.actions.createWorkflowDispatch,
+      mockOctokit.rest.actions.createWorkflowDispatch,
     ).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',

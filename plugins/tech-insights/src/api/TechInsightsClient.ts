@@ -22,7 +22,7 @@ import {
 import { Check } from './types';
 import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 import {
   CheckResultRenderer,
@@ -74,14 +74,13 @@ export class TechInsightsClient implements TechInsightsApi {
   }
 
   async runChecks(
-    entityParams: EntityName,
-    checks?: Check[],
+    entityParams: CompoundEntityRef,
+    checks?: string[],
   ): Promise<CheckResult[]> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');
     const { token } = await this.identityApi.getCredentials();
     const { namespace, kind, name } = entityParams;
-    const checkIds = checks ? checks.map(check => check.id) : [];
-    const requestBody = { checks: checkIds.length > 0 ? checkIds : undefined };
+    const requestBody = { checks };
     const response = await fetch(
       `${url}/checks/run/${encodeURIComponent(namespace)}/${encodeURIComponent(
         kind,
@@ -102,7 +101,7 @@ export class TechInsightsClient implements TechInsightsApi {
   }
 
   async runBulkChecks(
-    entities: EntityName[],
+    entities: CompoundEntityRef[],
     checks?: Check[],
   ): Promise<BulkCheckResponse> {
     const url = await this.discoveryApi.getBaseUrl('tech-insights');

@@ -15,18 +15,12 @@
  */
 
 export {
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
-  SOURCE_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  ANNOTATION_SOURCE_LOCATION,
 } from './annotation';
 export {
-  parseLocationReference,
-  stringifyLocationReference,
   getEntitySourceLocation,
+  parseLocationRef,
+  stringifyLocationRef,
 } from './helpers';
-export type { Location, LocationSpec } from './types';
-export {
-  analyzeLocationSchema,
-  locationSchema,
-  locationSpecSchema,
-} from './validation';

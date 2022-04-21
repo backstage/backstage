@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
-export { FilteredEntityLayout } from './FilteredEntityLayout';
-export { FilterContainer } from './FilterContainer';
-export { EntityListContainer } from './EntityListContainer';
+import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
+
+/**
+ * @public
+ * @deprecated Use `CatalogFilterLayout` from `@backstage/plugin-catalog-react` instead.
+ */
+export const FilteredEntityLayout = CatalogFilterLayout as (props: {
+  children: React.ReactNode;
+}) => JSX.Element;
+
+/**
+ * @public
+ * @deprecated Use `CatalogFilterLayout.Filters` from `@backstage/plugin-catalog-react` instead.
+ */
+export const FilterContainer = CatalogFilterLayout.Filters;
+
+/**
+ * @public
+ * @deprecated Use `CatalogFilterLayout.Content` from `@backstage/plugin-catalog-react` instead.
+ */
+export const EntityListContainer = CatalogFilterLayout.Content;

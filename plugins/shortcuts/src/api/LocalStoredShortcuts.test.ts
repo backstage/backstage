@@ -21,19 +21,22 @@ import { LocalStoredShortcuts } from './LocalStoredShortcuts';
 import { ShortcutApi } from './ShortcutApi';
 
 describe('LocalStoredShortcuts', () => {
-  // eslint-disable-next-line jest/no-done-callback
-  it('should observe shortcuts', async done => {
+  it('should observe shortcuts', async () => {
     const shortcutApi: ShortcutApi = new LocalStoredShortcuts(
       MockStorageApi.create(),
     );
     const shortcut: Shortcut = { id: 'id', title: 'title', url: '/url' };
 
     await shortcutApi.add(shortcut);
-    shortcutApi.shortcut$().subscribe(data => {
-      expect(data).toEqual(
-        expect.arrayContaining([{ ...shortcut, id: expect.anything() }]),
-      );
-      done();
+
+    await new Promise<void>(resolve => {
+      const subscription = shortcutApi.shortcut$().subscribe(data => {
+        expect(data).toEqual(
+          expect.arrayContaining([{ ...shortcut, id: expect.anything() }]),
+        );
+        subscription.unsubscribe();
+        resolve();
+      });
     });
   });
 

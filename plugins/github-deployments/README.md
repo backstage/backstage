@@ -14,8 +14,7 @@ The GitHub Deployments Plugin displays recent deployments from GitHub.
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-github-deployments
+yarn add --cwd packages/app @backstage/plugin-github-deployments
 ```
 
 2. Add the `EntityGithubDeploymentsCard` to the EntityPage:

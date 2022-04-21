@@ -17,6 +17,7 @@
 import {
   EscalationPolicyInfo,
   Incident,
+  RoutingKey,
   Team,
   User,
 } from '../components/types';
@@ -86,6 +87,18 @@ export const MOCK_TEAM: Team = {
   memberCount: 1,
   version: 1,
   isDefaultTeam: false,
+};
+
+export const MOCK_ROUTING_KEY: RoutingKey = {
+  routingKey: 'test-routing-key',
+  targets: [
+    {
+      policyName: 'some policy',
+      policySlug: MOCK_TEAM.slug || '',
+      _teamUrl: `/api-public/v1/team/${MOCK_TEAM.slug}`,
+    },
+  ],
+  isDefault: false,
 };
 
 export const MOCK_TEAM_NO_INCIDENTS: Team = {

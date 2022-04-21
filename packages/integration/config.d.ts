@@ -31,7 +31,10 @@ export interface Config {
       token?: string;
     }>;
 
-    /** Integration configuration for Bitbucket */
+    /**
+     * Integration configuration for Bitbucket
+     * @deprecated replaced by bitbucketCloud and bitbucketServer
+     */
     bitbucket?: Array<{
       /**
        * The hostname of the given Bitbucket instance
@@ -58,6 +61,64 @@ export interface Config {
        * @visibility secret
        */
       appPassword?: string;
+    }>;
+
+    /** Integration configuration for Bitbucket Cloud */
+    bitbucketCloud?: Array<{
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username: string;
+      /**
+       * Bitbucket Cloud app password used to authenticate requests.
+       * @visibility secret
+       */
+      appPassword: string;
+    }>;
+
+    /** Integration configuration for Bitbucket Server */
+    bitbucketServer?: Array<{
+      /**
+       * The hostname of the given Bitbucket Server instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
+      /**
+       * The base url for the Bitbucket Server API, for example https://<host>/rest/api/1.0
+       * @visibility frontend
+       */
+      apiBaseUrl?: string;
+    }>;
+
+    /** Integration configuration for Gerrit */
+    gerrit?: Array<{
+      /**
+       * The hostname of the given Gerrit instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * The base url for the Gerrit instance.
+       * @visibility frontend
+       */
+      baseUrl?: string;
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Gerrit password used to authenticate requests. This can be either a password
+       * or a generated access token.
+       * @visibility secret
+       */
+      password?: string;
     }>;
 
     /** Integration configuration for GitHub */
@@ -200,6 +261,12 @@ export interface Config {
        * @visibility backend
        */
       roleArn?: string;
+
+      /**
+       * External ID to use when assuming role
+       * @visibility backend
+       */
+      externalId?: string;
     }>;
   };
 }

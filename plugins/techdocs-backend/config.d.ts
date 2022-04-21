@@ -44,17 +44,20 @@ export interface Config {
        * Pull the latest docker image
        */
       pullImage?: boolean;
-    };
 
-    /**
-     * Techdocs generator information
-     * @deprecated Replaced with techdocs.generator
-     */
-    generators?: {
       /**
-       * @deprecated Use techdocs.generator.runIn
+       * Override behavior specific to mkdocs.
        */
-      techdocs: 'local' | 'docker';
+      mkdocs?: {
+        /**
+         * (Optional and not recommended) Configures the techdocs generator to
+         * attempt to ensure an index.md exists falling back to using <docs-dir>/README.md
+         * or README.md in case a default <docs-dir>/index.md is not provided.
+         * Note that https://www.mkdocs.org/user-guide/configuration/#edit_uri behavior
+         * will be broken in these scenarios.
+         */
+        legacyCopyReadmeMdToIndexMd?: boolean;
+      };
     };
 
     /**
@@ -251,19 +254,6 @@ export interface Config {
        */
       readTimeout?: number;
     };
-
-    /**
-     * @example http://localhost:7007/api/techdocs
-     * @visibility frontend
-     * @deprecated
-     */
-    requestUrl?: string;
-
-    /**
-     * @example http://localhost:7007/api/techdocs/static/docs
-     * @deprecated
-     */
-    storageUrl?: string;
 
     /**
      * (Optional and not recommended) Prior to version [0.x.y] of TechDocs, docs

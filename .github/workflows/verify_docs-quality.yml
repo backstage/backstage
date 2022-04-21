@@ -1,9 +1,9 @@
 name: Verify Docs Quality
-
 on:
   pull_request:
     branches: [master]
     paths:
+      - '.github/workflows/verify_docs-quality.yml'
       - '**.md'
 
 jobs:

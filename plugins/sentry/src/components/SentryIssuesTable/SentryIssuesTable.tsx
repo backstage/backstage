@@ -20,6 +20,7 @@ import { DateTime } from 'luxon';
 import { ErrorCell } from '../ErrorCell/ErrorCell';
 import { ErrorGraph } from '../ErrorGraph/ErrorGraph';
 import { Table, TableColumn } from '@backstage/core-components';
+import { Options } from '@material-table/core';
 
 const columns: TableColumn[] = [
   {
@@ -59,17 +60,19 @@ const columns: TableColumn[] = [
 
 type SentryIssuesTableProps = {
   sentryIssues: SentryIssue[];
-  statsFor?: '24h' | '14d' | '';
+  statsFor: '24h' | '14d' | '';
+  tableOptions: Options<never>;
 };
 
 const SentryIssuesTable = ({
   sentryIssues,
   statsFor,
+  tableOptions,
 }: SentryIssuesTableProps) => {
   return (
     <Table
       columns={columns}
-      options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
+      options={tableOptions}
       title="Sentry issues"
       subtitle={statsFor ? `Last ${statsFor}` : undefined}
       data={sentryIssues}

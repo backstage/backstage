@@ -4,12 +4,13 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { Duration } from 'luxon';
 import express from 'express';
 import type { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import type { JsonObject } from '@backstage/types';
 import type { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import type { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
 
@@ -83,28 +84,22 @@ export interface GKEClusterDetails extends ClusterDetails {}
 export class KubernetesBuilder {
   constructor(env: KubernetesEnvironment);
   // (undocumented)
-  build(): Promise<{
-    clusterDetails: ClusterDetails[];
-    clusterSupplier: KubernetesClustersSupplier;
-    customResources: CustomResource[];
-    fetcher: KubernetesFetcher;
-    objectsProvider: KubernetesObjectsProvider;
-    router: express.Router;
-    serviceLocator: KubernetesServiceLocator;
-  }>;
+  build(): KubernetesBuilderReturn;
   // (undocumented)
-  protected buildClusterSupplier(): KubernetesClustersSupplier;
+  protected buildClusterSupplier(
+    refreshInterval: Duration,
+  ): KubernetesClustersSupplier;
   // (undocumented)
   protected buildCustomResources(): CustomResource[];
   // (undocumented)
   protected buildFetcher(): KubernetesFetcher;
   // (undocumented)
   protected buildHttpServiceLocator(
-    _clusterDetails: ClusterDetails[],
+    _clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   protected buildMultiTenantServiceLocator(
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   protected buildObjectsProvider(
@@ -113,12 +108,12 @@ export class KubernetesBuilder {
   // (undocumented)
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
     method: ServiceLocatorMethod,
-    clusterDetails: ClusterDetails[],
+    clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator;
   // (undocumented)
   static createBuilder(env: KubernetesEnvironment): KubernetesBuilder;
@@ -135,6 +130,8 @@ export class KubernetesBuilder {
   // (undocumented)
   setClusterSupplier(clusterSupplier?: KubernetesClustersSupplier): this;
   // (undocumented)
+  setDefaultClusterRefreshInterval(refreshInterval: Duration): this;
+  // (undocumented)
   setFetcher(fetcher?: KubernetesFetcher): this;
   // (undocumented)
   setObjectsProvider(objectsProvider?: KubernetesObjectsProvider): this;
@@ -142,11 +139,20 @@ export class KubernetesBuilder {
   setServiceLocator(serviceLocator?: KubernetesServiceLocator): this;
 }
 
+// @public
+export type KubernetesBuilderReturn = Promise<{
+  router: express.Router;
+  clusterSupplier: KubernetesClustersSupplier;
+  customResources: CustomResource[];
+  fetcher: KubernetesFetcher;
+  objectsProvider: KubernetesObjectsProvider;
+  serviceLocator: KubernetesServiceLocator;
+}>;
+
 // Warning: (ae-missing-release-tag) "KubernetesClustersSupplier" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface KubernetesClustersSupplier {
-  // (undocumented)
   getClusters(): Promise<ClusterDetails[]>;
 }
 
@@ -157,7 +163,7 @@ export interface KubernetesEnvironment {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
 }
 
 // Warning: (ae-missing-release-tag) "KubernetesFetcher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -194,7 +200,7 @@ export interface KubernetesObjectsProviderOptions {
   // (undocumented)
   fetcher: KubernetesFetcher;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
   // (undocumented)
   objectTypesToFetch?: ObjectToFetch[];
   // (undocumented)
@@ -239,6 +245,8 @@ export interface ObjectFetchParams {
   // (undocumented)
   labelSelector: string;
   // (undocumented)
+  namespace?: string;
+  // (undocumented)
   objectTypesToFetch: Set<ObjectToFetch>;
   // (undocumented)
   serviceId: string;
@@ -272,7 +280,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger_2;
+  logger: Logger;
 }
 
 // Warning: (ae-missing-release-tag) "ServiceAccountClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

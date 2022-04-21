@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -70,18 +70,6 @@ const expectedEntities: Entity[] = [
       type: 'dog',
       lifecycle: 'experimental',
       owner: 'someone',
-    },
-  },
-  {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Component',
-    metadata: {
-      name: 'test-entity',
-      description: 'The expected description',
-    },
-    spec: {
-      type: 'some-type',
-      lifecycle: 'experimental',
     },
   },
 ];
@@ -198,8 +186,8 @@ describe('DefaultTechDocsCollator', () => {
         componentType: entity!.spec!.type,
         lifecycle: entity!.spec!.lifecycle,
         owner: '',
-        kind: entity.kind,
-        name: entity.metadata.name,
+        kind: entity.kind.toLocaleLowerCase('en-US'),
+        name: entity.metadata.name.toLocaleLowerCase('en-US'),
         authorization: {
           resourceRef: `component:default/${entity.metadata.name}`,
         },
@@ -208,8 +196,13 @@ describe('DefaultTechDocsCollator', () => {
   });
 
   it('maps a returned entity with a custom locationTemplate', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        legacyUseCaseSensitiveTripletPaths: true,
+      },
+    });
     // Provide an alternate location template.
-    collator = new DefaultTechDocsCollator({
+    collator = DefaultTechDocsCollator.fromConfig(mockConfig, {
       discovery: mockDiscoveryApi,
       tokenManager: mockTokenManager,
       locationTemplate: '/software/:name',

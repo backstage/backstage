@@ -50,7 +50,6 @@ describe('oauth helpers', () => {
             email: 'foo@bar.com',
           },
           backstageIdentity: {
-            id: 'a',
             token: 'a.b.c',
             identity: {
               type: 'user',
@@ -110,7 +109,6 @@ describe('oauth helpers', () => {
             email: 'foo@bar.com',
           },
           backstageIdentity: {
-            id: 'a',
             token: 'a.b.c',
             identity: {
               type: 'user',
@@ -157,7 +155,6 @@ describe('oauth helpers', () => {
             displayName: "Adam l'Hôpital",
           },
           backstageIdentity: {
-            id: 'a',
             token: 'a.b.c',
             identity: {
               type: 'user',

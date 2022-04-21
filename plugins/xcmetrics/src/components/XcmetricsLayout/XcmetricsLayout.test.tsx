@@ -51,7 +51,7 @@ describe('XcmetricsLayout', () => {
       </TestApiProvider>,
     );
 
-    userEvent.click(rendered.getByText('Builds'));
+    await userEvent.click(rendered.getByText('Builds'));
     expect(await rendered.findByText('BuildList')).toBeInTheDocument();
   });
 });

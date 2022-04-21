@@ -93,11 +93,7 @@ describe('Stitcher', () => {
         relations: [
           {
             type: 'looksAt',
-            target: {
-              kind: 'k',
-              namespace: 'ns',
-              name: 'other',
-            },
+            targetRef: 'k:ns/other',
           },
         ],
         apiVersion: 'a',
@@ -106,7 +102,6 @@ describe('Stitcher', () => {
           name: 'n',
           namespace: 'ns',
           etag: expect.any(String),
-          generation: 1,
           uid: 'my-id',
         },
         spec: {
@@ -159,19 +154,11 @@ describe('Stitcher', () => {
         relations: expect.arrayContaining([
           {
             type: 'looksAt',
-            target: {
-              kind: 'k',
-              namespace: 'ns',
-              name: 'other',
-            },
+            targetRef: 'k:ns/other',
           },
           {
             type: 'looksAt',
-            target: {
-              kind: 'k',
-              namespace: 'ns',
-              name: 'third',
-            },
+            targetRef: 'k:ns/third',
           },
         ]),
         apiVersion: 'a',
@@ -180,7 +167,6 @@ describe('Stitcher', () => {
           name: 'n',
           namespace: 'ns',
           etag: expect.any(String),
-          generation: 1,
           uid: 'my-id',
         },
         spec: {

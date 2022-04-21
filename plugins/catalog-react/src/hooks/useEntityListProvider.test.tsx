@@ -29,14 +29,11 @@ import qs from 'qs';
 import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router';
 import { catalogApiRef } from '../api';
-import { DefaultStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
+import { starredEntitiesApiRef, MockStarredEntitiesApi } from '../apis';
 import { EntityKindPicker, UserListPicker } from '../components';
 import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../filters';
 import { UserListFilterKind } from '../types';
-import {
-  EntityListProvider,
-  useEntityListProvider,
-} from './useEntityListProvider';
+import { EntityListProvider, useEntityList } from './useEntityListProvider';
 
 const entities: Entity[] = [
   {
@@ -48,11 +45,7 @@ const entities: Entity[] = [
     relations: [
       {
         type: 'ownedBy',
-        target: {
-          name: 'guest',
-          namespace: 'default',
-          kind: 'User',
-        },
+        targetRef: 'user:default/guest',
       },
     ],
   },
@@ -78,7 +71,7 @@ const mockIdentityApi: Partial<IdentityApi> = {
 };
 const mockCatalogApi: Partial<CatalogApi> = {
   getEntities: jest.fn().mockImplementation(async () => ({ items: entities })),
-  getEntityByName: async () => undefined,
+  getEntityByRef: async () => undefined,
 };
 
 const wrapper = ({
@@ -97,12 +90,7 @@ const wrapper = ({
           [catalogApiRef, mockCatalogApi],
           [identityApiRef, mockIdentityApi],
           [storageApiRef, MockStorageApi.create()],
-          [
-            starredEntitiesApiRef,
-            new DefaultStarredEntitiesApi({
-              storageApi: MockStorageApi.create(),
-            }),
-          ],
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
         ]}
       >
         <EntityListProvider>
@@ -129,12 +117,9 @@ describe('<EntityListProvider />', () => {
   });
 
   it('resolves backend filters', async () => {
-    const { result, waitForValueToChange } = renderHook(
-      () => useEntityListProvider(),
-      {
-        wrapper,
-      },
-    );
+    const { result, waitForValueToChange } = renderHook(() => useEntityList(), {
+      wrapper,
+    });
     await waitForValueToChange(() => result.current.backendEntities);
     expect(result.current.backendEntities.length).toBe(2);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
@@ -143,7 +128,7 @@ describe('<EntityListProvider />', () => {
   });
 
   it('resolves frontend filters', async () => {
-    const { result, waitFor } = renderHook(() => useEntityListProvider(), {
+    const { result, waitFor } = renderHook(() => useEntityList(), {
       wrapper,
       initialProps: {
         userFilter: 'all',
@@ -173,7 +158,7 @@ describe('<EntityListProvider />', () => {
     const query = qs.stringify({
       filters: { kind: 'component', type: 'service' },
     });
-    const { result, waitFor } = renderHook(() => useEntityListProvider(), {
+    const { result, waitFor } = renderHook(() => useEntityList(), {
       wrapper,
       initialProps: {
         location: `/catalog?${query}`,
@@ -187,7 +172,7 @@ describe('<EntityListProvider />', () => {
   });
 
   it('does not fetch when only frontend filters change', async () => {
-    const { result, waitFor } = renderHook(() => useEntityListProvider(), {
+    const { result, waitFor } = renderHook(() => useEntityList(), {
       wrapper,
     });
 
@@ -214,7 +199,7 @@ describe('<EntityListProvider />', () => {
 
   it('debounces multiple filter changes', async () => {
     const { result, waitForNextUpdate, waitForValueToChange } = renderHook(
-      () => useEntityListProvider(),
+      () => useEntityList(),
       {
         wrapper,
       },
@@ -233,7 +218,7 @@ describe('<EntityListProvider />', () => {
 
   it('returns an error on catalogApi failure', async () => {
     const { result, waitForValueToChange, waitFor } = renderHook(
-      () => useEntityListProvider(),
+      () => useEntityList(),
       {
         wrapper,
       },

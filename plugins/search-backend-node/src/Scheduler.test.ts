@@ -29,31 +29,107 @@ describe('Scheduler', () => {
 
   describe('addToSchedule', () => {
     it('should not add a task and interval to schedule, if already started', async () => {
-      jest.useFakeTimers();
       const mockTask1 = jest.fn();
       const mockTask2 = jest.fn();
+      const mockScheduledTaskRunner1 = {
+        run: jest.fn(),
+      };
+      const mockScheduledTaskRunner2 = {
+        run: jest.fn(),
+      };
 
       // Add a task and interval to schedule
-      testScheduler.addToSchedule(mockTask1, 2);
+      testScheduler.addToSchedule({
+        id: 'id1',
+        task: mockTask1,
+        scheduledRunner: mockScheduledTaskRunner1,
+      });
 
       // Starts scheduling process
       testScheduler.start();
 
       // Throws Error if task and interval is added to a already started schedule
-      expect(() => testScheduler.addToSchedule(mockTask2, 2)).toThrowError();
+      expect(() =>
+        testScheduler.addToSchedule({
+          id: 'id2',
+          task: mockTask2,
+          scheduledRunner: mockScheduledTaskRunner2,
+        }),
+      ).toThrowError();
 
-      jest.runOnlyPendingTimers();
-      expect(mockTask1).toHaveBeenCalled();
-      expect(mockTask2).not.toHaveBeenCalled();
+      expect(mockScheduledTaskRunner1.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id1',
+          fn: mockTask1,
+        }),
+      );
+      expect(mockScheduledTaskRunner2.run).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id2',
+          fn: mockTask2,
+        }),
+      );
+    });
+
+    it('should not add a task to schedule, if it already exists', async () => {
+      const mockTask1 = jest.fn();
+      const mockTask2 = jest.fn();
+      const mockScheduledTaskRunner1 = {
+        run: jest.fn(),
+      };
+      const mockScheduledTaskRunner2 = {
+        run: jest.fn(),
+      };
+
+      // Add a task and interval to schedule
+      testScheduler.addToSchedule({
+        id: 'id1',
+        task: mockTask1,
+        scheduledRunner: mockScheduledTaskRunner1,
+      });
+
+      // Throws Error if task and interval is added to a already started schedule
+      expect(() =>
+        testScheduler.addToSchedule({
+          id: 'id1',
+          task: mockTask2,
+          scheduledRunner: mockScheduledTaskRunner2,
+        }),
+      ).toThrowError();
+
+      // Starts scheduling process
+      testScheduler.start();
+
+      expect(mockScheduledTaskRunner1.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id1',
+          fn: mockTask1,
+        }),
+      );
+      expect(mockScheduledTaskRunner2.run).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id2',
+          fn: mockTask2,
+        }),
+      );
     });
 
     it('should be possible to add a task and interval to schedule, if already started, but stopped in between', async () => {
-      jest.useFakeTimers();
       const mockTask1 = jest.fn();
       const mockTask2 = jest.fn();
+      const mockScheduledTaskRunner1 = {
+        run: jest.fn(),
+      };
+      const mockScheduledTaskRunner2 = {
+        run: jest.fn(),
+      };
 
       // Add a task and interval to schedule
-      testScheduler.addToSchedule(mockTask1, 2);
+      testScheduler.addToSchedule({
+        id: 'id1',
+        task: mockTask1,
+        scheduledRunner: mockScheduledTaskRunner1,
+      });
 
       // Starts scheduling process
       testScheduler.start();
@@ -61,17 +137,30 @@ describe('Scheduler', () => {
       // Stop scheduling process
       testScheduler.stop();
 
-      // Should't throw error, as it is stopped.
+      // Shouldn't throw error, as it is stopped.
       expect(() =>
-        testScheduler.addToSchedule(mockTask2, 4),
+        testScheduler.addToSchedule({
+          id: 'id2',
+          task: mockTask2,
+          scheduledRunner: mockScheduledTaskRunner2,
+        }),
       ).not.toThrowError();
 
       // Starts scheduling process
       testScheduler.start();
 
-      jest.runOnlyPendingTimers();
-      expect(mockTask1).toHaveBeenCalled();
-      expect(mockTask2).toHaveBeenCalled();
+      expect(mockScheduledTaskRunner1.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id1',
+          fn: mockTask1,
+        }),
+      );
+      expect(mockScheduledTaskRunner2.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id2',
+          fn: mockTask2,
+        }),
+      );
     });
   });
 
@@ -79,16 +168,40 @@ describe('Scheduler', () => {
     it('should execute tasks on start', () => {
       const mockTask1 = jest.fn();
       const mockTask2 = jest.fn();
+      const mockScheduledTaskRunner1 = {
+        run: jest.fn(),
+      };
+      const mockScheduledTaskRunner2 = {
+        run: jest.fn(),
+      };
 
       // Add tasks and interval to schedule
-      testScheduler.addToSchedule(mockTask1, 2);
-      testScheduler.addToSchedule(mockTask2, 2);
+      testScheduler.addToSchedule({
+        id: 'id1',
+        task: mockTask1,
+        scheduledRunner: mockScheduledTaskRunner1,
+      });
+      testScheduler.addToSchedule({
+        id: 'id2',
+        task: mockTask2,
+        scheduledRunner: mockScheduledTaskRunner2,
+      });
 
       // Starts scheduling process
       testScheduler.start();
 
-      expect(mockTask1).toHaveBeenCalled();
-      expect(mockTask2).toHaveBeenCalled();
+      expect(mockScheduledTaskRunner1.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id1',
+          fn: mockTask1,
+        }),
+      );
+      expect(mockScheduledTaskRunner2.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'id2',
+          fn: mockTask2,
+        }),
+      );
     });
   });
 });

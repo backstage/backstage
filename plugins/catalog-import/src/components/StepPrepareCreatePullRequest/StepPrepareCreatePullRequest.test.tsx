@@ -38,14 +38,14 @@ describe('<StepPrepareCreatePullRequest />', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
-    getEntityByName: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getEntityByRef: jest.fn(),
+    getLocationByRef: jest.fn(),
     getLocationById: jest.fn(),
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
 
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {
@@ -168,9 +168,9 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      userEvent.type(await screen.findByLabelText('name'), '-changed');
-      userEvent.type(await screen.findByLabelText('owner'), '-changed');
-      userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
+      await userEvent.type(await screen.findByLabelText('name'), '-changed');
+      await userEvent.type(await screen.findByLabelText('owner'), '-changed');
+      await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
     });
 
     expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
@@ -244,7 +244,7 @@ spec:
         },
       );
 
-      userEvent.click(
+      await userEvent.click(
         await screen.findByRole('button', { name: /Create PR/i }),
       );
     });

@@ -60,14 +60,14 @@ describe('createRouter', () => {
     catalog = {
       addLocation: jest.fn(),
       getEntities: jest.fn(),
-      getEntityByName: jest.fn(),
-      getOriginLocationByEntity: jest.fn(),
-      getLocationByEntity: jest.fn(),
+      getEntityByRef: jest.fn(),
+      getLocationByRef: jest.fn(),
       getLocationById: jest.fn(),
       removeLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
+      getEntityFacets: jest.fn(),
     };
 
     config = new ConfigReader({
@@ -103,7 +103,7 @@ describe('createRouter', () => {
 
   describe('GET /entity/:namespace/:kind/:name/badge-specs', () => {
     it('returns all badge specs for entity', async () => {
-      catalog.getEntityByName.mockResolvedValueOnce(entity);
+      catalog.getEntityByRef.mockResolvedValueOnce(entity);
 
       badgeBuilder.getBadges.mockResolvedValueOnce([{ id: badge.id }]);
       badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
@@ -115,8 +115,8 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.text).toEqual(JSON.stringify([badge], null, 2));
 
-      expect(catalog.getEntityByName).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByName).toHaveBeenCalledWith(
+      expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
+      expect(catalog.getEntityByRef).toHaveBeenCalledWith(
         {
           namespace: 'default',
           kind: 'service',
@@ -142,7 +142,7 @@ describe('createRouter', () => {
 
   describe('GET /entity/:namespace/:kind/:name/badge/test-badge', () => {
     it('returns badge for entity', async () => {
-      catalog.getEntityByName.mockResolvedValueOnce(entity);
+      catalog.getEntityByRef.mockResolvedValueOnce(entity);
 
       const image = '<svg>...</svg>';
       badgeBuilder.createBadgeSvg.mockResolvedValueOnce(image);
@@ -154,8 +154,8 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(Buffer.from(image));
 
-      expect(catalog.getEntityByName).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByName).toHaveBeenCalledWith(
+      expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
+      expect(catalog.getEntityByRef).toHaveBeenCalledWith(
         {
           namespace: 'default',
           kind: 'service',
@@ -179,7 +179,7 @@ describe('createRouter', () => {
     });
 
     it('returns badge spec for entity', async () => {
-      catalog.getEntityByName.mockResolvedValueOnce(entity);
+      catalog.getEntityByRef.mockResolvedValueOnce(entity);
       badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
 
       const url = '/entity/default/service/test/badge/test-badge?format=json';
@@ -192,7 +192,7 @@ describe('createRouter', () => {
 
   describe('Errors', () => {
     it('returns 404 for unknown entities', async () => {
-      catalog.getEntityByName.mockResolvedValue(undefined);
+      catalog.getEntityByRef.mockResolvedValue(undefined);
       async function testUrl(url: string) {
         const response = await request(app).get(url);
         expect(response.status).toEqual(404);

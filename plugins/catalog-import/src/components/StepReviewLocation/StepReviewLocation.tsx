@@ -73,8 +73,6 @@ export const StepReviewLocation = ({
             const result = await catalogApi.addLocation({
               type: 'url',
               target: l.target,
-              presence:
-                prepareResult.type === 'repository' ? 'optional' : 'required',
             });
             return {
               target: result.location.target,

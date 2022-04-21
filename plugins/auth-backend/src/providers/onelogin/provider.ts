@@ -38,13 +38,11 @@ import {
 } from '../../lib/passport';
 import {
   RedirectInfo,
-  AuthProviderFactory,
   AuthHandler,
   SignInResolver,
+  AuthResolverContext,
 } from '../types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { Logger } from 'winston';
-import { TokenIssuer } from '../../identity';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -54,25 +52,19 @@ export type Options = OAuthProviderOptions & {
   issuer: string;
   signInResolver?: SignInResolver<OAuthResult>;
   authHandler: AuthHandler<OAuthResult>;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class OneLoginProvider implements OAuthHandlers {
   private readonly _strategy: any;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
 
   constructor(options: Options) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
     this._strategy = new OneLoginStrategy(
       {
         issuer: options.issuer,
@@ -148,12 +140,7 @@ export class OneLoginProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -171,7 +158,7 @@ export class OneLoginProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
     }
 
@@ -179,19 +166,10 @@ export class OneLoginProvider implements OAuthHandlers {
   }
 }
 
-const defaultSignInResolver: SignInResolver<OAuthResult> = async info => {
-  const { profile } = info;
-
-  if (!profile.email) {
-    throw new Error('OIDC profile contained no email');
-  }
-
-  const id = profile.email.split('@')[0];
-
-  return { id, token: '' };
-};
-
-/** @public */
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type OneLoginProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -210,58 +188,66 @@ export type OneLoginProviderOptions = {
   };
 };
 
-/** @public */
-export const createOneLoginProvider = (
-  options?: OneLoginProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const issuer = envConfig.getString('issuer');
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+/**
+ * Auth provider integration for OneLogin auth
+ *
+ * @public
+ */
+export const onelogin = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<OAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<OAuthResult>;
+    };
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const issuer = envConfig.getString('issuer');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+
+        const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile, params }) => ({
+              profile: makeProfileInfo(fullProfile, params.id_token),
+            });
+
+        const provider = new OneLoginProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          issuer,
+          authHandler,
+          signInResolver: options?.signIn?.resolver,
+          resolverContext,
+        });
+
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          disableRefresh: false,
+          providerId,
+          callbackUrl,
+        });
       });
+  },
+});
 
-      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile, params }) => ({
-            profile: makeProfileInfo(fullProfile, params.id_token),
-          });
-
-      const signInResolver = options?.signIn?.resolver ?? defaultSignInResolver;
-
-      const provider = new OneLoginProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        issuer,
-        authHandler,
-        signInResolver,
-        tokenIssuer,
-        catalogIdentityClient,
-        logger,
-      });
-
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        disableRefresh: false,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+/**
+ * @public
+ * @deprecated Use `providers.onelogin.create` instead
+ */
+export const createOneLoginProvider = onelogin.create;

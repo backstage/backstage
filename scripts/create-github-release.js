@@ -63,7 +63,7 @@ const octokit = new Octokit({
 });
 
 // Get the message of the commit responsible for a tag
-async function getCommitMessageUsingTagName(tagName) {
+async function getCommitUsingTagName(tagName) {
   // Get the tag SHA using the provided tag name
   const refData = await octokit.git.getRef({
     owner: GH_OWNER,
@@ -114,39 +114,57 @@ async function getCommitMessageUsingTagName(tagName) {
 
   // Example Commit Message
   // Merge pull request #3555 from backstage/changeset-release/master Version Packages
-  return commitData.data.message;
+  return { sha: commitSha, message: commitData.data.message };
 }
 
 // There is a PR number in our expected commit message. Get the description of that PR.
-async function getReleaseDescriptionFromCommitMessage(commitMessage) {
-  // It should exactly match the pattern of changeset commit message, or else will abort.
-  const expectedMessage = RegExp(EXPECTED_COMMIT_MESSAGE);
-  if (!expectedMessage.test(commitMessage)) {
-    throw new Error(
-      `Expected regex did not match commit message: ${commitMessage}`,
+async function getReleaseDescriptionFromCommit(commit) {
+  let pullRequestBody = undefined;
+
+  const { data: pullRequests } =
+    await octokit.repos.listPullRequestsAssociatedWithCommit({
+      owner: GH_OWNER,
+      repo: GH_REPO,
+      commit_sha: commit.sha,
+    });
+  if (pullRequests.length === 1) {
+    pullRequestBody = pullRequests[0].body;
+  } else {
+    console.warn(
+      `Found ${pullRequests.length} pull requests for commit ${commit.sha}, falling back to parsing commit message`,
     );
+
+    // It should exactly match the pattern of changeset commit message, or else will abort.
+    const expectedMessage = RegExp(EXPECTED_COMMIT_MESSAGE);
+    if (!expectedMessage.test(commit.message)) {
+      throw new Error(
+        `Expected regex did not match commit message: ${commit.message}`,
+      );
+    }
+
+    // Get the PR description from the commit message
+    const prNumber = commit.message.match(expectedMessage).groups.prNumber;
+    console.log(
+      `Identified the changeset Pull request - https://github.com/backstage/backstage/pull/${prNumber}`,
+    );
+
+    const { data } = await octokit.pulls.get({
+      owner: GH_OWNER,
+      repo: GH_REPO,
+      pull_number: prNumber,
+    });
+
+    pullRequestBody = data.body;
   }
 
-  // Get the PR description from the commit message
-  const prNumber = commitMessage.match(expectedMessage).groups.prNumber;
-  console.log(
-    `Identified the changeset Pull request - https://github.com/backstage/backstage/pull/${prNumber}`,
-  );
-
-  const { data } = await octokit.pulls.get({
-    owner: GH_OWNER,
-    repo: GH_REPO,
-    pull_number: prNumber,
-  });
-
   // Use the PR description to prepare for the release description
-  const isChangesetRelease = commitMessage.includes(CHANGESET_RELEASE_BRANCH);
+  const isChangesetRelease = commit.message.includes(CHANGESET_RELEASE_BRANCH);
   if (isChangesetRelease) {
-    const lines = data.body.split('\n');
+    const lines = pullRequestBody.split('\n');
     return lines.slice(lines.indexOf('# Releases') + 1).join('\n');
   }
 
-  return data.body;
+  return pullRequestBody;
 }
 
 // Create Release on GitHub.
@@ -179,10 +197,8 @@ async function createRelease(releaseDescription) {
 }
 
 async function main() {
-  const commitMessage = await getCommitMessageUsingTagName(TAG_NAME);
-  const releaseDescription = await getReleaseDescriptionFromCommitMessage(
-    commitMessage,
-  );
+  const commit = await getCommitUsingTagName(TAG_NAME);
+  const releaseDescription = await getReleaseDescriptionFromCommit(commit);
   await createRelease(releaseDescription);
 }
 

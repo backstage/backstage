@@ -16,20 +16,25 @@
 
 import {
   Entity,
-  EntityName,
+  CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { useCallback, useEffect, useState } from 'react';
 import { starredEntitiesApiRef } from '../apis';
 
-function getEntityRef(entityOrRef: Entity | EntityName | string): string {
+function getEntityRef(
+  entityOrRef: Entity | CompoundEntityRef | string,
+): string {
   return typeof entityOrRef === 'string'
     ? entityOrRef
     : stringifyEntityRef(entityOrRef);
 }
 
-export function useStarredEntity(entityOrRef: Entity | EntityName | string): {
+/** @public */
+export function useStarredEntity(
+  entityOrRef: Entity | CompoundEntityRef | string,
+): {
   toggleStarredEntity: () => void;
   isStarredEntity: boolean;
 } {

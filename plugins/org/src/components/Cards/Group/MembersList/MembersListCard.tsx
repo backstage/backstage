@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
-  ENTITY_DEFAULT_NAMESPACE,
+  DEFAULT_NAMESPACE,
   GroupEntity,
   UserEntity,
   stringifyEntityRef,
@@ -61,12 +62,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const MemberComponent = ({ member }: { member: UserEntity }) => {
+const MemberComponent = (props: { member: UserEntity }) => {
   const classes = useStyles();
   const {
-    metadata: { name: metaName },
+    metadata: { name: metaName, description },
     spec: { profile },
-  } = member;
+  } = props.member;
   const displayName = profile?.displayName ?? metaName;
 
   return (
@@ -92,7 +93,7 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
               <Link
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(member),
+                  entityRouteParams(props.member),
                 )}
               >
                 {displayName}
@@ -101,6 +102,9 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
             {profile?.email && (
               <Link to={`mailto:${profile.email}`}>{profile.email}</Link>
             )}
+            {description && (
+              <Typography variant="subtitle2">{description}</Typography>
+            )}
           </Box>
         </Box>
       </Box>
@@ -108,14 +112,14 @@ const MemberComponent = ({ member }: { member: UserEntity }) => {
   );
 };
 
-export const MembersListCard = (_props: {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: GroupEntity;
+/** @public */
+export const MembersListCard = (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
 }) => {
+  const { memberDisplayTitle = 'Members', pageSize = 50 } = props;
+
   const { entity: groupEntity } = useEntity<GroupEntity>();
-  let { memberDisplayTitle, pageSize } = _props;
   const {
     metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
@@ -124,14 +128,12 @@ export const MembersListCard = (_props: {
 
   const displayName = profile?.displayName ?? groupName;
 
-  const groupNamespace = grpNamespace || ENTITY_DEFAULT_NAMESPACE;
+  const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
   const [page, setPage] = React.useState(1);
   const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
     setPage(pageIndex);
   };
-  pageSize = pageSize ? pageSize : 50;
-  memberDisplayTitle = memberDisplayTitle ? memberDisplayTitle : 'Members';
 
   const {
     loading,

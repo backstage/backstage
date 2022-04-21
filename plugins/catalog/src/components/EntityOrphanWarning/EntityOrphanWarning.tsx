@@ -15,22 +15,33 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { catalogRouteRef, useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
 import { useRouteRef } from '@backstage/core-plugin-api';
-
-export const isOrphan = (entity: Entity) =>
-  entity?.metadata?.annotations?.['backstage.io/orphan'] === 'true';
+import { rootRouteRef } from '../../routes';
 
 /**
- * Displays a warning alert if the entity is marked as orphan with the ability to delete said entity.
+ * Returns true if the given entity has the orphan annotation given by the
+ * catalog.
+ *
+ * @public
  */
-export const EntityOrphanWarning = () => {
+export function isOrphan(entity: Entity): boolean {
+  return entity?.metadata?.annotations?.['backstage.io/orphan'] === 'true';
+}
+
+/**
+ * Displays a warning alert if the entity is marked as orphan with the ability
+ * to delete said entity.
+ *
+ * @public
+ */
+export function EntityOrphanWarning() {
   const navigate = useNavigate();
-  const catalogLink = useRouteRef(catalogRouteRef);
+  const catalogLink = useRouteRef(rootRouteRef);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const { entity } = useEntity();
 
@@ -53,4 +64,4 @@ export const EntityOrphanWarning = () => {
       />
     </>
   );
-};
+}

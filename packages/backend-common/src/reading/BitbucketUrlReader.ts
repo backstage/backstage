@@ -28,6 +28,7 @@ import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
+import { Logger } from 'winston';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -45,31 +46,40 @@ import {
  * as the one exposed by Bitbucket Cloud itself.
  *
  * @public
+ * @deprecated in favor of BitbucketCloudUrlReader and BitbucketServerUrlReader
  */
 export class BitbucketUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
-    return integrations.bitbucket.list().map(integration => {
-      const reader = new BitbucketUrlReader(integration, {
-        treeResponseFactory,
+    return integrations.bitbucket
+      .list()
+      .filter(
+        item =>
+          !integrations.bitbucketCloud.byHost(item.config.host) &&
+          !integrations.bitbucketServer.byHost(item.config.host),
+      )
+      .map(integration => {
+        const reader = new BitbucketUrlReader(integration, logger, {
+          treeResponseFactory,
+        });
+        const predicate = (url: URL) => url.host === integration.config.host;
+        return { reader, predicate };
       });
-      const predicate = (url: URL) => url.host === integration.config.host;
-      return { reader, predicate };
-    });
   };
 
   constructor(
     private readonly integration: BitbucketIntegration,
+    logger: Logger,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, apiBaseUrl, token, username, appPassword } =
-      integration.config;
+    const { host, token, username, appPassword } = integration.config;
+    const replacement =
+      host === 'bitbucket.org' ? 'bitbucketCloud' : 'bitbucketServer';
+    logger.warn(
+      `[Deprecated] Please migrate from "integrations.bitbucket" to "integrations.${replacement}".`,
+    );
 
-    if (!apiBaseUrl) {
-      throw new Error(
-        `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
-      );
-    } else if (!token && username && !appPassword) {
+    if (!token && username && !appPassword) {
       throw new Error(
         `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
@@ -85,15 +95,17 @@ export class BitbucketUrlReader implements UrlReader {
     url: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    // TODO: etag is not supported yet
-    const { signal } = options ?? {};
+    const { etag, signal } = options ?? {};
     const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
     const requestOptions = getBitbucketRequestOptions(this.integration.config);
 
     let response: Response;
     try {
       response = await fetch(bitbucketUrl.toString(), {
-        ...requestOptions,
+        headers: {
+          ...requestOptions.headers,
+          ...(etag && { 'If-None-Match': etag }),
+        },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
         // The difference does not affect us in practice however. The cast can be
@@ -106,9 +118,14 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
+    if (response.status === 304) {
+      throw new NotModifiedError();
+    }
+
     if (response.ok) {
       return {
         buffer: async () => Buffer.from(await response.arrayBuffer()),
+        etag: response.headers.get('ETag') ?? undefined,
       };
     }
 

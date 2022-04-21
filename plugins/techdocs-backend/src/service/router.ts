@@ -20,13 +20,13 @@ import {
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   getLocationForEntity,
   PreparerBuilder,
   PublisherBase,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
@@ -35,10 +35,16 @@ import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
+import {
+  DefaultDocsBuildStrategy,
+  DocsBuildStrategy,
+} from './DocsBuildStrategy';
 
 /**
- * All of the required dependencies for running TechDocs in the "out-of-the-box"
+ * Required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
+ *
+ * @public
  */
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
@@ -49,11 +55,14 @@ export type OutOfTheBoxDeploymentOptions = {
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
  * Required dependencies for running TechDocs in the "recommended" deployment
  * configuration (prepare/generate handled externally in CI/CD).
+ *
+ * @public
  */
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
@@ -61,10 +70,13 @@ export type RecommendedDeploymentOptions = {
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
+  docsBuildStrategy?: DocsBuildStrategy;
 };
 
 /**
  * One of the two deployment configurations must be provided.
+ *
+ * @public
  */
 export type RouterOptions =
   | RecommendedDeploymentOptions
@@ -73,6 +85,8 @@ export type RouterOptions =
 /**
  * Typeguard to help createRouter() understand when we are in a "recommended"
  * deployment vs. when we are in an out-of-the-box deployment configuration.
+ *
+ * * @public
  */
 function isOutOfTheBoxOption(
   opt: RouterOptions,
@@ -80,12 +94,19 @@ function isOutOfTheBoxOption(
   return (opt as OutOfTheBoxDeploymentOptions).preparers !== undefined;
 }
 
+/**
+ * Creates a techdocs router.
+ *
+ * @public
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
   const { publisher, config, logger, discovery } = options;
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const docsBuildStrategy =
+    options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
@@ -187,20 +208,15 @@ export async function createRouter(
       throw new NotFoundError('Entity metadata UID missing');
     }
 
-    let responseHandler: DocsSynchronizerSyncOpts;
-    if (req.header('accept') !== 'text/event-stream') {
-      console.warn(
-        "The call to /sync/:namespace/:kind/:name wasn't done by an EventSource. This behavior is deprecated and will be removed soon. Make sure to update the @backstage/plugin-techdocs package in the frontend to the latest version.",
-      );
-      responseHandler = createHttpResponse(res);
-    } else {
-      responseHandler = createEventStream(res);
-    }
+    const responseHandler: DocsSynchronizerSyncOpts = createEventStream(res);
 
-    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
-    // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
-    // of the repository) is responsible for building and publishing documentation to the storage provider
-    if (config.getString('techdocs.builder') !== 'local') {
+    // By default, techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to
+    // 'local'. If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
+    // of the repository) is responsible for building and publishing documentation to the storage provider.
+    // Altering the implementation of the injected docsBuildStrategy allows for more complex behaviours, based on
+    // either config or the properties of the entity (e.g. annotations, labels, spec fields etc.).
+    const shouldBuild = await docsBuildStrategy.shouldBuild({ entity });
+    if (!shouldBuild) {
       // However, if caching is enabled, take the opportunity to check and
       // invalidate stale cache entries.
       if (cache) {
@@ -231,7 +247,7 @@ export async function createRouter(
 
     responseHandler.error(
       new Error(
-        "Invalid configuration. 'techdocs.builder' was set to 'local' but no 'preparer' was provided to the router initialization.",
+        "Invalid configuration. docsBuildStrategy.shouldBuild returned 'true', but no 'preparer' was provided to the router initialization.",
       ),
     );
   });
@@ -318,33 +334,6 @@ export function createEventStream(
     finish: result => {
       send('finish', result);
       res.end();
-    },
-  };
-}
-
-/**
- * Create a HTTP response. This is used for the legacy non-event-stream implementation of the sync endpoint.
- *
- * @param res - the response to write the event-stream to
- * @returns A tuple of <log, error, finish> callbacks to emit messages. A call to 'error' or 'finish'
- *          will close the event-stream.
- */
-export function createHttpResponse(
-  res: Response<any, any>,
-): DocsSynchronizerSyncOpts {
-  return {
-    log: () => {},
-    error: e => {
-      throw e;
-    },
-    finish: ({ updated }) => {
-      if (!updated) {
-        throw new NotModifiedError();
-      }
-
-      res
-        .status(201)
-        .json({ message: 'Docs updated or did not need updating' });
     },
   };
 }

@@ -17,16 +17,20 @@ import { createTemplateAction } from '../../createTemplateAction';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 
 import { InputError } from '@backstage/errors';
-import { JsonObject } from '@backstage/types';
 import fs from 'fs-extra';
 
-interface FilesToRename extends JsonObject {
-  from: string;
-  to: string;
-}
-
+/**
+ * Creates a new action that allows renames of files and directories in the workspace.
+ * @public
+ */
 export const createFilesystemRenameAction = () => {
-  return createTemplateAction<{ files: FilesToRename }>({
+  return createTemplateAction<{
+    files: Array<{
+      from: string;
+      to: string;
+      overwrite?: boolean;
+    }>;
+  }>({
     id: 'fs:rename',
     description: 'Renames files and directories within the workspace',
     schema: {

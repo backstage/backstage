@@ -39,14 +39,14 @@ export class FactRetrieverRegistry {
     this.retrievers.set(registration.factRetriever.id, registration);
   }
 
-  get(retrieverReference: string): FactRetriever {
+  get(retrieverReference: string): FactRetrieverRegistration {
     const registration = this.retrievers.get(retrieverReference);
     if (!registration) {
       throw new NotFoundError(
         `Tech insight fact retriever with identifier '${retrieverReference}' is not registered.`,
       );
     }
-    return registration.factRetriever;
+    return registration;
   }
 
   listRetrievers(): FactRetriever[] {

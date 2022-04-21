@@ -15,18 +15,20 @@
  */
 
 /**
- * Function that returns the catalog refresh interval in seconds.
+ * Function that returns the catalog processing interval in seconds.
+ * @public
  */
-export type RefreshIntervalFunction = () => number;
+export type ProcessingIntervalFunction = () => number;
 
 /**
- * Creates a function that returns a random refresh interval between minSeconds and maxSeconds.
- * @returns A {@link RefreshIntervalFunction} that provides the next refresh interval
+ * Creates a function that returns a random processing interval between minSeconds and maxSeconds.
+ * @returns A {@link ProcessingIntervalFunction} that provides the next processing interval
+ * @public
  */
-export function createRandomRefreshInterval(options: {
+export function createRandomProcessingInterval(options: {
   minSeconds: number;
   maxSeconds: number;
-}): RefreshIntervalFunction {
+}): ProcessingIntervalFunction {
   const { minSeconds, maxSeconds } = options;
   return () => {
     return Math.random() * (maxSeconds - minSeconds) + minSeconds;

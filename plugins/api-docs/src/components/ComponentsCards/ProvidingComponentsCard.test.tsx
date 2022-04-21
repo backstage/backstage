@@ -32,7 +32,7 @@ describe('<ProvidingComponentsCard />', () => {
     getEntityByName: jest.fn(),
     getEntities: jest.fn(),
     addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
   let Wrapper: React.ComponentType;
@@ -97,11 +97,7 @@ describe('<ProvidingComponentsCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'Component',
-            namespace: 'my-namespace',
-            name: 'target-name',
-          },
+          targetRef: 'component:my-namespace/target-name',
           type: RELATION_API_PROVIDED_BY,
         },
       ],

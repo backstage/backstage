@@ -7,10 +7,9 @@ Welcome to the Bitrise plugin!
 
 ## Installation
 
-```sh
+```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-bitrise
+yarn add --cwd packages/app @backstage/plugin-bitrise
 ```
 
 Bitrise Plugin exposes an entity tab component named `EntityBitriseContent`. You can include it in the

@@ -1,5 +1,113 @@
 # @backstage/plugin-user-settings
 
+## 0.4.3
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- cf647f6a72: Wired up the OneLogin provider to be visible in the Settings UI when configured correctly.
+
+  Previously it wasn't visible at all.
+
+- af508a895e: Dynamically layout User Settings theme toggle container
+- 230ad0826f: Bump to using `@types/node` v16
+- 016c574b51: Added the ability to render extra setting tabs
+- Updated dependencies
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- af508a895e: Dynamically layout User Settings theme toggle container
+- 230ad0826f: Bump to using `@types/node` v16
+- 016c574b51: Added the ability to render extra setting tabs
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- cf647f6a72: Wired up the OneLogin provider to be visible in the Settings UI when configured correctly.
+
+  Previously it wasn't visible at all.
+
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.0
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.3.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.3.20
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 12dd25c2a1: Updated example code for registering feature flags in the `EmptyFlags` component
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/theme@0.2.15
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+
 ## 0.3.18
 
 ### Patch Changes

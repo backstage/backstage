@@ -28,8 +28,7 @@ import {
   TableRow,
   makeStyles,
 } from '@material-ui/core';
-import { JSONSchema } from '@backstage/catalog-model';
-import { JSONSchema7Definition } from 'json-schema';
+import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import classNames from 'classnames';
 
 import { useApi } from '@backstage/core-plugin-api';
@@ -87,7 +86,7 @@ export const ActionsPage = () => {
     );
   }
 
-  const formatRows = (input: JSONSchema) => {
+  const formatRows = (input: JSONSchema7) => {
     const properties = input.properties;
     if (!properties) {
       return undefined;
@@ -95,7 +94,7 @@ export const ActionsPage = () => {
 
     return Object.entries(properties).map(entry => {
       const [key] = entry;
-      const props = entry[1] as unknown as JSONSchema;
+      const props = entry[1] as unknown as JSONSchema7;
       const codeClassname = classNames(classes.code, {
         [classes.codeRequired]: input.required?.includes(key),
       });
@@ -115,7 +114,7 @@ export const ActionsPage = () => {
     });
   };
 
-  const renderTable = (input: JSONSchema) => {
+  const renderTable = (input: JSONSchema7) => {
     if (!input.properties) {
       return undefined;
     }
@@ -145,7 +144,7 @@ export const ActionsPage = () => {
       <>
         <Typography variant="h6">{name}</Typography>
         {input.map((i, index) => (
-          <div key={index}>{renderTable(i as unknown as JSONSchema)}</div>
+          <div key={index}>{renderTable(i as unknown as JSONSchema7)}</div>
         ))}
       </>
     );

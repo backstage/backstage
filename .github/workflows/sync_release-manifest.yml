@@ -5,6 +5,7 @@ on:
       version:
         description: Version number, without any 'v' prefix
         required: true
+
 jobs:
   create-new-version:
     runs-on: ubuntu-latest
@@ -55,24 +56,14 @@ jobs:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           # TODO(Rugvip): Remove the create-app dispatch once we've been on the release version for a while
           script: |
-            console.log('Dispatching upgrade helper sync - release version');
-            await octokit.actions.createWorkflowDispatch({
+            console.log('Dispatching upgrade helper sync');
+            await github.rest.actions.createWorkflowDispatch({
               owner: 'backstage',
               repo: 'upgrade-helper-diff',
               workflow_id: 'release.yml',
               ref: 'master',
               inputs: {
-                version: require('./package.json').version,
-              },
-            });
-
-            console.log('Dispatching upgrade helper sync - create-app version');
-            await octokit.actions.createWorkflowDispatch({
-              owner: 'backstage',
-              repo: 'upgrade-helper-diff',
-              workflow_id: 'release.yml',
-              ref: 'master',
-              inputs: {
-                version: require('./packages/create-app/package.json').version,
+                version: require('./backstage/packages/create-app/package.json').version,
+                releaseVersion: require('./backstage/package.json').version
               },
             });

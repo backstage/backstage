@@ -42,7 +42,7 @@ const entity = (name?: string) =>
     relations: [
       {
         type: RELATION_OWNED_BY,
-        target: { kind: 'Group', namespace: 'default', name },
+        targetRef: `group:default/${name}`,
       },
     ],
   } as Entity);

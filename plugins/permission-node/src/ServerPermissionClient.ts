@@ -20,12 +20,14 @@ import {
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
-  AuthorizeQuery,
-  AuthorizeRequestOptions,
-  AuthorizeDecision,
   AuthorizeResult,
   PermissionClient,
-  PermissionAuthorizer,
+  PermissionEvaluator,
+  AuthorizePermissionRequest,
+  EvaluatorRequestOptions,
+  AuthorizePermissionResponse,
+  PolicyDecision,
+  QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
 
 /**
@@ -34,7 +36,7 @@ import {
  * backend-to-backend requests.
  * @public
  */
-export class ServerPermissionClient implements PermissionAuthorizer {
+export class ServerPermissionClient implements PermissionEvaluator {
   private readonly permissionClient: PermissionClient;
   private readonly tokenManager: TokenManager;
   private readonly permissionEnabled: boolean;
@@ -56,7 +58,7 @@ export class ServerPermissionClient implements PermissionAuthorizer {
       (tokenManager as any).isInsecureServerTokenManager
     ) {
       throw new Error(
-        'You must configure at least one key in backend.auth.keys if permissions are enabled.',
+        'Backend-to-backend authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/tutorials/backend-to-backend-auth',
       );
     }
 
@@ -77,21 +79,22 @@ export class ServerPermissionClient implements PermissionAuthorizer {
     this.permissionEnabled = options.permissionEnabled;
   }
 
+  async authorizeConditional(
+    queries: QueryPermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<PolicyDecision[]> {
+    return (await this.isEnabled(options?.token))
+      ? this.permissionClient.authorizeConditional(queries, options)
+      : queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
+  }
+
   async authorize(
-    queries: AuthorizeQuery[],
-    options?: AuthorizeRequestOptions,
-  ): Promise<AuthorizeDecision[]> {
-    // Check if permissions are enabled before validating the server token. That
-    // way when permissions are disabled, the noop token manager can be used
-    // without fouling up the logic inside the ServerPermissionClient, because
-    // the code path won't be reached.
-    if (
-      !this.permissionEnabled ||
-      (await this.isValidServerToken(options?.token))
-    ) {
-      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
-    }
-    return this.permissionClient.authorize(queries, options);
+    requests: AuthorizePermissionRequest[],
+    options?: EvaluatorRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]> {
+    return (await this.isEnabled(options?.token))
+      ? this.permissionClient.authorize(requests, options)
+      : requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
   }
 
   private async isValidServerToken(
@@ -104,5 +107,13 @@ export class ServerPermissionClient implements PermissionAuthorizer {
       .authenticate(token)
       .then(() => true)
       .catch(() => false);
+  }
+
+  private async isEnabled(token?: string) {
+    // Check if permissions are enabled before validating the server token. That
+    // way when permissions are disabled, the noop token manager can be used
+    // without fouling up the logic inside the ServerPermissionClient, because
+    // the code path won't be reached.
+    return this.permissionEnabled && !(await this.isValidServerToken(token));
   }
 }

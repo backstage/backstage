@@ -153,11 +153,11 @@ describe('ScmAuth', () => {
       githubAuth.getCredentials({
         url: 'http://example.com',
         additionalScope: {
-          customScopes: { github: ['org:read', 'workflow:write'] },
+          customScopes: { github: ['org:read', 'workflow'] },
         },
       }),
     ).resolves.toMatchObject({
-      token: 'repo read:org read:user org:read workflow:write',
+      token: 'repo read:org read:user org:read workflow',
     });
 
     const gitlabAuth = ScmAuth.forGitlab(mockAuthApi);
@@ -238,7 +238,7 @@ describe('ScmAuth', () => {
     await expect(
       emptyMux.getCredentials({ url: 'http://example.com' }),
     ).rejects.toThrow(
-      "No authentication provider available for access to 'http://example.com'",
+      "No auth provider available for 'http://example.com', see https://backstage.io/link?scm-auth",
     );
 
     const scmAuth = ScmAuth.merge(
@@ -256,12 +256,12 @@ describe('ScmAuth', () => {
     await expect(
       scmAuth.getCredentials({ url: 'http://not.example.com' }),
     ).rejects.toThrow(
-      "No authentication provider available for access to 'http://not.example.com'",
+      "No auth provider available for 'http://not.example.com', see https://backstage.io/link?scm-auth",
     );
     await expect(
       scmAuth.getCredentials({ url: 'http://example.com:8080' }),
     ).rejects.toThrow(
-      "No authentication provider available for access to 'http://example.com:8080'",
+      "No auth provider available for 'http://example.com:8080', see https://backstage.io/link?scm-auth",
     );
   });
 });

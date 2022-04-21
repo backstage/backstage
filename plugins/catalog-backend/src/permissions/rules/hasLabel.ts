@@ -15,16 +15,18 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { RESOURCE_TYPE_CATALOG_ENTITY } from '@backstage/plugin-catalog-common';
 import { createCatalogPermissionRule } from './util';
 
 /**
  * A catalog {@link @backstage/plugin-permission-node#PermissionRule} which
  * filters for entities with a specified label in its metadata.
- * @public
+ * @alpha
  */
 export const hasLabel = createCatalogPermissionRule({
   name: 'HAS_LABEL',
   description: 'Allow entities which have the specified label metadata.',
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
   apply: (resource: Entity, label: string) =>
     !!resource.metadata.labels?.hasOwnProperty(label),
   toQuery: (label: string) => ({

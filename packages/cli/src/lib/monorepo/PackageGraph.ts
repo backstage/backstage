@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import path from 'path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { paths } from '../paths';
 import { PackageRole } from '../role';
+import { listChangedFiles } from '../git';
 
 type PackageJSON = Package['packageJson'];
 
@@ -45,6 +47,7 @@ export type PackageGraphNode = {
   dir: string;
   /** The package data of the package itself */
   packageJson: ExtendedPackageJSON;
+
   /** All direct local dependencies of the package */
   allLocalDependencies: Map<string, PackageGraphNode>;
   /** All direct local dependencies that will be present in the published package */
@@ -55,6 +58,17 @@ export type PackageGraphNode = {
   localDevDependencies: Map<string, PackageGraphNode>;
   /** Local optionalDependencies */
   localOptionalDependencies: Map<string, PackageGraphNode>;
+
+  /** All direct incoming local dependencies of the package */
+  allLocalDependents: Map<string, PackageGraphNode>;
+  /** All direct incoming local dependencies that will be present in the published package */
+  publishedLocalDependents: Map<string, PackageGraphNode>;
+  /** Incoming local dependencies */
+  localDependents: Map<string, PackageGraphNode>;
+  /** Incoming local devDependencies */
+  localDevDependents: Map<string, PackageGraphNode>;
+  /** Incoming local optionalDependencies */
+  localOptionalDependents: Map<string, PackageGraphNode>;
 };
 
 export class PackageGraph extends Map<string, PackageGraphNode> {
@@ -80,11 +94,18 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         name,
         dir: pkg.dir,
         packageJson: pkg.packageJson as ExtendedPackageJSON,
+
         allLocalDependencies: new Map(),
         publishedLocalDependencies: new Map(),
         localDependencies: new Map(),
         localDevDependencies: new Map(),
         localOptionalDependencies: new Map(),
+
+        allLocalDependents: new Map(),
+        publishedLocalDependents: new Map(),
+        localDependents: new Map(),
+        localDevDependents: new Map(),
+        localOptionalDependents: new Map(),
       });
     }
 
@@ -96,6 +117,10 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
           node.allLocalDependencies.set(depName, depPkg);
           node.publishedLocalDependencies.set(depName, depPkg);
           node.localDependencies.set(depName, depPkg);
+
+          depPkg.allLocalDependents.set(node.name, node);
+          depPkg.publishedLocalDependents.set(node.name, node);
+          depPkg.localDependents.set(node.name, node);
         }
       }
       for (const depName of Object.keys(
@@ -105,6 +130,9 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
         if (depPkg) {
           node.allLocalDependencies.set(depName, depPkg);
           node.localDevDependencies.set(depName, depPkg);
+
+          depPkg.allLocalDependents.set(node.name, node);
+          depPkg.localDevDependents.set(node.name, node);
         }
       }
       for (const depName of Object.keys(
@@ -115,6 +143,10 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
           node.allLocalDependencies.set(depName, depPkg);
           node.publishedLocalDependencies.set(depName, depPkg);
           node.localOptionalDependencies.set(depName, depPkg);
+
+          depPkg.allLocalDependents.set(node.name, node);
+          depPkg.publishedLocalDependents.set(node.name, node);
+          depPkg.localOptionalDependents.set(node.name, node);
         }
       }
     }
@@ -157,5 +189,51 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
     }
 
     return targets;
+  }
+
+  async listChangedPackages(options: { ref: string }) {
+    const changedFiles = await listChangedFiles(options.ref);
+
+    const dirMap = new Map(
+      Array.from(this.values()).map(pkg => [
+        // relative from root, convert to posix, and add a / at the end
+        path
+          .relative(paths.targetRoot, pkg.dir)
+          .split(path.sep)
+          .join(path.posix.sep) + path.posix.sep,
+        pkg,
+      ]),
+    );
+    const packageDirs = Array.from(dirMap.keys());
+
+    const result = new Array<PackageGraphNode>();
+    let searchIndex = 0;
+
+    changedFiles.sort();
+    packageDirs.sort();
+
+    for (const packageDir of packageDirs) {
+      // Skip through changes that appear before our package dir
+      while (
+        searchIndex < changedFiles.length &&
+        changedFiles[searchIndex] < packageDir
+      ) {
+        searchIndex += 1;
+      }
+
+      // Check if we arrived at a match, otherwise we move on to the next package dir
+      if (changedFiles[searchIndex]?.startsWith(packageDir)) {
+        searchIndex += 1;
+
+        result.push(dirMap.get(packageDir)!);
+
+        // Skip through the rest of the changed files for the same package
+        while (changedFiles[searchIndex]?.startsWith(packageDir)) {
+          searchIndex += 1;
+        }
+      }
+    }
+
+    return result;
   }
 }

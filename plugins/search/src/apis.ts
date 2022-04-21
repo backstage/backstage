@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  createApiRef,
-  DiscoveryApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { SearchQuery, SearchResultSet } from '@backstage/search-common';
+import { SearchApi } from '@backstage/plugin-search-react';
+import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
+
 import qs from 'qs';
-
-export const searchApiRef = createApiRef<SearchApi>({
-  id: 'plugin.search.queryservice',
-});
-
-export interface SearchApi {
-  query(query: SearchQuery): Promise<SearchResultSet>;
-}
 
 export class SearchClient implements SearchApi {
   private readonly discoveryApi: DiscoveryApi;

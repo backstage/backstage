@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
 import { findRoleFromCommand, getRoleInfo } from '../../lib/role';
 import { paths } from '../../lib/paths';
-import { buildApp } from './buildApp';
+import { buildFrontend } from './buildFrontend';
 import { buildBackend } from './buildBackend';
 
-export async function command(cmd: Command): Promise<void> {
-  const role = await findRoleFromCommand(cmd);
+export async function command(opts: OptionValues): Promise<void> {
+  const role = await findRoleFromCommand(opts);
 
-  if (role === 'app') {
-    return buildApp({
-      targetDir: paths.resolveTarget('dist'),
-      configPaths: cmd.config as string[],
-      writeStats: Boolean(cmd.stats),
+  if (role === 'frontend') {
+    return buildFrontend({
+      targetDir: paths.targetDir,
+      configPaths: opts.config as string[],
+      writeStats: Boolean(opts.stats),
     });
   }
   if (role === 'backend') {
     return buildBackend({
-      targetDir: paths.resolveTarget('dist'),
-      skipBuildDependencies: Boolean(cmd.skipBuildDependencies),
+      targetDir: paths.targetDir,
+      skipBuildDependencies: Boolean(opts.skipBuildDependencies),
     });
   }
 
@@ -54,7 +54,7 @@ export async function command(cmd: Command): Promise<void> {
 
   return buildPackage({
     outputs,
-    minify: Boolean(cmd.minify),
-    useApiExtractor: Boolean(cmd.experimentalTypeBuild),
+    minify: Boolean(opts.minify),
+    useApiExtractor: Boolean(opts.experimentalTypeBuild),
   });
 }

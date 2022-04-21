@@ -1,5 +1,244 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.5.0
+
+### Minor Changes
+
+- 3d45427666: **BREAKING** Custom cluster suppliers need to cache their getClusters result
+
+  To allow custom `KubernetesClustersSupplier` instances to refresh the list of clusters
+  the `getClusters` method is now called whenever the list of clusters is needed.
+
+  Existing `KubernetesClustersSupplier` implementations will need to ensure that `getClusters`
+  can be called frequently and should return a cached result from `getClusters` instead.
+
+  For example, here's a simple example of a custom supplier in `packages/backend/src/plugins/kubernetes.ts`:
+
+  ```diff
+  -import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+  +import {
+  +  ClusterDetails,
+  +  KubernetesBuilder,
+  +  KubernetesClustersSupplier,
+  +} from '@backstage/plugin-kubernetes-backend';
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
+  +import { Duration } from 'luxon';
+  +
+  +export class CustomClustersSupplier implements KubernetesClustersSupplier {
+  +  constructor(private clusterDetails: ClusterDetails[] = []) {}
+  +
+  +  static create(refreshInterval: Duration) {
+  +    const clusterSupplier = new CustomClustersSupplier();
+  +    // setup refresh, e.g. using a copy of https://github.com/backstage/backstage/blob/master/plugins/search-backend-node/src/runPeriodically.ts
+  +    runPeriodically(
+  +      () => clusterSupplier.refreshClusters(),
+  +      refreshInterval.toMillis(),
+  +    );
+  +    return clusterSupplier;
+  +  }
+  +
+  +  async refreshClusters(): Promise<void> {
+  +    this.clusterDetails = []; // fetch from somewhere
+  +  }
+  +
+  +  async getClusters(): Promise<ClusterDetails[]> {
+  +    return this.clusterDetails;
+  +  }
+  +}
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+  -  const { router } = await KubernetesBuilder.createBuilder({
+  +  const builder = await KubernetesBuilder.createBuilder({
+       logger: env.logger,
+       config: env.config,
+  -  }).build();
+  +  });
+  +  builder.setClusterSupplier(
+  +    CustomClustersSupplier.create(Duration.fromObject({ minutes: 60 })),
+  +  );
+  +  const { router } = await builder.build();
+  ```
+
+### Patch Changes
+
+- 753a20c89e: Add kubernetes namespace annotation `backstage.io/kubernetes-namespace` to allow namespaced Kubernetes resources fetches
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-kubernetes-common@0.2.9
+
+## 0.5.0-next.1
+
+### Minor Changes
+
+- 3d45427666: **BREAKING** Custom cluster suppliers need to cache their getClusters result
+
+  To allow custom `KubernetesClustersSupplier` instances to refresh the list of clusters
+  the `getClusters` method is now called whenever the list of clusters is needed.
+
+  Existing `KubernetesClustersSupplier` implementations will need to ensure that `getClusters`
+  can be called frequently and should return a cached result from `getClusters` instead.
+
+  For example, here's a simple example of a custom supplier in `packages/backend/src/plugins/kubernetes.ts`:
+
+  ```diff
+  -import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+  +import {
+  +  ClusterDetails,
+  +  KubernetesBuilder,
+  +  KubernetesClustersSupplier,
+  +} from '@backstage/plugin-kubernetes-backend';
+   import { Router } from 'express';
+   import { PluginEnvironment } from '../types';
+  +import { Duration } from 'luxon';
+  +
+  +export class CustomClustersSupplier implements KubernetesClustersSupplier {
+  +  constructor(private clusterDetails: ClusterDetails[] = []) {}
+  +
+  +  static create(refreshInterval: Duration) {
+  +    const clusterSupplier = new CustomClustersSupplier();
+  +    // setup refresh, e.g. using a copy of https://github.com/backstage/backstage/blob/master/plugins/search-backend-node/src/runPeriodically.ts
+  +    runPeriodically(
+  +      () => clusterSupplier.refreshClusters(),
+  +      refreshInterval.toMillis(),
+  +    );
+  +    return clusterSupplier;
+  +  }
+  +
+  +  async refreshClusters(): Promise<void> {
+  +    this.clusterDetails = []; // fetch from somewhere
+  +  }
+  +
+  +  async getClusters(): Promise<ClusterDetails[]> {
+  +    return this.clusterDetails;
+  +  }
+  +}
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+  -  const { router } = await KubernetesBuilder.createBuilder({
+  +  const builder = await KubernetesBuilder.createBuilder({
+       logger: env.logger,
+       config: env.config,
+  -  }).build();
+  +  });
+  +  builder.setClusterSupplier(
+  +    CustomClustersSupplier.create(Duration.fromObject({ minutes: 60 })),
+  +  );
+  +  const { router } = await builder.build();
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+
+## 0.4.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/plugin-kubernetes-common@0.2.9-next.0
+
+## 0.4.13
+
+### Patch Changes
+
+- dab7f8dbd3: build(deps): bump `@google-cloud/container` from 2.3.0 to 3.0.0
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-kubernetes-common@0.2.8
+
+## 0.4.12
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 35e58d57aa: refactor kubernetes fetcher
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-kubernetes-common@0.2.7
+
+## 0.4.12-next.0
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/plugin-kubernetes-common@0.2.7-next.0
+
+## 0.4.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-kubernetes-common@0.2.6
+
+## 0.4.10
+
+### Patch Changes
+
+- 64acf65c03: Allow missing kubernetes config in development env
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/plugin-kubernetes-common@0.2.5
+
+## 0.4.9
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/plugin-kubernetes-common@0.2.4
+
+## 0.4.8
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- fb09a59a3f: Fixed a potential issue in AWS token encoding, where they might not always be properly converted to URL-safe base64.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/plugin-kubernetes-common@0.2.3
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.4.6
 
 ### Patch Changes

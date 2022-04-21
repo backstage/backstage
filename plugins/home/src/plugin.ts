@@ -23,6 +23,7 @@ import { ToolkitContentProps } from './homePageComponents';
 
 import { rootRouteRef } from './routes';
 
+/** @public */
 export const homePlugin = createPlugin({
   id: 'home',
   routes: {
@@ -30,6 +31,7 @@ export const homePlugin = createPlugin({
   },
 });
 
+/** @public */
 export const HomepageCompositionRoot = homePlugin.provide(
   createRoutableExtension({
     name: 'HomepageCompositionRoot',
@@ -39,6 +41,7 @@ export const HomepageCompositionRoot = homePlugin.provide(
   }),
 );
 
+/** @public */
 export const ComponentAccordion = homePlugin.provide(
   createComponentExtension({
     name: 'ComponentAccordion',
@@ -48,6 +51,8 @@ export const ComponentAccordion = homePlugin.provide(
     },
   }),
 );
+
+/** @public */
 export const ComponentTabs = homePlugin.provide(
   createComponentExtension({
     name: 'ComponentTabs',
@@ -56,6 +61,8 @@ export const ComponentTabs = homePlugin.provide(
     },
   }),
 );
+
+/** @public */
 export const ComponentTab = homePlugin.provide(
   createComponentExtension({
     name: 'ComponentTab',
@@ -95,6 +102,7 @@ export const HomePageCompanyLogo = homePlugin.provide(
   }),
 );
 
+/** @public */
 export const HomePageRandomJoke = homePlugin.provide(
   createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',

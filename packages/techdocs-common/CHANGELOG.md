@@ -1,5 +1,128 @@
 # @backstage/techdocs-common
 
+## 0.11.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.1.0
+
+## 0.11.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.1.0-next.2
+
+## 0.11.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.0.1-next.1
+
+## 0.11.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.0.1-next.0
+
+## 0.11.13
+
+### Patch Changes
+
+- 82b0190155: This package is no longer maintained. Use `@backstage/plugin-techdocs-node`, going forward.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.0.0
+
+## 0.11.12
+
+### Patch Changes
+
+- cea6f10b97: **DEPRECATION**
+
+  The `@backstage/techdocs-common` package is being renamed `@backstage/plugin-techdocs-node`. We may continue to publish changes to `@backstage/techdocs-common` for a time, but will stop doing so in the near future. If you depend on this package, you should update your dependencies to point at the renamed package.
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@0.11.12
+
+## 0.11.12-next.0
+
+### Patch Changes
+
+- cea6f10b97: **DEPRECATION**
+
+  The `@backstage/techdocs-common` package is being renamed `@backstage/plugin-techdocs-node`. We may continue to publish changes to `@backstage/techdocs-common` for a time, but will stop doing so in the near future. If you depend on this package, you should update your dependencies to point at the renamed package.
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@0.11.12-next.0
+
+## 0.11.11
+
+### Patch Changes
+
+- 955be6bc7d: adds passing projectID to the Storage client
+- ff0a16fb1a: Modify techdocs builder to automatically append techdocs-core plugin to mkdocs.yaml file if it is missing. Adds an optional configuration item if this plugin needs to be omitted.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+  - @backstage/search-common@0.3.0
+
+## 0.11.10
+
+### Patch Changes
+
+- 209fd128e6: Updated usage of `github:` location types in docs to use `url:` instead.
+- 13ef228d03: Clean up the API interface for TechDocs common library.
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/integration@0.7.5
+
+## 0.11.9
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/search-common@0.2.4
+
+## 0.11.8
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+
+## 0.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.11.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.11.6
 
 ### Patch Changes

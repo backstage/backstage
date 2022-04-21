@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
+import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -23,8 +24,13 @@ import {
   MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react';
 import { ApiProvider } from '@backstage/core-app-api';
-import { renderWithEffects, TestApiRegistry } from '@backstage/test-utils';
+import {
+  MockErrorApi,
+  renderWithEffects,
+  TestApiRegistry,
+} from '@backstage/test-utils';
 import { CatalogKindHeader } from './CatalogKindHeader';
+import { errorApiRef } from '@backstage/core-plugin-api';
 
 const entities: Entity[] = [
   {
@@ -56,13 +62,24 @@ const entities: Entity[] = [
     },
   },
 ];
-
-const apis = TestApiRegistry.from([
-  catalogApiRef,
-  {
-    getEntities: jest.fn().mockResolvedValue({ items: entities }),
-  },
-]);
+const errorApi = new MockErrorApi();
+const apis = TestApiRegistry.from(
+  [
+    catalogApiRef,
+    {
+      getEntityFacets: jest.fn().mockResolvedValue({
+        facets: {
+          kind: [
+            { value: 'Component', count: 2 },
+            { value: 'Template', count: 1 },
+            { value: 'System', count: 1 },
+          ],
+        },
+      } as GetEntityFacetsResponse),
+    },
+  ],
+  [errorApiRef, errorApi],
+);
 
 describe('<CatalogKindHeader />', () => {
   it('renders available kinds', async () => {
@@ -117,5 +134,82 @@ describe('<CatalogKindHeader />', () => {
     expect(updateFilters).toHaveBeenCalledWith({
       kind: new EntityKindFilter('template'),
     });
+  });
+
+  it('responds to external queryParameters changes', async () => {
+    const updateFilters = jest.fn();
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: ['components'] },
+          }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: new EntityKindFilter('components'),
+    });
+    rendered.rerender(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { kind: ['template'] },
+          }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      kind: new EntityKindFilter('template'),
+    });
+  });
+
+  it('limits kinds when allowedKinds is set', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider>
+          <CatalogKindHeader allowedKinds={['component', 'system']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    const input = rendered.getByText('Components');
+    fireEvent.mouseDown(input);
+
+    expect(
+      rendered.getByRole('option', { name: 'Components' }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByRole('option', { name: 'Systems' }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.queryByRole('option', { name: 'Templates' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders kind from the query parameter even when not in allowedKinds', async () => {
+    const rendered = await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { kind: 'Frob' } }}
+        >
+          <CatalogKindHeader allowedKinds={['system']} />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(rendered.getByText('Frobs')).toBeInTheDocument();
+    const input = rendered.getByText('Frobs');
+    fireEvent.mouseDown(input);
+
+    expect(
+      rendered.getByRole('option', { name: 'Systems' }),
+    ).toBeInTheDocument();
   });
 });

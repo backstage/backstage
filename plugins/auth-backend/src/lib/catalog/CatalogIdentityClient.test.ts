@@ -26,15 +26,15 @@ import { CatalogIdentityClient } from './CatalogIdentityClient';
 describe('CatalogIdentityClient', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
+    getEntityByRef: jest.fn(),
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
-    getOriginLocationByEntity: jest.fn(),
-    getLocationByEntity: jest.fn(),
+    getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
     refreshEntity: jest.fn(),
     getEntityAncestors: jest.fn(),
+    getEntityFacets: jest.fn(),
   };
   const tokenManager: jest.Mocked<TokenManager> = {
     getToken: jest.fn(),
@@ -79,11 +79,7 @@ describe('CatalogIdentityClient', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
-            target: {
-              kind: 'Group',
-              namespace: 'default',
-              name: 'team-a',
-            },
+            targetRef: 'group:default/team-a',
           },
         ],
       },
@@ -100,11 +96,7 @@ describe('CatalogIdentityClient', () => {
         relations: [
           {
             type: RELATION_MEMBER_OF,
-            target: {
-              kind: 'Group',
-              namespace: 'reality',
-              name: 'screen-actors-guild',
-            },
+            targetRef: 'group:reality/screen-actors-guild',
           },
         ],
       },

@@ -46,7 +46,7 @@ describe('<ComponentTabs>', () => {
     });
   });
 
-  test('should switch tab on click', () => {
+  test('should switch tab on click', async () => {
     const { getByText } = render(
       <ComponentTabs
         title="Random Jokes"
@@ -67,7 +67,7 @@ describe('<ComponentTabs>', () => {
       display: 'none',
     });
 
-    userEvent.click(getByText('TabB'));
+    await userEvent.click(getByText('TabB'));
 
     expect(getByText('ContentA')).toHaveStyle({
       display: 'none',

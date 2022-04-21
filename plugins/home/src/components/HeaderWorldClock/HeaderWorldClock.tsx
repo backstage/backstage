@@ -68,11 +68,10 @@ function getTimes(clockConfigs: ClockConfig[]) {
   return clocks;
 }
 
-export const HeaderWorldClock = ({
-  clockConfigs,
-}: {
-  clockConfigs: ClockConfig[];
-}) => {
+/** @public */
+export const HeaderWorldClock = (props: { clockConfigs: ClockConfig[] }) => {
+  const { clockConfigs } = props;
+
   const defaultTimes: TimeObj[] = [];
   const [clocks, setTimes] = React.useState(defaultTimes);
 

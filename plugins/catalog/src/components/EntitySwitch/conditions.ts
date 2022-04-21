@@ -22,13 +22,21 @@ function strCmp(a: string | undefined, b: string | undefined): boolean {
   );
 }
 
+/**
+ * For use in EntitySwitch.Case. Matches if the entity is of a given kind.
+ * @public
+ */
 export function isKind(kind: string) {
-  return (entity: Entity) => strCmp(entity?.kind, kind);
+  return (entity: Entity) => strCmp(entity.kind, kind);
 }
 
+/**
+ * For use in EntitySwitch.Case. Matches if the entity is a Component of a given spec.type.
+ * @public
+ */
 export function isComponentType(type: string) {
   return (entity: Entity) => {
-    if (!strCmp(entity?.kind, 'component')) {
+    if (!strCmp(entity.kind, 'component')) {
       return false;
     }
     const componentEntity = entity as ComponentEntity;
@@ -36,6 +44,10 @@ export function isComponentType(type: string) {
   };
 }
 
+/**
+ * For use in EntitySwitch.Case. Matches if the entity is in a given namespace.
+ * @public
+ */
 export function isNamespace(namespace: string) {
-  return (entity: Entity) => strCmp(entity?.metadata?.namespace, namespace);
+  return (entity: Entity) => strCmp(entity.metadata?.namespace, namespace);
 }

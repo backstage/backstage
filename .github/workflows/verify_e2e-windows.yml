@@ -1,11 +1,12 @@
-name: E2E Test Windows
-
 # Building on windows is really slow, so this workflow is separate from e2e.yml and only builds on changes
 # to the cli itself. They're more likely to introduce issues on windows, compared to changes to core and yarn.lock.
+
+name: E2E Test Windows
 on:
   pull_request:
     paths:
-      - '.github/workflows/e2e-win.yml'
+      - 'yarn.lock'
+      - '.github/workflows/verify_e2e-windows.yml'
       - 'packages/cli/**'
       - 'packages/e2e-test/**'
       - 'packages/create-app/**'
@@ -20,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2019]
         node-version: [14.x, 16.x]
 
     env:
@@ -43,15 +44,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1.0.3
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
       - name: yarn install
         run: yarn install --frozen-lockfile
 
       - run: yarn tsc
-      - name: yarn build
-        run: yarn build --ignore example-app --ignore example-backend --ignore @techdocs/cli
+      - run: yarn backstage-cli repo build
       - name: run E2E test
         run: yarn e2e-test run
         env:

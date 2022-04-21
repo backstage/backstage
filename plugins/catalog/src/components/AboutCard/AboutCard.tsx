@@ -15,9 +15,9 @@
  */
 
 import {
-  Entity,
-  ENTITY_DEFAULT_NAMESPACE,
-  LOCATION_ANNOTATION,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_LOCATION,
+  DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -33,7 +33,6 @@ import {
 } from '@backstage/integration-react';
 import {
   catalogApiRef,
-  getEntityMetadataEditUrl,
   getEntitySourceLocation,
   useEntity,
 } from '@backstage/plugin-catalog-react';
@@ -72,13 +71,20 @@ const useStyles = makeStyles({
   },
 });
 
-type AboutCardProps = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
+/**
+ * Props for {@link EntityAboutCard}.
+ *
+ * @public
+ */
+export interface AboutCardProps {
   variant?: InfoCardVariants;
-};
+}
 
-export function AboutCard({ variant }: AboutCardProps) {
+/**
+ * Exported publicly via the EntityAboutCard
+ */
+export function AboutCard(props: AboutCardProps) {
+  const { variant } = props;
   const classes = useStyles();
   const { entity } = useEntity();
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
@@ -90,7 +96,8 @@ export function AboutCard({ variant }: AboutCardProps) {
     entity,
     scmIntegrationsApi,
   );
-  const entityMetadataEditUrl = getEntityMetadataEditUrl(entity);
+  const entityMetadataEditUrl =
+    entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
   const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
@@ -107,7 +114,7 @@ export function AboutCard({ variant }: AboutCardProps) {
     href:
       viewTechdocLink &&
       viewTechdocLink({
-        namespace: entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE,
+        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
         kind: entity.kind,
         name: entity.metadata.name,
       }),
@@ -127,7 +134,7 @@ export function AboutCard({ variant }: AboutCardProps) {
     cardContentClass = classes.fullHeightCardContent;
   }
 
-  const entityLocation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  const entityLocation = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   // Limiting the ability to manually refresh to the less expensive locations
   const allowRefresh =
     entityLocation?.startsWith('url:') || entityLocation?.startsWith('file:');

@@ -10,13 +10,16 @@ import { AbortController as AbortController_2 } from 'node-abort-controller';
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
+import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
+import { BitbucketServerIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
 import { Duration } from 'luxon';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
+import { GerritIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
@@ -24,7 +27,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
-import { Logger as Logger_2 } from 'winston';
+import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -82,9 +85,54 @@ export class AzureUrlReader implements UrlReader {
 }
 
 // @public
+export class BitbucketCloudUrlReader implements UrlReader {
+  constructor(
+    integration: BitbucketCloudIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export class BitbucketServerUrlReader implements UrlReader {
+  constructor(
+    integration: BitbucketServerIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public @deprecated
 export class BitbucketUrlReader implements UrlReader {
   constructor(
     integration: BitbucketIntegration,
+    logger: Logger,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -135,7 +183,7 @@ export class CacheManager {
 
 // @public
 export type CacheManagerOptions = {
-  logger?: Logger_2;
+  logger?: Logger;
   onError?: (err: Error) => void;
 };
 
@@ -170,14 +218,11 @@ export class Contexts {
   ): Context;
 }
 
-// @public @deprecated
-export const createDatabase: typeof createDatabaseClient;
-
 // @public
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-): Knex<any, Record<string, any>[]>;
+): Knex<any, any[]>;
 
 // @public
 export function createRootLogger(
@@ -190,7 +235,7 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
 export function createStatusCheckRouter(options: {
-  logger: Logger_2;
+  logger: Logger;
   path?: string;
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
@@ -230,15 +275,47 @@ export function errorHandler(
 // @public
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
-  logger?: Logger_2;
+  logger?: Logger;
   logClientErrors?: boolean;
 };
+
+// @public
+export class FetchUrlReader implements UrlReader {
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
 
 // @public
 export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;
 }>;
+
+// @public
+export class GerritUrlReader implements UrlReader {
+  constructor(integration: GerritIntegration);
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
 
 // @public
 export function getRootLogger(): winston.Logger;
@@ -285,7 +362,7 @@ export class Git {
   static fromAuth: (options: {
     username?: string;
     password?: string;
-    logger?: Logger_2;
+    logger?: Logger;
   }) => Git;
   // (undocumented)
   init(options: { dir: string; defaultBranch?: string }): Promise<void>;
@@ -361,7 +438,7 @@ export function isDatabaseConflictError(e: unknown): boolean;
 
 // @public
 export function loadBackendConfig(options: {
-  logger: Logger_2;
+  logger: Logger;
   remote?: LoadConfigOptionsRemote;
   argv: string[];
 }): Promise<Config>;
@@ -391,7 +468,7 @@ export type PluginEndpointDiscovery = {
 // @public
 export type ReaderFactory = (options: {
   config: Config;
-  logger: Logger_2;
+  logger: Logger;
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
@@ -468,12 +545,10 @@ export type ReadUrlResponse = {
 };
 
 // @public
-export function requestLoggingHandler(logger?: Logger_2): RequestHandler;
+export function requestLoggingHandler(logger?: Logger): RequestHandler;
 
 // @public
-export type RequestLoggingHandlerFactory = (
-  logger?: Logger_2,
-) => RequestHandler;
+export type RequestLoggingHandlerFactory = (logger?: Logger) => RequestHandler;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -519,7 +594,7 @@ export class ServerTokenManager implements TokenManager {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger_2;
+      logger: Logger;
     },
   ): ServerTokenManager;
   // (undocumented)
@@ -535,7 +610,7 @@ export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
   setHost(host: string): ServiceBuilder;
-  setLogger(logger: Logger_2): ServiceBuilder;
+  setLogger(logger: Logger): ServiceBuilder;
   enableCors(options: cors.CorsOptions): ServiceBuilder;
   setHttpsSettings(settings: {
     certificate:
@@ -558,9 +633,6 @@ export type ServiceBuilder = {
 
 // @public
 export function setRootLogger(newLogger: winston.Logger): void;
-
-// @public @deprecated
-export const SingleConnectionDatabaseManager: typeof DatabaseManager;
 
 // @public
 export class SingleHostDiscovery implements PluginEndpointDiscovery {
@@ -622,7 +694,7 @@ export class UrlReaders {
 // @public
 export type UrlReadersOptions = {
   config: Config;
-  logger: Logger_2;
+  logger: Logger;
   factories?: ReaderFactory[];
 };
 

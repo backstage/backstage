@@ -17,7 +17,7 @@
 import { useEffect, useRef } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 
 /**
  * Utility hook for either asynchronously loading filter values from a given
@@ -43,7 +43,7 @@ export const useAsyncFilterValues = (
       // for the lifetime of the hook/component.
       if (valuesMemo.current[inputValue] === undefined) {
         valuesMemo.current[inputValue] = callback(inputValue).then(values => {
-          // Overrite the value for future immediate returns.
+          // Override the value for future immediate returns.
           valuesMemo.current[inputValue] = values;
           return values;
         });

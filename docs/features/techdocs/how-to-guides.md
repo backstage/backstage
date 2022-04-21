@@ -162,20 +162,11 @@ The `techDocsPage` is a default techdocs reader page which lives in
 having to set anything up.
 
 ```tsx
-<TechDocsPage>
-  {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
-    <>
-      <TechDocsPageHeader
-        techDocsMetadata={techdocsMetadataValue}
-        entityMetadata={entityMetadataValue}
-        entityRef={entityRef}
-      />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<Page themeId="documentation">
+  <TechDocsReaderPageHeader />
+  <TechDocsReaderPageSubheader />
+  <TechDocsReaderPageContent />
+</Page>
 ```
 
 If you would like to compose your own `techDocsPage`, you can do so by replacing
@@ -183,42 +174,30 @@ the children of TechDocsPage with something else. Maybe you are _just_
 interested in replacing the Header:
 
 ```tsx
-<TechDocsPage>
-  {({ entityRef, onReady }) => (
-    <>
-      <Header type="documentation" title="Custom Header" />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<Page themeId="documentation">
+  <Header type="documentation" title="Custom Header" />
+  <TechDocsReaderPageContent />
+</Page>
 ```
 
 Or maybe you want to disable the in-context search
 
 ```tsx
-<TechDocsPage>
-  {({ entityRef, onReady }) => (
-    <>
-      <Header type="documentation" title="Custom Header" />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<Page themeId="documentation">
+  <Header type="documentation" title="Custom Header" />
+  <TechDocsReaderPageContent withSearch={false} />
+</Page>
 ```
 
 Or maybe you want to replace the entire TechDocs Page.
 
 ```tsx
-<TechDocsPage>
+<Page themeId="documentation">
   <Header type="documentation" title="Custom Header" />
   <Content data-testid="techdocs-content">
     <p>my own content</p>
   </Content>
-</TechDocsPage>
+</Page>
 ```
 
 ## How to migrate from TechDocs Alpha to Beta
@@ -458,7 +437,7 @@ FROM python:3.8-alpine
 
 RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
 
-RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.2.1
+RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==1.0.1
 
 RUN pip install mkdocs-kroki-plugin
 
@@ -538,3 +517,58 @@ Done! Now you have a support of the following diagrams along with mermaid:
 - `Vega`
 - `Vega-Lite`
 - `WaveDrom`
+
+## How to implement a hybrid build strategy
+
+One limitation of the [Recommended deployment](./architecture.md#recommended-deployment) is that
+the experience for users requires modifying their CI/CD process to publish
+their TechDocs. For some users, this may be unnecessary, and provides a barrier
+to entry for onboarding users to Backstage. However, a purely local TechDocs
+build restricts TechDocs creators to using the tooling provided in Backstage,
+as well as the plugins and features provided in the Backstage-included `mkdocs`
+installation.
+
+To accommodate both of these use-cases, users can implement a custom [Build Strategy](./concepts.md#techdocs-build-strategy)
+with logic to encode which TechDocs should be built locally, and which will be
+built externally.
+
+To achieve this hybrid build model:
+
+1. In your Backstage instance's `app-config.yaml`, set `techdocs.builder` to
+   `'local'`. This ensures that Backstage will build docs for users who want the
+   'out-of-the-box' experience.
+2. Configure external storage of TechDocs as normal for a production deployment.
+   This allows Backstage to publish documentation to your storage, as well as
+   allowing other users to publish documentation from their CI/CD pipelines.
+3. Create a custom build strategy, that implements the `DocsBuildStrategy` interface,
+   and which implements your custom logic for determining whether to build docs for
+   a given entity.
+   For example, to only build docs when an entity has the `company.com/techdocs-builder`
+   annotation set to `'local'`:
+
+   ```typescript
+   export class AnnotationBasedBuildStrategy {
+     private readonly config: Config;
+
+     constructor(config: Config) {
+       this.config = config;
+     }
+
+     async shouldBuild(_: Entity): Promise<boolean> {
+       return (
+         this.entity.metadata?.annotations?.['company.com/techdocs-builder'] ===
+         'local'
+       );
+     }
+   }
+   ```
+
+4. Pass an instance of this Build Strategy as the `docsBuildStrategy` parameter of the
+   TechDocs backend `createRouter` method.
+
+Users should now be able to choose to have their documentation built and published by
+the TechDocs backend by adding the `company.com/techdocs-builder` annotation to their
+entity. If the value of this annotation is `'local'`, the TechDocs backend will build
+and publish the documentation for them. If the value of the `company.com/techdocs-builder`
+annotation is anything other than `'local'`, the user is responsible for publishing
+documentation to the appropriate location in the TechDocs external storage.

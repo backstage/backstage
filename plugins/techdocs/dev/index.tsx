@@ -17,9 +17,9 @@
 import { createDevApp } from '@backstage/dev-utils';
 import { NotFoundError } from '@backstage/errors';
 import React from 'react';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
-  Reader,
+  TechDocsReaderPageContent,
   SyncResult,
   TechDocsStorageApi,
   techdocsStorageApiRef,
@@ -30,6 +30,7 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
+import { TechDocsReaderPageProvider } from '@backstage/plugin-techdocs-react';
 import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 // used so each route can provide it's own implementation in the constructor of the react component
@@ -82,7 +83,10 @@ function createPage({
       });
     }
 
-    async syncEntityDocs(_: EntityName, logHandler?: (line: string) => void) {
+    async syncEntityDocs(
+      _: CompoundEntityRef,
+      logHandler?: (line: string) => void,
+    ) {
       if (syncDocsDelay) {
         for (let i = 0; i < 10; i++) {
           setTimeout(
@@ -109,13 +113,15 @@ function createPage({
 
     render() {
       return (
-        <Reader
+        <TechDocsReaderPageProvider
           entityRef={{
             kind: 'Component',
             namespace: 'default',
             name: 'my-docs',
           }}
-        />
+        >
+          <TechDocsReaderPageContent />
+        </TechDocsReaderPageProvider>
       );
     }
   }

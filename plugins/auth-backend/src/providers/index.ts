@@ -30,30 +30,24 @@ export * from './onelogin';
 export * from './saml';
 export * from './gcp-iap';
 
+export { providers } from './providers';
+
 export { factories as defaultAuthProviderFactories } from './factories';
 
-// Export the minimal interface required for implementing a
-// custom Authorization Handler
 export type {
+  AuthProviderConfig,
   AuthProviderRouteHandlers,
   AuthProviderFactoryOptions,
   AuthProviderFactory,
   AuthHandler,
+  AuthResolverCatalogUserQuery,
   AuthResolverContext,
   AuthHandlerResult,
   SignInResolver,
   SignInInfo,
   CookieConfigurer,
-} from './types';
-
-// These types are needed for a postMessage from the login pop-up
-// to the frontend
-export type {
+  StateEncoder,
   AuthResponse,
-  BackstageIdentity,
-  BackstageUserIdentity,
-  BackstageIdentityResponse,
-  BackstageSignInResult,
   ProfileInfo,
 } from './types';
 

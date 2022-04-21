@@ -20,7 +20,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';
 import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
@@ -32,7 +32,7 @@ import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
  */
 export type ProxiedSignInPageProps = SignInPageProps & {
   /**
-   * The provider to use, e.g. "gcp-iap" or "aws-alb". This must correspond to
+   * The provider to use, e.g. "gcp-iap" or "awsalb". This must correspond to
    * a properly configured auth provider ID in the auth backend.
    */
   provider: string;
@@ -56,7 +56,7 @@ export type ProxiedSignInPageProps = SignInPageProps & {
 export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
   const discoveryApi = useApi(discoveryApiRef);
 
-  const { loading, error } = useAsync(async () => {
+  const [{ status, error }, { execute }] = useAsync(async () => {
     const identity = new ProxiedSignInIdentity({
       provider: props.provider,
       discoveryApi,
@@ -65,9 +65,11 @@ export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
     await identity.start();
 
     props.onSignInSuccess(identity);
-  }, []);
+  });
 
-  if (loading) {
+  useMountEffect(execute);
+
+  if (status === 'loading') {
     return <Progress />;
   } else if (error) {
     return (

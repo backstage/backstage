@@ -44,19 +44,11 @@ describe('useEntityRelationNodesAndEdges', () => {
         },
         relations: [
           {
-            target: {
-              kind: 'k',
-              name: 'a1',
-              namespace: 'd',
-            },
+            targetRef: 'k:d/a1',
             type: RELATION_OWNER_OF,
           },
           {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
+            targetRef: 'b:d/c1',
             type: RELATION_HAS_PART,
           },
         ],
@@ -70,19 +62,11 @@ describe('useEntityRelationNodesAndEdges', () => {
         },
         relations: [
           {
-            target: {
-              kind: 'b',
-              name: 'c',
-              namespace: 'd',
-            },
+            targetRef: 'b:d/c',
             type: RELATION_OWNED_BY,
           },
           {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
+            targetRef: 'b:d/c1',
             type: RELATION_OWNED_BY,
           },
         ],
@@ -96,27 +80,15 @@ describe('useEntityRelationNodesAndEdges', () => {
         },
         relations: [
           {
-            target: {
-              kind: 'b',
-              name: 'c',
-              namespace: 'd',
-            },
+            targetRef: 'b:d/c',
             type: RELATION_PART_OF,
           },
           {
-            target: {
-              kind: 'k',
-              name: 'a1',
-              namespace: 'd',
-            },
+            targetRef: 'k:d/a1',
             type: RELATION_OWNER_OF,
           },
           {
-            target: {
-              kind: 'b',
-              name: 'c2',
-              namespace: 'd',
-            },
+            targetRef: 'b:d/c2',
             type: RELATION_HAS_PART,
           },
         ],
@@ -130,11 +102,7 @@ describe('useEntityRelationNodesAndEdges', () => {
         },
         relations: [
           {
-            target: {
-              kind: 'b',
-              name: 'c1',
-              namespace: 'd',
-            },
+            targetRef: 'b:d/c1',
             type: RELATION_PART_OF,
           },
         ],

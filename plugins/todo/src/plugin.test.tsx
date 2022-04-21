@@ -19,6 +19,7 @@ import { Route } from 'react-router';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { todoPlugin, EntityTodoContent } from './plugin';
 import { todoApiRef } from './api';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 
 describe('todo', () => {
   it('should export plugin', () => {
@@ -47,7 +48,15 @@ describe('todo', () => {
           ],
         ]}
       >
-        <Route path="/" element={<EntityTodoContent />} />
+        <EntityProvider
+          entity={{
+            apiVersion: 'backstage/v1alpha1',
+            kind: 'Component',
+            metadata: { name: 'Test TODO' },
+          }}
+        >
+          <Route path="/" element={<EntityTodoContent />} />
+        </EntityProvider>
       </TestApiProvider>,
     );
 

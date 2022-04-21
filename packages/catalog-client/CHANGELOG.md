@@ -1,5 +1,150 @@
 # @backstage/catalog-client
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 0163c41be2: **BREAKING**: Removed the deprecated `presence` field in the `Location` and `AddLocationRequest` types. This field was already being ignored by the catalog backend and can be safely removed.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.0
+  - @backstage/errors@1.0.0
+
+## 0.9.0
+
+### Minor Changes
+
+- bf95bb806c: **BREAKING**: Removed previously deprecated `CatalogApi.getEntityByName`, please use `getEntityByRef` instead.
+- a3eb3d2afa: **BREAKING**: Removed `CatalogClient.getLocationByEntity` and `CatalogClient.getOriginLocationByEntity` which had previously been deprecated. Please use `CatalogApi.getLocationByRef` instead. Note that this only affects you if you were using `CatalogClient` (the class) directly, rather than `CatalogApi` (the interface), since it has been removed from the interface in an earlier release.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.13.0
+
+## 0.9.0-next.0
+
+### Minor Changes
+
+- bf95bb806c: **BREAKING**: Removed previously deprecated `CatalogApi.getEntityByName`, please use `getEntityByRef` instead.
+- a3eb3d2afa: **BREAKING**: Removed `CatalogClient.getLocationByEntity` and `CatalogClient.getOriginLocationByEntity` which had previously been deprecated. Please use `CatalogApi.getLocationByRef` instead. Note that this only affects you if you were using `CatalogClient` (the class) directly, rather than `CatalogApi` (the interface), since it has been removed from the interface in an earlier release.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.13.0-next.0
+
+## 0.8.0
+
+### Minor Changes
+
+- bb2ba5f10d: **BREAKING**: Removed the old deprecated request/response types:
+
+  - `CatalogEntitiesRequest` - please use `GetEntitiesRequest` instead
+  - `CatalogEntityAncestorsRequest` - please use `GetEntityAncestorsRequest` instead
+  - `CatalogEntityAncestorsResponse` - please use `GetEntityAncestorsResponse` instead
+  - `CatalogListResponse` - please use `GetEntitiesResponse` instead
+
+### Patch Changes
+
+- a52f69987a: **DEPRECATION**: Deprecated `getEntityByName` from `CatalogApi` and added `getEntityByRef` instead, which accepts both string and compound ref forms.
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+
+## 0.7.2
+
+### Patch Changes
+
+- ed09ad8093: Updated usage of the `LocationSpec` type from `@backstage/catalog-model`, which is deprecated.
+- 46dee04eba: Deprecated `AddLocationRequest.presence`, as it is already being ignored.
+- 6e1cbc12a6: Added `CatalogApi.getEntityFacets`. Marking this as a breaking change since it
+  is a non-optional addition to the API and depends on the backend being in place.
+  If you are mocking this interface in your tests, you will need to add an extra
+  `getEntityFacets: jest.fn()` or similar to that interface.
+- Updated dependencies
+  - @backstage/catalog-model@0.11.0
+
+## 0.7.1
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/catalog-model@0.10.1
+  - @backstage/errors@0.2.2
+
+## 0.7.0
+
+### Minor Changes
+
+- 8eda0e7a9c: **BREAKING**: Removed the explicit `DiscoveryApi` and `FetchApi` export symbols,
+  which were unnecessary duplicates from the well known core ones.
+
+  The `CATALOG_FILTER_EXISTS` symbol's value has changed. However, this should not
+  affect any code in practice.
+
+- deaf6065db: Removed `CatalogApi.geLocationByEntity` and `CatalogApi.getOriginLocationByEntity`, and replaced them with `CatalogApi.getLocationByRef`.
+
+  If you were using one of the two old methods, you can update your code as follows:
+
+  ```diff
+  -const originLocation = catalogApi.getOriginLocationByEntity(entity);
+  +const originLocation = catalogApi.getLocationByRef(entity.metadata.annotations[ANNOTATION_ORIGIN_LOCATION]!);
+  -const location = catalogApi.getLocationByEntity(entity);
+  +const location = catalogApi.getLocationByRef(entity.metadata.annotations[ANNOTATION_LOCATION]!);
+  ```
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- 244d24ebc4: Export the `Location` type that was previously exported by the `@backstage/catalog-model` package.
+- 538ca90790: Deprecated the following types used by the catalog client, and created new
+  corresponding types to make them more consistent:
+
+  - `CatalogEntitiesRequest` -> `GetEntitiesRequest`
+  - `CatalogListResponse` was removed and generally replaced with `GetEntitiesResponse` (which does not use a type parameter argument)
+  - `CatalogEntityAncestorsRequest`-> `GetEntityAncestorsRequest`
+  - `CatalogEntityAncestorsResponse` -> `GetEntityAncestorsResponse`
+
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+
+## 0.6.0
+
+### Minor Changes
+
+- f8633307c4: Fixed the return type of the catalog API `getEntityAncestors`, to match the
+  actual server response shape.
+
+  While this technically is a breaking change, the old shape has never worked at
+  all if you tried to use it - so treating this as an immediately-shipped breaking
+  bug fix.
+
 ## 0.5.5
 
 ### Patch Changes

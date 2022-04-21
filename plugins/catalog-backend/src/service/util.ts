@@ -17,7 +17,7 @@
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { Request } from 'express';
 import lodash from 'lodash';
-import yup from 'yup';
+import { z } from 'zod';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
@@ -40,19 +40,24 @@ export async function requireRequestBody(req: Request): Promise<unknown> {
   return body;
 }
 
+export const locationInput = z
+  .object({
+    type: z.string(),
+    target: z.string(),
+    presence: z.literal('required').or(z.literal('optional')).optional(),
+  })
+  .strict(); // no unknown keys;
+
 export async function validateRequestBody<T>(
   req: Request,
-  schema: yup.AnySchema<T>,
+  schema: z.Schema<T>,
 ): Promise<T> {
   const body = await requireRequestBody(req);
-
   try {
-    await schema.validate(body, { strict: true });
+    return await schema.parse(body);
   } catch (e) {
     throw new InputError(`Malformed request: ${e}`);
   }
-
-  return body as unknown as T;
 }
 
 export function disallowReadonlyMode(readonly: boolean) {

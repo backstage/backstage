@@ -24,14 +24,14 @@ import {
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import { TechDocsCache } from '../cache';
 import { DocsBuilder, shouldCheckForUpdate } from '../DocsBuilder';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 
 jest.mock('../DocsBuilder');
 
-jest.mock('cross-fetch', () => ({
+jest.mock('node-fetch', () => ({
   __esModule: true,
   default: async () => {
     return {

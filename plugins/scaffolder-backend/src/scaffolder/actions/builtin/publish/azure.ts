@@ -23,6 +23,11 @@ import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Config } from '@backstage/config';
 
+/**
+ * Creates a new action that initializes a git repository of the content in the workspace
+ * and publishes it to Azure.
+ * @public
+ */
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -35,6 +40,9 @@ export function createPublishAzureAction(options: {
     defaultBranch?: string;
     sourcePath?: string;
     token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:azure',
     description:
@@ -56,6 +64,21 @@ export function createPublishAzureAction(options: {
             title: 'Default Branch',
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'master'`,
+          },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
           },
           sourcePath: {
             title: 'Source Path',
@@ -85,7 +108,13 @@ export function createPublishAzureAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, defaultBranch = 'master' } = ctx.input;
+      const {
+        repoUrl,
+        defaultBranch = 'master',
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
+      } = ctx.input;
 
       const { owner, repo, host, organization } = parseRepoUrl(
         repoUrl,
@@ -137,8 +166,12 @@ export function createPublishAzureAction(options: {
       const repoContentsUrl = remoteUrl;
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       await initRepoAndPush({
@@ -150,9 +183,9 @@ export function createPublishAzureAction(options: {
           password: token,
         },
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 

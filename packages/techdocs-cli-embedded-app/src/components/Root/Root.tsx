@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useContext, PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useContext } from 'react';
+
 import { Link, makeStyles } from '@material-ui/core';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
+
 import {
   Sidebar,
+  SidebarItem,
   SidebarPage,
   sidebarConfig,
-  SidebarContext,
-  SidebarItem,
   SidebarDivider,
+  SidebarContext,
 } from '@backstage/core-components';
 import { NavLink } from 'react-router-dom';
 
@@ -70,7 +72,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       {/* Global nav, not org-specific */}
       <SidebarItem
         icon={LibraryBooks}
-        to="docs/default/component/local/"
+        to="/docs/default/component/local"
         text="Docs Preview"
       />
       {/* End global nav */}

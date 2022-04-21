@@ -19,21 +19,24 @@ import classnames from 'classnames';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import {
   SidebarItemWithSubmenuContext,
-  sidebarConfig,
   SidebarContext,
-  submenuConfig,
+  SidebarConfigContext,
+  SubmenuConfig,
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = (props: { left: number }) =>
-  makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<
+  BackstageTheme,
+  { submenuConfig: SubmenuConfig; left: number }
+>(
+  theme => ({
     root: {
       zIndex: 1000,
       position: 'relative',
       overflow: 'visible',
       width: theme.spacing(7) + 1,
     },
-    drawer: {
+    drawer: props => ({
       display: 'flex',
       flexFlow: 'column nowrap',
       alignItems: 'flex-start',
@@ -53,17 +56,17 @@ const useStyles = (props: { left: number }) =>
       msOverflowStyle: 'none',
       scrollbarWidth: 'none',
       cursor: 'default',
-      width: submenuConfig.drawerWidthClosed,
-      transitionDelay: `${submenuConfig.defaultOpenDelayMs}ms`,
+      width: props.submenuConfig.drawerWidthClosed,
+      transitionDelay: `${props.submenuConfig.defaultOpenDelayMs}ms`,
       '& > *': {
         flexShrink: 0,
       },
       '&::-webkit-scrollbar': {
         display: 'none',
       },
-    },
-    drawerOpen: {
-      width: submenuConfig.drawerWidthOpen,
+    }),
+    drawerOpen: props => ({
+      width: props.submenuConfig.drawerWidthOpen,
       [theme.breakpoints.down('xs')]: {
         width: '100%',
         position: 'relative',
@@ -71,7 +74,7 @@ const useStyles = (props: { left: number }) =>
         left: 0,
         top: 0,
       },
-    },
+    }),
     title: {
       fontSize: 24,
       fontWeight: 500,
@@ -81,7 +84,9 @@ const useStyles = (props: { left: number }) =>
         display: 'none',
       },
     },
-  }));
+  }),
+  { name: 'BackstageSidebarSubmenu' },
+);
 
 /**
  * Holds a title for text Header of a sidebar submenu and children
@@ -101,10 +106,11 @@ export type SidebarSubmenuProps = {
  */
 export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
   const { isOpen } = useContext(SidebarContext);
+  const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen
     : sidebarConfig.drawerWidthClosed;
-  const classes = useStyles({ left })();
+  const classes = useStyles({ left, submenuConfig });
 
   const { isHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);

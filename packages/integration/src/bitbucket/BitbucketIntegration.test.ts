@@ -18,25 +18,52 @@ import { ConfigReader } from '@backstage/config';
 import { BitbucketIntegration } from './BitbucketIntegration';
 
 describe('BitbucketIntegration', () => {
-  it('has a working factory', () => {
-    const integrations = BitbucketIntegration.factory({
-      config: new ConfigReader({
-        integrations: {
-          bitbucket: [
-            {
-              host: 'h.com',
-              apiBaseUrl: 'a',
-              token: 't',
-              username: 'u',
-              appPassword: 'p',
-            },
-          ],
-        },
-      }),
+  describe('factory', () => {
+    it('works', () => {
+      const integrations = BitbucketIntegration.factory({
+        config: new ConfigReader({
+          integrations: {
+            bitbucket: [
+              {
+                host: 'h.com',
+                apiBaseUrl: 'a',
+                token: 't',
+                username: 'u',
+                appPassword: 'p',
+              },
+            ],
+          },
+        }),
+      });
+      expect(integrations.list().length).toBe(2); // including default
+      expect(integrations.list()[0].config.host).toBe('h.com');
+      expect(integrations.list()[1].config.host).toBe('bitbucket.org');
     });
-    expect(integrations.list().length).toBe(2); // including default
-    expect(integrations.list()[0].config.host).toBe('h.com');
-    expect(integrations.list()[1].config.host).toBe('bitbucket.org');
+
+    it('falls back to bitbucketCloud+bitbucketServer', () => {
+      const integrations = BitbucketIntegration.factory({
+        config: new ConfigReader({
+          integrations: {
+            bitbucketCloud: [
+              {
+                username: 'u',
+                appPassword: 'p',
+              },
+            ],
+            bitbucketServer: [
+              {
+                host: 'h.com',
+                apiBaseUrl: 'a',
+                token: 't',
+              },
+            ],
+          },
+        }),
+      });
+      expect(integrations.list().length).toBe(2); // including default
+      expect(integrations.list()[0].config.host).toBe('bitbucket.org');
+      expect(integrations.list()[1].config.host).toBe('h.com');
+    });
   });
 
   it('returns the basics', () => {
@@ -45,8 +72,10 @@ describe('BitbucketIntegration', () => {
     expect(integration.title).toBe('h.com');
   });
 
-  it('resolves url line number correctly', () => {
-    const integration = new BitbucketIntegration({ host: 'h.com' } as any);
+  it('resolves url line number correctly for Bitbucket Cloud', () => {
+    const integration = new BitbucketIntegration({
+      host: 'bitbucket.org',
+    } as any);
 
     expect(
       integration.resolveUrl({
@@ -55,8 +84,20 @@ describe('BitbucketIntegration', () => {
         lineNumber: 14,
       }),
     ).toBe(
-      'https://bitbucket.org/my-owner/my-project/src/master/a.yaml#a.yaml-14',
+      'https://bitbucket.org/my-owner/my-project/src/master/a.yaml#lines-14',
     );
+  });
+
+  it('resolves url line number correctly for Bitbucket Server', () => {
+    const integration = new BitbucketIntegration({ host: 'h.com' } as any);
+
+    expect(
+      integration.resolveUrl({
+        url: './a.yaml',
+        base: 'https://bitbucket.org/my-owner/my-project/src/master/README.md',
+        lineNumber: 14,
+      }),
+    ).toBe('https://bitbucket.org/my-owner/my-project/src/master/a.yaml#14');
   });
 
   it('resolve edit URL', () => {

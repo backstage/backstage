@@ -1,5 +1,369 @@
 # @backstage/plugin-scaffolder
 
+## 1.1.0
+
+### Minor Changes
+
+- 6331ec1ebc: Added a context menu to the scaffolder page that provides links to the template editor and actions reference. These links and the presence of the context menu can be toggled through the `contextMenu` prop of the scaffolder page.
+- 8fad3b6ef5: The Template Preview page has been renamed to Template Editor, and is not available at the `/edit` path instead. There is a redirect in place from `/preview`.
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 946af407db: Changed input label for owner field in GitlabRepoPicker
+- 230ad0826f: Bump to using `@types/node` v16
+- d34900af81: Added a new `NextScaffolderRouter` which will eventually replace the exiting router
+- 9975ff9852: Applied the fix from version 1.0.1 of this package, which is part of the v1.0.2 release of Backstage.
+- 4431873583: Update `usePermission` usage.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/plugin-permission-react@0.4.0
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/integration-react@1.0.1
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/catalog-client@1.0.1
+  - @backstage/plugin-scaffolder-common@1.0.1
+
+## 1.1.0-next.3
+
+### Minor Changes
+
+- 6331ec1ebc: Added a context menu to the scaffolder page that provides links to the template editor and actions reference. These links and the presence of the context menu can be toggled through the `contextMenu` prop of the scaffolder page.
+- 8fad3b6ef5: The Template Preview page has been renamed to Template Editor, and is not available at the `/edit` path instead. There is a redirect in place from `/preview`.
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 946af407db: Changed input label for owner field in GitlabRepoPicker
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/integration-react@1.0.1-next.2
+  - @backstage/plugin-catalog-react@1.0.1-next.3
+  - @backstage/plugin-permission-react@0.4.0-next.1
+  - @backstage/integration@1.1.0-next.2
+
+## 1.0.1-next.2
+
+### Patch Changes
+
+- 9975ff9852: Applied the fix from version 1.0.1 of this package, which is part of the v1.0.2 release of Backstage.
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.1
+  - @backstage/plugin-catalog-react@1.0.1-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
+## 1.0.1
+
+### Patch Changes
+
+- Pin the `event-source-polyfill` dependency to version 1.0.25
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- 4431873583: Update `usePermission` usage.
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/plugin-permission-react@0.4.0-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+  - @backstage/plugin-catalog-common@1.0.1-next.1
+  - @backstage/integration-react@1.0.1-next.1
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- d34900af81: Added a new `NextScaffolderRouter` which will eventually replace the exiting router
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-scaffolder-common@1.0.1-next.0
+  - @backstage/integration-react@1.0.1-next.0
+  - @backstage/plugin-catalog-common@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 9a408928a1: **BREAKING**: Removed the unused `titleComponent` property of `groups` passed to the `ScaffolderPage`. The property was already ignored, but existing usage should migrated to use the `title` property instead, which now accepts any `ReactNode`.
+
+### Patch Changes
+
+- 9b7e361783: Remove beta labels
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- 20a262c214: The `ScaffolderPage` now uses the `CatalogFilterLayout`, which means the filters are put in a drawer on smaller screens.
+- f24ef7864e: Minor typo fixes
+- d8716924d6: Implement a template preview page (`/create/preview`) to test creating form UIs
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/integration-react@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/plugin-permission-react@0.3.4
+  - @backstage/catalog-model@1.0.0
+  - @backstage/plugin-scaffolder-common@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-catalog-common@1.0.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 310e905998: The following deprecations are now breaking and have been removed:
+
+  - **BREAKING**: Support for `backstage.io/v1beta2` Software Templates has been removed. Please migrate your legacy templates to the new `scaffolder.backstage.io/v1beta3` `apiVersion` by following the [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3)
+
+  - **BREAKING**: Removed the deprecated `TemplateMetadata`. Please use `TemplateInfo` instead.
+
+  - **BREAKING**: Removed the deprecated `context.baseUrl`. It's now available on `context.templateInfo.baseUrl`.
+
+  - **BREAKING**: Removed the deprecated `DispatchResult`, use `TaskBrokerDispatchResult` instead.
+
+  - **BREAKING**: Removed the deprecated `runCommand`, use `executeShellCommond` instead.
+
+  - **BREAKING**: Removed the deprecated `Status` in favour of `TaskStatus` instead.
+
+  - **BREAKING**: Removed the deprecated `TaskState` in favour of `CurrentClaimedTask` instead.
+
+- 1360f7d73a: **BREAKING**: Removed `ScaffolderTaskOutput.entityRef` and `ScaffolderTaskOutput.remoteUrl`, which both have been deprecated for over a year. Please use the `links` output instead.
+- e63e5a9452: Removed the following previously deprecated exports:
+
+  - **BREAKING**: Removed the deprecated `TemplateList` component and the `TemplateListProps` type. Please use the `TemplateCard` to create your own list component instead to render these lists.
+
+  - **BREAKING**: Removed the deprecated `setSecret` method, please use `setSecrets` instead.
+
+  - **BREAKING**: Removed the deprecated `TemplateCardComponent` and `TaskPageComponent` props from the `ScaffolderPage` component. These are now provided using the `components` prop with the shape `{{ TemplateCardComponent: () => JSX.Element, TaskPageComponent: () => JSX.Element }}`
+
+  - **BREAKING**: Removed `JobStatus` as this type was actually a legacy type used in `v1alpha` templates and the workflow engine and should no longer be used or depended on.
+
+### Patch Changes
+
+- d741c97b98: Render markdown for description in software templates
+- 33e58456b5: Fixing the border color for the `FavoriteEntity` star button on the `TemplateCard`
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/plugin-scaffolder-common@0.3.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-catalog-common@0.2.2
+  - @backstage/catalog-client@0.9.0
+  - @backstage/integration-react@0.1.25
+
+## 0.15.0-next.0
+
+### Minor Changes
+
+- 310e905998: The following deprecations are now breaking and have been removed:
+
+  - **BREAKING**: Support for `backstage.io/v1beta2` Software Templates has been removed. Please migrate your legacy templates to the new `scaffolder.backstage.io/v1beta3` `apiVersion` by following the [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3)
+
+  - **BREAKING**: Removed the deprecated `TemplateMetadata`. Please use `TemplateInfo` instead.
+
+  - **BREAKING**: Removed the deprecated `context.baseUrl`. It's now available on `context.templateInfo.baseUrl`.
+
+  - **BREAKING**: Removed the deprecated `DispatchResult`, use `TaskBrokerDispatchResult` instead.
+
+  - **BREAKING**: Removed the deprecated `runCommand`, use `executeShellCommond` instead.
+
+  - **BREAKING**: Removed the deprecated `Status` in favour of `TaskStatus` instead.
+
+  - **BREAKING**: Removed the deprecated `TaskState` in favour of `CurrentClaimedTask` instead.
+
+- 1360f7d73a: **BREAKING**: Removed `ScaffolderTaskOutput.entityRef` and `ScaffolderTaskOutput.remoteUrl`, which both have been deprecated for over a year. Please use the `links` output instead.
+- e63e5a9452: Removed the following previously deprecated exports:
+
+  - **BREAKING**: Removed the deprecated `TemplateList` component and the `TemplateListProps` type. Please use the `TemplateCard` to create your own list component instead to render these lists.
+
+  - **BREAKING**: Removed the deprecated `setSecret` method, please use `setSecrets` instead.
+
+  - **BREAKING**: Removed the deprecated `TemplateCardComponent` and `TaskPageComponent` props from the `ScaffolderPage` component. These are now provided using the `components` prop with the shape `{{ TemplateCardComponent: () => JSX.Element, TaskPageComponent: () => JSX.Element }}`
+
+  - **BREAKING**: Removed `JobStatus` as this type was actually a legacy type used in `v1alpha` templates and the workflow engine and should no longer be used or depended on.
+
+### Patch Changes
+
+- d741c97b98: Render markdown for description in software templates
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0-next.0
+  - @backstage/core-components@0.9.1-next.0
+  - @backstage/plugin-scaffolder-common@0.3.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/plugin-catalog-common@0.2.2-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+  - @backstage/integration-react@0.1.25-next.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 1c2755991d: - **BREAKING**: Removed the `FavouriteTemplate` export in favor of the `FavoriteEntity` from `@backstage/plugin-catalog-react`. Please migrate any usages to that component instead if you are creating your own `TemplateCard` page.
+- 86da51cec5: **BREAKING**: Removing the exports of the raw components that back the `CustomFieldExtensions`.
+
+### Patch Changes
+
+- f41a293231: - **DEPRECATION**: Deprecated `formatEntityRefTitle` in favor of the new `humanizeEntityRef` method instead. Please migrate to using the new method instead.
+- 55361f3f7b: Added some deprecations as follows:
+
+  - **DEPRECATED**: `TemplateCardComponent` and `TaskPageComponent` props have been deprecated, and moved to a `components` prop instead. You can pass them in through there instead.
+  - **DEPRECATED**: `TemplateList` and `TemplateListProps` has been deprecated. Please use the `TemplateCard` to create your own list component instead.
+  - **DEPRECATED**: `setSecret` has been deprecated in favour of `setSecrets` when calling `useTemplateSecrets`
+
+  Other notable changes:
+
+  - `scaffolderApi.scaffold()` `values` type has been narrowed from `Record<string, any>` to `Record<string, JsonValue>` instead.
+  - Moved all navigation internally over to using `routeRefs` and `subRouteRefs`
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/plugin-catalog-common@0.2.0
+  - @backstage/integration@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/plugin-scaffolder-common@0.2.3
+  - @backstage/integration-react@0.1.24
+  - @backstage/plugin-permission-react@0.3.3
+
+## 0.13.0
+
+### Minor Changes
+
+- 50e0242ac2: - **BREAKING** - `scaffolderApi.scaffold()` now takes one `options` argument instead of 3, the existing arguments should just be wrapped up in one object instead.
+  - **BREAKING** - `scaffolderApi.scaffold()` now returns an object instead of a single string for the job ID. It's now `{ taskId: string }`
+  - **BREAKING** - `scaffolderApi.scaffold()` now takes a `templateRef` instead of `templateName` as an argument in the options. This should be a valid stringified `entityRef`.
+  - **BREAKING** - `scaffolderApi.getIntegrationsList` now returns an object `{ integrations: { type: string, title: string, host: string }[] }` instead of just an array.
+- a2589000ee: - **BREAKING** - Removed the `plugin` export, use `scaffolderPlugin` instead.
+  - **BREAKING** - Removed the `TextValuePicker` component export, you can inline this component instead as it's a simple wrapper around a `TextField` from `@material-ui/core`.
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- b776ce5aab: Replaced use of deprecated `useEntityListProvider` hook with `useEntityList`.
+- 0f37cdef19: Migrated over from the deprecated `spec.metadata` to `spec.templateInfo` for the `name` and the `baseUrl` of the template.
+- 50e0242ac2: - Moved the `JSONSchema` type from `@backstage/catalog-model` to `JSONSchema7`.
+  - Renamed and prefixed some types ready for exporting.
+- a2589000ee: - Reworking the `FieldExtensionComponentType` so we can export the `ui:schema:options` props in the `api-report.md`.
+  - Exporting all of the `UiOptions` types for the `FieldExtensions` so we can see them in the `api-report.md`.
+  - Removing the redundant type in the `CustomFieldValidator` union.
+- 2f2543592c: You can now hide sections or fields in your templates based on a feature flag. For example, take this template:
+
+  ```json
+  {
+    title: 'my-schema',
+    steps: [
+      {
+        title: 'Fill in some steps',
+        schema: {
+          title: 'Fill in some steps',
+          'backstage:featureFlag': 'experimental-feature',
+          properties: {
+            name: {
+              title: 'Name',
+              type: 'string',
+              'backstage:featureFlag': 'should-show-some-stuff-first-option',
+            },
+            description: {
+              title: 'Description',
+              type: 'string',
+              description: 'A description for the component',
+            },
+            owner: {
+              title: 'Owner',
+              type: 'string',
+              description: 'Owner of the component',
+            },
+          },
+          type: 'object',
+        },
+    },
+  }
+
+  ```
+
+  If you have a feature flag that is called `experimental-feature` then your first step would be shown if you that feature flag was not active then it wouldn't be shown. The same goes for the properties in the schema. Make sure to use the key `backstage:featureFlag` in your templates if you want to use this functionality.
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-scaffolder-common@0.2.2
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/integration@0.7.5
+  - @backstage/integration-react@0.1.23
+  - @backstage/plugin-permission-react@0.3.2
+
+## 0.12.3
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 538ca90790: Use updated type names from `@backstage/catalog-client`
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- e72d371296: Use `TemplateEntityV1beta2` from `@backstage/plugin-scaffolder-common` instead
+  of `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@0.2.0
+  - @backstage/catalog-client@0.7.0
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/integration-react@0.1.22
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/plugin-permission-react@0.3.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+  - @backstage/types@0.1.2
+  - @backstage/plugin-catalog-common@0.1.3
+
+## 0.12.2
+
+### Patch Changes
+
+- 33e139e652: Adds a loading bar to the scaffolder task page if the task is still loading. This can happen if it takes a while for a task worker to pick up a task.
+- 6458be3307: Encode the `formData` in the `queryString` using `JSON.stringify` to keep the types in the decoded value
+- 319f4b79a2: The ScaffolderPage can be passed an optional `TaskPageComponent` with a `loadingText` string. It will replace the Loading text in the scaffolder task page.
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+  - @backstage/integration-react@0.1.21
+
+## 0.12.2-next.0
+
+### Patch Changes
+
+- 33e139e652: Adds a loading bar to the scaffolder task page if the task is still loading. This can happen if it takes a while for a task worker to pick up a task.
+- 6458be3307: Encode the `formData` in the `queryString` using `JSON.stringify` to keep the types in the decoded value
+- 319f4b79a2: The ScaffolderPage can be passed an optional `TaskPageComponent` with a `loadingText` string. It will replace the Loading text in the scaffolder task page.
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+  - @backstage/integration-react@0.1.21-next.0
+
 ## 0.12.1
 
 ### Patch Changes

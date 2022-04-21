@@ -102,11 +102,7 @@ describe('<SystemDiagramCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'Domain',
-            namespace: 'namespace',
-            name: 'domain',
-          },
+          targetRef: 'domain:namespace/domain',
           type: RELATION_PART_OF,
         },
       ],
@@ -161,11 +157,7 @@ describe('<SystemDiagramCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'Domain',
-            namespace: 'namespace',
-            name: 'alongdomainthatshouldgettruncated',
-          },
+          targetRef: 'domain:namespace/alongdomainthatshouldgettruncated',
           type: RELATION_PART_OF,
         },
       ],

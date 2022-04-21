@@ -16,10 +16,11 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import ora from 'ora';
 import semver from 'semver';
 import minimatch from 'minimatch';
-import { Command } from 'commander';
-import { isError } from '@backstage/errors';
+import { OptionValues } from 'commander';
+import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
 import { paths } from '../../lib/paths';
@@ -27,10 +28,16 @@ import {
   mapDependencies,
   fetchPackageInfo,
   Lockfile,
+  YarnInfoInspectData,
 } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import { runParallelWorkers } from '../../lib/parallel';
+import {
+  getManifestByReleaseLine,
+  getManifestByVersion,
+  ReleaseManifest,
+} from '@backstage/release-manifests';
 
 const DEP_TYPES = [
   'dependencies',
@@ -48,10 +55,10 @@ type PkgVersionInfo = {
   location: string;
 };
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
-  let pattern = cmd.pattern;
+  let pattern = opts.pattern;
 
   if (!pattern) {
     console.log(`Using default pattern glob ${DEFAULT_PATTERN_GLOB}`);
@@ -60,7 +67,37 @@ export default async (cmd: Command) => {
     console.log(`Using custom pattern glob ${pattern}`);
   }
 
-  const findTargetVersion = createVersionFinder();
+  let findTargetVersion: (name: string) => Promise<string>;
+  let releaseManifest: ReleaseManifest;
+  // Specific release specified. Be strict when resolving versions
+  if (semver.valid(opts.release)) {
+    releaseManifest = await getManifestByVersion({ version: opts.release });
+    findTargetVersion = createStrictVersionFinder({
+      releaseManifest,
+    });
+  } else {
+    // Release line specified. Be lenient when resolving versions.
+    if (opts.release === 'next') {
+      const next = await getManifestByReleaseLine({
+        releaseLine: 'next',
+      });
+      const main = await getManifestByReleaseLine({
+        releaseLine: 'main',
+      });
+      // Prefer manifest with the latest release version
+      releaseManifest = semver.gt(next.releaseVersion, main.releaseVersion)
+        ? next
+        : main;
+    } else {
+      releaseManifest = await getManifestByReleaseLine({
+        releaseLine: opts.release,
+      });
+    }
+    findTargetVersion = createVersionFinder({
+      releaseLine: opts.releaseLine,
+      releaseManifest,
+    });
+  }
 
   // First we discover all Backstage dependencies within our own repo
   const dependencyMap = await mapDependencies(paths.targetDir, pattern);
@@ -213,14 +250,18 @@ export default async (cmd: Command) => {
 
     console.log();
 
-    await bumpBackstageJsonVersion();
+    // Do not update backstage.json when upgrade patterns are used.
+    if (pattern === DEFAULT_PATTERN_GLOB) {
+      await bumpBackstageJsonVersion(releaseManifest.releaseVersion);
+    } else {
+      console.log(
+        chalk.yellow(
+          `Skipping backstage.json update as custom pattern is used`,
+        ),
+      );
+    }
 
-    console.log();
-    console.log(
-      `Running ${chalk.blue('yarn install')} to install new versions`,
-    );
-    console.log();
-    await run('yarn', ['install']);
+    await runYarnInstall();
 
     if (breakingUpdates.size > 0) {
       console.log();
@@ -284,9 +325,38 @@ export default async (cmd: Command) => {
   }
 };
 
-function createVersionFinder() {
-  const found = new Map<string, string>();
+export function createStrictVersionFinder(options: {
+  releaseManifest: ReleaseManifest;
+}) {
+  const releasePackages = new Map(
+    options.releaseManifest.packages.map(p => [p.name, p.version]),
+  );
+  return async function findTargetVersion(name: string) {
+    console.log(`Checking for updates of ${name}`);
+    const manifestVersion = releasePackages.get(name);
+    if (manifestVersion) {
+      return manifestVersion;
+    }
+    throw new NotFoundError(`Package ${name} not found in release manifest`);
+  };
+}
 
+export function createVersionFinder(options: {
+  releaseLine?: string;
+  packageInfoFetcher?: () => Promise<YarnInfoInspectData>;
+  releaseManifest?: ReleaseManifest;
+}) {
+  const {
+    releaseLine = 'latest',
+    packageInfoFetcher = fetchPackageInfo,
+    releaseManifest,
+  } = options;
+  // The main release line is just an alias for latest
+  const distTag = releaseLine === 'main' ? 'latest' : releaseLine;
+  const found = new Map<string, string>();
+  const releasePackages = new Map(
+    releaseManifest?.packages.map(p => [p.name, p.version]),
+  );
   return async function findTargetVersion(name: string) {
     const existing = found.get(name);
     if (existing) {
@@ -294,17 +364,50 @@ function createVersionFinder() {
     }
 
     console.log(`Checking for updates of ${name}`);
-    const info = await fetchPackageInfo(name);
-    const latest = info['dist-tags'].latest;
-    if (!latest) {
-      throw new Error(`No latest version found for ${name}`);
+    const manifestVersion = releasePackages.get(name);
+    if (manifestVersion) {
+      return manifestVersion;
     }
-    found.set(name, latest);
-    return latest;
+
+    const info = await packageInfoFetcher(name);
+    const latestVersion = info['dist-tags'].latest;
+    if (!latestVersion) {
+      throw new Error(`No target 'latest' version found for ${name}`);
+    }
+
+    const taggedVersion = info['dist-tags'][distTag];
+    if (distTag === 'latest' || !taggedVersion) {
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+
+    const latestVersionDateStr = info.time[latestVersion];
+    const taggedVersionDateStr = info.time[taggedVersion];
+    if (!latestVersionDateStr) {
+      throw new Error(
+        `No time available for version '${latestVersion}' of ${name}`,
+      );
+    }
+    if (!taggedVersionDateStr) {
+      throw new Error(
+        `No time available for version '${taggedVersion}' of ${name}`,
+      );
+    }
+
+    const latestVersionRelease = new Date(latestVersionDateStr).getTime();
+    const taggedVersionRelease = new Date(taggedVersionDateStr).getTime();
+    if (latestVersionRelease > taggedVersionRelease) {
+      // Prefer latest version if it's newer.
+      found.set(name, latestVersion);
+      return latestVersion;
+    }
+
+    found.set(name, taggedVersion);
+    return taggedVersion;
   };
 }
 
-export async function bumpBackstageJsonVersion() {
+export async function bumpBackstageJsonVersion(version: string) {
   const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
   const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
     if (e.code === 'ENOENT') {
@@ -314,27 +417,73 @@ export async function bumpBackstageJsonVersion() {
     throw e;
   });
 
-  const info = await fetchPackageInfo('@backstage/create-app');
-  const { latest } = info['dist-tags'];
+  const prevVersion = backstageJson?.version;
 
-  if (backstageJson?.version === latest) {
+  if (prevVersion === version) {
     return;
   }
 
-  console.log(
-    chalk.yellow(
-      typeof backstageJson === 'undefined'
-        ? `Creating ${BACKSTAGE_JSON}`
-        : `Bumping version in ${BACKSTAGE_JSON}`,
-    ),
-  );
+  const { yellow, cyan, green } = chalk;
+  if (prevVersion) {
+    const from = encodeURIComponent(prevVersion);
+    const to = encodeURIComponent(version);
+    const link = `https://backstage.github.io/upgrade-helper/?from=${from}&to=${to}`;
+    console.log(
+      yellow(
+        `Upgraded from release ${green(prevVersion)} to ${green(
+          version,
+        )}, please review these template changes:`,
+      ),
+    );
+    console.log();
+    console.log(`  ${cyan(link)}`);
+    console.log();
+  } else {
+    console.log(
+      yellow(
+        `Your project is now at version ${version}, which has been written to ${BACKSTAGE_JSON}`,
+      ),
+    );
+  }
 
   await fs.writeJson(
     backstageJsonPath,
-    { ...backstageJson, version: latest },
+    { ...backstageJson, version },
     {
       spaces: 2,
       encoding: 'utf8',
     },
   );
+}
+
+async function runYarnInstall() {
+  const spinner = ora({
+    prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
+    spinner: 'arc',
+    color: 'green',
+  }).start();
+
+  const installOutput = new Array<Buffer>();
+  try {
+    await run('yarn', ['install'], {
+      env: {
+        FORCE_COLOR: 'true',
+        // We filter out all of the npm_* environment variables that are added when
+        // executing through yarn. This works around an issue where these variables
+        // incorrectly override local yarn or npm config in the project directory.
+        ...Object.fromEntries(
+          Object.entries(process.env).map(([name, value]) =>
+            name.startsWith('npm_') ? [name, undefined] : [name, value],
+          ),
+        ),
+      },
+      stdoutLogFunc: data => installOutput.push(data),
+      stderrLogFunc: data => installOutput.push(data),
+    });
+    spinner.succeed();
+  } catch (error) {
+    spinner.fail();
+    process.stdout.write(Buffer.concat(installOutput));
+    throw error;
+  }
 }

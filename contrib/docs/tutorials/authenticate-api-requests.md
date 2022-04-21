@@ -15,7 +15,10 @@ import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
 import { JWT } from 'jose';
 import { URL } from 'url';
-import { IdentityClient } from '@backstage/plugin-auth-backend';
+import {
+  IdentityClient,
+  getBearerTokenFromAuthorizationHeader,
+} from '@backstage/plugin-auth-node';
 
 // ...
 
@@ -44,7 +47,7 @@ async function main() {
   // ...
 
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const identity = new IdentityClient({
+  const identity = IdentityClient.create({
     discovery,
     issuer: await discovery.getExternalBaseUrl('auth'),
   });
@@ -58,7 +61,7 @@ async function main() {
   ) => {
     try {
       const token =
-        IdentityClient.getBearerToken(req.headers.authorization) ||
+        getBearerTokenFromAuthorizationHeader(req.headers.authorization) ||
         req.cookies['token'];
       req.user = await identity.authenticate(token);
       if (!req.headers.authorization) {
@@ -80,7 +83,7 @@ async function main() {
 
   const apiRouter = Router();
   apiRouter.use(cookieParser());
-  // The auth route must be publically available as it is used during login
+  // The auth route must be publicly available as it is used during login
   apiRouter.use('/auth', await auth(authEnv));
   // Add a simple endpoint to be used when setting a token cookie
   apiRouter.use('/cookie', authMiddleware, (_req, res) => {

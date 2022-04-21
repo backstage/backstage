@@ -8,8 +8,7 @@ Welcome to the Bazaar backend plugin!
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-bazaar-backend
+yarn add --cwd packages/backend @backstage/plugin-bazaar-backend
 ```
 
 ## Adding the plugin to your `packages/backend`
@@ -19,13 +18,16 @@ You'll need to add the plugin to the router in your `backend` package. You can d
 ```tsx
 import { PluginEnvironment } from '../types';
 import { createRouter } from '@backstage/plugin-bazaar-backend';
+import { Router } from 'express';
 
-export default async function createPlugin({
-  logger,
-  database,
-  config,
-}: PluginEnvironment) {
-  return await createRouter({ logger, config, database });
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+  });
 }
 ```
 

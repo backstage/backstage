@@ -27,7 +27,7 @@ export class Cobertura implements Converter {
    * convert cobertura into shared json coverage format
    *
    * @param xml - cobertura xml object
-   * @param scmFiles - list of files that are commited to SCM
+   * @param scmFiles - list of files that are committed to SCM
    */
   convert(xml: CoberturaXML, scmFiles: string[]): FileEntry[] {
     const ppc = xml.coverage.packages

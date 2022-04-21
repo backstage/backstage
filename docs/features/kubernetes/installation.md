@@ -19,8 +19,7 @@ package.
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-kubernetes
+yarn add --cwd packages/app @backstage/plugin-kubernetes
 ```
 
 Once the package has been installed, you need to import the plugin in your app
@@ -50,8 +49,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-kubernetes-backend
+yarn add --cwd packages/backend @backstage/plugin-kubernetes-backend
 ```
 
 Create a file called `kubernetes.ts` inside `packages/backend/src/plugins/` and
@@ -60,15 +58,15 @@ add the following:
 ```typescript
 // In packages/backend/src/plugins/kubernetes.ts
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment) {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   const { router } = await KubernetesBuilder.createBuilder({
-    logger,
-    config,
+    logger: env.logger,
+    config: env.config,
   }).build();
   return router;
 }
@@ -91,6 +89,63 @@ async function main() {
 
 That's it! The Kubernetes frontend and backend have now been added to your
 Backstage app.
+
+### Custom cluster discovery
+
+If either existing
+[cluster locators](https://backstage.io/docs/features/kubernetes/configuration#clusterlocatormethods)
+don't work for your use-case, it is possible to implement a custom
+[KubernetesClustersSupplier](https://backstage.io/docs/reference/plugin-kubernetes-backend.kubernetesclusterssupplier).
+
+Change the following in `packages/backend/src/plugin/kubernetes.ts`:
+
+```diff
+-import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
++import {
++  ClusterDetails,
++  KubernetesBuilder,
++  KubernetesClustersSupplier,
++} from '@backstage/plugin-kubernetes-backend';
+ import { Router } from 'express';
+ import { PluginEnvironment } from '../types';
++import { Duration } from 'luxon';
++
++export class CustomClustersSupplier implements KubernetesClustersSupplier {
++  constructor(private clusterDetails: ClusterDetails[] = []) {}
++
++  static create(refreshInterval: Duration) {
++    const clusterSupplier = new CustomClustersSupplier();
++    // setup refresh, e.g. using a copy of https://github.com/backstage/backstage/blob/master/plugins/search-backend-node/src/runPeriodically.ts
++    runPeriodically(
++      () => clusterSupplier.refreshClusters(),
++      refreshInterval.toMillis(),
++    );
++    return clusterSupplier;
++  }
++
++  async refreshClusters(): Promise<void> {
++    this.clusterDetails = []; // fetch from somewhere
++  }
++
++  async getClusters(): Promise<ClusterDetails[]> {
++    return this.clusterDetails;
++  }
++}
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+-  const { router } = await KubernetesBuilder.createBuilder({
++  const builder = await KubernetesBuilder.createBuilder({
+     logger: env.logger,
+     config: env.config,
+-  }).build();
++  });
++  builder.setClusterSupplier(
++    CustomClustersSupplier.create(Duration.fromObject({ minutes: 60 })),
++  );
++  const { router } = await builder.build();
+```
 
 ## Running Backstage locally
 

@@ -1,5 +1,186 @@
 # @backstage/plugin-search
 
+## 0.8.0
+
+### Minor Changes
+
+- 520e21aaea: The following exports has now been fully deleted from this package and can be import from `@backstage/plugin-search-react` instead.
+
+  `SearchApi` interface.
+  `searchApiRef`
+  `SearchContextProvider`
+  `useSearch`
+
+  `SearchContext` has now been fully deleted from this package and is no longer exported publicly. Use `SearchContextProvider` when access to the context is needed.
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 5c062f275e: Support customizing the content of the `SidebarSearchModal`
+- 38e01f2f70: Switch to `SearchDocument` type in `DefaultResultListItem` props
+- 230ad0826f: Bump to using `@types/node` v16
+- ab230a433f: The following exports has been moved to `@backstage/plugin-search-react` and will be removed in the next release. import from `@backstage/plugin-search-react` instead.
+
+  - `SearchApi` interface.
+  - `searchApiRef`
+  - `SearchContext`
+  - `SearchContextProvider`
+  - `useSearch`
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/plugin-search-react@0.1.0
+  - @backstage/plugin-search-common@0.3.3
+
+## 0.7.5-next.1
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 5c062f275e: Support customizing the content of the `SidebarSearchModal`
+- 230ad0826f: Bump to using `@types/node` v16
+- ab230a433f: The following exports has been moved to `@backstage/plugin-search-react` and will be removed in the next release. import from `@backstage/plugin-search-react` instead.
+
+  - `SearchApi` interface.
+  - `searchApiRef`
+  - `SearchContext`
+  - `SearchContextProvider`
+  - `useSearch`
+
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.3
+  - @backstage/plugin-search-react@0.1.0-next.0
+
+## 0.7.5-next.0
+
+### Patch Changes
+
+- 38e01f2f70: Switch to `SearchDocument` type in `DefaultResultListItem` props
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-search-common@0.3.3-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+
+## 0.7.4
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-search-common@0.3.2
+
+## 0.7.3
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-search-common@0.3.1
+
+## 0.7.3-next.0
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0-next.0
+  - @backstage/core-components@0.9.1-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/plugin-search-common@0.3.1-next.0
+
+## 0.7.2
+
+### Patch Changes
+
+- 64b430f80d: chore(deps): bump `react-text-truncate` from 0.17.0 to 0.18.0
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/search-common@0.3.0
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.7.0
+
+### Minor Changes
+
+- f986369b2a: **BREAKING**: `useSearch` doesn't return anymore `open` and `toggleModal`.
+  The two properties have been moved to the `useSearchModal` hook.
+
+  ```
+  import { SearchModal, useSearchModal } from '@backstage/plugin-search';
+
+  const Foo = () => {
+    const { state, setOpen, toggleModal } = useSearchModal();
+
+    return (
+      <SearchModal {...state} toggleModal={toggleModal} />
+    );
+  };
+  ```
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/theme@0.2.15
+  - @backstage/types@0.1.2
+
+## 0.6.2
+
+### Patch Changes
+
+- faf49ba82f: Modify modal search to clamp result length to 5 rows.
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- faf49ba82f: Modify modal search to clamp result length to 5 rows.
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
 ## 0.6.1
 
 ### Patch Changes

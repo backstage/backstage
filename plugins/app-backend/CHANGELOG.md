@@ -1,5 +1,120 @@
 # @backstage/plugin-app-backend
 
+## 0.3.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.1.0
+  - @backstage/backend-common@0.13.2
+
+## 0.3.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/config-loader@1.1.0-next.1
+
+## 0.3.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.0.1-next.0
+  - @backstage/backend-common@0.13.2-next.0
+
+## 0.3.30
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- Updated dependencies
+  - @backstage/config-loader@1.0.0
+  - @backstage/backend-common@0.13.1
+  - @backstage/config@1.0.0
+  - @backstage/types@1.0.0
+
+## 0.3.29
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/config-loader@0.9.7
+
+## 0.3.29-next.0
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/config-loader@0.9.7-next.0
+
+## 0.3.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+
+## 0.3.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/config-loader@0.9.6
+
+## 0.3.26
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/config-loader@0.9.5
+  - @backstage/types@0.1.3
+
+## 0.3.25
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/config-loader@0.9.4
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.3.24
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.3.24-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.3.23
 
 ### Patch Changes

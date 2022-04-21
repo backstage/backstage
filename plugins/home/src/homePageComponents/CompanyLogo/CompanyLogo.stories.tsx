@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateBackstageLogo } from '../../templates';
+import { TemplateBackstageLogo } from '../../assets';
 import { HomePageCompanyLogo } from '../../plugin';
 import { rootRouteRef } from '../../routes';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';

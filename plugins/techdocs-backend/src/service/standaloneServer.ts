@@ -28,7 +28,7 @@ import {
   Preparers,
   Publisher,
   TechdocsGenerator,
-} from '@backstage/techdocs-common';
+} from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -60,11 +60,10 @@ export async function startStandaloneServer(
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
-  const directoryPreparer = new DirectoryPreparer(
-    config,
+  const directoryPreparer = DirectoryPreparer.fromConfig(config, {
     logger,
-    mockUrlReader,
-  );
+    reader: mockUrlReader,
+  });
   preparers.register('dir', directoryPreparer);
 
   const dockerClient = new Docker();

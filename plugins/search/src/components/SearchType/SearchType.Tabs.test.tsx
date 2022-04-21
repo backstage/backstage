@@ -15,51 +15,49 @@
  */
 
 import React from 'react';
-import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import user from '@testing-library/user-event';
-
-import { searchApiRef } from '../../apis';
-import { SearchContext, SearchContextProvider } from '../SearchContext';
+import {
+  SearchContextProvider,
+  searchApiRef,
+} from '@backstage/plugin-search-react';
 import { SearchType } from './SearchType';
 
-describe('SearchType.Tabs', () => {
-  const query = jest.fn();
-  const mockApis = TestApiRegistry.from([searchApiRef, { query }]);
+const setTypesMock = jest.fn();
+const setPageCursorMock = jest.fn();
 
-  const contextSpy = {
-    result: { loading: false, value: { results: [] } },
-    term: '',
+jest.mock('@backstage/plugin-search-react', () => ({
+  ...jest.requireActual('@backstage/plugin-search-react'),
+  useSearch: jest.fn().mockReturnValue({
     types: [],
-    filters: {},
-    toggleModal: jest.fn(),
-    setTerm: jest.fn(),
-    setTypes: jest.fn(),
-    setFilters: jest.fn(),
-    setPageCursor: jest.fn(),
-  };
+    setTypes: (types: any) => setTypesMock(types),
+    pageCursor: '',
+    setPageCursor: (pageCursor: any) => setPageCursorMock(pageCursor),
+  }),
+}));
+
+describe('SearchType.Tabs', () => {
+  const query = jest.fn().mockResolvedValue({});
 
   const expectedType = {
     value: 'expected-type',
     name: 'Expected Type',
   };
 
-  beforeEach(() => {
-    query.mockResolvedValue({ results: [] });
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchContextProvider>{children}</SearchContextProvider>
+      </TestApiProvider>
+    );
+  };
 
   it('should render as expected', async () => {
     const { getByText } = render(
-      <ApiProvider apis={mockApis}>
-        <SearchContextProvider>
-          <SearchType.Tabs types={[expectedType]} />
-        </SearchContextProvider>
-      </ApiProvider>,
+      <Wrapper>
+        <SearchType.Tabs types={[expectedType]} />
+      </Wrapper>,
     );
 
     // The default "all" type should be rendered.
@@ -71,42 +69,42 @@ describe('SearchType.Tabs', () => {
     await act(() => Promise.resolve());
   });
 
-  it('should set entire types array when a type is selected', () => {
+  it('should set entire types array when a type is selected', async () => {
     const { getByText } = render(
-      <SearchContext.Provider value={contextSpy}>
+      <Wrapper>
         <SearchType.Tabs types={[expectedType]} />
-      </SearchContext.Provider>,
+      </Wrapper>,
     );
 
-    user.click(getByText(expectedType.name));
+    await user.click(getByText(expectedType.name));
 
-    expect(contextSpy.setTypes).toHaveBeenCalledWith([expectedType.value]);
+    expect(setTypesMock).toHaveBeenCalledWith([expectedType.value]);
   });
 
-  it('should reset types array when all is selected', () => {
+  it('should reset types array when all is selected', async () => {
     const { getByText } = render(
-      <SearchContext.Provider value={contextSpy}>
+      <Wrapper>
         <SearchType.Tabs
           defaultValue={expectedType.value}
           types={[expectedType]}
         />
-      </SearchContext.Provider>,
+      </Wrapper>,
     );
 
-    user.click(getByText('All'));
+    await user.click(getByText('All'));
 
-    expect(contextSpy.setTypes).toHaveBeenCalledWith([]);
+    expect(setTypesMock).toHaveBeenCalledWith([]);
   });
 
-  it('should reset page cursor when a new type is selected', () => {
+  it('should reset page cursor when a new type is selected', async () => {
     const { getByText } = render(
-      <SearchContext.Provider value={contextSpy}>
+      <Wrapper>
         <SearchType.Tabs types={[expectedType]} />
-      </SearchContext.Provider>,
+      </Wrapper>,
     );
 
-    user.click(getByText(expectedType.name));
+    await user.click(getByText(expectedType.name));
 
-    expect(contextSpy.setPageCursor).toHaveBeenCalledWith(undefined);
+    expect(setPageCursorMock).toHaveBeenCalledWith(undefined);
   });
 });

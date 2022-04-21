@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
+import {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+} from '@backstage/plugin-techdocs-react';
 
-export type TechDocsMetadata = {
-  site_name: string;
-  site_description: string;
-};
-
-export type TechDocsEntityMetadata = Entity & {
-  locationMetadata?: LocationSpec;
-};
+/**
+ * Helper function that gives the children of {@link TechDocsReaderPage} access to techdocs and entity metadata
+ *
+ * @public
+ */
+export type TechDocsReaderPageRenderFunction = ({
+  techdocsMetadataValue,
+  entityMetadataValue,
+  entityRef,
+}: {
+  techdocsMetadataValue?: TechDocsMetadata | undefined;
+  entityMetadataValue?: TechDocsEntityMetadata | undefined;
+  entityRef: CompoundEntityRef;
+  /**
+   * @deprecated You can continue pass this property, but directly to the `TechDocsReaderPageContent` component.
+   */
+  onReady?: () => void;
+}) => JSX.Element;

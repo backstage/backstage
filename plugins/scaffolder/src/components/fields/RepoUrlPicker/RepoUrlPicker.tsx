@@ -30,6 +30,12 @@ import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '../../secrets';
 
+/**
+ * The input props that can be specified under `ui:options` for the
+ * `RepoUrlPicker` field extension.
+ *
+ * @public
+ */
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   allowedOwners?: string[];
@@ -44,6 +50,12 @@ export interface RepoUrlPickerUiOptions {
   };
 }
 
+/**
+ * The underlying component that is rendered in the form for the `RepoUrlPicker`
+ * field extension.
+ *
+ * @public
+ */
 export const RepoUrlPicker = (
   props: FieldExtensionComponentProps<string, RepoUrlPickerUiOptions>,
 ) => {
@@ -53,7 +65,7 @@ export const RepoUrlPicker = (
   );
   const integrationApi = useApi(scmIntegrationsApiRef);
   const scmAuthApi = useApi(scmAuthApiRef);
-  const { setSecret } = useTemplateSecrets();
+  const { setSecrets } = useTemplateSecrets();
   const allowedHosts = useMemo(
     () => uiSchema?.['ui:options']?.allowedHosts ?? [],
     [uiSchema],
@@ -111,7 +123,7 @@ export const RepoUrlPicker = (
 
       // set the secret using the key provided in the the ui:options for use
       // in the templating the manifest with ${{ secrets[secretsKey] }}
-      setSecret({ [requestUserCredentials.secretsKey]: token });
+      setSecrets({ [requestUserCredentials.secretsKey]: token });
     },
     500,
     [state, uiSchema],

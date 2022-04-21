@@ -1,5 +1,98 @@
 # @backstage/plugin-graphql-backend
 
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-catalog-graphql@0.3.8
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/plugin-catalog-graphql@0.3.8-next.0
+
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/plugin-catalog-graphql@0.3.7
+  - @backstage/config@1.0.0
+
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/plugin-catalog-graphql@0.3.6
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/plugin-catalog-graphql@0.3.6-next.0
+
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-catalog-graphql@0.3.5
+
+## 0.1.17
+
+### Patch Changes
+
+- 68913af4ff: chore(deps): bump `graphql-modules` from 1.4.4 to 2.0.0
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-catalog-graphql@0.3.4
+
+## 0.1.16
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/plugin-catalog-graphql@0.3.3
+
+## 0.1.15
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/plugin-catalog-graphql@0.3.2
+  - @backstage/config@0.1.14
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.1.13
 
 ### Patch Changes

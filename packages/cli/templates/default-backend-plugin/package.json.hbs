@@ -15,14 +15,17 @@
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
+  "backstage": {
+    "role": "backend-plugin"
+  },
   "scripts": {
-    "start": "backstage-cli backend:dev",
-    "build": "backstage-cli backend:build",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "prepack": "backstage-cli prepack",
-    "postpack": "backstage-cli postpack",
-    "clean": "backstage-cli clean"
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
     "@backstage/backend-common": "{{versionQuery '@backstage/backend-common'}}",
@@ -31,7 +34,7 @@
     "express": "{{versionQuery 'express' '4.17.1'}}",
     "express-promise-router": "{{versionQuery 'express-promise-router' '4.1.0'}}",
     "winston": "{{versionQuery 'winston' '3.2.1'}}",
-    "cross-fetch": "{{versionQuery 'cross-fetch' '3.0.6'}}",
+    "node-fetch": "{{versionQuery 'node-fetch' '2.6.7'}}",
     "yn": "{{versionQuery 'yn' '4.0.0'}}"
   },
   "devDependencies": {

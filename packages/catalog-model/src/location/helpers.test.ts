@@ -16,47 +16,47 @@
 
 import {
   getEntitySourceLocation,
-  parseLocationReference,
-  stringifyLocationReference,
+  parseLocationRef,
+  stringifyLocationRef,
 } from './helpers';
 
-describe('parseLocationReference', () => {
+describe('parseLocationRef', () => {
   it('works for the simple case', () => {
-    expect(parseLocationReference('url:https://www.google.com')).toEqual({
+    expect(parseLocationRef('url:https://www.google.com')).toEqual({
       type: 'url',
       target: 'https://www.google.com',
     });
   });
 
   it('rejects faulty inputs', () => {
-    expect(() => parseLocationReference(7 as any)).toThrow(
-      "Unable to parse location reference '7', unexpected argument number",
+    expect(() => parseLocationRef(7 as any)).toThrow(
+      "Unable to parse location ref '7', unexpected argument number",
     );
-    expect(() => parseLocationReference('')).toThrow(
-      "Unable to parse location reference '', expected '<type>:<target>', e.g. 'url:https://host/path'",
+    expect(() => parseLocationRef('')).toThrow(
+      "Unable to parse location ref '', expected '<type>:<target>', e.g. 'url:https://host/path'",
     );
-    expect(() => parseLocationReference('hello')).toThrow(
-      "Unable to parse location reference 'hello', expected '<type>:<target>', e.g. 'url:https://host/path'",
+    expect(() => parseLocationRef('hello')).toThrow(
+      "Unable to parse location ref 'hello', expected '<type>:<target>', e.g. 'url:https://host/path'",
     );
-    expect(() => parseLocationReference(':hello')).toThrow(
-      "Unable to parse location reference ':hello', expected '<type>:<target>', e.g. 'url:https://host/path'",
+    expect(() => parseLocationRef(':hello')).toThrow(
+      "Unable to parse location ref ':hello', expected '<type>:<target>', e.g. 'url:https://host/path'",
     );
-    expect(() => parseLocationReference('hello:')).toThrow(
-      "Unable to parse location reference 'hello:', expected '<type>:<target>', e.g. 'url:https://host/path'",
+    expect(() => parseLocationRef('hello:')).toThrow(
+      "Unable to parse location ref 'hello:', expected '<type>:<target>', e.g. 'url:https://host/path'",
     );
-    expect(() => parseLocationReference('http://blah')).toThrow(
-      "Invalid location reference 'http://blah', please prefix it with 'url:', e.g. 'url:http://blah'",
+    expect(() => parseLocationRef('http://blah')).toThrow(
+      "Invalid location ref 'http://blah', please prefix it with 'url:', e.g. 'url:http://blah'",
     );
-    expect(() => parseLocationReference('https://bleh')).toThrow(
-      "Invalid location reference 'https://bleh', please prefix it with 'url:', e.g. 'url:https://bleh'",
+    expect(() => parseLocationRef('https://bleh')).toThrow(
+      "Invalid location ref 'https://bleh', please prefix it with 'url:', e.g. 'url:https://bleh'",
     );
   });
 });
 
-describe('stringifyLocationReference', () => {
+describe('stringifyLocationRef', () => {
   it('works for the simple case', () => {
     expect(
-      stringifyLocationReference({
+      stringifyLocationRef({
         type: 'url',
         target: 'https://www.google.com',
       }),
@@ -64,12 +64,12 @@ describe('stringifyLocationReference', () => {
   });
 
   it('rejects faulty inputs', () => {
-    expect(() =>
-      stringifyLocationReference({ type: '', target: 'hello' }),
-    ).toThrow('Unable to stringify location reference, empty type');
-    expect(() =>
-      stringifyLocationReference({ type: 'hello', target: '' }),
-    ).toThrow('Unable to stringify location reference, empty target');
+    expect(() => stringifyLocationRef({ type: '', target: 'hello' })).toThrow(
+      'Unable to stringify location ref, empty type',
+    );
+    expect(() => stringifyLocationRef({ type: 'hello', target: '' })).toThrow(
+      'Unable to stringify location ref, empty target',
+    );
   });
 });
 

@@ -22,6 +22,7 @@ import {
   KubernetesObjectsProviderOptions,
   KubernetesServiceLocator,
   ObjectsByEntityRequest,
+  FetchResponseWrapper,
   ObjectToFetch,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
@@ -146,6 +147,8 @@ const toClientSafePodMetrics = (
   });
 };
 
+type responseWithMetrics = [FetchResponseWrapper, PodStatus[][]];
+
 export class KubernetesFanOutHandler {
   private readonly logger: Logger;
   private readonly fetcher: KubernetesFetcher;
@@ -204,6 +207,11 @@ export class KubernetesFanOutHandler {
         'backstage.io/kubernetes-label-selector'
       ] || `backstage.io/kubernetes-id=${entityName}`;
 
+    const namespace =
+      requestBody.entity?.metadata?.annotations?.[
+        'backstage.io/kubernetes-namespace'
+      ];
+
     return Promise.all(
       clusterDetailsDecoratedForAuth.map(clusterDetailsItem => {
         return this.fetcher
@@ -213,62 +221,71 @@ export class KubernetesFanOutHandler {
             objectTypesToFetch: this.objectTypesToFetch,
             labelSelector,
             customResources: this.customResources,
+            namespace,
           })
-          .then(result => {
-            if (clusterDetailsItem.skipMetricsLookup) {
-              return Promise.all([
-                Promise.resolve(result),
-                Promise.resolve([]),
-              ]);
-            }
-            // TODO refactor, extract as method
-            const namespaces: Set<string> = new Set<string>(
-              result.responses
-                .filter(isPodFetchResponse)
-                .flatMap(r => r.resources)
-                .map(p => p.metadata?.namespace)
-                .filter(isString),
-            );
-
-            const podMetrics = Array.from(namespaces).map(ns =>
-              this.fetcher.fetchPodMetricsByNamespace(clusterDetailsItem, ns),
-            );
-
-            return Promise.all([
-              Promise.resolve(result),
-              Promise.all(podMetrics),
-            ]);
-          })
-          .then(([result, metrics]) => {
-            const objects: ClusterObjects = {
-              cluster: {
-                name: clusterDetailsItem.name,
-              },
-              podMetrics: toClientSafePodMetrics(metrics),
-              resources: result.responses,
-              errors: result.errors,
-            };
-            if (clusterDetailsItem.dashboardUrl) {
-              objects.cluster.dashboardUrl = clusterDetailsItem.dashboardUrl;
-            }
-            if (clusterDetailsItem.dashboardApp) {
-              objects.cluster.dashboardApp = clusterDetailsItem.dashboardApp;
-            }
-            if (clusterDetailsItem.dashboardParameters) {
-              objects.cluster.dashboardParameters =
-                clusterDetailsItem.dashboardParameters;
-            }
-            return objects;
-          });
+          .then(result => this.getMetricsForPods(clusterDetailsItem, result))
+          .then(r => this.toClusterObjects(clusterDetailsItem, r));
       }),
-    ).then(r => ({
-      items: r.filter(
+    ).then(this.toObjectsByEntityResponse);
+  }
+
+  toObjectsByEntityResponse(
+    clusterObjects: ClusterObjects[],
+  ): ObjectsByEntityResponse {
+    return {
+      items: clusterObjects.filter(
         item =>
           (item.errors !== undefined && item.errors.length >= 1) ||
           (item.resources !== undefined &&
             item.resources.length >= 1 &&
             item.resources.some(fr => fr.resources.length >= 1)),
       ),
-    }));
+    };
+  }
+
+  toClusterObjects(
+    clusterDetails: ClusterDetails,
+    [result, metrics]: responseWithMetrics,
+  ): ClusterObjects {
+    const objects: ClusterObjects = {
+      cluster: {
+        name: clusterDetails.name,
+      },
+      podMetrics: toClientSafePodMetrics(metrics),
+      resources: result.responses,
+      errors: result.errors,
+    };
+    if (clusterDetails.dashboardUrl) {
+      objects.cluster.dashboardUrl = clusterDetails.dashboardUrl;
+    }
+    if (clusterDetails.dashboardApp) {
+      objects.cluster.dashboardApp = clusterDetails.dashboardApp;
+    }
+    if (clusterDetails.dashboardParameters) {
+      objects.cluster.dashboardParameters = clusterDetails.dashboardParameters;
+    }
+    return objects;
+  }
+
+  async getMetricsForPods(
+    clusterDetails: ClusterDetails,
+    result: FetchResponseWrapper,
+  ): Promise<responseWithMetrics> {
+    if (clusterDetails.skipMetricsLookup) {
+      return [result, []];
+    }
+    const namespaces: Set<string> = new Set<string>(
+      result.responses
+        .filter(isPodFetchResponse)
+        .flatMap(r => r.resources)
+        .map(p => p.metadata?.namespace)
+        .filter(isString),
+    );
+
+    const podMetrics = Array.from(namespaces).map(ns =>
+      this.fetcher.fetchPodMetricsByNamespace(clusterDetails, ns),
+    );
+
+    return Promise.all([result, Promise.all(podMetrics)]);
   }
 }

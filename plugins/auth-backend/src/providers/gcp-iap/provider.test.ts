@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
+import { AuthResolverContext } from '../types';
 import { GcpIapProvider } from './provider';
 
 beforeEach(() => {
@@ -27,16 +27,13 @@ describe('GcpIapProvider', () => {
   const authHandler = jest.fn();
   const signInResolver = jest.fn();
   const tokenValidator = jest.fn();
-  const logger = getVoidLogger();
 
   it('runs the happy path', async () => {
     const provider = new GcpIapProvider({
       authHandler,
       signInResolver,
       tokenValidator,
-      tokenIssuer: {} as any,
-      catalogIdentityClient: {} as any,
-      logger,
+      resolverContext: {} as AuthResolverContext,
     });
 
     // { "sub": "user:default/me", "ent": ["group:default/home"] }
@@ -45,7 +42,7 @@ describe('GcpIapProvider', () => {
     const iapToken = { sub: 's', email: 'e@mail.com' };
 
     authHandler.mockResolvedValueOnce({ email: 'e@mail.com' });
-    signInResolver.mockResolvedValueOnce({ id: 'i', token: backstageToken });
+    signInResolver.mockResolvedValueOnce({ token: backstageToken });
     tokenValidator.mockResolvedValueOnce(iapToken);
 
     const app = express();
@@ -61,8 +58,6 @@ describe('GcpIapProvider', () => {
     );
     expect(response.body).toEqual({
       backstageIdentity: {
-        id: 'i',
-        idToken: backstageToken,
         token: backstageToken,
         identity: {
           type: 'user',

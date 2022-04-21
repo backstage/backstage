@@ -143,24 +143,35 @@ ApiReportGenerator.generateReviewFileContent =
             );
           }
 
-          // NOTE: we limit the @internal functionality to only apply to types that are declared
-          //       in the same module as where they're being referenced from. This limitation makes
-          //       the implementation here simpler but could be revisited if needed.
-
           // The local name of the symbol within the file, rather than the exported name
           const localName = (sourceFile as any).identifiers?.get(symbolName);
           if (!localName) {
-            return true;
+            throw new Error(
+              `Unable to find local name of "${symbolName}" in ${sourceFile.fileName}`,
+            );
           }
+
           // The local AST node of the export that we're missing
           const local = (sourceFile as any).locals?.get(localName);
           if (!local) {
             return true;
           }
 
+          // Use the type checker to look up the actual declaration(s) rather than the one in the local file
+          const type = program.getTypeChecker().getDeclaredTypeOfSymbol(local);
+          if (!type) {
+            throw new Error(
+              `Unable to find type declaration of "${symbolName}" in ${sourceFile.fileName}`,
+            );
+          }
+          const declarations = type.aliasSymbol?.declarations;
+          if (!declarations || declarations.length === 0) {
+            return true;
+          }
+
           // If any of the TSDoc comments contain a @ignore tag, we ignore this message
-          const isIgnored = local.declarations.some(declaration => {
-            const tags = [declaration.jsDoc]
+          const isIgnored = declarations.some(declaration => {
+            const tags = [(declaration as any).jsDoc]
               .flat()
               .filter(Boolean)
               .flatMap((tagNode: any) => tagNode.tags);
@@ -213,14 +224,29 @@ const NO_WARNING_PACKAGES = [
   'packages/errors',
   'packages/integration',
   'packages/integration-react',
+  'packages/search-common',
+  'packages/techdocs-common',
   'packages/test-utils',
   'packages/theme',
   'packages/types',
+  'packages/release-manifests',
   'packages/version-bridge',
+  'plugins/auth-node',
+  'plugins/catalog-backend',
+  'plugins/catalog-backend-module-aws',
+  'plugins/catalog-backend-module-azure',
+  'plugins/catalog-backend-module-bitbucket',
+  'plugins/catalog-backend-module-github',
+  'plugins/catalog-backend-module-gitlab',
   'plugins/catalog-backend-module-ldap',
   'plugins/catalog-backend-module-msgraph',
   'plugins/catalog-common',
   'plugins/catalog-graph',
+  'plugins/catalog-react',
+  'plugins/graphiql',
+  'plugins/org',
+  'plugins/periskop',
+  'plugins/periskop-backend',
   'plugins/permission-backend',
   'plugins/permission-common',
   'plugins/permission-node',
@@ -229,6 +255,13 @@ const NO_WARNING_PACKAGES = [
   'plugins/scaffolder-backend-module-rails',
   'plugins/scaffolder-backend-module-yeoman',
   'plugins/scaffolder-common',
+  'plugins/search-backend-node',
+  'plugins/search-common',
+  'plugins/search-react',
+  'plugins/techdocs',
+  'plugins/techdocs-backend',
+  'plugins/techdocs-node',
+  'plugins/techdocs-react',
   'plugins/tech-insights',
   'plugins/tech-insights-backend',
   'plugins/tech-insights-backend-module-jsonfc',
@@ -313,7 +346,6 @@ async function createTemporaryTsConfig(includedPackageDirs: string[]) {
     include: [
       // These two contain global definitions that are needed for stable API report generation
       'packages/cli/asset-types/asset-types.d.ts',
-      'node_modules/handlebars/types/index.d.ts',
       ...includedPackageDirs.map(dir => join(dir, 'src')),
     ],
   });
@@ -571,9 +603,219 @@ async function runApiExtraction({
 WARNING: Bring a blanket if you're gonna read the code below
 
 There's some weird shit going on here, and it's because we cba
-forking rushstash to modify the api-documenter markdown generation,
+forking rushstack to modify the api-documenter markdown generation,
 which otherwise is the recommended way to do customizations.
 */
+
+type ExcerptToken = {
+  kind: string;
+  text: string;
+  canonicalReference?: string;
+};
+
+class ExcerptTokenMatcher {
+  readonly #tokens: ExcerptToken[];
+
+  constructor(tokens: ExcerptToken[]) {
+    this.#tokens = tokens.slice();
+  }
+
+  nextContent() {
+    const token = this.#tokens.shift();
+    if (token?.kind === 'Content') {
+      return token.text;
+    }
+    return undefined;
+  }
+
+  matchContent(expectedText: string) {
+    const text = this.nextContent();
+    return text !== expectedText;
+  }
+
+  getTokensUntilArrow() {
+    const tokens = [];
+    for (;;) {
+      const token = this.#tokens.shift();
+      if (token === undefined) {
+        return undefined;
+      }
+      if (token.kind === 'Content' && token.text === ') => ') {
+        return tokens;
+      }
+      tokens.push(token);
+    }
+  }
+
+  getComponentReturnTokens() {
+    const first = this.#tokens.shift();
+    if (!first) {
+      return undefined;
+    }
+    const second = this.#tokens.shift();
+
+    if (this.#tokens.length !== 0) {
+      return undefined;
+    }
+    if (first.kind !== 'Reference' || first.text !== 'JSX.Element') {
+      return undefined;
+    }
+    if (!second) {
+      return [first];
+    } else if (second.kind === 'Content' && second.text === ' | null') {
+      return [first, second];
+    }
+    return undefined;
+  }
+}
+
+class ApiModelTransforms {
+  static deserializeWithTransforms(
+    serialized: any,
+    transforms: Array<(member: any) => any>,
+  ): ApiPackage {
+    if (serialized.kind !== 'Package') {
+      throw new Error(
+        `Unexpected root kind in serialized ApiPackage, ${serialized.kind}`,
+      );
+    }
+    if (serialized.members.length !== 1) {
+      throw new Error(
+        `Unexpected members in serialized ApiPackage, [${serialized.members
+          .map(m => m.kind)
+          .join(' ')}]`,
+      );
+    }
+    const [entryPoint] = serialized.members;
+    if (entryPoint.kind !== 'EntryPoint') {
+      throw new Error(
+        `Unexpected kind in serialized ApiPackage member, ${entryPoint.kind}`,
+      );
+    }
+
+    const transformed = {
+      ...serialized,
+      members: [
+        {
+          ...entryPoint,
+          members: entryPoint.members.map(member =>
+            transforms.reduce((m, t) => t(m), member),
+          ),
+        },
+      ],
+    };
+
+    return ApiPackage.deserialize(
+      transformed,
+      transformed.metadata,
+    ) as ApiPackage;
+  }
+
+  static transformArrowComponents = (member: any) => {
+    if (member.kind !== 'Variable') {
+      return member;
+    }
+
+    const { name, excerptTokens } = member;
+
+    // First letter in name must be uppercase
+    const [firstChar] = name;
+    if (firstChar.toLocaleUpperCase('en-US') !== firstChar) {
+      return member;
+    }
+
+    // First content must match expected declaration format
+    const tokens = new ExcerptTokenMatcher(excerptTokens);
+    if (tokens.nextContent() !== `${name}: `) {
+      return member;
+    }
+
+    // Next needs to be an arrow with `props` parameters or no parameters
+    // followed by a return type of `JSX.Element | null` or just `JSX.Element`
+    const declStart = tokens.nextContent();
+    if (declStart === '(props: ' || declStart === '(_props: ') {
+      const props = tokens.getTokensUntilArrow();
+      const ret = tokens.getComponentReturnTokens();
+      if (props && ret) {
+        return this.makeComponentMember(member, ret, props);
+      }
+    } else if (declStart === '() => ') {
+      const ret = tokens.getComponentReturnTokens();
+      if (ret) {
+        return this.makeComponentMember(member, ret);
+      }
+    }
+    return member;
+  };
+
+  static makeComponentMember(
+    member: any,
+    ret: ExcerptToken[],
+    props?: ExcerptToken[],
+  ) {
+    const declTokens = props
+      ? [
+          {
+            kind: 'Content',
+            text: `export declare function ${member.name}(props: `,
+          },
+          ...props,
+          {
+            kind: 'Content',
+            text: '): ',
+          },
+        ]
+      : [
+          {
+            kind: 'Content',
+            text: `export declare function ${member.name}(): `,
+          },
+        ];
+
+    return {
+      kind: 'Function',
+      name: member.name,
+      releaseTag: member.releaseTag,
+      docComment: member.docComment ?? '',
+      canonicalReference: member.canonicalReference,
+      excerptTokens: [...declTokens, ...ret],
+      returnTypeTokenRange: {
+        startIndex: declTokens.length,
+        endIndex: declTokens.length + ret.length,
+      },
+      parameters: props
+        ? [
+            {
+              parameterName: 'props',
+              parameterTypeTokenRange: {
+                startIndex: 1,
+                endIndex: 1 + props.length,
+              },
+            },
+          ]
+        : [],
+      overloadIndex: 1,
+    };
+  }
+
+  static transformTrimDeclare = (member: any) => {
+    const { excerptTokens } = member;
+    const firstContent = new ExcerptTokenMatcher(excerptTokens).nextContent();
+    if (firstContent && firstContent.startsWith('export declare ')) {
+      return {
+        ...member,
+        excerptTokens: [
+          {
+            kind: 'Content',
+            text: firstContent.slice('export declare '.length),
+          },
+          ...excerptTokens.slice(1),
+        ],
+      };
+    }
+    return member;
+  };
+}
 
 async function buildDocs({
   inputDir,
@@ -598,13 +840,12 @@ async function buildDocs({
 
   const newModel = new ApiModel();
   for (const serialized of serializedPackages) {
-    // Add any docs filtering logic here
-
-    const pkg = ApiPackage.deserialize(
-      serialized,
-      serialized.metadata,
-    ) as ApiPackage;
-    newModel.addMember(pkg);
+    newModel.addMember(
+      ApiModelTransforms.deserializeWithTransforms(serialized, [
+        ApiModelTransforms.transformArrowComponents,
+        ApiModelTransforms.transformTrimDeclare,
+      ]),
+    );
   }
 
   // The doc AST need to be extended with custom nodes if we want to
@@ -820,9 +1061,9 @@ async function main() {
   const selectedPackageDirs = await findSpecificPackageDirs(
     process.argv.slice(2).filter(arg => !arg.startsWith('--')),
   );
-  if (selectedPackageDirs && (isCiBuild || isDocsBuild)) {
+  if (selectedPackageDirs && isCiBuild) {
     throw new Error(
-      'Package path arguments are not supported for the --ci and --docs flags',
+      'Package path arguments are not supported together with the --ci flag',
     );
   }
   if (!selectedPackageDirs && !isCiBuild && !isDocsBuild) {

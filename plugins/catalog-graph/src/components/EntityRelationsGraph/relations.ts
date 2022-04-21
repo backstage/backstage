@@ -38,7 +38,7 @@ import {
  */
 export type RelationPairs = [string, string][];
 
-// TODO: This file only contains the pairs for the build-in relations.
+// TODO: This file only contains the pairs for the built-in relations.
 //  How to implement this when custom relations are used? Right now you can pass
 //  the relations everywhere.
 //  Another option is to move this into @backstage/catalog-model

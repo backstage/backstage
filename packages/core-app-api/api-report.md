@@ -16,7 +16,6 @@ import { AppConfig } from '@backstage/config';
 import { AppTheme } from '@backstage/core-plugin-api';
 import { AppThemeApi } from '@backstage/core-plugin-api';
 import { atlassianAuthApiRef } from '@backstage/core-plugin-api';
-import { auth0AuthApiRef } from '@backstage/core-plugin-api';
 import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
@@ -246,12 +245,6 @@ export class AtlassianAuth {
   static create(options: OAuthApiCreateOptions): typeof atlassianAuthApiRef.T;
 }
 
-// @public @deprecated
-export class Auth0Auth {
-  // (undocumented)
-  static create(options: OAuthApiCreateOptions): typeof auth0AuthApiRef.T;
-}
-
 // @public
 export type AuthApiCreateOptions = {
   discoveryApi: DiscoveryApi;
@@ -383,20 +376,7 @@ export type FlatRoutesProps = {
 export class GithubAuth {
   // (undocumented)
   static create(options: OAuthApiCreateOptions): typeof githubAuthApiRef.T;
-  // @deprecated (undocumented)
-  static normalizeScope(scope?: string): Set<string>;
 }
-
-// @public @deprecated
-export type GithubSession = {
-  providerInfo: {
-    accessToken: string;
-    scopes: Set<string>;
-    expiresAt?: Date;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
-};
 
 // @public
 export class GitlabAuth {
@@ -538,13 +518,6 @@ export class SamlAuth
   // (undocumented)
   signOut(): Promise<void>;
 }
-
-// @public @deprecated
-export type SamlSession = {
-  userId: string;
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentityResponse;
-};
 
 // @public
 export type SignInPageProps = {

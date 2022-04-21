@@ -20,6 +20,10 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { createTemplateAction } from '../../createTemplateAction';
 
+/**
+ * Registers entities from a catalog descriptor file in the workspace into the software catalog.
+ * @public
+ */
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;

@@ -16,9 +16,9 @@
 
 import {
   Entity,
-  EntityName,
-  getEntityName,
-  ORIGIN_LOCATION_ANNOTATION,
+  CompoundEntityRef,
+  getCompoundEntityRef,
+  ANNOTATION_ORIGIN_LOCATION,
 } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
 import { useCallback } from 'react';
@@ -44,7 +44,7 @@ export type UseUnregisterEntityDialogState =
   | {
       type: 'unregister';
       location: string;
-      colocatedEntities: EntityName[];
+      colocatedEntities: CompoundEntityRef[];
       unregisterLocation: () => Promise<void>;
       deleteEntity: () => Promise<void>;
     }
@@ -60,20 +60,20 @@ export function useUnregisterEntityDialogState(
   entity: Entity,
 ): UseUnregisterEntityDialogState {
   const catalogApi = useApi(catalogApiRef);
-  const locationRef = entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+  const locationRef = entity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
   const uid = entity.metadata.uid;
   const isBootstrap = locationRef === 'bootstrap:bootstrap';
 
   // Load the prerequisite data: what entities that are colocated with us, and
   // what location that spawned us
   const prerequisites = useAsync(async () => {
-    const locationPromise = catalogApi.getOriginLocationByEntity(entity);
+    const locationPromise = catalogApi.getLocationByRef(locationRef!);
 
     let colocatedEntitiesPromise: Promise<Entity[]>;
     if (!locationRef) {
       colocatedEntitiesPromise = Promise.resolve([]);
     } else {
-      const locationAnnotationFilter = `metadata.annotations.${ORIGIN_LOCATION_ANNOTATION}`;
+      const locationAnnotationFilter = `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`;
       colocatedEntitiesPromise = catalogApi
         .getEntities({
           filter: { [locationAnnotationFilter]: locationRef },
@@ -95,18 +95,13 @@ export function useUnregisterEntityDialogState(
     );
   }, [catalogApi, entity]);
 
-  // Unregisters the underlying location and removes all of the entities that
-  // are spawned from it. Can only ever be called when the prerequisites have
-  // finished loading successfully, and if there was a matching location.
+  // Unregisters the underlying location which will remove all of the entities that are spawned from
+  // it. Can only ever be called when the prerequisites have finished loading successfully, and if
+  // there was a matching location.
   const unregisterLocation = useCallback(
     async function unregisterLocationFn() {
-      const { location, colocatedEntities } = prerequisites.value!;
+      const { location } = prerequisites.value!;
       await catalogApi.removeLocationById(location!.id);
-      await Promise.allSettled(
-        colocatedEntities.map(e =>
-          catalogApi.removeEntityByUid(e.metadata.uid!),
-        ),
-      );
     },
     [catalogApi, prerequisites],
   );
@@ -141,7 +136,7 @@ export function useUnregisterEntityDialogState(
   return {
     type: 'unregister',
     location: locationRef!,
-    colocatedEntities: colocatedEntities.map(getEntityName),
+    colocatedEntities: colocatedEntities.map(getCompoundEntityRef),
     unregisterLocation,
     deleteEntity,
   };

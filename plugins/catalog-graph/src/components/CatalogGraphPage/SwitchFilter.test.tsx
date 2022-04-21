@@ -28,7 +28,7 @@ describe('<SwitchFilter/>', () => {
     expect(getByLabelText('My label')).not.toBeChecked();
   });
 
-  test('should toggle value', () => {
+  test('should toggle value', async () => {
     const onChange = jest.fn();
     const { getByLabelText } = render(
       <SwitchFilter label="My label" value onChange={onChange} />,
@@ -37,7 +37,7 @@ describe('<SwitchFilter/>', () => {
     expect(getByLabelText('My label')).toBeInTheDocument();
     expect(getByLabelText('My label')).toBeChecked();
 
-    userEvent.click(getByLabelText('My label'));
+    await userEvent.click(getByLabelText('My label'));
 
     expect(onChange).toBeCalledWith(false);
   });

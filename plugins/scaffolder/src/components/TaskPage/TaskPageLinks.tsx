@@ -14,42 +14,26 @@
  * limitations under the License.
  */
 
-import { parseEntityName } from '@backstage/catalog-model';
+import { parseEntityRef } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
-import { TaskOutput } from '../../types';
+import { ScaffolderTaskOutput } from '../../types';
 import { IconLink } from './IconLink';
 import { IconComponent, useApp, useRouteRef } from '@backstage/core-plugin-api';
 
 type TaskPageLinksProps = {
-  output: TaskOutput;
+  output: ScaffolderTaskOutput;
 };
 
 export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
-  const { entityRef: entityRefOutput, remoteUrl } = output;
-  let { links = [] } = output;
+  const { links = [] } = output;
   const app = useApp();
   const entityRoute = useRouteRef(entityRouteRef);
 
   const iconResolver = (key?: string): IconComponent =>
     key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
-
-  if (remoteUrl) {
-    links = [{ url: remoteUrl, title: 'Repo' }, ...links];
-  }
-
-  if (entityRefOutput) {
-    links = [
-      {
-        entityRef: entityRefOutput,
-        title: 'Open in catalog',
-        icon: 'catalog',
-      },
-      ...links,
-    ];
-  }
 
   return (
     <Box px={3} pb={3}>
@@ -57,7 +41,7 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
         .filter(({ url, entityRef }) => url || entityRef)
         .map(({ url, entityRef, title, icon }) => {
           if (entityRef) {
-            const entityName = parseEntityName(entityRef);
+            const entityName = parseEntityRef(entityRef);
             const target = entityRoute(entityName);
             return { title, icon, url: target };
           }

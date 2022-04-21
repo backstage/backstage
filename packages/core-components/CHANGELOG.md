@@ -1,5 +1,129 @@
 # @backstage/core-components
 
+## 0.9.3
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 25b8e8d5b5: Add BackstageTab to overridableComponents so can override styles in a theme
+- 230ad0826f: Bump to using `@types/node` v16
+- 41fd107189: Exported `IdentityProviders` type.
+- a13604b8f7: Adding a name to the core-components Tab styles so can customise in the theme settings
+- 19648d5cf5: fix support config ref to use backstage/backstage
+- d505e43ffc: Fix highlighting of active sidebar items.
+- 72f3dfd05a: Updated ProxiedSignInPageProps docs
+- 7741e47eae: `<Sidebar />` now accepts additional props `sidebarOptions` and `submenuOptions` to allow further customization
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1
+
+## 0.9.3-next.2
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- 41fd107189: Exported `IdentityProviders` type.
+- d505e43ffc: Fix highlighting of active sidebar items.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1-next.0
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- 25b8e8d5b5: Add BackstageTab to overridableComponents so can override styles in a theme
+- a13604b8f7: Adding a name to the core-components Tab styles so can customise in the theme settings
+- 72f3dfd05a: Updated ProxiedSignInPageProps docs
+- 7741e47eae: `<Sidebar />` now accepts additional props `sidebarOptions` and `submenuOptions` to allow further customization
+
+## 0.9.3-next.0
+
+### Patch Changes
+
+- 19648d5cf5: fix support config ref to use backstage/backstage
+
+## 0.9.2
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- 7c8cde4aa1: Change header style `word-wrap` from `break-all` to `break-word`
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+
+## 0.9.1
+
+### Patch Changes
+
+- 23568dd328: chore(deps): bump `@react-hookz/web` from 12.3.0 to 13.0.0
+- 95667624c1: Add names to sidebar sub menu styles for customization
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- 23568dd328: chore(deps): bump `@react-hookz/web` from 12.3.0 to 13.0.0
+- 95667624c1: Add names to sidebar sub menu styles for customization
+
+## 0.9.0
+
+### Minor Changes
+
+- af5eaa87f4: **BREAKING**: Removed deprecated `auth0AuthApiRef`, `oauth2ApiRef`, `samlAuthApiRef` and `oidcAuthApiRef` as these APIs are too generic to be useful. Instructions for how to migrate can be found at [https://backstage.io/docs/api/deprecations#generic-auth-api-refs](https://backstage.io/docs/api/deprecations#generic-auth-api-refs).
+
+### Patch Changes
+
+- 64b430f80d: chore(deps): bump `react-text-truncate` from 0.17.0 to 0.18.0
+- bb2bb36651: Updated usage of `StorageApi` to use `snapshot` method instead of `get`
+- 689840dcbe: Added ability for SidebarSubmenuItem to handle external links correctly via the "to" prop
+- Updated dependencies
+  - @backstage/core-plugin-api@0.8.0
+
+## 0.8.10
+
+### Patch Changes
+
+- d91d22bb19: When clicking on a log line the URL will be updated from `/task/uid` to
+  `/task/uid/#line-1`. This URL are also sharable, meaning that the UI will
+  highlight the log line in the hash of the URL.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.8.9
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 126074a04b: Port supported react-use functions to react-hookz.
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/errors@0.2.1
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+
+## 0.8.8
+
+### Patch Changes
+
+- 8d785a0b1b: chore: bump `ansi-regex` from `5.0.1` to `6.0.1`
+- f2dfbd3fb0: Adjust ErrorPage to accept optional supportUrl property to override app support config. Update type of additionalInfo property to be ReactNode to accept both string and component.
+- 19155e0939: Updated React component type declarations to avoid exporting exotic component types.
+- 89c84b9108: chore: fixing typescript errors for `TabbedCard.tsx` for React 17.x
+- d62bdb7a8e: The `ErrorPage` now falls back to using the default support configuration if the `ConfigApi` is not available.
+
+## 0.8.8-next.0
+
+### Patch Changes
+
+- 8d785a0b1b: chore: bump `ansi-regex` from `5.0.1` to `6.0.1`
+- f2dfbd3fb0: Adjust ErrorPage to accept optional supportUrl property to override app support config. Update type of additionalInfo property to be ReactNode to accept both string and component.
+- d62bdb7a8e: The `ErrorPage` now falls back to using the default support configuration if the `ConfigApi` is not available.
+
 ## 0.8.7
 
 ### Patch Changes

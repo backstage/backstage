@@ -28,7 +28,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
-import { createRandomRefreshInterval } from '../processing/refresh';
+import { createRandomProcessingInterval } from '../processing/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 
@@ -49,7 +49,7 @@ describe('Default Processing Database', () => {
       db: new DefaultProcessingDatabase({
         database: knex,
         logger,
-        refreshInterval: createRandomRefreshInterval({
+        refreshInterval: createRandomProcessingInterval({
           minSeconds: 100,
           maxSeconds: 150,
         }),
@@ -221,7 +221,7 @@ describe('Default Processing Database', () => {
           },
         ];
 
-        await db.transaction(tx =>
+        let updateResult = await db.transaction(tx =>
           db.updateProcessedEntity(tx, {
             id,
             processedEntity,
@@ -231,7 +231,7 @@ describe('Default Processing Database', () => {
           }),
         );
 
-        const savedRelations = await knex<DbRelationsRow>('relations')
+        let savedRelations = await knex<DbRelationsRow>('relations')
           .where({ originating_entity_id: id })
           .select();
         expect(savedRelations.length).toBe(1);
@@ -241,6 +241,36 @@ describe('Default Processing Database', () => {
           type: 'memberOf',
           target_entity_ref: 'component:default/foo',
         });
+        expect(updateResult.previous.relations).toEqual([]);
+
+        updateResult = await db.transaction(tx =>
+          db.updateProcessedEntity(tx, {
+            id,
+            processedEntity,
+            resultHash: '',
+            relations: relations,
+            deferredEntities: [],
+          }),
+        );
+
+        savedRelations = await knex<DbRelationsRow>('relations')
+          .where({ originating_entity_id: id })
+          .select();
+        expect(savedRelations.length).toBe(1);
+        expect(savedRelations[0]).toEqual({
+          originating_entity_id: id,
+          source_entity_ref: 'component:default/foo',
+          type: 'memberOf',
+          target_entity_ref: 'component:default/foo',
+        });
+        expect(updateResult.previous.relations).toEqual([
+          {
+            originating_entity_id: expect.any(String),
+            source_entity_ref: 'component:default/foo',
+            type: 'memberOf',
+            target_entity_ref: 'component:default/foo',
+          },
+        ]);
       },
       60_000,
     );
@@ -832,7 +862,7 @@ describe('Default Processing Database', () => {
         /*
         config-1 -> location:default/root
         config-2 -> location:default/root
-      */
+        */
         await createLocations(knex, ['location:default/root']);
 
         await insertRefRow(knex, {
@@ -1086,6 +1116,61 @@ describe('Default Processing Database', () => {
               entity_ref: 'component:default/b',
               location_key: 'file:///tmp/b',
               unprocessed_entity: expect.stringContaining('NEVER_CHANGES'),
+            }),
+          ]),
+        );
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should successfully fall back from batch to individual mode on conflicts, %p',
+      async databaseId => {
+        const fakeLogger = {
+          debug: jest.fn(),
+        };
+        const { knex, db } = await createDatabase(
+          databaseId,
+          fakeLogger as any,
+        );
+
+        await createLocations(knex, ['component:default/a']);
+
+        await insertRefRow(knex, {
+          source_key: undefined,
+          target_entity_ref: 'component:default/a',
+        });
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'full',
+            sourceKey: 'lols',
+            items: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'a' },
+                  spec: { marker: 'WILL_CHANGE' },
+                } as Entity,
+                locationKey: 'file:///tmp/a',
+              },
+            ],
+          });
+        });
+        expect(fakeLogger.debug).toBeCalledWith(
+          expect.stringMatching(
+            /Fast insert path failed, falling back to slow path/,
+          ),
+        );
+
+        const state = await knex<DbRefreshStateRow>('refresh_state').select();
+        expect(state).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              entity_ref: 'component:default/a',
+              location_key: 'file:///tmp/a',
+              unprocessed_entity: expect.stringContaining('WILL_CHANGE'),
             }),
           ]),
         );

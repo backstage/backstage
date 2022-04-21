@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { loadCliConfig } from '../../lib/config';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   await loadCliConfig({
-    args: cmd.config,
-    fromPackage: cmd.package,
-    mockEnv: cmd.lax,
-    fullVisibility: !cmd.frontend,
-    withDeprecatedKeys: cmd.deprecated,
+    args: opts.config,
+    fromPackage: opts.package,
+    mockEnv: opts.lax,
+    fullVisibility: !opts.frontend,
+    withDeprecatedKeys: opts.deprecated,
   });
 };

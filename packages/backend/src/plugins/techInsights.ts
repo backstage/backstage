@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createRouter,
   buildTechInsightsContext,
@@ -28,17 +29,15 @@ import {
   JSON_RULE_ENGINE_CHECK_TYPE,
 } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
 
-export default async function createPlugin({
-  logger,
-  config,
-  discovery,
-  database,
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   const techInsightsContext = await buildTechInsightsContext({
-    logger,
-    config,
-    database,
-    discovery,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    scheduler: env.scheduler,
+    discovery: env.discovery,
     factRetrievers: [
       createFactRetrieverRegistration({
         cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.
@@ -54,6 +53,7 @@ export default async function createPlugin({
       }),
     ],
     factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
+      logger: env.logger,
       checks: [
         {
           id: 'simpleTestCheck',
@@ -93,13 +93,12 @@ export default async function createPlugin({
           },
         },
       ],
-      logger,
     }),
   });
 
   return await createRouter({
     ...techInsightsContext,
-    logger,
-    config,
+    logger: env.logger,
+    config: env.config,
   });
 }

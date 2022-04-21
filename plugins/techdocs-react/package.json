@@ -1,0 +1,65 @@
+{
+  "name": "@backstage/plugin-techdocs-react",
+  "description": "Shared frontend utilities for TechDocs and Addons",
+  "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "alphaTypes": "dist/index.alpha.d.ts",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "web-library"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/techdocs-react"
+  },
+  "keywords": [
+    "backstage",
+    "techdocs"
+  ],
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "backstage-cli package build --experimental-type-build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "^1.0.1",
+    "@backstage/core-components": "^0.9.3",
+    "@backstage/core-plugin-api": "^1.0.1",
+    "@backstage/version-bridge": "^1.0.1",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/styles": "^4.11.0",
+    "jss": "~10.8.2",
+    "lodash": "^4.17.21",
+    "react-helmet": "6.1.0",
+    "react-router-dom": "6.0.0-beta.0",
+    "react-use": "^17.2.4"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0",
+    "react": "^16.13.1 || ^17.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^12.1.3",
+    "@testing-library/react-hooks": "^8.0.0",
+    "@backstage/test-utils": "^1.0.1",
+    "@backstage/theme": "^0.2.15"
+  },
+  "files": [
+    "alpha",
+    "dist"
+  ]
+}

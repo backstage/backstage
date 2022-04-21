@@ -56,25 +56,27 @@ export class PluginTaskSchedulerJanitor {
     // SQLite currently (Oct 1 2021) returns a number for returning()
     // statements, effectively ignoring them and instead returning the outcome
     // of the delete() - and knex also emits a warning about that fact, which
-    // is why we avoid that entirely for the sqlite3 driver.
+    // is why we avoid that entirely for the sqlite3 family of drivers.
     // https://github.com/knex/knex/issues/4370
     // https://github.com/mapbox/node-sqlite3/issues/1453
 
     const dbNull = this.knex.raw('null');
 
-    const tasksQuery = this.knex<DbTasksRow>(DB_TASKS_TABLE)
+    const tasks = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
       .where('current_run_expires_at', '<', this.knex.fn.now())
       .update({
         current_run_ticket: dbNull,
         current_run_started_at: dbNull,
         current_run_expires_at: dbNull,
-      });
+      })
+      .returning(['id']);
 
-    if (this.knex.client.config.client === 'sqlite3') {
-      const tasks = await tasksQuery;
-      this.logger.warn(`${tasks} tasks timed out and were lost`);
+    // sqlite ignores "returning", returns number of rows changed instead
+    if (typeof tasks === 'number') {
+      if (tasks > 0) {
+        this.logger.warn(`${tasks} tasks timed out and were lost`);
+      }
     } else {
-      const tasks = await tasksQuery.returning(['id']);
       for (const { id } of tasks) {
         this.logger.warn(`Task timed out and was lost: ${id}`);
       }

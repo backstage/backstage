@@ -15,10 +15,14 @@
  */
 
 export { AzureUrlReader } from './AzureUrlReader';
+export { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
 export { BitbucketUrlReader } from './BitbucketUrlReader';
+export { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
+export { GerritUrlReader } from './GerritUrlReader';
 export { GithubUrlReader } from './GithubUrlReader';
 export { GitlabUrlReader } from './GitlabUrlReader';
 export { AwsS3UrlReader } from './AwsS3UrlReader';
+export { FetchUrlReader } from './FetchUrlReader';
 export type {
   FromReadableArrayOptions,
   ReaderFactory,

@@ -24,7 +24,6 @@ import {
   renderInTestApp,
   wrapInTestApp,
 } from '@backstage/test-utils';
-import { pageTheme } from '@backstage/theme';
 import { SidebarContext } from '@backstage/core-components';
 
 describe('ShortcutItem', () => {
@@ -75,29 +74,6 @@ describe('ShortcutItem', () => {
     rerender(wrapInTestApp(<ShortcutItem api={api} shortcut={shortcut3} />));
     await waitFor(() => {
       expect(screen.getByText('MT')).toBeInTheDocument();
-    });
-  });
-
-  it('gets the color based on the theme', async () => {
-    const { rerender } = await renderInTestApp(
-      <ShortcutItem api={api} shortcut={shortcut} />,
-    );
-
-    expect(document.querySelector('circle')?.getAttribute('fill')).toEqual(
-      pageTheme.tool.colors[0],
-    );
-
-    const newShortcut: Shortcut = {
-      id: 'id',
-      url: '/catalog',
-      title: 'some title',
-    };
-    rerender(wrapInTestApp(<ShortcutItem api={api} shortcut={newShortcut} />));
-
-    await waitFor(() => {
-      expect(document.querySelector('circle')?.getAttribute('fill')).toEqual(
-        pageTheme.home.colors[0],
-      );
     });
   });
 });

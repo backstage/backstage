@@ -25,11 +25,10 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router';
-import { SidebarContext } from '.';
-import { sidebarConfig } from './config';
 import { SidebarGroup } from './SidebarGroup';
+import { SidebarConfigContext, SidebarContext, SidebarConfig } from './config';
 
 /**
  * Type of `MobileSidebarContext`
@@ -60,44 +59,46 @@ type OverlayMenuProps = {
   children?: React.ReactNode;
 };
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  root: {
-    position: 'fixed',
-    backgroundColor: theme.palette.navigation.background,
-    color: theme.palette.navigation.color,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: theme.zIndex.snackbar,
-    // SidebarDivider color
-    borderTop: '1px solid #383838',
-  },
+const useStyles = makeStyles<BackstageTheme, { sidebarConfig: SidebarConfig }>(
+  theme => ({
+    root: {
+      position: 'fixed',
+      backgroundColor: theme.palette.navigation.background,
+      color: theme.palette.navigation.color,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: theme.zIndex.snackbar,
+      // SidebarDivider color
+      borderTop: '1px solid #383838',
+    },
 
-  overlay: {
-    background: theme.palette.navigation.background,
-    width: '100%',
-    bottom: `${sidebarConfig.mobileSidebarHeight}px`,
-    height: `calc(100% - ${sidebarConfig.mobileSidebarHeight}px)`,
-    flex: '0 1 auto',
-    overflow: 'auto',
-  },
+    overlay: props => ({
+      background: theme.palette.navigation.background,
+      width: '100%',
+      bottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
+      height: `calc(100% - ${props.sidebarConfig.mobileSidebarHeight}px)`,
+      flex: '0 1 auto',
+      overflow: 'auto',
+    }),
 
-  overlayHeader: {
-    display: 'flex',
-    color: theme.palette.bursts.fontColor,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: theme.spacing(2, 3),
-  },
+    overlayHeader: {
+      display: 'flex',
+      color: theme.palette.bursts.fontColor,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: theme.spacing(2, 3),
+    },
 
-  overlayHeaderClose: {
-    color: theme.palette.bursts.fontColor,
-  },
+    overlayHeaderClose: {
+      color: theme.palette.bursts.fontColor,
+    },
 
-  marginMobileSidebar: {
-    marginBottom: `${sidebarConfig.mobileSidebarHeight}px`,
-  },
-}));
+    marginMobileSidebar: props => ({
+      marginBottom: `${props.sidebarConfig.mobileSidebarHeight}px`,
+    }),
+  }),
+);
 
 const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
   orderBy(
@@ -114,7 +115,8 @@ const OverlayMenu = ({
   open,
   onClose,
 }: OverlayMenuProps) => {
-  const classes = useStyles();
+  const { sidebarConfig } = useContext(SidebarConfigContext);
+  const classes = useStyles({ sidebarConfig });
 
   return (
     <Drawer
@@ -163,8 +165,9 @@ export const MobileSidebarContext = createContext<MobileSidebarContextType>({
  * @public
  */
 export const MobileSidebar = (props: MobileSidebarProps) => {
+  const { sidebarConfig } = useContext(SidebarConfigContext);
   const { children } = props;
-  const classes = useStyles();
+  const classes = useStyles({ sidebarConfig });
   const location = useLocation();
   const [selectedMenuItemIndex, setSelectedMenuItemIndex] =
     useState<number>(-1);

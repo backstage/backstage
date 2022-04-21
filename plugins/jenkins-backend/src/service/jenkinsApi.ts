@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import { JenkinsInfo } from './jenkinsInfoProvider';
+import type { JenkinsInfo } from './jenkinsInfoProvider';
 import jenkins from 'jenkins';
-import {
+import type {
   BackstageBuild,
   BackstageProject,
   JenkinsBuild,
   JenkinsProject,
   ScmDetails,
 } from '../types';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
+import { NotAllowedError } from '@backstage/errors';
 
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
@@ -57,6 +63,8 @@ export class JenkinsApiImpl {
   private static readonly jobsTreeSpec = `jobs[
                    ${JenkinsApiImpl.jobTreeSpec}
                  ]{0,50}`;
+
+  constructor(private readonly permissionApi?: PermissionEvaluator) {}
 
   /**
    * Get a list of projects for the given JenkinsInfo.
@@ -128,8 +136,25 @@ export class JenkinsApiImpl {
    * Trigger a build of a project
    * @see ../../../jenkins/src/api/JenkinsApi.ts#retry
    */
-  async buildProject(jenkinsInfo: JenkinsInfo, jobFullName: string) {
+  async buildProject(
+    jenkinsInfo: JenkinsInfo,
+    jobFullName: string,
+    resourceRef: string,
+    options?: { token?: string },
+  ) {
     const client = await JenkinsApiImpl.getClient(jenkinsInfo);
+
+    if (this.permissionApi) {
+      const response = await this.permissionApi.authorize(
+        [{ permission: jenkinsExecutePermission, resourceRef }],
+        { token: options?.token },
+      );
+      // permission api returns always at least one item, we need to check only one result since we do not expect any additional results
+      const { result } = response[0];
+      if (result === AuthorizeResult.DENY) {
+        throw new NotAllowedError();
+      }
+    }
 
     // looks like the current SDK only supports triggering a new build
     // can't see any support for replay (re-running the specific build with the same SCM info)
@@ -186,7 +211,7 @@ export class JenkinsApiImpl {
       build.actions
         .filter(
           (action: any) =>
-            action._class === 'hudson.plugins.git.util.BuildData',
+            action?._class === 'hudson.plugins.git.util.BuildData',
         )
         .map((action: any) => {
           const [first]: any = Object.values(action.buildsByBranchName);
@@ -228,7 +253,7 @@ export class JenkinsApiImpl {
     const scmInfo: ScmDetails | undefined = project.actions
       .filter(
         (action: any) =>
-          action._class === 'jenkins.scm.api.metadata.ObjectMetadataAction',
+          action?._class === 'jenkins.scm.api.metadata.ObjectMetadataAction',
       )
       .map((action: any) => {
         return {
@@ -247,7 +272,7 @@ export class JenkinsApiImpl {
     const author = project.actions
       .filter(
         (action: any) =>
-          action._class ===
+          action?._class ===
           'jenkins.scm.api.metadata.ContributorMetadataAction',
       )
       .map((action: any) => {
@@ -272,7 +297,7 @@ export class JenkinsApiImpl {
     return build.actions
       .filter(
         (action: any) =>
-          action._class === 'hudson.tasks.junit.TestResultAction',
+          action?._class === 'hudson.tasks.junit.TestResultAction',
       )
       .map((action: any) => {
         return {

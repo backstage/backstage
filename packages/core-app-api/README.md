@@ -6,9 +6,8 @@ This package provides the core API used by Backstage apps.
 
 Install the package via Yarn:
 
-```sh
-cd packages/app
-yarn add @backstage/core-app-api
+```bash
+yarn add --cwd packages/app @backstage/core-app-api
 ```
 
 ## Documentation

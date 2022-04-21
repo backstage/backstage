@@ -36,7 +36,7 @@ import { compact } from 'lodash';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { UserListFilter } from '../../filters';
 import {
-  useEntityListProvider,
+  useEntityList,
   useStarredEntities,
   useEntityOwnership,
 } from '../../hooks';
@@ -118,20 +118,25 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-type UserListPickerProps = {
+/** @public */
+export type UserListPickerProps = {
   initialFilter?: UserListFilterKind;
   availableFilters?: UserListFilterKind[];
 };
 
-export const UserListPicker = ({
-  initialFilter,
-  availableFilters,
-}: UserListPickerProps) => {
+/** @public */
+export const UserListPicker = (props: UserListPickerProps) => {
+  const { initialFilter, availableFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const { filters, updateFilters, backendEntities, queryParameters, loading } =
-    useEntityListProvider();
+  const {
+    filters,
+    updateFilters,
+    backendEntities,
+    queryParameters: { kind: kindParameter, user: userParameter },
+    loading: loadingBackendEntities,
+  } = useEntityList();
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
@@ -141,7 +146,7 @@ export const UserListPicker = ({
       ...filterGroup,
       items: filterGroup.items.filter(({ id }) =>
         // TODO: avoid hardcoding kinds here
-        ['group', 'user'].some(kind => kind === queryParameters.kind)
+        ['group', 'user'].some(kind => kind === kindParameter)
           ? userAndGroupFilterIds.includes(id)
           : !availableFilters || availableFilters.includes(id),
       ),
@@ -149,7 +154,10 @@ export const UserListPicker = ({
     .filter(({ items }) => !!items.length);
 
   const { isStarredEntity } = useStarredEntities();
-  const { isOwnedEntity } = useEntityOwnership();
+  const { isOwnedEntity, loading: loadingEntityOwnership } =
+    useEntityOwnership();
+
+  const loading = loadingBackendEntities || loadingEntityOwnership;
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(
@@ -162,8 +170,8 @@ export const UserListPicker = ({
   );
 
   const queryParamUserFilter = useMemo(
-    () => [queryParameters.user].flat()[0],
-    [queryParameters],
+    () => [userParameter].flat()[0],
+    [userParameter],
   );
 
   const [selectedUserFilter, setSelectedUserFilter] = useState(

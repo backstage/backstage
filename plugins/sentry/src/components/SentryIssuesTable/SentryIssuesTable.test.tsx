@@ -37,7 +37,16 @@ describe('SentryIssuesTable', () => {
     ];
     const table = await render(
       <ThemeProvider theme={lightTheme}>
-        <SentryIssuesTable sentryIssues={issues} />
+        <SentryIssuesTable
+          sentryIssues={issues}
+          statsFor="24h"
+          tableOptions={{
+            padding: 'dense',
+            paging: true,
+            search: false,
+            pageSize: 5,
+          }}
+        />
       </ThemeProvider>,
     );
     expect(await table.findByText('Error')).toBeInTheDocument();
@@ -61,7 +70,16 @@ describe('SentryIssuesTable', () => {
     ];
     const table = await render(
       <ThemeProvider theme={lightTheme}>
-        <SentryIssuesTable sentryIssues={issues} />
+        <SentryIssuesTable
+          sentryIssues={issues}
+          statsFor="24h"
+          tableOptions={{
+            padding: 'dense',
+            paging: true,
+            search: false,
+            pageSize: 5,
+          }}
+        />
       </ThemeProvider>,
     );
     expect(await table.findByText('Exception')).toBeInTheDocument();
@@ -83,7 +101,16 @@ describe('SentryIssuesTable', () => {
     ];
     const table = await render(
       <ThemeProvider theme={lightTheme}>
-        <SentryIssuesTable sentryIssues={issues} statsFor="24h" />
+        <SentryIssuesTable
+          sentryIssues={issues}
+          statsFor="24h"
+          tableOptions={{
+            padding: 'dense',
+            paging: true,
+            search: false,
+            pageSize: 5,
+          }}
+        />
       </ThemeProvider>,
     );
     expect(await table.findByText('Last 24h')).toBeInTheDocument();

@@ -47,19 +47,4 @@ export default class GithubAuth {
       defaultScopes,
     });
   }
-
-  /**
-   * @deprecated This method is deprecated and will be removed in a future release.
-   */
-  static normalizeScope(scope?: string): Set<string> {
-    if (!scope) {
-      return new Set();
-    }
-
-    const scopeList = Array.isArray(scope)
-      ? scope
-      : scope.split(/[\s|,]/).filter(Boolean);
-
-    return new Set(scopeList);
-  }
 }

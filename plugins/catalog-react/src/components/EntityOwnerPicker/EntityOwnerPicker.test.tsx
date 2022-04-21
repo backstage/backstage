@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
@@ -31,19 +31,11 @@ const sampleEntities: Entity[] = [
     relations: [
       {
         type: 'ownedBy',
-        target: {
-          name: 'some-owner',
-          namespace: 'default',
-          kind: 'Group',
-        },
+        targetRef: 'group:default/some-owner',
       },
       {
         type: 'ownedBy',
-        target: {
-          name: 'some-owner-2',
-          namespace: 'default',
-          kind: 'Group',
-        },
+        targetRef: 'group:default/some-owner-2',
       },
     ],
   },
@@ -56,11 +48,7 @@ const sampleEntities: Entity[] = [
     relations: [
       {
         type: 'ownedBy',
-        target: {
-          name: 'another-owner',
-          namespace: 'default',
-          kind: 'Group',
-        },
+        targetRef: 'group:default/another-owner',
       },
     ],
   },
@@ -73,11 +61,7 @@ const sampleEntities: Entity[] = [
     relations: [
       {
         type: 'ownedBy',
-        target: {
-          name: 'some-owner',
-          namespace: 'default',
-          kind: 'Group',
-        },
+        targetRef: 'group:default/some-owner',
       },
     ],
   },
@@ -96,7 +80,7 @@ describe('<EntityOwnerPicker/>', () => {
 
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
     sampleEntities
-      .flatMap(e => e.relations?.map(r => r.target.name))
+      .flatMap(e => e.relations?.map(r => parseEntityRef(r.targetRef).name))
       .forEach(owner => {
         expect(rendered.getByText(owner as string)).toBeInTheDocument();
       });

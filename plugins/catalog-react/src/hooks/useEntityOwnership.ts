@@ -14,77 +14,15 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
-  EntityName,
-  parseEntityRef,
-  RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  IdentityApi,
-  identityApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { useMemo } from 'react';
 import useAsync from 'react-use/lib/useAsync';
-import { catalogApiRef } from '../api';
 import { getEntityRelations } from '../utils/getEntityRelations';
-
-/**
- * Takes the relevant parts of the Backstage identity, and translates them into
- * a list of entity refs on string form that represent the user's ownership
- * connections.
- *
- * @public
- * @deprecated Use `ownershipEntityRefs` from `identityApi.getBackstageIdentity()` instead.
- *
- * @param identityApi - The IdentityApi implementation
- * @returns IdentityOwner refs as a string array
- */
-export async function loadIdentityOwnerRefs(
-  identityApi: IdentityApi,
-): Promise<string[]> {
-  const identity = await identityApi.getBackstageIdentity();
-  return identity.ownershipEntityRefs;
-}
-
-/**
- * Takes the relevant parts of the User entity corresponding to the Backstage
- * identity, and translates them into a list of entity refs on string form that
- * represent the user's ownership connections.
- *
- * @public
- *
- * @param catalogApi - The Catalog API implementation
- * @param identityOwnerRefs - List of identity owner refs as strings
- * @returns OwnerRefs as a string array
- */
-export async function loadCatalogOwnerRefs(
-  catalogApi: CatalogApi,
-  identityOwnerRefs: string[],
-): Promise<string[]> {
-  const result = new Array<string>();
-
-  const primaryUserRef = identityOwnerRefs.find(ref => ref.startsWith('user:'));
-  if (primaryUserRef) {
-    const entity = await catalogApi.getEntityByName(
-      parseEntityRef(primaryUserRef),
-    );
-    if (entity) {
-      const memberOf = getEntityRelations(entity, RELATION_MEMBER_OF, {
-        kind: 'Group',
-      });
-      for (const group of memberOf) {
-        result.push(stringifyEntityRef(group));
-      }
-    }
-  }
-
-  return result;
-}
 
 /**
  * Returns a function that checks whether the currently signed-in user is an
@@ -98,29 +36,22 @@ export async function loadCatalogOwnerRefs(
  */
 export function useEntityOwnership(): {
   loading: boolean;
-  isOwnedEntity: (entity: Entity | EntityName) => boolean;
+  isOwnedEntity: (entity: Entity) => boolean;
 } {
   const identityApi = useApi(identityApiRef);
-  const catalogApi = useApi(catalogApiRef);
 
   // Trigger load only on mount
   const { loading, value: refs } = useAsync(async () => {
     const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
-    const catalogRefs = await loadCatalogOwnerRefs(
-      catalogApi,
-      ownershipEntityRefs,
-    );
-    return new Set([...ownershipEntityRefs, ...catalogRefs]);
+    return ownershipEntityRefs;
   }, []);
 
   const isOwnedEntity = useMemo(() => {
     const myOwnerRefs = new Set(refs ?? []);
-    return (entity: Entity | EntityName) => {
-      const entityOwnerRefs = (
-        'metadata' in entity
-          ? getEntityRelations(entity, RELATION_OWNED_BY)
-          : [entity]
-      ).map(stringifyEntityRef);
+    return (entity: Entity) => {
+      const entityOwnerRefs = getEntityRelations(entity, RELATION_OWNED_BY).map(
+        stringifyEntityRef,
+      );
       for (const ref of entityOwnerRefs) {
         if (myOwnerRefs.has(ref)) {
           return true;

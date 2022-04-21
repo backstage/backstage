@@ -34,6 +34,7 @@ export interface ObjectFetchParams {
   objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
+  namespace?: string;
 }
 
 // Fetches information from a kubernetes cluster using the cluster details object
@@ -80,6 +81,12 @@ export type KubernetesObjectTypes =
 
 // Used to load cluster details from different sources
 export interface KubernetesClustersSupplier {
+  /**
+   * Returns the cached list of clusters.
+   *
+   * Implementations _should_ cache the clusters and refresh them periodically,
+   * as getClusters is called whenever the list of clusters is needed.
+   */
   getClusters(): Promise<ClusterDetails[]>;
 }
 
@@ -110,7 +117,7 @@ export interface ClusterDetails {
    * @remarks
    * Note that you should specify the app used for the dashboard
    * using the dashboardApp property, in order to properly format
-   * links to kubernetes resources,  otherwise it will assume that you're running the standard one.
+   * links to kubernetes resources, otherwise it will assume that you're running the standard one.
    * @see dashboardApp
    * @see dashboardParameters
    */

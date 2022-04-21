@@ -19,7 +19,7 @@ import {
   AzureIntegration,
   readAzureIntegrationConfig,
 } from '@backstage/integration';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { rest } from 'msw';
@@ -130,7 +130,7 @@ describe('AzureUrlReader', () => {
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
         config: createConfig(),
-        error: 'Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+        error: 'Invalid URL',
       },
       {
         url: '',

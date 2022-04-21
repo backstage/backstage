@@ -17,13 +17,13 @@
 import {
   Entity,
   LocationEntityV1alpha1,
-  LocationSpec,
-  LOCATION_ANNOTATION,
-  ORIGIN_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
-  stringifyLocationReference,
+  stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
+import { LocationSpec } from '../api';
 
 export function locationSpecToMetadataName(location: LocationSpec) {
   const hash = createHash('sha1')
@@ -32,39 +32,43 @@ export function locationSpecToMetadataName(location: LocationSpec) {
   return `generated-${hash}`;
 }
 
-export function locationSpecToLocationEntity(
-  location: LocationSpec,
-  parentEntity?: Entity,
-): LocationEntityV1alpha1 {
+/** @public */
+export function locationSpecToLocationEntity(opts: {
+  location: LocationSpec;
+  parentEntity?: Entity;
+}): LocationEntityV1alpha1 {
+  const location = opts.location;
+  const parentEntity = opts.parentEntity;
+
   let ownLocation: string;
   let originLocation: string;
   if (parentEntity) {
     const maybeOwnLocation =
-      parentEntity.metadata.annotations?.[LOCATION_ANNOTATION];
+      parentEntity.metadata.annotations?.[ANNOTATION_LOCATION];
     if (!maybeOwnLocation) {
       throw new Error(
         `Parent entity '${stringifyEntityRef(
           parentEntity,
-        )}' of location '${stringifyLocationReference(
+        )}' of location '${stringifyLocationRef(
           location,
         )}' does not have a location annotation`,
       );
     }
     ownLocation = maybeOwnLocation;
     const maybeOriginLocation =
-      parentEntity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+      parentEntity.metadata.annotations?.[ANNOTATION_ORIGIN_LOCATION];
     if (!maybeOriginLocation) {
       throw new Error(
         `Parent entity '${stringifyEntityRef(
           parentEntity,
-        )}' of location '${stringifyLocationReference(
+        )}' of location '${stringifyLocationRef(
           location,
         )}' does not have an origin location annotation`,
       );
     }
     originLocation = maybeOriginLocation;
   } else {
-    ownLocation = stringifyLocationReference(location);
+    ownLocation = stringifyLocationRef(location);
     originLocation = ownLocation;
   }
 
@@ -74,8 +78,8 @@ export function locationSpecToLocationEntity(
     metadata: {
       name: locationSpecToMetadataName(location),
       annotations: {
-        [LOCATION_ANNOTATION]: ownLocation,
-        [ORIGIN_LOCATION_ANNOTATION]: originLocation,
+        [ANNOTATION_LOCATION]: ownLocation,
+        [ANNOTATION_ORIGIN_LOCATION]: originLocation,
       },
     },
     spec: {

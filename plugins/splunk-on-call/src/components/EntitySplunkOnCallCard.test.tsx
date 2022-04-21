@@ -28,6 +28,7 @@ import {
   MOCKED_ON_CALL,
   MOCKED_USER,
   MOCK_INCIDENT,
+  MOCK_ROUTING_KEY,
   MOCK_TEAM,
   MOCK_TEAM_NO_INCIDENTS,
 } from '../api/mocks';
@@ -45,6 +46,7 @@ const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getIncidents: async () => [MOCK_INCIDENT],
   getOnCallUsers: async () => MOCKED_ON_CALL,
   getTeams: async () => [MOCK_TEAM],
+  getRoutingKeys: async () => [MOCK_ROUTING_KEY],
   getEscalationPolicies: async () => ESCALATION_POLICIES,
 };
 
@@ -68,6 +70,26 @@ const mockEntity = {
     annotations: {
       'splunk.com/on-call-team': 'test',
     },
+  },
+} as Entity;
+
+const mockEntityWithRoutingKeyAnnotation = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'splunkoncall-test',
+    annotations: {
+      'splunk.com/on-call-routing-key': MOCK_ROUTING_KEY.routingKey,
+    },
+  },
+} as Entity;
+
+const mockEntityNoAnnotation = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'splunkoncall-test',
+    annotations: {},
   },
 } as Entity;
 
@@ -107,6 +129,60 @@ describe('SplunkOnCallCard', () => {
       { timeout: 2000 },
     );
     expect(getByText('Empty escalation policy')).toBeInTheDocument();
+  });
+
+  it('does not render a "Create incident" link in read only mode', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementation(async () => [MOCK_TEAM_NO_INCIDENTS]);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityNoIncidents}>
+            <EntitySplunkOnCallCard readOnly />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(() => getByText('Create Incident')).toThrow();
+    await waitFor(
+      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
+    expect(getByText('Empty escalation policy')).toBeInTheDocument();
+  });
+
+  it('handles a "splunk.com/on-call-routing-key" annotation', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getRoutingKeys = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCK_ROUTING_KEY]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementation(async () => [MOCK_TEAM]);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
+            <EntitySplunkOnCallCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(getByText(`Team: ${MOCK_TEAM.name}`)).toBeInTheDocument();
+    await waitFor(
+      () => expect(getByText('test-incident')).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
   });
 
   it('Handles custom error for missing token', async () => {
@@ -151,6 +227,20 @@ describe('SplunkOnCallCard', () => {
     ).toBeInTheDocument();
   });
 
+  it('handles warning for missing required annotations', async () => {
+    const { getAllByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityNoAnnotation}>
+            <EntitySplunkOnCallCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(getAllByText('Missing Annotation').length).toEqual(1);
+  });
+
   it('handles warning for incorrect team annotation', async () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()
@@ -170,7 +260,37 @@ describe('SplunkOnCallCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(
-      getByText('Could not find team named "test" in the Splunk On-Call API'),
+      getByText(
+        'Splunk On-Call API returned no record of teams associated with the "test" team name',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('handles warning for incorrect routing key annotation', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getRoutingKeys = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCK_ROUTING_KEY]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementationOnce(async () => []);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={mockEntityWithRoutingKeyAnnotation}>
+            <EntitySplunkOnCallCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(
+      getByText(
+        `Splunk On-Call API returned no record of teams associated with the "${MOCK_ROUTING_KEY.routingKey}" routing key`,
+      ),
     ).toBeInTheDocument();
   });
 

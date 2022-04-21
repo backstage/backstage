@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
-  LOCATION_ANNOTATION,
-  parseLocationReference,
-  SOURCE_LOCATION_ANNOTATION,
+  ANNOTATION_LOCATION,
+  parseLocationRef,
+  ANNOTATION_SOURCE_LOCATION,
+  CompoundEntityRef,
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { assertError } from '@backstage/errors';
+import { assertError, InputError, NotFoundError } from '@backstage/errors';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import fs from 'fs-extra';
 import os from 'os';
 import { Logger } from 'winston';
@@ -59,15 +64,15 @@ export async function getWorkingDirectory(
  * For file locations this will return a `file://` URL.
  */
 export function getEntityBaseUrl(entity: Entity): string | undefined {
-  let location = entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
+  let location = entity.metadata.annotations?.[ANNOTATION_SOURCE_LOCATION];
   if (!location) {
-    location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    location = entity.metadata.annotations?.[ANNOTATION_LOCATION];
   }
   if (!location) {
     return undefined;
   }
 
-  const { type, target } = parseLocationReference(location);
+  const { type, target } = parseLocationRef(location);
   if (type === 'url') {
     return target;
   } else if (type === 'file') {
@@ -77,4 +82,34 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
   // Only url and file location are handled, as we otherwise don't know if
   // what the url is pointing to makes sense to use as a baseUrl
   return undefined;
+}
+
+/**
+ * Will use the provided CatalogApi to go find the given template entity with an additional token.
+ * Returns the matching template, or throws a NotFoundError if no such template existed.
+ */
+export async function findTemplate(options: {
+  entityRef: CompoundEntityRef;
+  token?: string;
+  catalogApi: CatalogApi;
+}): Promise<TemplateEntityV1beta3> {
+  const { entityRef, token, catalogApi } = options;
+
+  if (entityRef.namespace.toLocaleLowerCase('en-US') !== DEFAULT_NAMESPACE) {
+    throw new InputError(
+      `Invalid namespace, only '${DEFAULT_NAMESPACE}' namespace is supported`,
+    );
+  }
+  if (entityRef.kind.toLocaleLowerCase('en-US') !== 'template') {
+    throw new InputError(`Invalid kind, only 'Template' kind is supported`);
+  }
+
+  const template = await catalogApi.getEntityByRef(entityRef, { token });
+  if (!template) {
+    throw new NotFoundError(
+      `Template ${stringifyEntityRef(entityRef)} not found`,
+    );
+  }
+
+  return template as TemplateEntityV1beta3;
 }

@@ -33,7 +33,7 @@ describe('DatePicker', () => {
     );
     const input = rendered.getByLabelText(label);
 
-    userEvent.type(input, '2020-02-02');
+    await userEvent.type(input, '2020-02-02');
     expect(callback).toBeCalledWith('2020-02-02');
   });
 
@@ -45,7 +45,7 @@ describe('DatePicker', () => {
     );
     const input = rendered.getByLabelText(label);
 
-    userEvent.type(input, 'test');
+    await userEvent.type(input, 'test');
     expect(callback).not.toHaveBeenCalled();
   });
 });

@@ -37,12 +37,29 @@ techdocs:
 
     pullImage: true
 
+    mkdocs:
+      # (Optional)  techdocs.generator.omitTechdocsCoreMkdocsPlugin can be used to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
+      # Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+      omitTechdocsCorePlugin: false
+
+      # (Optional and not recommended) Configures the techdocs generator to
+      # attempt to ensure an index.md exists falling back to using <docs-dir>/README.md
+      # or README.md in case a default <docs-dir>/index.md is not provided.
+      # Note that https://www.mkdocs.org/user-guide/configuration/#edit_uri behavior
+      # will be broken in these scenarios.
+      legacyCopyReadmeMdToIndexMd: false
+
   # techdocs.builder can be either 'local' or 'external.
-  # If builder is set to 'local' and you open a TechDocs page, techdocs-backend will try to generate the docs, publish to storage
-  # and show the generated docs afterwords. This is the "Basic" setup of the TechDocs Architecture.
-  # If builder is set to 'external', techdocs-backend will only fetch the docs and will NOT try to generate and publish. In this case of 'external',
-  # we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository). This is the "Recommended" setup of
-  # the architecture. Read more here https://backstage.io/docs/features/techdocs/architecture
+  # Using the default build strategy, if builder is set to 'local' and you open a TechDocs page,
+  # techdocs-backend will try to generate the docs, publish to storage and show the generated docs afterwords.
+  # This is the "Basic" setup of the TechDocs Architecture.
+  # Using the default build strategy, if builder is set to 'external' (or anything other than 'local'), techdocs-backend
+  # will only fetch the docs and will NOT try to generate and publish.
+  # In this case, we assume that docs are being built by an external process (e.g. in the CI/CD pipeline of the repository).
+  # This is the "Recommended" setup of the architecture.
+  # Note that custom build strategies may alter this behaviour.
+  # Read more about the "Basic" and "Recommended" setups here https://backstage.io/docs/features/techdocs/architecture
+  # Read more about build strategies here: https://backstage.io/docs/features/techdocs/concepts#techdocs-build-strategy
 
   builder: 'local'
 
@@ -150,15 +167,4 @@ techdocs:
     # object was not found (e.g. when the cache sercice is unavailable). The
     # default value is 1000
     readTimeout: 500
-
-  # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
-  # You don't have to specify this anymore.
-
-  requestUrl: http://localhost:7007/api/techdocs
-
-  # (Optional and Legacy) Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
-  # to serve files from either a local directory or an External storage provider.
-  # You don't have to specify this anymore.
-
-  storageUrl: http://localhost:7007/api/techdocs/static/docs
 ```

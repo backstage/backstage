@@ -22,12 +22,11 @@ import {
   CATALOG_FILTER_EXISTS,
   catalogApiRef,
   CatalogApi,
-  isOwnerOf,
-  useOwnUser,
+  useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
-import { DocsTable } from './DocsTable';
-import { DocsCardGrid } from './DocsCardGrid';
+import { DocsTable } from './Tables';
+import { DocsCardGrid } from './Grids';
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 
 import {
@@ -39,7 +38,6 @@ import {
   SupportButton,
   ContentHeader,
 } from '@backstage/core-components';
-
 import { useApi } from '@backstage/core-plugin-api';
 
 const panels = {
@@ -47,8 +45,18 @@ const panels = {
   DocsCardGrid: DocsCardGrid,
 };
 
+/**
+ * Available panel types
+ *
+ * @public
+ */
 export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
+/**
+ * Type representing a TechDocsCustomHome panel.
+ *
+ * @public
+ */
 export interface PanelConfig {
   title: string;
   description: string;
@@ -57,11 +65,21 @@ export interface PanelConfig {
   filterPredicate: ((entity: Entity) => boolean) | string;
 }
 
+/**
+ * Type representing a TechDocsCustomHome tab.
+ *
+ * @public
+ */
 export interface TabConfig {
   label: string;
   panels: PanelConfig[];
 }
 
+/**
+ * Type representing a list of TechDocsCustomHome tabs.
+ *
+ * @public
+ */
 export type TabsConfig = TabConfig[];
 
 const CustomPanel = ({
@@ -80,16 +98,16 @@ const CustomPanel = ({
     },
   });
   const classes = useStyles();
-  const { value: user } = useOwnUser();
+  const { loading: loadingOwnership, isOwnedEntity } = useEntityOwnership();
 
   const Panel = panels[config.panelType];
 
   const shownEntities = entities.filter(entity => {
     if (config.filterPredicate === 'ownedByUser') {
-      if (!user) {
+      if (loadingOwnership) {
         return false;
       }
-      return isOwnerOf(user, entity);
+      return isOwnedEntity(entity);
     }
 
     return (
@@ -114,11 +132,17 @@ const CustomPanel = ({
   );
 };
 
-export const TechDocsCustomHome = ({
-  tabsConfig,
-}: {
+/**
+ * Props for {@link TechDocsCustomHome}
+ *
+ * @public
+ */
+export type TechDocsCustomHomeProps = {
   tabsConfig: TabsConfig;
-}) => {
+};
+
+export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
+  const { tabsConfig } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
 

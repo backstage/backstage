@@ -17,7 +17,7 @@ bundle into the `packages/techdocs-cli/dist` which is then published with the
 ```sh
 # From the root of this repository run
 # NOTE: This will build the techdocs-cli-embedded-app and copy the output into the cli dist directory
-yarn build --scope @techdocs/cli
+yarn workspace @techdocs/cli build
 
 # Now execute the binary
 packages/techdocs-cli/bin/techdocs-cli
@@ -40,7 +40,24 @@ yarn start
 yarn techdocs-cli:dev [...options]
 ```
 
+### Using an example docs project
+
+For the purpose of local development, we have created an example documentation project. You are of course also free to create your own local test site - all it takes is a `docs/index.md` and an `mkdocs.yml` in a directory.
+
+```sh
+
+cd packages/techdocs-cli/src/example-docs
+
+# To get a view of your docs in Backstage, use:
+techdocs-cli serve
+
+# To view the raw mkdocs site (without Backstage), use:
+techdocs-cli serve:mkdocs
+```
+
 ### Testing
+
+#### E2E tests
 
 Running unit tests requires mkdocs to be installed locally:
 
@@ -51,18 +68,37 @@ pip install mkdocs-techdocs-core
 
 Then run `yarn test`.
 
-### Use an example docs project
+#### Cypress (Integration and Visual regression) tests
 
-We have created an [example documentation project](https://github.com/backstage/techdocs-container/tree/main/mock-docs) and it's shipped with [techdocs-container](https://github.com/backstage/techdocs-container) repository, for the purpose of local development. But you are free to create your own local test site. All it takes is a `docs/index.md` and `mkdocs.yml` in a directory.
+Running cypress tests requires you to run the CLI locally against our example docs.
+
+Run the local version of techdocs-cli against the example docs:
 
 ```sh
-git clone https://github.com/backstage/techdocs-container.git
+# From the root of this repository run
+# NOTE: This will build the techdocs-cli-embedded-app and copy the output into the cli dist directory
+yarn build --scope @techdocs/cli
 
-cd techdocs-container/mock-docs
+# Navigate to the example project
+cd packages/techdocs-cli/src/example-docs
 
-# To get a view of your docs in Backstage, use:
-techdocs-cli serve
-
-# To view the raw mkdocs site (without Backstage), use:
-techdocs-cli serve:mkdocs
+# Now execute the techdocs-cli serve command
+../../bin/techdocs-cli serve
 ```
+
+In another shell, run the cypress tests:
+
+```sh
+# From the root of the project, navigate to the techdocs-cli package
+cd packages/techdocs-cli
+
+# Run tests
+yarn test:cypress
+```
+
+This will launch a cypress app where you can run the two different tests:
+
+- `backstage_serve` - will run against the backstage server
+- `mkdocs_serve` - will run test against the mkdocs server
+
+> If its the first time you run Cypress, it will run a "Verifying Cypress can run" step. This step can result in a "Cypress verification timed out" error. If that is the case, let the verification step run and then run the command again and it should succeed.

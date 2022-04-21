@@ -22,16 +22,8 @@ import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootDocsRouteRef } from '../../routes';
 
-jest.mock('@backstage/plugin-catalog-react', () => {
-  const actual = jest.requireActual('@backstage/plugin-catalog-react');
-  return {
-    ...actual,
-    useOwnUser: () => 'test-user',
-  };
-});
-
 const mockCatalogApi = {
-  getEntityByName: jest.fn(),
+  getEntityByRef: jest.fn(),
   getEntities: async () => ({
     items: [
       {

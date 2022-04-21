@@ -10,8 +10,7 @@ as well as a framework to run fact retrievers and store fact values in to a data
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-tech-insights-backend
+yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend
 ```
 
 ### Adding the plugin to your `packages/backend`
@@ -27,24 +26,22 @@ import {
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  config,
-  discovery,
-  database,
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   const builder = buildTechInsightsContext({
-    logger,
-    config,
-    database,
-    discovery,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
+    scheduler: env.scheduler,
     factRetrievers: [], // Fact retrievers registrations you want tech insights to use
   });
 
   return await createRouter({
     ...(await builder),
-    logger,
-    config,
+    logger: env.logger,
+    config: env.config,
   });
 }
 ```
@@ -95,18 +92,18 @@ FactRetrieverRegistration also accepts an optional `lifecycle` configuration val
 
 ```ts
 const maxItems = { maxItems: 7 }; // Deletes all but 7 latest facts for each id/entity pair
-const ttl = { ttl: 1209600000 }; // (2 weeks) Deletes items older than 2 weeks
-const ttlWithAHumanReadableValue = { ttl: { weeks: 2 } }; // Deletes items older than 2 weeks
+const ttl = { timeToLive: 1209600000 }; // (2 weeks) Deletes items older than 2 weeks
+const ttlWithAHumanReadableValue = { timeToLive: { weeks: 2 } }; // Deletes items older than 2 weeks
 ```
 
 To register these fact retrievers to your application you can modify the example `techInsights.ts` file shown above like this:
 
 ```diff
-const builder = new DefaultTechInsightsBuilder({
-  logger,
-  config,
-  database,
-  discovery,
+const builder = buildTechInsightsContext({
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  discovery: env.discovery,
 - factRetrievers: [],
 + factRetrievers: [myFactRetrieverRegistration],
 });
@@ -117,11 +114,11 @@ const builder = new DefaultTechInsightsBuilder({
 Current logic on running scheduled fact retrievers is intended to be executed in a single instance. Running on multi-instane environment there might be some additional data accumulation when multiple fact retrievers would retrieve and persist their facts. To mitigate this it is recommended to mark a single instance to be a specific fact retriever instance. One way to do this is by using environment variables to indicate if the retrievers should be registered. This can be done for example like the code snippet below
 
 ```diff
-const builder = new DefaultTechInsightsBuilder({
-  logger,
-  config,
-  database,
-  discovery,
+const builder = buildTechInsightsContext({
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  discovery: env.discovery,
 - factRetrievers: [],
 + factRetrievers: process.env.MAIN_FACT_RETRIEVER_INSTANCE ? [myFactRetrieverRegistration] : [],
 });
@@ -199,8 +196,7 @@ To add the default FactChecker into your Tech Insights you need to install the m
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-tech-insights-backend-module-jsonfc
+yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend-module-jsonfc
 ```
 
 and modify the `techInsights.ts` file to contain a reference to the FactChecker implementation.
@@ -210,14 +206,14 @@ and modify the `techInsights.ts` file to contain a reference to the FactChecker 
 
 +const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
 +   checks: [],
-+   logger,
++   logger: env.logger,
 +}),
 
  const builder = new DefaultTechInsightsBuilder({
-   logger,
-   config,
-   database,
-   discovery,
+   logger: env.logger,
+   config: env.config,
+   database: env.database,
+   discovery: env.discovery,
    factRetrievers: [myFactRetrieverRegistration],
 +  factCheckerFactory: myFactCheckerFactory
  });
@@ -233,8 +229,135 @@ The default FactChecker implementation comes with an in-memory storage to store 
 const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
 const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
   checks: [],
-  logger,
+  logger: env.logger,
 + checkRegistry: myTechInsightCheckRegistry
 }),
 
+```
+
+## Included FactRetrievers
+
+There are three FactRetrievers that come out of the box with Tech Insights:
+
+- `entityMetadataFactRetriever`: Generates facts which indicate the completeness of entity metadata
+- `entityOwnershipFactRetriever`: Generates facts which indicate the quality of data in the spec.owner field
+- `techdocsFactRetriever`: Generates facts related to the completeness of techdocs configuration for entities
+
+## Backend Example
+
+Here's an example backend setup that will use the three included fact retrievers so you can get an idea of how this all works. This will be the entire contents of your `techInsights.ts` file found at `\packages\backend\src\plugins` as per [Adding the plugin to your `packages/backend`](#adding-the-plugin-to-your-packagesbackend)
+
+```ts
+import {
+  createRouter,
+  buildTechInsightsContext,
+  createFactRetrieverRegistration,
+  entityOwnershipFactRetriever,
+  entityMetadataFactRetriever,
+  techdocsFactRetriever,
+} from '@backstage/plugin-tech-insights-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+import {
+  JsonRulesEngineFactCheckerFactory,
+  JSON_RULE_ENGINE_CHECK_TYPE,
+} from '@backstage/plugin-tech-insights-backend-module-jsonfc';
+
+const ttlTwoWeeks = { timeToLive: { weeks: 2 } };
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const techInsightsContext = await buildTechInsightsContext({
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
+    factRetrievers: [
+      createFactRetrieverRegistration({
+        cadence: '0 */6 * * *', // Run every 6 hours - https://crontab.guru/#0_*/6_*_*_*
+        factRetriever: entityOwnershipFactRetriever,
+        lifecycle: ttlTwoWeeks,
+      }),
+      createFactRetrieverRegistration({
+        cadence: '0 */6 * * *',
+        factRetriever: entityMetadataFactRetriever,
+        lifecycle: ttlTwoWeeks,
+      }),
+      createFactRetrieverRegistration({
+        cadence: '0 */6 * * *',
+        factRetriever: techdocsFactRetriever,
+        lifecycle: ttlTwoWeeks,
+      }),
+    ],
+    factCheckerFactory: new JsonRulesEngineFactCheckerFactory({
+      logger: env.logger,
+      checks: [
+        {
+          id: 'groupOwnerCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'Group Owner Check',
+          description:
+            'Verifies that a Group has been set as the owner for this entity',
+          factIds: ['entityOwnershipFactRetriever'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'hasGroupOwner',
+                  operator: 'equal',
+                  value: true,
+                },
+              ],
+            },
+          },
+        },
+        {
+          id: 'titleCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'Title Check',
+          description:
+            'Verifies that a Title, used to improve readability, has been set for this entity',
+          factIds: ['entityMetadataFactRetriever'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'hasTitle',
+                  operator: 'equal',
+                  value: true,
+                },
+              ],
+            },
+          },
+        },
+        {
+          id: 'techDocsCheck',
+          type: JSON_RULE_ENGINE_CHECK_TYPE,
+          name: 'TechDocs Check',
+          description:
+            'Verifies that TechDocs has been enabled for this entity',
+          factIds: ['techdocsFactRetriever'],
+          rule: {
+            conditions: {
+              all: [
+                {
+                  fact: 'hasAnnotationBackstageIoTechdocsRef',
+                  operator: 'equal',
+                  value: true,
+                },
+              ],
+            },
+          },
+        },
+      ],
+    }),
+  });
+
+  return await createRouter({
+    ...techInsightsContext,
+    logger: env.logger,
+    config: env.config,
+  });
+}
 ```

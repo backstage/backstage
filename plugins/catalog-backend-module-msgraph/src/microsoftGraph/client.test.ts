@@ -15,7 +15,7 @@
  */
 
 import * as msal from '@azure/msal-node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
@@ -85,7 +85,7 @@ describe('MicrosoftGraphClient', () => {
 
     const response = await client.requestApi('users', {
       filter: 'test eq true',
-      expand: ['children'],
+      expand: 'children',
       select: ['id', 'children'],
     });
 
@@ -157,7 +157,7 @@ describe('MicrosoftGraphClient', () => {
     expect(userProfile).toEqual({ surname: 'Example' });
   });
 
-  it('should throw expection if load user profile fails', async () => {
+  it('should throw exception if load user profile fails', async () => {
     worker.use(
       rest.get('https://example.com/users/user-id', (_, res, ctx) =>
         res(ctx.status(404)),

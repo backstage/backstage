@@ -16,32 +16,33 @@
 
 import {
   Entity,
-  getEntityName,
-  LocationSpec,
+  getCompoundEntityRef,
   parseEntityRef,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
-  entityKindSchemaValidator,
 } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
-  results,
+  LocationSpec,
+  processingResult,
 } from '@backstage/plugin-catalog-backend';
 import {
   TemplateEntityV1beta3,
-  templateEntityV1beta3Schema,
+  templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 
 /** @public */
 export class ScaffolderEntitiesProcessor implements CatalogProcessor {
-  private readonly validators = [
-    entityKindSchemaValidator(templateEntityV1beta3Schema),
-  ];
+  getProcessorName(): string {
+    return 'ScaffolderEntitiesProcessor';
+  }
+
+  private readonly validators = [templateEntityV1beta3Validator];
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
-      if (validator(entity)) {
+      if (await validator.check(entity)) {
         return true;
       }
     }
@@ -54,7 +55,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
     _location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
-    const selfRef = getEntityName(entity);
+    const selfRef = getCompoundEntityRef(entity);
 
     if (
       entity.apiVersion === 'scaffolder.backstage.io/v1beta3' &&
@@ -69,7 +70,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
           defaultNamespace: selfRef.namespace,
         });
         emit(
-          results.relation({
+          processingResult.relation({
             source: selfRef,
             type: RELATION_OWNED_BY,
             target: {
@@ -80,7 +81,7 @@ export class ScaffolderEntitiesProcessor implements CatalogProcessor {
           }),
         );
         emit(
-          results.relation({
+          processingResult.relation({
             source: {
               kind: targetRef.kind,
               namespace: targetRef.namespace,

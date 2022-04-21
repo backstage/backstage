@@ -17,11 +17,11 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 import { SearchResult } from './SearchResult';
 
-jest.mock('../SearchContext', () => ({
-  ...jest.requireActual('../SearchContext'),
+jest.mock('@backstage/plugin-search-react', () => ({
+  ...jest.requireActual('@backstage/plugin-search-react'),
   useSearch: jest.fn().mockReturnValue({
     result: {},
   }),

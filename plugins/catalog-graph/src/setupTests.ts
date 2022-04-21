@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
+
+// Common mocks needed for SVG and D3 rendering
+Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
+  value: () => ({ width: 100, height: 100 }),
+  configurable: true,
+});
+Object.defineProperty(window.SVGElement.prototype, 'viewBox', {
+  value: { baseVal: { x: 0, y: 0, width: 100, height: 100 } },
+  configurable: true,
+});
+Object.defineProperty(window.MouseEvent.prototype, 'view', {
+  value: window,
+  configurable: true,
+});

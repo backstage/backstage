@@ -1,5 +1,4 @@
 name: CI
-
 on:
   pull_request:
     paths-ignore:
@@ -111,7 +110,7 @@ jobs:
         continue-on-error: true
 
       - name: prettier
-        run: yarn prettier:check '!ADOPTERS.md'
+        run: yarn prettier:check
 
       - name: lock
         run: yarn lock:check
@@ -120,7 +119,7 @@ jobs:
         run: yarn backstage-cli config:check --lax
 
       - name: lint
-        run: yarn lerna -- run lint --since origin/master
+        run: yarn backstage-cli repo lint --since origin/master
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -138,13 +137,16 @@ jobs:
       - name: verify doc links
         run: node scripts/verify-links.js
 
+      - name: verify local dependency ranges
+        run: node scripts/verify-local-dependencies.js
+
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run build --since origin/master --include-dependencies
+        run: yarn backstage-cli repo build --all --since origin/master
 
       - name: build all packages
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
-        run: yarn lerna -- run build
+        run: yarn backstage-cli repo build --all
 
       - name: verify type dependencies
         run: yarn lint:type-deps
@@ -153,6 +155,7 @@ jobs:
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run test --since origin/master -- --coverage --runInBand
         env:
+          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
@@ -164,6 +167,7 @@ jobs:
           yarn lerna -- run test -- --coverage --runInBand
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
         env:
+          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}

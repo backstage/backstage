@@ -21,6 +21,7 @@ import { Entity } from '@backstage/catalog-model';
  *
  * Any (at least one) of the outer sets must match, within which all of the
  * individual filters must match.
+ * @public
  */
 export type EntityFilter =
   | { allOf: EntityFilter[] }
@@ -38,7 +39,8 @@ export type EntityPagination = {
 };
 
 /**
- * Matches rows in the entities_search table.
+ * Matches rows in the search table.
+ * @public
  */
 export type EntitiesSearchFilter = {
   /**
@@ -78,7 +80,6 @@ export type EntitiesResponse = {
   pageInfo: PageInfo;
 };
 
-/** @public */
 export type EntityAncestryResponse = {
   rootEntityRef: string;
   items: Array<{
@@ -87,8 +88,41 @@ export type EntityAncestryResponse = {
   }>;
 };
 
-/** @public */
-export type EntitiesCatalog = {
+/**
+ * The request shape for {@link EntitiesCatalog.facets}.
+ */
+export interface EntityFacetsRequest {
+  /**
+   * A filter to apply on the full list of entities before computing the facets.
+   */
+  filter?: EntityFilter;
+  /**
+   * The facets to compute.
+   *
+   * @remarks
+   *
+   * This is a list of strings corresponding to paths within individual entity
+   * shapes. For example, to compute the facets for all available tags, you
+   * would pass in the string 'metadata.tags'.
+   */
+  facets: string[];
+  /**
+   * The optional token that authorizes the action.
+   */
+  authorizationToken?: string;
+}
+
+/**
+ * The response shape for {@link EntitiesCatalog.facets}.
+ */
+export interface EntityFacetsResponse {
+  /**
+   * The computed facets, one entry per facet in the request.
+   */
+  facets: Record<string, Array<{ value: string; count: number }>>;
+}
+
+export interface EntitiesCatalog {
   /**
    * Fetch entities.
    *
@@ -115,4 +149,12 @@ export type EntitiesCatalog = {
     entityRef: string,
     options?: { authorizationToken?: string },
   ): Promise<EntityAncestryResponse>;
-};
+
+  /**
+   * Computes facets for a set of entities, e.g. for populating filter lists
+   * or driving insights or similar.
+   *
+   * @param request - Request options
+   */
+  facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse>;
+}

@@ -1,5 +1,17 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.2.2
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+
+## 0.2.1
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+
 ## 0.2.0
 
 ### Minor Changes

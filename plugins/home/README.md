@@ -10,8 +10,7 @@ If you have a standalone app (you didn't clone this repo), then do
 
 ```bash
 # From the Backstage repository root
-cd packages/app
-yarn add @backstage/plugin-home
+yarn add --cwd packages/app @backstage/plugin-home
 ```
 
 ### Setting up the Home Page
@@ -94,4 +93,4 @@ Additionally, the API is at a very early state, so contributing with additional 
 
 ### Homepage Templates
 
-We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates). If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example to create your own](/plugins/home/src/templates/DefaultTemplate.stories.tsx), and then open a PR with your suggestion.
+We are hoping that we together can build up a collection of Homepage templates. We therefore put together a place where we can collect all the templates for the Home Plugin in the [storybook](https://backstage.io/storybook/?path=/story/plugins-home-templates). If you would like to contribute with a template, start by taking a look at the [DefaultTemplate storybook example to create your own](/packages/app/src/components/home/templates/DefaultTemplate.stories.tsx), and then open a PR with your suggestion.

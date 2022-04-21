@@ -27,9 +27,9 @@ import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { Writable } from 'stream';
 import {
-  runCommand,
   createTemplateAction,
   fetchContents,
+  executeShellCommand,
 } from '@backstage/plugin-scaffolder-backend';
 
 export class CookiecutterRunner {
@@ -57,23 +57,29 @@ export class CookiecutterRunner {
     workspacePath,
     values,
     logStream,
+    imageName,
+    templateDir,
+    templateContentsDir,
   }: {
     workspacePath: string;
     values: JsonObject;
     logStream: Writable;
+    imageName?: string;
+    templateDir: string;
+    templateContentsDir: string;
   }): Promise<void> {
-    const templateDir = path.join(workspacePath, 'template');
     const intermediateDir = path.join(workspacePath, 'intermediate');
     await fs.ensureDir(intermediateDir);
     const resultDir = path.join(workspacePath, 'result');
 
     // First lets grab the default cookiecutter.json file
-    const cookieCutterJson = await this.fetchTemplateCookieCutter(templateDir);
+    const cookieCutterJson = await this.fetchTemplateCookieCutter(
+      templateContentsDir,
+    );
 
-    const { imageName, ...valuesForCookieCutterJson } = values;
     const cookieInfo = {
       ...cookieCutterJson,
-      ...valuesForCookieCutterJson,
+      ...values,
     };
 
     await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);
@@ -89,14 +95,14 @@ export class CookiecutterRunner {
       () => false,
     );
     if (cookieCutterInstalled) {
-      await runCommand({
+      await executeShellCommand({
         command: 'cookiecutter',
         args: ['--no-input', '-o', intermediateDir, templateDir, '--verbose'],
         logStream,
       });
     } else {
       await this.containerRunner.runContainer({
-        imageName: (imageName as string) ?? 'spotify/backstage-cookiecutter',
+        imageName: imageName ?? 'spotify/backstage-cookiecutter',
         command: 'cookiecutter',
         args: ['--no-input', '-o', '/output', '/input', '--verbose'],
         mountDirs,
@@ -222,7 +228,7 @@ export function createFetchCookiecutterAction(options: {
       await fetchContents({
         reader,
         integrations,
-        baseUrl: ctx.baseUrl,
+        baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath: templateContentsDir,
       });
@@ -232,14 +238,16 @@ export function createFetchCookiecutterAction(options: {
         ...ctx.input.values,
         _copy_without_render: ctx.input.copyWithoutRender,
         _extensions: ctx.input.extensions,
-        imageName: ctx.input.imageName,
       };
 
       // Will execute the template in ./template and put the result in ./result
       await cookiecutter.run({
         workspacePath: workDir,
         logStream: ctx.logStream,
-        values,
+        values: values,
+        imageName: ctx.input.imageName,
+        templateDir: templateDir,
+        templateContentsDir: templateContentsDir,
       });
 
       // Finally move the template result into the task workspace

@@ -1,9 +1,8 @@
 name: Verify Microsite
-
 on:
   pull_request:
     paths:
-      - '.github/workflows/microsite-build-check.yml'
+      - '.github/workflows/verify_microsite.yml'
       - 'microsite/**'
       - 'docs/**'
 

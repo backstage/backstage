@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { CommanderStatic } from 'commander';
-import { TechdocsGenerator } from '@backstage/techdocs-common';
+import { Command } from 'commander';
+import { TechdocsGenerator } from '@backstage/plugin-techdocs-node';
 
 const defaultDockerImage = TechdocsGenerator.defaultDockerImage;
 
-export function registerCommands(program: CommanderStatic) {
+export function registerCommands(program: Command) {
   program
     .command('generate')
     .description('Generate TechDocs documentation site using MkDocs.')
@@ -45,7 +45,7 @@ export function registerCommands(program: CommanderStatic) {
     )
     .option(
       '--techdocs-ref <HOST_TYPE:URL>',
-      'The repository hosting documentation source files e.g. github:https://ghe.mycompany.net.com/org/repo.' +
+      'The repository hosting documentation source files e.g. url:https://ghe.mycompany.net.com/org/repo.' +
         '\nThis value is same as the backstage.io/techdocs-ref annotation of the corresponding Backstage entity.' +
         '\nIt is completely fine to skip this as it is only being used to set repo_url in mkdocs.yml if not found.\n',
     )
@@ -54,6 +54,16 @@ export function registerCommands(program: CommanderStatic) {
       'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.',
     )
     .option('-v --verbose', 'Enable verbose output.', false)
+    .option(
+      '--omitTechdocsCoreMkdocsPlugin',
+      "Don't patch MkDocs file automatically with techdocs-core plugin.",
+      false,
+    )
+    .option(
+      '--legacyCopyReadmeMdToIndexMd',
+      'Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided.',
+      false,
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
 
@@ -202,6 +212,10 @@ export function registerCommands(program: CommanderStatic) {
       defaultDockerImage,
     )
     .option(
+      '--docker-entrypoint <DOCKER_ENTRYPOINT>',
+      'Override the image entrypoint',
+    )
+    .option(
       '--no-docker',
       'Do not use Docker, run `mkdocs serve` in current user environment.',
     )
@@ -218,6 +232,10 @@ export function registerCommands(program: CommanderStatic) {
       '-i, --docker-image <DOCKER_IMAGE>',
       'The mkdocs docker container to use',
       defaultDockerImage,
+    )
+    .option(
+      '--docker-entrypoint <DOCKER_ENTRYPOINT>',
+      'Override the image entrypoint',
     )
     .option(
       '--no-docker',

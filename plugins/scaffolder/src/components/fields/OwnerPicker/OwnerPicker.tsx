@@ -13,15 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FieldProps } from '@rjsf/core';
 import React from 'react';
-import { EntityPicker } from '../EntityPicker';
+import { EntityPicker } from '../EntityPicker/EntityPicker';
+import { FieldExtensionComponentProps } from '../../../extensions';
 
-export const OwnerPicker = ({
-  schema: { title = 'Owner', description = 'The owner of the component' },
-  uiSchema,
-  ...props
-}: FieldProps<string>) => {
+/**
+ * The input props that can be specified under `ui:options` for the
+ * `OwnerPicker` field extension.
+ *
+ * @public
+ */
+export interface OwnerPickerUiOptions {
+  allowedKinds?: string[];
+}
+
+/**
+ * The underlying component that is rendered in the form for the `OwnerPicker`
+ * field extension.
+ *
+ * @public
+ */
+export const OwnerPicker = (
+  props: FieldExtensionComponentProps<string, OwnerPickerUiOptions>,
+) => {
+  const {
+    schema: { title = 'Owner', description = 'The owner of the component' },
+    uiSchema,
+    ...restProps
+  } = props;
+
   const ownerUiSchema = {
     ...uiSchema,
     'ui:options': {
@@ -35,7 +55,7 @@ export const OwnerPicker = ({
 
   return (
     <EntityPicker
-      {...props}
+      {...restProps}
       schema={{ title, description }}
       uiSchema={ownerUiSchema}
     />

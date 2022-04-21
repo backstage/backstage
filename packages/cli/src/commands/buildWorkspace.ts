@@ -15,10 +15,9 @@
  */
 
 import fs from 'fs-extra';
-import { Command } from 'commander';
 import { createDistWorkspace } from '../lib/packager';
 
-export default async (dir: string, _cmd: Command, packages: string[]) => {
+export default async (dir: string, packages: string[]) => {
   if (!(await fs.pathExists(dir))) {
     throw new Error(`Target workspace directory doesn't exist, '${dir}'`);
   }

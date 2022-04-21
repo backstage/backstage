@@ -8,9 +8,9 @@ You need to configure the action in your backend:
 
 ## From your Backstage root directory
 
-```
-cd packages/backend
-yarn add @backstage/plugin-scaffolder-backend-module-yeoman
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/plugin-scaffolder-backend-module-yeoman
 ```
 
 Configure the action:
@@ -23,28 +23,28 @@ const actions = [
   createRunYeomanAction(),
   ...createBuiltInActions({
     containerRunner,
-    integrations,
-    config,
     catalogClient,
-    reader,
+    integrations,
+    config: env.config,
+    reader: env.reader,
   }),
 ];
 
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
   actions,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 
 After that you can use the action in your template:
 
 ```yaml
-apiVersion: backstage.io/v1beta2
+apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: yeoman-demo
@@ -107,29 +107,30 @@ spec:
       name: Yeoman
       action: run:yeoman
       input:
-        namespace: 'org:codeowners'
+        namespace: org:codeowners
         options:
-          codeowners: '@{{ parameters.owner }}'
+          codeowners: '@${{ parameters.owner }}'
 
     - id: publish
-      if: '{{ not parameters.dryRun }}'
+      if: ${{ parameters.dryRun !== true }}
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
-        description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        allowedHosts:
+          - github.com
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
 
     - id: register
-      if: '{{ not parameters.dryRun }}'
+      if: ${{ parameters.dryRun !== true }}
       name: Register
       action: catalog:register
       input:
-        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
     - name: Results
-      if: '{{ parameters.dryRun }}'
+      if: ${{ parameters.dryRun }}
       action: debug:log
       input:
         listWorkspace: true
@@ -137,10 +138,10 @@ spec:
   output:
     links:
       - title: Repository
-        url: '{{ steps.publish.output.remoteUrl }}'
+        url: ${{ steps.publish.output.remoteUrl }}
       - title: Open in catalog
-        icon: 'catalog'
-        entityRef: '{{ steps.register.output.entityRef }}'
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
 ```
 
 You can also visit the `/create/actions` route in your Backstage application to find out more about the parameters this action accepts when it's installed to configure how you like.

@@ -25,29 +25,32 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { sidebarConfig } from './config';
+import { SidebarConfigContext, SidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export type SidebarPageClassKey = 'root';
 
-const useStyles = makeStyles<BackstageTheme, { isPinned: boolean }>(
+const useStyles = makeStyles<
+  BackstageTheme,
+  { sidebarConfig: SidebarConfig; isPinned: boolean }
+>(
   theme => ({
-    root: {
+    root: props => ({
       width: '100%',
       transition: 'padding-left 0.1s ease-out',
       isolation: 'isolate',
       [theme.breakpoints.up('sm')]: {
-        paddingLeft: ({ isPinned }) =>
-          isPinned
-            ? sidebarConfig.drawerWidthOpen
-            : sidebarConfig.drawerWidthClosed,
+        paddingLeft: () =>
+          props.isPinned
+            ? props.sidebarConfig.drawerWidthOpen
+            : props.sidebarConfig.drawerWidthClosed,
       },
       [theme.breakpoints.down('xs')]: {
-        paddingBottom: sidebarConfig.mobileSidebarHeight,
+        paddingBottom: props.sidebarConfig.mobileSidebarHeight,
       },
-    },
+    }),
     content: {
       zIndex: 0,
       isolation: 'isolate',
@@ -107,6 +110,7 @@ export function SidebarPage(props: SidebarPageProps) {
   const [isPinned, setIsPinned] = useState(() =>
     LocalStorage.getSidebarPinState(),
   );
+  const { sidebarConfig } = useContext(SidebarConfigContext);
 
   const contentRef = useRef(null);
 
@@ -130,7 +134,7 @@ export function SidebarPage(props: SidebarPageProps) {
 
   const toggleSidebarPinState = () => setIsPinned(!isPinned);
 
-  const classes = useStyles({ isPinned });
+  const classes = useStyles({ isPinned, sidebarConfig });
 
   return (
     <SidebarPinStateContext.Provider
@@ -151,7 +155,7 @@ export function SidebarPage(props: SidebarPageProps) {
  * This hook provides a react ref to the main content.
  * Allows to set an element as the main content and focus on that component.
  *
- * *Note: If `contentRef` is not set `focusContent` is noop. `Content` component sets this ref automaticaly*
+ * *Note: If `contentRef` is not set `focusContent` is noop. `Content` component sets this ref automatically*
  *
  * @public
  * @example

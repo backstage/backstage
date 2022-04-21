@@ -16,16 +16,13 @@
 
 import React from 'react';
 
-export const ComponentTab = ({
-  title,
-  Content,
-  ContextProvider,
-  ...childProps
-}: {
+export const ComponentTab = (props: {
   title: string;
   Content: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
 }) => {
+  const { title, Content, ContextProvider, ...childProps } = props;
+
   return ContextProvider ? (
     <ContextProvider {...childProps}>
       <Content />

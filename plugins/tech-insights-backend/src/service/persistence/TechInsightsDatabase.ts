@@ -26,7 +26,7 @@ import { rsort } from 'semver';
 import { groupBy, omit } from 'lodash';
 import { DateTime } from 'luxon';
 import { Logger } from 'winston';
-import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { isMaxItems, isTtl } from '../fact/factRetrievers/utils';
 
 type Transaction = Knex.Transaction;
@@ -62,7 +62,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
     return Object.values(groupedSchemas)
       .map(schemas => {
         const sorted = rsort(schemas.map(it => it.version));
-        return schemas.find(it => it.version === sorted[0])!!;
+        return schemas.find(it => it.version === sorted[0])!;
       })
       .map((it: RawDbFactSchemaRow) => ({
         ...omit(it, 'schema'),
@@ -161,7 +161,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
 
     return groupBy(
       results.map(it => {
-        const { namespace, kind, name } = parseEntityName(it.entity);
+        const { namespace, kind, name } = parseEntityRef(it.entity);
         const timestamp =
           typeof it.timestamp === 'string'
             ? DateTime.fromISO(it.timestamp)
@@ -188,7 +188,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
       throw new Error(`No schema found for ${id}. `);
     }
     const sorted = rsort(existingSchemas.map(it => it.version));
-    return existingSchemas.find(it => it.version === sorted[0])!!;
+    return existingSchemas.find(it => it.version === sorted[0])!;
   }
 
   private async deleteExpiredFactsByDate(
@@ -253,7 +253,7 @@ export class TechInsightsDatabase implements TechInsightsStore {
 
   private dbFactRowsToTechInsightFacts(rows: RawDbFactRow[]) {
     return rows.reduce((acc, it) => {
-      const { namespace, kind, name } = parseEntityName(it.entity);
+      const { namespace, kind, name } = parseEntityRef(it.entity);
       const timestamp =
         typeof it.timestamp === 'string'
           ? DateTime.fromISO(it.timestamp)

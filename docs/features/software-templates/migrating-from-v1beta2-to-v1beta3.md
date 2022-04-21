@@ -34,6 +34,20 @@ The migration path is pretty simple, and we've removed some of the pain points
 from writing the `handlebars` templates too. Let's go through what's new and how
 to upgrade.
 
+## Add the Processor to the `plugin-catalog-backend`
+
+An important change is to add the required processor to your `packages/backend/src/plugins/catalog.ts`
+
+```diff
++import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
+
+...
+
+   const builder = await CatalogBuilder.create(env);
++  builder.addProcessor(new ScaffolderEntitiesProcessor());
+   const { processingEngine, router } = await builder.build();
+```
+
 ## `backstage.io/v1beta2` -> `scaffolder.backstage.io/v1beta3`
 
 The most important change is that you'll need to switch over the `apiVersion` in
@@ -147,6 +161,53 @@ Now we have complex value support here too, expect that this `filter` will go
 away in future versions and the `RepoUrlPicker` will return an object so
 `parameters.repoUrl` will already be a
 `{ host: string; owner: string; repo: string }` 🚀
+
+## Links should be used instead of named outputs
+
+Previously, it was possible to provide links to the frontend using the named output `entityRef` and `remoteUrl`.
+These should be moved to `links` under the `output` object instead.
+
+```diff
+  output:
+-   remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+-   entityRef: '{{ steps.register.output.entityRef }}'
++   links:
++     - title: Repository
++       url: ${{ steps.publish.output.remoteUrl }}
++     - title: Open in catalog
++       icon: catalog
++       entityRef: ${{ steps.register.output.entityRef }}
+
+```
+
+## Watch out for `dash-case`
+
+The nunjucks compiler can run into issues if the `id` fields in your template steps use dash characters, since these IDs translate directly to JavaScript object properties when accessed as output. One possible migration path is to use `camelCase` for your action IDs.
+
+```diff
+  steps:
+-   id: my-custom-action
+-   ...
+-
+-   id: publish-pull-request
+-   input:
+-     repoUrl: {{ steps.my-custom-action.output.repoUrl }} # Will not recognize 'my-custom-action' as a JS property since it contains dashes!
+
+  steps:
++   id: myCustomAction
++   ...
++
++   id: publishPullRequest
++   input:
++     repoUrl: ${{ steps.myCustomAction.output.repoUrl }}
+```
+
+Alternatively, it's possible to keep the `dash-case` syntax and use brackets for property access as you would in JavaScript:
+
+```yaml
+input:
+  repoUrl: ${{ steps['my-custom-action'].output.repoUrl }}
+```
 
 ### Summary
 

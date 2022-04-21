@@ -1,5 +1,7 @@
 site_name: 'Backstage'
 site_description: 'Main documentation for Backstage features and platform APIs'
+repo_url: https://github.com/backstage/backstage
+edit_uri: edit/master/docs
 
 plugins:
   - techdocs-core
@@ -12,7 +14,7 @@ nav:
       - Vision: 'overview/vision.md'
       - The Spotify Story: 'overview/background.md'
       - Strategies for adopting: 'overview/adopting.md'
-      - Stability Index: 'overview/stability-index.md'
+      - Release & Versioning Policy: 'overview/versioning-policy.md'
       - Support and community: 'overview/support.md'
       - Glossary: 'overview/glossary.md'
       - Logo assets: 'overview/logos.md'
@@ -97,10 +99,14 @@ nav:
           - Discovery: 'integrations/bitbucket/discovery.md'
       - Datadog:
           - Installation: 'integrations/datadog-rum/installation.md'
+      - Gerrit:
+          - Locations: 'integrations/gerrit/locations.md'
+          - Discovery: 'integrations/gerrit/discovery.md'
       - GitHub:
           - Locations: 'integrations/github/locations.md'
           - Discovery: 'integrations/github/discovery.md'
           - Org Data: 'integrations/github/org.md'
+          - GitHub Apps: 'integrations/github/github-apps.md'
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
@@ -122,7 +128,6 @@ nav:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
           - Call existing API: 'plugins/call-existing-api.md'
-          - GitHub Apps for Backend Authentication: 'plugins/github-apps.md'
           - URL Reader: 'plugins/url-reader.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
@@ -170,6 +175,7 @@ nav:
       - Deprecations: 'api/deprecations.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
+      - Package Role Migration: 'tutorials/package-role-migration.md'
       - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'

@@ -14,22 +14,81 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-auth-backend';
+import {
+  createRouter,
+  providers,
+  defaultAuthProviderFactories,
+} from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createPlugin({
-  logger,
-  database,
-  config,
-  discovery,
-  tokenManager,
-}: PluginEnvironment): Promise<Router> {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   return await createRouter({
-    logger,
-    config,
-    database,
-    discovery,
-    tokenManager,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+    providerFactories: {
+      ...defaultAuthProviderFactories,
+
+      // NOTE: DO NOT add this many resolvers in your own instance!
+      //       It is important that each real user always gets resolved to
+      //       the same sign-in identity. The code below will not do that.
+      //       It is here for demo purposes only.
+      github: providers.github.create({
+        signIn: {
+          resolver: providers.github.resolvers.usernameMatchingUserEntityName(),
+        },
+      }),
+      gitlab: providers.gitlab.create({
+        signIn: {
+          async resolver({ result: { fullProfile } }, ctx) {
+            return ctx.signInWithCatalogUser({
+              entityRef: {
+                name: fullProfile.id,
+              },
+            });
+          },
+        },
+      }),
+      microsoft: providers.microsoft.create({
+        signIn: {
+          resolver:
+            providers.microsoft.resolvers.emailMatchingUserEntityAnnotation(),
+        },
+      }),
+      google: providers.google.create({
+        signIn: {
+          resolver:
+            providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
+        },
+      }),
+      okta: providers.okta.create({
+        signIn: {
+          resolver:
+            providers.okta.resolvers.emailMatchingUserEntityAnnotation(),
+        },
+      }),
+      bitbucket: providers.bitbucket.create({
+        signIn: {
+          resolver:
+            providers.bitbucket.resolvers.usernameMatchingUserEntityAnnotation(),
+        },
+      }),
+      onelogin: providers.onelogin.create({
+        signIn: {
+          async resolver({ result: { fullProfile } }, ctx) {
+            return ctx.signInWithCatalogUser({
+              entityRef: {
+                name: fullProfile.id,
+              },
+            });
+          },
+        },
+      }),
+    },
   });
 }

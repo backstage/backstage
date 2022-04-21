@@ -32,10 +32,7 @@ export const isKubernetesAvailable = (entity: Entity) =>
     entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION],
   );
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
+type Props = {};
 
 export const Router = (_props: Props) => {
   const { entity } = useEntity();

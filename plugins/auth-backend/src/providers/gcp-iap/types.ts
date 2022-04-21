@@ -71,9 +71,8 @@ export type GcpIapProviderInfo = {
 export type GcpIapResponse = AuthResponse<GcpIapProviderInfo>;
 
 /**
- * Options for {@link createGcpIapProvider}.
- *
  * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
  */
 export type GcpIapProviderOptions = {
   /**

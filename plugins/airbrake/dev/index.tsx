@@ -15,39 +15,74 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { EntityAirbrakeContent, airbrakePlugin } from '../src/plugin';
+import { TestApiProvider } from '@backstage/test-utils';
+import { airbrakePlugin, EntityAirbrakeContent } from '../src';
 import {
-  Content,
-  ContentHeader,
-  Header,
-  HeaderLabel,
-  Page,
-  SupportButton,
-} from '@backstage/core-components';
+  airbrakeApiRef,
+  localDiscoveryApi,
+  MockAirbrakeApi,
+  ProductionAirbrakeApi,
+} from '../src/api';
+import { ApiBar } from './components/ApiBar';
+import { Content, Header, Page } from '@backstage/core-components';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { createEntity } from '../src/api';
+import CloudOffIcon from '@material-ui/icons/CloudOff';
+import CloudIcon from '@material-ui/icons/Cloud';
+import { Context, ContextProvider } from './components/ContextProvider';
 
 createDevApp()
   .registerPlugin(airbrakePlugin)
   .addPage({
     element: (
       <Page themeId="tool">
-        <Header
-          title="Airbrake demo application"
-          subtitle="Test the plugin below"
-        >
-          <HeaderLabel label="Owner" value="Owner" />
-          <HeaderLabel label="Lifecycle" value="Alpha" />
-        </Header>
+        <Header title="Airbrake demo application" subtitle="Mock API" />
         <Content>
-          <ContentHeader title="Airbrake">
-            <SupportButton>
-              A description of your plugin goes here.
-            </SupportButton>
-          </ContentHeader>
-          <EntityAirbrakeContent />
+          <TestApiProvider apis={[[airbrakeApiRef, new MockAirbrakeApi(800)]]}>
+            <EntityProvider entity={createEntity(1234)}>
+              <EntityAirbrakeContent />
+            </EntityProvider>
+          </TestApiProvider>
         </Content>
       </Page>
     ),
-    title: 'Root Page',
-    path: '/airbrake',
+    title: 'Mock API',
+    path: '/airbrake-mock-api',
+    icon: CloudOffIcon,
+  })
+  .addPage({
+    element: (
+      <ContextProvider>
+        <Page themeId="tool">
+          <Header
+            title="Airbrake demo application"
+            subtitle="Real API (The Airbrake backend plugin must be running for this to work)"
+          >
+            <ApiBar />
+          </Header>
+          <Content>
+            <Context.Consumer>
+              {value => (
+                <TestApiProvider
+                  apis={[
+                    [
+                      airbrakeApiRef,
+                      new ProductionAirbrakeApi(localDiscoveryApi),
+                    ],
+                  ]}
+                >
+                  <EntityProvider entity={createEntity(value.projectId)}>
+                    <EntityAirbrakeContent />
+                  </EntityProvider>
+                </TestApiProvider>
+              )}
+            </Context.Consumer>
+          </Content>
+        </Page>
+      </ContextProvider>
+    ),
+    title: 'Real API',
+    path: '/airbrake-real-api',
+    icon: CloudIcon,
   })
   .render();

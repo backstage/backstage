@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  ENTITY_DEFAULT_NAMESPACE,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, parseEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
@@ -108,7 +105,7 @@ export const IncidentNewModal = ({
         const { userEntityRef } = await identityApi.getBackstageIdentity();
         const { name: userName } = parseEntityRef(userEntityRef, {
           defaultKind: 'User',
-          defaultNamespace: ENTITY_DEFAULT_NAMESPACE,
+          defaultNamespace: DEFAULT_NAMESPACE,
         });
         await ilertApi.createIncident({
           integrationKey,

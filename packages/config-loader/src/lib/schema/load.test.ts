@@ -105,7 +105,7 @@ describe('loadConfigSchema', () => {
     expect(() =>
       schema2.process([...configs, { data: { key1: 3 }, context: 'test2' }]),
     ).toThrow(
-      'Config validation failed, Config should be string { type=string } at /key1',
+      'Config validation failed, Config must be string { type=string } at /key1',
     );
 
     await expect(
@@ -142,7 +142,7 @@ describe('loadConfigSchema', () => {
       ];
 
       expect(() => schema.process(configs)).toThrow(
-        'Config validation failed, Config should be number { type=number } at /key2',
+        'Config validation failed, Config must be number { type=number } at /key2',
       );
       expect(schema.process(configs, { visibility: ['frontend'] })).toEqual([
         {
@@ -151,7 +151,7 @@ describe('loadConfigSchema', () => {
         },
       ]);
       expect(() => schema.process(configs, { visibility: ['secret'] })).toThrow(
-        'Config validation failed, Config should be number { type=number } at /key2',
+        'Config validation failed, Config must be number { type=number } at /key2',
       );
     });
 
@@ -203,12 +203,12 @@ describe('loadConfigSchema', () => {
         },
       ]);
       expect(() => schema.process(mkConfig({ y: 1 }))).toThrow(
-        'Config validation failed, Config should be string { type=string } at /nested/0/y',
+        'Config validation failed, Config must be string { type=string } at /nested/0/y',
       );
       expect(() =>
         schema.process(mkConfig({ y: 1 }), { visibility: ['frontend'] }),
       ).toThrow(
-        'Config validation failed, Config should be string { type=string } at /nested/0/y',
+        'Config validation failed, Config must be string { type=string } at /nested/0/y',
       );
       expect(
         schema.process(mkConfig({ x: 'a' }), { visibility: ['frontend'] }),
@@ -229,7 +229,7 @@ describe('loadConfigSchema', () => {
       expect(() =>
         schema.process(mkConfig({ y: 'aaaa' }), { visibility: ['frontend'] }),
       ).toThrow(
-        'Config validation failed, Config should match pattern "^...$" { pattern=^...$ } at /nested/0/y',
+        'Config validation failed, Config must match pattern "^...$" { pattern=^...$ } at /nested/0/y',
       );
 
       // This is a bit of an edge case where we have a structural error, these should always be reported
@@ -238,7 +238,7 @@ describe('loadConfigSchema', () => {
           visibility: ['frontend'],
         }),
       ).toThrow(
-        'Config validation failed, Config should be array { type=array } at /nested',
+        'Config validation failed, Config must be array { type=array } at /nested',
       );
     });
   });
@@ -273,7 +273,14 @@ describe('loadConfigSchema', () => {
         visibility: ['frontend'],
       }),
     ).toThrow(
-      "Config should have required property 'x a' { missingProperty=x a } at /other",
+      "Config must have required property 'x a' { missingProperty=x a } at /other",
     );
+
+    expect(
+      schema.process([{ data: { other: {} }, context: 'test' }], {
+        visibility: ['frontend'],
+        ignoreSchemaErrors: true,
+      }),
+    ).toEqual([{ data: {}, context: 'test' }]);
   });
 });

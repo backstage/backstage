@@ -17,6 +17,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
+  parseEntityRef,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
@@ -29,9 +30,9 @@ import {
 } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  DefaultStarredEntitiesApi,
   entityRouteRef,
   starredEntitiesApiRef,
+  MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
 import {
   mockBreakpoint,
@@ -44,7 +45,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
-import { EntityRow } from '../CatalogTable';
+import { CatalogTableRow } from '../CatalogTable';
 import { DefaultCatalogPage } from './DefaultCatalogPage';
 
 describe('DefaultCatalogPage', () => {
@@ -73,7 +74,7 @@ describe('DefaultCatalogPage', () => {
             relations: [
               {
                 type: RELATION_OWNED_BY,
-                target: { kind: 'Group', name: 'tools', namespace: 'default' },
+                targetRef: 'group:default/tools',
               },
             ],
           },
@@ -90,8 +91,9 @@ describe('DefaultCatalogPage', () => {
             relations: [
               {
                 type: RELATION_OWNED_BY,
+                targetRef: 'group:default/not-tools',
                 target: {
-                  kind: 'Group',
+                  kind: 'group',
                   name: 'not-tools',
                   namespace: 'default',
                 },
@@ -100,16 +102,17 @@ describe('DefaultCatalogPage', () => {
           },
         ] as Entity[],
       }),
-    getLocationByEntity: () =>
-      Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
-    getEntityByName: async entityName => {
+    getLocationByRef: () =>
+      Promise.resolve({ id: 'id', type: 'url', target: 'url' }),
+    getEntityByRef: async entityRef => {
       return {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'User',
-        metadata: { name: entityName.name },
+        metadata: { name: parseEntityRef(entityRef).name },
         relations: [
           {
             type: RELATION_MEMBER_OF,
+            targetRef: 'group:default/tools',
             target: { namespace: 'default', kind: 'Group', name: 'tools' },
           },
         ],
@@ -138,10 +141,7 @@ describe('DefaultCatalogPage', () => {
             [catalogApiRef, catalogApi],
             [identityApiRef, identityApi],
             [storageApiRef, storageApi],
-            [
-              starredEntitiesApiRef,
-              new DefaultStarredEntitiesApi({ storageApi }),
-            ],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           ]}
         >
           {children}
@@ -180,7 +180,7 @@ describe('DefaultCatalogPage', () => {
   }, 20_000);
 
   it('should render the custom column passed as prop', async () => {
-    const columns: TableColumn<EntityRow>[] = [
+    const columns: TableColumn<CatalogTableRow>[] = [
       { title: 'Foo', field: 'entity.foo' },
       { title: 'Bar', field: 'entity.bar' },
       { title: 'Baz', field: 'entity.spec.lifecycle' },
@@ -208,7 +208,7 @@ describe('DefaultCatalogPage', () => {
   }, 20_000);
 
   it('should render the custom actions of an item passed as prop', async () => {
-    const actions: TableProps<EntityRow>['actions'] = [
+    const actions: TableProps<CatalogTableRow>['actions'] = [
       () => {
         return {
           icon: () => <DashboardIcon fontSize="small" />,

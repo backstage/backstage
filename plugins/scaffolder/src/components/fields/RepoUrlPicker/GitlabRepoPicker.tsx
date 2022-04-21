@@ -65,7 +65,8 @@ export const GitlabRepoPicker = (props: {
           </>
         )}
         <FormHelperText>
-          The organization, user or project that this repo will belong to
+          The organization, groups, subgroups, user, project (also known as
+          namespaces in gitlab), that this repo will belong to
         </FormHelperText>
       </FormControl>
       <FormControl

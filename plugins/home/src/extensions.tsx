@@ -21,6 +21,9 @@ import { InfoCard } from '@backstage/core-components';
 import { SettingsModal } from './components';
 import { createReactExtension, useApp } from '@backstage/core-plugin-api';
 
+/**
+ * @public
+ */
 export type ComponentRenderer = {
   Renderer?: (props: RendererProps) => JSX.Element;
 };
@@ -41,15 +44,13 @@ type CardExtensionProps<T> = ComponentRenderer & { title?: string } & T;
  *
  * @public
  */
-export function createCardExtension<T>({
-  title,
-  components,
-  name,
-}: {
+export function createCardExtension<T>(options: {
   title: string;
   components: () => Promise<ComponentParts>;
   name?: string;
 }) {
+  const { title, components, name } = options;
+
   return createReactExtension({
     name,
     component: {

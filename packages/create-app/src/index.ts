@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-import program from 'commander';
+import { program } from 'commander';
 import { exitWithError } from './lib/errors';
 import { version } from '../package.json';
 import createApp from './createApp';
@@ -38,7 +38,7 @@ const main = (argv: string[]) => {
       '--skip-install',
       'Skip the install and builds steps after creating the app',
     )
-    .action(cmd => createApp(cmd, version));
+    .action(cmd => createApp(cmd));
 
   program.parse(argv);
 };

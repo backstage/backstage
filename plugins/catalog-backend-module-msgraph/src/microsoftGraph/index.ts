@@ -19,6 +19,7 @@ export type { GroupMember, ODataQuery } from './client';
 export { readMicrosoftGraphConfig } from './config';
 export type { MicrosoftGraphProviderConfig } from './config';
 export {
+  MICROSOFT_EMAIL_ANNOTATION,
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
   MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,

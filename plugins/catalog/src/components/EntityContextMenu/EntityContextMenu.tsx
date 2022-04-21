@@ -24,7 +24,8 @@ import {
   Popover,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Cancel from '@material-ui/icons/Cancel';
+import CancelIcon from '@material-ui/icons/Cancel';
+import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -40,28 +41,31 @@ const useStyles = makeStyles({
 
 // NOTE(freben): Intentionally not exported at this point, since it's part of
 // the unstable extra context menu items concept below
-type ExtraContextMenuItem = {
+interface ExtraContextMenuItem {
   title: string;
   Icon: IconComponent;
   onClick: () => void;
-};
+}
 
 // unstable context menu option, eg: disable the unregister entity menu
-type contextMenuOptions = {
+interface contextMenuOptions {
   disableUnregister: boolean;
-};
+}
 
-type Props = {
+interface EntityContextMenuProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: contextMenuOptions;
   onUnregisterEntity: () => void;
-};
+  onInspectEntity: () => void;
+}
 
-export const EntityContextMenu = ({
-  UNSTABLE_extraContextMenuItems,
-  UNSTABLE_contextMenuOptions,
-  onUnregisterEntity,
-}: Props) => {
+export function EntityContextMenu(props: EntityContextMenuProps) {
+  const {
+    UNSTABLE_extraContextMenuItems,
+    UNSTABLE_contextMenuOptions,
+    onUnregisterEntity,
+    onInspectEntity,
+  } = props;
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
   const unregisterPermission = useEntityPermission(
@@ -128,12 +132,23 @@ export const EntityContextMenu = ({
             disabled={disableUnregister}
           >
             <ListItemIcon>
-              <Cancel fontSize="small" />
+              <CancelIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="Unregister entity" />
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              onClose();
+              onInspectEntity();
+            }}
+          >
+            <ListItemIcon>
+              <BugReportIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Inspect entity" />
           </MenuItem>
         </MenuList>
       </Popover>
     </>
   );
-};
+}

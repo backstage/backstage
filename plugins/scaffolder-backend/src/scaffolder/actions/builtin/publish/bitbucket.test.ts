@@ -19,7 +19,7 @@ jest.mock('../helpers');
 import { createPublishBitbucketAction } from './bitbucket';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -51,7 +51,7 @@ describe('publish:bitbucket', () => {
   const mockContext = {
     input: {
       repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
-      repoVisibility: 'private',
+      repoVisibility: 'private' as const,
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -348,6 +348,7 @@ describe('publish:bitbucket', () => {
       defaultBranch: 'master',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -391,6 +392,7 @@ describe('publish:bitbucket', () => {
       defaultBranch: 'main',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -460,6 +462,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -526,7 +529,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       defaultBranch: 'master',
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
@@ -565,6 +568,49 @@ describe('publish:bitbucket', () => {
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
       'https://bitbucket.org/workspace/repo/src/master',
+    );
+  });
+
+  it('should call outputs with the correct urls with correct default branch', async () => {
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/workspace/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        defaultBranch: 'main',
+      },
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://bitbucket.org/workspace/cloneurl',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'https://bitbucket.org/workspace/repo/src/main',
     );
   });
 });

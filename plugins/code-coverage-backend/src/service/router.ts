@@ -18,7 +18,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import xmlparser from 'express-xml-bodyparser';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
   errorHandler,
   PluginDatabaseManager,
@@ -33,11 +33,7 @@ import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
 import { Cobertura } from './converter/cobertura';
 import { Jacoco } from './converter/jacoco';
 import { Converter } from './converter';
-import {
-  EntityRef,
-  getEntitySourceLocation,
-  parseEntityName,
-} from '@backstage/catalog-model';
+import { getEntitySourceLocation } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   config: Config;
@@ -60,7 +56,7 @@ export const makeRouter = async (
     await database.getClient(),
   );
   const codecovUrl = await discovery.getExternalBaseUrl('code-coverage');
-  const catalogApi = new CatalogClient({ discoveryApi: discovery });
+  const catalogApi: CatalogApi = new CatalogClient({ discoveryApi: discovery });
   const scm = ScmIntegrations.fromConfig(config);
 
   const router = Router();
@@ -78,8 +74,7 @@ export const makeRouter = async (
    */
   router.get('/report', async (req, res) => {
     const { entity } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
-    const entityLookup = await catalogApi.getEntityByName(entityName);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -101,8 +96,7 @@ export const makeRouter = async (
    */
   router.get('/history', async (req, res) => {
     const { entity } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
-    const entityLookup = await catalogApi.getEntityByName(entityName);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -120,8 +114,7 @@ export const makeRouter = async (
    */
   router.get('/file-content', async (req, res) => {
     const { entity, path } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
-    const entityLookup = await catalogApi.getEntityByName(entityName);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }
@@ -172,8 +165,7 @@ export const makeRouter = async (
    */
   router.post('/report', async (req, res) => {
     const { entity, coverageType } = req.query;
-    const entityName = parseEntityName(entity as EntityRef);
-    const entityLookup = await catalogApi.getEntityByName(entityName);
+    const entityLookup = await catalogApi.getEntityByRef(entity as string);
     if (!entityLookup) {
       throw new NotFoundError(`No entity found matching ${entity}`);
     }

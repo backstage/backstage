@@ -58,7 +58,7 @@ export interface Config {
           clientSecret: string;
 
           // TODO: Consider not making these config options and pass them in the
-          // constructor instead. They are probably not environment specifc, so
+          // constructor instead. They are probably not environment specific, so
           // they could also be configured "in code".
 
           /**
@@ -74,11 +74,31 @@ export interface Config {
            */
           groupFilter?: string;
           /**
+           * The search criteria to apply to extract users by groups memberships.
+           *
+           * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
+           */
+          groupSearch?: string;
+
+          /**
+           * The fields to be fetched on query.
+           *
+           * E.g. ["id", "displayName", "description"]
+           */
+          groupSelect?: string[];
+
+          /**
            * The filter to apply to extract users by groups memberships.
            *
            * E.g. "displayName eq 'Backstage Users'"
            */
           userGroupMemberFilter?: string;
+          /**
+           * The search criteria to apply to extract groups.
+           *
+           * E.g. "\"displayName:-team\"" would only match groups which contain '-team'
+           */
+          userGroupMemberSearch?: string;
         }>;
       };
     };

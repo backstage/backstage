@@ -28,7 +28,6 @@ describe('NoForeignRootFieldsEntityPolicy', () => {
       metadata:
         uid: e01199ab-08cc-44c2-8e19-5c29ded82521
         etag: lsndfkjsndfkjnsdfkjnsd==
-        generation: 13
         name: my-component-yay
         namespace: the-namespace
         labels:

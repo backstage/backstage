@@ -15,7 +15,6 @@
  */
 
 import express from 'express';
-import { Logger } from 'winston';
 import { Profile as PassportProfile } from 'passport';
 import { Strategy as GithubStrategy } from 'passport-github2';
 import {
@@ -28,10 +27,10 @@ import {
 } from '../../lib/passport';
 import {
   RedirectInfo,
-  AuthProviderFactory,
   AuthHandler,
   SignInResolver,
   StateEncoder,
+  AuthResolverContext,
 } from '../types';
 import {
   OAuthAdapter,
@@ -42,8 +41,7 @@ import {
   encodeState,
   OAuthRefreshRequest,
 } from '../../lib/oauth';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import { TokenIssuer } from '../../identity';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 const ACCESS_TOKEN_PREFIX = 'access-token.';
 
@@ -72,27 +70,21 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
   signInResolver?: SignInResolver<GithubOAuthResult>;
   authHandler: AuthHandler<GithubOAuthResult>;
   stateEncoder: StateEncoder;
-  tokenIssuer: TokenIssuer;
-  catalogIdentityClient: CatalogIdentityClient;
-  logger: Logger;
+  resolverContext: AuthResolverContext;
 };
 
 export class GithubAuthProvider implements OAuthHandlers {
   private readonly _strategy: GithubStrategy;
   private readonly signInResolver?: SignInResolver<GithubOAuthResult>;
   private readonly authHandler: AuthHandler<GithubOAuthResult>;
-  private readonly tokenIssuer: TokenIssuer;
-  private readonly catalogIdentityClient: CatalogIdentityClient;
-  private readonly logger: Logger;
+  private readonly resolverContext: AuthResolverContext;
   private readonly stateEncoder: StateEncoder;
 
   constructor(options: GithubAuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.stateEncoder = options.stateEncoder;
-    this.tokenIssuer = options.tokenIssuer;
-    this.catalogIdentityClient = options.catalogIdentityClient;
-    this.logger = options.logger;
+    this.resolverContext = options.resolverContext;
     this._strategy = new GithubStrategy(
       {
         clientID: options.clientId,
@@ -194,12 +186,7 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: GithubOAuthResult) {
-    const context = {
-      logger: this.logger,
-      catalogIdentityClient: this.catalogIdentityClient,
-      tokenIssuer: this.tokenIssuer,
-    };
-    const { profile } = await this.authHandler(result, context);
+    const { profile } = await this.authHandler(result, this.resolverContext);
 
     const expiresInStr = result.params.expires_in;
     let expiresInSeconds =
@@ -213,7 +200,7 @@ export class GithubAuthProvider implements OAuthHandlers {
           result,
           profile,
         },
-        context,
+        this.resolverContext,
       );
 
       // GitHub sessions last longer than Backstage sessions, so if we're using
@@ -240,23 +227,10 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 }
 
-export const githubDefaultSignInResolver: SignInResolver<
-  GithubOAuthResult
-> = async (info, ctx) => {
-  const { fullProfile } = info.result;
-
-  const userId = fullProfile.username || fullProfile.id;
-
-  const token = await ctx.tokenIssuer.issueToken({
-    claims: {
-      sub: `user:default/${userId}`,
-      ent: [`user:default/${userId}`],
-    },
-  });
-
-  return { id: userId, token };
-};
-
+/**
+ * @public
+ * @deprecated This type has been inlined into the create method and will be removed.
+ */
 export type GithubProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -271,7 +245,7 @@ export type GithubProviderOptions = {
     /**
      * Maps an auth result to a Backstage identity for the user.
      */
-    resolver?: SignInResolver<GithubOAuthResult>;
+    resolver: SignInResolver<GithubOAuthResult>;
   };
 
   /**
@@ -293,85 +267,123 @@ export type GithubProviderOptions = {
   stateEncoder?: StateEncoder;
 };
 
-export const createGithubProvider = (
-  options?: GithubProviderOptions,
-): AuthProviderFactory => {
-  return ({
-    providerId,
-    globalConfig,
-    config,
-    tokenIssuer,
-    tokenManager,
-    catalogApi,
-    logger,
-  }) =>
-    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-      const clientId = envConfig.getString('clientId');
-      const clientSecret = envConfig.getString('clientSecret');
-      const enterpriseInstanceUrl = envConfig.getOptionalString(
-        'enterpriseInstanceUrl',
-      );
-      const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-      const authorizationUrl = enterpriseInstanceUrl
-        ? `${enterpriseInstanceUrl}/login/oauth/authorize`
-        : undefined;
-      const tokenUrl = enterpriseInstanceUrl
-        ? `${enterpriseInstanceUrl}/login/oauth/access_token`
-        : undefined;
-      const userProfileUrl = enterpriseInstanceUrl
-        ? `${enterpriseInstanceUrl}/api/v3/user`
-        : undefined;
-      const callbackUrl =
-        customCallbackUrl ||
-        `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+/**
+ * Auth provider integration for GitHub auth
+ *
+ * @public
+ */
+export const github = createAuthProviderIntegration({
+  create(options?: {
+    /**
+     * The profile transformation function used to verify and convert the auth response
+     * into the profile that will be presented to the user.
+     */
+    authHandler?: AuthHandler<GithubOAuthResult>;
 
-      const catalogIdentityClient = new CatalogIdentityClient({
-        catalogApi,
-        tokenManager,
-      });
+    /**
+     * Configure sign-in for this provider, without it the provider can not be used to sign users in.
+     */
+    signIn?: {
+      /**
+       * Maps an auth result to a Backstage identity for the user.
+       */
+      resolver: SignInResolver<GithubOAuthResult>;
+    };
 
-      const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
-        ? options.authHandler
-        : async ({ fullProfile }) => ({
-            profile: makeProfileInfo(fullProfile),
+    /**
+     * The state encoder used to encode the 'state' parameter on the OAuth request.
+     *
+     * It should return a string that takes the state params (from the request), url encodes the params
+     * and finally base64 encodes them.
+     *
+     * Providing your own stateEncoder will allow you to add addition parameters to the state field.
+     *
+     * It is typed as follows:
+     *   `export type StateEncoder = (input: OAuthState) => Promise<{encodedState: string}>;`
+     *
+     * Note: the stateEncoder must encode a 'nonce' value and an 'env' value. Without this, the OAuth flow will fail
+     * (These two values will be set by the req.state by default)
+     *
+     * For more information, please see the helper module in ../../oauth/helpers #readState
+     */
+    stateEncoder?: StateEncoder;
+  }) {
+    return ({ providerId, globalConfig, config, resolverContext }) =>
+      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+        const clientId = envConfig.getString('clientId');
+        const clientSecret = envConfig.getString('clientSecret');
+        const enterpriseInstanceUrl = envConfig
+          .getOptionalString('enterpriseInstanceUrl')
+          ?.replace(/\/$/, '');
+        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
+        const authorizationUrl = enterpriseInstanceUrl
+          ? `${enterpriseInstanceUrl}/login/oauth/authorize`
+          : undefined;
+        const tokenUrl = enterpriseInstanceUrl
+          ? `${enterpriseInstanceUrl}/login/oauth/access_token`
+          : undefined;
+        const userProfileUrl = enterpriseInstanceUrl
+          ? `${enterpriseInstanceUrl}/api/v3/user`
+          : undefined;
+        const callbackUrl =
+          customCallbackUrl ||
+          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+
+        const authHandler: AuthHandler<GithubOAuthResult> = options?.authHandler
+          ? options.authHandler
+          : async ({ fullProfile }) => ({
+              profile: makeProfileInfo(fullProfile),
+            });
+
+        const stateEncoder: StateEncoder =
+          options?.stateEncoder ??
+          (async (
+            req: OAuthStartRequest,
+          ): Promise<{ encodedState: string }> => {
+            return { encodedState: encodeState(req.state) };
           });
 
-      const signInResolverFn =
-        options?.signIn?.resolver ?? githubDefaultSignInResolver;
-
-      const signInResolver: SignInResolver<GithubOAuthResult> = info =>
-        signInResolverFn(info, {
-          catalogIdentityClient,
-          tokenIssuer,
-          logger,
+        const provider = new GithubAuthProvider({
+          clientId,
+          clientSecret,
+          callbackUrl,
+          tokenUrl,
+          userProfileUrl,
+          authorizationUrl,
+          signInResolver: options?.signIn?.resolver,
+          authHandler,
+          stateEncoder,
+          resolverContext,
         });
 
-      const stateEncoder: StateEncoder =
-        options?.stateEncoder ??
-        (async (req: OAuthStartRequest): Promise<{ encodedState: string }> => {
-          return { encodedState: encodeState(req.state) };
+        return OAuthAdapter.fromConfig(globalConfig, provider, {
+          persistScopes: true,
+          providerId,
+          callbackUrl,
         });
-
-      const provider = new GithubAuthProvider({
-        clientId,
-        clientSecret,
-        callbackUrl,
-        tokenUrl,
-        userProfileUrl,
-        authorizationUrl,
-        signInResolver,
-        authHandler,
-        tokenIssuer,
-        catalogIdentityClient,
-        stateEncoder,
-        logger,
       });
+  },
+  resolvers: {
+    /**
+     * Looks up the user by matching their GitHub username to the entity name.
+     */
+    usernameMatchingUserEntityName: (): SignInResolver<GithubOAuthResult> => {
+      return async (info, ctx) => {
+        const { fullProfile } = info.result;
 
-      return OAuthAdapter.fromConfig(globalConfig, provider, {
-        persistScopes: true,
-        providerId,
-        tokenIssuer,
-        callbackUrl,
-      });
-    });
-};
+        const userId = fullProfile.username;
+        if (!userId) {
+          throw new Error(`GitHub user profile does not contain a username`);
+        }
+
+        return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
+      };
+    },
+  },
+});
+
+/**
+ * @public
+ * @deprecated Use `providers.github.create` instead
+ */
+export const createGithubProvider = github.create;

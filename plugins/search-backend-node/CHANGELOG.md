@@ -1,5 +1,257 @@
 # @backstage/plugin-search-backend-node
 
+## 0.6.0
+
+### Minor Changes
+
+- 0a63e99a26: **BREAKING**: `IndexBuilder.addCollator()` now requires a `schedule` parameter (replacing `defaultRefreshIntervalSeconds`) which is expected to be a `TaskRunner` that is configured with the desired search indexing schedule for the given collator.
+
+  `Scheduler.addToSchedule()` now takes a new parameter object (`ScheduleTaskParameters`) with two new options `id` and `scheduledRunner` in addition to the migrated `task` argument.
+
+  NOTE: The search backend plugin now creates a dedicated database for coordinating indexing tasks.
+
+  To make this change to an existing app, make the following changes to `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  +import { Duration } from 'luxon';
+
+  /* ... */
+
+  +  const schedule = env.scheduler.createScheduledTaskRunner({
+  +    frequency: Duration.fromObject({ minutes: 10 }),
+  +    timeout: Duration.fromObject({ minutes: 15 }),
+  +    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +  });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     const { scheduler } = await indexBuilder.build();
+  -  setTimeout(() => scheduler.start(), 3000);
+  +  scheduler.start();
+  /* ... */
+  ```
+
+  NOTE: For scenarios where the `lunr` search engine is used in a multi-node configuration, a non-distributed `TaskRunner` like the following should be implemented to ensure consistency across nodes (alternatively, you can configure
+  the search plugin to use a non-distributed DB such as [SQLite](https://backstage.io/docs/tutorials/configuring-plugin-databases#postgresql-and-sqlite-3)):
+
+  ```diff
+  +import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+
+  /* ... */
+
+  +  const schedule: TaskRunner = {
+  +    run: async (task: TaskInvocationDefinition) => {
+  +      const startRefresh = async () => {
+  +        while (!task.signal?.aborted) {
+  +          try {
+  +            await task.fn(task.signal);
+  +          } catch {
+  +            // ignore intentionally
+  +          }
+  +
+  +          await new Promise(resolve => setTimeout(resolve, 600 * 1000));
+  +        }
+  +      };
+  +      startRefresh();
+  +    },
+  +  };
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+  /* ... */
+  ```
+
+### Patch Changes
+
+- 62ee65422c: Use new `IndexableResultSet` type as return type of query method in `SearchEngine` implementation.
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.0
+  - @backstage/plugin-search-common@0.3.3
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 0a63e99a26: **BREAKING**: `IndexBuilder.addCollator()` now requires a `schedule` parameter (replacing `defaultRefreshIntervalSeconds`) which is expected to be a `TaskRunner` that is configured with the desired search indexing schedule for the given collator.
+
+  `Scheduler.addToSchedule()` now takes a new parameter object (`ScheduleTaskParameters`) with two new options `id` and `scheduledRunner` in addition to the migrated `task` argument.
+
+  NOTE: The search backend plugin now creates a dedicated database for coordinating indexing tasks.
+
+  To make this change to an existing app, make the following changes to `packages/backend/src/plugins/search.ts`:
+
+  ```diff
+  +import { Duration } from 'luxon';
+
+  /* ... */
+
+  +  const schedule = env.scheduler.createScheduledTaskRunner({
+  +    frequency: Duration.fromObject({ minutes: 10 }),
+  +    timeout: Duration.fromObject({ minutes: 15 }),
+  +    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +  });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+     const { scheduler } = await indexBuilder.build();
+  -  setTimeout(() => scheduler.start(), 3000);
+  +  scheduler.start();
+  /* ... */
+  ```
+
+  NOTE: For scenarios where the `lunr` search engine is used in a multi-node configuration, a non-distributed `TaskRunner` like the following should be implemented to ensure consistency across nodes (alternatively, you can configure
+  the search plugin to use a non-distributed DB such as [SQLite](https://backstage.io/docs/tutorials/configuring-plugin-databases#postgresql-and-sqlite-3)):
+
+  ```diff
+  +import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+
+  /* ... */
+
+  +  const schedule: TaskRunner = {
+  +    run: async (task: TaskInvocationDefinition) => {
+  +      const startRefresh = async () => {
+  +        while (!task.signal?.aborted) {
+  +          try {
+  +            await task.fn(task.signal);
+  +          } catch {
+  +            // ignore intentionally
+  +          }
+  +
+  +          await new Promise(resolve => setTimeout(resolve, 600 * 1000));
+  +        }
+  +      };
+  +      startRefresh();
+  +    },
+  +  };
+
+     indexBuilder.addCollator({
+  -    defaultRefreshIntervalSeconds: 600,
+  +    schedule,
+       factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+        discovery: env.discovery,
+        tokenManager: env.tokenManager,
+       }),
+     });
+
+  /* ... */
+  ```
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- 62ee65422c: Use new `IndexableResultSet` type as return type of query method in `SearchEngine` implementation.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.3-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-search-common@0.3.2
+
+## 0.5.1
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.1
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.1-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 022507c860: **BREAKING**
+
+  The Backstage Search Platform's indexing process has been rewritten as a stream
+  pipeline in order to improve efficiency and performance on large document sets.
+
+  The concepts of `Collator` and `Decorator` have been replaced with readable and
+  transform object streams (respectively), as well as factory classes to
+  instantiate them. Accordingly, the `SearchEngine.index()` method has also been
+  replaced with a `getIndexer()` factory method that resolves to a writable
+  object stream.
+
+  Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  for further details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/search-common@0.3.0
+
+## 0.4.7
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/search-common@0.2.4
+
+## 0.4.6
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/search-common@0.2.3
+
 ## 0.4.5
 
 ### Patch Changes

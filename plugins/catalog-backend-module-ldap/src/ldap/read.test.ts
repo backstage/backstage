@@ -17,7 +17,6 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import merge from 'lodash/merge';
-import { RecursivePartial } from '@backstage/plugin-catalog-backend';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig } from './config';
 import {
@@ -32,6 +31,7 @@ import {
   readLdapUsers,
   resolveRelations,
 } from './read';
+import { RecursivePartial } from './util';
 import { ActiveDirectoryVendor, DefaultLdapVendor } from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
@@ -362,8 +362,8 @@ describe('resolveRelations', () => {
         ['pa', new Set(['ca'])],
       ]);
       resolveRelations([parent, child], [], new Map(), new Map(), groupMember);
-      expect(parent.spec.children).toEqual(['child']);
-      expect(child.spec.parent).toEqual('parent');
+      expect(parent.spec.children).toEqual(['group:default/child']);
+      expect(child.spec.parent).toEqual('group:default/parent');
     });
 
     it('matches by UUID', () => {
@@ -383,8 +383,8 @@ describe('resolveRelations', () => {
         ['pa', new Set(['ca'])],
       ]);
       resolveRelations([parent, child], [], new Map(), new Map(), groupMember);
-      expect(parent.spec.children).toEqual(['child']);
-      expect(child.spec.parent).toEqual('parent');
+      expect(parent.spec.children).toEqual(['group:default/child']);
+      expect(child.spec.parent).toEqual('group:default/parent');
     });
   });
 
@@ -403,7 +403,7 @@ describe('resolveRelations', () => {
         ['ma', new Set(['ha'])],
       ]);
       resolveRelations([host], [member], userMemberOf, new Map(), new Map());
-      expect(member.spec.memberOf).toEqual(['host']);
+      expect(member.spec.memberOf).toEqual(['group:default/host']);
     });
 
     it('populates relations by uuid', () => {
@@ -423,7 +423,7 @@ describe('resolveRelations', () => {
         ['ma', new Set(['ha'])],
       ]);
       resolveRelations([host], [member], userMemberOf, new Map(), new Map());
-      expect(member.spec.memberOf).toEqual(['host']);
+      expect(member.spec.memberOf).toEqual(['group:default/host']);
     });
   });
 
@@ -451,8 +451,8 @@ describe('resolveRelations', () => {
         groupMemberOf,
         new Map(),
       );
-      expect(parent.spec.children).toEqual(['child']);
-      expect(child.spec.parent).toEqual('parent');
+      expect(parent.spec.children).toEqual(['group:default/child']);
+      expect(child.spec.parent).toEqual('group:default/parent');
     });
   });
 
@@ -473,8 +473,8 @@ describe('resolveRelations', () => {
       ['ca', new Set(['pa'])],
     ]);
     resolveRelations([parent, child], [], new Map(), groupMemberOf, new Map());
-    expect(parent.spec.children).toEqual(['child']);
-    expect(child.spec.parent).toEqual('parent');
+    expect(parent.spec.children).toEqual(['group:default/child']);
+    expect(child.spec.parent).toEqual('group:default/parent');
   });
 
   describe('groupMember', () => {
@@ -507,9 +507,9 @@ describe('resolveRelations', () => {
         new Map(),
         groupMember,
       );
-      expect(parent.spec.children).toEqual(['child']);
-      expect(child.spec.parent).toEqual('parent');
-      expect(member.spec.memberOf).toEqual(['parent']);
+      expect(parent.spec.children).toEqual(['group:default/child']);
+      expect(child.spec.parent).toEqual('group:default/parent');
+      expect(member.spec.memberOf).toEqual(['group:default/parent']);
     });
 
     it('populates relations by uuid', () => {
@@ -541,9 +541,9 @@ describe('resolveRelations', () => {
         new Map(),
         groupMember,
       );
-      expect(parent.spec.children).toEqual(['child']);
-      expect(child.spec.parent).toEqual('parent');
-      expect(member.spec.memberOf).toEqual(['parent']);
+      expect(parent.spec.children).toEqual(['group:default/child']);
+      expect(child.spec.parent).toEqual('group:default/parent');
+      expect(member.spec.memberOf).toEqual(['group:default/parent']);
     });
   });
 });

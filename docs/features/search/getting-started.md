@@ -18,8 +18,7 @@ If you haven't setup Backstage already, start
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-search
+yarn add --cwd packages/app @backstage/plugin-search
 ```
 
 Create a new `packages/app/src/components/search/SearchPage.tsx` file in your
@@ -114,15 +113,13 @@ const routes = (
 In `Root.tsx`, add the `SidebarSearchModal` component:
 
 ```bash
-import { SidebarSearchModal, SearchContextProvider } from '@backstage/plugin-search';
+import { SidebarSearchModal } from '@backstage/plugin-search';
 
 export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
-      <SearchContextProvider>
-        <SidebarSearchModal />
-      </SearchContextProvider>
+      <SidebarSearchModal />
       <SidebarDivider />
 ...
 ```
@@ -136,8 +133,7 @@ Add the following plugins into your backend app:
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-search-backend @backstage/plugin-search-backend-node
+yarn add --cwd packages/backend @backstage/plugin-search-backend @backstage/plugin-search-backend-node
 ```
 
 Create a `packages/backend/src/plugins/search.ts` file containing the following
@@ -152,20 +148,31 @@ import {
 } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+import { Router } from 'express';
+import { Duration } from 'luxon';
 
-export default async function createPlugin({
-  logger,
-  discovery,
-  tokenManager,
-}: PluginEnvironment) {
-  const searchEngine = new LunrSearchEngine({ logger });
-  const indexBuilder = new IndexBuilder({ logger, searchEngine });
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const searchEngine = new LunrSearchEngine({
+    logger: env.logger,
+  });
+  const indexBuilder = new IndexBuilder({
+    logger: env.logger,
+    searchEngine,
+  });
+
+  const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
+    frequency: Duration.fromObject({ minutes: 10 }),
+    timeout: Duration.fromObject({ minutes: 15 }),
+    initialDelay: Duration.fromObject({ seconds: 3 }),
+  });
 
   indexBuilder.addCollator({
-    defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator({
-      discovery,
-      tokenManager,
+    schedule: every10MinutesSchedule,
+    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+      discovery: env.discovery,
+      tokenManager: env.tokenManager,
     }),
   });
 
@@ -176,7 +183,7 @@ export default async function createPlugin({
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
-    logger,
+    logger: env.logger,
   });
 }
 ```
@@ -287,34 +294,89 @@ which are responsible for providing documents
 number of collators with the `IndexBuilder` like this:
 
 ```typescript
-const indexBuilder = new IndexBuilder({ logger, searchEngine });
+import { Duration } from 'luxon';
+
+const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
+
+const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
+  frequency: Duration.fromObject({ minutes: 10 }),
+  timeout: Duration.fromObject({ minutes: 15 }),
+  initialDelay: Duration.fromObject({ seconds: 3 }),
+});
+
+const everyHourSchedule = env.scheduler.createScheduledTaskRunner({
+  frequency: Duration.fromObject({ hours: 1 }),
+  timeout: Duration.fromObject({ minutes: 90 }),
+  initialDelay: Duration.fromObject({ seconds: 3 }),
+});
 
 indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 600,
-  collator: new DefaultCatalogCollator({
-    discovery,
-    tokenManager,
+  schedule: every10MinutesSchedule,
+  factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
   }),
 });
 
 indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 3600,
-  collator: new MyCustomCollator(),
+  schedule: everyHourSchedule,
+  factory: new MyCustomCollatorFactory(),
 });
 ```
 
 Backstage Search builds and maintains its index
 [on a schedule](./concepts.md#the-scheduler). You can change how often the
 indexes are rebuilt for a given type of document. You may want to do this if
-your documents are updated more or less frequently. You can do so by modifying
-its `defaultRefreshIntervalSeconds` value, like this:
+your documents are updated more or less frequently. You can do so by configuring
+a scheduled `TaskRunner` to pass into the `schedule` value, like this:
 
 ```typescript {3}
+const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
+  frequency: Duration.fromObject({ minutes: 10 }),
+  timeout: Duration.fromObject({ minutes: 15 }),
+  initialDelay: Duration.fromObject({ seconds: 3 }),
+});
+
 indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 600,
-  collator: new DefaultCatalogCollator({
-    discovery,
-    tokenManager,
+  schedule: every10MinutesSchedule,
+  factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+  }),
+});
+```
+
+Note: if you are using the in-memory Lunr search engine, you probably want to
+implement a non-distributed `TaskRunner` like the following to ensure consistency
+if you're running multiple search backend nodes (alternatively, you can configure
+the search plugin to use a non-distributed database such as
+[SQLite](../../tutorials/configuring-plugin-databases.md#postgresql-and-sqlite-3)):
+
+```typescript
+import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+
+const schedule: TaskRunner = {
+  run: async (task: TaskInvocationDefinition) => {
+    const startRefresh = async () => {
+      while (!task.signal?.aborted) {
+        try {
+          await task.fn(task.signal);
+        } catch {
+          // ignore intentionally
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 600 * 1000));
+      }
+    };
+    startRefresh();
+  },
+};
+
+indexBuilder.addCollator({
+  schedule,
+  factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
   }),
 });
 ```

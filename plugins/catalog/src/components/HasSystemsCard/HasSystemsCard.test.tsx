@@ -78,11 +78,7 @@ describe('<HasSystemsCard />', () => {
       },
       relations: [
         {
-          target: {
-            kind: 'System',
-            namespace: 'my-namespace',
-            name: 'target-name',
-          },
+          targetRef: 'system:my-namespace/target-name',
           type: RELATION_HAS_PART,
         },
       ],

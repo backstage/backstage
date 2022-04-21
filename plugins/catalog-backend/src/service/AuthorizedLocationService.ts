@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { LocationSpec, Location, Entity } from '@backstage/catalog-model';
+import { Location } from '@backstage/catalog-client';
+import { Entity } from '@backstage/catalog-model';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   catalogLocationCreatePermission,
@@ -23,18 +24,18 @@ import {
 } from '@backstage/plugin-catalog-common';
 import {
   AuthorizeResult,
-  PermissionAuthorizer,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { LocationService } from './types';
+import { LocationInput, LocationService } from './types';
 
 export class AuthorizedLocationService implements LocationService {
   constructor(
     private readonly locationService: LocationService,
-    private readonly permissionApi: PermissionAuthorizer,
+    private readonly permissionApi: PermissionEvaluator,
   ) {}
 
   async createLocation(
-    spec: LocationSpec,
+    spec: LocationInput,
     dryRun: boolean,
     options?: {
       authorizationToken?: string;

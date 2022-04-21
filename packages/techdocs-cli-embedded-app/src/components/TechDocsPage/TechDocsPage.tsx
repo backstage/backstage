@@ -14,40 +14,88 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Content } from '@backstage/core-components';
+import { Theme, makeStyles } from '@material-ui/core';
+
+import { Box, Tooltip, IconButton } from '@material-ui/core';
+import LightIcon from '@material-ui/icons/Brightness7';
+import DarkIcon from '@material-ui/icons/Brightness4';
+
+import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
 
 import {
-  Reader,
-  TechDocsPage,
-  TechDocsPageHeader,
+  TechDocsReaderPage,
+  TechDocsReaderPageHeader,
+  TechDocsReaderPageContent,
 } from '@backstage/plugin-techdocs';
 
-const DefaultTechDocsPage = () => {
-  const techDocsMetadata = {
-    site_name: 'Live preview environment',
-    site_description: '',
+const useStyles = makeStyles((theme: Theme) => ({
+  headerIcon: {
+    color: theme.palette.common.white,
+    width: '32px',
+    height: '32px',
+  },
+  content: {
+    backgroundColor: theme.palette.background.default,
+  },
+  contentToolbar: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: 0,
+  },
+}));
+
+enum Themes {
+  LIGHT = 'light',
+  DARK = 'dark',
+}
+
+export const TechDocsThemeToggle = () => {
+  const appThemeApi = useApi(appThemeApiRef);
+  const classes = useStyles();
+  const [theme, setTheme] = useState<Themes>(
+    (appThemeApi.getActiveThemeId() as Themes) || Themes.LIGHT,
+  );
+
+  const themes = {
+    [Themes.LIGHT]: {
+      icon: DarkIcon,
+      title: 'Dark theme',
+    },
+    [Themes.DARK]: {
+      icon: LightIcon,
+      title: 'Light theme',
+    },
+  };
+
+  const { title, icon: Icon } = themes[theme];
+
+  const handleSetTheme = () => {
+    setTheme(prevTheme => {
+      const newTheme = prevTheme === Themes.LIGHT ? Themes.DARK : Themes.LIGHT;
+      appThemeApi.setActiveThemeId(newTheme);
+      return newTheme;
+    });
   };
 
   return (
-    <TechDocsPage>
-      {({ entityRef, onReady }) => (
-        <>
-          <TechDocsPageHeader
-            techDocsMetadata={techDocsMetadata}
-            entityRef={entityRef}
-          />
-          <Content data-testid="techdocs-content">
-            <Reader
-              onReady={onReady}
-              entityRef={entityRef}
-              withSearch={false}
-            />
-          </Content>
-        </>
-      )}
-    </TechDocsPage>
+    <Box display="flex" alignItems="center" mr={2}>
+      <Tooltip title={title} arrow>
+        <IconButton size="small" onClick={handleSetTheme}>
+          <Icon className={classes.headerIcon} />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
+};
+
+const DefaultTechDocsPage = () => {
+  return (
+    <TechDocsReaderPage>
+      <TechDocsReaderPageHeader />
+      <TechDocsReaderPageContent withSearch={false} />
+    </TechDocsReaderPage>
   );
 };
 

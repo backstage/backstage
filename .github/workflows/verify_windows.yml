@@ -1,13 +1,15 @@
 name: Verify Master Branch on Windows
-
 on:
   workflow_dispatch:
   push:
     branches: [master]
+  pull_request:
+    paths:
+      - '.github/workflows/verify_windows.yml'
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     strategy:
       matrix:
@@ -45,7 +47,7 @@ jobs:
       # End of yarn setup
 
       - name: lint
-        run: yarn lerna -- run lint
+        run: yarn backstage-cli repo lint
 
       - name: type checking and declarations
         run: yarn tsc:full
@@ -53,13 +55,10 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
-      # The core packages need to be built for the codemods tests to work
-      - name: build core packages
-        run: lerna run --scope @backstage/core-* build
-
       - name: test
         run: yarn lerna -- run test
         env:
+          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
 
       # credit: https://github.com/appleboy/discord-action/issues/3#issuecomment-731426861

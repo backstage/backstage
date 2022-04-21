@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import {
+  GroupEntity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import lodashSet from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
@@ -353,18 +357,18 @@ export function resolveRelations(
 ) {
   // Build reference lookup tables - all of the relations that are output from
   // the above calls can be expressed as either DNs or UUIDs so we need to be
-  // able to find by both, as well as the name. Note that we expect them to not
+  // able to find by both, as well as the entity reference. Note that we expect them to not
   // collide here - this is a reasonable assumption as long as the fields are
   // the supported forms.
-  const userMap: Map<string, UserEntity> = new Map(); // by name, dn, uuid
-  const groupMap: Map<string, GroupEntity> = new Map(); // by name, dn, uuid
+  const userMap: Map<string, UserEntity> = new Map(); // by entityRef, dn, uuid
+  const groupMap: Map<string, GroupEntity> = new Map(); // by entityRef, dn, uuid
   for (const user of users) {
-    userMap.set(user.metadata.name, user);
+    userMap.set(stringifyEntityRef(user), user);
     userMap.set(user.metadata.annotations![LDAP_DN_ANNOTATION], user);
     userMap.set(user.metadata.annotations![LDAP_UUID_ANNOTATION], user);
   }
   for (const group of groups) {
-    groupMap.set(group.metadata.name, group);
+    groupMap.set(stringifyEntityRef(group), group);
     groupMap.set(group.metadata.annotations![LDAP_DN_ANNOTATION], group);
     groupMap.set(group.metadata.annotations![LDAP_UUID_ANNOTATION], group);
   }
@@ -375,7 +379,7 @@ export function resolveRelations(
   userMap.delete(undefined!);
   groupMap.delete(undefined!);
 
-  // Fill in all of the immediate relations, now keyed on metadata.name. We
+  // Fill in all of the immediate relations, now keyed on the entity reference. We
   // keep all parents at this point, whether the target model can support more
   // than one or not (it gets filtered farther down). And group children are
   // only groups in here.
@@ -394,8 +398,8 @@ export function resolveRelations(
       for (const groupN of groupsN) {
         const group = groupMap.get(groupN);
         if (group) {
-          ensureItems(newUserMemberOf, user.metadata.name, [
-            group.metadata.name,
+          ensureItems(newUserMemberOf, stringifyEntityRef(user), [
+            stringifyEntityRef(group),
           ]);
         }
       }
@@ -407,11 +411,11 @@ export function resolveRelations(
       for (const parentN of parentsN) {
         const parentGroup = groupMap.get(parentN);
         if (parentGroup) {
-          ensureItems(newGroupParents, group.metadata.name, [
-            parentGroup.metadata.name,
+          ensureItems(newGroupParents, stringifyEntityRef(group), [
+            stringifyEntityRef(parentGroup),
           ]);
-          ensureItems(newGroupChildren, parentGroup.metadata.name, [
-            group.metadata.name,
+          ensureItems(newGroupChildren, stringifyEntityRef(parentGroup), [
+            stringifyEntityRef(group),
           ]);
         }
       }
@@ -425,17 +429,17 @@ export function resolveRelations(
         // try both
         const memberUser = userMap.get(memberN);
         if (memberUser) {
-          ensureItems(newUserMemberOf, memberUser.metadata.name, [
-            group.metadata.name,
+          ensureItems(newUserMemberOf, stringifyEntityRef(memberUser), [
+            stringifyEntityRef(group),
           ]);
         } else {
           const memberGroup = groupMap.get(memberN);
           if (memberGroup) {
-            ensureItems(newGroupChildren, group.metadata.name, [
-              memberGroup.metadata.name,
+            ensureItems(newGroupChildren, stringifyEntityRef(group), [
+              stringifyEntityRef(memberGroup),
             ]);
-            ensureItems(newGroupParents, memberGroup.metadata.name, [
-              group.metadata.name,
+            ensureItems(newGroupParents, stringifyEntityRef(memberGroup), [
+              stringifyEntityRef(group),
             ]);
           }
         }

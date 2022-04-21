@@ -29,11 +29,7 @@ describe('isEntityOwner', () => {
         relations: [
           {
             type: 'ownedBy',
-            target: {
-              kind: 'user',
-              namespace: 'default',
-              name: 'spiderman',
-            },
+            targetRef: 'user:default/spiderman',
           },
         ],
       };
@@ -52,11 +48,7 @@ describe('isEntityOwner', () => {
         relations: [
           {
             type: 'ownedBy',
-            target: {
-              kind: 'user',
-              namespace: 'default',
-              name: 'green-goblin',
-            },
+            targetRef: 'user:default/green-goblin',
           },
         ],
       };

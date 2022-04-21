@@ -1,5 +1,206 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 231fee736b: This backend now uses the `@backstage/backend-tasks` package facilities for scheduling fact retrievers.
+
+  **BREAKING**: The `buildTechInsightsContext` function now takes an additional field in its options argument: `scheduler`. This is an instance of `PluginTaskScheduler`, which can be found in your backend initialization code's `env`.
+
+  ```diff
+   const builder = buildTechInsightsContext({
+     logger: env.logger,
+     config: env.config,
+     database: env.database,
+     discovery: env.discovery,
+  +  scheduler: env.scheduler,
+     factRetrievers: [ /* ... */ ],
+   });
+  ```
+
+### Patch Changes
+
+- 21de525ce9: Updated README.md with better install instructions
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 2fe58c7285: Improved the Tech-Insights documentation:
+
+  - `lifecycle` examples used `ttl` when it should be `timeToLive`
+  - Added list of included FactRetrievers
+  - Added full backend example using all included FactRetrievers
+  - Added boolean scorecard example image showing results of backend example
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-tech-insights-node@0.2.9
+  - @backstage/backend-common@0.13.2
+  - @backstage/catalog-client@1.0.1
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 21de525ce9: Updated README.md with better install instructions
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.0-next.2
+  - @backstage/catalog-model@1.0.1-next.1
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 231fee736b: This backend now uses the `@backstage/backend-tasks` package facilities for scheduling fact retrievers.
+
+  **BREAKING**: The `buildTechInsightsContext` function now takes an additional field in its options argument: `scheduler`. This is an instance of `PluginTaskScheduler`, which can be found in your backend initialization code's `env`.
+
+  ```diff
+   const builder = buildTechInsightsContext({
+     logger: env.logger,
+     config: env.config,
+     database: env.database,
+     discovery: env.discovery,
+  +  scheduler: env.scheduler,
+     factRetrievers: [ /* ... */ ],
+   });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.0-next.1
+  - @backstage/plugin-tech-insights-node@0.2.9-next.1
+  - @backstage/backend-common@0.13.2-next.1
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 2fe58c7285: Improved the Tech-Insights documentation:
+
+  - `lifecycle` examples used `ttl` when it should be `timeToLive`
+  - Added list of included FactRetrievers
+  - Added full backend example using all included FactRetrievers
+  - Added boolean scorecard example image showing results of backend example
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-tech-insights-node@0.2.9-next.0
+
+## 0.2.10
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.4
+  - @backstage/plugin-tech-insights-node@0.2.8
+
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/catalog-client@0.9.0
+  - @backstage/plugin-tech-insights-node@0.2.7
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+  - @backstage/plugin-tech-insights-node@0.2.7-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-tech-insights-node@0.2.6
+
+## 0.2.7
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/plugin-tech-insights-node@0.2.5
+
+## 0.2.6
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/plugin-tech-insights-common@0.2.3
+  - @backstage/plugin-tech-insights-node@0.2.4
+
+## 0.2.5
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 538ca90790: Use updated type names from `@backstage/catalog-client`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/plugin-tech-insights-common@0.2.2
+  - @backstage/plugin-tech-insights-node@0.2.3
+
+## 0.2.4
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-tech-insights-node@0.2.2
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/plugin-tech-insights-node@0.2.2-next.0
+
 ## 0.2.3
 
 ### Patch Changes

@@ -33,25 +33,32 @@ const useStyles = makeStyles((theme: Theme) => ({
   settingsIconButton: {
     padding: theme.spacing(0, 1, 0, 0),
   },
+  contentContainer: {
+    width: '100%',
+  },
 }));
 
-export const ComponentAccordion = ({
-  title,
-  Content,
-  Actions,
-  Settings,
-  ContextProvider,
-  ...childProps
-}: {
+export const ComponentAccordion = (props: {
   title: string;
+  expanded?: boolean;
   Content: () => JSX.Element;
   Actions?: () => JSX.Element;
   Settings?: () => JSX.Element;
   ContextProvider?: (props: any) => JSX.Element;
 }) => {
+  const {
+    title,
+    expanded = false,
+    Content,
+    Actions,
+    Settings,
+    ContextProvider,
+    ...childProps
+  } = props;
+
   const classes = useStyles();
   const [settingsIsExpanded, setSettingsIsExpanded] = React.useState(false);
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(expanded);
 
   const handleOpenSettings = (e: any) => {
     e.stopPropagation();
@@ -71,7 +78,9 @@ export const ComponentAccordion = ({
       )}
       <Accordion
         expanded={isExpanded}
-        onChange={(_e: any, expanded: boolean) => setIsExpanded(expanded)}
+        onChange={(_e: any, expandedValue: boolean) =>
+          setIsExpanded(expandedValue)
+        }
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           {Settings && (
@@ -85,7 +94,7 @@ export const ComponentAccordion = ({
           <Typography>{title}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <div>
+          <div className={classes.contentContainer}>
             <Content />
             {Actions && <Actions />}
           </div>

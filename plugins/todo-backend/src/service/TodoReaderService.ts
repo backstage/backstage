@@ -17,11 +17,8 @@
 import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
-  LOCATION_ANNOTATION,
-  SOURCE_LOCATION_ANNOTATION,
-  serializeEntityRef,
-  Entity,
-  parseLocationReference,
+  getEntitySourceLocation,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { TodoReader } from '../lib';
 import { ListTodosRequest, ListTodosResponse, TodoService } from './types';
@@ -66,16 +63,23 @@ export class TodoReaderService implements TodoService {
       throw new InputError('Entity filter is required to list TODOs');
     }
     const token = options?.token;
-    const entity = await this.catalogClient.getEntityByName(req.entity, {
+    const entity = await this.catalogClient.getEntityByRef(req.entity, {
       token,
     });
     if (!entity) {
       throw new NotFoundError(
-        `Entity not found, ${serializeEntityRef(req.entity)}`,
+        `Entity not found, ${stringifyEntityRef(req.entity)}`,
       );
     }
-
-    const url = this.getEntitySourceUrl(entity);
+    const entitySourceLocation = getEntitySourceLocation(entity);
+    if (entitySourceLocation.type !== 'url') {
+      throw new InputError(
+        `Invalid entity location type for ${stringifyEntityRef(entity)}, got '${
+          entitySourceLocation.type
+        }' for location ${entitySourceLocation.target}`,
+      );
+    }
+    const url = entitySourceLocation.target;
     const todos = await this.todoReader.readTodos({ url });
 
     let limit = req.limit ?? this.defaultPageSize;
@@ -124,37 +128,5 @@ export class TodoReaderService implements TodoService {
       offset,
       limit,
     };
-  }
-
-  private getEntitySourceUrl(entity: Entity) {
-    const sourceLocation =
-      entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
-    if (sourceLocation) {
-      const parsed = parseLocationReference(sourceLocation);
-      if (parsed.type !== 'url') {
-        throw new InputError(
-          `Invalid entity source location type for ${serializeEntityRef(
-            entity,
-          )}, got '${parsed.type}'`,
-        );
-      }
-      return parsed.target;
-    }
-
-    const location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-    if (location) {
-      const parsed = parseLocationReference(location);
-      if (parsed.type !== 'url') {
-        throw new InputError(
-          `Invalid entity location type for ${serializeEntityRef(
-            entity,
-          )}, got '${parsed.type}'`,
-        );
-      }
-      return parsed.target;
-    }
-    throw new InputError(
-      `No entity location annotation found for ${serializeEntityRef(entity)}`,
-    );
   }
 }

@@ -1,5 +1,204 @@
 # @backstage/backend-common
 
+## 0.13.2
+
+### Patch Changes
+
+- 19f6c6c32a: The backend will no longer fail to start up when configured secrets do not match the configuration schema.
+- b7436743cb: Added the GerritUrlReader that implements "readUrl".
+- 3ef123bbf0: Support external ID when assuming roles in S3 integration
+
+  In order to assume a role created by a 3rd party as external
+  ID is needed. This change adds an optional field to the s3
+  integration configuration and consumes that in the AwsS3UrlReader.
+
+- bae9359032: The logger returned from `getVoidLogger` is now uses a silenced console transport instead.
+- 3ff0e79654: Tweaked the `UrlReader` multiplexer so that it uses the more helpful `NotAllowedError` messaging for all methods.
+- 12608f8ba8: Add `@types/webpack-env` to dependencies.
+- f9f512559b: Updated the visibility of database connection fields in config to be secret
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/config-loader@1.1.0
+
+## 0.13.2-next.2
+
+### Patch Changes
+
+- 19f6c6c32a: The backend will no longer fail to start up when configured secrets do not match the configuration schema.
+- Updated dependencies
+  - @backstage/config-loader@1.1.0-next.1
+  - @backstage/integration@1.1.0-next.2
+
+## 0.13.2-next.1
+
+### Patch Changes
+
+- b7436743cb: Added the GerritUrlReader that implements "readUrl".
+- bae9359032: The logger returned from `getVoidLogger` is now uses a silenced console transport instead.
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+
+## 0.13.2-next.0
+
+### Patch Changes
+
+- 3ef123bbf0: Support external ID when assuming roles in S3 integration
+
+  In order to assume a role created by a 3rd party as external
+  ID is needed. This change adds an optional field to the s3
+  integration configuration and consumes that in the AwsS3UrlReader.
+
+- f9f512559b: Updated the visibility of database connection fields in config to be secret
+- Updated dependencies
+  - @backstage/config-loader@1.0.1-next.0
+  - @backstage/integration@1.0.1-next.0
+
+## 0.13.1
+
+### Patch Changes
+
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- f24ef7864e: Minor typo fixes
+- b66f70180f: Fix handling of bucket names with dots, in `AwsS3UrlReader`
+- Updated dependencies
+  - @backstage/config-loader@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
+## 0.13.0
+
+### Minor Changes
+
+- ae9d6fb3df: **BREAKING**:
+
+  - Removed the (since way back) deprecated `createDatabase` export, please use `createDatabaseClient` instead.
+  - Removed the (since way back) deprecated `SingleConnectionDatabaseManager` export, please use `DatabaseManager` instead.
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- aefca2a7e9: add support for ETag at `BitbucketUrlReader.readUrl`
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- b1aacbf96a: Applied the fix for the `/alpha` entry point resolution that was part of the `v0.70.1` release of Backstage.
+- Updated dependencies
+  - @backstage/config-loader@0.9.7
+
+## 0.13.0-next.0
+
+### Minor Changes
+
+- ae9d6fb3df: **BREAKING**:
+
+  - Removed the (since way back) deprecated `createDatabase` export, please use `createDatabaseClient` instead.
+  - Removed the (since way back) deprecated `SingleConnectionDatabaseManager` export, please use `DatabaseManager` instead.
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- aefca2a7e9: add support for ETag at `BitbucketUrlReader.readUrl`
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- b1aacbf96a: Applied the fix for the `/alpha` entry point resolution that was part of the `v0.70.1` release of Backstage.
+- Updated dependencies
+  - @backstage/config-loader@0.9.7-next.0
+
+## 0.12.1
+
+### Patch Changes
+
+- Fixed runtime resolution of the `/alpha` entry point.
+
+## 0.12.0
+
+### Minor Changes
+
+- 9a0510144f: **BREAKING**: The connection string for `redis` cache store now requires a protocol prefix.
+
+  ```diff
+  backend:
+    cache:
+      store: redis
+  -   connection: user:pass@cache.example.com:6379
+  +   connection: redis://user:pass@cache.example.com:6379
+  ```
+
+### Patch Changes
+
+- 0df6077ab5: DockerContainerRunner.runContainer now automatically removes the container when its execution terminates
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+- b838717e92: Export FetchUrlReader to facilitate more flexible configuration of the backend.
+- Updated dependencies
+  - @backstage/integration@0.8.0
+
+## 0.11.0
+
+### Minor Changes
+
+- 7d12e4cf32: feat(backend-common): add Redis backed cache store
+
+### Patch Changes
+
+- b2f8bb99d3: Make backend.auth.keys optional in config schema. Previously backend.auth was optional but keys was not, which meant that if another plugin introduced additional properties under backend.auth, it would implicitly make backend.auth.keys mandatory.
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- Updated dependencies
+  - @backstage/config-loader@0.9.6
+  - @backstage/integration@0.7.5
+
+## 0.10.9
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/cli-common@0.1.8
+  - @backstage/config@0.1.15
+  - @backstage/config-loader@0.9.5
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/types@0.1.3
+
+## 0.10.8
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 0107c9aa08: chore(deps): bump `helmet` from 4.4.1 to 5.0.2
+- b590e9b58d: Updated `isDatabaseConflictError` to handle modern sqlite conflict errors
+- Updated dependencies
+  - @backstage/config-loader@0.9.4
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.10.7
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 599f3dfa83: chore(deps-dev): bump `@types/concat-stream` from 1.6.1 to 2.0.0
+- c3868458d8: Removed unnecessary `get-port` dependency
+- 04398e946e: Bump `selfsigned` to 2.0.0
+
+## 0.10.7-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- 599f3dfa83: chore(deps-dev): bump `@types/concat-stream` from 1.6.1 to 2.0.0
+- c3868458d8: Removed unnecessary `get-port` dependency
+
 ## 0.10.6
 
 ### Patch Changes

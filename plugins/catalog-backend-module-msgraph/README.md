@@ -35,17 +35,46 @@ catalog:
           # the App registration in the Microsoft Azure Portal.
           clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
           clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
+          # Optional mode for querying which defaults to "basic".
+          # By default, the Microsoft Graph API only provides the basic feature set
+          # for querying. Certain features are limited to advanced querying capabilities.
+          # (See https://docs.microsoft.com/en-us/graph/aad-advanced-queries)
+          queryMode: basic # basic | advanced
+          # Optional parameter to include the expanded resource or collection referenced
+          # by a single relationship (navigation property) in your results.
+          # Only one relationship can be expanded in a single request.
+          # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
+          # Can be combined with userGroupMember[...] instead of userFilter.
+          userExpand: manager
           # Optional filter for user, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
           # and for the syntax https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter
           # This and userGroupMemberFilter are mutually exclusive, only one can be specified
           userFilter: accountEnabled eq true and userType eq 'member'
           # Optional filter for users, use group membership to get users.
+          # (Filtered groups and fetch their members.)
           # This and userFilter are mutually exclusive, only one can be specified
+          # See https://docs.microsoft.com/en-us/graph/search-query-parameter
           userGroupMemberFilter: "displayName eq 'Backstage Users'"
+          # Optional parameter to include the expanded resource or collection referenced
+          # by a single relationship (navigation property) in your results.
+          # Only one relationship can be expanded in a single request.
+          # See https://docs.microsoft.com/en-us/graph/query-parameters#expand-parameter
+          # Can be combined with userGroupMember[...] instead of userFilter.
+          groupExpand: member
+          # Optional search for users, use group membership to get users.
+          # (Search for groups and fetch their members.)
+          # This and userFilter are mutually exclusive, only one can be specified
+          userGroupMemberSearch: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
           # Optional filter for group, see Microsoft Graph API for the syntax
           # See https://docs.microsoft.com/en-us/graph/api/resources/group?view=graph-rest-1.0#properties
           groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+          # Optional search for groups, see Microsoft Graph API for the syntax
+          # See https://docs.microsoft.com/en-us/graph/search-query-parameter
+          groupSearch: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+          # Optional select for groups, this will allow you work with schemaExtensions in order to add extra information to your groups that can be used on you custom groupTransformers
+          # See  https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-1.0
+          groupSelect: ['id', 'displayName', 'description']
 ```
 
 `userFilter` and `userGroupMemberFilter` are mutually exclusive, only one can be provided. If both are provided, an error will be thrown.
@@ -58,34 +87,38 @@ By default, all users are loaded. If you want to filter users based on their att
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-catalog-backend-module-msgraph
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-msgraph
 ```
 
 ### Using the Entity Provider
 
 4. The `MicrosoftGraphOrgEntityProvider` is not registered by default, so you
    have to register it in the catalog plugin. Pass the target to reference a
-   provider from the configuration. As entity providers are not part of the
-   entity refresh loop, you have to run them manually.
+   provider from the configuration.
 
-```typescript
-// packages/backend/src/plugins/catalog.ts
-const msGraphOrgEntityProvider = MicrosoftGraphOrgEntityProvider.fromConfig(
-  env.config,
-  {
-    id: 'https://graph.microsoft.com/v1.0',
-    target: 'https://graph.microsoft.com/v1.0',
-    logger: env.logger,
-  },
-);
-builder.addEntityProvider(msGraphOrgEntityProvider);
+```diff
+ // packages/backend/src/plugins/catalog.ts
++import { Duration } from 'luxon';
++import { MicrosoftGraphOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-msgraph';
 
-// Trigger a read every 5 minutes
-useHotCleanup(
-  module,
-  runPeriodically(() => msGraphOrgEntityProvider.read(), 5 * 60 * 1000),
-);
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
+
++  // The target parameter below needs to match one of the providers' target
++  // value specified in your app-config (see above).
++  builder.addEntityProvider(
++    MicrosoftGraphOrgEntityProvider.fromConfig(env.config, {
++      id: 'production',
++      target: 'https://graph.microsoft.com/v1.0',
++      logger: env.logger,
++      schedule: env.scheduler.createScheduledTaskRunner({
++        frequency: Duration.fromObject({ minutes: 5 }),
++        timeout: Duration.fromObject({ minutes: 3 }),
++      }),
++    }),
++  );
 ```
 
 ### Using the Processor
@@ -96,8 +129,8 @@ useHotCleanup(
 ```typescript
 // packages/backend/src/plugins/catalog.ts
 builder.addProcessor(
-  MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
-    logger,
+  MicrosoftGraphOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
   }),
 );
 ```
@@ -110,8 +143,6 @@ catalog:
   locations:
     - type: microsoft-graph-org
       target: https://graph.microsoft.com/v1.0
-      # If you catalog doesn't allow to import Group and User entities by
-      # default, allow them here
       rules:
         - allow: [Group, User]
     …
@@ -152,8 +183,8 @@ export async function myGroupTransformer(
 
 ```ts
 builder.addProcessor(
-  MicrosoftGraphOrgReaderProcessor.fromConfig(config, {
-    logger,
+  MicrosoftGraphOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
     groupTransformer: myGroupTransformer,
   }),
 );

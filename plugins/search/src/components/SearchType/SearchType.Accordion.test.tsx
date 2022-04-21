@@ -15,30 +15,30 @@
  */
 
 import React from 'react';
-import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import user from '@testing-library/user-event';
-
-import { searchApiRef } from '../../apis';
-import { SearchContext, SearchContextProvider } from '../SearchContext';
+import {
+  searchApiRef,
+  SearchContextProvider,
+} from '@backstage/plugin-search-react';
 import { SearchType } from './SearchType';
+
+const setTypesMock = jest.fn();
+const setPageCursorMock = jest.fn();
+
+jest.mock('@backstage/plugin-search-react', () => ({
+  ...jest.requireActual('@backstage/plugin-search-react'),
+  useSearch: jest.fn().mockReturnValue({
+    types: [],
+    setTypes: (types: any) => setTypesMock(types),
+    pageCursor: '',
+    setPageCursor: (pageCursor: any) => setPageCursorMock(pageCursor),
+  }),
+}));
 
 describe('SearchType.Accordion', () => {
   const query = jest.fn();
-  const mockApis = TestApiRegistry.from([searchApiRef, { query }]);
-
-  const contextSpy = {
-    result: { loading: false, value: { results: [] } },
-    term: '',
-    types: [],
-    filters: {},
-    toggleModal: jest.fn(),
-    setTerm: jest.fn(),
-    setTypes: jest.fn(),
-    setFilters: jest.fn(),
-    setPageCursor: jest.fn(),
-  };
 
   const expectedLabel = 'Expected Label';
   const expectedType = {
@@ -51,17 +51,19 @@ describe('SearchType.Accordion', () => {
     query.mockResolvedValue({ results: [] });
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <TestApiProvider apis={[[searchApiRef, { query }]]}>
+        <SearchContextProvider>{children}</SearchContextProvider>
+      </TestApiProvider>
+    );
+  };
 
   it('should render as expected', async () => {
     const { getByText } = render(
-      <ApiProvider apis={mockApis}>
-        <SearchContextProvider>
-          <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
-        </SearchContextProvider>
-      </ApiProvider>,
+      <Wrapper>
+        <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
+      </Wrapper>,
     );
 
     // The given label should be rendered.
@@ -79,54 +81,54 @@ describe('SearchType.Accordion', () => {
     await act(() => Promise.resolve());
   });
 
-  it('should set entire types array when a type is selected', () => {
+  it('should set entire types array when a type is selected', async () => {
     const { getByText } = render(
-      <SearchContext.Provider value={contextSpy}>
+      <Wrapper>
         <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
-      </SearchContext.Provider>,
+      </Wrapper>,
     );
 
-    user.click(getByText(expectedType.name));
+    await user.click(getByText(expectedType.name));
 
-    expect(contextSpy.setTypes).toHaveBeenCalledWith([expectedType.value]);
+    expect(setTypesMock).toHaveBeenCalledWith([expectedType.value]);
   });
 
-  it('should reset types array when all is selected', () => {
+  it('should reset types array when all is selected', async () => {
     const { getByText } = render(
-      <SearchContext.Provider value={contextSpy}>
+      <Wrapper>
         <SearchType.Accordion
           name={expectedLabel}
           defaultValue={expectedType.value}
           types={[expectedType]}
         />
-      </SearchContext.Provider>,
+      </Wrapper>,
     );
 
-    user.click(getByText('All'));
+    await user.click(getByText('All'));
 
-    expect(contextSpy.setTypes).toHaveBeenCalledWith([]);
+    expect(setTypesMock).toHaveBeenCalledWith([]);
   });
 
-  it('should reset page cursor when a new type is selected', () => {
+  it('should reset page cursor when a new type is selected', async () => {
     const { getByText } = render(
-      <SearchContext.Provider value={contextSpy}>
+      <Wrapper>
         <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
-      </SearchContext.Provider>,
+      </Wrapper>,
     );
 
-    user.click(getByText(expectedType.name));
+    await user.click(getByText(expectedType.name));
 
-    expect(contextSpy.setPageCursor).toHaveBeenCalledWith(undefined);
+    expect(setPageCursorMock).toHaveBeenCalledWith(undefined);
   });
 
-  it('should collapse when a new type is selected', () => {
+  it('should collapse when a new type is selected', async () => {
     const { getByText, queryByText } = render(
-      <SearchContext.Provider value={contextSpy}>
+      <Wrapper>
         <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
-      </SearchContext.Provider>,
+      </Wrapper>,
     );
 
-    user.click(getByText(expectedType.name));
+    await user.click(getByText(expectedType.name));
 
     expect(queryByText('Collapse')).not.toBeInTheDocument();
   });

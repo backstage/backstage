@@ -39,13 +39,6 @@ describe('<CatalogGraphCard/>', () => {
   let catalog: jest.Mocked<CatalogApi>;
   let apis: TestApiRegistry;
 
-  beforeAll(() => {
-    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
-      value: () => ({ width: 100, height: 100 }),
-      configurable: true,
-    });
-  });
-
   beforeEach(() => {
     entity = {
       apiVersion: 'a',
@@ -57,15 +50,15 @@ describe('<CatalogGraphCard/>', () => {
     };
     catalog = {
       getEntities: jest.fn(),
-      getEntityByName: jest.fn(async _ => ({ ...entity, relations: [] })),
+      getEntityByRef: jest.fn(async _ => ({ ...entity, relations: [] })),
       removeEntityByUid: jest.fn(),
       getLocationById: jest.fn(),
-      getOriginLocationByEntity: jest.fn(),
-      getLocationByEntity: jest.fn(),
+      getLocationByRef: jest.fn(),
       addLocation: jest.fn(),
       removeLocationById: jest.fn(),
       refreshEntity: jest.fn(),
       getEntityAncestors: jest.fn(),
+      getEntityFacets: jest.fn(),
     };
     apis = TestApiRegistry.from([catalogApiRef, catalog]);
 
@@ -88,7 +81,7 @@ describe('<CatalogGraphCard/>', () => {
 
     expect(await findByText('b:d/c')).toBeInTheDocument();
     expect(await findAllByTestId('node')).toHaveLength(1);
-    expect(catalog.getEntityByName).toBeCalledTimes(1);
+    expect(catalog.getEntityByRef).toBeCalledTimes(1);
   });
 
   test('renders with custom title', async () => {
@@ -141,7 +134,7 @@ describe('<CatalogGraphCard/>', () => {
     );
 
     expect(await findByText('b:d/c')).toBeInTheDocument();
-    userEvent.click(await findByText('b:d/c'));
+    await userEvent.click(await findByText('b:d/c'));
 
     expect(analyticsSpy.getEvents()[0]).toMatchObject({
       action: 'click',

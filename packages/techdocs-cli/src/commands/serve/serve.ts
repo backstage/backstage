@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import path from 'path';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { findPaths } from '@backstage/cli-common';
@@ -37,12 +37,13 @@ function findPreviewBundlePath(): string {
     // This can be tested by running `yarn pack` and extracting the resulting tarball into a directory.
     // Within the extracted directory, run `npm install --only=prod`.
     // Once that's done you can test the CLI in any directory using `node <tmp-dir>/package <command>`.
+    // eslint-disable-next-line no-restricted-syntax
     return findPaths(__dirname).resolveOwn('dist/embedded-app');
   }
 }
 
-export default async function serve(cmd: Command) {
-  const logger = createLogger({ verbose: cmd.verbose });
+export default async function serve(opts: OptionValues) {
+  const logger = createLogger({ verbose: opts.verbose });
 
   // Determine if we want to run in local dev mode or not
   // This will run the backstage http server on a different port and only used
@@ -57,15 +58,17 @@ export default async function serve(cmd: Command) {
   const backstagePort = 3000;
   const backstageBackendPort = 7007;
 
-  const mkdocsDockerAddr = `http://0.0.0.0:${cmd.mkdocsPort}`;
-  const mkdocsLocalAddr = `http://127.0.0.1:${cmd.mkdocsPort}`;
-  const mkdocsExpectedDevAddr = cmd.docker ? mkdocsDockerAddr : mkdocsLocalAddr;
+  const mkdocsDockerAddr = `http://0.0.0.0:${opts.mkdocsPort}`;
+  const mkdocsLocalAddr = `http://127.0.0.1:${opts.mkdocsPort}`;
+  const mkdocsExpectedDevAddr = opts.docker
+    ? mkdocsDockerAddr
+    : mkdocsLocalAddr;
 
   let mkdocsServerHasStarted = false;
   const mkdocsLogFunc: LogFunc = data => {
     // Sometimes the lines contain an unnecessary extra new line
     const logLines = data.toString().split('\n');
-    const logPrefix = cmd.docker ? '[docker/mkdocs]' : '[mkdocs]';
+    const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
     logLines.forEach(line => {
       if (line === '') {
         return;
@@ -87,9 +90,10 @@ export default async function serve(cmd: Command) {
   // Had me questioning this whole implementation for half an hour.
   logger.info('Starting mkdocs server.');
   const mkdocsChildProcess = await runMkdocsServer({
-    port: cmd.mkdocsPort,
-    dockerImage: cmd.dockerImage,
-    useDocker: cmd.docker,
+    port: opts.mkdocsPort,
+    dockerImage: opts.dockerImage,
+    dockerEntrypoint: opts.dockerEntrypoint,
+    useDocker: opts.docker,
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,
   });
@@ -114,8 +118,8 @@ export default async function serve(cmd: Command) {
   const httpServer = new HTTPServer(
     findPreviewBundlePath(),
     port,
-    cmd.mkdocsPort,
-    cmd.verbose,
+    opts.mkdocsPort,
+    opts.verbose,
   );
 
   httpServer

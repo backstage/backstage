@@ -18,8 +18,8 @@ import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 import { SearchOptions } from 'ldapjs';
 import mergeWith from 'lodash/mergeWith';
-import { RecursivePartial } from '@backstage/plugin-catalog-backend';
 import { trimEnd } from 'lodash';
+import { RecursivePartial } from './util';
 
 /**
  * The configuration parameters for a single LDAP provider.
@@ -208,6 +208,10 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       scope: c.getOptionalString('scope') as SearchOptions['scope'],
       filter: formatFilter(c.getOptionalString('filter')),
       attributes: c.getOptionalStringArray('attributes'),
+      sizeLimit: c.getOptionalNumber('sizeLimit'),
+      timeLimit: c.getOptionalNumber('timeLimit'),
+      derefAliases: c.getOptionalNumber('derefAliases'),
+      typesOnly: c.getOptionalBoolean('typesOnly'),
       ...(paged !== undefined ? { paged } : undefined),
     };
   }

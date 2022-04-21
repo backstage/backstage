@@ -1,5 +1,99 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.2.9
+
+### Patch Changes
+
+- 231fee736b: Adds an optional timeout to fact retriever registrations to stop a task if it runs too long.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- 231fee736b: Adds an optional timeout to fact retriever registrations to stop a task if it runs too long.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/config@1.0.0
+  - @backstage/plugin-tech-insights-common@0.2.4
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+
+## 0.2.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/plugin-tech-insights-common@0.2.3
+
+## 0.2.3
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/config@0.1.14
+  - @backstage/plugin-tech-insights-common@0.2.2
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.2.1
 
 ### Patch Changes

@@ -16,17 +16,19 @@
 
 import { errorHandler } from '@backstage/backend-common';
 import {
-  analyzeLocationSchema,
-  locationSpecSchema,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  Entity,
+  parseLocationRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
-import { EntitiesCatalog } from '../catalog';
+import { EntitiesCatalog } from '../catalog/types';
 import { LocationAnalyzer } from '../ingestion/types';
 import {
   basicEntityFilter,
@@ -34,8 +36,16 @@ import {
   parseEntityPaginationParams,
   parseEntityTransformParams,
 } from './request';
-import { disallowReadonlyMode, validateRequestBody } from './util';
+import {
+  disallowReadonlyMode,
+  locationInput,
+  validateRequestBody,
+} from './util';
+import { z } from 'zod';
+import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { RefreshOptions, LocationService, RefreshService } from './types';
+import { CatalogProcessingOrchestrator } from '../processing/types';
+import { validateEntityEnvelope } from '../processing/util';
 
 /**
  * Options used by {@link createRouter}.
@@ -46,6 +56,7 @@ export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
   locationAnalyzer?: LocationAnalyzer;
   locationService: LocationService;
+  orchestrator?: CatalogProcessingOrchestrator;
   refreshService?: RefreshService;
   logger: Logger;
   config: Config;
@@ -64,12 +75,12 @@ export async function createRouter(
     entitiesCatalog,
     locationAnalyzer,
     locationService,
+    orchestrator,
     refreshService,
     config,
     logger,
     permissionIntegrationRouter,
   } = options;
-
   const router = Router();
   router.use(express.json());
 
@@ -156,16 +167,26 @@ export async function createRouter(
         async (req, res) => {
           const { kind, namespace, name } = req.params;
           const entityRef = stringifyEntityRef({ kind, namespace, name });
-          const response = await entitiesCatalog.entityAncestry(entityRef);
+          const response = await entitiesCatalog.entityAncestry(entityRef, {
+            authorizationToken: getBearerToken(req.header('authorization')),
+          });
           res.status(200).json(response);
         },
-      );
+      )
+      .get('/entity-facets', async (req, res) => {
+        const response = await entitiesCatalog.facets({
+          filter: parseEntityFilterParams(req.query),
+          facets: parseEntityFacetParams(req.query),
+          authorizationToken: getBearerToken(req.header('authorization')),
+        });
+        res.status(200).json(response);
+      });
   }
 
   if (locationService) {
     router
       .post('/locations', async (req, res) => {
-        const input = await validateRequestBody(req, locationSpecSchema);
+        const location = await validateRequestBody(req, locationInput);
         const dryRun = yn(req.query.dryRun, { default: false });
 
         // when in dryRun addLocation is effectively a read operation so we don't
@@ -174,7 +195,7 @@ export async function createRouter(
           disallowReadonlyMode(readonlyEnabled);
         }
 
-        const output = await locationService.createLocation(input, dryRun, {
+        const output = await locationService.createLocation(location, dryRun, {
           authorizationToken: getBearerToken(req.header('authorization')),
         });
         res.status(201).json(output);
@@ -206,9 +227,59 @@ export async function createRouter(
 
   if (locationAnalyzer) {
     router.post('/analyze-location', async (req, res) => {
-      const input = await validateRequestBody(req, analyzeLocationSchema);
-      const output = await locationAnalyzer.analyzeLocation(input);
+      const body = await validateRequestBody(
+        req,
+        z.object({ location: locationInput }),
+      );
+      const schema = z.object({ location: locationInput });
+      const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
       res.status(200).json(output);
+    });
+  }
+
+  if (orchestrator) {
+    router.post('/validate-entity', async (req, res) => {
+      const bodySchema = z.object({
+        entity: z.unknown(),
+        location: z.string(),
+      });
+
+      let body: z.infer<typeof bodySchema>;
+      let entity: Entity;
+      let location: { type: string; target: string };
+      try {
+        body = await validateRequestBody(req, bodySchema);
+        entity = validateEntityEnvelope(body.entity);
+        location = parseLocationRef(body.location);
+        if (location.type !== 'url')
+          throw new TypeError(
+            `Invalid location ref ${body.location}, only 'url:<target>' is supported, e.g. url:https://host/path`,
+          );
+      } catch (err) {
+        return res.status(400).json({
+          errors: [serializeError(err)],
+        });
+      }
+
+      const processingResult = await orchestrator.process({
+        entity: {
+          ...entity,
+          metadata: {
+            ...entity.metadata,
+            annotations: {
+              [ANNOTATION_LOCATION]: body.location,
+              [ANNOTATION_ORIGIN_LOCATION]: body.location,
+              ...entity.metadata.annotations,
+            },
+          },
+        },
+      });
+
+      if (!processingResult.ok)
+        res.status(400).json({
+          errors: processingResult.errors.map(e => serializeError(e)),
+        });
+      return res.status(200).end();
     });
   }
 

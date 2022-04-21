@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/errors';
 import lodash from 'lodash';
-import { RecursivePartial } from '../../util';
+import { RecursivePartial } from '../../util/RecursivePartial';
 import { parseStringsParam } from './common';
 
 export function parseEntityTransformParams(

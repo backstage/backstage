@@ -1,5 +1,165 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.28
+
+### Patch Changes
+
+- 5da036264b: Fix method to get source-location.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/backend-common@0.13.2
+  - @backstage/catalog-client@1.0.1
+
+## 0.1.28-next.2
+
+### Patch Changes
+
+- 5da036264b: Fix method to get source-location.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/integration@1.1.0-next.2
+
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/backend-common@0.13.2-next.1
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+
+## 0.1.27
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+
+## 0.1.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/catalog-model@0.13.0
+  - @backstage/catalog-client@0.9.0
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/integration@0.8.0
+
+## 0.1.24
+
+### Patch Changes
+
+- 67a7c02d26: Remove usages of `EntityRef` and `parseEntityName` from `@backstage/catalog-model`
+- 6e1cbc12a6: Updated according to the new `getEntityFacets` catalog API method
+- be9e010da0: Add support to exclude certain folders in `todo` plugin.
+
+  You can add function by configuring your own exclusion logic, for example:
+
+  ```ts
+  import {
+    TodoScmReader,
+    createTodoParser,
+  } from '@backstage/plugin-todo-backend';
+
+  // ...
+
+  const todoReader = TodoScmReader.fromConfig(config, {
+    logger,
+    reader,
+    filePathFilter: (filePath: string): boolean => {
+        ...
+        YOUR LOGIC HERE
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/integration@0.7.5
+
+## 0.1.23
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+
+## 0.1.22
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- edbc03814a: Replace usage of `serializeEntityRef` with `stringifyEntityRef`
+- deaf6065db: Adapt to the new `CatalogApi.getLocationByRef`
+- 216725b434: Updated to use new names for `parseLocationRef` and `stringifyLocationRef`
+- 27eccab216: Replaces use of deprecated catalog-model constants.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+
 ## 0.1.20
 
 ### Patch Changes

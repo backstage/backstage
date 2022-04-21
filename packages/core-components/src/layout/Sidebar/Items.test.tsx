@@ -47,7 +47,7 @@ async function renderSidebar() {
       <SidebarExpandButton />
     </Sidebar>,
   );
-  userEvent.hover(screen.getByTestId('sidebar-root'));
+  await userEvent.hover(screen.getByTestId('sidebar-root'));
 }
 
 describe('Items', () => {

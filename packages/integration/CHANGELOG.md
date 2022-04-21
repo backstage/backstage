@@ -1,5 +1,93 @@
 # @backstage/integration
 
+## 1.1.0
+
+### Minor Changes
+
+- b7436743cb: Gerrit integration: Added an optional configuration to set the Gitiles base url.
+
+### Patch Changes
+
+- 1691c6c5c2: Clarify that config locations that emit User and Group kinds now need to declare so in the `catalog.locations.[].rules`
+- 3ef123bbf0: Support external ID when assuming roles in S3 integration
+
+  In order to assume a role created by a 3rd party as external
+  ID is needed. This change adds an optional field to the s3
+  integration configuration and consumes that in the AwsS3UrlReader.
+
+- d26e1b0146: Exported `replaceGitLabUrlType` from package
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- d26e1b0146: Exported `replaceGitLabUrlType` from package
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- b7436743cb: Gerrit integration: Added an optional configuration to set the Gitiles base url.
+
+### Patch Changes
+
+- 1691c6c5c2: Clarify that config locations that emit User and Group kinds now need to declare so in the `catalog.locations.[].rules`
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 3ef123bbf0: Support external ID when assuming roles in S3 integration
+
+  In order to assume a role created by a 3rd party as external
+  ID is needed. This change adds an optional field to the s3
+  integration configuration and consumes that in the AwsS3UrlReader.
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- 403837cbac: Added an integration for Gerrit
+- Updated dependencies
+  - @backstage/config@1.0.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 34af86517c: ensure `apiBaseUrl` being set for Bitbucket integrations, replace hardcoded defaults
+
+### Patch Changes
+
+- 33d5e79822: Fix Bitbucket Cloud and Bitbucket Server line number reference.
+
+## 0.7.5
+
+### Patch Changes
+
+- 4e1384884f: Fixed bug in integration package where Self Hosted GitLab instances with custom ports weren't supported (because of the lack of an option to add the port in the integration configs. Now users can add the port directly in the host)
+
+## 0.7.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/config@0.1.15
+
+## 0.7.3
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/config@0.1.14
+
 ## 0.7.2
 
 ### Patch Changes
@@ -182,6 +270,8 @@
     locations:
       - type: github-multi-org
         target: https://github.myorg.com
+        rules:
+          - allow: [User, Group]
 
     processors:
       githubMultiOrg:
@@ -212,7 +302,7 @@
 
 - 0fd4ea443: Updates the `GithubCredentialsProvider` to return the token type, it can either be `token` or `app` depending on the authentication method.
 
-  Update the `GithubOrgReaderProcessor` NOT to query for email addresses if GitHub Apps is used for authentication, this is due to inconsistencies in the GitHub API when using server to server communications and installation tokens. https://github.community/t/api-v4-unable-to-retrieve-email-resource-not-accessible-by-integration/13831/4 for more info.
+  Update the `GithubOrgReaderProcessor` NOT to query for email addresses if GitHub Apps is used for authentication, this is due to inconsistencies in the GitHub API when using server to server communications and installation tokens. See [this community discussion](https://github.community/t/api-v4-unable-to-retrieve-email-resource-not-accessible-by-integration/13831/4) for more info.
 
   **Removes** deprecated GithubOrgReaderProcessor provider configuration(`catalog.processors.githubOrg`). If you're using the deprecated config section make sure to migrate to [integrations](https://backstage.io/docs/integrations/github/locations) instead.
 

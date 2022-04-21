@@ -21,17 +21,18 @@ import {
 } from '@backstage/catalog-model';
 import { TokenParams } from '../../identity';
 
+/**
+ * @deprecated use {@link getDefaultOwnershipEntityRefs} instead
+ */
 export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
   const userRef = stringifyEntityRef(entity);
 
   const membershipRefs =
     entity.relations
       ?.filter(
-        r =>
-          r.type === RELATION_MEMBER_OF &&
-          r.target.kind.toLocaleLowerCase('en-US') === 'group',
+        r => r.type === RELATION_MEMBER_OF && r.targetRef.startsWith('group:'),
       )
-      .map(r => stringifyEntityRef(r.target)) ?? [];
+      .map(r => r.targetRef) ?? [];
 
   return {
     sub: userRef,

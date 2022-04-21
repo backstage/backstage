@@ -4,6 +4,8 @@ Welcome to the GoCD plugin!
 
 - View recent GoCD Builds
 
+![gocd-builds-card](./docs/gocd-plugin-screenshot.png)
+
 ## Installation
 
 GoCD Plugin exposes an entity tab component named `EntityGoCdContent`. You can include it in the

@@ -16,7 +16,7 @@
 
 import { relative as relativePath } from 'path';
 import { spawn } from 'child_process';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { findPaths } from '@backstage/cli-common';
 import { platform } from 'os';
 import { ExitCodeError } from './errors';
@@ -25,7 +25,7 @@ import { ExitCodeError } from './errors';
 const paths = findPaths(__dirname);
 
 export function createCodemodAction(name: string) {
-  return async (_: unknown, cmd: Command) => {
+  return async (dirs: string[], opts: OptionValues) => {
     const transformPath = relativePath(
       process.cwd(),
       paths.resolveOwn('transforms', `${name}.js`),
@@ -39,12 +39,12 @@ export function createCodemodAction(name: string) {
       '--ignore-pattern=**/node_modules/**',
     ];
 
-    if (cmd.dry) {
+    if (opts.dry) {
       args.push('--dry');
     }
 
-    if (cmd.args.length) {
-      args.push(...cmd.args);
+    if (dirs.length) {
+      args.push(...dirs);
     } else {
       args.push('.');
     }

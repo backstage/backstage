@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Entity, TemplateEntityV1beta2 } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { EntityTextFilter } from './filters';
 
 const entities: Entity[] = [
@@ -36,9 +37,9 @@ const entities: Entity[] = [
   },
 ];
 
-const templates: TemplateEntityV1beta2[] = [
+const templates: TemplateEntityV1beta3[] = [
   {
-    apiVersion: 'backstage.io/v1beta2',
+    apiVersion: 'scaffolder.backstage.io/v1beta3',
     kind: 'Template',
     metadata: {
       name: 'react-app',
@@ -51,7 +52,7 @@ const templates: TemplateEntityV1beta2[] = [
     },
   },
   {
-    apiVersion: 'backstage.io/v1beta2',
+    apiVersion: 'scaffolder.backstage.io/v1beta3',
     kind: 'Template',
     metadata: {
       name: 'gRPC service',

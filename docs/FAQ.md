@@ -211,7 +211,7 @@ Spotify will maintain the open source core, but we envision different parts of
 the project being maintained by various companies and contributors. We also
 envision a large, diverse ecosystem of open source plugins, which would be
 maintained by their original authors/contributors or by the community. When it
-comes to [deployment](https://backstage.io/docs/getting-started/deployment-k8s),
+comes to [deployment](https://backstage.io/docs/deployment),
 the system integrator (typically, the infrastructure team in your organization)
 maintains Backstage in your own environment.
 

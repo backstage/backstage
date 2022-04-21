@@ -24,7 +24,8 @@ import { hasSpec } from './hasSpec';
 /**
  * These permission rules can be used to conditionally filter catalog entities
  * or describe a user's access to the entities.
- * @public
+ *
+ * @alpha
  */
 export const permissionRules = {
   hasAnnotation,
@@ -35,4 +36,5 @@ export const permissionRules = {
   isEntityOwner,
 };
 
+export type { CatalogPermissionRule } from './util';
 export { createCatalogPermissionRule } from './util';

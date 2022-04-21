@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { createSamlProvider } from './provider';
+export {
+  createSamlProvider,
+  samlNameIdEntityNameSignInResolver,
+} from './provider';
 export type { SamlProviderOptions, SamlAuthResult } from './provider';

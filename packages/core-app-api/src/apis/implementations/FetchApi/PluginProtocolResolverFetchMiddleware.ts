@@ -55,7 +55,7 @@ export class PluginProtocolResolverFetchMiddleware implements FetchMiddleware {
       }
 
       const target = `${join(base, pathname)}${search}${hash}`;
-      return next(target, request);
+      return next(target, typeof input === 'string' ? init : input);
     };
   }
 }

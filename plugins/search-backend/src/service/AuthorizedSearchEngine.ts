@@ -18,23 +18,26 @@ import { compact, zipObject } from 'lodash';
 import qs from 'qs';
 import DataLoader from 'dataloader';
 import {
-  AuthorizeDecision,
-  AuthorizeQuery,
+  EvaluatePermissionResponse,
+  EvaluatePermissionRequest,
   AuthorizeResult,
-  PermissionAuthorizer,
+  isResourcePermission,
+  PermissionEvaluator,
+  AuthorizePermissionRequest,
+  QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
-  IndexableDocument,
+  IndexableResult,
+  IndexableResultSet,
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
   SearchQuery,
-  SearchResult,
-  SearchResultSet,
-} from '@backstage/search-common';
+} from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
+import { Writable } from 'stream';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
@@ -66,7 +69,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
   constructor(
     private readonly searchEngine: SearchEngine,
     private readonly types: Record<string, DocumentTypeInfo>,
-    private readonly permissions: PermissionAuthorizer,
+    private readonly permissions: PermissionEvaluator,
     config: Config,
   ) {
     this.queryLatencyBudgetMs =
@@ -78,18 +81,26 @@ export class AuthorizedSearchEngine implements SearchEngine {
     this.searchEngine.setTranslator(translator);
   }
 
-  async index(type: string, documents: IndexableDocument[]): Promise<void> {
-    this.searchEngine.index(type, documents);
+  async getIndexer(type: string): Promise<Writable> {
+    return this.searchEngine.getIndexer(type);
   }
 
   async query(
     query: SearchQuery,
     options: QueryRequestOptions,
-  ): Promise<SearchResultSet> {
+  ): Promise<IndexableResultSet> {
     const queryStartTime = Date.now();
 
+    const conditionFetcher = new DataLoader(
+      (requests: readonly QueryPermissionRequest[]) =>
+        this.permissions.authorizeConditional(requests.slice(), options),
+      {
+        cacheKeyFn: ({ permission: { name } }) => name,
+      },
+    );
+
     const authorizer = new DataLoader(
-      (requests: readonly AuthorizeQuery[]) =>
+      (requests: readonly AuthorizePermissionRequest[]) =>
         this.permissions.authorize(requests.slice(), options),
       {
         // Serialize the permission name and resourceRef as
@@ -99,6 +110,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
           qs.stringify({ name, resourceRef }),
       },
     );
+
     const requestedTypes = query.types || Object.keys(this.types);
 
     const typeDecisions = zipObject(
@@ -107,9 +119,18 @@ export class AuthorizedSearchEngine implements SearchEngine {
         requestedTypes.map(type => {
           const permission = this.types[type]?.visibilityPermission;
 
-          return permission
-            ? authorizer.load({ permission })
-            : { result: AuthorizeResult.ALLOW as const };
+          // No permission configured for this document type - always allow.
+          if (!permission) {
+            return { result: AuthorizeResult.ALLOW as const };
+          }
+
+          // Resource permission supplied, so we need to check for conditional decisions.
+          if (isResourcePermission(permission)) {
+            return conditionFetcher.load({ permission });
+          }
+
+          // Non-resource permission supplied - we can perform a standard authorization.
+          return authorizer.load({ permission });
         }),
       ),
     );
@@ -144,7 +165,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
     const { page } = decodePageCursor(query.pageCursor);
     const targetResults = (page + 1) * this.pageSize;
 
-    let filteredResults: SearchResult[] = [];
+    let filteredResults: IndexableResult[] = [];
     let nextPageCursor: string | undefined;
     let latencyBudgetExhausted = false;
 
@@ -183,9 +204,12 @@ export class AuthorizedSearchEngine implements SearchEngine {
   }
 
   private async filterResults(
-    results: SearchResult[],
-    typeDecisions: Record<string, AuthorizeDecision>,
-    authorizer: DataLoader<AuthorizeQuery, AuthorizeDecision>,
+    results: IndexableResult[],
+    typeDecisions: Record<string, EvaluatePermissionResponse>,
+    authorizer: DataLoader<
+      EvaluatePermissionRequest,
+      EvaluatePermissionResponse
+    >,
   ) {
     return compact(
       await Promise.all(
@@ -199,6 +223,23 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
           if (!permission || !resourceRef) {
             return result;
+          }
+
+          // We only reach this point in the code for types where the initial
+          // authorization returned CONDITIONAL -- ALLOWs return early
+          // immediately above, and types where the decision was DENY get
+          // filtered out entirely when querying.
+          //
+          // This means the call to isResourcePermission here is mostly about
+          // narrowing the type of permission - the only way to get here with a
+          // non-resource permission is if the PermissionPolicy returns a
+          // CONDITIONAL decision for a non-resource permission, which can't
+          // happen - it would throw an error during validation in the
+          // permission-backend.
+          if (!isResourcePermission(permission)) {
+            throw new Error(
+              `Unexpected conditional decision returned for non-resource permission "${permission.name}"`,
+            );
           }
 
           return authorizer

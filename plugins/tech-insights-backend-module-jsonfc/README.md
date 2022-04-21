@@ -10,8 +10,7 @@ To add this FactChecker into your Tech Insights you need to install the module i
 
 ```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/plugin-tech-insights-backend-module-jsonfc
+yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend-module-jsonfc
 ```
 
 and modify the `techInsights.ts` file to contain a reference to the FactCheckers implementation.
@@ -21,14 +20,14 @@ and modify the `techInsights.ts` file to contain a reference to the FactCheckers
 
 +const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
 +   checks: [],
-+   logger,
++   logger: env.logger,
 +}),
 
  const builder = buildTechInsightsContext({
-   logger,
-   config,
-   database,
-   discovery,
+   logger: env.logger,
+   config: env.config,
+   database: env.database,
+   discovery: env.discovery,
    factRetrievers: [myFactRetrieverRegistration],
 +  factCheckerFactory: myFactCheckerFactory
  });
@@ -40,7 +39,7 @@ By default this implementation comes with an in-memory storage to store checks. 
  const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
  const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
    checks: [],
-   logger,
+   logger: env.logger,
 +  checkRegistry: myTechInsightCheckRegistry
  }),
 
@@ -95,7 +94,7 @@ json-rules-engine supports a limited [number of built-in operators](https://gith
 
 const myFactCheckerFactory = new JsonRulesEngineFactCheckerFactory({
    checks: [],
-   logger,
+   logger: env.logger,
 +  operators: [ new Operator("startsWith", (a, b) => a.startsWith(b) ]
 })
 ```

@@ -12,7 +12,7 @@ by writing custom actions which can be used along side our
 > built-in actions too**. To ensure you can continue to include the builtin
 > actions, see below to include them during registration of your action.
 
-### Writing your Custom Action
+## Writing your Custom Action
 
 Your custom action can live where you choose, but simplest is to include it
 alongside your `backend` package in `packages/backend`.
@@ -79,7 +79,7 @@ The `createTemplateAction` takes an object which specifies the following:
   function using `ctx.output`
 - `handler` - the actual code which is run part of the action, with a context
 
-#### The context object
+### The context object
 
 When the action `handler` is called, we provide you a `context` as the only
 argument. It looks like the following:
@@ -98,7 +98,7 @@ argument. It looks like the following:
 - `ctx.metadata` - an object containing a `name` field, indicating the template
   name. More metadata fields may be added later.
 
-### Registering Custom Actions
+## Registering Custom Actions
 
 Once you have your Custom Action ready for usage with the scaffolder, you'll
 need to pass this into the `scaffolder-backend` `createRouter` function. You
@@ -108,11 +108,11 @@ should have something similar to the below in
 ```ts
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 
@@ -123,29 +123,29 @@ will set the available actions that the scaffolder has access to.
 import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 import { ScmIntegrations } from '@backstage/integration';
 
-const integrations = ScmIntegrations.fromConfig(config);
+const integrations = ScmIntegrations.fromConfig(env.config);
 
 const builtInActions = createBuiltinActions({
   containerRunner,
   integrations,
-  config,
   catalogClient,
-  reader,
+  config: env.config,
+  reader: env.reader,
 });
 
 const actions = [...builtInActions, createNewFileAction()];
 return await createRouter({
   containerRunner,
-  logger,
-  config,
-  database,
   catalogClient,
-  reader,
   actions,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
 });
 ```
 
-### List of custom action packages
+## List of custom action packages
 
 Here is a list of Open Source custom actions that you can add to your Backstage
 scaffolder backend:
@@ -156,6 +156,8 @@ scaffolder backend:
 | Cookiecutter            | [plugin-scaffolder-backend-module-cookiecutter](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-cookiecutter) | [Backstage](https://backstage.io)            |
 | Rails                   | [plugin-scaffolder-backend-module-rails](https://www.npmjs.com/package/@backstage/plugin-scaffolder-backend-module-rails)               | [Backstage](https://backstage.io)            |
 | HTTP requests           | [scaffolder-backend-module-http-request](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-http-request)                | [Roadie](https://roadie.io)                  |
+| Utility actions         | [scaffolder-backend-module-utils](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-utils)                              | [Roadie](https://roadie.io)                  |
+| AWS cli actions         | [scaffolder-backend-module-aws](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-aws)                                  | [Roadie](https://roadie.io)                  |
 | Scaffolder .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                           | [Alef Carlos](https://github.com/alefcarlos) |
 
 Have fun! 🚀

@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
-import { CATALOG_FILTER_EXISTS, CatalogListResponse } from './types/api';
+import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
 const server = setupServer();
@@ -60,7 +60,7 @@ describe('CatalogClient', () => {
         },
       },
     ];
-    const defaultResponse: CatalogListResponse<Entity> = {
+    const defaultResponse: GetEntitiesResponse = {
       items: defaultServiceResponse.reverse(),
     };
 
@@ -192,6 +192,60 @@ describe('CatalogClient', () => {
       );
 
       expect(response.items).toEqual([]);
+    });
+  });
+
+  describe('getEntityByRef', () => {
+    const existingEntity: Entity = {
+      apiVersion: 'v1',
+      kind: 'CustomKind',
+      metadata: {
+        namespace: 'default',
+        name: 'exists',
+      },
+    };
+
+    beforeEach(() => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/customkind/default/exists`,
+          (_, res, ctx) => {
+            return res(ctx.json(existingEntity));
+          },
+        ),
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/customkind/default/missing`,
+          (_, res, ctx) => {
+            return res(ctx.status(404));
+          },
+        ),
+      );
+    });
+
+    it('finds by string and compound', async () => {
+      await expect(
+        client.getEntityByRef('customkind:default/exists'),
+      ).resolves.toEqual(existingEntity);
+      await expect(
+        client.getEntityByRef({
+          kind: 'CustomKind',
+          namespace: 'default',
+          name: 'exists',
+        }),
+      ).resolves.toEqual(existingEntity);
+    });
+
+    it('returns undefined for 404s', async () => {
+      await expect(
+        client.getEntityByRef('customkind:default/missing'),
+      ).resolves.toBeUndefined();
+      await expect(
+        client.getEntityByRef({
+          kind: 'CustomKind',
+          namespace: 'default',
+          name: 'missing',
+        }),
+      ).resolves.toBeUndefined();
     });
   });
 

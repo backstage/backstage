@@ -1,5 +1,262 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.1.0
+
+### Minor Changes
+
+- 733187987b: Removed an undocumented, broken behavior where `README.md` files would be copied to `index.md` if it did not exist, leading to broken links in the TechDocs UI.
+
+  **WARNING**: If you notice 404s in TechDocs after updating, check to make sure that all markdown files referenced in your `mkdocs.yml`s' `nav` sections exist. The following configuration may be used to temporarily revert to the broken behavior.
+
+  ```yaml
+  techdocs:
+    generator:
+      mkdocs:
+        legacyCopyReadmeMdToIndexMd: true
+  ```
+
+### Patch Changes
+
+- ada4446733: Specify type of `visibilityPermission` property on collators and collator factories.
+- 7762d54200: Fixed a bug affecting those with cache enabled that would result in empty content being cached if the first attempt to load a static asset from storage were made via a `HEAD` request, rather than a `GET` request.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-catalog-common@1.0.1
+  - @backstage/plugin-techdocs-node@1.1.0
+  - @backstage/catalog-client@1.0.1
+
+## 1.1.0-next.2
+
+### Minor Changes
+
+- bcf1a2496c: BREAKING: The default Techdocs behavior will no longer attempt to copy `docs/README.md` or `README.md` to `docs/index.md` (if not found). To retain this behavior in your instance, you can set the following config in your `app-config.yaml`:
+
+  ```yaml
+  techdocs:
+    generator:
+      mkdocs:
+        legacyCopyReadmeMdToIndexMd: true
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0-next.1
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/integration@1.1.0-next.2
+  - @backstage/plugin-techdocs-node@1.1.0-next.2
+
+## 1.0.1-next.1
+
+### Patch Changes
+
+- ada4446733: Specify type of `visibilityPermission` property on collators and collator factories.
+- Updated dependencies
+  - @backstage/integration@1.1.0-next.1
+  - @backstage/plugin-permission-common@0.6.0-next.0
+  - @backstage/plugin-catalog-common@1.0.1-next.1
+  - @backstage/backend-common@0.13.2-next.1
+  - @backstage/plugin-techdocs-node@1.0.1-next.1
+  - @backstage/plugin-search-common@0.3.3-next.1
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 7762d54200: Fixed a bug affecting those with cache enabled that would result in empty content being cached if the first attempt to load a static asset from storage were made via a `HEAD` request, rather than a `GET` request.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-search-common@0.3.3-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/integration@1.0.1-next.0
+  - @backstage/catalog-client@1.0.1-next.0
+  - @backstage/plugin-techdocs-node@1.0.1-next.0
+  - @backstage/plugin-catalog-common@1.0.1-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Minor Changes
+
+- 700d93ff41: Removed deprecated exports, including:
+
+  - deprecated config `generators` is now deleted and fully replaced with `techdocs.generator`
+  - deprecated config `generators.techdocs` is now deleted and fully replaced with `techdocs.generator.runIn`
+  - deprecated config `techdocs.requestUrl` is now deleted
+  - deprecated config `techdocs.storageUrl` is now deleted
+  - deprecated `createHttpResponse` is now deleted and calls to `/sync/:namespace/:kind/:name` needs to be done by an EventSource.
+
+### Patch Changes
+
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/catalog-model@1.0.0
+  - @backstage/integration@1.0.0
+  - @backstage/catalog-client@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/plugin-catalog-common@1.0.0
+  - @backstage/plugin-techdocs-node@1.0.0
+  - @backstage/plugin-search-common@0.3.2
+
+## 0.14.2
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- 91bf1e6c1a: Use `@backstage/plugin-techdocs-node` package instead of `@backstage/techdocs-common`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/plugin-techdocs-node@0.11.12
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-catalog-common@0.2.2
+  - @backstage/plugin-search-common@0.3.1
+  - @backstage/catalog-client@0.9.0
+
+## 0.14.2-next.0
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 3c2bc73901: Use `setupRequestMockHandlers` from `@backstage/backend-test-utils`
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- 91bf1e6c1a: Use `@backstage/plugin-techdocs-node` package instead of `@backstage/techdocs-common`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/plugin-techdocs-node@0.11.12-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/plugin-catalog-common@0.2.2-next.0
+  - @backstage/plugin-search-common@0.3.1-next.0
+  - @backstage/catalog-client@0.9.0-next.0
+
+## 0.14.1
+
+### Patch Changes
+
+- 6537a601c7: Added a new interface that allows for customization of when to build techdocs
+- 899f196af5: Use `getEntityByRef` instead of `getEntityByName` in the catalog client
+- 022507c860: A `DefaultTechDocsCollatorFactory`, which works with the new stream-based
+  search indexing subsystem, is now available. The `DefaultTechDocsCollator` will
+  continue to be available for those unable to upgrade to the stream-based
+  `@backstage/search-backend-node` (and related packages), however it is now
+  marked as deprecated and will be removed in a future version.
+
+  To upgrade this plugin and the search indexing subsystem in one go, check
+  [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  for necessary changes to your search backend plugin configuration.
+
+- 36aa63022b: Use `CompoundEntityRef` instead of `EntityName`, and `getCompoundEntityRef` instead of `getEntityName`, from `@backstage/catalog-model`.
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/catalog-client@0.8.0
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-catalog-common@0.2.0
+  - @backstage/integration@0.8.0
+  - @backstage/search-common@0.3.0
+  - @backstage/techdocs-common@0.11.11
+
+## 0.14.0
+
+### Minor Changes
+
+- a925ba8385: BREAKING: constructor based initialization of DefaultTechDocsCollator now deprecated. Use static fromConfig method instead.
+
+  ```diff
+  indexBuilder.addCollator({
+    defaultRefreshIntervalSeconds: 600,
+  -   collator: new DefaultTechDocsCollator({
+  +   collator: DefaultTechDocsCollator.fromConfig(config, {
+      discovery,
+      logger,
+      tokenManager,
+    }),
+  });
+  ```
+
+  Note: in an upcoming release, TechDocs backend's /sync/:namespace/:kind/:name endpoint will only respond to text/event-stream-based requests. Update any custom code at your organization accordingly.
+
+### Patch Changes
+
+- 91eb01b5cf: Optimize DefaultTechDocsCollator get entities.
+- 919cf2f836: Minor updates to match the new `targetRef` field of relations, and to stop consuming the `target` field
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/catalog-client@0.7.2
+  - @backstage/techdocs-common@0.11.10
+  - @backstage/integration@0.7.5
+
+## 0.13.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/catalog-client@0.7.1
+  - @backstage/catalog-model@0.10.1
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/integration@0.7.4
+  - @backstage/search-common@0.2.4
+  - @backstage/techdocs-common@0.11.9
+  - @backstage/plugin-catalog-common@0.1.4
+
+## 0.13.4
+
+### Patch Changes
+
+- 453145abba: Do not use cross-fetch in the backend
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 811c710a21: Fix bug where tech docs collator stores search indices with wrong entity ref casing. Make the collator to conform legacyPathCasing configuration option.
+- 7aeb491394: Replace use of deprecated `ENTITY_DEFAULT_NAMESPACE` constant with `DEFAULT_NAMESPACE`.
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/catalog-client@0.7.0
+  - @backstage/errors@0.2.1
+  - @backstage/integration@0.7.3
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/techdocs-common@0.11.8
+  - @backstage/plugin-catalog-common@0.1.3
+
+## 0.13.3
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/catalog-client@0.6.0
+  - @backstage/backend-common@0.10.7
+  - @backstage/techdocs-common@0.11.7
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/techdocs-common@0.11.7-next.0
+
 ## 0.13.2
 
 ### Patch Changes

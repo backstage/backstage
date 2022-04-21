@@ -6,10 +6,9 @@ Common distributed task management for Backstage backends.
 
 Add the library to your backend package:
 
-```sh
+```bash
 # From your Backstage root directory
-cd packages/backend
-yarn add @backstage/backend-tasks
+yarn add --cwd packages/backend @backstage/backend-tasks
 ```
 
 then make use of its facilities as necessary:
@@ -22,7 +21,7 @@ const scheduler = TaskScheduler.fromConfig(rootConfig).forPlugin('my-plugin');
 
 await scheduler.scheduleTask({
   id: 'refresh_things',
-  frequency: Duration.fromObject({ minutes: 10 }),
+  frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
   timeout: Duration.fromObject({ minutes: 15 }),
   fn: async () => {
     await entityProvider.run();

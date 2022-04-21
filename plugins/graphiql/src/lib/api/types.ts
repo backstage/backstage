@@ -16,6 +16,7 @@
 
 import { createApiRef } from '@backstage/core-plugin-api';
 
+/** @public */
 export type GraphQLEndpoint = {
   // Will be used as unique key for storing history and query data
   id: string;
@@ -29,10 +30,12 @@ export type GraphQLEndpoint = {
   fetcher: (body: any) => Promise<any>;
 };
 
+/** @public */
 export type GraphQLBrowseApi = {
   getEndpoints(): Promise<GraphQLEndpoint[]>;
 };
 
+/** @public */
 export const graphQlBrowseApiRef = createApiRef<GraphQLBrowseApi>({
   id: 'plugin.graphiql.browse',
 });

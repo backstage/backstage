@@ -17,7 +17,10 @@
 import { Config } from '@backstage/config';
 import { AwsS3Integration } from './awsS3/AwsS3Integration';
 import { AzureIntegration } from './azure/AzureIntegration';
+import { BitbucketCloudIntegration } from './bitbucketCloud/BitbucketCloudIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
+import { BitbucketServerIntegration } from './bitbucketServer/BitbucketServerIntegration';
+import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import { defaultScmResolveUrl } from './helpers';
@@ -32,7 +35,13 @@ import { ScmIntegrationRegistry } from './registry';
 export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
+  /**
+   * @deprecated in favor of `bitbucketCloud` and `bitbucketServer`
+   */
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
+  bitbucketServer: ScmIntegrationsGroup<BitbucketServerIntegration>;
+  gerrit: ScmIntegrationsGroup<GerritIntegration>;
   github: ScmIntegrationsGroup<GitHubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 }
@@ -50,6 +59,9 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
       awsS3: AwsS3Integration.factory({ config }),
       azure: AzureIntegration.factory({ config }),
       bitbucket: BitbucketIntegration.factory({ config }),
+      bitbucketCloud: BitbucketCloudIntegration.factory({ config }),
+      bitbucketServer: BitbucketServerIntegration.factory({ config }),
+      gerrit: GerritIntegration.factory({ config }),
       github: GitHubIntegration.factory({ config }),
       gitlab: GitLabIntegration.factory({ config }),
     });
@@ -67,8 +79,23 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return this.byType.azure;
   }
 
+  /**
+   * @deprecated in favor of `bitbucketCloud()` and `bitbucketServer()`
+   */
   get bitbucket(): ScmIntegrationsGroup<BitbucketIntegration> {
     return this.byType.bitbucket;
+  }
+
+  get bitbucketCloud(): ScmIntegrationsGroup<BitbucketCloudIntegration> {
+    return this.byType.bitbucketCloud;
+  }
+
+  get bitbucketServer(): ScmIntegrationsGroup<BitbucketServerIntegration> {
+    return this.byType.bitbucketServer;
+  }
+
+  get gerrit(): ScmIntegrationsGroup<GerritIntegration> {
+    return this.byType.gerrit;
   }
 
   get github(): ScmIntegrationsGroup<GitHubIntegration> {

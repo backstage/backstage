@@ -57,11 +57,11 @@ export function compileConfigSchemas(
       },
       compile(visibility: ConfigVisibility) {
         return (_data, context) => {
-          if (context?.dataPath === undefined) {
+          if (context?.instancePath === undefined) {
             return false;
           }
           if (visibility && visibility !== 'backend') {
-            const normalizedPath = context.dataPath.replace(
+            const normalizedPath = context.instancePath.replace(
               /\['?(.*?)'?\]/g,
               (_, segment) => `/${segment}`,
             );
@@ -77,10 +77,10 @@ export function compileConfigSchemas(
       metaSchema: { type: 'string' },
       compile(deprecationDescription: string) {
         return (_data, context) => {
-          if (context?.dataPath === undefined) {
+          if (context?.instancePath === undefined) {
             return false;
           }
-          const normalizedPath = context.dataPath.replace(
+          const normalizedPath = context.instancePath.replace(
             /\['?(.*?)'?\]/g,
             (_, segment) => `/${segment}`,
           );

@@ -53,7 +53,7 @@ export const DEFAULT_CONFIG_VISIBILITY: ConfigVisibility = 'backend';
  */
 export type ValidationError = {
   keyword: string;
-  dataPath: string;
+  instancePath: string;
   schemaPath: string;
   params: Record<string, any>;
   propertyName?: string;
@@ -116,6 +116,11 @@ export type ConfigSchemaProcessingOptions = {
    * If omitted, the data will not be filtered by visibility.
    */
   visibility?: ConfigVisibility[];
+
+  /**
+   * When set to `true`, any schema errors in the provided configuration will be ignored.
+   */
+  ignoreSchemaErrors?: boolean;
 
   /**
    * A transform function that can be used to transform primitive configuration values

@@ -20,18 +20,38 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
+import {
+  PermissionAuthorizer,
+  PermissionEvaluator,
+  toPermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
+  permissions?: PermissionEvaluator | PermissionAuthorizer;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { jenkinsInfoProvider } = options;
+  const { jenkinsInfoProvider, permissions, logger } = options;
 
-  const jenkinsApi = new JenkinsApiImpl();
+  let permissionEvaluator: PermissionEvaluator | undefined;
+  if (permissions && 'authorizeConditional' in permissions) {
+    permissionEvaluator = permissions as PermissionEvaluator;
+  } else {
+    logger.warn(
+      'PermissionAuthorizer is deprecated. Please use an instance of PermissionEvaluator instead of PermissionAuthorizer in PluginEnvironment#permissions',
+    );
+    permissionEvaluator = permissions
+      ? toPermissionEvaluator(permissions)
+      : undefined;
+  }
+
+  const jenkinsApi = new JenkinsApiImpl(permissionEvaluator);
 
   const router = Router();
   router.use(express.json());
@@ -40,6 +60,9 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/projects',
     async (request, response) => {
       const { namespace, kind, name } = request.params;
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
       const branch = request.query.branch;
       let branchStr: string | undefined;
 
@@ -63,6 +86,7 @@ export async function createRouter(
           namespace,
           name,
         },
+        backstageToken: token,
       });
       const projects = await jenkinsApi.getProjects(jenkinsInfo, branchStr);
 
@@ -75,6 +99,9 @@ export async function createRouter(
   router.get(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber',
     async (request, response) => {
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
       const { namespace, kind, name, jobFullName, buildNumber } =
         request.params;
 
@@ -85,6 +112,7 @@ export async function createRouter(
           name,
         },
         jobFullName,
+        backstageToken: token,
       });
 
       const build = await jenkinsApi.getBuild(
@@ -103,7 +131,6 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber::rebuild',
     async (request, response) => {
       const { namespace, kind, name, jobFullName } = request.params;
-
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
           kind,
@@ -112,12 +139,17 @@ export async function createRouter(
         },
         jobFullName,
       });
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
 
-      await jenkinsApi.buildProject(jenkinsInfo, jobFullName);
+      const resourceRef = stringifyEntityRef({ kind, namespace, name });
+      await jenkinsApi.buildProject(jenkinsInfo, jobFullName, resourceRef, {
+        token,
+      });
       response.json({});
     },
   );
-
   router.use(errorHandler());
   return router;
 }

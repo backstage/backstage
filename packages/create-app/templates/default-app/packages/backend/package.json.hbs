@@ -4,14 +4,16 @@
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "private": true,
+  "backstage": {
+    "role": "backend"
+  },
   "scripts": {
-    "build": "backstage-cli backend:bundle",
-    "build-image": "docker build ../.. -f Dockerfile --tag backstage",
-    "start": "backstage-cli backend:dev",
-    "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "clean": "backstage-cli clean",
-    "migrate:create": "knex migrate:make -x ts"
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "build-image": "docker build ../.. -f Dockerfile --tag backstage"
   },
   "dependencies": {
     "app": "link:../app",
@@ -28,19 +30,20 @@
     "@backstage/plugin-proxy-backend": "^{{version '@backstage/plugin-proxy-backend'}}",
     "@backstage/plugin-scaffolder-backend": "^{{version '@backstage/plugin-scaffolder-backend'}}",
     "@backstage/plugin-search-backend": "^{{version '@backstage/plugin-search-backend'}}",
+    {{#if dbTypePG}}
+    "@backstage/plugin-search-backend-module-pg": "^{{version '@backstage/plugin-search-backend-module-pg'}}",
+    {{/if}}
     "@backstage/plugin-search-backend-node": "^{{version '@backstage/plugin-search-backend-node'}}",
     "@backstage/plugin-techdocs-backend": "^{{version '@backstage/plugin-techdocs-backend'}}",
-    "@gitbeaker/node": "^34.6.0",
-    "@octokit/rest": "^18.5.3",
     "dockerode": "^3.3.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "knex": "^0.21.6",
+    "luxon": "^2.0.2",
     {{#if dbTypePG}}
     "pg": "^8.3.0",
     {{/if}}
     {{#if dbTypeSqlite}}
-    "@vscode/sqlite3": "^5.0.7",
+    "better-sqlite3": "^7.5.0",
     {{/if}}
     "winston": "^3.2.1"
   },
@@ -48,7 +51,8 @@
     "@backstage/cli": "^{{version '@backstage/cli'}}",
     "@types/dockerode": "^3.3.0",
     "@types/express": "^4.17.6",
-    "@types/express-serve-static-core": "^4.17.5"
+    "@types/express-serve-static-core": "^4.17.5",
+    "@types/luxon": "^2.0.4"
   },
   "files": [
     "dist"

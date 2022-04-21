@@ -12,6 +12,53 @@ organization and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
 catalog.
 
+## Installation
+
+You will have to add the processors in the catalog initialization code of your
+backend. They are not installed by default, therefore you have to add a
+dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
+package, plus `@backstage/integration` for the basic credentials management:
+
+```bash
+# From your Backstage root directory
+yarn add --cwd packages/backend @backstage/integration
+yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+```
+
+And then add the processors to your catalog builder:
+
+```diff
+// In packages/backend/src/plugins/catalog.ts
++import {
++  GithubDiscoveryProcessor,
++  GithubOrgReaderProcessor,
++} from '@backstage/plugin-catalog-backend-module-github';
++import {
++  ScmIntegrations,
++  DefaultGithubCredentialsProvider
++} from '@backstage/integration';
+
+ export default async function createPlugin(
+   env: PluginEnvironment,
+ ): Promise<Router> {
+   const builder = await CatalogBuilder.create(env);
++  const integrations = ScmIntegrations.fromConfig(env.config);
++  const githubCredentialsProvider =
++    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
++  builder.addProcessor(
++    GithubDiscoveryProcessor.fromConfig(env.config, {
++      logger: env.logger,
++      githubCredentialsProvider,
++    }),
++    GithubOrgReaderProcessor.fromConfig(env.config, {
++      logger: env.logger,
++      githubCredentialsProvider,
++    }),
++  );
+```
+
+## Configuration
+
 To use the discovery processor, you'll need a GitHub integration
 [set up](locations.md) with a `GITHUB_TOKEN`. Then you can add a location target
 to the catalog configuration:
@@ -62,14 +109,13 @@ the catalog in your `packages/backend/src/plugins/catalog.ts` file:
 const builder = await CatalogBuilder.create(env);
 
 // For example, to refresh every 5 minutes (300 seconds).
-builder.setRefreshIntervalSeconds(300);
+builder.setProcessingIntervalSeconds(300);
 ```
 
-Alternatively, or additionally, you can configure [github-apps] authentication
+Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
 which carries a much higher rate limit at GitHub.
 
 This is true for any method of adding GitHub entities to the catalog, but
 especially easy to hit with automatic discovery.
 
 [rate limits]: https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting
-[github-apps]: ../../plugins/github-apps.md

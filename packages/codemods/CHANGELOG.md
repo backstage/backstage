@@ -1,5 +1,69 @@
 # @backstage/codemods
 
+## 0.1.37
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+
+## 0.1.37-next.0
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+
+## 0.1.36
+
+### Patch Changes
+
+- 224441d0f9: Inlined the table of symbols used by the `core-imports` codemod so that future updates to the core packages don't break the codemod. An entry for has also been added to direct imports of `createApp` to `@backstage/app-defaults`.
+
+## 0.1.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1
+
+## 0.1.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.1-next.0
+
+## 0.1.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.8
+
+## 0.1.34
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-app-api@0.5.3
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/cli-common@0.1.7
+
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+
+## 0.1.33-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+
 ## 0.1.32
 
 ### Patch Changes

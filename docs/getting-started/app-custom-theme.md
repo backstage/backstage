@@ -57,6 +57,7 @@ done like this:
 import { createApp } from '@backstage/app-defaults';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import LightIcon from '@material-ui/icons/WbSunny';
 
 const app = createApp({
   apis: ...,
@@ -65,6 +66,7 @@ const app = createApp({
     id: 'my-theme',
     title: 'My Custom Theme',
     variant: 'light',
+    icon: <LightIcon />,
     Provider: ({ children }) => (
       <ThemeProvider theme={myTheme}>
         <CssBaseline>{children}</CssBaseline>
@@ -146,6 +148,11 @@ const myTheme = createTheme({
   },
 });
 ```
+
+For a more complete example of a custom theme including Backstage and
+Material-UI component overrides, see the [Aperture
+theme](https://github.com/backstage/demo/blob/master/packages/app/src/theme/aperture.ts)
+from the [Backstage demo site](https://demo.backstage.io).
 
 ## Overriding Backstage and Material UI components styles
 
@@ -257,68 +264,4 @@ const LogoFull = () => {
 ## Custom Homepage
 
 In addition to a custom theme, a custom logo, you can also customize the
-homepage of your app. To do that we need to go through a few steps.
-
-### Setting up the Home Page
-
-1. Create a Home Page Component that will be used for composition.
-
-`packages/app/src/components/home/HomePage.tsx`
-
-```tsx
-import React from 'react';
-
-export const HomePage = () => {
-  return {
-    /* TODO: Compose a Home Page here */
-  };
-};
-```
-
-2. Add a route where the homepage will live, presumably `/`.
-
-`packages/app/src/App.tsx`
-
-```tsx
-import { HomepageCompositionRoot } from '@backstage/plugin-home';
-import { HomePage } from './components/home/HomePage';
-
-// ...
-<Route path="/" element={<HomepageCompositionRoot />}>
-  <HomePage />
-</Route>;
-// ...
-```
-
-### Composing your Home Page
-
-Composing a Home Page is no different from creating a regular React Component,
-i.e. the App Integrator is free to include whatever content they like. However,
-there are components developed with the Home Page in mind. If you are looking
-for components to use when composing your homepage, you can take a look at the
-[collection of Homepage components](https://backstage.io/?path=/story/plugins-home-components)
-in storybook. If you don't find a component that suits your needs but want to
-contribute, check the
-[Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing).
-
-> If you want to use one of the available homepage templates you can find the
-> [templates](https://backstage.io/storybook/?path=/story/plugins-home-templates)
-> in the storybook under the "Home" plugin. And if you would like to contribute
-> a template, please see the
-> [Contributing documentation](https://github.com/backstage/backstage/blob/master/plugins/home/README.md#contributing)
-
-```tsx
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import { HomePageCompanyLogo } from '@backstage/plugin-home';
-
-export const HomePage = () => {
-  return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={4}>
-        <HomePageCompanyLogo className={container} />
-      </Grid>
-    </Grid>
-  );
-};
-```
+homepage of your app. Read the full guide on the [next page](homepage.md).

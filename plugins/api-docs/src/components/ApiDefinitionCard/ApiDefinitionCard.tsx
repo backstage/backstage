@@ -24,12 +24,7 @@ import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
 import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  apiEntity?: ApiEntity;
-};
-
-export const ApiDefinitionCard = (_: Props) => {
+export const ApiDefinitionCard = () => {
   const { entity } = useEntity<ApiEntity>();
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;

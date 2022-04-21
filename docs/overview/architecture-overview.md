@@ -256,6 +256,18 @@ The Backstage CLI is in a category of its own and is depended on by virtually
 all other packages. It's not a library in itself though, and must always be a
 development dependency only.
 
+### Deciding where you place your code
+
+It can sometimes be difficult to decide where to place your plugin code. For example
+should it go directly in the `-backend` plugin package or in the `-node` package?
+As a rule of thumb you should try to keep the exposure of your code as low
+as possible. If it doesn't need to be public API, it's best to avoid. If you don't
+need it to be used by other plugins, then keep it directly in the plugin packages.
+
+Below is a chart to help you decide where to place your code.
+
+![Package decision](../assets/architecture-overview/package-decision.drawio.svg)
+
 ## Databases
 
 As we have seen, both the `lighthouse-audit-service` and `catalog-backend`
@@ -281,11 +293,11 @@ stores as a means of improving performance or reliability. Similar to how
 databases are supported, plugins receive logically separated cache connections,
 which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
-At this time of writing, Backstage can be configured to use one of two cache
-stores: memory, which is mainly used for local testing, and memcache, which is a
-cache store better suited for production deployment. The right cache store for
-your Backstage instance will depend on your own run-time constraints and those
-required of the plugins you're running.
+At this time of writing, Backstage can be configured to use one of three cache
+stores: memory, which is mainly used for local testing, memcache or Redis,
+which are cache stores better suited for production deployment. The right cache
+store for your Backstage instance will depend on your own run-time constraints
+and those required of the plugins you're running.
 
 ### Use memory for cache
 
@@ -302,6 +314,15 @@ backend:
   cache:
     store: memcache
     connection: user:pass@cache.example.com:11211
+```
+
+### Use Redis for cache
+
+```yaml
+backend:
+  cache:
+    store: redis
+    connection: redis://user:pass@cache.example.com:6379
 ```
 
 Contributions supporting other cache stores are welcome!

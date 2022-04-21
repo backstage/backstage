@@ -14,8 +14,7 @@ Main areas covered by this plugin currently are:
 
 ```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-tech-insights
+yarn add --cwd packages/app @backstage/plugin-tech-insights
 ```
 
 ### Add boolean checks overview (Scorecards) page to the EntityPage:
@@ -39,6 +38,10 @@ const serviceEntityPage = (
         title="Customized title for the scorecard"
         description="Small description about scorecards"
       />
+      <EntityTechInsightsScorecardContent
+        title="Show only simpleTestCheck in this card"
+        checksId={['simpleTestCheck']}
+      />
     </EntityLayout.Route>
     ...
   </EntityLayoutWrapper>
@@ -47,12 +50,10 @@ const serviceEntityPage = (
 
 It is not obligatory to pass title and description props to `EntityTechInsightsScorecardContent`. If those are left out, default values from `defaultCheckResultRenderers` in `CheckResultRenderer` will be taken, hence `Boolean scorecard` and `This card represents an overview of default boolean Backstage checks`.
 
-### Customize scorecards overview title and description:
+You can pass an array `checksId` as a prop with the [Fact Retrievers ids](../tech-insights-backend#creating-fact-retrievers) to limit which checks you want to show in this card, If you don't pass, the default value is show all checks.
 
-```tsx
-// packages/app/src/components/catalog/EntityPage.tsx
+## Boolean Scorecard Example
 
-## Links
+If you follow the [Backend Example](https://github.com/backstage/backstage/tree/master/plugins/tech-insights-backend#backend-example), once the needed facts have been generated the boolean scorecard will look like this:
 
-- [The Backstage homepage](https://backstage.io)
-```
+![Boolean Scorecard Example](./docs/boolean-scorecard-example.png)

@@ -19,15 +19,9 @@ import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { TaskWorker } from './TaskWorker';
-import { HandlebarsWorkflowRunner } from './HandlebarsWorkflowRunner';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
-
-jest.mock('./HandlebarsWorkflowRunner');
-const MockedHandlebarsWorkflowRunner =
-  HandlebarsWorkflowRunner as jest.Mock<HandlebarsWorkflowRunner>;
-MockedHandlebarsWorkflowRunner.mockImplementation();
 
 jest.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
@@ -39,7 +33,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
     new ConfigReader({
       backend: {
         database: {
-          client: 'sqlite3',
+          client: 'better-sqlite3',
           connection: ':memory:',
         },
       },
@@ -58,10 +52,6 @@ describe('TaskWorker', () => {
   const actionRegistry: TemplateActionRegistry = {} as TemplateActionRegistry;
   const workingDirectory = '/tmp/scaffolder';
 
-  const handlebarsWorkflowRunner: HandlebarsWorkflowRunner = {
-    execute: jest.fn(),
-  } as unknown as HandlebarsWorkflowRunner;
-
   const workflowRunner: NunjucksWorkflowRunner = {
     execute: jest.fn(),
   } as unknown as NunjucksWorkflowRunner;
@@ -72,44 +62,10 @@ describe('TaskWorker', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    MockedHandlebarsWorkflowRunner.mockImplementation(
-      () => handlebarsWorkflowRunner,
-    );
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
   const logger = getVoidLogger();
-
-  it('should call the legacy workflow runner when the apiVersion is not beta3', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
-    const taskWorker = await TaskWorker.create({
-      logger,
-      workingDirectory,
-      integrations,
-      taskBroker: broker,
-      actionRegistry,
-    });
-
-    await broker.dispatch({
-      apiVersion: 'backstage.io/v1beta2',
-      steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-      output: {
-        result: '{{ steps.test.output.testOutput }}',
-      },
-      values: {},
-    });
-
-    const task = await broker.claim();
-    await taskWorker.runOneTask(task);
-
-    expect(MockedHandlebarsWorkflowRunner).toBeCalledWith({
-      actionRegistry,
-      integrations,
-      logger,
-      workingDirectory,
-    });
-    expect(handlebarsWorkflowRunner.execute).toHaveBeenCalled();
-  });
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
@@ -122,12 +78,14 @@ describe('TaskWorker', () => {
     });
 
     await broker.dispatch({
-      apiVersion: 'scaffolder.backstage.io/v1beta3',
-      steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-      output: {
-        result: '{{ steps.test.output.testOutput }}',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+        output: {
+          result: '{{ steps.test.output.testOutput }}',
+        },
+        parameters: {},
       },
-      parameters: {},
     });
 
     const task = await broker.claim();
@@ -151,12 +109,14 @@ describe('TaskWorker', () => {
     });
 
     const { taskId } = await broker.dispatch({
-      apiVersion: 'scaffolder.backstage.io/v1beta3',
-      steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
-      output: {
-        result: '{{ steps.test.output.testOutput }}',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [{ id: 'test', name: 'test', action: 'not-found-action' }],
+        output: {
+          result: '{{ steps.test.output.testOutput }}',
+        },
+        parameters: {},
       },
-      parameters: {},
     });
 
     const task = await broker.claim();

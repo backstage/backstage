@@ -16,10 +16,9 @@ The Bazaar allows engineers and teams to open up and announce their new and exci
 
 First install the plugin into your app:
 
-```sh
+```bash
 # From your Backstage root directory
-cd packages/app
-yarn add @backstage/plugin-bazaar
+yarn add --cwd packages/app @backstage/plugin-bazaar
 ```
 
 Modify your app routes in `packages/app/src/App.tsx` to include the `Bazaar` component exported from the plugin, for example:

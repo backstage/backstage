@@ -1,5 +1,303 @@
 # @backstage/cli
 
+## 0.17.0
+
+### Minor Changes
+
+- 1f7d4763ab: **BREAKING**: Bump the version range of `jest` from `^26.0.1` to `^27.5.1`. You can find the complete list of breaking changes [here](https://github.com/facebook/jest/releases/tag/v27.0.0).
+
+  We strongly recommend to have completed the [package role migration](https://backstage.io/docs/tutorials/package-role-migration) before upgrading to this version, as the package roles are used to automatically determine the testing environment for each package. If you instead want to set an explicit test environment for each package, you can do so for example in the `"jest"` section in `package.json`. The default test environment for all packages is now `node`, which is also the new Jest default.
+
+  Note that one of the breaking changes of Jest 27 is that the `jsdom` environment no longer includes `setImmediate` and `clearImmediate`, which means you might need to update some of your frontend packages. Another notable change is that `jest.useFakeTimers` now defaults to the `'modern'` implementation, which also mocks microtasks.
+
+### Patch Changes
+
+- e80ecad93c: Bump the `rushstack` api generator libraries to their latest versions
+- c54ce828bd: build(deps): bump `eslint-plugin-jest` from 25.3.4 to 26.1.2
+- f151dfee5a: build(deps): bump `eslint-webpack-plugin` from 2.6.0 to 3.1.1
+- 7e7ba704be: build(deps): bump `@spotify/eslint-config-base` from 12.0.0 to 13.0.0
+- ecd72391fb: build(deps): bump `@spotify/eslint-config-typescript`
+- 6a341b2d87: build(deps): bump `@spotify/eslint-config-react` from 12.0.0 to 13.0.0
+- 3c26b2edb5: build(deps): bump `npm-packlist` from 3.0.0 to 5.0.0
+- ed3551b7be: Introduced a new experimental test configuration with a number of changes. It switches the coverage provider from `v8` to the default Babel provider, along with always enabling source maps in the Sucrase transform. It also adds a custom module loader that caches both file transforms and VM script objects across all projects in a test run, which provides a big performance boost when running tests from the project root, increasing speed and reducing memory usage.
+
+  This new configuration is not enabled by default. It is enabled by setting the environment variable `BACKSTAGE_NEXT_TESTS` to a non-empty value.
+
+- 6ad0c45648: Added an experimental `package fix` command which applies automated fixes to the target package. The initial fix that is available is to add missing monorepo dependencies to the target package.
+- 5b3079694e: Stop logging "Stopped watcher" when shutting down the development backend.
+- f512554910: Updated the plugin template to install version 14 of `@testing-library/user-event`.
+
+  To apply this change to your own project, update the `devDependencies` section in your `package.json` files:
+
+  ```diff
+   "devDependencies": {
+     ... omitted dev dependencies ...
+  -   "@testing-library/user-event": "^13.1.8",
+  +   "@testing-library/user-event": "^14.0.0",
+      ... omitted dev dependencies ...
+   }
+  ```
+
+- df7862cfa6: Fixed a bug were the `react-hot-loader` transform was being applied to backend development builds.
+- 230ad0826f: Bump to using `@types/node` v16
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 948a56f401: Added a new experimental `repo list-deprecations` command, which scans the entire project for usage of deprecated APIs.
+- 4782f9e925: Fixed misleading log message during frontend plugin creation.
+- 0383cd0228: The `versions:*` commands no longer warns about duplicate plugin libraries, such as `@backstage/plugin-catalog-common`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.0
+
+## 0.17.0-next.3
+
+### Patch Changes
+
+- e80ecad93c: Bump the `rushstack` api generator libraries to their latest versions
+- 3c26b2edb5: build(deps): bump `npm-packlist` from 3.0.0 to 5.0.0
+- f512554910: Updated the plugin template to install version 14 of `@testing-library/user-event`.
+
+  To apply this change to your own project, update the `devDependencies` section in your `package.json` files:
+
+  ```diff
+   "devDependencies": {
+     ... omitted dev dependencies ...
+  -   "@testing-library/user-event": "^13.1.8",
+  +   "@testing-library/user-event": "^14.0.0",
+      ... omitted dev dependencies ...
+   }
+  ```
+
+- df7862cfa6: Fixed a bug were the `react-hot-loader` transform was being applied to backend development builds.
+- 230ad0826f: Bump to using `@types/node` v16
+- 0383cd0228: The `versions:*` commands no longer warns about duplicate plugin libraries, such as `@backstage/plugin-catalog-common`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.0-next.1
+
+## 0.17.0-next.2
+
+### Patch Changes
+
+- 6a341b2d87: build(deps): bump `@spotify/eslint-config-react` from 12.0.0 to 13.0.0
+- 4782f9e925: Fixed misleading log message during frontend plugin creation.
+
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 1f7d4763ab: **BREAKING**: Bump the version range of `jest` from `^26.0.1` to `^27.5.1`. You can find the complete list of breaking changes [here](https://github.com/facebook/jest/releases/tag/v27.0.0).
+
+  We strongly recommend to have completed the [package role migration](https://backstage.io/docs/tutorials/package-role-migration) before upgrading to this version, as the package roles are used to automatically determine the testing environment for each package. If you instead want to set an explicit test environment for each package, you can do so for example in the `"jest"` section in `package.json`. The default test environment for all packages is now `node`, which is also the new Jest default.
+
+  Note that one of the breaking changes of Jest 27 is that the `jsdom` environment no longer includes `setImmediate` and `clearImmediate`, which means you might need to update some of your frontend packages. Another notable change is that `jest.useFakeTimers` now defaults to the `'modern'` implementation, which also mocks microtasks.
+
+### Patch Changes
+
+- c54ce828bd: build(deps): bump `eslint-plugin-jest` from 25.3.4 to 26.1.2
+- f151dfee5a: build(deps): bump `eslint-webpack-plugin` from 2.6.0 to 3.1.1
+- 7e7ba704be: build(deps): bump `@spotify/eslint-config-base` from 12.0.0 to 13.0.0
+- ecd72391fb: build(deps): bump `@spotify/eslint-config-typescript`
+- 5b3079694e: Stop logging "Stopped watcher" when shutting down the development backend.
+
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 6ad0c45648: Added an experimental `package fix` command which applies automated fixes to the target package. The initial fix that is available is to add missing monorepo dependencies to the target package.
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+- 948a56f401: Added a new experimental `repo list-deprecations` command, which scans the entire project for usage of deprecated APIs.
+- Updated dependencies
+  - @backstage/config-loader@1.0.1-next.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 217547ae51: **BREAKING**: The provided Jest configuration now only matches files with a `.test.` infix, rather than any files that is suffixed with `test.<ext>`. In particular this means that files named just `test.ts` will no longer be considered a test file.
+
+### Patch Changes
+
+- 947ae3b40e: Applied the fix from version `0.15.3` of this package, which is part of the `v0.71.1` release of Backstage.
+- 19eed0edd9: Fix for `overrides` not being properly forwarded from the extra configuration passed to `@backstage/cli/config/eslint-factory`.
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/config-loader@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
+## 0.15.3
+
+### Patch Changes
+
+- Fixed an issue where the CLI would try and fail to require the `package.json` of other Backstage packages, like `@backstage/dev-utils/package.json`.
+
+## 0.15.2
+
+### Patch Changes
+
+- 2c528506aa: Added `--since <ref>` flag for `repo build` command.`
+- 60799cc5be: build(deps-dev): bump `@types/npm-packlist` from 1.1.2 to 3.0.0
+- d3d1b82198: chore(deps): bump `minimatch` from 5.0.0 to 5.0.1
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 44cc7c3b95: Added a new ESLint configuration setup for packages, which utilizes package roles to generate the correct configuration. The new configuration is available at `@backstage/cli/config/eslint-factory`.
+
+  Introduced a new `backstage-cli migrate package-lint-configs` command, which migrates old lint configurations to use `@backstage/cli/config/eslint-factory`.
+
+- b1aacbf96a: Applied the fix from version `0.15.1` of this package, which was part of the `v0.70.1` release of Backstage.
+- d2ecde959b: Package roles are now marked as stable and migration is encouraged. Please check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+
+  The new `package`, `repo`, and `migrate` command categories are now marked as stable.
+
+  Marked all commands that are being replaced by the new `package` and `repo` commands as deprecated.
+
+  The package templates used by the `create` command have all been updated to use package roles.
+
+- f06da37290: The backend development setup now ignores the `"browser"` and `"module"` entry points in `package.json`, and instead always uses `"main"`.
+- 6a1fe077ad: Changed the logic for how modules are marked as external in the Rollup build of packages. Rather than only marking dependencies and build-in Node.js modules as external, all non-relative imports are now considered external.
+- dc6002a7b9: The `--since` flag of repo commands now silently falls back to using the provided `ref` directly if no merge base is available.
+- Updated dependencies
+  - @backstage/config-loader@0.9.7
+
+## 0.15.2-next.0
+
+### Patch Changes
+
+- 2c528506aa: Added `--since <ref>` flag for `repo build` command.`
+- d3d1b82198: chore(deps): bump `minimatch` from 5.0.0 to 5.0.1
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+- 44cc7c3b95: Added a new ESLint configuration setup for packages, which utilizes package roles to generate the correct configuration. The new configuration is available at `@backstage/cli/config/eslint-factory`.
+
+  Introduced a new `backstage-cli migrate package-lint-configs` command, which migrates old lint configurations to use `@backstage/cli/config/eslint-factory`.
+
+- b1aacbf96a: Applied the fix from version `0.15.1` of this package, which was part of the `v0.70.1` release of Backstage.
+- d2ecde959b: Package roles are now marked as stable and migration is encouraged. Please check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+
+  The new `package`, `repo`, and `migrate` command categories are now marked as stable.
+
+  Marked all commands that are being replaced by the new `package` and `repo` commands as deprecated.
+
+  The package templates used by the `create` command have all been updated to use package roles.
+
+- f06da37290: The backend development setup now ignores the `"browser"` and `"module"` entry points in `package.json`, and instead always uses `"main"`.
+- 6a1fe077ad: Changed the logic for how modules are marked as external in the Rollup build of packages. Rather than only marking dependencies and build-in Node.js modules as external, all non-relative imports are now considered external.
+- dc6002a7b9: The `--since` flag of repo commands now silently falls back to using the provided `ref` directly if no merge base is available.
+- Updated dependencies
+  - @backstage/config-loader@0.9.7-next.0
+
+## 0.15.1
+
+### Patch Changes
+
+- Fixed an issue where the release stage entry point of packages were not resolved correctly.
+
+## 0.15.0
+
+### Minor Changes
+
+- 8c3f30cb28: **BREAKING**: Removed the deprecated `app.<key>` template variables from the `index.html` templating. These should be replaced by using `config.getString("app.<key>")` instead.
+
+### Patch Changes
+
+- 46a19c599f: The CLI now bundles both version 16 and 17 of the patched `@hot-loader/react-dom` dependency, and selects the appropriate one based on what version of `react-dom` is installed within the app.
+
+## 0.14.1
+
+### Patch Changes
+
+- 5cc7f48400: Fixed a bug in the built-in Jest configuration that prevented it from identifying packages that had migrated to using the new package scripts to run tests.
+- 49ae6c9573: chore(deps-dev): bump `@types/rollup-plugin-postcss` from 2.0.1 to 3.1.4
+- d64b8d3678: chore(deps): bump `minimatch` from 3.0.4 to 5.0.0
+- d2e9d2a34f: chore(deps): bump `@hot-loader/react-dom` from 16.13.0 to 17.0.2
+- c2f3a548cf: Fix building of backends with `repo build --all`, where it would previously only work if the build was executed within the backend package.
+- 3d7ed5377a: Ignore setupTests and the file inside ./dev folder recursively. Eslint
+  can not resolve relative paths as we defined in the rule import/no-extraneous-dependencies, and it does not apply this rule.
+
+  A downside to use a recursive definition would be to checking all `dev` folders, which might not be wanted. Ensure you don't use
+  the `dev` folder out of scope (must be used for dev. env. only)
+
+- Updated dependencies
+  - @backstage/config-loader@0.9.6
+
+## 0.14.0
+
+### Minor Changes
+
+- 1fc0cd3896: Bumped Webpack and Rollup `svgr` dependencies and updated the AST template for `.icon.svg` modules. This means that SVG icon imports are now using SVGO v2.
+
+### Patch Changes
+
+- 0b74c72987: Added a new experimental and hidden `backstage-cli repo lint` command that can be used to lint all packages in the project, similar to `lerna run lint`.
+- 532dae9c4c: The `versions:bump --release next` command is updated to compare the `main` and `next` release manifests and prefer the latest.
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- 22862486de: The `versions:bump` command now filters out `npm_` environment configuration when running `yarn install`. This has the effect of allowing it to consider local configuration files within the repository, which is the behavior that one would expect.
+- 22862486de: The `versions:bump` command now also considers the root `package.json` when searching for updates. It has also received updates to its output, including a link the [Backstage upgrade helper](https://backstage.github.io/upgrade-helper) and silenced `yarn install` output.
+- 7410e12268: Several changes were made to the new experimental package roles system. Unless you have been experimenting with using this new system, these changes have no affect on your project.
+
+  Renamed the `backstage-cli migrate package-role` command to `backstage-cli migrate package-roles`.
+
+  Updated the package role definitions by renaming `app` to `frontend`, `plugin-frontend` to `frontend-plugin`, `plugin-frontend-module` to `frontend-plugin-module`, `plugin-backend` to `backend-plugin`, and `plugin-backend-module` to `backend-plugin-module`
+
+  The `backstage-cli migrate package-scripts` received several tweaks to make it more accurate. It now tries to maintain existing script arguments, like `--config` parameters for `build` and `start` scripts.
+
+  The `script` command category has been renamed to `package`.
+
+  The `backstage-cli package build` command set an incorrect target directory for `app` and `backend` packages, which has been fixed.
+
+  The `backend:bundle` and `repo build` command for the `backend` role was previously ignoring building of bundled packages that had migrated to use package roles and the standard build script, this has now been fixed.
+
+- c6bbafb516: Updated the default [sucrase](https://github.com/alangpierce/sucrase)-based Jest transform to include source maps if the environment variable `ENABLE_SOURCE_MAPS` is non-empty. This can be used to better support editor test debugging integrations.
+- 7410e12268: The `test` command now automatically adds `--passWithNoTests` to the Jest invocation. To revert this behavior, pass `--passWithNoTests=false` or `--no-passWithNoTests`.
+- Updated dependencies
+  - @backstage/config-loader@0.9.4
+  - @backstage/errors@0.2.1
+  - @backstage/release-manifests@0.0.2
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
+## 0.13.2
+
+### Patch Changes
+
+- bbbaa8ed61: The `plugin:diff` command no longer validates the existence of any of the files within `dev/` or `src/`.
+- eaf67f0578: Introduced initial support for an experimental `backstage.role` field in package.json, as well as experimental and hidden `migrate` and `script` sub-commands. We do not recommend usage of any of these additions yet.
+- aeb5c69abb: Introduces a new `--release` parameter to the `backstage-cli versions:bump` command.
+  The release can be either a specific version, for example `0.99.1`, or the latest `main` or `next` release.
+  The default behavior is to bump to the latest `main` release.
+- d59b90852a: The experimental types build enabled by `--experimental-type-build` now runs in a separate worker thread.
+- 50a19ff8dd: The file path printed by the default lint formatter is now relative to the repository root, rather than the individual package.
+- 63181dee79: Tweaked frontend bundling configuration to avoid leaking declarations into global scope.
+- fae2aee878: Removed the `import/no-duplicates` lint rule from the frontend and backend ESLint configurations. This rule is quite expensive to execute and only provides a purely cosmetic benefit, so we opted to remove it from the set of default rules. If you would like to keep this rule you can add it back in your local ESLint configuration:
+
+  ```js
+    'import/no-duplicates': 'warn'
+  ```
+
+- b906f98119: Rather than calling `yarn pack`, the `build-workspace` and `backend-bundle` commands now move files directly whenever possible. This cuts out several `yarn` invocations and speeds the packing process up by several orders of magnitude.
+- d0c71e2aa4: Switched the `lint` command to invoke ESLint directly through its Node.js API rather than spawning a new process.
+- d59b90852a: Introduced an experimental and hidden `repo` sub-command, that contains commands that operate on an entire monorepo rather than individual packages.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.1
+
+## 0.13.2-next.0
+
+### Patch Changes
+
+- bbbaa8ed61: The `plugin:diff` command no longer validates the existence of any of the files within `dev/` or `src/`.
+- eaf67f0578: Introduced initial support for an experimental `backstage.role` field in package.json, as well as experimental and hidden `migrate` and `script` sub-commands. We do not recommend usage of any of these additions yet.
+- d59b90852a: The experimental types build enabled by `--experimental-type-build` now runs in a separate worker thread.
+- 50a19ff8dd: The file path printed by the default lint formatter is now relative to the repository root, rather than the individual package.
+- 63181dee79: Tweaked frontend bundling configuration to avoid leaking declarations into global scope.
+- fae2aee878: Removed the `import/no-duplicates` lint rule from the frontend and backend ESLint configurations. This rule is quite expensive to execute and only provides a purely cosmetic benefit, so we opted to remove it from the set of default rules. If you would like to keep this rule you can add it back in your local ESLint configuration:
+
+  ```js
+    'import/no-duplicates': 'warn'
+  ```
+
+- b906f98119: Rather than calling `yarn pack`, the `build-workspace` and `backend-bundle` commands now move files directly whenever possible. This cuts out several `yarn` invocations and speeds the packing process up by several orders of magnitude.
+- d0c71e2aa4: Switched the `lint` command to invoke ESLint directly through its Node.js API rather than spawning a new process.
+- d59b90852a: Introduced an experimental and hidden `repo` sub-command, that contains commands that operate on an entire monorepo rather than individual packages.
+
 ## 0.13.1
 
 ### Patch Changes

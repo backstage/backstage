@@ -22,7 +22,7 @@ import {
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
-  PermissionAuthorizer,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { ConditionTransformer } from '@backstage/plugin-permission-node';
 import {
@@ -30,6 +30,8 @@ import {
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
+  EntityFacetsRequest,
+  EntityFacetsResponse,
   EntityFilter,
 } from '../catalog/types';
 import { basicEntityFilter } from './request/basicEntityFilter';
@@ -37,13 +39,13 @@ import { basicEntityFilter } from './request/basicEntityFilter';
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
   constructor(
     private readonly entitiesCatalog: EntitiesCatalog,
-    private readonly permissionApi: PermissionAuthorizer,
+    private readonly permissionApi: PermissionEvaluator,
     private readonly transformConditions: ConditionTransformer<EntityFilter>,
   ) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const authorizeDecision = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
         { token: request?.authorizationToken },
       )
@@ -76,7 +78,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     options?: { authorizationToken?: string },
   ): Promise<void> {
     const authorizeResponse = (
-      await this.permissionApi.authorize(
+      await this.permissionApi.authorizeConditional(
         [{ permission: catalogEntityDeletePermission }],
         { token: options?.authorizationToken },
       )
@@ -149,6 +151,35 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
           ),
       ),
     };
+  }
+
+  async facets(request: EntityFacetsRequest): Promise<EntityFacetsResponse> {
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { token: request?.authorizationToken },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return {
+        facets: Object.fromEntries(request.facets.map(f => [f, []])),
+      };
+    }
+
+    if (authorizeDecision.result === AuthorizeResult.CONDITIONAL) {
+      const permissionFilter: EntityFilter = this.transformConditions(
+        authorizeDecision.conditions,
+      );
+      return this.entitiesCatalog.facets({
+        ...request,
+        filter: request?.filter
+          ? { allOf: [permissionFilter, request.filter] }
+          : permissionFilter,
+      });
+    }
+
+    return this.entitiesCatalog.facets(request);
   }
 
   private findParents(

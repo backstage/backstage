@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
-import { Permission } from '@backstage/plugin-permission-common';
+import {
+  createPermission,
+  ResourcePermission,
+} from '@backstage/plugin-permission-common';
 
 /**
+ * Permission resource type which corresponds to catalog entities.
+ *
  * {@link https://backstage.io/docs/features/software-catalog/software-catalog-overview}
- * @public
+ * @alpha
  */
 export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
+
+/**
+ * Convenience type for catalog entity
+ * {@link @backstage/plugin-permission-common#ResourcePermission}s.
+ * @alpha
+ */
+export type CatalogEntityPermission = ResourcePermission<
+  typeof RESOURCE_TYPE_CATALOG_ENTITY
+>;
 
 /**
  * This permission is used to authorize actions that involve reading one or more
@@ -28,55 +42,54 @@ export const RESOURCE_TYPE_CATALOG_ENTITY = 'catalog-entity';
  *
  * If this permission is not authorized, it will appear that the entity does not
  * exist in the catalog — both in the frontend and in API responses.
- * @public
+ * @alpha
  */
-export const catalogEntityReadPermission: Permission = {
+export const catalogEntityReadPermission = createPermission({
   name: 'catalog.entity.read',
   attributes: {
     action: 'read',
   },
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-};
+});
 
 /**
  * This permission is used to authorize actions that involve creating a new
  * catalog entity. This includes registering an existing component into the
  * catalog.
- * @public
+ * @alpha
  */
-export const catalogEntityCreatePermission: Permission = {
+export const catalogEntityCreatePermission = createPermission({
   name: 'catalog.entity.create',
   attributes: {
     action: 'create',
   },
-  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-};
+});
 
 /**
  * This permission is used to designate actions that involve removing one or
  * more entities from the catalog.
- * @public
+ * @alpha
  */
-export const catalogEntityDeletePermission: Permission = {
+export const catalogEntityDeletePermission = createPermission({
   name: 'catalog.entity.delete',
   attributes: {
     action: 'delete',
   },
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-};
+});
 
 /**
  * This permission is used to designate refreshing one or more entities from the
  * catalog.
- * @public
+ * @alpha
  */
-export const catalogEntityRefreshPermission: Permission = {
+export const catalogEntityRefreshPermission = createPermission({
   name: 'catalog.entity.refresh',
   attributes: {
     action: 'update',
   },
   resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
-};
+});
 
 /**
  * This permission is used to designate actions that involve reading one or more
@@ -84,35 +97,35 @@ export const catalogEntityRefreshPermission: Permission = {
  *
  * If this permission is not authorized, it will appear that the location does
  * not exist in the catalog — both in the frontend and in API responses.
- * @public
+ * @alpha
  */
-export const catalogLocationReadPermission: Permission = {
+export const catalogLocationReadPermission = createPermission({
   name: 'catalog.location.read',
   attributes: {
     action: 'read',
   },
-};
+});
 
 /**
  * This permission is used to designate actions that involve creating catalog
  * locations.
- * @public
+ * @alpha
  */
-export const catalogLocationCreatePermission: Permission = {
+export const catalogLocationCreatePermission = createPermission({
   name: 'catalog.location.create',
   attributes: {
     action: 'create',
   },
-};
+});
 
 /**
  * This permission is used to designate actions that involve deleting locations
  * from the catalog.
- * @public
+ * @alpha
  */
-export const catalogLocationDeletePermission: Permission = {
+export const catalogLocationDeletePermission = createPermission({
   name: 'catalog.location.delete',
   attributes: {
     action: 'delete',
   },
-};
+});

@@ -16,10 +16,9 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   IndexBuilder,
-  LunrSearchEngine,
   SearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import express from 'express';
@@ -27,8 +26,11 @@ import request from 'supertest';
 
 import { createRouter } from './router';
 
-const mockPermissionAuthorizer: PermissionAuthorizer = {
+const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
+    throw new Error('Not implemented');
+  },
+  authorizeConditional: () => {
     throw new Error('Not implemented');
   },
 };
@@ -39,8 +41,19 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const logger = getVoidLogger();
-    const searchEngine = new LunrSearchEngine({ logger });
-    const indexBuilder = new IndexBuilder({ logger, searchEngine });
+    mockSearchEngine = {
+      getIndexer: jest.fn(),
+      setTranslator: jest.fn(),
+      query: jest.fn().mockResolvedValue({
+        results: [],
+        nextPageCursor: '',
+        previousPageCursor: '',
+      }),
+    };
+    const indexBuilder = new IndexBuilder({
+      logger,
+      searchEngine: mockSearchEngine,
+    });
 
     const router = await createRouter({
       engine: indexBuilder.getSearchEngine(),
@@ -49,14 +62,14 @@ describe('createRouter', () => {
         'second-type': {},
       },
       config: new ConfigReader({ permissions: { enabled: false } }),
-      permissions: mockPermissionAuthorizer,
+      permissions: mockPermissionEvaluator,
       logger,
     });
     app = express().use(router);
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('GET /query', () => {
@@ -101,11 +114,47 @@ describe('createRouter', () => {
       });
     });
 
+    it('removes backend-only properties from search documents', async () => {
+      mockSearchEngine.query.mockResolvedValue({
+        results: [
+          {
+            type: 'software-catalog',
+            document: {
+              text: 'foo',
+              title: 'bar baz',
+              location: '/catalog/default/component/example',
+              authorization: {
+                resourceRef: 'component:default/example',
+              },
+            },
+          },
+        ],
+        nextPageCursor: '',
+        previousPageCursor: '',
+      });
+
+      const response = await request(app).get('/query');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toMatchObject({
+        results: [
+          {
+            type: 'software-catalog',
+            document: {
+              text: 'foo',
+              title: 'bar baz',
+              location: '/catalog/default/component/example',
+            },
+          },
+        ],
+      });
+    });
+
     describe('search result filtering', () => {
       beforeAll(async () => {
         const logger = getVoidLogger();
         mockSearchEngine = {
-          index: jest.fn(),
+          getIndexer: jest.fn(),
           setTranslator: jest.fn(),
           query: jest.fn(),
         };
@@ -118,7 +167,7 @@ describe('createRouter', () => {
           engine: indexBuilder.getSearchEngine(),
           types: indexBuilder.getDocumentTypes(),
           config: new ConfigReader({ permissions: { enabled: false } }),
-          permissions: mockPermissionAuthorizer,
+          permissions: mockPermissionEvaluator,
           logger,
         });
         app = express().use(router);

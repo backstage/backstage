@@ -15,13 +15,15 @@
  */
 
 import React, { ComponentType } from 'react';
-import { Routes, Route, useOutlet } from 'react-router';
-import { TemplateEntityV1beta2, Entity } from '@backstage/catalog-model';
+import { Routes, Route, useOutlet, Navigate } from 'react-router';
+import { Entity } from '@backstage/catalog-model';
+import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 import { SecretsContextProvider } from './secrets/SecretsContext';
+import { TemplateEditorPage } from './TemplateEditorPage';
 
 import {
   FieldExtensionOptions,
@@ -30,26 +32,52 @@ import {
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
 import { useElementFilter } from '@backstage/core-plugin-api';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  scaffolderTaskRouteRef,
+  selectedTemplateRouteRef,
+} from '../routes';
 
-type RouterProps = {
-  TemplateCardComponent?:
-    | ComponentType<{ template: TemplateEntityV1beta2 }>
-    | undefined;
-  TaskPageComponent?: ComponentType<{}>;
+/**
+ * The props for the entrypoint `ScaffolderPage` component the plugin.
+ * @public
+ */
+export type RouterProps = {
+  components?: {
+    TemplateCardComponent?:
+      | ComponentType<{ template: TemplateEntityV1beta3 }>
+      | undefined;
+    TaskPageComponent?: ComponentType<{}>;
+  };
   groups?: Array<{
-    title?: string;
-    titleComponent?: React.ReactNode;
+    title?: React.ReactNode;
     filter: (entity: Entity) => boolean;
   }>;
+  defaultPreviewTemplate?: string;
+  /**
+   * Options for the context menu on the scaffolder page.
+   */
+  contextMenu?: {
+    /** Whether to show a link to the template editor */
+    editor?: boolean;
+    /** Whether to show a link to the actions documentation */
+    actions?: boolean;
+  };
 };
 
-export const Router = ({
-  TemplateCardComponent,
-  TaskPageComponent,
-  groups,
-}: RouterProps) => {
+/**
+ * The main entrypoint `Router` for the `ScaffolderPlugin`.
+ *
+ * @public
+ */
+export const Router = (props: RouterProps) => {
+  const { groups, components = {}, defaultPreviewTemplate } = props;
+
+  const { TemplateCardComponent, TaskPageComponent } = components;
+
   const outlet = useOutlet();
-  const TaskPageElement = TaskPageComponent || TaskPage;
+  const TaskPageElement = TaskPageComponent ?? TaskPage;
 
   const customFieldExtensions = useElementFilter(outlet, elements =>
     elements
@@ -74,24 +102,37 @@ export const Router = ({
   return (
     <Routes>
       <Route
-        path="/"
         element={
           <ScaffolderPage
-            TemplateCardComponent={TemplateCardComponent}
             groups={groups}
+            TemplateCardComponent={TemplateCardComponent}
+            contextMenu={props.contextMenu}
           />
         }
       />
       <Route
-        path="/templates/:templateName"
+        path={selectedTemplateRouteRef.path}
         element={
           <SecretsContextProvider>
             <TemplatePage customFieldExtensions={fieldExtensions} />
           </SecretsContextProvider>
         }
       />
-      <Route path="/tasks/:taskId" element={<TaskPageElement />} />
-      <Route path="/actions" element={<ActionsPage />} />
+      <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
+      <Route path={actionsRouteRef.path} element={<ActionsPage />} />
+      <Route
+        path={editRouteRef.path}
+        element={
+          <SecretsContextProvider>
+            <TemplateEditorPage
+              defaultPreviewTemplate={defaultPreviewTemplate}
+              customFieldExtensions={fieldExtensions}
+            />
+          </SecretsContextProvider>
+        }
+      />
+
+      <Route path="preview" element={<Navigate to="../edit" />} />
     </Routes>
   );
 };

@@ -1,5 +1,97 @@
 # @backstage/search-common
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.3
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.3-next.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.3-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- 82b0190155: This package is no longer maintained. Use `@backstage/plugin-search-common`, going forward.
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.2
+
+## 0.3.1
+
+### Patch Changes
+
+- d52155466a: **DEPRECATION**
+
+  The `@backstage/search-common` package is being renamed `@backstage/plugin-search-common`. We may continue to publish changes to `@backstage/search-common` for a time, but will stop doing so in the near future. If you depend on this package, you should update your dependencies to point at the renamed package.
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.1
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- d52155466a: **DEPRECATION**
+
+  The `@backstage/search-common` package is being renamed `@backstage/plugin-search-common`. We may continue to publish changes to `@backstage/search-common` for a time, but will stop doing so in the near future. If you depend on this package, you should update your dependencies to point at the renamed package.
+
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.1-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 022507c860: **BREAKING**
+
+  The Backstage Search Platform's indexing process has been rewritten as a stream
+  pipeline in order to improve efficiency and performance on large document sets.
+
+  The concepts of `Collator` and `Decorator` have been replaced with readable and
+  transform object streams (respectively), as well as factory classes to
+  instantiate them. Accordingly, the `SearchEngine.index()` method has also been
+  replaced with a `getIndexer()` factory method that resolves to a writable
+  object stream.
+
+  Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  for further details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.5.2
+
+## 0.2.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/types@0.1.3
+  - @backstage/plugin-permission-common@0.5.1
+
+## 0.2.3
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/types@0.1.2
+
 ## 0.2.2
 
 ### Patch Changes

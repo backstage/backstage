@@ -98,6 +98,7 @@ export class CommonValidatorFunctions {
   /**
    * Checks that the value is a valid tag.
    *
+   * @deprecated This will be removed in a future release
    * @param value - The value to check
    */
   static isValidTag(value: unknown): boolean {
@@ -110,7 +111,7 @@ export class CommonValidatorFunctions {
   }
 
   /**
-   * Checks that the value is a valid URL.
+   * Checks that the value is a valid string URL.
    *
    * @param value - The value to check
    */
@@ -131,9 +132,19 @@ export class CommonValidatorFunctions {
   /**
    * Checks that the value is a non empty string value.
    *
+   * @deprecated use isNonEmptyString instead
    * @param value - The value to check
    */
   static isValidString(value: unknown): boolean {
+    return typeof value === 'string' && value?.trim()?.length >= 1;
+  }
+
+  /**
+   * Checks that the value is a string value that's not empty.
+   *
+   * @param value - The value to check
+   */
+  static isNonEmptyString(value: unknown): value is string {
     return typeof value === 'string' && value?.trim()?.length >= 1;
   }
 }

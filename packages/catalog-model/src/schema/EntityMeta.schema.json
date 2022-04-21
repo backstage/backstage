@@ -6,7 +6,6 @@
     {
       "uid": "e01199ab-08cc-44c2-8e19-5c29ded82521",
       "etag": "lsndfkjsndfkjnsdfkjnsd==",
-      "generation": 13,
       "name": "my-component-yay",
       "namespace": "the-namespace",
       "labels": {
@@ -33,12 +32,6 @@
       "description": "An opaque string that changes for each update operation to any part of the entity, including metadata. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations. The field can (optionally) be specified when performing update or delete operations, and the server will then reject the operation if it does not match the current stored value.",
       "examples": ["lsndfkjsndfkjnsdfkjnsd=="],
       "minLength": 1
-    },
-    "generation": {
-      "type": "integer",
-      "description": "A positive nonzero number that indicates the current generation of data for this entity; the value is incremented each time the spec changes. This field can not be set by the user at creation time, and the server will reject an attempt to do so. The field will be populated in read operations.",
-      "examples": [1],
-      "minimum": 1
     },
     "name": {
       "type": "string",

@@ -16,31 +16,42 @@
 import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import useEffectOnce from 'react-use/lib/useEffectOnce';
-import { CatalogEntitiesRequest } from '@backstage/catalog-client';
+import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { Entity, makeValidator } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { FormControl, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import { FieldProps } from '@rjsf/core';
+import { FieldExtensionComponentProps } from '../../../extensions';
 
 /**
- * EntityTagsPicker
+ * The input props that can be specified under `ui:options` for the
+ * `EntityTagsPicker` field extension.
+ *
  * @public
  */
-export const EntityTagsPicker = ({
-  formData,
-  onChange,
-  uiSchema,
-}: FieldProps<string[]>) => {
+export interface EntityTagsPickerUiOptions {
+  kinds?: string[];
+}
+
+/**
+ * The underlying component that is rendered in the form for the `EntityTagsPicker`
+ * field extension.
+ *
+ * @public
+ */
+export const EntityTagsPicker = (
+  props: FieldExtensionComponentProps<string[], EntityTagsPickerUiOptions>,
+) => {
+  const { formData, onChange, uiSchema } = props;
   const catalogApi = useApi(catalogApiRef);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState(false);
   const tagValidator = makeValidator().isValidTag;
-  const kinds = uiSchema['ui:options']?.kinds as string[];
+  const kinds = uiSchema['ui:options']?.kinds;
 
   const { loading, value: existingTags } = useAsync(async () => {
-    const tagsRequest: CatalogEntitiesRequest = { fields: ['metadata.tags'] };
+    const tagsRequest: GetEntitiesRequest = { fields: ['metadata.tags'] };
     if (kinds) {
       tagsRequest.filter = { kind: kinds };
     }

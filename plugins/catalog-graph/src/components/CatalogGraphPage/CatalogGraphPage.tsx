@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { parseEntityRef } from '@backstage/catalog-model';
 import {
   Content,
@@ -24,7 +25,7 @@ import {
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
   entityRouteRef,
-  formatEntityRefTitle,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -98,10 +99,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const CatalogGraphPage = ({
-  relationPairs = ALL_RELATION_PAIRS,
-  initialState,
-}: {
+export const CatalogGraphPage = (props: {
   relationPairs?: RelationPairs;
   initialState?: {
     selectedRelations?: string[];
@@ -114,6 +112,8 @@ export const CatalogGraphPage = ({
     showFilters?: boolean;
   };
 }) => {
+  const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
+
   const navigate = useNavigate();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
@@ -149,14 +149,14 @@ export const CatalogGraphPage = ({
 
         analytics.captureEvent(
           'click',
-          node.title ?? formatEntityRefTitle(nodeEntityName),
+          node.title ?? humanizeEntityRef(nodeEntityName),
           { attributes: { to: path } },
         );
         navigate(path);
       } else {
         analytics.captureEvent(
           'click',
-          node.title ?? formatEntityRefTitle(nodeEntityName),
+          node.title ?? humanizeEntityRef(nodeEntityName),
         );
         setRootEntityNames([nodeEntityName]);
       }
@@ -168,7 +168,7 @@ export const CatalogGraphPage = ({
     <Page themeId="home">
       <Header
         title="Catalog Graph"
-        subtitle={rootEntityNames.map(e => formatEntityRefTitle(e)).join(', ')}
+        subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
       />
       <Content stretch className={classes.content}>
         <ContentHeader

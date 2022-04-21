@@ -8,3 +8,6 @@ api-report.md
 plugins/scaffolder-backend/sample-templates
 .vscode
 dist-types
+
+# reduce the barrier for adopters to add themselves
+ADOPTERS.md

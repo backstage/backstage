@@ -15,7 +15,7 @@
  */
 
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError, NotFoundError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -23,8 +23,8 @@ import {
   GeneratorBuilder,
   PreparerBuilder,
   PublisherBase,
-} from '@backstage/techdocs-common';
-import fetch from 'cross-fetch';
+} from '@backstage/plugin-techdocs-node';
+import fetch from 'node-fetch';
 import { PassThrough } from 'stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
@@ -177,7 +177,7 @@ export class DocsSynchronizer {
 
     // Fetch techdocs_metadata.json from the publisher and from cache.
     const baseUrl = await discovery.getBaseUrl('techdocs');
-    const namespace = entity.metadata?.namespace || ENTITY_DEFAULT_NAMESPACE;
+    const namespace = entity.metadata?.namespace || DEFAULT_NAMESPACE;
     const kind = entity.kind;
     const name = entity.metadata.name;
     const legacyPathCasing =

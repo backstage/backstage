@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-tech-insights-common';
 import { Check } from './types';
 import { CheckResultRenderer } from '../components/CheckResultRenderer';
-import { EntityName } from '@backstage/catalog-model';
+import { CompoundEntityRef } from '@backstage/catalog-model';
 
 /**
  * {@link @backstage/core-plugin-api#ApiRef} for the {@link TechInsightsApi}
@@ -45,9 +45,12 @@ export interface TechInsightsApi {
     description?: string,
   ) => CheckResultRenderer | undefined;
   getAllChecks(): Promise<Check[]>;
-  runChecks(entityParams: EntityName, checks?: Check[]): Promise<CheckResult[]>;
+  runChecks(
+    entityParams: CompoundEntityRef,
+    checks?: string[],
+  ): Promise<CheckResult[]>;
   runBulkChecks(
-    entities: EntityName[],
+    entities: CompoundEntityRef[],
     checks?: Check[],
   ): Promise<BulkCheckResponse>;
 }

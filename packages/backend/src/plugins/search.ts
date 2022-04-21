@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginDatabaseManager,
-  useHotCleanup,
-} from '@backstage/backend-common';
-import { Config } from '@backstage/config';
-import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+
+import { useHotCleanup } from '@backstage/backend-common';
+import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
 import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
@@ -27,78 +24,77 @@ import {
   LunrSearchEngine,
   SearchEngine,
 } from '@backstage/plugin-search-backend-node';
-import { DefaultTechDocsCollator } from '@backstage/plugin-techdocs-backend';
-import { Logger } from 'winston';
+import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
+import { Router } from 'express';
+import { Duration } from 'luxon';
 import { PluginEnvironment } from '../types';
 
-async function createSearchEngine({
-  logger,
-  database,
-  config,
-}: {
-  logger: Logger;
-  database: PluginDatabaseManager;
-  config: Config;
-}): Promise<SearchEngine> {
-  if (config.has('search.elasticsearch')) {
+async function createSearchEngine(
+  env: PluginEnvironment,
+): Promise<SearchEngine> {
+  if (env.config.has('search.elasticsearch')) {
     return await ElasticSearchSearchEngine.fromConfig({
-      logger,
-      config,
+      logger: env.logger,
+      config: env.config,
     });
   }
 
-  if (await PgSearchEngine.supported(database)) {
-    return await PgSearchEngine.from({ database });
+  if (await PgSearchEngine.supported(env.database)) {
+    return await PgSearchEngine.from({ database: env.database });
   }
 
-  return new LunrSearchEngine({ logger });
+  return new LunrSearchEngine({ logger: env.logger });
 }
 
-export default async function createPlugin({
-  logger,
-  permissions,
-  discovery,
-  config,
-  database,
-  tokenManager,
-}: PluginEnvironment) {
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   // Initialize a connection to a search engine.
-  const searchEngine = await createSearchEngine({ config, logger, database });
-  const indexBuilder = new IndexBuilder({ logger, searchEngine });
+  const searchEngine = await createSearchEngine(env);
+  const indexBuilder = new IndexBuilder({
+    logger: env.logger,
+    searchEngine,
+  });
+
+  const schedule = env.scheduler.createScheduledTaskRunner({
+    frequency: Duration.fromObject({ minutes: 10 }),
+    timeout: Duration.fromObject({ minutes: 15 }),
+    // A 3 second delay gives the backend server a chance to initialize before
+    // any collators are executed, which may attempt requests against the API.
+    initialDelay: Duration.fromObject({ seconds: 3 }),
+  });
 
   // Collators are responsible for gathering documents known to plugins. This
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
-    defaultRefreshIntervalSeconds: 600,
-    collator: DefaultCatalogCollator.fromConfig(config, {
-      discovery,
-      tokenManager,
+    schedule,
+    factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
+      discovery: env.discovery,
+      tokenManager: env.tokenManager,
     }),
   });
 
   indexBuilder.addCollator({
-    defaultRefreshIntervalSeconds: 600,
-    collator: DefaultTechDocsCollator.fromConfig(config, {
-      discovery,
-      logger,
-      tokenManager,
+    schedule,
+    factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
+      discovery: env.discovery,
+      logger: env.logger,
+      tokenManager: env.tokenManager,
     }),
   });
 
   // The scheduler controls when documents are gathered from collators and sent
   // to the search engine for indexing.
   const { scheduler } = await indexBuilder.build();
+  scheduler.start();
 
-  // A 3 second delay gives the backend server a chance to initialize before
-  // any collators are executed, which may attempt requests against the API.
-  setTimeout(() => scheduler.start(), 3000);
   useHotCleanup(module, () => scheduler.stop());
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
     types: indexBuilder.getDocumentTypes(),
-    permissions,
-    config,
-    logger,
+    permissions: env.permissions,
+    config: env.config,
+    logger: env.logger,
   });
 }

@@ -1,5 +1,100 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2
+  - @backstage/backend-test-utils@0.1.23
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/backend-test-utils@0.1.23-next.0
+
+## 0.1.14
+
+### Patch Changes
+
+- 89c7e47967: Minor README update
+- efc73db10c: Use `better-sqlite3` instead of `@vscode/sqlite3`
+- Updated dependencies
+  - @backstage/backend-test-utils@0.1.22
+  - @backstage/backend-common@0.13.1
+  - @backstage/config@1.0.0
+
+## 0.1.13
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/backend-test-utils@0.1.21
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- ab7cd7d70e: Do some groundwork for supporting the `better-sqlite3` driver, to maybe eventually replace `@vscode/sqlite3` (#9912)
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/backend-test-utils@0.1.21-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+  - @backstage/backend-test-utils@0.1.20
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/backend-test-utils@0.1.19
+
+## 0.1.10
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/backend-test-utils@0.1.18
+  - @backstage/config@0.1.14
+
+## 0.1.9
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+  - @backstage/backend-test-utils@0.1.17
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- 2441d1cf59: chore(deps): bump `knex` from 0.95.6 to 1.0.2
+
+  This also replaces `sqlite3` with `@vscode/sqlite3` 5.0.7
+
+- Updated dependencies
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/backend-test-utils@0.1.17-next.0
+
 ## 0.1.8
 
 ### Patch Changes

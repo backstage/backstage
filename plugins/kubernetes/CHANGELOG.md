@@ -1,5 +1,144 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.4
+
+### Patch Changes
+
+- 82e2ae6ff6: build(deps): bump `cronstrue` from 1.125.0 to 2.2.0
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 1023ee6353: export kubernetes components
+- 230ad0826f: Bump to using `@types/node` v16
+- f616d99f6f: Fix division by zero in currentToDeclaredResourceToPerc when pod resources weren't set
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1
+  - @backstage/catalog-model@1.0.1
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+  - @backstage/plugin-kubernetes-common@0.2.9
+
+## 0.6.4-next.2
+
+### Patch Changes
+
+- 82e2ae6ff6: build(deps): bump `cronstrue` from 1.125.0 to 2.2.0
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.3
+
+## 0.6.4-next.1
+
+### Patch Changes
+
+- 1023ee6353: export kubernetes components
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.0.1-next.1
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- f616d99f6f: Fix division by zero in currentToDeclaredResourceToPerc when pod resources weren't set
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.0.1-next.0
+  - @backstage/core-components@0.9.3-next.0
+  - @backstage/plugin-kubernetes-common@0.2.9-next.0
+
+## 0.6.3
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-components@0.9.2
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/plugin-catalog-react@1.0.0
+  - @backstage/catalog-model@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/plugin-kubernetes-common@0.2.8
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0
+  - @backstage/core-components@0.9.1
+  - @backstage/catalog-model@0.13.0
+  - @backstage/plugin-kubernetes-common@0.2.7
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.9.0-next.0
+  - @backstage/core-components@0.9.1-next.0
+  - @backstage/catalog-model@0.13.0-next.0
+  - @backstage/plugin-kubernetes-common@0.2.7-next.0
+
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+  - @backstage/core-components@0.9.0
+  - @backstage/plugin-catalog-react@0.8.0
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/plugin-kubernetes-common@0.2.6
+
+## 0.6.0
+
+### Minor Changes
+
+- 2262fe19c9: **BREAKING**: Removed support for passing in an explicit `entity` prop to entity page extensions, which has been deprecated for a long time. This is only a breaking change at the TypeScript level, as this property was already ignored.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.10
+  - @backstage/plugin-catalog-react@0.7.0
+  - @backstage/catalog-model@0.11.0
+  - @backstage/core-plugin-api@0.7.0
+  - @backstage/plugin-kubernetes-common@0.2.5
+
+## 0.5.8
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-components@0.8.9
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-catalog-react@0.6.15
+  - @backstage/catalog-model@0.10.0
+  - @backstage/config@0.1.14
+  - @backstage/theme@0.2.15
+  - @backstage/plugin-kubernetes-common@0.2.3
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8
+  - @backstage/plugin-catalog-react@0.6.14
+
+## 0.5.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.8.8-next.0
+  - @backstage/plugin-catalog-react@0.6.14-next.0
+
 ## 0.5.6
 
 ### Patch Changes
@@ -97,7 +236,7 @@
   ## Backwards incompatible changes
 
   If your Kubernetes distribution does not have the [metrics server](https://github.com/kubernetes-sigs/metrics-server) installed,
-  you will need to set the `skipMetricsLookup` config flag to `false`.
+  you will need to set the `skipMetricsLookup` config flag to `true`.
 
   See the [configuration docs](https://backstage.io/docs/features/kubernetes/configuration) for more details.
 

@@ -21,14 +21,14 @@ import {
   createSqliteDatabaseClient,
 } from './sqlite3';
 
-describe('sqlite3', () => {
+describe('better-sqlite3', () => {
   const createConfig = (connection: any) =>
-    new ConfigReader({ client: 'sqlite3', connection });
+    new ConfigReader({ client: 'better-sqlite3', connection });
 
   describe('buildSqliteDatabaseConfig', () => {
     it('builds an in-memory connection', () => {
       expect(buildSqliteDatabaseConfig(createConfig(':memory:'))).toEqual({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
         connection: { filename: ':memory:' },
         useNullAsDefault: true,
       });
@@ -41,7 +41,7 @@ describe('sqlite3', () => {
           { connection: ':memory:' },
         ),
       ).toEqual({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
         connection: { filename: ':memory:' },
         useNullAsDefault: true,
       });
@@ -51,7 +51,7 @@ describe('sqlite3', () => {
       expect(
         buildSqliteDatabaseConfig(createConfig(path.join('path', 'to', 'foo'))),
       ).toEqual({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
         connection: { filename: path.join('path', 'to', 'foo') },
         useNullAsDefault: true,
       });
@@ -65,7 +65,7 @@ describe('sqlite3', () => {
           }),
         ),
       ).toEqual({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
         connection: {
           filename: path.join('path', 'to', 'foo'),
         },
@@ -79,7 +79,7 @@ describe('sqlite3', () => {
           connection: { filename: path.join('path', 'to', 'foo') },
         }),
       ).toEqual({
-        client: 'sqlite3',
+        client: 'better-sqlite3',
         connection: {
           filename: path.join('path', 'to', 'foo'),
         },
@@ -90,14 +90,7 @@ describe('sqlite3', () => {
 
   describe('createSqliteDatabaseClient', () => {
     it('creates an in memory knex instance', () => {
-      expect(
-        createSqliteDatabaseClient(
-          createConfig({
-            client: 'sqlite3',
-            connection: ':memory:',
-          }),
-        ),
-      ).toBeTruthy();
+      expect(createSqliteDatabaseClient(createConfig(':memory:'))).toBeTruthy();
     });
   });
 });

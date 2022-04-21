@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
+import { Route, Routes } from 'react-router-dom';
+
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Route, Routes } from 'react-router-dom';
-import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
-import { TechDocsPage as TechDocsReaderPage } from './reader/components/TechDocsPage';
-import { EntityPageDocs } from './EntityPageDocs';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
+
+import { EntityPageDocs } from './EntityPageDocs';
+import { TechDocsIndexPage } from './home/components/TechDocsIndexPage';
+import { TechDocsReaderPage } from './reader/components/TechDocsReaderPage';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
+/**
+ * Helper that takes in entity and returns true/false if TechDocs is available for the entity
+ *
+ * @public
+ */
 export const isTechDocsAvailable = (entity: Entity) =>
   Boolean(entity?.metadata?.annotations?.[TECHDOCS_ANNOTATION]);
 
+/**
+ * Responsible for registering routes for TechDocs, TechDocs Homepage and separate TechDocs page
+ *
+ * @public
+ */
 export const Router = () => {
   return (
     <Routes>
@@ -40,12 +52,13 @@ export const Router = () => {
   );
 };
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const EmbeddedDocsRouter = (_props: Props) => {
+/**
+ * Responsible for registering route to view docs on Entity page
+ *
+ * @public
+ */
+export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
+  const { children } = props;
   const { entity } = useEntity();
 
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
@@ -56,7 +69,7 @@ export const EmbeddedDocsRouter = (_props: Props) => {
 
   return (
     <Routes>
-      <Route path="/*" element={<EntityPageDocs entity={entity} />} />
+      <Route element={<EntityPageDocs entity={entity} />}>{children}</Route>
     </Routes>
   );
 };

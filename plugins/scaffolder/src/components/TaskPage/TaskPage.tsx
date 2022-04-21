@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
   Content,
   ErrorPage,
   Header,
-  Lifecycle,
   Page,
   LogViewer,
   Progress,
@@ -45,10 +45,10 @@ import classNames from 'classnames';
 import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { generatePath, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import useInterval from 'react-use/lib/useInterval';
-import { rootRouteRef } from '../../routes';
-import { Status, TaskOutput } from '../../types';
+import { rootRouteRef, selectedTemplateRouteRef } from '../../routes';
+import { ScaffolderTaskStatus, ScaffolderTaskOutput } from '../../types';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import { TaskPageLinks } from './TaskPageLinks';
 
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type TaskStep = {
   id: string;
   name: string;
-  status: Status;
+  status: ScaffolderTaskStatus;
   startedAt?: string;
   endedAt?: string;
 };
@@ -216,8 +216,8 @@ export const TaskStatusStepper = memo(
   },
 );
 
-const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
-  !!(entityRef || remoteUrl || links.length > 0);
+const hasLinks = ({ links = [] }: ScaffolderTaskOutput): boolean =>
+  links.length > 0;
 
 /**
  * TaskPageProps for constructing a TaskPage
@@ -238,7 +238,8 @@ export type TaskPageProps = {
 export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const rootLink = useRouteRef(rootRouteRef);
+  const rootPath = useRouteRef(rootRouteRef);
+  const templateRoute = useRouteRef(selectedTemplateRouteRef);
   const [userSelectedStepId, setUserSelectedStepId] = useState<
     string | undefined
   >(undefined);
@@ -291,24 +292,21 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
   const { output } = taskStream;
 
   const handleStartOver = () => {
-    if (!taskStream.task || !taskStream.task?.spec.metadata?.name) {
-      navigate(generatePath(rootLink()));
+    if (!taskStream.task || !taskStream.task?.spec.templateInfo?.entityRef) {
+      navigate(rootPath());
+      return;
     }
 
-    const formData =
-      taskStream.task!.spec.apiVersion === 'backstage.io/v1beta2'
-        ? taskStream.task!.spec.values
-        : taskStream.task!.spec.parameters;
+    const formData = taskStream.task!.spec.parameters;
+
+    const { name } = parseEntityRef(
+      taskStream.task!.spec.templateInfo?.entityRef,
+    );
 
     navigate(
-      generatePath(
-        `${rootLink()}/templates/:templateName?${qs.stringify({
-          formData: JSON.stringify(formData),
-        })}`,
-        {
-          templateName: taskStream.task!.spec.metadata!.name,
-        },
-      ),
+      `${templateRoute({ templateName: name })}?${qs.stringify({
+        formData: JSON.stringify(formData),
+      })}`,
     );
   };
 
@@ -316,11 +314,7 @@ export const TaskPage = ({ loadingText }: TaskPageProps) => {
     <Page themeId="home">
       <Header
         pageTitleOverride={`Task ${taskId}`}
-        title={
-          <>
-            Task Activity <Lifecycle alpha shorthand />
-          </>
-        }
+        title="Task Activity"
         subtitle={`Activity for task: ${taskId}`}
       />
       <Content>

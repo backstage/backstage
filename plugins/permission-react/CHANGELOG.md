@@ -1,5 +1,77 @@
 # @backstage/plugin-permission-react
 
+## 0.4.0
+
+### Minor Changes
+
+- 5bdcb8c45d: **BREAKING**: More restrictive typing for `usePermission` hook and `PermissionedRoute` component. It's no longer possible to pass a `resourceRef` unless the permission is of type `ResourcePermission`.
+
+### Patch Changes
+
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- 322b69e46a: **BREAKING:** Make `IdentityPermissionApi#authorize` typing more strict, using `AuthorizePermissionRequest` and `AuthorizePermissionResponse`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/core-plugin-api@1.0.1
+
+## 0.4.0-next.1
+
+### Patch Changes
+
+- 322b69e46a: **BREAKING:** Make `IdentityPermissionApi#authorize` typing more strict, using `AuthorizePermissionRequest` and `AuthorizePermissionResponse`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/plugin-permission-common@0.6.0-next.1
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 5bdcb8c45d: **BREAKING**: More restrictive typing for `usePermission` hook and `PermissionedRoute` component. It's no longer possible to pass a `resourceRef` unless the permission is of type `ResourcePermission`.
+
+### Patch Changes
+
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- a422d7ce5e: chore(deps): bump `@testing-library/react` from 11.2.6 to 12.1.3
+- f24ef7864e: Minor typo fixes
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.0
+  - @backstage/config@1.0.0
+  - @backstage/plugin-permission-common@0.5.3
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.8.0
+  - @backstage/plugin-permission-common@0.5.2
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@0.7.0
+
+## 0.3.1
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/core-plugin-api@0.6.1
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/config@0.1.14
+
 ## 0.3.0
 
 ### Minor Changes

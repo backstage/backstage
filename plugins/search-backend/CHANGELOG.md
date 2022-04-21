@@ -1,5 +1,175 @@
 # @backstage/plugin-search-backend
 
+## 0.5.0
+
+### Minor Changes
+
+- 94ccd772d4: **BREAKING**: The `authorization` property is no longer returned on search results when queried. Note: this will only result in a breaking change if you have custom code in your frontend that relies on the `authorization.resourceRef` property on documents.
+
+### Patch Changes
+
+- 30f9884359: Check for non-resource permissions when authorizing result-by-result in AuthorizedSearchEngine.
+- 3c8cfaaa80: Use `PermissionEvaluator` instead of `PermissionAuthorizer`, which is now deprecated.
+- 62ee65422c: Use new `IndexableResultSet` type as return type of query method in `SearchEngine` implementation.
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/plugin-permission-node@0.6.0
+  - @backstage/plugin-auth-node@0.2.0
+  - @backstage/plugin-search-common@0.3.3
+  - @backstage/backend-common@0.13.2
+  - @backstage/plugin-search-backend-node@0.6.0
+
+## 0.5.0-next.2
+
+### Patch Changes
+
+- 3c8cfaaa80: Use `PermissionEvaluator` instead of `PermissionAuthorizer`, which is now deprecated.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0-next.1
+  - @backstage/plugin-permission-node@0.6.0-next.2
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/plugin-search-backend-node@0.6.0-next.1
+
+## 0.5.0-next.1
+
+### Patch Changes
+
+- 30f9884359: Check for non-resource permissions when authorizing result-by-result in AuthorizedSearchEngine.
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.0-next.0
+  - @backstage/plugin-permission-node@0.6.0-next.1
+  - @backstage/backend-common@0.13.2-next.1
+  - @backstage/plugin-search-common@0.3.3-next.1
+
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 94ccd772d4: **BREAKING**: The `authorization` property is no longer returned on search results when queried. Note: this will only result in a breaking change if you have custom code in your frontend that relies on the `authorization.resourceRef` property on documents.
+
+### Patch Changes
+
+- 62ee65422c: Use new `IndexableResultSet` type as return type of query method in `SearchEngine` implementation.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.2.0-next.0
+  - @backstage/plugin-search-common@0.3.3-next.0
+  - @backstage/plugin-search-backend-node@0.5.3-next.0
+  - @backstage/backend-common@0.13.2-next.0
+  - @backstage/plugin-permission-node@0.5.6-next.0
+
+## 0.4.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.1
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+  - @backstage/plugin-permission-common@0.5.3
+  - @backstage/plugin-search-backend-node@0.5.2
+  - @backstage/plugin-auth-node@0.1.6
+  - @backstage/plugin-permission-node@0.5.5
+  - @backstage/plugin-search-common@0.3.2
+
+## 0.4.7
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.0
+  - @backstage/plugin-search-common@0.3.1
+  - @backstage/plugin-search-backend-node@0.5.1
+  - @backstage/plugin-auth-node@0.1.5
+  - @backstage/plugin-permission-node@0.5.4
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- 3e54f6c436: Use `@backstage/plugin-search-common` package instead of `@backstage/search-common`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.0-next.0
+  - @backstage/plugin-search-common@0.3.1-next.0
+  - @backstage/plugin-search-backend-node@0.5.1-next.0
+  - @backstage/plugin-auth-node@0.1.5-next.0
+  - @backstage/plugin-permission-node@0.5.4-next.0
+
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.12.0
+  - @backstage/plugin-permission-common@0.5.2
+  - @backstage/plugin-permission-node@0.5.3
+  - @backstage/plugin-search-backend-node@0.5.0
+  - @backstage/search-common@0.3.0
+  - @backstage/plugin-auth-node@0.1.4
+
+## 0.4.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.11.0
+  - @backstage/plugin-permission-node@0.5.2
+  - @backstage/plugin-auth-node@0.1.3
+
+## 0.4.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/backend-common@0.10.9
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/search-common@0.2.4
+  - @backstage/types@0.1.3
+  - @backstage/plugin-auth-node@0.1.2
+  - @backstage/plugin-permission-common@0.5.1
+  - @backstage/plugin-permission-node@0.5.1
+  - @backstage/plugin-search-backend-node@0.4.7
+
+## 0.4.3
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/backend-common@0.10.8
+  - @backstage/errors@0.2.1
+  - @backstage/plugin-auth-node@0.1.1
+  - @backstage/plugin-permission-common@0.5.0
+  - @backstage/config@0.1.14
+  - @backstage/search-common@0.2.3
+  - @backstage/types@0.1.2
+  - @backstage/plugin-permission-node@0.5.0
+  - @backstage/plugin-search-backend-node@0.4.6
+
+## 0.4.2
+
+### Patch Changes
+
+- b3f3e42036: Use `getBearerTokenFromAuthorizationHeader` from `@backstage/plugin-auth-node` instead of the deprecated `IdentityClient` method.
+- Updated dependencies
+  - @backstage/backend-common@0.10.7
+  - @backstage/plugin-auth-node@0.1.0
+  - @backstage/plugin-permission-node@0.4.3
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.10.0-next.0
+  - @backstage/backend-common@0.10.7-next.0
+  - @backstage/plugin-permission-node@0.4.3-next.0
+
 ## 0.4.1
 
 ### Patch Changes

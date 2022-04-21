@@ -24,7 +24,18 @@ export const Router = ({ entity }: { entity: Entity }) => {
     <Routes>
       <Route
         path="/"
-        element={<SentryIssuesWidget entity={entity} statsFor="24h" />}
+        element={
+          <SentryIssuesWidget
+            entity={entity}
+            statsFor="24h"
+            tableOptions={{
+              padding: 'dense',
+              paging: true,
+              search: false,
+              pageSize: 5,
+            }}
+          />
+        }
       />
       )
     </Routes>

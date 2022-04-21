@@ -1,5 +1,90 @@
 # @backstage/config-loader
 
+## 1.1.0
+
+### Minor Changes
+
+- 19f6c6c32a: Added `ignoreSchemaErrors` to `schema.process`.
+
+### Patch Changes
+
+- e0a51384ac: build(deps): bump `ajv` from 7.0.3 to 8.10.0
+- 230ad0826f: Bump to using `@types/node` v16
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+
+## 1.1.0-next.1
+
+### Minor Changes
+
+- 19f6c6c32a: Added `ignoreSchemaErrors` to `schema.process`.
+
+### Patch Changes
+
+- 230ad0826f: Bump to using `@types/node` v16
+
+## 1.0.1-next.0
+
+### Patch Changes
+
+- e0a51384ac: build(deps): bump `ajv` from 7.0.3 to 8.10.0
+- c47509e1a0: Implemented changes suggested by Deepsource.io including multiple double non-null assertion operators and unexpected awaits for non-promise values.
+
+## 1.0.0
+
+### Major Changes
+
+- b58c70c223: This package has been promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
+
+### Patch Changes
+
+- 664821371e: The `typescript-json-schema` dependency that is used during schema collection is now lazy loaded, as it eagerly loads in the TypeScript compiler.
+- f910c2a3f8: build(deps): bump `typescript-json-schema` from 0.52.0 to 0.53.0
+- Updated dependencies
+  - @backstage/config@1.0.0
+  - @backstage/errors@1.0.0
+  - @backstage/types@1.0.0
+
+## 0.9.7
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- e0a69ba49f: build(deps): bump `fs-extra` from 9.1.0 to 10.0.1
+
+## 0.9.6
+
+### Patch Changes
+
+- c3a1300f79: Include any files included in configuration via $include or $file directives when watching for configuration changes.
+
+## 0.9.5
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/cli-common@0.1.8
+  - @backstage/config@0.1.15
+  - @backstage/errors@0.2.2
+  - @backstage/types@0.1.3
+
+## 0.9.4
+
+### Patch Changes
+
+- 1ed305728b: Bump `node-fetch` to version 2.6.7 and `cross-fetch` to version 3.1.5
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/errors@0.2.1
+  - @backstage/cli-common@0.1.7
+  - @backstage/config@0.1.14
+  - @backstage/types@0.1.2
+
 ## 0.9.3
 
 ### Patch Changes

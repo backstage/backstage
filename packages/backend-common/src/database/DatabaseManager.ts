@@ -119,7 +119,7 @@ export class DatabaseManager {
   private getDatabaseName(pluginId: string): string | undefined {
     const connection = this.getConnectionConfig(pluginId);
 
-    if (this.getClientType(pluginId).client === 'sqlite3') {
+    if (this.getClientType(pluginId).client.includes('sqlite3')) {
       const sqliteFilename: string | undefined = (
         connection as Knex.Sqlite3ConnectionConfig
       ).filename;
@@ -224,7 +224,7 @@ export class DatabaseManager {
     );
 
     if (
-      client === 'sqlite3' &&
+      client.includes('sqlite3') &&
       'filename' in baseConnection &&
       baseConnection.filename !== ':memory:'
     ) {

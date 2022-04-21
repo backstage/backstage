@@ -17,7 +17,6 @@
 import { TemplateAction } from '../../types';
 
 jest.mock('../helpers');
-jest.mock('octokit');
 
 import { createPublishGithubAction } from './github';
 import {
@@ -33,6 +32,30 @@ import {
   initRepoAndPush,
 } from '../helpers';
 import { when } from 'jest-when';
+
+const mockOctokit = {
+  rest: {
+    users: {
+      getByUsername: jest.fn(),
+    },
+    repos: {
+      addCollaborator: jest.fn(),
+      createInOrg: jest.fn(),
+      createForAuthenticatedUser: jest.fn(),
+      replaceAllTopics: jest.fn(),
+    },
+    teams: {
+      addOrUpdateRepoPermissionsInOrg: jest.fn(),
+    },
+  },
+};
+jest.mock('octokit', () => ({
+  Octokit: class {
+    constructor() {
+      return mockOctokit;
+    }
+  },
+}));
 
 describe('publish:github', () => {
   const config = new ConfigReader({
@@ -52,7 +75,7 @@ describe('publish:github', () => {
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       description: 'description',
-      repoVisibility: 'private',
+      repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
     workspacePath: 'lol',
@@ -61,8 +84,6 @@ describe('publish:github', () => {
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
   };
-
-  const { mockGithubClient } = require('octokit');
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -76,18 +97,22 @@ describe('publish:github', () => {
   });
 
   it('should call the githubApis with the correct values for createInOrg', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'Organization' },
     });
 
-    mockGithubClient.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
 
     await action.handler(mockContext);
-    expect(mockGithubClient.rest.repos.createInOrg).toHaveBeenCalledWith({
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
       description: 'description',
       name: 'repo',
       org: 'owner',
       private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
       visibility: 'private',
     });
 
@@ -98,31 +123,39 @@ describe('publish:github', () => {
         repoVisibility: 'public',
       },
     });
-    expect(mockGithubClient.rest.repos.createInOrg).toHaveBeenCalledWith({
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
       description: 'description',
       name: 'repo',
       org: 'owner',
       private: false,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
       visibility: 'public',
     });
   });
 
   it('should call the githubApis with the correct values for createForAuthenticatedUser', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {},
     });
 
     await action.handler(mockContext);
     expect(
-      mockGithubClient.rest.repos.createForAuthenticatedUser,
+      mockOctokit.rest.repos.createForAuthenticatedUser,
     ).toHaveBeenCalledWith({
       description: 'description',
       name: 'repo',
       private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
     });
 
     await action.handler({
@@ -133,20 +166,24 @@ describe('publish:github', () => {
       },
     });
     expect(
-      mockGithubClient.rest.repos.createForAuthenticatedUser,
+      mockOctokit.rest.repos.createForAuthenticatedUser,
     ).toHaveBeenCalledWith({
       description: 'description',
       name: 'repo',
       private: false,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
     });
   });
 
   it('should call initRepoAndPush with the correct values', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -161,16 +198,17 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
 
   it('should call initRepoAndPush with the correct defaultBranch main', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -191,6 +229,7 @@ describe('publish:github', () => {
       defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -219,11 +258,11 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -238,6 +277,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -263,11 +303,11 @@ describe('publish:github', () => {
       githubCredentialsProvider,
     });
 
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -282,17 +322,17 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
   it('should add access for the team when it starts with the owner', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -302,7 +342,7 @@ describe('publish:github', () => {
     await action.handler(mockContext);
 
     expect(
-      mockGithubClient.rest.teams.addOrUpdateRepoPermissionsInOrg,
+      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg,
     ).toHaveBeenCalledWith({
       org: 'owner',
       team_slug: 'blam',
@@ -313,11 +353,11 @@ describe('publish:github', () => {
   });
 
   it('should add outside collaborators when provided', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -332,7 +372,7 @@ describe('publish:github', () => {
       },
     });
 
-    expect(mockGithubClient.rest.repos.addCollaborator).toHaveBeenCalledWith({
+    expect(mockOctokit.rest.repos.addCollaborator).toHaveBeenCalledWith({
       username: 'outsidecollaborator',
       owner: 'owner',
       repo: 'repo',
@@ -341,11 +381,11 @@ describe('publish:github', () => {
   });
 
   it('should add multiple collaborators when provided', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -376,7 +416,7 @@ describe('publish:github', () => {
     };
 
     expect(
-      mockGithubClient.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[1],
+      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[1],
     ).toEqual([
       {
         ...commonProperties,
@@ -386,7 +426,7 @@ describe('publish:github', () => {
     ]);
 
     expect(
-      mockGithubClient.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
+      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
     ).toEqual([
       {
         ...commonProperties,
@@ -397,18 +437,18 @@ describe('publish:github', () => {
   });
 
   it('should ignore failures when adding multiple collaborators', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
       },
     });
 
-    when(mockGithubClient.rest.teams.addOrUpdateRepoPermissionsInOrg)
+    when(mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg)
       .calledWith({
         org: 'owner',
         owner: 'owner',
@@ -436,7 +476,7 @@ describe('publish:github', () => {
     });
 
     expect(
-      mockGithubClient.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
+      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
     ).toEqual([
       {
         org: 'owner',
@@ -449,18 +489,18 @@ describe('publish:github', () => {
   });
 
   it('should add topics when provided', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
       },
     });
 
-    mockGithubClient.rest.repos.replaceAllTopics.mockResolvedValue({
+    mockOctokit.rest.repos.replaceAllTopics.mockResolvedValue({
       data: {
         names: ['node.js'],
       },
@@ -474,7 +514,7 @@ describe('publish:github', () => {
       },
     });
 
-    expect(mockGithubClient.rest.repos.replaceAllTopics).toHaveBeenCalledWith({
+    expect(mockOctokit.rest.repos.replaceAllTopics).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       names: ['node.js'],
@@ -482,18 +522,18 @@ describe('publish:github', () => {
   });
 
   it('should lowercase topics when provided', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
       },
     });
 
-    mockGithubClient.rest.repos.replaceAllTopics.mockResolvedValue({
+    mockOctokit.rest.repos.replaceAllTopics.mockResolvedValue({
       data: {
         names: ['backstage'],
       },
@@ -507,7 +547,7 @@ describe('publish:github', () => {
       },
     });
 
-    expect(mockGithubClient.rest.repos.replaceAllTopics).toHaveBeenCalledWith({
+    expect(mockOctokit.rest.repos.replaceAllTopics).toHaveBeenCalledWith({
       owner: 'owner',
       repo: 'repo',
       names: ['backstage'],
@@ -515,11 +555,11 @@ describe('publish:github', () => {
   });
 
   it('should call output with the remoteUrl and the repoContentsUrl', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -539,11 +579,11 @@ describe('publish:github', () => {
   });
 
   it('should use main as default branch', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         clone_url: 'https://github.com/clone/url.git',
         html_url: 'https://github.com/html/url',
@@ -569,11 +609,11 @@ describe('publish:github', () => {
   });
 
   it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requireCodeOwnerReviews', async () => {
-    mockGithubClient.rest.users.getByUsername.mockResolvedValue({
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
 
-    mockGithubClient.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
       data: {
         name: 'repository',
       },
@@ -583,11 +623,12 @@ describe('publish:github', () => {
 
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
-      client: mockGithubClient,
+      client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
     });
 
     await action.handler({
@@ -600,11 +641,12 @@ describe('publish:github', () => {
 
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
-      client: mockGithubClient,
+      client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
+      requiredStatusCheckContexts: [],
     });
 
     await action.handler({
@@ -617,11 +659,72 @@ describe('publish:github', () => {
 
     expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
       owner: 'owner',
-      client: mockGithubClient,
+      client: mockOctokit,
       repoName: 'repository',
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+    });
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repository',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredStatusCheckContexts: ['statusCheck'],
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: ['statusCheck'],
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredStatusCheckContexts: [],
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
     });
   });
 });

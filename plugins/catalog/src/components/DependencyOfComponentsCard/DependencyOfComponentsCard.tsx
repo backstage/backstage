@@ -23,15 +23,16 @@ import {
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 
-type Props = {
+/** @public */
+export interface DependencyOfComponentsCardProps {
   variant?: 'gridItem';
   title?: string;
-};
+}
 
-export const DependencyOfComponentsCard = ({
-  variant = 'gridItem',
-  title = 'Dependency of components',
-}: Props) => {
+export function DependencyOfComponentsCard(
+  props: DependencyOfComponentsCardProps,
+) {
+  const { variant = 'gridItem', title = 'Dependency of components' } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -44,4 +45,4 @@ export const DependencyOfComponentsCard = ({
       asRenderableEntities={asComponentEntities}
     />
   );
-};
+}

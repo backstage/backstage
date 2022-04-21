@@ -17,7 +17,7 @@
 import os from 'os';
 import fs from 'fs-extra';
 import { join as joinPath } from 'path';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { FactoryRegistry } from '../../lib/create/FactoryRegistry';
 import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
@@ -40,12 +40,10 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
   return options;
 }
 
-export default async (cmd: Command) => {
-  const cmdOpts = cmd.opts();
+export default async (opts: OptionValues) => {
+  const factory = await FactoryRegistry.interactiveSelect(opts.select);
 
-  const factory = await FactoryRegistry.interactiveSelect(cmdOpts.select);
-
-  const providedOptions = parseOptions(cmdOpts.option);
+  const providedOptions = parseOptions(opts.option);
   const options = await FactoryRegistry.populateOptions(
     factory,
     providedOptions,
@@ -93,9 +91,9 @@ export default async (cmd: Command) => {
     await factory.create(options, {
       isMonoRepo,
       defaultVersion,
-      scope: cmdOpts.scope?.replace(/^@/, ''),
-      npmRegistry: cmdOpts.npmRegistry,
-      private: Boolean(cmdOpts.private),
+      scope: opts.scope?.replace(/^@/, ''),
+      npmRegistry: opts.npmRegistry,
+      private: Boolean(opts.private),
       createTemporaryDirectory,
       markAsModified() {
         modified = true;

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { JsonObject } from '@backstage/types';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   GithubCredentialsProvider,
@@ -29,7 +30,6 @@ import {
 
 import { createDebugLogAction } from './debug';
 import { createFetchPlainAction, createFetchTemplateAction } from './fetch';
-import { createFetchCookiecutterAction } from '@backstage/plugin-scaffolder-backend-module-cookiecutter';
 import {
   createFilesystemDeleteAction,
   createFilesystemRenameAction,
@@ -37,6 +37,8 @@ import {
 import {
   createPublishAzureAction,
   createPublishBitbucketAction,
+  createPublishBitbucketCloudAction,
+  createPublishBitbucketServerAction,
   createPublishGithubAction,
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
@@ -45,25 +47,57 @@ import {
 import {
   createGithubActionsDispatchAction,
   createGithubWebhookAction,
+  createGithubIssuesLabelAction,
 } from './github';
 import { TemplateFilter } from '../../../lib';
+import { TemplateAction } from '../types';
 
-export const createBuiltinActions = (options: {
+/**
+ * The options passed to {@link createBuiltinActions}
+ * @public
+ */
+export interface CreateBuiltInActionsOptions {
+  /**
+   * The {@link @backstage/backend-common#UrlReader} interface that will be used in the default actions.
+   */
   reader: UrlReader;
+  /**
+   * The {@link @backstage/integrations#ScmIntegrations} that will be used in the default actions.
+   */
   integrations: ScmIntegrations;
+  /**
+   * The {@link @backstage/catalog-client#CatalogApi} that will be used in the default actions.
+   */
   catalogClient: CatalogApi;
-  containerRunner?: ContainerRunner;
+  /**
+   * The {@link @backstage/config#Config} that will be used in the default actions.
+   */
   config: Config;
+  /**
+   * Additional custom filters that will be passed to the nunjucks template engine for use in
+   * Template Manifests and also template skeleton files when using `fetch:template`.
+   */
   additionalTemplateFilters?: Record<string, TemplateFilter>;
-}) => {
+}
+
+/**
+ * A function to generate create a list of default actions that the scaffolder provides.
+ * Is called internally in the default setup, but can be used when adding your own actions or overriding the default ones
+ *
+ * @public
+ * @returns A list of actions that can be used in the scaffolder
+ */
+export const createBuiltinActions = (
+  options: CreateBuiltInActionsOptions,
+): TemplateAction<JsonObject>[] => {
   const {
     reader,
     integrations,
-    containerRunner,
     catalogClient,
     config,
     additionalTemplateFilters,
   } = options;
+
   const githubCredentialsProvider: GithubCredentialsProvider =
     DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
@@ -97,6 +131,14 @@ export const createBuiltinActions = (options: {
       integrations,
       config,
     }),
+    createPublishBitbucketCloudAction({
+      integrations,
+      config,
+    }),
+    createPublishBitbucketServerAction({
+      integrations,
+      config,
+    }),
     createPublishAzureAction({
       integrations,
       config,
@@ -114,17 +156,11 @@ export const createBuiltinActions = (options: {
       integrations,
       githubCredentialsProvider,
     }),
+    createGithubIssuesLabelAction({
+      integrations,
+      githubCredentialsProvider,
+    }),
   ];
 
-  if (containerRunner) {
-    actions.push(
-      createFetchCookiecutterAction({
-        reader,
-        integrations,
-        containerRunner,
-      }),
-    );
-  }
-
-  return actions;
+  return actions as TemplateAction<JsonObject>[];
 };

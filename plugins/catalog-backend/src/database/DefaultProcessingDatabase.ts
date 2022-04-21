@@ -35,7 +35,7 @@ import {
   ListParentsResult,
 } from './types';
 import { DeferredEntity } from '../processing/types';
-import { RefreshIntervalFunction } from '../processing/refresh';
+import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {
@@ -45,6 +45,7 @@ import {
 } from './tables';
 
 import { generateStableHash } from './util';
+import { isDatabaseConflictError } from '@backstage/backend-common';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -58,7 +59,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     private readonly options: {
       database: Knex;
       logger: Logger;
-      refreshInterval: RefreshIntervalFunction;
+      refreshInterval: ProcessingIntervalFunction;
     },
   ) {
     initDatabaseMetrics(options.database);
@@ -67,7 +68,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   async updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
-  ): Promise<void> {
+  ): Promise<{ previous: { relations: DbRelationsRow[] } }> {
     const tx = txOpaque as Knex.Transaction;
     const {
       id,
@@ -107,9 +108,20 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     });
 
     // Delete old relations
-    await tx<DbRelationsRow>('relations')
-      .where({ originating_entity_id: id })
-      .delete();
+    let previousRelationRows: DbRelationsRow[];
+    if (tx.client.config.client.includes('sqlite3')) {
+      previousRelationRows = await tx<DbRelationsRow>('relations')
+        .select('*')
+        .where({ originating_entity_id: id });
+      await tx<DbRelationsRow>('relations')
+        .where({ originating_entity_id: id })
+        .delete();
+    } else {
+      previousRelationRows = await tx<DbRelationsRow>('relations')
+        .where({ originating_entity_id: id })
+        .delete()
+        .returning('*');
+    }
 
     // Batch insert new relations
     const relationRows: DbRelationsRow[] = relations.map(
@@ -125,6 +137,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       this.deduplicateRelations(relationRows),
       BATCH_SIZE,
     );
+
+    return {
+      previous: {
+        relations: previousRelationRows,
+      },
+    };
   }
 
   async updateProcessedEntityErrors(
@@ -160,11 +178,12 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    const { toUpsert, toRemove } = await this.createDelta(tx, options);
+    const { toAdd, toUpsert, toRemove } = await this.createDelta(tx, options);
 
     if (toRemove.length) {
-      // TODO(freben): Batch split, to not hit variable limits?
-      /*
+      let removedCount = 0;
+      for (const refs of lodash.chunk(toRemove, 1000)) {
+        /*
       WITH RECURSIVE
         -- All the nodes that can be reached downwards from our root
         descendants(root_id, entity_ref) AS (
@@ -199,82 +218,130 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       -- Exclude all lines that had such a foreign ancestor
       WHERE ancestors.root_id IS NULL;
       */
-      const removedCount = await tx<DbRefreshStateRow>('refresh_state')
-        .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
-          return (
-            orphans
-              // All the nodes that can be reached downwards from our root
-              .withRecursive('descendants', function descendants(outer) {
-                return outer
-                  .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
-                  .from('refresh_state_references')
-                  .where('source_key', options.sourceKey)
-                  .whereIn('target_entity_ref', toRemove)
-                  .union(function recursive(inner) {
-                    return inner
-                      .select({
-                        root_id: 'descendants.root_id',
-                        entity_ref:
-                          'refresh_state_references.target_entity_ref',
-                      })
-                      .from('descendants')
-                      .join('refresh_state_references', {
-                        'descendants.entity_ref':
-                          'refresh_state_references.source_entity_ref',
-                      });
-                  });
-              })
-              // All the nodes that can be reached upwards from the descendants
-              .withRecursive('ancestors', function ancestors(outer) {
-                return outer
-                  .select({
-                    root_id: tx.raw('CAST(NULL as INT)', []),
-                    via_entity_ref: 'entity_ref',
-                    to_entity_ref: 'entity_ref',
-                  })
-                  .from('descendants')
-                  .union(function recursive(inner) {
-                    return inner
-                      .select({
-                        root_id: tx.raw(
-                          'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
-                          [],
-                        ),
-                        via_entity_ref: 'source_entity_ref',
-                        to_entity_ref: 'ancestors.to_entity_ref',
-                      })
-                      .from('ancestors')
-                      .join('refresh_state_references', {
-                        target_entity_ref: 'ancestors.via_entity_ref',
-                      });
-                  });
-              })
-              // Start out with all of the descendants
-              .select('descendants.entity_ref')
-              .from('descendants')
-              // Expand with all ancestors that point to those, but aren't the current root
-              .leftOuterJoin('ancestors', function keepaliveRoots() {
-                this.on(
-                  'ancestors.to_entity_ref',
-                  '=',
-                  'descendants.entity_ref',
-                );
-                this.andOnNotNull('ancestors.root_id');
-                this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
-              })
-              .whereNull('ancestors.root_id')
-          );
-        })
-        .delete();
+        removedCount += await tx<DbRefreshStateRow>('refresh_state')
+          .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
+            return (
+              orphans
+                // All the nodes that can be reached downwards from our root
+                .withRecursive('descendants', function descendants(outer) {
+                  return outer
+                    .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
+                    .from('refresh_state_references')
+                    .where('source_key', options.sourceKey)
+                    .whereIn('target_entity_ref', refs)
+                    .union(function recursive(inner) {
+                      return inner
+                        .select({
+                          root_id: 'descendants.root_id',
+                          entity_ref:
+                            'refresh_state_references.target_entity_ref',
+                        })
+                        .from('descendants')
+                        .join('refresh_state_references', {
+                          'descendants.entity_ref':
+                            'refresh_state_references.source_entity_ref',
+                        });
+                    });
+                })
+                // All the nodes that can be reached upwards from the descendants
+                .withRecursive('ancestors', function ancestors(outer) {
+                  return outer
+                    .select({
+                      root_id: tx.raw('CAST(NULL as INT)', []),
+                      via_entity_ref: 'entity_ref',
+                      to_entity_ref: 'entity_ref',
+                    })
+                    .from('descendants')
+                    .union(function recursive(inner) {
+                      return inner
+                        .select({
+                          root_id: tx.raw(
+                            'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
+                            [],
+                          ),
+                          via_entity_ref: 'source_entity_ref',
+                          to_entity_ref: 'ancestors.to_entity_ref',
+                        })
+                        .from('ancestors')
+                        .join('refresh_state_references', {
+                          target_entity_ref: 'ancestors.via_entity_ref',
+                        });
+                    });
+                })
+                // Start out with all of the descendants
+                .select('descendants.entity_ref')
+                .from('descendants')
+                // Expand with all ancestors that point to those, but aren't the current root
+                .leftOuterJoin('ancestors', function keepaliveRoots() {
+                  this.on(
+                    'ancestors.to_entity_ref',
+                    '=',
+                    'descendants.entity_ref',
+                  );
+                  this.andOnNotNull('ancestors.root_id');
+                  this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
+                })
+                .whereNull('ancestors.root_id')
+            );
+          })
+          .delete();
 
-      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-        .where('source_key', '=', options.sourceKey)
-        .whereIn('target_entity_ref', toRemove)
-        .delete();
+        await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+          .where('source_key', '=', options.sourceKey)
+          .whereIn('target_entity_ref', refs)
+          .delete();
+      }
 
       this.options.logger.debug(
         `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
       );
+    }
+
+    if (toAdd.length) {
+      // The reason for this chunking, rather than just massively batch
+      // inserting the entire payload, is that we fall back to the individual
+      // upsert mechanism below on conflicts. That path is massively slower than
+      // the fast batch path, so we don't want to end up accidentally having to
+      // for example item-by-item upsert tens of thousands of entities in a
+      // large initial delivery dump. The implication is that the size of these
+      // chunks needs to weigh the benefit of fast successful inserts, against
+      // the drawback of super slow but more rare fallbacks. There's quickly
+      // diminishing returns though with turning up this value way high.
+      for (const chunk of lodash.chunk(toAdd, 50)) {
+        try {
+          await tx.batchInsert(
+            'refresh_state',
+            chunk.map(item => ({
+              entity_id: uuid(),
+              entity_ref: stringifyEntityRef(item.deferred.entity),
+              unprocessed_entity: JSON.stringify(item.deferred.entity),
+              unprocessed_hash: item.hash,
+              errors: '',
+              location_key: item.deferred.locationKey,
+              next_update_at: tx.fn.now(),
+              last_discovery_at: tx.fn.now(),
+            })),
+            BATCH_SIZE,
+          );
+          await tx.batchInsert(
+            'refresh_state_references',
+            chunk.map(item => ({
+              source_key: options.sourceKey,
+              target_entity_ref: stringifyEntityRef(item.deferred.entity),
+            })),
+            BATCH_SIZE,
+          );
+        } catch (error) {
+          if (!isDatabaseConflictError(error)) {
+            throw error;
+          } else {
+            this.options.logger.debug(
+              `Fast insert path failed, falling back to slow path, ${error}`,
+            );
+            toUpsert.push(...chunk);
+          }
+        }
+      }
     }
 
     if (toUpsert.length) {
@@ -355,10 +422,9 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         items.map(i => i.entity_ref),
       )
       .update({
-        next_update_at:
-          tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
-            : tx.raw(`now() + interval '${interval} seconds'`),
+        next_update_at: tx.client.config.client.includes('sqlite3')
+          ? tx.raw(`datetime('now', ?)`, [`${interval} seconds`])
+          : tx.raw(`now() + interval '${interval} seconds'`),
       });
 
     return {
@@ -541,7 +607,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       // We have to do this because the only way to detect if there was a conflict with
       // SQLite is to catch the error, while Postgres needs to ignore the conflict to not
       // break the ongoing transaction.
-      if (tx.client.config.client !== 'sqlite3') {
+      if (!tx.client.config.client.includes('sqlite3')) {
         query = query.onConflict('entity_ref').ignore() as any; // type here does not match runtime
       }
 
@@ -600,11 +666,13 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     tx: Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<{
+    toAdd: { deferred: DeferredEntity; hash: string }[];
     toUpsert: { deferred: DeferredEntity; hash: string }[];
     toRemove: string[];
   }> {
     if (options.type === 'delta') {
       return {
+        toAdd: [],
         toUpsert: options.added.map(e => ({
           deferred: e,
           hash: generateStableHash(e.entity),
@@ -644,6 +712,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
     const newRefsSet = new Set(items.map(item => item.ref));
 
+    const toAdd = new Array<{ deferred: DeferredEntity; hash: string }>();
     const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
     const toRemove = oldRefs
       .map(row => row.target_entity_ref)
@@ -654,18 +723,18 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const upsertItem = { deferred: item.deferred, hash: item.hash };
       if (!oldRef) {
         // Add any entity that does not exist in the database
-        toUpsert.push(upsertItem);
+        toAdd.push(upsertItem);
       } else if (oldRef.locationKey !== item.deferred.locationKey) {
         // Remove and then re-add any entity that exists, but with a different location key
         toRemove.push(item.ref);
-        toUpsert.push(upsertItem);
+        toAdd.push(upsertItem);
       } else if (oldRef.oldEntityHash !== item.hash) {
         // Entities with modifications should be pushed through too
         toUpsert.push(upsertItem);
       }
     }
 
-    return { toUpsert, toRemove };
+    return { toAdd, toUpsert, toRemove };
   }
 
   /**

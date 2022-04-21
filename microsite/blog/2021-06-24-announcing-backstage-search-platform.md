@@ -1,5 +1,6 @@
 ---
-title: 'Announcing the Backstage Search platform: a customizable search tool built just for you'
+# prettier-ignore
+title: "Announcing the Backstage Search platform: a customizable search tool built just for you"
 author: Emma Indal, Spotify
 authorURL: https://www.linkedin.com/in/emma-indal
 ---

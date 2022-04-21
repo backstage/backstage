@@ -41,11 +41,11 @@ export type LoadConfigSchemaOptions =
     };
 
 function errorsToError(errors: ValidationError[]): Error {
-  const messages = errors.map(({ dataPath, message, params }) => {
+  const messages = errors.map(({ instancePath, message, params }) => {
     const paramStr = Object.entries(params)
       .map(([name, value]) => `${name}=${value}`)
       .join(' ');
-    return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
+    return `Config ${message || ''} { ${paramStr} } at ${instancePath}`;
   });
   const error = new Error(`Config validation failed, ${messages.join('; ')}`);
   (error as any).messages = messages;
@@ -82,18 +82,26 @@ export async function loadConfigSchema(
   return {
     process(
       configs: AppConfig[],
-      { visibility, valueTransform, withFilteredKeys, withDeprecatedKeys } = {},
+      {
+        visibility,
+        valueTransform,
+        withFilteredKeys,
+        withDeprecatedKeys,
+        ignoreSchemaErrors,
+      } = {},
     ): AppConfig[] {
       const result = validate(configs);
 
-      const visibleErrors = filterErrorsByVisibility(
-        result.errors,
-        visibility,
-        result.visibilityByDataPath,
-        result.visibilityBySchemaPath,
-      );
-      if (visibleErrors.length > 0) {
-        throw errorsToError(visibleErrors);
+      if (!ignoreSchemaErrors) {
+        const visibleErrors = filterErrorsByVisibility(
+          result.errors,
+          visibility,
+          result.visibilityByDataPath,
+          result.visibilityBySchemaPath,
+        );
+        if (visibleErrors.length > 0) {
+          throw errorsToError(visibleErrors);
+        }
       }
 
       let processedConfigs = configs;

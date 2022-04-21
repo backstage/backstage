@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 export { DatabaseTaskStore } from './DatabaseTaskStore';
+export type { DatabaseTaskStoreOptions } from './DatabaseTaskStore';
 export { TaskManager } from './StorageTaskBroker';
-export type { TaskState } from './StorageTaskBroker';
+export type { CurrentClaimedTask } from './StorageTaskBroker';
 export { TaskWorker } from './TaskWorker';
 export type { CreateWorkerOptions } from './TaskWorker';
 export type {
   TaskSecrets,
-  TaskSpec,
-  CompletedTaskState,
+  TaskCompletionState,
   TaskStoreEmitOptions,
   TaskStoreListEventsOptions,
   SerializedTask,
   SerializedTaskEvent,
-  TaskSpecV1beta2,
-  TaskSpecV1beta3,
-  Status,
+  TaskStatus,
   TaskEventType,
   TaskBroker,
   TaskContext,
   TaskStore,
-  DispatchResult,
-  TemplateMetadata,
+  TaskBrokerDispatchResult,
+  TaskBrokerDispatchOptions,
+  TaskStoreCreateTaskOptions,
+  TaskStoreCreateTaskResult,
 } from './types';

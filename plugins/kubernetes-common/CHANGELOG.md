@@ -1,5 +1,70 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.0.0
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.13.0
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.13.0-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.12.0
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@0.11.0
+
+## 0.2.4
+
+### Patch Changes
+
+- Fix for the previous release with missing type declarations.
+- Updated dependencies
+  - @backstage/catalog-model@0.10.1
+
+## 0.2.3
+
+### Patch Changes
+
+- c77c5c7eb6: Added `backstage.role` to `package.json`
+- Updated dependencies
+  - @backstage/catalog-model@0.10.0
+
 ## 0.2.2
 
 ### Patch Changes
