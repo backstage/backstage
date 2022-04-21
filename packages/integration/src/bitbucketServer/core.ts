@@ -16,7 +16,7 @@
 
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
-import { BitbucketIntegrationConfig } from './config';
+import { BitbucketServerIntegrationConfig } from './config';
 
 /**
  * Given a URL pointing to a path on a provider, returns the default branch.
@@ -24,27 +24,26 @@ import { BitbucketIntegrationConfig } from './config';
  * @param url - A URL pointing to a path
  * @param config - The relevant provider config
  * @public
- * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
-export async function getBitbucketDefaultBranch(
+export async function getBitbucketServerDefaultBranch(
   url: string,
-  config: BitbucketIntegrationConfig,
+  config: BitbucketServerIntegrationConfig,
 ): Promise<string> {
-  const { name: repoName, owner: project, resource } = parseGitUrl(url);
+  const { name: repoName, owner: project } = parseGitUrl(url);
 
-  const isHosted = resource === 'bitbucket.org';
   // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp184
-  let branchUrl = isHosted
-    ? `${config.apiBaseUrl}/repositories/${project}/${repoName}`
-    : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/default-branch`;
+  let branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/default-branch`;
 
-  let response = await fetch(branchUrl, getBitbucketRequestOptions(config));
+  let response = await fetch(
+    branchUrl,
+    getBitbucketServerRequestOptions(config),
+  );
 
-  if (response.status === 404 && !isHosted) {
+  if (response.status === 404) {
     // First try the new format, and then if it gets specifically a 404 it should try the old format
-    // (to support old  Atlassian Bitbucket v5.11.1 format )
+    // (to support old  Atlassian Bitbucket Server v5.11.1 format )
     branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
-    response = await fetch(branchUrl, getBitbucketRequestOptions(config));
+    response = await fetch(branchUrl, getBitbucketServerRequestOptions(config));
   }
 
   if (!response.ok) {
@@ -52,14 +51,8 @@ export async function getBitbucketDefaultBranch(
     throw new Error(message);
   }
 
-  let defaultBranch;
-  if (isHosted) {
-    const repoInfo = await response.json();
-    defaultBranch = repoInfo.mainbranch.name;
-  } else {
-    const { displayId } = await response.json();
-    defaultBranch = displayId;
-  }
+  const { displayId } = await response.json();
+  const defaultBranch = displayId;
   if (!defaultBranch) {
     throw new Error(
       `Failed to read default branch from ${branchUrl}. ` +
@@ -76,36 +69,22 @@ export async function getBitbucketDefaultBranch(
  * @param url - A URL pointing to a path
  * @param config - The relevant provider config
  * @public
- * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
-export async function getBitbucketDownloadUrl(
+export async function getBitbucketServerDownloadUrl(
   url: string,
-  config: BitbucketIntegrationConfig,
+  config: BitbucketServerIntegrationConfig,
 ): Promise<string> {
-  const {
-    name: repoName,
-    owner: project,
-    ref,
-    protocol,
-    resource,
-    filepath,
-  } = parseGitUrl(url);
-
-  const isHosted = resource === 'bitbucket.org';
+  const { name: repoName, owner: project, ref, filepath } = parseGitUrl(url);
 
   let branch = ref;
   if (!branch) {
-    branch = await getBitbucketDefaultBranch(url, config);
+    branch = await getBitbucketServerDefaultBranch(url, config);
   }
   // path will limit the downloaded content
   // /docs will only download the docs folder and everything below it
   // /docs/index.md will download the docs folder and everything below it
   const path = filepath ? `&path=${encodeURIComponent(filepath)}` : '';
-  const archiveUrl = isHosted
-    ? `${protocol}://${resource}/${project}/${repoName}/get/${branch}.tar.gz`
-    : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${branch}&prefix=${project}-${repoName}${path}`;
-
-  return archiveUrl;
+  return `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${branch}&prefix=${project}-${repoName}${path}`;
 }
 
 /**
@@ -115,17 +94,16 @@ export async function getBitbucketDownloadUrl(
  * @remarks
  *
  * Converts
- * from: https://bitbucket.org/orgname/reponame/src/master/file.yaml
- * to:   https://api.bitbucket.org/2.0/repositories/orgname/reponame/src/master/file.yaml
+ * from: https://bitbucket.company.com/projectname/reponame/src/main/file.yaml
+ * to:   https://bitbucket.company.com/rest/api/1.0/project/projectname/reponame/raw/file.yaml?at=main
  *
  * @param url - A URL pointing to a file
  * @param config - The relevant provider config
  * @public
- * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
-export function getBitbucketFileFetchUrl(
+export function getBitbucketServerFileFetchUrl(
   url: string,
-  config: BitbucketIntegrationConfig,
+  config: BitbucketServerIntegrationConfig,
 ): string {
   try {
     const { owner, name, ref, filepathtype, filepath } = parseGitUrl(url);
@@ -136,17 +114,10 @@ export function getBitbucketFileFetchUrl(
         filepathtype !== 'raw' &&
         filepathtype !== 'src')
     ) {
-      throw new Error('Invalid Bitbucket URL or file path');
+      throw new Error('Invalid Bitbucket Server URL or file path');
     }
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
-
-    if (config.host === 'bitbucket.org') {
-      if (!ref) {
-        throw new Error('Invalid Bitbucket URL or file path');
-      }
-      return `${config.apiBaseUrl}/repositories/${owner}/${name}/src/${ref}/${pathWithoutSlash}`;
-    }
     return `${config.apiBaseUrl}/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?at=${ref}`;
   } catch (e) {
     throw new Error(`Incorrect URL: ${url}, ${e}`);
@@ -158,21 +129,14 @@ export function getBitbucketFileFetchUrl(
  *
  * @param config - The relevant provider config
  * @public
- * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
-export function getBitbucketRequestOptions(
-  config: BitbucketIntegrationConfig,
+export function getBitbucketServerRequestOptions(
+  config: BitbucketServerIntegrationConfig,
 ): { headers: Record<string, string> } {
   const headers: Record<string, string> = {};
 
   if (config.token) {
     headers.Authorization = `Bearer ${config.token}`;
-  } else if (config.username && config.appPassword) {
-    const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
-      'utf8',
-    );
-    headers.Authorization = `Basic ${buffer.toString('base64')}`;
   }
 
   return {

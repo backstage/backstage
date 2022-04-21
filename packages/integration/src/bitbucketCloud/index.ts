@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigReader } from '@backstage/config';
-import {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-} from './ScmIntegrationsApi';
 
-describe('scmIntegrationsApiRef', () => {
-  it('should export api', () => {
-    expect(scmIntegrationsApiRef).toBeDefined();
-  });
-
-  it('should be instantiated', () => {
-    const i = ScmIntegrationsApi.fromConfig(new ConfigReader({}));
-    expect(i.list().length).toBe(6); // The default ones
-  });
-});
+export { BitbucketCloudIntegration } from './BitbucketCloudIntegration';
+export {
+  readBitbucketCloudIntegrationConfig,
+  readBitbucketCloudIntegrationConfigs,
+} from './config';
+export type { BitbucketCloudIntegrationConfig } from './config';
+export {
+  getBitbucketCloudDefaultBranch,
+  getBitbucketCloudDownloadUrl,
+  getBitbucketCloudFileFetchUrl,
+  getBitbucketCloudRequestOptions,
+} from './core';

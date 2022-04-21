@@ -198,7 +198,7 @@ export function createPublishAzureAction(options: {
   gitAuthorEmail?: string | undefined;
 }>;
 
-// @public
+// @public @deprecated
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
@@ -213,6 +213,33 @@ export function createPublishBitbucketAction(options: {
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
   gitAuthorEmail?: string | undefined;
+}>;
+
+// @public
+export function createPublishBitbucketCloudAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  description?: string | undefined;
+  defaultBranch?: string | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
+  sourcePath?: string | undefined;
+  token?: string | undefined;
+}>;
+
+// @public
+export function createPublishBitbucketServerAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  description?: string | undefined;
+  defaultBranch?: string | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
+  sourcePath?: string | undefined;
+  enableLFS?: boolean | undefined;
+  token?: string | undefined;
 }>;
 
 // @public
