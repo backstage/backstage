@@ -15,6 +15,7 @@ Right now, the following API formats are supported:
 - [OpenAPI](https://swagger.io/specification/) 2 & 3
 - [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/)
 - [GraphQL](https://graphql.org/learn/schema/)
+- [gRPC/protobuf](https://developers.google.com/protocol-buffers)
 - [Generated Github Flavored Markdown](https://github.github.com/gfm/)
 
 Other formats are displayed as plain text, but this can easily be extended.
