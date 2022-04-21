@@ -73,11 +73,19 @@ describe('ElasticSearchSearchEngineIndexer', () => {
         'routing.search': '-',
         is_write_index: '-',
       },
+      {
+        alias: 'some-type-index__search_removable',
+        index: 'some-type-index__456tobedeleted',
+        filter: '-',
+        'routing.index': '-',
+        'routing.search': '-',
+        is_write_index: '-',
+      },
     ]);
     mock.add(
       {
         method: 'GET',
-        path: '/_cat/aliases/some-type-index__search',
+        path: '/_cat/aliases/some-type-index__search%2Csome-type-index__search_removable',
       },
       catSpy,
     );
@@ -108,7 +116,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     mock.add(
       {
         method: 'DELETE',
-        path: '/some-type-index__123tobedeleted',
+        path: '/some-type-index__123tobedeleted%2Csome-type-index__456tobedeleted',
       },
       deleteSpy,
     );
@@ -151,6 +159,15 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       remove: { index: 'some-type-index__*', alias: 'some-type-index__search' },
     });
     expect(aliasActions[1]).toStrictEqual({
+      add: {
+        indices: [
+          'some-type-index__123tobedeleted',
+          'some-type-index__456tobedeleted',
+        ],
+        alias: 'some-type-index__search_removable',
+      },
+    });
+    expect(aliasActions[2]).toStrictEqual({
       add: { index: createdIndex, alias: 'some-type-index__search' },
     });
 
@@ -193,12 +210,12 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     catSpy = jest.fn().mockReturnValue([]);
     mock.clear({
       method: 'GET',
-      path: '/_cat/aliases/some-type-index__search',
+      path: '/_cat/aliases/some-type-index__search%2Csome-type-index__search_removable',
     });
     mock.add(
       {
         method: 'GET',
-        path: '/_cat/aliases/some-type-index__search',
+        path: '/_cat/aliases/some-type-index__search%2Csome-type-index__search_removable',
       },
       catSpy,
     );
