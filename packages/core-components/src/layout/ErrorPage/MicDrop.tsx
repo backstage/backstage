@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import MicDropSvgUrl from './mic-drop.svg';
 
 const useStyles = makeStyles(
@@ -39,11 +40,21 @@ const useStyles = makeStyles(
 
 export type MicDropClassKey = 'micDrop';
 
+const publicPath = () => {
+  if (typeof __webpack_public_path__ !== 'undefined') {
+    return __webpack_public_path__;
+  } else if (process.env.ASSET_PATH) {
+    return process.env.ASSET_PATH;
+  }
+  return '/';
+};
+
 export const MicDrop = () => {
   const classes = useStyles();
+  const customSvg = useApi(configApiRef).getOptionalString('app.micDropSvg');
   return (
     <img
-      src={MicDropSvgUrl}
+      src={customSvg ? `${publicPath()}${customSvg}` : MicDropSvgUrl}
       className={classes.micDrop}
       alt="Girl dropping mic from her hands"
     />
