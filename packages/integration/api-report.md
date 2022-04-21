@@ -299,6 +299,11 @@ export function getGerritFileContentsApiUrl(
 ): string;
 
 // @public
+export function getGerritProjectsApiUrl(
+  config: GerritIntegrationConfig,
+): string;
+
+// @public
 export function getGerritRequestOptions(config: GerritIntegrationConfig): {
   headers?: Record<string, string>;
 };

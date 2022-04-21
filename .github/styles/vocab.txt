@@ -106,6 +106,7 @@ Firekube
 Firestore
 Fiverr
 Francesco
+gerrit
 Gerrit
 gitbeaker
 github

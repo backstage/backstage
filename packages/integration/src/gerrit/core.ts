@@ -97,6 +97,7 @@ export function getAuthenticationPrefix(
 /**
  * Return the url to fetch the contents of a file using the Gerrit API.
  *
+ * @param config - A Gerrit provider config.
  * @param url - An url pointing to a file in git.
  * @public
  */
@@ -111,6 +112,16 @@ export function getGerritFileContentsApiUrl(
   )}projects/${encodeURIComponent(
     project,
   )}/branches/${branch}/files/${encodeURIComponent(filePath)}/content`;
+}
+
+/**
+ * Return the url to query available projects using the Gerrit API.
+ *
+ * @param config - A Gerrit provider config.
+ * @public
+ */
+export function getGerritProjectsApiUrl(config: GerritIntegrationConfig) {
+  return `${config.baseUrl}${getAuthenticationPrefix(config)}projects/`;
 }
 
 /**
