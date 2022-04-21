@@ -32,17 +32,32 @@ import {
   TestApiProviderProps,
 } from '@backstage/test-utils';
 
-import { TechDocsEntityMetadata, TechDocsMetadata } from '../types';
-import { TechDocsReaderPage } from '../reader/components/TechDocsReaderPage';
-import { TechDocsAddons } from '@backstage/techdocs-addons';
+import {
+  TechDocsEntityMetadata,
+  TechDocsMetadata,
+  TechDocsAddons,
+} from '@backstage/plugin-techdocs-react';
+import { TechDocsReaderPage } from '@backstage/plugin-techdocs';
 
-type RecursivePartial<T> = {
+/**
+ * Allow only passing single values in nested objects to mock metadata
+ * @alpha
+ */
+export type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
 
-type Apis = TestApiProviderProps<any>['apis'];
+/**
+ * Custom API ref and implementation to be passed to the TechDocs addons environment
+ * @alpha
+ */
+export type Apis = TestApiProviderProps<any>['apis'];
 
-export type TechDocsAddonsBuilder = {
+/**
+ * Provided values to mock a TechDocs addons environment
+ * @alpha
+ */
+export type TechDocsAddonBuilderOptions = {
   dom: ReactElement;
   entity: RecursivePartial<TechDocsEntityMetadata>;
   metadata: RecursivePartial<TechDocsMetadata>;
@@ -51,7 +66,7 @@ export type TechDocsAddonsBuilder = {
   path: string;
 };
 
-const defaultOptions: TechDocsAddonsBuilder = {
+const defaultOptions: TechDocsAddonBuilderOptions = {
   dom: <></>,
   entity: {},
   metadata: {},
@@ -79,8 +94,12 @@ const defaultDom = (
   </html>
 );
 
+/**
+ * Test utility to insert addons into a testable TechDocs environment
+ * @alpha
+ */
 export class TechDocsAddonBuilder {
-  private options: TechDocsAddonsBuilder = defaultOptions;
+  private options: TechDocsAddonBuilderOptions = defaultOptions;
   private addons: ReactElement[];
 
   static buildAddonsInTechDocs(addons: ReactElement[]) {

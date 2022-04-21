@@ -291,21 +291,7 @@ export { techdocsPlugin as plugin };
 export { techdocsPlugin };
 
 // @public
-export const TechDocsReaderLayout: ({
-  withSearch,
-  withHeader,
-}: TechDocsReaderLayoutProps) => JSX.Element;
-
-// @public
-export type TechDocsReaderLayoutProps = {
-  withHeader?: boolean;
-  withSearch?: boolean;
-};
-
-// @public
-export const TechDocsReaderPage: (
-  props: TechDocsReaderPageProps,
-) => JSX.Element;
+export const TechDocsReaderPage: (props: TechDocsReaderPageProps) => any;
 
 // @public
 export const TechDocsReaderPageContent: (
@@ -333,6 +319,8 @@ export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
 
 // @public (undocumented)
 export type TechDocsReaderPageProps = {
+  withHeader?: boolean;
+  withSearch?: boolean;
   entityRef?: CompoundEntityRef;
   children?: TechDocsReaderPageRenderFunction | ReactNode;
 };
