@@ -11,7 +11,11 @@ import { Logger } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
+  createScheduledLocalTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
+  scheduleLocalTask(
+    task: TaskScheduleDefinition & TaskInvocationDefinition,
+  ): Promise<void>;
   scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void>;

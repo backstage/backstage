@@ -175,6 +175,21 @@ export interface PluginTaskScheduler {
   ): Promise<void>;
 
   /**
+   * Schedules a task function for running only locally on this machine, without
+   * any form of coordination, locking or concurrency control across hosts. This
+   * convenience method performs both the scheduling and invocation in one go.
+   *
+   * @remarks
+   *
+   * If a task with this ID was already registered, a ConflictError is thrown.
+   *
+   * @param task - The task definition
+   */
+  scheduleLocalTask(
+    task: TaskScheduleDefinition & TaskInvocationDefinition,
+  ): Promise<void>;
+
+  /**
    * Creates a scheduled but dormant recurring task, ready to be launched at a
    * later time.
    *
@@ -187,6 +202,21 @@ export interface PluginTaskScheduler {
    * @param schedule - The task schedule
    */
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
+
+  /**
+   * Creates a local (without any form of coordination, locking or concurrency
+   * control across hosts) scheduled but dormant recurring task, ready to be
+   * launched at a later time.
+   *
+   * @remarks
+   *
+   * This method is useful for pre-creating a schedule in outer code to be
+   * passed into an inner implementation, such that the outer code controls
+   * scheduling while inner code controls implementation.
+   *
+   * @param schedule - The task schedule
+   */
+  createScheduledLocalTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
 }
 
 function isValidOptionalDurationString(d: string | undefined): boolean {
