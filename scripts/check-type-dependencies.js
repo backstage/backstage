@@ -73,16 +73,20 @@ function shouldCheckTypes(pkg) {
   );
 }
 
-function findAllDeps(declSrc) {
+function findImportedDeps(declSrc) {
   const importedDeps = (declSrc.match(/from '.*'/g) || [])
     .map(match => match.replace(/from '(.*)'/, '$1'))
     .filter(n => !n.startsWith('.'));
+  return Array.from(new Set(importedDeps));
+}
+
+function findReferencedDeps(declSrc) {
   const referencedDeps = (declSrc.match(/types=".*"/g) || [])
     .map(match => match.replace(/types="(.*)"/, '$1'))
     .filter(n => !n.startsWith('.'))
     // We allow references to these without an explicit dependency.
     .filter(n => !['node', 'react'].includes(n));
-  return Array.from(new Set([...importedDeps, ...referencedDeps]));
+  return Array.from(new Set(referencedDeps));
 }
 
 /**
@@ -94,12 +98,13 @@ function checkTypes(pkg) {
     resolvePath(pkg.dir, 'dist/index.d.ts'),
     'utf8',
   );
-  const allDeps = findAllDeps(typeDecl);
-  const deps = Array.from(new Set(allDeps));
+  const importedDeps = findImportedDeps(typeDecl);
+  const referencedDeps = findReferencedDeps(typeDecl);
 
   const errors = [];
-  const typeDeps = [];
-  for (const dep of deps) {
+  // Referenced deps always need to exist
+  const typeDeps = [...referencedDeps];
+  for (const dep of importedDeps) {
     try {
       const typeDep = findTypesPackage(dep, pkg);
       if (typeDep) {
