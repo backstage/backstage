@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/techdocs-addons-contrib"
+    "directory": "plugins/techdocs-module-addons-contrib"
   },
   "keywords": [
     "backstage",
