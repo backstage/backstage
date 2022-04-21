@@ -55,6 +55,7 @@ export function createPublishGithubAction(options: {
     allowMergeCommit?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
+    requiredStatusCheckContexts?: string[];
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<{
       username: string;
@@ -90,6 +91,15 @@ export function createPublishGithubAction(options: {
             description:
               'Require an approved review in PR including files with a designated Code Owner',
             type: 'boolean',
+          },
+          requiredStatusCheckContexts: {
+            title: 'Required Status Check Contexts',
+            description:
+              'The list of status checks to require in order to merge into this branch',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
           },
           repoVisibility: {
             title: 'Repository Visibility',
@@ -196,6 +206,7 @@ export function createPublishGithubAction(options: {
         description,
         access,
         requireCodeOwnerReviews = false,
+        requiredStatusCheckContexts = [],
         repoVisibility = 'private',
         defaultBranch = 'master',
         deleteBranchOnMerge = false,
@@ -342,6 +353,7 @@ export function createPublishGithubAction(options: {
           logger: ctx.logger,
           defaultBranch,
           requireCodeOwnerReviews,
+          requiredStatusCheckContexts,
         });
       } catch (e) {
         assertError(e);
