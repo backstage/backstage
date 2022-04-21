@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { act } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -144,6 +144,39 @@ describe('<TechDocsReaderPage />', () => {
         rendered.container.querySelector('article'),
       ).not.toBeInTheDocument();
       expect(rendered.getByText('techdocs reader page')).toBeInTheDocument();
+    });
+  });
+
+  it('should render a techdocs reader page with children being function', async () => {
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPage
+            entityRef={{
+              name: 'test-name',
+              namespace: 'test-namespace',
+              kind: 'test',
+            }}
+          >
+            {({ techdocsMetadataValue }) => (
+              <div>{techdocsMetadataValue?.site_name}</div>
+            )}
+          </TechDocsReaderPage>
+        </Wrapper>,
+        {
+          mountedRoutes,
+        },
+      );
+      expect(
+        rendered.container.querySelector('header'),
+      ).not.toBeInTheDocument();
+      expect(
+        rendered.container.querySelector('article'),
+      ).not.toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(rendered.getByText('test-site-name')).toBeInTheDocument();
+      });
     });
   });
 });
