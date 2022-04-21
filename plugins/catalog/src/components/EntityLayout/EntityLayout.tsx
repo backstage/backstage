@@ -261,6 +261,12 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {error && (
         <Content>
+          <Alert severity="error">{error.toString()}</Alert>
+        </Content>
+      )}
+
+      {!loading && !error && !entity && (
+        <Content>
           {NotFoundComponent ? (
             NotFoundComponent
           ) : (
@@ -272,18 +278,6 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               .
             </WarningPanel>
           )}
-        </Content>
-      )}
-
-      {!loading && !error && !entity && (
-        <Content>
-          <WarningPanel title="Entity not found">
-            There is no {kind} with the requested{' '}
-            <Link to="https://backstage.io/docs/features/software-catalog/references">
-              kind, namespace, and name
-            </Link>
-            .
-          </WarningPanel>
         </Content>
       )}
 
