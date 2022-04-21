@@ -16,8 +16,9 @@
 import React from 'react';
 import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
 import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
-import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { GrpcApiDefinitionWidget } from '../GrpcApiDefinitionWidget';
+import { MarkdownApiDefinitionWidget } from '../MarkdownApiDefinitionWidget';
+import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 
 export type ApiDefinitionWidget = {
   type: string;
@@ -57,6 +58,13 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       title: 'gRPC',
       component: definition => (
         <GrpcApiDefinitionWidget definition={definition} />
+      ),
+    },
+    {
+      type: 'markdown',
+      title: 'Markdown',
+      component: definition => (
+        <MarkdownApiDefinitionWidget definition={definition} />
       ),
     },
   ];

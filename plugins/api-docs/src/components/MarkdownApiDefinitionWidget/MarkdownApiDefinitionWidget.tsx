@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-export * from './ApiExplorerPage';
-export * from './ApiDefinitionCard';
-export * from './ApisCards';
-export * from './AsyncApiDefinitionWidget';
-export * from './ComponentsCards';
-export * from './GraphQlDefinitionWidget';
-export * from './MarkdownApiDefinitionWidget';
-export * from './OpenApiDefinitionWidget';
-export * from './PlainApiDefinitionWidget';
+import React from 'react';
+import { MarkdownContent } from '@backstage/core-components';
+
+export type MarkdownApiDefinitionWidgetProps = {
+  definition: any;
+};
+
+export const MarkdownApiDefinitionWidget = (
+  props: MarkdownApiDefinitionWidgetProps,
+) => {
+  return (
+    <MarkdownContent content={props.definition} dialect="gfm" trustedHtml />
+  );
+};

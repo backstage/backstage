@@ -30,6 +30,7 @@ import {
 import asyncapiApiEntity from './asyncapi-example-api.yaml';
 import graphqlApiEntity from './graphql-example-api.yaml';
 import invalidLanguageApiEntity from './invalid-language-example-api.yaml';
+import markdownApiEntity from './markdown-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
 
@@ -38,6 +39,7 @@ const mockEntities = [
   asyncapiApiEntity,
   graphqlApiEntity,
   invalidLanguageApiEntity,
+  markdownApiEntity,
   otherApiEntity,
 ] as unknown as Entity[];
 
@@ -131,6 +133,19 @@ createDevApp()
         <Header title="Other" />
         <Content>
           <EntityProvider entity={otherApiEntity as any as Entity}>
+            <EntityApiDefinitionCard />
+          </EntityProvider>
+        </Content>
+      </Page>
+    ),
+  })
+  .addPage({
+    title: 'Markdown',
+    element: (
+      <Page themeId="home">
+        <Header title="Markdown" />
+        <Content>
+          <EntityProvider entity={markdownApiEntity as any as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
