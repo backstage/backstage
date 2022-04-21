@@ -266,6 +266,7 @@ const symbolTable = {
     'useRouteRef',
     'useRouteRefParams',
     'withApis',
+    'openAMAuthApiRef',
   ],
 };
 

@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-export * from './github';
-export * from './gitlab';
-export * from './google';
-export * from './oauth2';
-export * from './okta';
-export * from './saml';
-export * from './microsoft';
-export * from './onelogin';
-export * from './bitbucket';
-export * from './atlassian';
-export * from './openam';
-export type { OAuthApiCreateOptions, AuthApiCreateOptions } from './types';
+import {
+  ProfileInfo,
+  BackstageIdentityResponse,
+} from '@backstage/core-plugin-api';
+
+export type { OpenAMCreateOptions } from './OpenAMAuth';
+/**
+ * Session information for OpenAM auth.
+ *
+ * @public
+ */
+export type OpenAMSession = {
+  providerInfo: {
+    idToken: string;
+    accessToken: string;
+    scopes: Set<string>;
+    expiresAt: Date;
+  };
+  profile: ProfileInfo;
+  backstageIdentity: BackstageIdentityResponse;
+};

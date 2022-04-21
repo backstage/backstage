@@ -431,3 +431,9 @@ export const atlassianAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.atlassian',
 });
+
+export const openAMAuthApiRef: ApiRef<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+> = createApiRef({
+  id: 'core.auth.openam',
+});

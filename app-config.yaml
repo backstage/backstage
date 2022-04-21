@@ -378,6 +378,13 @@ auth:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
         scopes: ${AUTH_ATLASSIAN_SCOPES}
+    openam:
+      development:
+        clientId: ${AUTH_OPENAM_CLIENT_ID}
+        clientSecret: ${AUTH_OPENAM_CLIENT_SECRET}
+        callbackUrl: ${AUTH_OPENAM_CALLBACK_URL}
+        authorizationUrl: ${AUTH_OPENAM_AUTHORIZATION_URL}
+        tokenUrl: ${AUTH_OPENAM_TOKEN_URL}
 costInsights:
   engineerCost: 200000
   products:

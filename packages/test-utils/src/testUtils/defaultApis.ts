@@ -31,6 +31,7 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
+  OpenAMAuth,
 } from '@backstage/core-app-api';
 
 import {
@@ -50,6 +51,7 @@ import {
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  openAMAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 // TODO(Rugvip): This is just a copy of the createApp default APIs for now, but
@@ -189,6 +191,21 @@ export const defaultApis = [
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
       return AtlassianAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
+  }),
+  createApiFactory({
+    api: openAMAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return OpenAMAuth.create({
         discoveryApi,
         oauthRequestApi,
         environment: configApi.getOptionalString('auth.environment'),

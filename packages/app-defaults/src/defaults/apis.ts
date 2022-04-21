@@ -33,6 +33,7 @@ import {
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
+  OpenAMAuth,
 } from '@backstage/core-app-api';
 
 import {
@@ -54,6 +55,7 @@ import {
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  openAMAuthApiRef,
 } from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
@@ -243,5 +245,20 @@ export const apis = [
     },
     factory: ({ config, discovery, identity }) =>
       IdentityPermissionApi.create({ config, discovery, identity }),
+  }),
+  createApiFactory({
+    api: openAMAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) => {
+      return OpenAMAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      });
+    },
   }),
 ];

@@ -25,6 +25,7 @@ import {
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
   oneloginAuthApiRef,
+  openAMAuthApiRef,
 } from '@backstage/core-plugin-api';
 
 type Props = {
@@ -94,6 +95,14 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
         title="Atlassian"
         description="Provides authentication towards Atlassian APIs"
         apiRef={atlassianAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('openam') && (
+      <ProviderSettingsItem
+        title="OpenAM"
+        description="Provides authentication towards OpenAM APIs"
+        apiRef={openAMAuthApiRef}
         icon={Star}
       />
     )}
