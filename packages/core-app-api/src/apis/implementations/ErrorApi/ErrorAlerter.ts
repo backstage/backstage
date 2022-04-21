@@ -17,8 +17,10 @@ import {
   ErrorApi,
   ErrorApiError,
   ErrorApiErrorContext,
-  AlertApi,
+  NotificationApi,
+  Notification,
 } from '@backstage/core-plugin-api';
+import { v4 as uuid } from 'uuid';
 
 /**
  * Decorates an ErrorApi by also forwarding error messages
@@ -28,13 +30,23 @@ import {
  */
 export class ErrorAlerter implements ErrorApi {
   constructor(
-    private readonly alertApi: AlertApi,
+    private readonly notificationApi: NotificationApi,
     private readonly errorApi: ErrorApi,
   ) {}
 
   post(error: ErrorApiError, context?: ErrorApiErrorContext) {
     if (!context?.hidden) {
-      this.alertApi.post({ message: error.message, severity: 'error' });
+      const alertNotification: Notification = {
+        kind: 'alert',
+        metadata: {
+          title: '',
+          message: error.message,
+          uuid: uuid(),
+          timestamp: Date.now(),
+          severity: 'error',
+        },
+      };
+      this.notificationApi.post(alertNotification);
     }
 
     return this.errorApi.post(error, context);

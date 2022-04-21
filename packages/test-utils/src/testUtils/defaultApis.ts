@@ -57,6 +57,7 @@ import {
   oidcAuthApiRef,
   bitbucketAuthApiRef,
   atlassianAuthApiRef,
+  notificationApiRef,
 } from '@backstage/core-plugin-api';
 
 // TODO(Rugvip): This is just a copy of the createApp default APIs for now, but
@@ -70,13 +71,20 @@ export const defaultApis = [
         `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
       ),
   }),
-  createApiFactory(alertApiRef, new AlertApiForwarder()),
+  createApiFactory({
+    api: alertApiRef,
+    deps: { notificationApi: notificationApiRef },
+    factory: ({ notificationApi }) => new AlertApiForwarder(notificationApi),
+  }),
   createApiFactory(analyticsApiRef, new NoOpAnalyticsApi()),
   createApiFactory({
     api: errorApiRef,
-    deps: { alertApi: alertApiRef },
-    factory: ({ alertApi }) => {
-      const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+    deps: { notificationApi: notificationApiRef },
+    factory: ({ notificationApi }) => {
+      const errorApi = new ErrorAlerter(
+        notificationApi,
+        new ErrorApiForwarder(),
+      );
       UnhandledErrorForwarder.forward(errorApi, { hidden: false });
       return errorApi;
     },

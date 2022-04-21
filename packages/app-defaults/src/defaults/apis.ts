@@ -80,8 +80,8 @@ export const apis = [
   }),
   createApiFactory({
     api: alertApiRef,
-    deps: {},
-    factory: () => new AlertApiForwarder(),
+    deps: { notificationApi: notificationApiRef },
+    factory: ({ notificationApi }) => new AlertApiForwarder(notificationApi),
   }),
   createApiFactory({
     api: notificationApiRef,
@@ -95,9 +95,12 @@ export const apis = [
   }),
   createApiFactory({
     api: errorApiRef,
-    deps: { alertApi: alertApiRef },
-    factory: ({ alertApi }) => {
-      const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+    deps: { notificationApi: notificationApiRef },
+    factory: ({ notificationApi }) => {
+      const errorApi = new ErrorAlerter(
+        notificationApi,
+        new ErrorApiForwarder(),
+      );
       UnhandledErrorForwarder.forward(errorApi, { hidden: false });
       return errorApi;
     },

@@ -84,9 +84,9 @@ For example, this is the default
 ```ts
 createApiFactory({
   api: errorApiRef,
-  deps: { alertApi: alertApiRef },
-  factory: ({ alertApi }) => {
-    const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+  deps: { notificationApi: notificationApiRef },
+  factory: ({ notificationApi }) => {
+    const errorApi = new ErrorAlerter(notificationApi, new ErrorApiForwarder());
     UnhandledErrorForwarder.forward(errorApi, { hidden: false });
     return errorApi;
   },

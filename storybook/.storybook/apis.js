@@ -11,6 +11,7 @@ import {
   Auth0Auth,
   ConfigReader,
   LocalStorageFeatureFlags,
+  NotificationApiForwarder,
 } from '@backstage/core-app-api';
 
 import {
@@ -30,8 +31,9 @@ import {
 
 const configApi = new ConfigReader({});
 const featureFlagsApi = new LocalStorageFeatureFlags();
-const alertApi = new AlertApiForwarder();
-const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+const notificationApi = new NotificationApiForwarder();
+const alertApi = new AlertApiForwarder(notificationApi);
+const errorApi = new ErrorAlerter(notificationApi, new ErrorApiForwarder());
 const identityApi = {
   getUserId: () => 'guest',
   getProfile: () => ({ email: 'guest@example.com' }),

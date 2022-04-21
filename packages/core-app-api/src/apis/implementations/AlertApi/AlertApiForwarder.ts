@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { AlertApi, AlertMessage } from '@backstage/core-plugin-api';
+import {
+  AlertApi,
+  AlertMessage,
+  NotificationApi,
+  Notification,
+} from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { PublishSubject } from '../../../lib/subjects';
+import { v4 as uuid } from 'uuid';
 
 /**
  * Base implementation for the AlertApi that simply forwards alerts to consumers.
@@ -26,8 +32,30 @@ import { PublishSubject } from '../../../lib/subjects';
 export class AlertApiForwarder implements AlertApi {
   private readonly subject = new PublishSubject<AlertMessage>();
 
+  constructor(private readonly notificationApi: NotificationApi) {
+    notificationApi.notification$().subscribe(notification => {
+      if (notification.kind === 'alert') {
+        const alert: AlertMessage = {
+          message: notification.metadata.message,
+          severity: notification.spec?.severity,
+        };
+        this.subject.next(alert);
+      }
+    });
+  }
+
   post(alert: AlertMessage) {
-    this.subject.next(alert);
+    const alertNotification: Notification = {
+      kind: 'alert',
+      metadata: {
+        title: '',
+        message: alert.message,
+        uuid: uuid(),
+        timestamp: Date.now(),
+        severity: alert.severity,
+      },
+    };
+    this.notificationApi.post(alertNotification);
   }
 
   alert$(): Observable<AlertMessage> {
