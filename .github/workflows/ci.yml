@@ -10,46 +10,46 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     strategy:
       matrix:
         node-version: [14.x, 16.x]
 
-    services:
-      postgres13:
-        image: postgres:13
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432/tcp
-      postgres9:
-        image: postgres:9
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432/tcp
-      mysql8:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        options: >-
-          --health-cmd "mysqladmin ping -h localhost"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 3306/tcp
+    # services:
+    #   postgres13:
+    #     image: postgres:13
+    #     env:
+    #       POSTGRES_PASSWORD: postgres
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     ports:
+    #       - 5432/tcp
+    #   postgres9:
+    #     image: postgres:9
+    #     env:
+    #       POSTGRES_PASSWORD: postgres
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     ports:
+    #       - 5432/tcp
+    #   mysql8:
+    #     image: mysql:8
+    #     env:
+    #       MYSQL_ROOT_PASSWORD: root
+    #     options: >-
+    #       --health-cmd "mysqladmin ping -h localhost"
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     ports:
+    #       - 3306/tcp
 
     env:
       CI: true
