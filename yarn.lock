@@ -1752,12 +1752,23 @@
     "@lezer/common" "^0.15.5"
     "@lezer/lr" "^0.15.0"
 
-"@codemirror/legacy-modes@^0.19.0":
-  version "0.19.1"
-  resolved "https://registry.npmjs.org/@codemirror/legacy-modes/-/legacy-modes-0.19.1.tgz#7dc3b5df1842060648f75764ab6919fcfce3ea1a"
-  integrity sha512-vYPLsD/ON+3SXhlGj9Qb3fpFNNU3Ya/AtDiv/g3OyqVzhh5vs5rAnOvk8xopGWRwppdhlNPD9VyXjiOmZUQtmQ==
+"@codemirror/language@^0.20.0":
+  version "0.20.0"
+  resolved "https://registry.npmjs.org/@codemirror/language/-/language-0.20.0.tgz#959967901e780c1612934cf5d6df3d7b7e5bf9f0"
+  integrity sha512-lPsF5Y2ZFd5lZ9+7HXTxu57Po3dms3+7q2iAffzrbis2wyJo0lzi/j2312EKStEzwd0pGGpvrUk2dEd333N2jw==
   dependencies:
-    "@codemirror/stream-parser" "^0.19.0"
+    "@codemirror/state" "^0.20.0"
+    "@codemirror/view" "^0.20.0"
+    "@lezer/common" "^0.16.0"
+    "@lezer/highlight" "^0.16.0"
+    "@lezer/lr" "^0.16.0"
+
+"@codemirror/legacy-modes@^0.20.0":
+  version "0.20.0"
+  resolved "https://registry.npmjs.org/@codemirror/legacy-modes/-/legacy-modes-0.20.0.tgz#a1cea5eed05fa09a0cac4a39f41e362a136da5ea"
+  integrity sha512-SYllodnzD8OI6Y6NoFzCv+77cU9aTdfqDO0Zn8j5PbjUIAD+pIofwHAvecd9/ePLAICr+EYCEuqUxldHAR+pLQ==
+  dependencies:
+    "@codemirror/language" "^0.20.0"
 
 "@codemirror/lint@^0.19.0":
   version "0.19.6"
@@ -1825,7 +1836,12 @@
   dependencies:
     "@codemirror/text" "^0.19.0"
 
-"@codemirror/stream-parser@^0.19.0", "@codemirror/stream-parser@^0.19.2", "@codemirror/stream-parser@^0.19.6":
+"@codemirror/state@^0.20.0":
+  version "0.20.0"
+  resolved "https://registry.npmjs.org/@codemirror/state/-/state-0.20.0.tgz#3343d209169813b0152b77361cd78bea01549a73"
+  integrity sha512-R3XrAWCS5Xm9lx+4pDET4EUPEg+8bDfAa5zoOFIhx+VChsfew9Vy33dAjCXS5ES4Q8UecW4WM4UudmUFpZ+86A==
+
+"@codemirror/stream-parser@^0.19.2", "@codemirror/stream-parser@^0.19.6":
   version "0.19.9"
   resolved "https://registry.npmjs.org/@codemirror/stream-parser/-/stream-parser-0.19.9.tgz#34955ea91a8047cf72abebd5ce28f0d332aeca48"
   integrity sha512-WTmkEFSRCetpk8xIOvV2yyXdZs3DgYckM0IP7eFi4ewlxWnJO/H4BeJZLs4wQaydWsAqTQoDyIwNH1BCzK5LUQ==
@@ -1867,6 +1883,15 @@
     "@codemirror/rangeset" "^0.19.5"
     "@codemirror/state" "^0.19.3"
     "@codemirror/text" "^0.19.0"
+    style-mod "^4.0.0"
+    w3c-keyname "^2.2.4"
+
+"@codemirror/view@^0.20.0":
+  version "0.20.1"
+  resolved "https://registry.npmjs.org/@codemirror/view/-/view-0.20.1.tgz#071f192b2586e3122f1b8b2a9edcd06709a31e9d"
+  integrity sha512-DpTtg/w4LxgYmEYq67LY4k7ZDRJ97ppeQVg0+VsUi7CqHjfedi3zmjiUq9gA9is5DKIpGARDKyHigslpw3cX5w==
+  dependencies:
+    "@codemirror/state" "^0.20.0"
     style-mod "^4.0.0"
     w3c-keyname "^2.2.4"
 
@@ -4044,12 +4069,31 @@
   resolved "https://registry.npmjs.org/@lezer/common/-/common-0.15.10.tgz#662da668f46244fb20bfaada67b43b3d0463b344"
   integrity sha512-vlr+be73zTDoQBIknBVOh/633tmbQcjxUu9PIeVeYESeBK3V6TuBW96RRFg93Y2cyK9lglz241gOgSn452HFvA==
 
+"@lezer/common@^0.16.0":
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/@lezer/common/-/common-0.16.0.tgz#b6023a0a682b0b7676d0e7f0e0838f71bde39fcd"
+  integrity sha512-H6sPCku+asKWYaNjwfQ1Uvcay9UP1Pdzu4qpy8GtRZ0cKT2AAGnj9MQGiRtY18MDntvhYRJxNGv7FNWOSV/e8A==
+
+"@lezer/highlight@^0.16.0":
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/@lezer/highlight/-/highlight-0.16.0.tgz#95f7b7ee3c32c8a0f6ce499c085e8b1f927ffbdc"
+  integrity sha512-iE5f4flHlJ1g1clOStvXNLbORJoiW4Kytso6ubfYzHnaNo/eo5SKhxs4wv/rtvwZQeZrK3we8S9SyA7OGOoRKQ==
+  dependencies:
+    "@lezer/common" "^0.16.0"
+
 "@lezer/lr@^0.15.0":
   version "0.15.5"
   resolved "https://registry.npmjs.org/@lezer/lr/-/lr-0.15.5.tgz#4bce44169c441d9dda7be398f5202ea65c5f1138"
   integrity sha512-DEcLyhdmBxD1foQe7RegLrSlfS/XaTMGLkO5evkzHWAQKh/JnFWp7j7iNB7s2EpxzRrBCh0U+W7JDCeFhv2mng==
   dependencies:
     "@lezer/common" "^0.15.0"
+
+"@lezer/lr@^0.16.0":
+  version "0.16.1"
+  resolved "https://registry.npmjs.org/@lezer/lr/-/lr-0.16.1.tgz#abe8c538d3f1a811ce5731847e3d0470c7709dcd"
+  integrity sha512-RuRD84dWY9If8BanfaaWNe0YhRdYWtni92GpB4C4/7JgHyAIfdkJz7miBjgILm3gOsBjJsJh56vb1ckxSQEWBg==
+  dependencies:
+    "@lezer/common" "^0.16.0"
 
 "@manypkg/find-root@^1.1.0":
   version "1.1.0"
