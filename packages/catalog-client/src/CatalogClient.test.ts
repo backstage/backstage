@@ -30,7 +30,8 @@ const discoveryApi: DiscoveryApi = {
   },
 };
 
-describe('CatalogClient', () => {
+// eslint-disable-next-line jest/no-focused-tests
+describe.only('CatalogClient', () => {
   let client: CatalogClient;
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
