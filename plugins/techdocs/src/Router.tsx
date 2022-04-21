@@ -18,7 +18,6 @@ import React, { PropsWithChildren } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import { FlatRoutes } from '@backstage/core-app-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { MissingAnnotationEmptyState } from '@backstage/core-components';
 
@@ -69,10 +68,8 @@ export const EmbeddedDocsRouter = (props: PropsWithChildren<{}>) => {
   }
 
   return (
-    <FlatRoutes>
-      <Route path="/*" element={<EntityPageDocs entity={entity} />}>
-        {children}
-      </Route>
-    </FlatRoutes>
+    <Routes>
+      <Route element={<EntityPageDocs entity={entity} />}>{children}</Route>
+    </Routes>
   );
 };
