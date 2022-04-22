@@ -27,13 +27,13 @@ const githubPullRequestsBoardPlugin = createPlugin({
   },
 });
 
-export const TeamPullRequestsTable = githubPullRequestsBoardPlugin.provide(
+export const TeamPullRequestsBoard = githubPullRequestsBoardPlugin.provide(
   createComponentExtension({
-    name: 'TeamPullRequestsTable',
+    name: 'TeamPullRequestsBoard',
     component: {
       lazy: () =>
-        import('./components/TeamPullRequestsTable').then(
-          m => m.TeamPullRequestsTable,
+        import('./components/TeamPullRequestsBoard').then(
+          m => m.TeamPullRequestsBoard,
         ),
     },
   }),

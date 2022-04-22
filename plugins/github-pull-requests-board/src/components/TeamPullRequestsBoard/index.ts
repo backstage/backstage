@@ -13,13 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TeamPullRequestsBoard, TeamPullRequestsPage } from './plugin';
-
-describe('github-pull-requests-board', () => {
-  it('should export TeamPullRequestsBoard', () => {
-    expect(TeamPullRequestsBoard).toBeDefined();
-  });
-  it('should export TeamPullRequestsPage', () => {
-    expect(TeamPullRequestsPage).toBeDefined();
-  });
-});
+export { default as TeamPullRequestsBoard } from './TeamPullRequestsBoard';

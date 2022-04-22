@@ -141,6 +141,7 @@ import {
   EntityNewRelicDashboardCard,
 } from '@backstage/plugin-newrelic-dashboard';
 import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
+import { TeamPullRequestsPage } from '@backstage/plugin-github-pull-requests-board';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
@@ -642,6 +643,9 @@ const groupPage = (
           <EntityMembersListCard />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
+      <TeamPullRequestsPage />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
