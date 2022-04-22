@@ -19,7 +19,8 @@ To use this integration, add at least one Gerrit configuration to your root `app
 integrations:
   gerrit:
     - host: gerrit.company.com
-      apiBaseUrl: https://gerrit.company.com/gerrit
+      baseUrl: https://gerrit.company.com/gerrit
+      cloneUrl: https://gerrit.company.com/clone
       gitilesBaseUrl: https://gerrit.company.com/gitiles
       username: ${GERRIT_USERNAME}
       password: ${GERRIT_PASSWORD}
@@ -27,12 +28,14 @@ integrations:
 
 Directly under the `gerrit` key is a list of provider configurations, where
 you can list the Gerrit instances you want to fetch data from. Each entry is
-a structure with up to four elements:
+a structure with up to six elements:
 
 - `host`: The host of the Gerrit instance, e.g. `gerrit.company.com`.
-- `apiBaseUrl` (optional): Needed if the Gerrit instance is not reachable at
+- `baseUrl` (optional): Needed if the Gerrit instance is not reachable at
   the base of the `host` option (e.g. `https://gerrit.company.com`) set the
   address here. This is the address that you would open in a browser.
+- `cloneUrl` (optional): The base url for HTTP clones. Will default to `baseUrl` if
+  not set. The address used to clone a repo is the `cloneUrl` plus the repo name.
 - `gitilesBaseUrl` (optional): This is needed for creating a valid user-friendly url
   that can be used for browsing the content of the provider. If not set a default
   value will be created in the same way as the "baseUrl" option. There is no

@@ -195,6 +195,7 @@ export class GerritIntegration implements ScmIntegration {
 export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
+  cloneUrl?: string;
   gitilesBaseUrl?: string;
   username?: string;
   password?: string;
@@ -291,6 +292,18 @@ export function getBitbucketServerRequestOptions(
 ): {
   headers: Record<string, string>;
 };
+
+// @public
+export function getGerritBranchApiUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGerritCloneRepoUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): string;
 
 // @public
 export function getGerritFileContentsApiUrl(
@@ -457,6 +470,16 @@ export interface IntegrationsByType {
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 }
+
+// @public
+export function parseGerritGitilesUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): {
+  branch: string;
+  filePath: string;
+  project: string;
+};
 
 // @public
 export function parseGerritJsonResponse(response: Response): Promise<unknown>;

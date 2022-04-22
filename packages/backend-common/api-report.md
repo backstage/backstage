@@ -302,13 +302,19 @@ export type FromReadableArrayOptions = Array<{
 
 // @public
 export class GerritUrlReader implements UrlReader {
-  constructor(integration: GerritIntegration);
+  constructor(
+    integration: GerritIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+    workDir: string,
+  );
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)

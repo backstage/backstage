@@ -14,23 +14,35 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
-import { getVoidLogger } from '../logging';
-import { DefaultReadTreeResponseFactory } from './tree';
-import { UrlReaderPredicateTuple } from './types';
+import { NotModifiedError, NotFoundError } from '@backstage/errors';
 import {
   GerritIntegration,
   readGerritIntegrationConfig,
 } from '@backstage/integration';
+import { JsonObject } from '@backstage/types';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import mockFs from 'mock-fs';
+import fs from 'fs-extra';
+import path from 'path';
+import { getVoidLogger } from '../logging';
+import { UrlReaderPredicateTuple } from './types';
+import { DefaultReadTreeResponseFactory } from './tree';
 import { GerritUrlReader } from './GerritUrlReader';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
+
+jest.mock('../scm', () => ({
+  Git: {
+    fromAuth: () => ({
+      clone: jest.fn(() => Promise.resolve({})),
+    }),
+  },
+}));
 
 const gerritProcessor = new GerritUrlReader(
   new GerritIntegration(
@@ -40,6 +52,8 @@ const gerritProcessor = new GerritUrlReader(
       }),
     ),
   ),
+  { treeResponseFactory },
+  '/tmp',
 );
 
 const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
@@ -53,6 +67,10 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
 describe('GerritUrlReader', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
+
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
 
   describe('reader factory', () => {
     it('creates a reader.', () => {
@@ -103,7 +121,7 @@ describe('GerritUrlReader', () => {
       expect(predicate(new URL('https://gerrit-review.com/path'))).toBe(false);
     });
 
-    it('returns false for  host.', () => {
+    it('returns false for host.', () => {
       expect(predicate(new URL('https://gerrit.com/path'))).toBe(true);
     });
   });
@@ -168,6 +186,106 @@ describe('GerritUrlReader', () => {
           ' could not be read as https://gerrit.com/projects/web%2Fproject' +
           '/branches/master/files/LICENSE/content, 500 Error!!!',
       );
+    });
+  });
+
+  describe('readTree', () => {
+    const branchAPIUrl =
+      'https://gerrit.com/projects/app%2Fweb/branches/master';
+    const branchAPIresponse = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/gerrit/branch-info-response.txt'),
+    );
+    const treeUrl = 'https://gerrit.com/app/web/+/refs/heads/master/';
+    const etag = '52432507a70b677b5674b019c9a46b2e9f29d0a1';
+    const mkdocsContent = 'great content';
+    const mdContent = 'doc';
+
+    beforeEach(() => {
+      mockFs({
+        '/tmp/': mockFs.directory(),
+        '/tmp/gerrit-clone-123abc/repo/mkdocs.yml': mkdocsContent,
+        '/tmp/gerrit-clone-123abc/repo/docs/first.md': mdContent,
+      });
+      const spy = jest.spyOn(fs, 'mkdtemp');
+      spy.mockImplementation(() => '/tmp/gerrit-clone-123abc');
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+      jest.clearAllMocks();
+    });
+
+    it('reads the wanted files correctly.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(200), ctx.body(branchAPIresponse));
+        }),
+      );
+
+      const response = await gerritProcessor.readTree(treeUrl);
+
+      expect(response.etag).toBe(etag);
+
+      const files = await response.files();
+      expect(files.length).toBe(2);
+
+      const docsYaml = await files[0].content();
+      expect(docsYaml.toString()).toBe(mkdocsContent);
+
+      const mdFile = await files[1].content();
+      expect(mdFile.toString()).toBe(mdContent);
+    });
+
+    it('throws NotModifiedError for matching etags.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(200), ctx.body(branchAPIresponse));
+        }),
+      );
+
+      await expect(gerritProcessor.readTree(treeUrl, { etag })).rejects.toThrow(
+        NotModifiedError,
+      );
+    });
+
+    it('throws NotFoundError if branch info not found.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(404, 'Not found.'));
+        }),
+      );
+
+      await expect(gerritProcessor.readTree(treeUrl)).rejects.toThrow(
+        NotFoundError,
+      );
+    });
+
+    it('should throw on failures while getting branch info.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(500, 'Error'));
+        }),
+      );
+
+      await expect(gerritProcessor.readTree(treeUrl)).rejects.toThrow(Error);
+    });
+
+    it('should returns wanted files with a subpath', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(200), ctx.body(branchAPIresponse));
+        }),
+      );
+
+      const response = await gerritProcessor.readTree(`${treeUrl}/docs`);
+
+      expect(response.etag).toBe(etag);
+
+      const files = await response.files();
+      expect(files.length).toBe(1);
+
+      const mdFile = await files[0].content();
+      expect(mdFile.toString()).toBe(mdContent);
     });
   });
 });

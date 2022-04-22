@@ -18,12 +18,6 @@ import { GerritIntegrationConfig } from '.';
 
 const GERRIT_BODY_PREFIX = ")]}'";
 
-type GitFile = {
-  branch: string;
-  filePath: string;
-  project: string;
-};
-
 /**
  * Parse a Gitiles URL and return branch, file path and project.
  *
@@ -41,17 +35,17 @@ type GitFile = {
  * the urls point to an actual Gitiles installation.
  *
  * Gitiles url:
- * https://g.com/optional_path/{project}/+/refs/heads/{branch}/{filePath}
+ * https://g.com/optional_path/\{project\}/+/refs/heads/\{branch\}/\{filePath\}
  *
  *
  * @param url - An URL pointing to a file stored in git.
  * @public
  */
 
-export function parseGitilesUrl(
+export function parseGerritGitilesUrl(
   config: GerritIntegrationConfig,
   url: string,
-): GitFile {
+): { branch: string; filePath: string; project: string } {
   const urlPath = url.replace(config.gitilesBaseUrl!, '');
   const parts = urlPath.split('/').filter(p => !!p);
 
@@ -95,6 +89,39 @@ export function getAuthenticationPrefix(
 }
 
 /**
+ * Return the url to get branch info from the Gerrit API.
+ *
+ * @param config - A Gerrit provider config.
+ * @param url - An url pointing to a file in git.
+ * @public
+ */
+export function getGerritBranchApiUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+) {
+  const { branch, project } = parseGerritGitilesUrl(config, url);
+
+  return `${config.baseUrl}${getAuthenticationPrefix(
+    config,
+  )}projects/${encodeURIComponent(project)}/branches/${branch}`;
+}
+
+/**
+ * Return the url to clone the repo that is referenced by the url.
+ *
+ * @param url - An url pointing to a file in git.
+ * @public
+ */
+export function getGerritCloneRepoUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+) {
+  const { project } = parseGerritGitilesUrl(config, url);
+
+  return `${config.cloneUrl}${getAuthenticationPrefix(config)}${project}`;
+}
+
+/**
  * Return the url to fetch the contents of a file using the Gerrit API.
  *
  * @param config - A Gerrit provider config.
@@ -105,7 +132,7 @@ export function getGerritFileContentsApiUrl(
   config: GerritIntegrationConfig,
   url: string,
 ) {
-  const { branch, filePath, project } = parseGitilesUrl(config, url);
+  const { branch, filePath, project } = parseGerritGitilesUrl(config, url);
 
   return `${config.baseUrl}${getAuthenticationPrefix(
     config,
