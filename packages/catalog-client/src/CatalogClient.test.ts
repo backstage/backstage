@@ -21,7 +21,12 @@ import { CatalogClient } from './CatalogClient';
 import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
-const server = setupServer();
+const server =
+  setupServer(/* [
+  rest.get('http://derp.com', (_, res, ctx) => {
+    return res(ctx.json({ ok: true }));
+  }),
+] */);
 const token = 'fake-token';
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discoveryApi: DiscoveryApi = {
@@ -30,7 +35,7 @@ const discoveryApi: DiscoveryApi = {
   },
 };
 
-describe.skip('CatalogClient', () => {
+describe('CatalogClient', () => {
   let client: CatalogClient;
 
   beforeAll(() => {
@@ -47,9 +52,9 @@ describe.skip('CatalogClient', () => {
   });
   afterEach(() => {
     console.log('afterEach enter');
-    const res = server.resetHandlers();
-    console.log('afterEach exit', res);
-    return res;
+    // const res = server.resetHandlers();
+    // console.log('afterEach exit', res);
+    // return res;
   });
 
   beforeEach(() => {
