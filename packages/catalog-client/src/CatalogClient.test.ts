@@ -30,7 +30,7 @@ const discoveryApi: DiscoveryApi = {
   },
 };
 
-describe('CatalogClient', () => {
+describe.skip('CatalogClient', () => {
   let client: CatalogClient;
 
   beforeAll(() => {
