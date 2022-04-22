@@ -218,6 +218,8 @@ performant
 Performant
 periskop
 Periskop
+permissioned
+permissioning
 plantuml
 Platformize
 Podman
@@ -309,6 +311,7 @@ Templaters
 theia
 thumbsup
 todo
+todos
 tolerations
 Tolerations
 toolchain

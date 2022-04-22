@@ -150,4 +150,4 @@ import {
     }
 ```
 
-Once the changes to the permission policy are saved, the UI should should show only the todo items you've created.
+Once the changes to the permission policy are saved, the UI should show only the todo items you've created.

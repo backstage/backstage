@@ -6,7 +6,7 @@ description: A list of important permission framework concepts
 
 ### Permission
 
-Any action that a user performs within Backstage may be represented as a permission. More complex actions, like executing a software template, may require authorization for multiple permissions throughout the flow. Permissions are identified by a unique name and optionally include a set of attributes that describe the correponding action. Plugins are responsible for defining and exposing the permissions they enforce.
+Any action that a user performs within Backstage may be represented as a permission. More complex actions, like executing a software template, may require authorization for multiple permissions throughout the flow. Permissions are identified by a unique name and optionally include a set of attributes that describe the corresponding action. Plugins are responsible for defining and exposing the permissions they enforce.
 
 ### Policy
 
