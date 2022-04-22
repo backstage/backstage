@@ -33,12 +33,29 @@ const discoveryApi: DiscoveryApi = {
 describe('CatalogClient', () => {
   let client: CatalogClient;
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  beforeAll(() => {
+    console.log('beforeAll enter');
+    const res = server.listen({ onUnhandledRequest: 'error' });
+    console.log('beforeAll exit', res);
+    return res;
+  });
+  afterAll(() => {
+    console.log('afterAll enter');
+    const res = server.close();
+    console.log('afterAll exit', res);
+    return res;
+  });
+  afterEach(() => {
+    console.log('afterEach enter');
+    const res = server.resetHandlers();
+    console.log('afterEach exit', res);
+    return res;
+  });
 
   beforeEach(() => {
+    console.log('beforeEach enter');
     client = new CatalogClient({ discoveryApi });
+    console.log('beforeEach exit');
   });
 
   describe('getEntities', () => {
@@ -64,10 +81,46 @@ describe('CatalogClient', () => {
       items: defaultServiceResponse.reverse(),
     };
 
+    const existingEntity: Entity = {
+      apiVersion: 'v1',
+      kind: 'CustomKind',
+      metadata: {
+        namespace: 'default',
+        name: 'exists',
+      },
+    };
+
+    const defaultResponse2 = {
+      data: {
+        id: '42',
+      },
+    };
+
     beforeEach(() => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
           return res(ctx.json(defaultServiceResponse));
+        }),
+      );
+
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/customkind/default/exists`,
+          (_, res, ctx) => {
+            return res(ctx.json(existingEntity));
+          },
+        ),
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/customkind/default/missing`,
+          (_, res, ctx) => {
+            return res(ctx.status(404));
+          },
+        ),
+      );
+
+      server.use(
+        rest.get(`${mockBaseUrl}/locations/42`, (_, res, ctx) => {
+          return res(ctx.json(defaultResponse2));
         }),
       );
     });
@@ -140,7 +193,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it.only('builds entity field selectors properly', async () => {
+    it('builds entity field selectors properly', async () => {
       expect.assertions(2);
 
       server.use(
@@ -162,7 +215,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it.only('handles field filtered entities', async () => {
+    it('handles field filtered entities', async () => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
           return res(ctx.json([{ apiVersion: '1' }, { apiVersion: '2' }]));
@@ -184,7 +237,7 @@ describe('CatalogClient', () => {
       ]);
     });
 
-    it.only('builds paging parameters properly', async () => {
+    it('builds paging parameters properly', async () => {
       expect.assertions(2);
 
       server.use(
@@ -204,7 +257,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it.only('builds paging parameters properly 2', async () => {
+    it('builds paging parameters properly 2', async () => {
       expect.assertions(2);
 
       server.use(
@@ -224,7 +277,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it.only('builds paging parameters properly 3', async () => {
+    it('builds paging parameters properly 3', async () => {
       expect.assertions(2);
 
       server.use(
@@ -244,7 +297,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it.only('builds paging parameters properly 4', async () => {
+    it('builds paging parameters properly 4', async () => {
       expect.assertions(2);
 
       server.use(
@@ -264,7 +317,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it.only('builds entity field selectors properly last', async () => {
+    it('builds entity field selectors properly last', async () => {
       expect.assertions(2);
 
       server.use(
@@ -284,34 +337,6 @@ describe('CatalogClient', () => {
       );
 
       expect(response.items).toEqual([]);
-    });
-  });
-
-  describe('getEntityByRef', () => {
-    const existingEntity: Entity = {
-      apiVersion: 'v1',
-      kind: 'CustomKind',
-      metadata: {
-        namespace: 'default',
-        name: 'exists',
-      },
-    };
-
-    beforeEach(() => {
-      server.use(
-        rest.get(
-          `${mockBaseUrl}/entities/by-name/customkind/default/exists`,
-          (_, res, ctx) => {
-            return res(ctx.json(existingEntity));
-          },
-        ),
-        rest.get(
-          `${mockBaseUrl}/entities/by-name/customkind/default/missing`,
-          (_, res, ctx) => {
-            return res(ctx.status(404));
-          },
-        ),
-      );
     });
 
     it('finds by string and compound', async () => {
@@ -339,26 +364,10 @@ describe('CatalogClient', () => {
         }),
       ).resolves.toBeUndefined();
     });
-  });
-
-  describe('getLocationById', () => {
-    const defaultResponse = {
-      data: {
-        id: '42',
-      },
-    };
-
-    beforeEach(() => {
-      server.use(
-        rest.get(`${mockBaseUrl}/locations/42`, (_, res, ctx) => {
-          return res(ctx.json(defaultResponse));
-        }),
-      );
-    });
 
     it('should locations from correct endpoint', async () => {
       const response = await client.getLocationById('42', { token });
-      expect(response).toEqual(defaultResponse);
+      expect(response).toEqual(defaultResponse2);
     });
 
     it('forwards authorization token', async () => {
@@ -367,7 +376,7 @@ describe('CatalogClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
           expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
-          return res(ctx.json(defaultResponse));
+          return res(ctx.json(defaultResponse2));
         }),
       );
 
@@ -382,7 +391,7 @@ describe('CatalogClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
           expect(req.headers.get('authorization')).toBeNull();
-          return res(ctx.json(defaultResponse));
+          return res(ctx.json(defaultResponse2));
         }),
       );
 

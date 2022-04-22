@@ -191,20 +191,24 @@ jobs:
 
       - name: run test
         run: yarn test packages/catalog-client/src/CatalogClient.test.ts
-        env:
-          DEBUG: '*'
+        continue-on-error: true
+        # env:
+        #   DEBUG: '*'
 
       - name: run test
         run: yarn test packages/catalog-client/src/CatalogClient.test.ts
-        env:
-          DEBUG: '*'
+        continue-on-error: true
+        # env:
+        #   DEBUG: '*'
 
       - name: run test
         run: yarn test packages/catalog-client/src/CatalogClient.test.ts
-        env:
-          DEBUG: '*'
+        continue-on-error: true
+        # env:
+        #   DEBUG: '*'
 
       - name: run test
         run: yarn test packages/catalog-client/src/CatalogClient.test.ts
-        env:
-          DEBUG: '*'
+        continue-on-error: true
+        # env:
+        #   DEBUG: '*'
