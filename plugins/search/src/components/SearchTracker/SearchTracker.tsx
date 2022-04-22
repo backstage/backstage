@@ -16,14 +16,18 @@
 
 import React, { useEffect } from 'react';
 import { useAnalytics } from '@backstage/core-plugin-api';
-import { useSearch } from '@backstage/plugin-search-react';
 
 /**
  * Capture search event on term change.
  */
-export const TrackSearch = ({ children }: { children: React.ReactChild }) => {
+export const TrackSearch = ({
+  term,
+  children,
+}: {
+  term: string;
+  children: React.ReactChild;
+}) => {
   const analytics = useAnalytics();
-  const { term } = useSearch();
 
   useEffect(() => {
     if (term) {

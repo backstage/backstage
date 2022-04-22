@@ -32,10 +32,7 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
-import {
-  SearchContextProvider,
-  useSearch,
-} from '@backstage/plugin-search-react';
+import { useSearch } from '@backstage/plugin-search-react';
 import { TrackSearch } from '../SearchTracker';
 
 /**
@@ -54,7 +51,7 @@ export type SearchBarBaseProps = Omit<InputBaseProps, 'onChange'> & {
 /**
  * All search boxes exported by the search plugin are based on the <SearchBarBase />,
  * and this one is based on the <InputBase /> component from Material UI.
- * Recommended if you don't use Search Provider or Search Context.
+ * Recommended if you don't use SearchContextProvider.
  *
  * @public
  */
@@ -72,7 +69,6 @@ export const SearchBarBase = ({
 }: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
   const [value, setValue] = useState<string>(defaultValue as string);
-  const hasSearchContext = useSearch();
 
   useEffect(() => {
     setValue(prevValue =>
@@ -123,8 +119,8 @@ export const SearchBarBase = ({
     </InputAdornment>
   );
 
-  const searchBar = (
-    <TrackSearch>
+  return (
+    <TrackSearch term={value}>
       <InputBase
         data-testid="search-bar-next"
         value={value}
@@ -139,12 +135,6 @@ export const SearchBarBase = ({
       />
     </TrackSearch>
   );
-
-  return hasSearchContext ? (
-    searchBar
-  ) : (
-    <SearchContextProvider>{searchBar}</SearchContextProvider>
-  );
 };
 
 /**
@@ -155,7 +145,7 @@ export const SearchBarBase = ({
 export type SearchBarProps = Partial<SearchBarBaseProps>;
 
 /**
- * Recommended search bar when you use the Search Provider or Search Context.
+ * Recommended search bar when you use the SearchContextProvider
  *
  * @public
  */
