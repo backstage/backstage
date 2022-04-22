@@ -9924,9 +9924,9 @@ cron@^1.8.2:
     moment-timezone "^0.5.x"
 
 cronstrue@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-2.2.0.tgz#8e02b8ef0fa70a9eab9999f1f838df4bd378b471"
-  integrity sha512-oM/ftAvCNIdygVGGfYp8gxrVc81mDSA2mff0kvu6+ehrZhfYPzGHG8DVcFdrRVizjHnzWoFIlgEq6KTM/9lPBw==
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/cronstrue/-/cronstrue-2.4.0.tgz#16c6d10a17b90c37a71c7e8fb3bb67d0243d70e5"
+  integrity sha512-KDJgE8XoT0Nupt1iljNGAQnxkfITwIYkL7mHrzH4a0AWyrj7Xk6GVCNPN3Avs7tU2yYoNuDculMKp9T3jysbPA==
 
 cross-env@^7.0.0:
   version "7.0.3"
