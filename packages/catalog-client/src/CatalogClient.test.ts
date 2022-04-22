@@ -21,12 +21,7 @@ import { CatalogClient } from './CatalogClient';
 import { CATALOG_FILTER_EXISTS, GetEntitiesResponse } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 
-const server =
-  setupServer(/* [
-  rest.get('http://derp.com', (_, res, ctx) => {
-    return res(ctx.json({ ok: true }));
-  }),
-] */);
+const server = setupServer();
 const token = 'fake-token';
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';
 const discoveryApi: DiscoveryApi = {
@@ -52,9 +47,9 @@ describe('CatalogClient', () => {
   });
   afterEach(() => {
     console.log('afterEach enter');
-    // const res = server.resetHandlers();
-    // console.log('afterEach exit', res);
-    // return res;
+    const res = server.resetHandlers();
+    console.log('afterEach exit', res);
+    return res;
   });
 
   beforeEach(() => {
@@ -128,6 +123,188 @@ describe('CatalogClient', () => {
           return res(ctx.json(defaultResponse2));
         }),
       );
+    });
+
+    it.only('all the things', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+
+      server.printHandlers();
+
+      console.log('entities 1', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 2', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 3', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 4', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 5', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 6', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 7', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 8', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 9', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 10', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 11', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 12', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 13', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 14', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 15', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 16', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 17', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 18', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 19', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 20', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 21', await client.getEntities({}).catch(e => e));
+
+      server.resetHandlers();
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
+          return res(ctx.json([]));
+        }),
+      );
+      console.log('entities 22', await client.getEntities({}).catch(e => e));
+
+      expect([]).toEqual([]);
     });
 
     it('should fetch entities from correct endpoint', async () => {
