@@ -51,7 +51,7 @@ export async function run() {
 
   const isPostgres = Boolean(process.env.POSTGRES_USER);
   print('Creating a Backstage App');
-  const appDir = await createApp('test-app', isPostgres, workspaceDir, rootDir);
+  const appDir = await createApp('test-app', workspaceDir, rootDir);
 
   print('Creating a Backstage Plugin');
   const pluginName = await createPlugin('test-plugin', appDir);
@@ -191,7 +191,6 @@ async function pinYarnVersion(dir: string) {
  */
 async function createApp(
   appName: string,
-  isPostgres: boolean,
   workspaceDir: string,
   rootDir: string,
 ) {
@@ -214,14 +213,6 @@ async function createApp(
 
     await waitFor(() => stdout.includes('Enter a name for the app'));
     child.stdin?.write(`${appName}\n`);
-
-    await waitFor(() => stdout.includes('Select database for the backend'));
-
-    if (isPostgres) {
-      // Simulate down arrow press
-      child.stdin?.write(`\u001B\u005B\u0042`);
-    }
-    child.stdin?.write(`\n`);
 
     print('Waiting for app create script to be done');
     await waitForExit(child);
