@@ -11,11 +11,7 @@ import { Logger } from 'winston';
 
 // @public
 export interface PluginTaskScheduler {
-  createScheduledLocalTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
-  scheduleLocalTask(
-    task: TaskScheduleDefinition & TaskInvocationDefinition,
-  ): Promise<void>;
   scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void>;
@@ -47,6 +43,7 @@ export interface TaskScheduleDefinition {
       }
     | Duration;
   initialDelay?: Duration;
+  scope?: 'global' | 'local';
   timeout: Duration;
 }
 

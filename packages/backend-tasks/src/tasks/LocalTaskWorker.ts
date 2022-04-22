@@ -22,6 +22,11 @@ import { Logger } from 'winston';
 import { TaskFunction, TaskSettingsV2 } from './types';
 import { delegateAbortController, sleep } from './util';
 
+/**
+ * Implements tasks that run locally without cross-host collaboration.
+ *
+ * @private
+ */
 export class LocalTaskWorker {
   private abortWait: AbortController | undefined;
 
@@ -31,10 +36,6 @@ export class LocalTaskWorker {
     private readonly logger: Logger,
   ) {}
 
-  get id(): string {
-    return this.taskId;
-  }
-
   start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
@@ -43,19 +44,19 @@ export class LocalTaskWorker {
     (async () => {
       try {
         if (settings.initialDelayDuration) {
-          await sleep(
+          await this.sleep(
             Duration.fromISO(settings.initialDelayDuration),
             options?.signal,
           );
         }
 
         while (!options?.signal?.aborted) {
-          const startTime = Date.now();
+          const startTime = process.hrtime();
           await this.runOnce(settings, options?.signal);
-          const endTime = Date.now();
+          const timeTaken = process.hrtime(startTime);
           await this.waitUntilNext(
             settings,
-            endTime - startTime,
+            (timeTaken[0] + timeTaken[1] / 1e9) * 1000,
             options?.signal,
           );
         }
@@ -130,8 +131,15 @@ export class LocalTaskWorker {
       )}`,
     );
 
-    this.abortWait = delegateAbortController(signal);
-    await sleep(Duration.fromMillis(dt), this.abortWait.signal);
+    await this.sleep(Duration.fromMillis(dt), signal);
+  }
+
+  private async sleep(
+    duration: Duration,
+    abortSignal?: AbortSignal,
+  ): Promise<void> {
+    this.abortWait = delegateAbortController(abortSignal);
+    await sleep(duration, this.abortWait.signal);
     this.abortWait.abort(); // cleans up resources
     this.abortWait = undefined;
   }

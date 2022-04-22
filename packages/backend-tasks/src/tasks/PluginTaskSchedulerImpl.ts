@@ -52,63 +52,52 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void> {
     validateId(task.id);
+    const scope = task.scope ?? 'global';
 
-    const knex = await this.databaseFactory();
-    const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
+    if (scope === 'global') {
+      const knex = await this.databaseFactory();
+      const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
 
-    await worker.start(
-      {
-        version: 2,
-        cadence:
-          'cron' in task.frequency
-            ? task.frequency.cron
-            : task.frequency.toISO(),
-        initialDelayDuration: task.initialDelay?.toISO(),
-        timeoutAfterDuration: task.timeout.toISO(),
-      },
-      {
-        signal: task.signal,
-      },
-    );
-  }
+      await worker.start(
+        {
+          version: 2,
+          cadence:
+            'cron' in task.frequency
+              ? task.frequency.cron
+              : task.frequency.toISO(),
+          initialDelayDuration: task.initialDelay?.toISO(),
+          timeoutAfterDuration: task.timeout.toISO(),
+        },
+        {
+          signal: task.signal,
+        },
+      );
+    } else {
+      const worker = new LocalTaskWorker(task.id, task.fn, this.logger);
 
-  async scheduleLocalTask(
-    task: TaskScheduleDefinition & TaskInvocationDefinition,
-  ): Promise<void> {
-    validateId(task.id);
+      worker.start(
+        {
+          version: 2,
+          cadence:
+            'cron' in task.frequency
+              ? task.frequency.cron
+              : task.frequency.toISO(),
+          initialDelayDuration: task.initialDelay?.toISO(),
+          timeoutAfterDuration: task.timeout.toISO(),
+        },
+        {
+          signal: task.signal,
+        },
+      );
 
-    const worker = new LocalTaskWorker(task.id, task.fn, this.logger);
-
-    worker.start(
-      {
-        version: 2,
-        cadence:
-          'cron' in task.frequency
-            ? task.frequency.cron
-            : task.frequency.toISO(),
-        initialDelayDuration: task.initialDelay?.toISO(),
-        timeoutAfterDuration: task.timeout.toISO(),
-      },
-      {
-        signal: task.signal,
-      },
-    );
-
-    this.localTasksById.set(task.id, worker);
+      this.localTasksById.set(task.id, worker);
+    }
   }
 
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner {
     return {
       run: async task => {
         await this.scheduleTask({ ...task, ...schedule });
-      },
-    };
-  }
-
-  createScheduledLocalTaskRunner(schedule: TaskScheduleDefinition): TaskRunner {
-    return {
-      run: async task => {
-        await this.scheduleLocalTask({ ...task, ...schedule });
       },
     };
   }

@@ -28,7 +28,7 @@ import { delegateAbortController, nowPlus, sleep } from './util';
 const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
 /**
- * Performs the actual work of a task.
+ * Implements tasks that run across worker hosts, with collaborative locking.
  *
  * @private
  */
