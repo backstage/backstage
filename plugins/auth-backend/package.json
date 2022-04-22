@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-auth-backend",
+  "name": "@ceremium/plugin-auth-backend",
   "description": "A Backstage backend plugin that handles authentication",
   "version": "0.13.0",
   "main": "src/index.ts",
@@ -17,7 +17,7 @@
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/backstage/backstage",
+    "url": "https://github.com/ceremium/backstage",
     "directory": "plugins/auth-backend"
   },
   "keywords": [

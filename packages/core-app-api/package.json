@@ -1,7 +1,7 @@
 {
-  "name": "@backstage/core-app-api",
+  "name": "@ceremium/core-app-api",
   "description": "Core app API used by Backstage apps",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -14,7 +14,7 @@
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/backstage/backstage",
+    "url": "https://github.com/ceremium/backstage",
     "directory": "packages/core-app-api"
   },
   "keywords": [
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@backstage/config": "^1.0.0",
-    "@backstage/core-plugin-api": "^1.0.1",
+    "@ceremium/core-plugin-api": "^1.0.3",
     "@backstage/types": "^1.0.0",
     "@backstage/version-bridge": "^1.0.1",
     "@types/prop-types": "^15.7.3",
