@@ -369,6 +369,18 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   // Still waiting on a Q answered to fine tune the implementation
   const { isOpen } = useContext(SidebarContext);
 
+  const divStyle =
+    !isOpen && children ? { marginLeft: '24px', marginBottom: '4px' } : {};
+
+  const displayItemIcon = (
+    <>
+      <div style={divStyle}>
+        <Icon fontSize="small" />
+        {!isOpen && children ? <ArrowRightIcon /> : <></>}
+      </div>
+    </>
+  );
+
   const itemIcon = (
     <Badge
       color="secondary"
@@ -378,6 +390,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       className={classnames({ [classes.closedItemIcon]: !isOpen })}
     >
       <Icon fontSize="small" />
+      {displayItemIcon}
     </Badge>
   );
 
