@@ -214,11 +214,6 @@
           "plugins/add-to-marketplace",
           "plugins/observability"
         ]
-      },
-      {
-        "type": "subcategory",
-        "label": "Permissions",
-        "ids": ["plugins/permissions/index"]
       }
     ],
     "Configuration": [
