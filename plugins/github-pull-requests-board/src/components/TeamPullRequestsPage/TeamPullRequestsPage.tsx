@@ -1,12 +1,25 @@
+/*
+ * Copyright 2022 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import React, { FunctionComponent, useState } from 'react';
 import { Grid, Typography } from '@material-ui/core';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import { Progress, InfoCard } from '@backstage/core-components';
 
 import { InfoCardHeader } from '../../components/InfoCardHeader';
 import { PullRequestBoardOptions } from '../../components/PullRequestBoardOptions';
 import { Wrapper } from '../../components/Wrapper';
-import { SmallPullRequestCard } from '../../components/SmallPullRequestCard';
 import { PullRequestCard } from '../../components/PullRequestCard';
 import { usePullRequestsByTeam } from '../../hooks/usePullRequestsByTeam';
 import { PRCardFormating } from '../../utils/types';
@@ -18,21 +31,12 @@ const TeamPullRequestsPage: FunctionComponent = () => {
   const { repositories } = useUserRepositories();
   const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(repositories);
 
-  const CardComponent = infoCardFormat.includes('compacted')
-    ? SmallPullRequestCard
-    : PullRequestCard;
-
   const header = (
     <InfoCardHeader onRefresh={refreshPullRequests}>
       <PullRequestBoardOptions
         onClickOption={(newFormats) => setInfoCardFormat(newFormats)}
         value={infoCardFormat}
         options={[
-          {
-            icon: <ViewModuleIcon />,
-            value: 'compacted',
-            ariaLabel: 'Cards compacted'
-          },
           {
             icon: <DraftPrIcon />,
             value: 'draft',
@@ -71,7 +75,7 @@ const TeamPullRequestsPage: FunctionComponent = () => {
                 isDraft
               }, index) => (
                 isDraft ? (infoCardFormat.includes('draft') === isDraft) &&
-                  <CardComponent
+                  <PullRequestCard
                     key={`pull-request-${id}-${index}`}
                     title={title}
                     createdAt={createdAt}
@@ -82,7 +86,7 @@ const TeamPullRequestsPage: FunctionComponent = () => {
                     repositoryName={repository.name}
                     isDraft={isDraft}
                   />
-                  : <CardComponent
+                  : <PullRequestCard
                     key={`pull-request-${id}-${index}`}
                     title={title}
                     createdAt={createdAt}
