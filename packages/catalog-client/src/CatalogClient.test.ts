@@ -140,7 +140,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it('builds entity field selectors properly', async () => {
+    it.only('builds entity field selectors properly', async () => {
       expect.assertions(2);
 
       server.use(
@@ -162,7 +162,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it('handles field filtered entities', async () => {
+    it.only('handles field filtered entities', async () => {
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
           return res(ctx.json([{ apiVersion: '1' }, { apiVersion: '2' }]));
@@ -184,24 +184,105 @@ describe('CatalogClient', () => {
       ]);
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
     it.only('builds paging parameters properly', async () => {
       expect.assertions(2);
-      await new Promise(r => setTimeout(r, 1000));
+
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
           expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
           return res(ctx.json([]));
         }),
       );
-      await new Promise(r => setTimeout(r, 1000));
+
       server.printHandlers();
 
       const response = await client.getEntities(
         { offset: 1, limit: 2, after: '=' },
         { token },
       );
-      await new Promise(r => setTimeout(r, 1000));
+
+      expect(response.items).toEqual([]);
+    });
+
+    it.only('builds paging parameters properly 2', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
+          return res(ctx.json([]));
+        }),
+      );
+
+      server.printHandlers();
+
+      const response = await client.getEntities(
+        { offset: 1, limit: 2, after: '=' },
+        { token },
+      );
+
+      expect(response.items).toEqual([]);
+    });
+
+    it.only('builds paging parameters properly 3', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
+          return res(ctx.json([]));
+        }),
+      );
+
+      server.printHandlers();
+
+      const response = await client.getEntities(
+        { offset: 1, limit: 2, after: '=' },
+        { token },
+      );
+
+      expect(response.items).toEqual([]);
+    });
+
+    it.only('builds paging parameters properly 4', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?offset=1&limit=2&after=%3D');
+          return res(ctx.json([]));
+        }),
+      );
+
+      server.printHandlers();
+
+      const response = await client.getEntities(
+        { offset: 1, limit: 2, after: '=' },
+        { token },
+      );
+
+      expect(response.items).toEqual([]);
+    });
+
+    it.only('builds entity field selectors properly last', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?fields=a.b,%C3%B6');
+          return res(ctx.json([]));
+        }),
+      );
+
+      server.printHandlers();
+
+      const response = await client.getEntities(
+        {
+          fields: ['a.b', 'ö'],
+        },
+        { token },
+      );
+
       expect(response.items).toEqual([]);
     });
   });
