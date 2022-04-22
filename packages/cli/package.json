@@ -82,6 +82,7 @@
     "fork-ts-checker-webpack-plugin": "^7.0.0-alpha.8",
     "fs-extra": "10.0.1",
     "glob": "^7.1.7",
+    "global-agent": "^3.0.0",
     "handlebars": "^4.7.3",
     "html-webpack-plugin": "^5.3.1",
     "inquirer": "^8.2.0",
