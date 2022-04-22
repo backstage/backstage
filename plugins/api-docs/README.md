@@ -15,7 +15,7 @@ Right now, the following API formats are supported:
 - [OpenAPI](https://swagger.io/specification/) 2 & 3
 - [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/)
 - [GraphQL](https://graphql.org/learn/schema/)
-- [gRPC/protobuf](https://developers.google.com/protocol-buffers)
+- [gRPC/Protocol Buffer](https://developers.google.com/protocol-buffers)
 - [Generated Github Flavored Markdown](https://github.github.com/gfm/)
 
 Other formats are displayed as plain text, but this can easily be extended.
@@ -178,16 +178,14 @@ POST request body would look like this:
 
 ```json
 {
-    "client_name": "Example Backstage api-docs plugin Swagger UI Client",
-    "redirect_uris": [
-        "https://www.getpostman.com/oauth2/callback",
-        "http://localhost:3000/oauth2-redirect.html"
-        "https://<yourhost>/oauth2-redirect.html"
-    ],
-    "scope": "read_pets write_pets",
-    "grant_types": [
-        "authorization_code"
-    ]
+  "client_name": "Example Backstage api-docs plugin Swagger UI Client",
+  "redirect_uris": [
+    "https://www.getpostman.com/oauth2/callback",
+    "http://localhost:3000/oauth2-redirect.html",
+    "https://<yourhost>/oauth2-redirect.html"
+  ],
+  "scope": "read_pets write_pets",
+  "grant_types": ["authorization_code"]
 }
 ```
 
