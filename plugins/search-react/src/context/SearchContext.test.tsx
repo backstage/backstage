@@ -18,7 +18,11 @@ import { useApi } from '@backstage/core-plugin-api';
 import { render, screen, waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { SearchContextProvider, useSearch } from './SearchContext';
+import {
+  SearchContextProvider,
+  useSearch,
+  useSearchContextCheck,
+} from './SearchContext';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -69,6 +73,26 @@ describe('SearchContext', () => {
     expect(result.error).toEqual(
       Error('useSearch must be used within a SearchContextProvider'),
     );
+  });
+
+  it('Checks whether context is set', async () => {
+    const hook = renderHook(() => useSearchContextCheck());
+
+    expect(hook.result.current).toEqual(false);
+
+    const { result, waitForNextUpdate } = renderHook(
+      () => useSearchContextCheck(),
+      {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      },
+    );
+
+    await waitForNextUpdate();
+
+    expect(result.current).toEqual(true);
   });
 
   it('Uses initial state values', async () => {
