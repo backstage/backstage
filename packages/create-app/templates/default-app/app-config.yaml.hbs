@@ -91,35 +91,27 @@ catalog:
     - allow: [Component, System, API, Resource, Location]
   locations:
     # Backstage example components
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    - type: file
+      target: ../../examples/all-components.yaml
 
     # Backstage example systems
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-systems.yaml
+    - type: file
+      target: ../../examples/all-systems.yaml
 
     # Backstage example APIs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+    - type: file
+      target: ../../examples/all-apis.yaml
 
     # Backstage example resources
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-resources.yaml
+    - type: file
+      target: ../../examples/all-resources.yaml
 
     # Backstage example organization groups
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+    - type: file
+      target: ../../examples/acme/org.yaml
 
     # Backstage example templates
-    - type: url
-      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/react-ssr-template/template.yaml
-      rules:
-        - allow: [Template]
-    - type: url
-      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/springboot-grpc-template/template.yaml
-      rules:
-        - allow: [Template]
-    - type: url
-      target: https://github.com/backstage/software-templates/blob/main/scaffolder-templates/docs-template/template.yaml
+    - type: file
+      target: ../../examples/all-templates.yaml
       rules:
         - allow: [Template]
