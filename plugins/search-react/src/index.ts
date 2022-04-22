@@ -25,6 +25,7 @@ export type { SearchApi } from './api';
 export {
   SearchContextProvider,
   useSearch,
+  useSearchContextCheck,
   SearchContextProviderForStorybook,
   SearchApiProviderForStorybook,
 } from './context';
