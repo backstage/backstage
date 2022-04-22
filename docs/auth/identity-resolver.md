@@ -1,77 +1,123 @@
 ---
 id: identity-resolver
-title: Identity resolver
-description: Identity resolvers of Backstage users after they sign-in
+title: Sign-in Identities and Resolvers
+description: An introduction to Backstage user identities and sign-in resolvers
 ---
 
-This guide explains how the identity of a Backstage user is stored inside their
-Backstage Identity Token and how you can customize the Sign-In resolvers to
-include identity and group membership information of the user from other
-external systems. This ultimately helps with determining the ownership of a
-Backstage entity by a user. The ideas here were originally proposed in the RFC
-[#4089](https://github.com/backstage/backstage/issues/4089).
+By default, every Backstage auth provider is configured only for the use-case of
+access delegation. This enables Backstage to request resources and actions from
+external systems on behalf of the user, for example re-triggering a build in CI.
 
-When a user signs in to Backstage, inside the `claims` field of their Backstage
-Token (which are standard JWT tokens) a special `ent` claim is set. `ent`
-contains a list of
-[entity references](../features/software-catalog/references.md), each of which
-denotes an identity or a membership that is relevant to the user. There is no
-guarantee that these correspond to actual existing catalog entities.
+If you want to use an auth provider to sign in users, you need to explicitly configure
+it have sign-in enabled and also tell it how the external identities should
+be mapped to user identities within Backstage.
 
-Let's take an example sign-in resolver for the Google auth provider and explore
-how the `ent` field inside `claims` can be set.
+## Backstage User Identity
 
-Inside your `packages/backend/src/plugins/auth.ts` file, you can provide custom
-sign-in resolvers and set them for any of the Authentication providers inside
-`providerFactories` of the `createRouter` imported from the
-`@backstage/plugin-auth-backend` plugin.
+A user identity within Backstage is built up from two pieces of information, a
+user [entity reference](../features/software-catalog/references.md), and a
+set of ownership entity references.
+When a user signs in, a Backstage token is generated with these two pieces of information,
+which is then used to identity the user within the Backstage ecosystem.
+
+The user entity reference should uniquely identify the logged in user in Backstage.
+It is encouraged that a matching user entity also exists within the Software Catalog,
+but it is not required. If the user entity exists in the catalog it can be used to
+store additional data about the user. There may even be some plugins that require
+this for them to be able to function.
+
+The ownership references are also entity references, and it is likewise
+encouraged that these entities exist within the catalog, but it is not a requirement.
+The ownership references are used to determine what the user owns, as a set
+of references that the user claims ownership though. For example, a user
+Jane (`user:default/jane`) might have the ownership references `user:default/jane`,
+`group:default/team-a`, and `group:default/admins`. Given these ownership claims,
+any entity that is marked as owned by either of `user:jane`, `team-a`, or `admins` would
+be considered owned by Jane.
+
+The ownership claims often contain the user entity reference itself, but it is not
+required. It is also worth noting that the ownership claims can also be used to
+resolve other relations similar to ownership, such as a claim for a `maintainer` or
+`operator` status.
+
+The Backstage token that encapsulates the user identity is a JWT. The user entity
+reference is stored in the `sub` claim of the payload, while the ownership references
+are stored in a custom `ent` claim. Both the user and ownership references should
+always be full entity references, as opposed to shorthands like just `jane` or `user:jane`.
+
+## Sign-in Resolvers
+
+Signing in a user into Backstage requires a mapping of the user identity from the
+third-party auth provider to a Backstage user identity. This mapping can vary quite
+a lot between different organizations and auth providers, and because of that there's
+no default way to resolve user identities. The auth provider that one wants to use
+for sign-in must instead be configured with a sign-in resolver, which is a function
+that is responsible for creating this user identity mapping.
+
+The input to the sign-in resolver function is the result of a successful log in with
+the given auth provider, as well as a context object that contains various helpers
+for looking up users and issuing tokens. There are also a number of built-in sign-in
+resolvers that can be used, which are covered a bit further down.
+
+### Custom Resolver Example
+
+Let's look at an example of a custom sign-in resolver for the Google auth provider.
+This all typically happens within your `packages/backend/src/plugins/auth.ts` file,
+which is responsible for setting up and configuring the auth backend plugin.
+
+You provide the resolver as part of the options you pass when creating a new auth
+provider factory. This means you need to replace the default Google provider with
+one that you create. Be sure to also include the existing `defaultAuthProviderFactories`
+if you want to keep all of the built-in auth providers installed.
+
+Now let's look at the example, with the rest of the commentary being made with in
+the code comments:
 
 ```ts
-import { DEFAULT_NAMESPACE, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  createRouter,
+  providers,
+  defaultAuthProviderFactories,
+} from '@backstage/plugin-auth-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   return await createRouter({
-    ...
+    ...env,
     providerFactories: {
-      google: createGoogleProvider({
+      ...defaultAuthProviderFactories,
+      google: providers.google.create({
         signIn: {
-          resolver: async ({ profile: { email } }, ctx) => {
-            // Call a custom validator function that checks that the email is
-            // valid and on our own company's domain, and throws an Error if it
-            // isn't.
-            // TODO: Implement this function
-            validateEmail(email);
+          resolver: async (info, ctx) => {
+            const {
+              profile: { email },
+            } = info;
+            // Profiles are not always guaranteed to to have an email address.
+            // You can also find more provider-specific information in `info.result`.
+            // It typically contains a `fullProfile` object as well as ID and/or access
+            // tokens that you can use for additional lookups.
+            if (!email) {
+              throw new Error('User profile contained no email');
+            }
 
-            // List of entity references that denote the identity and
-            // membership of the user
-            const ent: string[] = [];
+            // You can add your own custom validation logic here.
+            // Logins can be prevented by throwing an error like the one above.
+            myEmailValidator(email);
 
-            // Let's use the username in the email ID as the user's default
-            // unique identifier inside Backstage.
-            const [id] = email.split('@');
-            const userEntityRef = stringifyEntityRef({
-              kind: 'User',
-              namespace: DEFAULT_NAMESPACE,
-              name: id,
+            // This example resolver simply uses the local part of the email as the name.
+            const [name] = email.split('@');
+
+            // This helper function handles sign-in by looking up a user in the catalog.
+            // The lookup can be done either by reference, annotations, or custom filters.
+            //
+            // The helper also issues a token for the user, using the standard group
+            // membership logic to determine the ownership references of the user.
+            return ctx.signInWithCatalogUser({
+              entityRef: { name },
             });
-            ent.push(userEntityRef);
-
-            // Let's call the internal LDAP provider to get a list of groups
-            // that the user belongs to, and add those to the list as well
-            const ldapGroups = await getLdapGroups(email);
-            ldapGroups.forEach(group => ent.push(stringifyEntityRef({
-              kind: 'Group',
-              namespace: DEFAULT_NAMESPACE,
-              name: group,
-            })));
-
-            // Issue the token containing the entity claims
-            const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: userEntityRef, ent },
-            });
-            return { id, token };
           },
         },
       }),
@@ -80,97 +126,75 @@ export default async function createPlugin(
 }
 ```
 
-As you can see, the generated Backstage Token now contains all the claims about
-the identity and membership of the user. Once the sign-in process is complete,
-and we need to find out if a user owns an Entity in the Software Catalog, these
-`ent` claims can be used to determine the ownership.
+### Built-in Resolvers
 
-According to the RFC, the definition of the ownership of an entity E, for a user
-U, is as follows:
-
-- Get all the `ownedBy` relations of E, and call them O
-- Get all the claims of the user U and call them C
-- If any C matches any O, return `true`
-- Get all Group entities that U is a member of, using the regular
-  `memberOf`/`hasMember` relation mechanism, and call them G
-- If any G matches any O, return `true`
-- Otherwise, return `false`
-
-## Default sign-in resolvers
-
-Of course you don't have to customize the sign-in resolver if you don't need to.
-The Auth backend plugin comes with a set of default sign-in resolvers which you
-can use. For example - the Google provider has a default email-based sign-in
-resolver, which will search the catalog for a single user entity that has a
-matching `google.com/email` annotation.
-
-It can be enabled like this
+You don't always have to write your own custom resolver. The auth backend plugin provides
+build-in resolvers for many of the common sign-in patterns. You access these via the `resolvers`
+property of each of the auth provider integrations. For example, the Google provider has
+a built in resolver that works just like the one we defined above:
 
 ```ts
-// File: packages/backend/src/plugins/auth.ts
-import { googleEmailSignInResolver, createGoogleProvider } from '@backstage/plugin-auth-backend';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    ...
-    providerFactories: {
-      google: createGoogleProvider({
-        signIn: {
-          resolver: googleEmailSignInResolver
-        }
-...
+providers.google.create({
+  signIn: {
+    resolver: providers.google.resolvers.emailLocalPartMatchingUserEntityName(),
+  },
+});
 ```
 
-## Resolving membership through the catalog
-
-If you want to provide additional claims through Sign-In resolvers but still
-have the software catalog handle group (and transitive group) membership, you
-can do this using the `CatalogIdentityClient` provided as context to Sign-In
-resolvers:
+There are also other options, like the this one that looks up a user
+by matching the `google.com/email` annotation of user entities in the catalog:
 
 ```ts
-import { DEFAULT_NAMESPACE, stringifyEntityRef } from '@backstage/catalog-model';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    ...
-    providerFactories: {
-      google: createGoogleProvider({
-        signIn: {
-          resolver: async ({ profile: { email } }, ctx) => {
-            const [id] = email?.split('@') ?? '';
-            const userEntityRef = stringifyEntityRef({
-              kind: 'User',
-              namespace: DEFAULT_NAMESPACE,
-              name: id,
-            });
-            // Fetch from an external system that returns entity claims like:
-            // ['user:default/breanna.davison', ...]
-            const ent = await externalSystemClient.getUsernames(email);
-
-            // Resolve group membership from the Backstage catalog
-            const fullEnt = await ctx.catalogIdentityClient.resolveCatalogMembership({
-              entityRefs: [id].concat(ent),
-              logger: ctx.logger,
-            });
-            const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: userEntityRef, ent: fullEnt },
-            });
-            return { id, token };
-          },
-        },
-      }),
-      ...
+providers.google.create({
+  signIn: {
+    resolver: providers.google.resolvers.emailMatchingUserEntityAnnotation(),
+  },
+});
 ```
 
-The `resolveCatalogMembership` method will retrieve the referenced entities from
-the catalog, if possible, and check for
-[memberOf](../features/software-catalog/well-known-relations.md#memberof-and-hasmember)
-relations to add additional entity claims.
+## Custom Ownership Resolution
+
+If you want to have more control over the membership resolution and token generation
+that happens during sign-in you can replace `ctx.signInWithCatalogUser` with a set
+of lower-level calls:
+
+```ts
+import { getDefaultOwnershipRefs } from '@backstage/plugin-auth-backend';
+
+// This example only shows the resolver function itself.
+async ({ profile: { email } }, ctx) => {
+  if (!email) {
+    throw new Error('User profile contained no email');
+  }
+
+  // This step calls the catalog to look up a user entity. You could for example
+  // replace it with a call to a different external system.
+  const { entity } = await ctx.findCatalogUser({
+    annotations: {
+      'acme.org/email': email,
+    },
+  });
+
+  // In this step we extract the ownership references from the user entity using
+  // the standard logic. It uses a reference to the entity itself, as well as the
+  // target of each `memberOf` relation where the target is of the kind `Group`.
+  //
+  // If you replace the catalog lookup with something does not return
+  // an entity you will need to replace this step as well.
+  //
+  // You might also replace it if you for example want to filter out certain groups.
+  const ownershipRefs = getDefaultOwnershipRefs(entity);
+
+  // The last step is to issue the token, where we might provide more options in the future.
+  const token = ctx.issueToken({
+    claims: {
+      sub: stringifyEntityRef(entity),
+      ent: ownershipRefs,
+    },
+  });
+  return { token };
+};
+```
 
 ## AuthHandler
 
