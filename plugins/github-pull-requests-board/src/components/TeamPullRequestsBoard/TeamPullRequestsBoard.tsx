@@ -19,16 +19,16 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { Progress, InfoCard } from '@backstage/core-components';
 
-import { InfoCardHeader } from '../../components/InfoCardHeader';
-import { PullRequestBoardOptions } from '../../components/PullRequestBoardOptions';
-import { Wrapper } from '../../components/Wrapper';
-import { PullRequestCard } from '../../components/PullRequestCard';
+import { InfoCardHeader } from '../InfoCardHeader';
+import { PullRequestBoardOptions } from '../PullRequestBoardOptions';
+import { Wrapper } from '../Wrapper';
+import { PullRequestCard } from '../PullRequestCard';
 import { usePullRequestsByTeam } from '../../hooks/usePullRequestsByTeam';
 import { PRCardFormating } from '../../utils/types';
-import { DraftPrIcon } from '../../components/icons/DraftPr'
+import { DraftPrIcon } from '../icons/DraftPr'
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
-const TeamPullRequestsTable: FunctionComponent = () => {
+const TeamPullRequestsBoard: FunctionComponent = () => {
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
   const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(repositories);
@@ -117,4 +117,4 @@ const TeamPullRequestsTable: FunctionComponent = () => {
   return <InfoCard title={header}>{getContent()}</InfoCard>;
 };
 
-export default TeamPullRequestsTable;
+export default TeamPullRequestsBoard;
