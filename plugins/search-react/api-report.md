@@ -74,4 +74,7 @@ export type SearchContextValue = {
 
 // @public
 export const useSearch: () => SearchContextValue;
+
+// @public
+export const useSearchContextCheck: () => boolean;
 ```

@@ -198,6 +198,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -228,6 +229,7 @@ describe('publish:github', () => {
       defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -275,6 +277,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -319,7 +322,7 @@ describe('publish:github', () => {
       defaultBranch: 'master',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
@@ -625,6 +628,7 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
     });
 
     await action.handler({
@@ -642,6 +646,7 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: true,
+      requiredStatusCheckContexts: [],
     });
 
     await action.handler({
@@ -659,6 +664,67 @@ describe('publish:github', () => {
       logger: mockContext.logger,
       defaultBranch: 'master',
       requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+    });
+  });
+
+  it('should call enableBranchProtectionOnDefaultRepoBranch with the correct values of requiredStatusCheckContexts', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repository',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredStatusCheckContexts: ['statusCheck'],
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: ['statusCheck'],
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        requiredStatusCheckContexts: [],
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).toHaveBeenCalledWith({
+      owner: 'owner',
+      client: mockOctokit,
+      repoName: 'repository',
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      requireCodeOwnerReviews: false,
+      requiredStatusCheckContexts: [],
     });
   });
 });

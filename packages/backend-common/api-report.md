@@ -10,7 +10,9 @@ import { AbortController as AbortController_2 } from 'node-abort-controller';
 import { AbortSignal as AbortSignal_2 } from 'node-abort-controller';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
+import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
+import { BitbucketServerIntegration } from '@backstage/integration';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import Docker from 'dockerode';
@@ -83,9 +85,54 @@ export class AzureUrlReader implements UrlReader {
 }
 
 // @public
+export class BitbucketCloudUrlReader implements UrlReader {
+  constructor(
+    integration: BitbucketCloudIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export class BitbucketServerUrlReader implements UrlReader {
+  constructor(
+    integration: BitbucketServerIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public @deprecated
 export class BitbucketUrlReader implements UrlReader {
   constructor(
     integration: BitbucketIntegration,
+    logger: Logger,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -175,7 +222,7 @@ export class Contexts {
 export function createDatabaseClient(
   dbConfig: Config,
   overrides?: Partial<Knex.Config>,
-): Knex<any, Record<string, any>[]>;
+): Knex<any, any[]>;
 
 // @public
 export function createRootLogger(
@@ -255,13 +302,19 @@ export type FromReadableArrayOptions = Array<{
 
 // @public
 export class GerritUrlReader implements UrlReader {
-  constructor(integration: GerritIntegration);
+  constructor(
+    integration: GerritIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+    workDir: string,
+  );
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)

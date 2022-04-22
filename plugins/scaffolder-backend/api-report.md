@@ -193,10 +193,43 @@ export function createPublishAzureAction(options: {
   defaultBranch?: string | undefined;
   sourcePath?: string | undefined;
   token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+}>;
+
+// @public @deprecated
+export function createPublishBitbucketAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  description?: string | undefined;
+  defaultBranch?: string | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
+  sourcePath?: string | undefined;
+  enableLFS?: boolean | undefined;
+  token?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
 }>;
 
 // @public
-export function createPublishBitbucketAction(options: {
+export function createPublishBitbucketCloudAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  description?: string | undefined;
+  defaultBranch?: string | undefined;
+  repoVisibility?: 'private' | 'public' | undefined;
+  sourcePath?: string | undefined;
+  token?: string | undefined;
+}>;
+
+// @public
+export function createPublishBitbucketServerAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
 }): TemplateAction<{
@@ -225,11 +258,15 @@ export function createPublishGithubAction(options: {
   access?: string | undefined;
   defaultBranch?: string | undefined;
   deleteBranchOnMerge?: boolean | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
   allowRebaseMerge?: boolean | undefined;
   allowSquashMerge?: boolean | undefined;
   allowMergeCommit?: boolean | undefined;
   sourcePath?: string | undefined;
   requireCodeOwnerReviews?: boolean | undefined;
+  requiredStatusCheckContexts?: string[] | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
     | {

@@ -38,6 +38,7 @@ import {
   getManifestByVersion,
   ReleaseManifest,
 } from '@backstage/release-manifests';
+import 'global-agent/bootstrap';
 
 const DEP_TYPES = [
   'dependencies',

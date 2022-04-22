@@ -35,6 +35,7 @@ import ClearButton from '@material-ui/icons/Clear';
 import {
   SearchContextProvider,
   useSearch,
+  useSearchContextCheck,
 } from '@backstage/plugin-search-react';
 import { TrackSearch } from '../SearchTracker';
 
@@ -72,7 +73,7 @@ export const SearchBarBase = ({
 }: SearchBarBaseProps) => {
   const configApi = useApi(configApiRef);
   const [value, setValue] = useState<string>(defaultValue as string);
-  const hasSearchContext = useSearch();
+  const hasSearchContext = useSearchContextCheck();
 
   useEffect(() => {
     setValue(prevValue =>

@@ -889,6 +889,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
@@ -945,6 +946,7 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;

@@ -213,7 +213,7 @@ export class Stitcher {
     // to write the search index.
     const searchEntries = buildEntitySearch(entityId, entity);
 
-    const rowsChanged = await this.database<DbFinalEntitiesRow>(
+    const amountOfRowsChanged = await this.database<DbFinalEntitiesRow>(
       'final_entities',
     )
       .update({
@@ -225,7 +225,7 @@ export class Stitcher {
       .onConflict('entity_id')
       .merge(['final_entity', 'hash']);
 
-    if (rowsChanged.length === 0) {
+    if (amountOfRowsChanged === 0) {
       this.logger.debug(
         `Entity ${entityRef} is already processed, skipping write.`,
       );

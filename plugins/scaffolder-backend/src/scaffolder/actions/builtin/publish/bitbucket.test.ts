@@ -348,6 +348,7 @@ describe('publish:bitbucket', () => {
       defaultBranch: 'master',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -391,6 +392,7 @@ describe('publish:bitbucket', () => {
       defaultBranch: 'main',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
+      commitMessage: 'initial commit',
       gitAuthorInfo: {},
     });
   });
@@ -460,6 +462,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { name: 'Test', email: 'example@example.com' },
     });
   });
@@ -526,7 +529,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       defaultBranch: 'master',
-      commitMessage: 'Test commit message',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
   });

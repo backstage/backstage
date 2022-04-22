@@ -198,6 +198,7 @@ const performEnableLFS = async (opts: {
  * Creates a new action that initializes a git repository of the content in the workspace
  * and publishes it to Bitbucket.
  * @public
+ * @deprecated in favor of createPublishBitbucketCloudAction and createPublishBitbucketServerAction
  */
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrationRegistry;
@@ -213,6 +214,9 @@ export function createPublishBitbucketAction(options: {
     sourcePath?: string;
     enableLFS?: boolean;
     token?: string;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:bitbucket',
     description:
@@ -257,6 +261,21 @@ export function createPublishBitbucketAction(options: {
             type: 'string',
             description: 'The token to use for authorization to BitBucket',
           },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
+          },
         },
       },
       output: {
@@ -274,12 +293,18 @@ export function createPublishBitbucketAction(options: {
       },
     },
     async handler(ctx) {
+      ctx.logger.warn(
+        `[Deprecated] Please migrate the use of action "publish:bitbucket" to "publish:bitbucketCloud" or "publish:bitbucketServer".`,
+      );
       const {
         repoUrl,
         description,
         defaultBranch = 'master',
         repoVisibility = 'private',
         enableLFS = false,
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
       } = ctx.input;
 
       const { workspace, project, repo, host } = parseRepoUrl(
@@ -340,8 +365,12 @@ export function createPublishBitbucketAction(options: {
       });
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       let auth;
@@ -368,9 +397,9 @@ export function createPublishBitbucketAction(options: {
         auth,
         defaultBranch,
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 

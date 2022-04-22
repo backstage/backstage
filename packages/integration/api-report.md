@@ -66,6 +66,35 @@ export type AzureIntegrationConfig = {
 };
 
 // @public
+export class BitbucketCloudIntegration implements ScmIntegration {
+  constructor(integrationConfig: BitbucketCloudIntegrationConfig);
+  // (undocumented)
+  get config(): BitbucketCloudIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<BitbucketCloudIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
+export type BitbucketCloudIntegrationConfig = {
+  host: string;
+  apiBaseUrl: string;
+  username?: string;
+  appPassword?: string;
+};
+
+// @public @deprecated
 export class BitbucketIntegration implements ScmIntegration {
   constructor(integrationConfig: BitbucketIntegrationConfig);
   // (undocumented)
@@ -86,13 +115,41 @@ export class BitbucketIntegration implements ScmIntegration {
   get type(): string;
 }
 
-// @public
+// @public @deprecated
 export type BitbucketIntegrationConfig = {
   host: string;
   apiBaseUrl: string;
   token?: string;
   username?: string;
   appPassword?: string;
+};
+
+// @public
+export class BitbucketServerIntegration implements ScmIntegration {
+  constructor(integrationConfig: BitbucketServerIntegrationConfig);
+  // (undocumented)
+  get config(): BitbucketServerIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<BitbucketServerIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
+export type BitbucketServerIntegrationConfig = {
+  host: string;
+  apiBaseUrl: string;
+  token?: string;
 };
 
 // @public
@@ -138,6 +195,7 @@ export class GerritIntegration implements ScmIntegration {
 export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
+  cloneUrl?: string;
   gitilesBaseUrl?: string;
   username?: string;
   password?: string;
@@ -161,24 +219,49 @@ export function getAzureRequestOptions(
 };
 
 // @public
+export function getBitbucketCloudDefaultBranch(
+  url: string,
+  config: BitbucketCloudIntegrationConfig,
+): Promise<string>;
+
+// @public
+export function getBitbucketCloudDownloadUrl(
+  url: string,
+  config: BitbucketCloudIntegrationConfig,
+): Promise<string>;
+
+// @public
+export function getBitbucketCloudFileFetchUrl(
+  url: string,
+  config: BitbucketCloudIntegrationConfig,
+): string;
+
+// @public
+export function getBitbucketCloudRequestOptions(
+  config: BitbucketCloudIntegrationConfig,
+): {
+  headers: Record<string, string>;
+};
+
+// @public @deprecated
 export function getBitbucketDefaultBranch(
   url: string,
   config: BitbucketIntegrationConfig,
 ): Promise<string>;
 
-// @public
+// @public @deprecated
 export function getBitbucketDownloadUrl(
   url: string,
   config: BitbucketIntegrationConfig,
 ): Promise<string>;
 
-// @public
+// @public @deprecated
 export function getBitbucketFileFetchUrl(
   url: string,
   config: BitbucketIntegrationConfig,
 ): string;
 
-// @public
+// @public @deprecated
 export function getBitbucketRequestOptions(
   config: BitbucketIntegrationConfig,
 ): {
@@ -186,9 +269,51 @@ export function getBitbucketRequestOptions(
 };
 
 // @public
+export function getBitbucketServerDefaultBranch(
+  url: string,
+  config: BitbucketServerIntegrationConfig,
+): Promise<string>;
+
+// @public
+export function getBitbucketServerDownloadUrl(
+  url: string,
+  config: BitbucketServerIntegrationConfig,
+): Promise<string>;
+
+// @public
+export function getBitbucketServerFileFetchUrl(
+  url: string,
+  config: BitbucketServerIntegrationConfig,
+): string;
+
+// @public
+export function getBitbucketServerRequestOptions(
+  config: BitbucketServerIntegrationConfig,
+): {
+  headers: Record<string, string>;
+};
+
+// @public
+export function getGerritBranchApiUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getGerritCloneRepoUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): string;
+
+// @public
 export function getGerritFileContentsApiUrl(
   config: GerritIntegrationConfig,
   url: string,
+): string;
+
+// @public
+export function getGerritProjectsApiUrl(
+  config: GerritIntegrationConfig,
 ): string;
 
 // @public
@@ -332,8 +457,12 @@ export interface IntegrationsByType {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
-  // (undocumented)
+  // @deprecated (undocumented)
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  // (undocumented)
+  bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
+  // (undocumented)
+  bitbucketServer: ScmIntegrationsGroup<BitbucketServerIntegration>;
   // (undocumented)
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
   // (undocumented)
@@ -341,6 +470,16 @@ export interface IntegrationsByType {
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 }
+
+// @public
+export function parseGerritGitilesUrl(
+  config: GerritIntegrationConfig,
+  url: string,
+): {
+  branch: string;
+  filePath: string;
+  project: string;
+};
 
 // @public
 export function parseGerritJsonResponse(response: Response): Promise<unknown>;
@@ -366,14 +505,34 @@ export function readAzureIntegrationConfigs(
 ): AzureIntegrationConfig[];
 
 // @public
+export function readBitbucketCloudIntegrationConfig(
+  config: Config,
+): BitbucketCloudIntegrationConfig;
+
+// @public
+export function readBitbucketCloudIntegrationConfigs(
+  configs: Config[],
+): BitbucketCloudIntegrationConfig[];
+
+// @public @deprecated
 export function readBitbucketIntegrationConfig(
   config: Config,
 ): BitbucketIntegrationConfig;
 
-// @public
+// @public @deprecated
 export function readBitbucketIntegrationConfigs(
   configs: Config[],
 ): BitbucketIntegrationConfig[];
+
+// @public
+export function readBitbucketServerIntegrationConfig(
+  config: Config,
+): BitbucketServerIntegrationConfig;
+
+// @public
+export function readBitbucketServerIntegrationConfigs(
+  configs: Config[],
+): BitbucketServerIntegrationConfig[];
 
 // @public
 export function readGerritIntegrationConfig(
@@ -441,8 +600,12 @@ export interface ScmIntegrationRegistry
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
-  // (undocumented)
+  // @deprecated (undocumented)
   bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  // (undocumented)
+  bitbucketCloud: ScmIntegrationsGroup<BitbucketCloudIntegration>;
+  // (undocumented)
+  bitbucketServer: ScmIntegrationsGroup<BitbucketServerIntegration>;
   // (undocumented)
   gerrit: ScmIntegrationsGroup<GerritIntegration>;
   // (undocumented)
@@ -464,8 +627,12 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   get awsS3(): ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   get azure(): ScmIntegrationsGroup<AzureIntegration>;
-  // (undocumented)
+  // @deprecated (undocumented)
   get bitbucket(): ScmIntegrationsGroup<BitbucketIntegration>;
+  // (undocumented)
+  get bitbucketCloud(): ScmIntegrationsGroup<BitbucketCloudIntegration>;
+  // (undocumented)
+  get bitbucketServer(): ScmIntegrationsGroup<BitbucketServerIntegration>;
   // (undocumented)
   byHost(host: string): ScmIntegration | undefined;
   // (undocumented)
