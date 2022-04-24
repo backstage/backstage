@@ -222,7 +222,7 @@ function ResultView() {
 const useSplitViewStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    gridTemplateColumns: '1fr auto 3fr',
+    gridTemplateColumns: '280px auto 3fr',
     gridTemplateRows: '1fr',
   },
   child: {
