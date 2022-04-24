@@ -135,6 +135,8 @@ Options:
                                   Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
   --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
                                   in case a default <docs-dir>/index.md is not provided. (default: false)
+  --strict                        Run mkdocs in 'strict' mode, where any warnings while generating docs causes the process
+                                  to error and exit with a non-zero return code. (default: false)
   -v --verbose                    Enable verbose output. (default: false)
   -h, --help                      display help for command
 ```
