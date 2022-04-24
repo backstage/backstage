@@ -222,14 +222,15 @@ function TemplateEditorTextArea(props: { errorText?: string }) {
   const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
 
-  const errorPanel = useMemo(() => {
+  const panelExtension = useMemo(() => {
     if (!errorText) {
-      return undefined;
+      return showPanel.of(null);
     }
-    const div = document.createElement('div');
-    div.classList.add(classes.editorErrorPanel);
-    div.textContent = errorText;
-    return div;
+
+    const dom = document.createElement('div');
+    dom.classList.add(classes.editorErrorPanel);
+    dom.textContent = errorText;
+    return showPanel.of(() => ({ dom, bottom: true }));
   }, [classes, errorText]);
 
   useKeyboardEvent(
@@ -246,12 +247,7 @@ function TemplateEditorTextArea(props: { errorText?: string }) {
         className={classes.editorCodeMirror}
         theme="dark"
         height="100%"
-        extensions={[
-          StreamLanguage.define(yamlSupport),
-          ...(errorPanel
-            ? [showPanel.of(() => ({ dom: errorPanel, bottom: true }))]
-            : []),
-        ]}
+        extensions={[StreamLanguage.define(yamlSupport), panelExtension]}
         value={directoryEditor.selectedFile?.content}
         onChange={content =>
           directoryEditor.selectedFile?.updateContent(content)
