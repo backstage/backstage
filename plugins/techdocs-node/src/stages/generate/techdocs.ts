@@ -96,7 +96,11 @@ export class TechdocsGenerator implements GeneratorBase {
       etag,
       logger: childLogger,
       logStream,
+      strictMode,
     } = options;
+
+    // Default to non-strict mode
+    const isStrictMode = strictMode ?? false;
 
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
     const { path: mkdocsYmlPath, content } = await getMkdocsYml(inputDir);
@@ -130,9 +134,13 @@ export class TechdocsGenerator implements GeneratorBase {
     try {
       switch (this.options.runIn) {
         case 'local':
+          let localArgs = ['build', '-d', outputDir, '-v']
+          if (isStrictMode) {
+            localArgs = [...localArgs, '--strict']
+          }
           await runCommand({
             command: 'mkdocs',
-            args: ['build', '-d', outputDir, '-v'],
+            args: localArgs,
             options: {
               cwd: inputDir,
             },
@@ -143,10 +151,14 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker':
+          let dockerArgs = ['build', '-d', '/output']
+          if (isStrictMode) {
+            dockerArgs = [...dockerArgs, '--strict']
+          }
           await this.containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
-            args: ['build', '-d', '/output'],
+            args: dockerArgs,
             logStream,
             mountDirs,
             workingDir: '/input',

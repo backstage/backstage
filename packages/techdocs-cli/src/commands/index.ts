@@ -64,6 +64,11 @@ export function registerCommands(program: Command) {
       'Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md in case a default <docs-dir>/index.md is not provided.',
       false,
     )
+    .option(
+      '--strict',
+      "Run mkdocs in 'strict' mode, where any warnings while generating docs causes the process to error and exit with a non-zero return code.",
+      false,
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate').then(m => m.default)));
 

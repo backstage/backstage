@@ -1,0 +1,9 @@
+site_name: docs-test-fixture-with-warnings
+site_description: Documentation site test fixture that has warnings because of invalid nav entries
+
+nav:
+  - Home: index.md
+  - Does not exist: does-not-exist.md
+
+plugins:
+  - techdocs-core

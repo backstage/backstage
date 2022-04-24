@@ -53,6 +53,7 @@ export type GeneratorConfig = {
  * @param etag - A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.
  * @param logger - A logger that forwards the messages to the caller to be displayed outside of the backend.
  * @param logStream - A log stream that can send raw log messages to the caller to be displayed outside of the backend.
+ * @param strictMode - A boolean that determines whether to execute mkdocs in 'strict' mode, where warnings are considered errors.
  */
 export type GeneratorRunOptions = {
   inputDir: string;
@@ -61,6 +62,7 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
+  strictMode?: boolean;
 };
 
 /**

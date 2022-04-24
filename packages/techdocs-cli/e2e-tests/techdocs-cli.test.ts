@@ -58,7 +58,8 @@ const timeout = 25000;
 jest.setTimeout(timeout * 2);
 
 describe('end-to-end', () => {
-  const cwd = path.resolve(__dirname, '../src/example-docs');
+  const validDocsCwd = path.resolve(__dirname, '../src/example-docs');
+  const invalidDocsCwd = path.resolve(__dirname, '../src/example-docs-with-warnings');
 
   afterEach(async () => {
     // On Windows the pid of a spawned process may be wrong
@@ -90,17 +91,27 @@ describe('end-to-end', () => {
     const proc = await executeCommand(
       'techdocs-cli',
       ['generate', '--no-docker'],
-      { cwd, timeout },
+      { cwd: validDocsCwd, timeout },
     );
     expect(proc.stdout).toContain('Successfully generated docs');
     expect(proc.exit).toEqual(0);
+  });
+
+  it('generate should exit with an error when --strict is passed and there is a missing index entry', async () => {
+    const proc = await executeCommand(
+      'techdocs-cli',
+      ['generate', '--no-docker', '--strict'],
+      { cwd: invalidDocsCwd, timeout },
+    );
+    expect(proc.stderr).toContain('Failed to generate docs');
+    expect(proc.exit).toEqual(1);
   });
 
   it('can serve in mkdocs', async () => {
     const proc = await executeCommand(
       'techdocs-cli',
       ['serve:mkdocs', '--no-docker'],
-      { cwd, timeout },
+      { cwd: validDocsCwd, timeout },
     );
     expect(proc.stdout).toContain('Starting mkdocs server');
     expect(proc.exit).toEqual(0);
@@ -111,7 +122,7 @@ describe('end-to-end', () => {
     const proc = await executeCommand(
       'techdocs-cli',
       ['serve', '--no-docker'],
-      { cwd, timeout },
+      { cwd: validDocsCwd, timeout },
     );
     expect(proc.stdout).toContain('Starting mkdocs server');
     expect(proc.stdout).toContain('Serving docs in Backstage at');

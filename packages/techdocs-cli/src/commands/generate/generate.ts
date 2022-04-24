@@ -43,6 +43,7 @@ export default async function generate(opts: OptionValues) {
   const dockerImage = opts.dockerImage;
   const pullImage = opts.pull;
   const legacyCopyReadmeMdToIndexMd = opts.legacyCopyReadmeMdToIndexMd;
+  const strictMode = opts.strict;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -99,6 +100,7 @@ export default async function generate(opts: OptionValues) {
     logger,
     etag: opts.etag,
     ...(process.env.LOG_LEVEL === 'debug' ? { logStream: stdout } : {}),
+    strictMode,
   });
 
   logger.info('Done!');

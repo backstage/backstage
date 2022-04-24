@@ -54,6 +54,7 @@ export type GeneratorRunOptions = {
   etag?: string;
   logger: Logger;
   logStream?: Writable;
+  strictMode?: boolean;
 };
 
 // @public
