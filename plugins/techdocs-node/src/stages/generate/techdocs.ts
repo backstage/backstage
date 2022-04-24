@@ -132,12 +132,14 @@ export class TechdocsGenerator implements GeneratorBase {
     };
 
     try {
+      let localArgs = ['build', '-d', outputDir, '-v'];
+      let dockerArgs = ['build', '-d', '/output'];
+      if (isStrictMode) {
+        localArgs = [...localArgs, '--strict'];
+        dockerArgs = [...dockerArgs, '--strict'];
+      }
       switch (this.options.runIn) {
         case 'local':
-          let localArgs = ['build', '-d', outputDir, '-v'];
-          if (isStrictMode) {
-            localArgs = [...localArgs, '--strict'];
-          }
           await runCommand({
             command: 'mkdocs',
             args: localArgs,
@@ -151,10 +153,6 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker':
-          let dockerArgs = ['build', '-d', '/output'];
-          if (isStrictMode) {
-            dockerArgs = [...dockerArgs, '--strict'];
-          }
           await this.containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
