@@ -16,7 +16,6 @@
 import React, {
   Component,
   ReactNode,
-  useEffect,
   useMemo,
   useReducer,
   useState,
@@ -105,6 +104,11 @@ const useStyles = makeStyles(theme => ({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  editorErrorPanel: {
+    color: theme.palette.error.main,
+    lineHeight: 2,
+    margin: theme.spacing(0, 1),
   },
   editorFloatingButtons: {
     position: 'absolute',
@@ -219,14 +223,14 @@ function TemplateEditorTextArea(props: { errorText?: string }) {
   const directoryEditor = useDirectoryEditor();
 
   const errorPanel = useMemo(() => {
+    if (!errorText) {
+      return undefined;
+    }
     const div = document.createElement('div');
-    div.style.color = 'red';
+    div.classList.add(classes.editorErrorPanel);
+    div.textContent = errorText;
     return div;
-  }, []);
-
-  useEffect(() => {
-    errorPanel.textContent = errorText ?? '';
-  }, [errorPanel, errorText]);
+  }, [classes, errorText]);
 
   useKeyboardEvent(
     e => e.key === 's' && (e.ctrlKey || e.metaKey),
@@ -244,7 +248,9 @@ function TemplateEditorTextArea(props: { errorText?: string }) {
         height="100%"
         extensions={[
           StreamLanguage.define(yamlSupport),
-          showPanel.of(() => ({ dom: errorPanel, top: true })),
+          ...(errorPanel
+            ? [showPanel.of(() => ({ dom: errorPanel, bottom: true }))]
+            : []),
         ]}
         value={directoryEditor.selectedFile?.content}
         onChange={content =>
