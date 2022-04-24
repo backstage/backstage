@@ -134,9 +134,9 @@ export class TechdocsGenerator implements GeneratorBase {
     try {
       switch (this.options.runIn) {
         case 'local':
-          let localArgs = ['build', '-d', outputDir, '-v']
+          let localArgs = ['build', '-d', outputDir, '-v'];
           if (isStrictMode) {
-            localArgs = [...localArgs, '--strict']
+            localArgs = [...localArgs, '--strict'];
           }
           await runCommand({
             command: 'mkdocs',
@@ -151,9 +151,9 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker':
-          let dockerArgs = ['build', '-d', '/output']
+          let dockerArgs = ['build', '-d', '/output'];
           if (isStrictMode) {
-            dockerArgs = [...dockerArgs, '--strict']
+            dockerArgs = [...dockerArgs, '--strict'];
           }
           await this.containerRunner.runContainer({
             imageName:

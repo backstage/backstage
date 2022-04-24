@@ -59,7 +59,10 @@ jest.setTimeout(timeout * 2);
 
 describe('end-to-end', () => {
   const validDocsCwd = path.resolve(__dirname, '../src/example-docs');
-  const invalidDocsCwd = path.resolve(__dirname, '../src/example-docs-with-warnings');
+  const invalidDocsCwd = path.resolve(
+    __dirname,
+    '../src/example-docs-with-warnings',
+  );
 
   afterEach(async () => {
     // On Windows the pid of a spawned process may be wrong
