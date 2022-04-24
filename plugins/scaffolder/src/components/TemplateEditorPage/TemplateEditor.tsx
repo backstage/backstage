@@ -21,13 +21,20 @@ import React, {
   useReducer,
   useState,
 } from 'react';
+import { useKeyboardEvent } from '@react-hookz/web';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import { showPanel } from '@codemirror/view';
 import { StreamLanguage } from '@codemirror/language';
-import { IconButton, makeStyles, Divider } from '@material-ui/core';
+import {
+  IconButton,
+  makeStyles,
+  Divider,
+  Tooltip,
+  Paper,
+} from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import CloseIcon from '@material-ui/icons/Close';
@@ -99,6 +106,11 @@ const useStyles = makeStyles(theme => ({
     left: 0,
     right: 0,
   },
+  editorFloatingButtons: {
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(3),
+  },
   preview: {
     gridArea: 'preview',
     overflow: 'auto',
@@ -108,11 +120,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const TemplateEditor = ({
-  directory,
-  fieldExtensions = [],
-  onClose,
-}: {
+export const TemplateEditor = (props: {
   directory: TemplateDirectoryAccess;
   fieldExtensions?: FieldExtensionOptions<any, any>[];
   onClose?: () => void;
@@ -122,12 +130,12 @@ export const TemplateEditor = ({
   const [errorText, setErrorText] = useState<string>();
 
   return (
-    <DirectoryEditorProvider directory={directory}>
+    <DirectoryEditorProvider directory={props.directory}>
       <DryRunProvider>
         <div className={classes.rootWrapper}>
           <main className={classes.root}>
             <section className={classes.browser}>
-              <TemplateEditorBrowser />
+              <TemplateEditorBrowser onClose={props.onClose} />
             </section>
             <section className={classes.editor}>
               <TemplateEditorTextArea errorText={errorText} />
@@ -135,7 +143,7 @@ export const TemplateEditor = ({
             <section className={classes.preview}>
               <TemplateEditorForm
                 setErrorText={setErrorText}
-                fieldExtensions={fieldExtensions}
+                fieldExtensions={props.fieldExtensions}
               />
             </section>
             <section className={classes.results}>
@@ -148,23 +156,52 @@ export const TemplateEditor = ({
   );
 };
 
-function TemplateEditorBrowser() {
+function TemplateEditorBrowser(props: { onClose?: () => void }) {
   const classes = useStyles();
   const directoryEditor = useDirectoryEditor();
+  const changedFiles = directoryEditor.files.filter(file => file.dirty);
+
+  const handleClose = () => {
+    if (!props.onClose) {
+      return;
+    }
+    if (changedFiles.length > 0) {
+      // eslint-disable-next-line no-alert
+      const accepted = window.confirm(
+        'Are you sure? Unsaved changes will be lost',
+      );
+      if (!accepted) {
+        return;
+      }
+    }
+    props.onClose();
+  };
 
   return (
     <>
       <div className={classes.browserButtons}>
-        <IconButton className={classes.browserButton}>
-          <SaveIcon />
-        </IconButton>
-        <IconButton className={classes.browserButton}>
-          <RefreshIcon />
-        </IconButton>
+        <Tooltip title="Save all files">
+          <IconButton
+            className={classes.browserButton}
+            onClick={() => directoryEditor.save()}
+          >
+            <SaveIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Reload directory">
+          <IconButton
+            className={classes.browserButton}
+            onClick={() => directoryEditor.reload()}
+          >
+            <RefreshIcon />
+          </IconButton>
+        </Tooltip>
         <div className={classes.browserButtonsGap} />
-        <IconButton className={classes.browserButton}>
-          <CloseIcon />
-        </IconButton>
+        <Tooltip title="Close directory">
+          <IconButton className={classes.browserButton} onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
       </div>
       <Divider className={classes.browserButtonsDivider} />
       <FileBrowser
@@ -191,18 +228,52 @@ function TemplateEditorTextArea(props: { errorText?: string }) {
     errorPanel.textContent = errorText ?? '';
   }, [errorPanel, errorText]);
 
+  useKeyboardEvent(
+    e => e.key === 's' && (e.ctrlKey || e.metaKey),
+    e => {
+      e.preventDefault();
+      directoryEditor.save();
+    },
+  );
+
   return (
-    <CodeMirror
-      className={classes.editorCodeMirror}
-      theme="dark"
-      height="100%"
-      extensions={[
-        StreamLanguage.define(yamlSupport),
-        showPanel.of(() => ({ dom: errorPanel, top: true })),
-      ]}
-      value={directoryEditor.selectedFile?.content}
-      onChange={content => directoryEditor.selectedFile?.updateContent(content)}
-    />
+    <>
+      <CodeMirror
+        className={classes.editorCodeMirror}
+        theme="dark"
+        height="100%"
+        extensions={[
+          StreamLanguage.define(yamlSupport),
+          showPanel.of(() => ({ dom: errorPanel, top: true })),
+        ]}
+        value={directoryEditor.selectedFile?.content}
+        onChange={content =>
+          directoryEditor.selectedFile?.updateContent(content)
+        }
+      />
+      {directoryEditor.selectedFile?.dirty && (
+        <div className={classes.editorFloatingButtons}>
+          <Paper>
+            <Tooltip title="Save file">
+              <IconButton
+                className={classes.browserButton}
+                onClick={() => directoryEditor.save()}
+              >
+                <SaveIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Reload file">
+              <IconButton
+                className={classes.browserButton}
+                onClick={() => directoryEditor.reload()}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+          </Paper>
+        </div>
+      )}
+    </>
   );
 }
 
