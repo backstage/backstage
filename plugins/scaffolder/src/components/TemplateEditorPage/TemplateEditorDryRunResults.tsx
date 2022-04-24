@@ -112,15 +112,15 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
 export function TemplateEditorDryRunResults() {
   const classes = useStyles();
   const dryRun = useDryRun();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [hidden, setHidden] = useState(true);
 
   const resultsLength = dryRun.results.length;
   const prevResultsLength = usePrevious(resultsLength);
   useEffect(() => {
     if (prevResultsLength === 0 && resultsLength === 1) {
-      setExpanded(true);
       setHidden(false);
+      setExpanded(true);
     } else if (prevResultsLength === 1 && resultsLength === 0) {
       setExpanded(false);
     }
