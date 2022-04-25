@@ -47,8 +47,8 @@ import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import { StreamLanguage } from '@codemirror/stream-parser';
 import { LogViewer } from '@backstage/core-components';
 import { usePrevious } from '@react-hookz/web';
-import { TaskStatusStepper } from '../TaskPage/TaskPage';
-import { TaskPageLinks } from '../TaskPage/TaskPageLinks';
+import { TaskStatusStepper } from '../../TaskPage/TaskPage';
+import { TaskPageLinks } from '../../TaskPage/TaskPageLinks';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { BackstageTheme } from '@backstage/theme';
 
