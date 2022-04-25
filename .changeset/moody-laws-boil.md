@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-api-docs': minor
+'@backstage/plugin-api-docs': patch
 '@backstage/plugin-catalog': minor
 '@backstage/plugin-catalog-react': minor
 ---
