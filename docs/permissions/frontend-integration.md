@@ -10,7 +10,7 @@ In most cases, actual functionality that live within various plugins will alread
 
 However, there are some cases where the integrator needs to supplement the policy on the frontend. One example is app level routing.
 
-If your Backstage permission policy may return a `DENY` for users requesting the `catalogEntityCreatePermission`, it may make sense, for example, to remove access to the `/catalog-import` page entirely on the frontend:
+If your Backstage permission policy may return a `DENY` for users requesting the `catalogEntityCreatePermission`, it may make sense, for example, to remove access to the `/catalog-import` page entirely:
 
 ```diff
 // packages/app/src/App.tsx
