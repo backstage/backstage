@@ -31,9 +31,17 @@ import pluralize from 'pluralize';
  * Shown as SnackBar at the top of the page
  */
 // TODO: improve on this and promote to a shared component for use by all apps.
-export function AlertDisplay(_props: {}) {
+
+type Props = {
+  vertical?: 'top' | 'bottom';
+  horizontal?: 'left' | 'center' | 'right';
+}
+
+export function AlertDisplay(props: Props) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
+
+  const { vertical = 'top', horizontal = 'center' } = props;
 
   useEffect(() => {
     const subscription = alertApi
@@ -56,7 +64,7 @@ export function AlertDisplay(_props: {}) {
   };
 
   return (
-    <Snackbar open anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+    <Snackbar open anchorOrigin={{ vertical, horizontal}}>
       <Alert
         action={
           <IconButton
