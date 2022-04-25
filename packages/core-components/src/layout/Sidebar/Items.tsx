@@ -389,7 +389,6 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       invisible={!hasNotifications}
       className={classnames({ [classes.closedItemIcon]: !isOpen })}
     >
-      <Icon fontSize="small" />
       {displayItemIcon}
     </Badge>
   );
