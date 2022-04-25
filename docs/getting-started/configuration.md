@@ -217,8 +217,7 @@ for 7 days, it's a lucky number.
   <img src='../assets/getting-started/gh-pat.png' alt='Screenshot of the GitHub Personal Access Token creation page' />
 </p>
 
-Set the scope to your likings. For this tutorial, selecting "repo" and "workflow" is required as the scaffolding job in this guide configures a GitHub actions workflow for the newly created project.
-enough.
+Set the scope to your likings. For this tutorial, selecting `repo` and `workflow` is required as the scaffolding job in this guide configures a GitHub actions workflow for the newly created project.
 
 In the `app-config.yaml`, search for `integrations:` and add your token, like we
 did in below example:
@@ -227,7 +226,7 @@ did in below example:
 integrations:
   github:
     - host: github.com
-      token: ghp_urtokendeinfewinfiwebfweb
+      token: $GITHUB_TOKEN
 ```
 
 That's settled. This information will be leveraged by other plugins.
