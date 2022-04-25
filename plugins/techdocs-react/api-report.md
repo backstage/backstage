@@ -17,7 +17,7 @@ import { SetStateAction } from 'react';
 // @alpha
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
-): Extension<ComponentType<TComponentProps>>;
+): Extension<(props: TComponentProps) => JSX.Element | null>;
 
 // @alpha (undocumented)
 export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue;

@@ -6,10 +6,9 @@
 /// <reference types="react" />
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { ComponentType } from 'react';
 
 // @public
-export const ReportIssue: ComponentType<ReportIssueProps>;
+export const ReportIssue: (props: ReportIssueProps) => JSX.Element | null;
 
 // @public (undocumented)
 export type ReportIssueProps = {
