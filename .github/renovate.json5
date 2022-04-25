@@ -2,6 +2,8 @@
   labels: ['dependencies'],
   extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
   rangeStrategy: 'update-lockfile',
+  // @elastic/elasticsearch is ignored due to licensing issues. See #10992
+  ignoreDeps: ['@elastic/elasticsearch'],
   packageRules: [
     {
       matchSourceUrlPrefixes: ['https://github.com/spotify/web-scripts'],
