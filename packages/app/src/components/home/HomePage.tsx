@@ -56,8 +56,6 @@ const timeFormat: Intl.DateTimeFormatOptions = {
   hour12: false,
 };
 
-import { DateTime } from 'luxon';
-
 export const homePage = (
   <Page themeId="home">
     <Header title={<WelcomeTitle />} pageTitleOverride="Home">
@@ -69,8 +67,8 @@ export const homePage = (
     <Content>
       <Banner
         info="Helloooo world!!!"
-        startTime={DateTime.fromISO('2022-03-19T19:00:00')}
-        endTime={DateTime.fromISO('2023-03-19T19:16:50')}
+        startTime={'2022-03-19T19:00:00'}
+        endTime={'2023-03-19T19:16:50'}
       />
       <Grid container spacing={3}>
         <Grid item xs={12}>

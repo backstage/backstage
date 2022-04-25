@@ -15,12 +15,20 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { homePlugin, HomepageCompositionRoot } from '../src/plugin';
+import { homePlugin, HomepageCompositionRoot, Banner } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(homePlugin)
   .addPage({
-    element: <HomepageCompositionRoot />,
+    element: (
+      <HomepageCompositionRoot>
+        <Banner
+          startTime="2022-04-23"
+          endTime="2022-04-25"
+          info="Happy holidays!"
+        />
+      </HomepageCompositionRoot>
+    ),
     title: 'Root Page',
     path: '/',
   })

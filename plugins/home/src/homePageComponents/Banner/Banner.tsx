@@ -53,13 +53,14 @@ const useStyles = makeStyles(
     message: {
       display: 'flex',
       alignItems: 'center',
-      color: theme.palette.banner.text,
+      color: theme.palette.text.primary,
+      fontWeight: Number(theme.typography.fontWeightBold),
       '& a': {
         color: theme.palette.banner.link,
       },
     },
     info: {
-      backgroundColor: theme.palette.primary.dark,
+      backgroundColor: '#015A4A',
     },
   }),
   { name: 'BackstageHomepageBanner' },
@@ -78,13 +79,27 @@ export const Banner = (props: BannerProps) => {
         root: classNames(classes.root, !false && classes.topPosition),
       }}
     >
-      <SnackbarContent
+      <DefaultBannerContent
         message={props.info}
+        color="primary"
         classes={{
           root: classNames(classes.content, classes.info),
           message: classes.message,
         }}
       />
     </Snackbar>
+  );
+};
+const DefaultBannerContent = props => {
+  const classes = useStyles();
+  return (
+    <SnackbarContent
+      message={props.info}
+      color="primary"
+      classes={{
+        root: classNames(classes.content, classes.info),
+        message: classes.message,
+      }}
+    />
   );
 };
