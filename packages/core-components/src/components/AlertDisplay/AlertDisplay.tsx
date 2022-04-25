@@ -33,12 +33,12 @@ import pluralize from 'pluralize';
 
 // TODO: improve on this and promote to a shared component for use by all apps.
 
-type Props = {
+export type AlertDisplayProps = {
   vertical?: 'top' | 'bottom';
   horizontal?: 'left' | 'center' | 'right';
 };
 
-export function AlertDisplay(props: Props) {
+export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
 
