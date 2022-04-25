@@ -74,6 +74,12 @@ techdocs:
 
     type: 'local'
 
+    # Optional when techdocs.publisher.type is set to 'local'.
+
+    local:
+      # (Optional). Set this to specify where the generated documentation is stored.
+      publishDirectory: '/path/to/local/directory'
+
     # Required when techdocs.publisher.type is set to 'googleGcs'. Skip otherwise.
 
     googleGcs:

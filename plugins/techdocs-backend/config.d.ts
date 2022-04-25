@@ -66,6 +66,13 @@ export interface Config {
     publisher?:
       | {
           type: 'local';
+
+          local?: {
+            /**
+             * Directory to store generated static files.
+             */
+            publishDirectory?: string;
+          };
         }
       | {
           type: 'awsS3';
