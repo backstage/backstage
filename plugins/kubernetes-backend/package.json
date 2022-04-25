@@ -50,7 +50,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "fs-extra": "10.0.1",
+    "fs-extra": "10.1.0",
     "helmet": "^5.0.2",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",

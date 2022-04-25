@@ -35,7 +35,7 @@
     "@backstage/errors": "^1.0.0",
     "@backstage/integration": "^1.1.0",
     "@backstage/plugin-catalog-backend": "^1.1.0",
-    "fs-extra": "10.0.1",
+    "fs-extra": "10.1.0",
     "msw": "^0.35.0",
     "node-fetch": "^2.6.7",
     "uuid": "^8.0.0",
