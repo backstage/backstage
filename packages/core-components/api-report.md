@@ -52,7 +52,13 @@ import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
 // @public
-export function AlertDisplay(_props: {}): JSX.Element | null;
+export type AlertDisplayProps = {
+  vertical?: 'top' | 'bottom';
+  horizontal?: 'left' | 'center' | 'right';
+};
+
+// @public
+export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
 
 // @public
 enum Alignment {
