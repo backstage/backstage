@@ -153,7 +153,6 @@ nav:
           - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
-      - Using authentication and identity: 'auth/using-auth.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
