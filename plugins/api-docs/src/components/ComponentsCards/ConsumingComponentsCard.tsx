@@ -28,13 +28,14 @@ import React from 'react';
 import {
   CodeSnippet,
   InfoCard,
+  InfoCardVariants,
   Link,
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
 
 type Props = {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 };
 
 export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {

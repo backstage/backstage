@@ -15,6 +15,7 @@
  */
 
 import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
+import { InfoCardVariants } from '@backstage/core-components';
 import React from 'react';
 import {
   asComponentEntities,
@@ -25,7 +26,7 @@ import {
 
 /** @public */
 export interface DependsOnComponentsCardProps {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
   title?: string;
 }
 
