@@ -20,7 +20,7 @@ import { useAsync } from '@react-hookz/web';
 import {
   TemplateDirectoryAccess,
   WebFileSystemAccess,
-} from '../../lib/filesystem';
+} from '../../../lib/filesystem';
 
 interface DirectoryLoaderProps {
   onLoad(directory: TemplateDirectoryAccess): void;

@@ -23,7 +23,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import {
   TemplateDirectoryAccess,
   TemplateFileAccess,
-} from '../../lib/filesystem';
+} from '../../../lib/filesystem';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ErrorPanel, Progress } from '@backstage/core-components';
 
