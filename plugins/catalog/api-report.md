@@ -247,6 +247,8 @@ export const EntityLayout: {
 export interface EntityLayoutProps {
   // (undocumented)
   children?: React_2.ReactNode;
+  // (undocumented)
+  NotFoundComponent?: React_2.ReactNode;
   // Warning: (ae-forgotten-export) The symbol "contextMenuOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
