@@ -23940,6 +23940,11 @@ testcontainers@^8.1.2:
     ssh-remote-port-forward "^1.0.4"
     tar-fs "^2.1.1"
 
+testing-library__dom@^7.29.4-beta.1:
+  version "7.29.4-beta.1"
+  resolved "https://registry.npmjs.org/testing-library__dom/-/testing-library__dom-7.29.4-beta.1.tgz#dc755f485837e923efbe12c1b7ae43b0ed326f96"
+  integrity sha512-vb/SMg8rXYcYYFY2eQ2n2a0p2VWNAseM4WHLfsckIyLwxRz5fYqKysUzUYpAX8SwRfruRK+tZqLuL4ND+D1s7Q==
+
 text-extensions@^1.0.0:
   version "1.9.0"
   resolved "https://registry.npmjs.org/text-extensions/-/text-extensions-1.9.0.tgz#1853e45fee39c945ce6f6c36b2d659b5aabc2a26"

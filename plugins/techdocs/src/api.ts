@@ -25,6 +25,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
  * Utility API reference for the {@link TechDocsStorageApi}.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-techdocs-react` instead
  */
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
@@ -44,6 +45,7 @@ export const techdocsApiRef = createApiRef<TechDocsApi>({
  * The outcome of a docs sync operation.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-techdocs-react` instead
  */
 export type SyncResult = 'cached' | 'updated';
 
@@ -51,6 +53,7 @@ export type SyncResult = 'cached' | 'updated';
  * API which talks to TechDocs storage to fetch files to render.
  *
  * @public
+ * @deprecated Import from `@backstage/plugin-techdocs-react` instead
  */
 export interface TechDocsStorageApi {
   getApiOrigin(): Promise<string>;
