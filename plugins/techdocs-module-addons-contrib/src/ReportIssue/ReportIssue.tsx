@@ -124,7 +124,9 @@ export const ReportIssueAddon = ({
       >
         <IssueLink
           repository={repository}
-          template={buildTemplate ? buildTemplate(selection) : defaultTemplate}
+          template={
+            buildTemplate ? buildTemplate({ selection }) : defaultTemplate
+          }
         />
       </Paper>
     </Portal>

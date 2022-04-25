@@ -25,9 +25,11 @@ export type ReportIssueTemplate = {
 /**
  * @public
  */
-export type ReportIssueTemplateBuilder = (
-  selection: Selection,
-) => ReportIssueTemplate;
+export type ReportIssueTemplateBuilder = ({
+  selection,
+}: {
+  selection: Selection;
+}) => ReportIssueTemplate;
 
 export type Repository = {
   type: string;

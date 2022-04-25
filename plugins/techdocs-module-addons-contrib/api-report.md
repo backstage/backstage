@@ -24,9 +24,11 @@ export type ReportIssueTemplate = {
 };
 
 // @public (undocumented)
-export type ReportIssueTemplateBuilder = (
-  selection: Selection,
-) => ReportIssueTemplate;
+export type ReportIssueTemplateBuilder = ({
+  selection,
+}: {
+  selection: Selection;
+}) => ReportIssueTemplate;
 
 // @public
 export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}>;
