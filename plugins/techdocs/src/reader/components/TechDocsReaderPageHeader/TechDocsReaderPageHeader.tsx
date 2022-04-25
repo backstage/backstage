@@ -71,7 +71,7 @@ export const TechDocsReaderPageHeader = (
     subtitle,
     setSubtitle,
     entityRef,
-    metadata: { value: metadata },
+    metadata: { value: metadata, loading: metadataLoading },
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
   } = useTechDocsReaderPage();
 
@@ -146,9 +146,11 @@ export const TechDocsReaderPageHeader = (
     </>
   );
 
-  // If there is no entity metadata, there's no reason to show the header.
-  if (entityMetadataLoading === false && entityMetadata === undefined)
-    return null;
+  // If there is no entity or techdocs metadata, there's no reason to show the
+  // header (hides the header on 404 error pages).
+  const noEntMetadata = !entityMetadataLoading && entityMetadata === undefined;
+  const noTdMetadata = !metadataLoading && metadata === undefined;
+  if (noEntMetadata || noTdMetadata) return null;
 
   return (
     <Header

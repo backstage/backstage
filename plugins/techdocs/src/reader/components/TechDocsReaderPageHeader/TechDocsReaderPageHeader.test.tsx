@@ -148,6 +148,28 @@ describe('<TechDocsReaderPageHeader />', () => {
     });
   });
 
+  it('should not render a techdocs page header if techdocs metadata is missing', async () => {
+    getTechDocsMetadata.mockResolvedValue(undefined);
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageHeader />
+        </Wrapper>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+            '/docs': rootRouteRef,
+          },
+        },
+      );
+
+      await waitFor(() => {
+        expect(rendered.container.innerHTML).not.toContain('header');
+      });
+    });
+  });
+
   it('should render a link back to the component page', async () => {
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
 
