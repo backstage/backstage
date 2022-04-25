@@ -26,7 +26,7 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { Content, Progress } from '@backstage/core-components';
+import { Content, ErrorPage } from '@backstage/core-components';
 
 import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
@@ -72,7 +72,12 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const { withSearch = true, onReady } = props;
     const classes = useStyles();
     const addons = useTechDocsAddons();
-    const { entityRef, shadowRoot, setShadowRoot } = useTechDocsReaderPage();
+    const {
+      entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
+      entityRef,
+      shadowRoot,
+      setShadowRoot,
+    } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
 
     const [jss, setJss] = useState(
@@ -121,11 +126,20 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const secondarySidebarAddonLocation = document.createElement('div');
     secondarySidebarElement?.prepend(secondarySidebarAddonLocation);
 
-    // do not return content until dom is ready
+    // No entity metadata = 404. Don't render content at all.
+    if (entityMetadataLoading === false && !entityMetadata)
+      return <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
+
+    // Do not return content until dom is ready; instead, render a state
+    // indicator, which handles progress and content errors on our behalf.
     if (!dom) {
       return (
         <Content>
-          <Progress />
+          <Grid container>
+            <Grid xs={12} item>
+              <TechDocsStateIndicator />
+            </Grid>
+          </Grid>
         </Content>
       );
     }

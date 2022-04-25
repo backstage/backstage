@@ -322,7 +322,7 @@ export type TechDocsReaderPageContentProps = {
 // @public
 export const TechDocsReaderPageHeader: (
   props: TechDocsReaderPageHeaderProps,
-) => JSX.Element;
+) => JSX.Element | null;
 
 // @public @deprecated
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
