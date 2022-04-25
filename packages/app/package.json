@@ -55,6 +55,8 @@
     "@backstage/plugin-stack-overflow": "^0.1.0",
     "@backstage/plugin-tech-radar": "^0.5.11",
     "@backstage/plugin-techdocs": "^1.1.0",
+    "@backstage/plugin-techdocs-react": "^0.1.0",
+    "@backstage/plugin-techdocs-module-addons-contrib": "^0.0.0",
     "@backstage/plugin-todo": "^0.2.6",
     "@backstage/plugin-user-settings": "^0.4.3",
     "@backstage/plugin-tech-insights": "^0.2.0",
