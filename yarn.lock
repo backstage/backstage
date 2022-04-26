@@ -4329,9 +4329,9 @@
     react-is "^16.8.0 || ^17.0.0"
 
 "@maxim_mazurok/gapi.client.calendar@^3.0.20220408":
-  version "3.0.20220408"
-  resolved "https://registry.npmjs.org/@maxim_mazurok/gapi.client.calendar/-/gapi.client.calendar-3.0.20220408.tgz#f6c4c91a1785bc0484a9c0b14fd079215d9ed80f"
-  integrity sha512-G0PF3QE2wWTDIDTpCQFmwkZSxuHtJQyMlRzK2Li5ZYdZ+sL2wm16iRaa3C8wx6nUStN5kY7nHSAPJ4jeN4npGw==
+  version "3.0.20220422"
+  resolved "https://registry.npmjs.org/@maxim_mazurok/gapi.client.calendar/-/gapi.client.calendar-3.0.20220422.tgz#f12bcd64edae03738685f5f5ed68874f2838fa1a"
+  integrity sha512-AZUpFnWuKAU2IqdWMlUHiZRkIgmQe5ZKHkmnowIGVV+UP85vpSSCjlSHssxOmFQA/tnowcbIHMMVBh+ZE0NdlQ==
   dependencies:
     "@types/gapi.client" "*"
 
