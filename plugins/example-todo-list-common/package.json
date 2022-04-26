@@ -36,7 +36,7 @@
     "@backstage/core-app-api": "^1.0.1-next.0",
     "@backstage/dev-utils": "^1.0.1-next.0",
     "@backstage/test-utils": "^1.0.1-next.1",
-    "@types/node": "*",
+    "@types/node": "^14.14.32",
     "msw": "^0.35.0",
     "cross-fetch": "^3.1.5"
   },
