@@ -186,14 +186,57 @@ async ({ profile: { email } }, ctx) => {
   const ownershipRefs = getDefaultOwnershipRefs(entity);
 
   // The last step is to issue the token, where we might provide more options in the future.
-  const token = ctx.issueToken({
+  return ctx.issueToken({
     claims: {
       sub: stringifyEntityRef(entity),
       ent: ownershipRefs,
     },
   });
-  return { token };
 };
+```
+
+## Sign-In without Users in the Catalog
+
+While populating the catalog with organizational data unlocks more powerful ways
+to browse your software ecosystem, it might not always be a viable or prioritized
+option. However, even if you do not have user entities populated in your catalog, you
+can still sign in users. As there are currently no built-in sign-in resolvers for
+this scenario you will need to implement your own.
+
+Signing in a user that doesn't exist in the catalog is as simple as skipping the
+catalog lookup step from the above example. Rather than looking up the user, we
+instead immediately issue a token using whatever information is available. One caveat
+is that it can be tricky to determine the ownership references, although it can
+be achieved for example through a lookup to an external service. You typically
+want to at least use the user itself as a lone ownership reference.
+
+```ts
+import { DEFAULT_NAMESPACE, stringifyEntityRef, } from '@backstage/catalog-model';
+
+// This example only shows the resolver function itself.
+async ({ profile }, ctx) => {
+  if (!profile.email) {
+    throw new Error(
+      'Login failed, user profile does not contain an email',
+    );
+  }
+  // We again use the local part of the email as the user name.
+  const [localPart] = profile.email.split('@');
+
+  // By using `stringifyEntityRef` we ensure that the reference is formatted correctly
+  const userEntityRef = stringifyEntityRef({
+    kind: 'User',
+    name: localPart,
+    namespace: DEFAULT_NAMESPACE,
+  });
+
+  return ctx.issueToken({
+    claims: {
+      sub: userEntityRef,
+      ent: [userEntityRef],
+    },
+  });
+},
 ```
 
 ## AuthHandler
