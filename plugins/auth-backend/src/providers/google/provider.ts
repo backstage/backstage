@@ -254,7 +254,7 @@ export const google = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their email to the entity email.
      */
-    emailMatchingUserEntityEmail: () => commonByEmailResolver,
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
     /**
      * Looks up the user by matching their email to the `google.com/email` annotation.
      */

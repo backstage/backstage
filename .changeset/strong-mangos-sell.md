@@ -11,6 +11,6 @@ Add the existing resolver to more providers (already available at `google`):
 
 Add a new resolver for simple email-to-email matching:
 
-- `providers.google.resolvers.emailMatchingUserEntityEmail()`
-- `providers.microsoft.resolvers.emailMatchingUserEntityEmail()`
-- `providers.okta.resolvers.emailMatchingUserEntityEmail()`
+- `providers.google.resolvers.emailMatchingUserEntityProfileEmail()`
+- `providers.microsoft.resolvers.emailMatchingUserEntityProfileEmail()`
+- `providers.okta.resolvers.emailMatchingUserEntityProfileEmail()`

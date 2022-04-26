@@ -285,7 +285,7 @@ export const okta = createAuthProviderIntegration({
     /**
      * Looks up the user by matching their email to the entity email.
      */
-    emailMatchingUserEntityEmail: () => commonByEmailResolver,
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
     /**
      * Looks up the user by matching their email to the `okta.com/email` annotation.
      */

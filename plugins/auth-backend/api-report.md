@@ -872,7 +872,7 @@ export const providers: Readonly<{
     ) => AuthProviderFactory;
     resolvers: Readonly<{
       emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
-      emailMatchingUserEntityEmail: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
@@ -891,7 +891,7 @@ export const providers: Readonly<{
     ) => AuthProviderFactory;
     resolvers: Readonly<{
       emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
-      emailMatchingUserEntityEmail: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
@@ -949,7 +949,7 @@ export const providers: Readonly<{
     ) => AuthProviderFactory;
     resolvers: Readonly<{
       emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
-      emailMatchingUserEntityEmail: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
