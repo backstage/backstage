@@ -85,7 +85,8 @@ So far we've only used the `PermissionEvaluator.authorize` method, which will ev
 
 + const transformConditions: ConditionTransformer<TodoFilter> = createConditionTransformer(Object.values(rules));
 
-  router.get('/todos', async (req, res) => {
+- router.get('/todos', async (_req, res) => {
++ router.get('/todos', async (req, res) => {
 +   const token = getBearerTokenFromAuthorizationHeader(
 +     req.header('authorization'),
 +   );
