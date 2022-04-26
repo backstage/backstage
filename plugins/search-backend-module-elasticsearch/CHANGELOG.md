@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- a7f7a63d14: Prevent orphaned stale indices by permanently marking them for deletion so removal can be re-attempted if it failed previously
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.1-next.0
+
 ## 0.1.3
 
 ### Patch Changes

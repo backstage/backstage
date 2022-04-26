@@ -1,5 +1,17 @@
 # @backstage/cli
 
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 97cce67ac7: Add instructions to `create-github-app` command.
+- 08e12a3a14: Add package global-agent to support behind a proxy for backstage-cli commands like versions:bump.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 8ab2a8226b: Updated the `create-github-app` command to throw an error if the organization argument is a user or a non existing organization.
+- Updated dependencies
+  - @backstage/config-loader@1.1.1-next.0
+
 ## 0.17.0
 
 ### Minor Changes

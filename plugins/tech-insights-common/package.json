@@ -38,7 +38,7 @@
     "@backstage/types": "^1.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.0-next.1"
+    "@backstage/cli": "^0.17.1-next.0"
   },
   "files": [
     "dist"

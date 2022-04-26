@@ -1,5 +1,12 @@
 # @backstage/plugin-allure
 
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.0-next.0
+
 ## 0.1.20
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @backstage/plugin-search-react
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 11a46863de: Export `useSearchContextCheck` hook to check if the search context is available
+- a307a14be0: Removed dependency on `@backstage/core-app-api`.
+
 ## 0.1.0
 
 ### Minor Changes

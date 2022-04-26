@@ -1,5 +1,47 @@
 # @backstage/integration-react
 
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 1b4e1e2306: Split `bitbucket` integration into `bitbucketCloud` and `bitbucketServer`
+  (backwards compatible).
+
+  In order to migrate to the new integration configs,
+  move your configs from `integrations.bitbucket`
+  to `integrations.bitbucketCloud` or `integrations.bitbucketServer`.
+
+  Migration example:
+
+  **Before:**
+
+  ```yaml
+  integrations:
+    bitbucket:
+      - host: bitbucket.org
+        username: bitbucket_user
+        appPassword: app-password
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+  **After:**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: bitbucket_user
+        appPassword: app-password
+    bitbucketServer:
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+
 ## 1.0.1
 
 ### Patch Changes

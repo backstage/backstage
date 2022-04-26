@@ -1,5 +1,14 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.1.22-next.0
+
+### Patch Changes
+
+- 8cc75993a6: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+  - @backstage/plugin-auth-node@0.2.1-next.0
+
 ## 0.1.20
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+
 ## 0.3.17
 
 ### Patch Changes

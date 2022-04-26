@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder
 
+## 1.2.0-next.0
+
+### Minor Changes
+
+- 06ab5218f9: Add new bitbucket(Cloud/Server) integrations to ScaffolderClient.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.0
+  - @backstage/integration-react@1.1.0-next.0
+
 ## 1.1.0
 
 ### Minor Changes

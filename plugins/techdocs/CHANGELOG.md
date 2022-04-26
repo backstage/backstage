@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- a307a14be0: Removed dependency on `@backstage/core-app-api`.
+- bed0d64ce9: Fixed bugs that prevented a 404 error from being shown when it should have been.
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.0
+  - @backstage/integration-react@1.1.0-next.0
+  - @backstage/plugin-search-react@0.1.1-next.0
+  - @backstage/plugin-techdocs-react@0.1.1-next.0
+
 ## 1.1.0
 
 ### Minor Changes

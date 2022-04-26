@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 55e09b29dd: Fixing broken types for `knex` when checking returned rows
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 8cc75993a6: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+  - @backstage/integration@1.2.0-next.0
+  - @backstage/plugin-permission-node@0.6.1-next.0
+
 ## 1.1.0
 
 ### Minor Changes

@@ -26,7 +26,7 @@
     "@backstage/plugin-permission-common": "^0.6.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.0"
+    "@backstage/cli": "^0.17.1-next.0"
   },
   "files": [
     "dist"

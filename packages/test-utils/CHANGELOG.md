@@ -1,5 +1,12 @@
 # @backstage/test-utils
 
+## 1.0.2-next.0
+
+### Patch Changes
+
+- 7a5ddfd595: Added missing `Routes` element to wrap the `Route` elements of the test app wrapping.
+- 7a5ddfd595: The internal elements created as part of the `mountedRoutes` implementation are now hidden during rendering.
+
 ## 1.0.1
 
 ### Patch Changes

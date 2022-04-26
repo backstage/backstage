@@ -38,7 +38,7 @@
     "cross-fetch": "^3.1.5"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.0",
+    "@backstage/cli": "^0.17.1-next.0",
     "@types/jest": "^26.0.7",
     "msw": "^0.35.0"
   },
