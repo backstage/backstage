@@ -6403,9 +6403,9 @@
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
 
 "@types/node@^16.11.26", "@types/node@^16.9.2":
-  version "16.11.28"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.28.tgz#4c16c266882b1cbd268719ea6c7c8ff3c60aae39"
-  integrity sha512-l/y1ZZpWqevemVQmk0Q1TPohlJTul7u9ysq3bw6xlRDO8z+98JBI6gp4JS0OK8YkWUdYxnJU35H4vOzuiOFIag==
+  version "16.11.31"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.31.tgz#1dad8138efee6808809bb80f9e66bbe3e46c9277"
+  integrity sha512-wh/d0pcu/Ie2mqTIqh4tjd0mLAB4JWxOjHQtLN20HS7sjMHiV4Afr+90hITTyZcxowwha5wjv32jGEn1zkEFMg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
