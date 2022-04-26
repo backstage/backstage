@@ -55,7 +55,8 @@ export function getGitHubFileFetchUrl(
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
     if (chooseEndpoint(config, credentials) === 'api') {
-      return `${config.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${ref}`;
+      const refSuffix = ref === '-' ? '' : `?ref=${ref}`;
+      return `${config.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}${refSuffix}`;
     }
     return `${config.rawBaseUrl}/${owner}/${name}/${ref}/${pathWithoutSlash}`;
   } catch (e) {
