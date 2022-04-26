@@ -43,7 +43,7 @@ export function AlertDisplay(_props: {}) {
     const subscription = notificationApi
       .notification$()
       .subscribe(notification => {
-        if (notification.kind === 'alert') {
+        if (notification.spec?.displayAs === 'alert') {
           setAlerts(a => a.concat(notification as AlertNotification));
         }
       });

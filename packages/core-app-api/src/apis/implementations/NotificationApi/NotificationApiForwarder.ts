@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Notification, NotificationApi } from '@backstage/core-plugin-api';
+import {
+  Notification,
+  NotificationApi,
+  NotificationFilter,
+} from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { PublishSubject } from '../../../lib/subjects';
 
@@ -25,6 +29,13 @@ import { PublishSubject } from '../../../lib/subjects';
  */
 export class NotificationApiForwarder implements NotificationApi {
   private readonly subject = new PublishSubject<Notification>();
+  private notifications: Notification[] = [];
+
+  constructor() {
+    this.subject.subscribe(notification => {
+      this.notifications.push(notification);
+    });
+  }
 
   post(notification: Notification) {
     this.subject.next(notification);
@@ -32,5 +43,28 @@ export class NotificationApiForwarder implements NotificationApi {
 
   notification$(): Observable<Notification> {
     return this.subject;
+  }
+
+  async query(filter: NotificationFilter): Promise<Notification[]> {
+    const offset = filter.offset ?? 0;
+    return Promise.resolve(
+      this.notifications
+        .filter(n =>
+          filter.targetEntityRefs
+            ? (n.spec?.targetEntityRefs ?? []).some(t =>
+                filter.targetEntityRefs!.includes(t),
+              )
+            : true,
+        )
+        .filter(n =>
+          filter.originatingEntityRef
+            ? n.spec?.originatingEntityRef === filter.originatingEntityRef
+            : true,
+        )
+        .filter(n =>
+          filter.since ? n.metadata.timestamp >= filter.since : true,
+        )
+        .slice(offset ?? 0, filter.limit ? offset + filter.limit : undefined),
+    );
   }
 }

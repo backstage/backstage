@@ -48,7 +48,6 @@ import {
   identityApiRef,
   BackstagePlugin,
   notificationApiRef,
-  PluginNotificationChannel,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -166,7 +165,6 @@ export class AppManager implements BackstageApp {
   private configApi?: ConfigApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
-  private readonly notificationChannels: PluginNotificationChannel[];
   private readonly icons: NonNullable<AppOptions['icons']>;
   private readonly plugins: Set<CompatiblePlugin>;
   private readonly components: AppComponents;
@@ -180,7 +178,6 @@ export class AppManager implements BackstageApp {
 
   constructor(options: AppOptions) {
     this.apis = options.apis ?? [];
-    this.notificationChannels = [];
     this.icons = options.icons;
     this.plugins = new Set((options.plugins as CompatiblePlugin[]) ?? []);
     this.components = options.components;
@@ -295,17 +292,9 @@ export class AppManager implements BackstageApp {
       }, [hasConfigApi, loadedConfig, featureFlags]);
 
       useEffect(() => {
-        const notificationApi = this.getApiHolder().get(notificationApiRef)!;
-
         for (const plugin of this.plugins) {
-          if ('getNotificationChannels' in plugin) {
-            for (const source of plugin.getNotificationChannels()) {
-              // Multiple plugins can attempt to register the same notification source; first wins
-              if (!this.notificationChannels.some(s => s.id === source.id)) {
-                source.initialize(notificationApi);
-                this.notificationChannels.push(source);
-              }
-            }
+          if ('initialize' in plugin) {
+            plugin.initialize(this.getApiHolder());
           }
         }
       }, []);

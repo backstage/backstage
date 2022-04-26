@@ -42,59 +42,51 @@ export const githubActionsPlugin = createPlugin({
   routes: {
     entityContent: rootRouteRef,
   },
-  notificationChannels: [
-    {
-      id: 'github-actions-notification-source',
-      initialize: (notificationApi: NotificationApi, _since?: number) => {
-        setInterval(async () => {
-          // Poll some backend for messages; potentially using a timestamp in the request to only
-          // retrieve messages we haven't seen yet. May also pass the Backstage identity to filter
-          // messages to only those applicable (global + user/team).
-          const alerts = await Promise.resolve([
-            {
-              kind: 'alert',
-              metadata: {
-                message: 'sample notification',
-                title: 'sample title',
-                uuid: uuid(),
-                timestamp: Date.now(),
-                severity: 'warning',
-              },
-            },
-          ]);
-          alerts.forEach(a => notificationApi.post(a));
-        }, 30 * 1000);
-      },
-    },
-    {
-      id: 'github-actions-user-notification-source',
-      initialize: (notificationApi: NotificationApi) => {
-        setInterval(async () => {
-          const notifications = await Promise.resolve([
-            {
-              kind: 'tingle',
-              metadata: {
-                message:
-                  'The queued build on component sample-component-name has failed with status: Error 500',
-                title: 'Build failed',
-                uuid: uuid(),
-                timestamp: Date.now(),
-              },
-              spec: {
-                icon: Math.random() > 0.5 ? <ErrorIcon /> : undefined,
-                links: [
-                  { url: '', title: 'View alert' },
-                  { url: '', title: 'Go to entity' },
-                ],
-                targetEntityRefs: ['user:default/guest'],
-              },
-            },
-          ]);
-          notifications.forEach(n => notificationApi.post(n));
-        }, 10 * 1000);
-      },
-    },
-  ],
+  initialize: (apiHolder: ApiHolder) => {
+    const notificationApi = apiHolder.get(notificationApiRef);
+    setInterval(async () => {
+      // Poll some backend for messages; potentially using a timestamp in the request to only
+      // retrieve messages we haven't seen yet. May also pass the Backstage identity to filter
+      // messages to only those applicable (global + user/team).
+      const alerts = await Promise.resolve([
+        {
+          kind: 'alert',
+          metadata: {
+            message: 'sample notification',
+            title: 'sample title',
+            uuid: uuid(),
+            timestamp: Date.now(),
+            severity: 'warning',
+          },
+        },
+      ]);
+      alerts.forEach(a => notificationApi.post(a));
+    }, 30 * 1000);
+
+    setInterval(async () => {
+      const notifications = await Promise.resolve([
+        {
+          kind: 'tingle',
+          metadata: {
+            message:
+              'The queued build on component sample-component-name has failed with status: Error 500',
+            title: 'Build failed',
+            uuid: uuid(),
+            timestamp: Date.now(),
+          },
+          spec: {
+            icon: Math.random() > 0.5 ? <ErrorIcon /> : undefined,
+            links: [
+              { url: '', title: 'View alert' },
+              { url: '', title: 'Go to entity' },
+            ],
+            targetEntityRefs: ['user:default/guest'],
+          },
+        },
+      ]);
+      notifications.forEach(n => notificationApi.post(n));
+    }, 10 * 1000);
+  },
 });
 
 export const EntityGithubActionsContent = githubActionsPlugin.provide(

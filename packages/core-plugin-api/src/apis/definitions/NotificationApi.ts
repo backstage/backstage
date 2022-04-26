@@ -16,25 +16,26 @@
 
 import { createApiRef, ApiRef } from '../system';
 import { Observable } from '@backstage/types';
-import { EntityRef } from '@backstage/catalog-model';
 
 export type Notification = {
-  kind: string;
   metadata: {
     title: string;
     message: string;
     uuid: string;
     timestamp: number; // milliseconds
+    readTimestamp: number;
+    plugin: string;
     [key: string]: any;
   };
   spec?: {
     // Catalog entity that triggered the notification, if applicable
-    originatingEntityRef?: EntityRef;
+    originatingEntityRef?: string;
     // Target user/Group entity refs if the notification is not global.
     // Note that the frontend does not use this for filtering, that should be done
     // by the channel and backend. This is informational so a user knows why they
     // received a notification.
-    targetEntityRefs?: EntityRef[];
+    targetEntityRefs?: string[];
+    displayAs: 'alert' | 'home' | 'notification';
     icon?: string | JSX.Element; // system or custom icon
     links?: { url: string; title: string }[]; // example: link notification to a page
     [key: string]: any;
@@ -46,6 +47,14 @@ export type AlertNotification = Notification & {
   metadata: {
     severity: 'success' | 'info' | 'warning' | 'error';
   };
+};
+
+export type NotificationFilter = {
+  targetEntityRefs?: string[];
+  originatingEntityRef?: string;
+  since?: number;
+  limit?: number;
+  offset?: number;
 };
 
 /**
@@ -63,6 +72,8 @@ export type NotificationApi = {
    * Observe notifications posted by other parts of the application.
    */
   notification$(): Observable<Notification>;
+
+  query(filter: NotificationFilter): Promise<Notification[]>;
 };
 
 /**

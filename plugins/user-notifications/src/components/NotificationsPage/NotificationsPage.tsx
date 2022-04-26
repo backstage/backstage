@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useNotifications } from '@backstage/core-app-api';
 import {
   Content,
   Header,
   Page,
   SidebarPinStateContext,
 } from '@backstage/core-components';
+import { Notification, NotificationApi } from '@backstage/core-plugin-api';
+import { identityApiRef } from '@backstage/core-plugin-api';
+import { notificationApiRef, useApi } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
@@ -31,7 +33,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import ChatIcon from '@material-ui/icons/Chat';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 const useStyles = makeStyles(
   (theme: BackstageTheme) =>
@@ -50,19 +52,32 @@ const useStyles = makeStyles(
 export const NotificationsPage = () => {
   const classes = useStyles();
   const { isMobile } = useContext(SidebarPinStateContext);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const { notifications, acknowledge } = useNotifications();
-  const userNotifications = notifications.filter(n => n.spec?.targetEntityRefs);
-  if (userNotifications.length) {
-    acknowledge(notifications[0].metadata.timestamp);
-  }
+  const identityApi = useApi(identityApiRef);
+  const notificationApi = useApi<NotificationApi>(notificationApiRef);
+
+  useEffect(() => {
+    async function fetchNotifications() {
+      const identity = await identityApi.getBackstageIdentity();
+      const userNotifications = await notificationApi.query({
+        targetEntityRefs: identity.ownershipEntityRefs,
+      });
+      setNotifications(userNotifications);
+    }
+    fetchNotifications();
+  }, [identityApi, notificationApi]);
+
+  // if (notifications.length) {
+  //   acknowledge(notifications[0].metadata.timestamp);
+  // }
 
   return (
     <Page themeId="home">
       {!isMobile && <Header title="Notifications" />}
       <Content>
-        {userNotifications.length ? (
-          userNotifications.map(notification => (
+        {notifications.length ? (
+          notifications.map(notification => (
             <Card key={notification.metadata.uuid} className={classes.card}>
               <CardHeader
                 title={notification.metadata.title}

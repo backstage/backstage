@@ -95,7 +95,6 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  notificationChannels?: PluginNotificationChannel[];
 };
 
 /**
