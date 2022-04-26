@@ -21,14 +21,18 @@ The source code is available here:
 1.  Copy-paste the three folders into the plugins folder of your backstage application repository or run the following script from the root of your backstage application:
 
     ```bash
-    $ curl https://codeload.github.com/backstage/backstage/zip/refs/heads/master | \
-        tar -C plugins --strip-components=1 -xv \
-        backstage-master/plugins/example-todo-list \
-        backstage-master/plugins/example-todo-list-backend \
-        backstage-master/plugins/example-todo-list-common
+    $ cd $(mktemp -d)
+      git clone --depth 1 --quiet --no-checkout --filter=blob:none https://github.com/backstage/backstage.git .
+      git checkout master -- plugins/example-todo-list/
+      git checkout master -- plugins/example-todo-list-backend/
+      git checkout master -- plugins/example-todo-list-common/
+      cp -R plugins/* $OLDPWD/plugins
+      cd -
     ```
 
     The `plugins` directory of your project should now include `todo-list`, `todo-list-backend`, and `todo-list-common`.
+
+    **Important**: if you are on **Windows**, make sure you have WSL and git installed on your machine before executing the script above.
 
 2.  Add these packages as dependencies for your Backstage app:
 
