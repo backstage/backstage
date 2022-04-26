@@ -43,6 +43,7 @@ export interface TaskScheduleDefinition {
       }
     | Duration;
   initialDelay?: Duration;
+  scope?: 'global' | 'local';
   timeout: Duration;
 }
 

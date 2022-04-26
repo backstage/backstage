@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { CronTime } from 'cron';
 import { Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
-import { CronTime } from 'cron';
 
 /**
  * A function that can be called as a scheduled task.
@@ -93,14 +93,37 @@ export interface TaskScheduleDefinition {
    * will happen as soon as possible according to the cadence.
    *
    * NOTE: This is a per-worker delay. If you have a cluster of workers all
-   * collaborating on a task, then you may still see the task being processed by
-   * other long-lived workers, while any given single worker is in its initial
-   * sleep delay time e.g. after a deployment. Therefore this parameter is not
-   * useful for "globally" pausing work; its main intended use is for individual
-   * machines to get a chance to reach some equilibrium at startup before
-   * triggering heavy batch workloads.
+   * collaborating on a task that has its `scope` field set to `'global'`, then
+   * you may still see the task being processed by other long-lived workers,
+   * while any given single worker is in its initial sleep delay time e.g. after
+   * a deployment. Therefore this parameter is not useful for "globally" pausing
+   * work; its main intended use is for individual machines to get a chance to
+   * reach some equilibrium at startup before triggering heavy batch workloads.
    */
   initialDelay?: Duration;
+
+  /**
+   * Sets the scope of concurrency control / locking to apply for invocations of
+   * this task.
+   *
+   * @remarks
+   *
+   * When the scope is set to the default value `'global'`, the scheduler will
+   * attempt to ensure that only one worker machine runs the task at a time,
+   * according to the given cadence. This means that as the number of worker
+   * hosts increases, the invocation frequency of this task will not go up.
+   * Instead the load is spread randomly across hosts. This setting is useful
+   * for tasks that access shared resources, for example catalog ingestion tasks
+   * where you do not want many machines to repeatedly import the same data and
+   * trample over each other.
+   *
+   * When the scope is set to `'local'`, there is no concurrency control across
+   * hosts. Each host runs the task according to the given cadence similarly to
+   * `setInterval`, but the runtime ensures that there are no overlapping runs.
+   *
+   * @defaultValue 'global'
+   */
+  scope?: 'global' | 'local';
 }
 
 /**
@@ -149,24 +172,23 @@ export interface PluginTaskScheduler {
   /**
    * Manually triggers a task by ID.
    *
-   * If the task doesn't exist, a NotFoundError is thrown.
-   * If the task is currently running, a ConflictError is thrown.
+   * If the task doesn't exist, a NotFoundError is thrown. If the task is
+   * currently running, a ConflictError is thrown.
    *
    * @param id - The task ID
-   *
    */
   triggerTask(id: string): Promise<void>;
 
   /**
-   * Schedules a task function for coordinated exclusive invocation across
-   * workers. This convenience method performs both the scheduling and
-   * invocation in one go.
+   * Schedules a task function for recurring runs.
    *
    * @remarks
    *
-   * If the task was already scheduled since before by us or by another party,
-   * its options are just overwritten with the given options, and things
-   * continue from there.
+   * The `scope` task field controls whether to use coordinated exclusive
+   * invocation across workers, or to just coordinate within the current worker.
+   *
+   * This convenience method performs both the scheduling and invocation in one
+   * go.
    *
    * @param task - The task definition
    */
