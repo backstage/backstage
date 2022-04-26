@@ -14,18 +14,18 @@ We will use a "Todo list" feature, composed of the `todo-list` and `todo-list-ba
 
 The source code is available here:
 
-- [todo-list](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list)
-- [todo-list-backend](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list-backend)
-- [todo-list-common](https://github.com/backstage/backstage/blob/master/contrib/plugins/todo-list-common)
+- [todo-list](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list)
+- [todo-list-backend](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list-backend)
+- [todo-list-common](https://github.com/backstage/backstage/blob/master/plugins/todo-list-common)
 
 1.  Copy-paste the three folders into the plugins folder of your backstage application repository or run the following script from the root of your backstage application:
 
     ```bash
     $ curl https://codeload.github.com/backstage/backstage/zip/refs/heads/master | \
         tar -C plugins --strip-components=1 -xv \
-        backstage-master/contrib/plugins/todo-list \
-        backstage-master/contrib/plugins/todo-list-backend \
-        backstage-master/contrib/plugins/todo-list-common
+        backstage-master/plugins/example-todo-list \
+        backstage-master/plugins/example-todo-list-backend \
+        backstage-master/plugins/example-todo-list-common
     ```
 
     The `plugins` directory of your project should now include `todo-list`, `todo-list-backend`, and `todo-list-common`.
