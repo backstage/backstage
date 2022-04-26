@@ -66,7 +66,7 @@ const getUrl = (repository: Repository, template: ReportIssueTemplate) => {
   if (type === 'github') {
     return `${url}/issues/new?title=${encodedTitle}&body=${encodedBody}`;
   }
-  return `${url}/issues/new?[title]=${encodedTitle}&[body]=${encodedBody}`;
+  return `${url}/issues/new?issue[title]=${encodedTitle}&issue[description]=${encodedBody}`;
 };
 
 export const IssueLink = ({ template, repository }: IssueLinkProps) => {
