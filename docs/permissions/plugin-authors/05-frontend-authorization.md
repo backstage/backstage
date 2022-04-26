@@ -4,11 +4,11 @@ title: 5. Frontend Components with Authorization
 description: Placing frontend components behind authorization
 ---
 
-In the previous sections, we learned how to place our plugin's backend API routes behind authorization using the permission framework. Most routes that return some data to be displayed (such as our `GET /todos` route) need no additional changes on the frontend, as the backend will simply not return the items that are unauthorized for the user. However, UI elements that allow the user to trigger some sort of creation, edit, or removal through an interaction often need additional changes to provide a good user experience.
+In the previous sections, we learned how to protect our plugin's backend API routes with the permission framework. Most routes that return some data to be displayed (such as our `GET /todos` route) need no additional changes on the frontend, as the backend will simply return an empty list or a `404`. However, for UI elements that trigger a mutative action, it's common practice to hide or disable them when a user doesn't have permission.
 
 Take, for example, the "Add" button in our todo list application. When a user clicks this button, the frontend makes a `POST` request to our backend's `/todos` route. If a user tries to add a todo but is not authorized, they will have no way of knowing this until they perform the action and are faced with an error. This is a poor user experience. We can do better by disabling the add button.
 
-**NOTE:** Placing frontend components behind authorization cannot take the place of placing your backend routes behind authorization. Authorization checks on the frontend should be used in _addition_ to the corresponding backend authorization, as an improvement to the user experience. If you do not place your backend route behind authorization, a malicious actor can still send a request to the route even if you disabled the corresponding frontend component.
+> Note: Placing frontend components behind authorization cannot take the place of placing your backend routes behind authorization. Authorization checks on the frontend should be used in _addition_ to the corresponding backend authorization, as an improvement to the user experience. If you do not place your backend route behind authorization, a malicious actor can still send a request to the route even if you disabled the corresponding frontend component.
 
 ## Using `usePermission`
 
@@ -66,7 +66,7 @@ Let's make the following changes in `plugins/todo-list/src/components/TodoListPa
 ...
 ```
 
-Here we are using the [`usePermission` hook](https://backstage.io/docs/reference/plugin-permission-react.usepermission) to easily communicate with the permission policy and receive a decision on whether this user is authorized to create a todo list item.
+Here we are using the [`usePermission` hook](https://backstage.io/docs/reference/plugin-permission-react.usepermission) to communicate with the permission policy and receive a decision on whether this user is authorized to create a todo list item.
 
 It's really that simple! Let's change our policy to test the disabled button:
 
@@ -89,7 +89,7 @@ And now you should see that you are not able to create a todo item from the fron
 
 ## Using `RequirePermission`
 
-More realistically, you probably don't even want to show the entire part of the UI that is used for todo list item creation if the user can't create a todo list item. For such cases, you can use the provided [`RequirePermission` component](https://backstage.io/docs/reference/plugin-permission-react.requirepermission):
+Providing a disabled state can be a helpful signal to users, but there may be cases where hiding the element is preferred. For such cases, you can use the provided [`RequirePermission` component](https://backstage.io/docs/reference/plugin-permission-react.requirepermission):
 
 ```diff
 // plugins/todo-list/src/components/TodoListPage/TodoListPage.tsx
