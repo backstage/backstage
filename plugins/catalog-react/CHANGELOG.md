@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 4274844a8c: Use InfoCardVariants on custom cards variant attribute
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+
 ## 1.0.1
 
 ### Patch Changes

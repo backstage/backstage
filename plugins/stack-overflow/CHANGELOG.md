@@ -1,5 +1,12 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-home@0.4.21-next.0
+
 ## 0.1.0
 
 ### Minor Changes

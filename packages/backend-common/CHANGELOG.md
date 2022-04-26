@@ -1,5 +1,17 @@
 # @backstage/backend-common
 
+## 0.13.3-next.0
+
+### Patch Changes
+
+- 6673babab9: Gerrit integration: Added optional `cloneUrl` string to config.
+- 75bf9e1da9: Split BitbucketUrlReader into BitbucketCloudUrlReader and BitbucketServerUrlReader. Backwards compatible.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+  - @backstage/config-loader@1.1.1-next.0
+
 ## 0.13.2
 
 ### Patch Changes

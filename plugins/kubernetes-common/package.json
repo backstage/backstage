@@ -42,7 +42,7 @@
     "@kubernetes/client-node": "^0.16.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.0"
+    "@backstage/cli": "^0.17.1-next.0"
   },
   "jest": {
     "roots": [

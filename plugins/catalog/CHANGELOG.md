@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 1.2.0-next.0
+
+### Minor Changes
+
+- 4274844a8c: Use InfoCardVariants on custom cards variant attribute
+- ceca63d149: Added the prop `NotFoundComponent` to `EntityLayout` which can be used to include a custom component when an entity is not found in the catalog
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.0-next.0
+  - @backstage/integration-react@1.1.0-next.0
+
 ## 1.1.0
 
 ### Minor Changes

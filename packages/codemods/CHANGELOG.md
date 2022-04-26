@@ -1,5 +1,11 @@
 # @backstage/codemods
 
+## 0.1.38-next.0
+
+### Patch Changes
+
+- 344ea56acc: Bump `commander` to version 9.1.0
+
 ## 0.1.37
 
 ### Patch Changes

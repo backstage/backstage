@@ -43,7 +43,7 @@
     "uuid": "^8.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.0",
+    "@backstage/cli": "^0.17.1-next.0",
     "@types/jest": "^26.0.7",
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.151",

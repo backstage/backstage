@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-react
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 075a9a067b: Updated the return type of `createTechDocsAddonExtension` to better reflect the fact that passing children to Addon components is not a valid use-case.
+
 ## 0.1.0
 
 ### Minor Changes

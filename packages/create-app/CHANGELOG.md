@@ -1,5 +1,53 @@
 # @backstage/create-app
 
+## 0.4.27-next.0
+
+### Patch Changes
+
+- 3983940a21: Optimized the command order in `packages/backend/Dockerfile` as well as added the `--no-install-recommends` to the `apt-get install` and tweaked the installed packages.
+
+  To apply this change to an existing app, update your `packages/backend/Dockerfile` to match the documented `Dockerfile` at https://backstage.io/docs/deployment/docker#host-build.
+
+- 28bbf5aff6: Added some instruction comments to the generated config files, to clarify the
+  usage of `backend.baseUrl` and `backend.listen.host`. Importantly, it also per
+  default now listens on all IPv4 interfaces, to make it easier to take the step
+  over to production. If you want to do the same, update your
+  `app-config.production.yaml` as follows:
+
+  ```diff
+   backend:
+     listen:
+       port: 7007
+  +    host: 0.0.0.0
+  ```
+
+  Also, updated the builtin backend Dockerfile to honor the
+  `app-config.production.yaml` file. If you want to do the same, change
+  `packages/backend/Dockerfile` as follows:
+
+  ```diff
+  -COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
+  +COPY packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+   RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+  -CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+  +CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+  ```
+
+  If you look carefully, this adds a glob match on app-config files. For those
+  that try out the build flows locally, you also want to make sure that the docker
+  daemon does NOT pick up any local/private config files that might contain
+  secrets. You should therefore also update your local `.dockerignore` file at the
+  same time:
+
+  ```diff
+  +*.local.yaml
+  ```
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 806427545f: Added a link to the `${GITHUB_TOKEN}` to document how to generate a token
+
 ## 0.4.26
 
 ### Patch Changes

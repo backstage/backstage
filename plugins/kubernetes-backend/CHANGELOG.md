@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- b9f7ffb162: Add filtering to GKE cluster locator
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+
 ## 0.5.0
 
 ### Minor Changes

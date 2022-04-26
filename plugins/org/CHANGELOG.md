@@ -1,5 +1,13 @@
 # @backstage/plugin-org
 
+## 0.5.5-next.0
+
+### Patch Changes
+
+- 8da4a207dd: Fix ref to filtered catalog table view when using aggregated relations.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.0-next.0
+
 ## 0.5.4
 
 ### Patch Changes
