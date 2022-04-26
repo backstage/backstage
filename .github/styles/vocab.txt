@@ -322,7 +322,7 @@ toolchain
 toolsets
 tooltip
 tooltips
-touchpoints
+touchpoint
 transpilation
 transpiled
 transpiler

@@ -249,7 +249,6 @@
         ]
       },
       "auth/add-auth-provider",
-      "auth/using-auth",
       "auth/identity-resolver",
       "auth/auth-backend",
       "auth/oauth",

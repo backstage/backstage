@@ -172,7 +172,7 @@ export type AppThemeApi = {
 // @public
 export const appThemeApiRef: ApiRef<AppThemeApi>;
 
-// @alpha
+// @public
 export const atlassianAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -230,7 +230,7 @@ export type BackstageUserIdentity = {
   ownershipEntityRefs: string[];
 };
 
-// @alpha
+// @public
 export const bitbucketAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
@@ -462,17 +462,17 @@ export function getComponentData<T>(
   type: string,
 ): T | undefined;
 
-// @alpha
+// @public
 export const githubAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @alpha
+// @public
 export const gitlabAuthApiRef: ApiRef<
   OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 >;
 
-// @alpha
+// @public
 export const googleAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -517,7 +517,7 @@ export type MergeParams<
   P2 extends AnyParams,
 > = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
 
-// @alpha
+// @public
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -559,7 +559,7 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
 // @public
 export type OAuthScope = string | string[];
 
-// @alpha
+// @public
 export const oktaAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &
@@ -568,7 +568,7 @@ export const oktaAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @alpha
+// @public
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
     OpenIdConnectApi &

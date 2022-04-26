@@ -193,9 +193,7 @@ go to your Backstage portal in your browser, you should have your login prompt!
 To learn more about Authentication in Backstage, here are some docs you
 could read:
 
-- [Adding Authentication](../auth/)
-- [Adding a new Authentication Provider](../auth/add-auth-provider.md)
-- [Using authentication and identity](../auth/using-auth.md)
+- [Authentication in Backstage](../auth/)
 - [Using organizational data from GitHub](../integrations/github/org.md)
 
 ### Setting up a GitHub Integration
