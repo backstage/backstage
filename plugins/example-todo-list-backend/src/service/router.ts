@@ -43,7 +43,7 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
 
-  router.get('/todos', async (req, res) => {
+  router.get('/todos', async (_req, res) => {
     res.json(getAll());
   });
 
