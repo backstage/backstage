@@ -43,7 +43,10 @@ import {
   AuthResolverContext,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { commonByEmailLocalPartResolver } from '../resolvers';
+import {
+  commonByEmailLocalPartResolver,
+  commonByEmailResolver,
+} from '../resolvers';
 import { Logger } from 'winston';
 import fetch from 'node-fetch';
 
@@ -275,6 +278,10 @@ export const microsoft = createAuthProviderIntegration({
      * Looks up the user by matching their email local part to the entity name.
      */
     emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
     /**
      * Looks up the user by matching their email to the `microsoft.com/email` annotation.
      */

@@ -35,3 +35,24 @@ export const commonByEmailLocalPartResolver: SignInResolver<unknown> = async (
     entityRef: { name: localPart },
   });
 };
+
+/**
+ * A common sign-in resolver that looks up the user using their email address
+ * as email of the entity.
+ */
+export const commonByEmailResolver: SignInResolver<unknown> = async (
+  info,
+  ctx,
+) => {
+  const { profile } = info;
+
+  if (!profile.email) {
+    throw new Error('Login failed, user profile does not contain an email');
+  }
+
+  return ctx.signInWithCatalogUser({
+    filter: {
+      'spec.profile.email': profile.email,
+    },
+  });
+};
