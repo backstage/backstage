@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TechDocsAddonBuilder } from '@backstage/plugin-techdocs-addons-test-utils';
+import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
 import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
@@ -59,7 +59,7 @@ describe('ReportIssue', () => {
   it('renders github link without exploding', async () => {
     byUrl.mockReturnValue({ type: 'github' });
     const { shadowRoot, getByText } =
-      await TechDocsAddonBuilder.buildAddonsInTechDocs([
+      await TechDocsAddonTester.buildAddonsInTechDocs([
         <ReportIssue debounceTime={0} />,
       ])
         .withDom(
@@ -117,7 +117,7 @@ describe('ReportIssue', () => {
   it('renders gitlab link without exploding', async () => {
     byUrl.mockReturnValue({ type: 'gitlab' });
     const { shadowRoot, getByText } =
-      await TechDocsAddonBuilder.buildAddonsInTechDocs([
+      await TechDocsAddonTester.buildAddonsInTechDocs([
         <ReportIssue debounceTime={0} />,
       ])
         .withDom(

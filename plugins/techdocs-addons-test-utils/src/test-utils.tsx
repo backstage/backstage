@@ -23,12 +23,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Route } from 'react-router-dom';
 import { act, render } from '@testing-library/react';
 
-import {
-  wrapInTestApp,
-  TestApiProvider,
-  TestApiProviderProps,
-} from '@backstage/test-utils';
+import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FlatRoutes } from '@backstage/core-app-api';
+import { ApiRef } from '@backstage/core-plugin-api';
 
 import {
   TechDocsAddons,
@@ -40,13 +37,6 @@ import {
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
 import { catalogPlugin } from '@backstage/plugin-catalog';
 import { searchApiRef } from '@backstage/plugin-search-react';
-
-/**
- * @public
- */
-export type RecursivePartial<T> = {
-  [P in keyof T]?: RecursivePartial<T[P]>;
-};
 
 const techdocsApi = {
   getTechDocsMetadata: jest.fn(),
@@ -66,18 +56,25 @@ const searchApi = {
 /**
  * @public
  */
-export type Apis = TestApiProviderProps<any>['apis'];
+export type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
+  ? readonly [ApiRef<TApi>, Partial<TImpl>]
+  : never;
 
-type TechDocsAddonBuilderOptions = {
+/**
+ * @public
+ */
+export type TechdocsAddonTesterApis<T> = TechDocsAddonTesterTestApiPair<T>[];
+
+type TechDocsAddonTesterOptions = {
   dom: ReactElement;
-  entity: RecursivePartial<TechDocsEntityMetadata>;
-  metadata: RecursivePartial<TechDocsMetadata>;
+  entity: Partial<TechDocsEntityMetadata>;
+  metadata: Partial<TechDocsMetadata>;
   componentId: string;
-  apis: Apis;
+  apis: TechdocsAddonTesterApis<any>;
   path: string;
 };
 
-const defaultOptions: TechDocsAddonBuilderOptions = {
+const defaultOptions: TechDocsAddonTesterOptions = {
   dom: <></>,
   entity: {},
   metadata: {},
@@ -113,19 +110,19 @@ const defaultDom = (
  * @public
  */
 
-export class TechDocsAddonBuilder {
-  private options: TechDocsAddonBuilderOptions = defaultOptions;
+export class TechDocsAddonTester {
+  private options: TechDocsAddonTesterOptions = defaultOptions;
   private addons: ReactElement[];
 
   static buildAddonsInTechDocs(addons: ReactElement[]) {
-    return new TechDocsAddonBuilder(addons);
+    return new TechDocsAddonTester(addons);
   }
 
-  constructor(addons: ReactElement[]) {
+  private constructor(addons: ReactElement[]) {
     this.addons = addons;
   }
 
-  withApis(apis: Apis) {
+  withApis<T>(apis: TechdocsAddonTesterApis<T>) {
     const refs = apis.map(([ref]) => ref);
     this.options.apis = this.options.apis
       .filter(([ref]) => !refs.includes(ref))
@@ -138,12 +135,12 @@ export class TechDocsAddonBuilder {
     return this;
   }
 
-  withMetadata(metadata: RecursivePartial<TechDocsMetadata>) {
+  withMetadata(metadata: Partial<TechDocsMetadata>) {
     this.options.metadata = metadata;
     return this;
   }
 
-  withEntity(entity: RecursivePartial<TechDocsEntityMetadata>) {
+  withEntity(entity: Partial<TechDocsEntityMetadata>) {
     this.options.entity = entity;
     return this;
   }
@@ -154,7 +151,7 @@ export class TechDocsAddonBuilder {
   }
 
   build() {
-    const apis = [
+    const apis: TechdocsAddonTesterApis<any> = [
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
@@ -237,4 +234,4 @@ export class TechDocsAddonBuilder {
   }
 }
 
-export default TechDocsAddonBuilder.buildAddonsInTechDocs;
+export default TechDocsAddonTester.buildAddonsInTechDocs;
