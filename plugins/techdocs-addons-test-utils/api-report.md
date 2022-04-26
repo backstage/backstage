@@ -36,12 +36,4 @@ export class TechDocsAddonTester {
   // (undocumented)
   withMetadata(metadata: Partial<TechDocsMetadata>): this;
 }
-
-// @public (undocumented)
-export type TechdocsAddonTesterApis<T> = TechDocsAddonTesterTestApiPair<T>[];
-
-// @public (undocumented)
-export type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
-  ? readonly [ApiRef<TApi>, Partial<TImpl>]
-  : never;
 ```

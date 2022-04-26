@@ -53,17 +53,13 @@ const searchApi = {
   query: jest.fn().mockResolvedValue({ results: [] }),
 };
 
-/**
- * @public
- */
-export type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
+/** @ignore */
+type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
   ? readonly [ApiRef<TApi>, Partial<TImpl>]
   : never;
 
-/**
- * @public
- */
-export type TechdocsAddonTesterApis<T> = TechDocsAddonTesterTestApiPair<T>[];
+/** @ignore */
+type TechdocsAddonTesterApis<T> = TechDocsAddonTesterTestApiPair<T>[];
 
 type TechDocsAddonTesterOptions = {
   dom: ReactElement;
