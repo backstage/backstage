@@ -54,8 +54,52 @@ const AppRoutes = () => {
 };
 ```
 
-That's it! But now, we need the TechDocs Backend plugin for the frontend to
-work.
+It would be nice to decorate your pages with something else... Having a link that redirects you to a new issue page when you highlight text in your documentation would be really cool, right? Let's learn how to do this using the TechDocs Add-ons Framework!
+
+With the [TechDocs plugin framework](https://backstage.io/docs/features/techdocs/addons#installing-and-using-addons), you can render React components in documentation pages and these add-ons can be provided by any Backstage plugin. The framework is exported by the [@backstage/plugin-techdocs-react](https://www.npmjs.com/package/@backstage/plugin-techdocs-react) package and there is a `<ReportIssue />` add-on in the [@backstage/plugin-techdocs-module-addons-contrib](https://www.npmjs.com/package/@backstage/plugin-techdocs-module-addons-contrib) package for you to use once you have these two dependencies installed:
+
+```tsx
+import {
+  DefaultTechDocsHome,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+} from '@backstage/plugin-techdocs';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react/alpha';
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+// ...
+
+const AppRoutes = () => {
+  <FlatRoutes>
+    // ... other plugin routes
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    >
+      <TechDocsAddons>
+        <ReportIssue />
+      </TechDocsAddons>
+    </Route>
+  </FlatRoutes>;
+};
+```
+
+In lines `6` and `7` we are importing respectively the TechDocs add-on framework and a `ReportIssue` add-on component. From lines `21` to `23` we are registering the `<ReportIssue/>` to be rendered in all TechDocs pages whenever some text is highlighted.
+
+The Report Issue addon can be customized with properties (see [here](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.reportissue)) and it takes one more step to be ready to use, so you should set up an `edit_uri` for your documentation pages as explained [here](https://backstage.io/docs/features/techdocs/faqs#is-it-possible-for-users-to-suggest-changes-or-provide-feedback-on-a-techdocs-page).
+
+That's all, now you can go ahead and configure your TechDocs Backend, but... I know, you're curious to see how it looks, aren't you? See the image below:
+
+<img data-zoomable src="../../assets/techdocs/report-issue-addon.png" alt="TechDocs Report Issue Add-on" />
+
+By clicking the open new issue button, you will be redirected to the new issue page according to the source code provider you are using:
+
+<img data-zoomable src="../../assets/techdocs/report-issue-template.png" alt="TechDocs Report Issue Template" />
+
+That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
 ## Adding TechDocs Backend plugin
 
