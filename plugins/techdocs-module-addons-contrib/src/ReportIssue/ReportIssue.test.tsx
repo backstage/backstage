@@ -171,4 +171,68 @@ describe('ReportIssue', () => {
       );
     });
   });
+
+  it('renders using a custom template builder', async () => {
+    byUrl.mockReturnValue({ type: 'gitlab' });
+
+    const templateBuilder = (options: { selection: Selection }) => ({
+      title: 'Custom',
+      body: options.selection.toString().trim(),
+    });
+
+    const { shadowRoot, getByText } =
+      await TechDocsAddonTester.buildAddonsInTechDocs([
+        <ReportIssue debounceTime={0} templateBuilder={templateBuilder} />,
+      ])
+        .withDom(
+          <html lang="en">
+            <head />
+            <body>
+              <div data-md-component="content">
+                <div data-md-component="navigation" />
+                <div data-md-component="toc" />
+                <div data-md-component="sidebar" />
+
+                <div data-md-component="main">
+                  <div className="md-content">
+                    <article>
+                      <a
+                        title="Leave feedback for this page"
+                        href="https://gitlab.com/backstage/backstage/issues/new"
+                      >
+                        Leave feedback
+                      </a>
+                      <a
+                        title="Edit this page"
+                        href="https://gitlab.com/backstage/backstage/-/edit/master/docs/README.md"
+                      >
+                        Edit page
+                      </a>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </body>
+          </html>,
+        )
+        .withApis([[scmIntegrationsApiRef, { byUrl }]])
+        .renderWithEffects();
+
+    (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
+      () => selection;
+
+    await waitFor(() => {
+      expect(getByText('Edit page')).toBeInTheDocument();
+    });
+
+    fireSelectionChangeEvent(window);
+
+    await waitFor(() => {
+      const link = getByText('Open new Gitlab issue');
+      expect(link).toHaveAttribute(
+        'href',
+        'https://gitlab.com/backstage/backstage/issues/new?issue[title]=Custom&issue[description]=his',
+      );
+    });
+  });
 });
