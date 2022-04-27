@@ -25,30 +25,31 @@ import { Wrapper } from '../Wrapper';
 import { PullRequestCard } from '../PullRequestCard';
 import { usePullRequestsByTeam } from '../../hooks/usePullRequestsByTeam';
 import { PRCardFormating } from '../../utils/types';
-import { DraftPrIcon } from '../icons/DraftPr'
+import { DraftPrIcon } from '../icons/DraftPr';
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
 const TeamPullRequestsBoard: FunctionComponent = () => {
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
-  const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(repositories);
+  const { loading, pullRequests, refreshPullRequests } =
+    usePullRequestsByTeam(repositories);
 
   const header = (
     <InfoCardHeader onRefresh={refreshPullRequests}>
       <PullRequestBoardOptions
-        onClickOption={(newFormats) => setInfoCardFormat(newFormats)}
+        onClickOption={newFormats => setInfoCardFormat(newFormats)}
         value={infoCardFormat}
         options={[
           {
             icon: <DraftPrIcon />,
             value: 'draft',
-            ariaLabel: 'Show draft PRs'
+            ariaLabel: 'Show draft PRs',
           },
           {
             icon: <FullscreenIcon />,
             value: 'fullscreen',
-            ariaLabel: 'Info card is set to fullscreen'
-          }
+            ariaLabel: 'Info card is set to fullscreen',
+          },
         ]}
       />
     </InfoCardHeader>
@@ -67,44 +68,36 @@ const TeamPullRequestsBoard: FunctionComponent = () => {
               key={columnTitle}
               fullscreen={infoCardFormat.includes('fullscreen')}
             >
-              <Typography variant="overline">
-                {columnTitle}
-              </Typography>
-              {content.map(({
-                id,
-                title,
-                createdAt,
-                lastEditedAt,
-                author,
-                url,
-                latestReviews,
-                repository,
-                isDraft
-              }, index) => (
-                isDraft ? (infoCardFormat.includes('draft') === isDraft) &&
-                  <PullRequestCard
-                    key={`pull-request-${id}-${index}`}
-                    title={title}
-                    createdAt={createdAt}
-                    updatedAt={lastEditedAt}
-                    author={author}
-                    url={url}
-                    reviews={latestReviews.nodes}
-                    repositoryName={repository.name}
-                    isDraft={isDraft}
-                  />
-                  : <PullRequestCard
-                    key={`pull-request-${id}-${index}`}
-                    title={title}
-                    createdAt={createdAt}
-                    updatedAt={lastEditedAt}
-                    author={author}
-                    url={url}
-                    reviews={latestReviews.nodes}
-                    repositoryName={repository.name}
-                    isDraft={isDraft}
-                  />
-              ))}
+              <Typography variant="overline">{columnTitle}</Typography>
+              {content.map(
+                (
+                  {
+                    id,
+                    title,
+                    createdAt,
+                    lastEditedAt,
+                    author,
+                    url,
+                    latestReviews,
+                    repository,
+                    isDraft,
+                  },
+                  index,
+                ) =>
+                  infoCardFormat.includes('draft') === isDraft && (
+                    <PullRequestCard
+                      key={`pull-request-${id}-${index}`}
+                      title={title}
+                      createdAt={createdAt}
+                      updatedAt={lastEditedAt}
+                      author={author}
+                      url={url}
+                      reviews={latestReviews.nodes}
+                      repositoryName={repository.name}
+                      isDraft={isDraft}
+                    />
+                  ),
+              )}
             </Wrapper>
           ))
         ) : (
