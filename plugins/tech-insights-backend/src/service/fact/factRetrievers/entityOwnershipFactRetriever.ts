@@ -42,11 +42,19 @@ export const entityOwnershipFactRetriever: FactRetriever = {
       description: 'The spec.owner field is set and refers to a group',
     },
   },
-  handler: async ({ discovery, entityFilter }: FactRetrieverContext) => {
+  handler: async ({
+    discovery,
+    entityFilter,
+    tokenManager,
+  }: FactRetrieverContext) => {
+    const { token } = await tokenManager.getToken();
     const catalogClient = new CatalogClient({
       discoveryApi: discovery,
     });
-    const entities = await catalogClient.getEntities({ filter: entityFilter });
+    const entities = await catalogClient.getEntities(
+      { filter: entityFilter },
+      { token },
+    );
 
     return entities.items.map((entity: Entity) => {
       return {

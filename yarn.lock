@@ -5041,9 +5041,9 @@
   integrity sha512-6k/pU2jNlgYvKOy84vpCAZ8MGVwybvAdjzrh4UicCVOCPxz0LSBws1OE6O5TO4sPHaSw+yLfNzNK8RicGFc1Kw==
 
 "@react-hookz/web@^13.0.0":
-  version "13.2.1"
-  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-13.2.1.tgz#12b3bc30d2cced8b75690c6c3708f96cfdf58172"
-  integrity sha512-ckHdvZ5rgblBscvHdPWAASH46FvfOGjnC+TG3ZtzkOEaYxFtXAzxgQyjjPS+veLuVEGLZ/9HdU6A2l24QBp+9w==
+  version "13.3.0"
+  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-13.3.0.tgz#257e31049e92a121912fe1e67bdd01dbec5a203b"
+  integrity sha512-KswgkmqBVVDo6UnBFfssrojmDisogxC4jGZmd976R8YHoS3zdQJxjqICpOBSRohbRyYhYS9Cprw7BuV/CZcMaw==
   dependencies:
     "@react-hookz/deep-equal" "^1.0.1"
 
@@ -10337,9 +10337,9 @@ cypress-plugin-snapshots@^1.4.4:
     unidiff "1.0.2"
 
 cypress@^9.5.0:
-  version "9.5.4"
-  resolved "https://registry.npmjs.org/cypress/-/cypress-9.5.4.tgz#49d9272f62eba12f2314faf29c2a865610e87550"
-  integrity sha512-6AyJAD8phe7IMvOL4oBsI9puRNOWxZjl8z1lgixJMcgJ85JJmyKeP6uqNA0dI1z14lmJ7Qklf2MOgP/xdAqJ/Q==
+  version "9.6.0"
+  resolved "https://registry.npmjs.org/cypress/-/cypress-9.6.0.tgz#84473b3362255fa8f5e627a596e58575c9e5320f"
+  integrity sha512-nNwt9eBQmSENamwa8LxvggXksfyzpyYaQ7lNBLgks3XZ6dPE/6BCQFBzeAyAPt/bNXfH3tKPkAyhiAZPYkWoEg==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
@@ -14421,9 +14421,9 @@ inquirer@^7.3.3:
     through "^2.3.6"
 
 inquirer@^8.0.0, inquirer@^8.1.1, inquirer@^8.2.0:
-  version "8.2.2"
-  resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.2.tgz#1310517a87a0814d25336c78a20b44c3d9b7629d"
-  integrity sha512-pG7I/si6K/0X7p1qU+rfWnpTE1UIkTONN1wxtzh0d+dHXtT/JG6qBgLxoyHVsQa8cFABxAPh0pD6uUUHiAoaow==
+  version "8.2.3"
+  resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.3.tgz#9c0b8a3fda91fdb00590557ec8530160e908c6e7"
+  integrity sha512-jmoBlmWUChXgVi1wGDZsD7pWCaibJKmL+8+E2jaiWiRj8OlJLwQdQQS2CIjgvdg8UUHX+oyagQKicVVcqwxi9Q==
   dependencies:
     ansi-escapes "^4.2.1"
     chalk "^4.1.1"
@@ -14439,6 +14439,7 @@ inquirer@^8.0.0, inquirer@^8.1.1, inquirer@^8.2.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
     through "^2.3.6"
+    wrap-ansi "^7.0.0"
 
 internal-slot@^1.0.3:
   version "1.0.3"
@@ -21288,9 +21289,9 @@ react-virtualized-auto-sizer@^1.0.6:
   integrity sha512-7tQ0BmZqfVF6YYEWcIGuoR3OdYe8I/ZFbNclFlGOC3pMqunkYF/oL30NCjSGl9sMEb17AnzixDz98Kqc3N76HQ==
 
 react-window@^1.8.6:
-  version "1.8.6"
-  resolved "https://registry.npmjs.org/react-window/-/react-window-1.8.6.tgz#d011950ac643a994118632665aad0c6382e2a112"
-  integrity sha512-8VwEEYyjz6DCnGBsd+MgkD0KJ2/OXFULyDtorIiTz+QzwoP94tBoA7CnbtyXMm+cCeAUER5KJcPtWl9cpKbOBg==
+  version "1.8.7"
+  resolved "https://registry.npmjs.org/react-window/-/react-window-1.8.7.tgz#5e9fd0d23f48f432d7022cdb327219353a15f0d4"
+  integrity sha512-JHEZbPXBpKMmoNO1bNhoXOOLg/ujhL/BU4IqVU9r8eQPcy5KQnGHIHDRkJ0ns9IM5+Aq5LNwt3j8t3tIrePQzA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     memoize-one ">=3.1.1 <6"

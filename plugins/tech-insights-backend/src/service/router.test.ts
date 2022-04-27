@@ -19,6 +19,7 @@ import {
   DatabaseManager,
   getVoidLogger,
   PluginDatabaseManager,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import request from 'supertest';
@@ -74,6 +75,7 @@ describe('Tech Insights router tests', () => {
         getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
         getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
       },
+      tokenManager: ServerTokenManager.noop(),
     });
 
     const router = await createRouter({
