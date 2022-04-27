@@ -16,6 +16,11 @@
 
 import { createPermission } from '@backstage/plugin-permission-common';
 
+/**
+ * An example of a permission.
+ *
+ * @public
+ */
 export const tempExamplePermission = createPermission({
   name: 'temp.example.noop',
   attributes: {},

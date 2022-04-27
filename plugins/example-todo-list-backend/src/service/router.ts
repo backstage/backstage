@@ -25,11 +25,25 @@ import {
 import { add, getAll, update } from './todos';
 import { InputError } from '@backstage/errors';
 
+/**
+ * Dependencies of the todo-list router
+ *
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   identity: IdentityClient;
 }
 
+/**
+ * Creates an express.Router with some endpoints
+ * for creating, editing and deleting todo items.
+ *
+ * @public
+ * @param options - the dependencies of the router
+ * @returns an express.Router
+ *
+ */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
