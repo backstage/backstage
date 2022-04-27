@@ -4826,9 +4826,9 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-github-insights@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-2.0.0.tgz#1137f4f3ad5744559bf095ee868371f5fd8c60ec"
-  integrity sha512-6rLMWq8F6hYNAkuF+gOKyAZ/A2MGVHuNJArBJCUVhw6b/tmSxQcj78y62GaXB1Zz9KERhSk8OZf94m0+EE8C5g==
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-2.0.1.tgz#b0cccdd5cfe1c94055ad372087a1daba9ec72bb4"
+  integrity sha512-Kq3JdzSIpLV0Ka6GqX7Ok2QW/s6w18l0Kyec+OtQ+/1dz8AeG7UoYwUtBI/+sTd+gveTHAonwi9xINYbcIvQhQ==
   dependencies:
     "@backstage/catalog-model" "^1.0.0"
     "@backstage/core-components" "^0.9.0"
