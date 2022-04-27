@@ -76,17 +76,19 @@ TechDocs packages:
 
 TechDocs promoted to v1.0! To understand how this change affects the package, please check out our [versioning policy](https://backstage.io/docs/overview/versioning-policy).
 
+**v1.2** 🚧
+
+With the Backstage 1.2 release, we plan to introduce the [TechDocs Addon Framework](https://github.com/backstage/backstage/issues/9636) for augmenting the TechDocs experience at read-time.
+
+In addition to the framework itself, we'll be open sourcing a `<ReportIssue />` addon, helping you to create a feedback loop that drives up documentation quality and fosters a documentation culture at your organization.
+
 ### **Future work 🔮**
 
 Some of the following items are coming soon and some are potential ideas.
 
-- [TechDocs Addon Framework](https://github.com/backstage/backstage/issues/9636)
-- Contribute to and deploy from a marketplace of TechDocs Addons
-- Addon: Highlight text and raise an Issue to create a feedback loop to drive up documentation quality
-- Addon: MDX (allows you to use JSX in your Markdown content)
 - Better integration with
   [Scaffolder V2](https://github.com/backstage/backstage/issues/2771) (e.g. easy to choose and plug documentation template with Software Templates)
-- Static site generator agnostic
+- Static site generator agnostic, including possible support for MDX (allowing you to use JSX in your Markdown content)
 - Possible to configure several aspects about TechDocs (e.g. URL, homepage,
   theme)
 

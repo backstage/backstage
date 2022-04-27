@@ -109,6 +109,7 @@
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
+          "features/techdocs/addons",
           "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
           "features/techdocs/configuration",
