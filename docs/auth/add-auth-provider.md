@@ -74,7 +74,7 @@ export class ProviderAAuthProvider implements OAuthProviderHandlers {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
         response_type: 'code',
         /// ... etc
       }
