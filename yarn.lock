@@ -5041,9 +5041,9 @@
   integrity sha512-6k/pU2jNlgYvKOy84vpCAZ8MGVwybvAdjzrh4UicCVOCPxz0LSBws1OE6O5TO4sPHaSw+yLfNzNK8RicGFc1Kw==
 
 "@react-hookz/web@^13.0.0":
-  version "13.2.1"
-  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-13.2.1.tgz#12b3bc30d2cced8b75690c6c3708f96cfdf58172"
-  integrity sha512-ckHdvZ5rgblBscvHdPWAASH46FvfOGjnC+TG3ZtzkOEaYxFtXAzxgQyjjPS+veLuVEGLZ/9HdU6A2l24QBp+9w==
+  version "13.3.0"
+  resolved "https://registry.npmjs.org/@react-hookz/web/-/web-13.3.0.tgz#257e31049e92a121912fe1e67bdd01dbec5a203b"
+  integrity sha512-KswgkmqBVVDo6UnBFfssrojmDisogxC4jGZmd976R8YHoS3zdQJxjqICpOBSRohbRyYhYS9Cprw7BuV/CZcMaw==
   dependencies:
     "@react-hookz/deep-equal" "^1.0.1"
 
