@@ -16,9 +16,9 @@ The source code is available here:
 
 - [todo-list](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list)
 - [todo-list-backend](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list-backend)
-- [todo-list-common](https://github.com/backstage/backstage/blob/master/plugins/todo-list-common)
+- [todo-list-common](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list-common)
 
-1.  Copy-paste the three folders into the plugins folder of your backstage application repository or run the following script from the root of your backstage application:
+1.  Copy-paste the three folders into the plugins folder of your backstage application repository (removing the `example-` prefix from each folder) or run the following script from the root of your backstage application:
 
     ```bash
     $ cd $(mktemp -d)
@@ -26,7 +26,7 @@ The source code is available here:
       git checkout master -- plugins/example-todo-list/
       git checkout master -- plugins/example-todo-list-backend/
       git checkout master -- plugins/example-todo-list-common/
-      cp -R plugins/* $OLDPWD/plugins
+      for file in plugins/*; do mv "$file" "$OLDPWD/${file/example-todo/todo}"; done
       cd -
     ```
 
