@@ -4807,9 +4807,9 @@
   integrity sha512-8UiDeDbjCImFSfOegGu13otQ7OdP9FOYpcLjeouppnhs+MPeIEAtYS+jCcBKmi3reyTagC15/KVSRhde1wS1vg==
 
 "@roadiehq/backstage-plugin-buildkite@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-2.0.0.tgz#e5da049a2e15c533228e26da1af537b3783fe5de"
-  integrity sha512-qurSWt+n505BXFBTzoTSXn9BPmhtLjt+SPiVYjD3KSqJ7hwOoJg3rr1wuCWigUDj1R0Kx9TgaxNscETGBzUUgQ==
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-2.0.1.tgz#a17cf1e827b7b27f6c4f36bb5959004cac40712c"
+  integrity sha512-Dd38wPv4N3GHDNxu6XsJm7jfIHru0avE2lwmIlZsKn9+Ad+CbeTdjkYjObctIynzjhrETJrNpmZath57yCVe1A==
   dependencies:
     "@backstage/catalog-model" "^1.0.0"
     "@backstage/core-components" "^0.9.0"
