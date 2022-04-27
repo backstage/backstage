@@ -139,15 +139,10 @@ import {
 +     isPermission(request.permission, todoListUpdate) ||
 +     isPermission(request.permission, todoListRead)
 +   ) {
-      return {
-        result: AuthorizeResult.CONDITIONAL,
-        pluginId: 'todolist',
-        resourceType: TODO_LIST_RESOURCE_TYPE,
-        conditions: {
-          rule: 'IS_OWNER',
-          params: [user?.identity.userEntityRef],
-        },
-      };
+      return createTodoListConditionalDecision(
+        request.permission,
+        todoListConditions.isOwner(user?.identity.userEntityRef),
+      );
     }
 ```
 
