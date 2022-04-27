@@ -83,7 +83,7 @@ import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
 import { Todo, TodoFilter } from './todos';
 
-const createTodoListPermissionRule = makeCreatePermissionRule<
+export const createTodoListPermissionRule = makeCreatePermissionRule<
   Todo,
   TodoFilter
 >();
@@ -107,6 +107,8 @@ export const rules = { isOwner };
 ```
 
 `makeCreatePermissionRule` is a helper used to ensure that rules created for this plugin use consistent types for the resource and query.
+
+> Note: To support custom rules defined by Backstage integrators, you must export `createTodoListPermissionRule` from the backend package and provide some way for custom rules to be passed in before the backend starts, likely via `createRouter`.
 
 We have created a new `isOwner` rule, which is going to be automatically used by the permission framework whenever a conditional response is returned in response to an authorized request with an attached `resourceRef`.
 Specifically, the `apply` function is used to understand whether the passed resource should be authorized or not.
@@ -149,9 +151,33 @@ Now, let's create the new endpoint by editing `plugins/todo-list-backend/src/ser
     router.post('/todos', async (req, res) => {
 ```
 
+## Provide utilities for policy authors
+
+Now that we have a new resource type and a corresponding rule, we need to export some utilities for policy authors to reference them.
+
+Create a new `plugins/todo-list-backend/src/conditionExports.ts` file and add the following code:
+
+```typescript
+import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
+import { createConditionExports } from '@backstage/plugin-permission-node';
+import { permissionRules } from './service/rules';
+
+const { conditions, createConditionalDecision } = createConditionExports({
+  pluginId: 'catalog',
+  resourceType: RESOURCE_TYPE_CATALOG_ENTITY,
+  rules: permissionRules,
+});
+
+export const todoListConditions = conditions;
+
+export const createTodoListConditionalDecision = createConditionalDecision;
+```
+
+Make sure `todoListConditions` and `createTodoListConditionalDecision` are exported from the `todo-list-backend` package.
+
 ## Test the authorized update endpoint
 
-Now let's go back to the permission policy's handle function and try to authorize our new permission.
+Let's go back to the permission policy's handle function and try to authorize our new permission with an `isOwner` condition.
 
 ```diff
   // packages/backend/src/plugins/permission.ts
@@ -171,6 +197,10 @@ Now let's go back to the permission policy's handle function and try to authoriz
 +   todoListUpdate,
 +   TODO_LIST_RESOURCE_TYPE,
 + } from '@internal/plugin-todo-list-common';
++ import {
++   todoListConditions,
++   createTodoListConditionalDecision,
++ } from '@internal/plugin-todo-list-backend';
 
 ...
 
@@ -181,15 +211,10 @@ Now let's go back to the permission policy's handle function and try to authoriz
     }
 
 +   if (isPermission(request.permission, todoListUpdate)) {
-+     return {
-+       result: AuthorizeResult.CONDITIONAL,
-+       pluginId: 'todolist',
-+       resourceType: TODO_LIST_RESOURCE_TYPE,
-+       conditions: {
-+         rule: 'IS_OWNER',
-+         params: [user?.identity.userEntityRef],
-+       },
-+     };
++     return createTodoListConditionalDecision(
++       request.permission,
++       todoListConditions.isOwner(user?.identity.userEntityRef),
++     );
 +   }
 +
     return {
