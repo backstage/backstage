@@ -71,6 +71,8 @@ export class Auth0AuthProvider implements OAuthHandlers {
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
         domain: options.domain,
+        // We need passReqToCallback set to false to get params, but there's
+        // no matching type signature for that, so instead behold this beauty
         passReqToCallback: false as true,
       },
       (
