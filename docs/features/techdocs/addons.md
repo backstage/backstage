@@ -39,6 +39,10 @@ representative of physical spaces in the TechDocs UI:
 - `SecondarySidebar`: Right of the content, above the table of contents.
 - `Content`: A special location intended for Addons which augment the
   statically generated content of the documentation itself.
+- `Component`: A [proposed-but-not-yet-implemented](https://github.com/backstage/backstage/issues/11109)
+  virtual location, aimed at simplifying a common type of Addon.
+
+<img data-zoomable src="../../assets/techdocs/addon-locations.png" alt="TechDocs Addon Location Guide" />
 
 ### Addon Registry
 
