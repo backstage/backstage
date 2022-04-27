@@ -17,13 +17,13 @@ jobs:
       # The action also does not allow args or a local config file to be passed in, so the files array
       # also contains an "--config=.github/vale/config.ini" option
       - name: generate vale args
-        id: generate-args
+        id: generate
         run: echo "::set-output name=args::$(node scripts/check-docs-quality.js --ci-args)"
 
       - name: documentation quality check
         uses: errata-ai/vale-action@v1.5.0
         with:
           # This also contains --config=.github/vale/config.ini ... :/
-          files: '${{ steps.generate-args.args }}'
+          files: '${{ steps.generate.outputs.args }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
