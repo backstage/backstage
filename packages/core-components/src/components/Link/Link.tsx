@@ -28,13 +28,13 @@ import {
 const useStyles = makeStyles(
   {
     visuallyHidden: {
-      top: 0,
+      clip: 'rect(0 0 0 0)',
+      clipPath: 'inset(50%)',
+      overflow: 'hidden',
       position: 'absolute',
-      zIndex: 1000,
-      transform: 'translateY(-200%)',
-      '&:focus': {
-        transform: 'translateY(5px)',
-      },
+      whiteSpace: 'nowrap',
+      height: 1,
+      width: 1,
     },
   },
   { name: 'Link' },
