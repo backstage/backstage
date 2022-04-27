@@ -212,9 +212,6 @@ future.
   common for companies to have their own npm registry, and this file makes sure
   that this folder always uses the public registry.
 
-- [`.vale.ini`](https://github.com/backstage/backstage/tree/master/.vale.ini) -
-  [Spell checker](https://github.com/errata-ai/vale) for Markdown files.
-
 - [`.yarnrc`](https://github.com/backstage/backstage/tree/master/.yarnrc) -
   Enforces "our" version of Yarn.
 
