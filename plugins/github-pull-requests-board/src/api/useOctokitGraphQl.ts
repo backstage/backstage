@@ -14,23 +14,34 @@
  * limitations under the License.
  */
 import { Octokit } from '@octokit/rest';
-import { useApi, githubAuthApiRef } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  githubAuthApiRef,
+  configApiRef,
+} from '@backstage/core-plugin-api';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 let octokit: any;
 
 export const useOctokitGraphQl = <T>() => {
   const auth = useApi(githubAuthApiRef);
+  const config = useApi(configApiRef);
+
+  const baseUrl = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('providers.github') ?? [],
+  )[0].apiBaseUrl;
 
   return (path: string, options?: any): Promise<T> =>
-    auth.getAccessToken(['repo'])
+    auth
+      .getAccessToken(['repo'])
       .then((token: string) => {
-        if(!octokit) {
-          octokit = new Octokit({ auth: token })
+        if (!octokit) {
+          octokit = new Octokit({ auth: token, ...(baseUrl && { baseUrl }) });
         }
 
-        return octokit
+        return octokit;
       })
       .then(octokitInstance => {
-        return octokitInstance.graphql(path, options)
+        return octokitInstance.graphql(path, options);
       });
 };
