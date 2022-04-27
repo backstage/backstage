@@ -18,8 +18,8 @@ GitLab, etc.) and passes the files to the generator for next steps.
 
 There are two kinds of preparers available -
 
-1. Common Git Preparer - Uses `git clone` on any repository url.
-2. Url Reader - Uses source code hosting provider's API to download files.
+1. Common Git Preparer - Uses `git clone` on any repository URL.
+2. URL Reader - Uses source code hosting provider's API to download files.
    (Faster and recommended)
 
 ### TechDocs Generator

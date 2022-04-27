@@ -16,7 +16,7 @@ This can be used to run the kubernetes plugin locally against a mock service.
 ## Steps
 
 1. Start minikube
-2. Get the Kubernetes master base url `kubectl cluster-info`
+2. Get the Kubernetes master base URL `kubectl cluster-info`
 3. Apply manifests `kubectl apply -f dice-roller-manifests.yaml`
 4. Get service account token (see below)
 5. Start Backstage UI and backend
