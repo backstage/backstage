@@ -20,6 +20,11 @@ import {
 
 import { rootRouteRef } from './routes';
 
+/**
+ * The todo-list plugin instance
+ *
+ * @public
+ */
 export const todoListPlugin = createPlugin({
   id: 'todolist',
   routes: {
@@ -27,6 +32,11 @@ export const todoListPlugin = createPlugin({
   },
 });
 
+/**
+ * The Router and main entrypoint to the todo-list plugin.
+ *
+ * @public
+ */
 export const TodoListPage = todoListPlugin.provide(
   createRoutableExtension({
     name: 'TodoListPage',
