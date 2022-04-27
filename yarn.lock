@@ -4874,9 +4874,9 @@
     react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-travis-ci@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-2.0.0.tgz#d86eba878bbaa6ada77e9eda932ff25bd9121021"
-  integrity sha512-nrqWysSLBq4t9jVkQb5rz1pfNt2Ojlj+s0004FSNzPa8PPD+5XUhFZiS9Mi4kJVUC9BLW5SVdJzWtWEGbxyLPw==
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-2.0.1.tgz#0d706d3a31b123cd2e76b6d7fd849ae8cb97e786"
+  integrity sha512-Qay8Ad+heMEyW5QPi2I4C7ky3NUYhgE7FF+pV77ES21zyytCcTHQIkYHJd0FrR6WpedtNSegfcRj61VSZfbRKA==
   dependencies:
     "@backstage/catalog-model" "^1.0.0"
     "@backstage/core-components" "^0.9.0"
