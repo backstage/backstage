@@ -23,24 +23,25 @@ import { Wrapper } from '../../components/Wrapper';
 import { PullRequestCard } from '../../components/PullRequestCard';
 import { usePullRequestsByTeam } from '../../hooks/usePullRequestsByTeam';
 import { PRCardFormating } from '../../utils/types';
-import { DraftPrIcon } from '../../components/icons/DraftPr'
+import { DraftPrIcon } from '../../components/icons/DraftPr';
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
 const TeamPullRequestsPage: FunctionComponent = () => {
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
-  const { loading, pullRequests, refreshPullRequests } = usePullRequestsByTeam(repositories);
+  const { loading, pullRequests, refreshPullRequests } =
+    usePullRequestsByTeam(repositories);
 
   const header = (
     <InfoCardHeader onRefresh={refreshPullRequests}>
       <PullRequestBoardOptions
-        onClickOption={(newFormats) => setInfoCardFormat(newFormats)}
+        onClickOption={newFormats => setInfoCardFormat(newFormats)}
         value={infoCardFormat}
         options={[
           {
             icon: <DraftPrIcon />,
             value: 'draft',
-            ariaLabel: 'Show draft PRs'
+            ariaLabel: 'Show draft PRs',
           },
         ]}
       />
@@ -56,48 +57,37 @@ const TeamPullRequestsPage: FunctionComponent = () => {
       <Grid container spacing={2}>
         {pullRequests.length ? (
           pullRequests.map(({ title: columnTitle, content }) => (
-            <Wrapper
-              key={columnTitle}
-              fullscreen
-            >
-              <Typography variant="overline">
-                {columnTitle}
-              </Typography>
-              {content.map(({
-                id,
-                title,
-                createdAt,
-                lastEditedAt,
-                author,
-                url,
-                latestReviews,
-                repository,
-                isDraft
-              }, index) => (
-                isDraft ? (infoCardFormat.includes('draft') === isDraft) &&
-                  <PullRequestCard
-                    key={`pull-request-${id}-${index}`}
-                    title={title}
-                    createdAt={createdAt}
-                    updatedAt={lastEditedAt}
-                    author={author}
-                    url={url}
-                    reviews={latestReviews.nodes}
-                    repositoryName={repository.name}
-                    isDraft={isDraft}
-                  />
-                  : <PullRequestCard
-                    key={`pull-request-${id}-${index}`}
-                    title={title}
-                    createdAt={createdAt}
-                    updatedAt={lastEditedAt}
-                    author={author}
-                    url={url}
-                    reviews={latestReviews.nodes}
-                    repositoryName={repository.name}
-                    isDraft={isDraft}
-                  />
-              ))}
+            <Wrapper key={columnTitle} fullscreen>
+              <Typography variant="overline">{columnTitle}</Typography>
+              {content.map(
+                (
+                  {
+                    id,
+                    title,
+                    createdAt,
+                    lastEditedAt,
+                    author,
+                    url,
+                    latestReviews,
+                    repository,
+                    isDraft,
+                  },
+                  index,
+                ) =>
+                  infoCardFormat.includes('draft') === isDraft && (
+                    <PullRequestCard
+                      key={`pull-request-${id}-${index}`}
+                      title={title}
+                      createdAt={createdAt}
+                      updatedAt={lastEditedAt}
+                      author={author}
+                      url={url}
+                      reviews={latestReviews.nodes}
+                      repositoryName={repository.name}
+                      isDraft={isDraft}
+                    />
+                  ),
+              )}
             </Wrapper>
           ))
         ) : (
