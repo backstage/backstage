@@ -24,6 +24,9 @@ describe('parseEntityTransformParams', () => {
     metadata: {
       name: 'n',
       tags: ['t1', 't2'],
+      annotations: {
+        'test.com/url-like': 'ul1',
+      },
     },
     spec: {
       type: 't',
@@ -61,7 +64,24 @@ describe('parseEntityTransformParams', () => {
       parseEntityTransformParams({ fields: 'kind,metadata.name' })!(entity),
     ).toEqual({ kind: 'k', metadata: { name: 'n' } });
     expect(parseEntityTransformParams({ fields: 'metadata' })!(entity)).toEqual(
-      { metadata: { name: 'n', tags: ['t1', 't2'] } },
+      {
+        metadata: {
+          name: 'n',
+          tags: ['t1', 't2'],
+          annotations: { 'test.com/url-like': 'ul1' },
+        },
+      },
     );
+  });
+
+  it('supports dot notated feilds properly', () => {
+    expect(
+      parseEntityTransformParams({
+        fields: 'kind,metadata.annotations.test.com/url-like',
+      })!(entity),
+    ).toEqual({
+      kind: 'k',
+      metadata: { annotations: { 'test.com/url-like': 'ul1' } },
+    });
   });
 });

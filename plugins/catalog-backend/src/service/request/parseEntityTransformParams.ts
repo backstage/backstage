@@ -20,6 +20,22 @@ import lodash from 'lodash';
 import { RecursivePartial } from '../../util/RecursivePartial';
 import { parseStringsParam } from './common';
 
+function getPathArray(input: Entity, field: string) {
+  const pathArray = [];
+  let currentPathPart = '';
+
+  for (const pathPart of field.split('.')) {
+    currentPathPart += pathPart;
+
+    if (lodash.has(input, pathArray.concat(currentPathPart))) {
+      pathArray.push(currentPathPart);
+      currentPathPart = '';
+    }
+  }
+
+  return pathArray;
+}
+
 export function parseEntityTransformParams(
   params: Record<string, unknown>,
 ): ((entity: Entity) => Entity) | undefined {
@@ -46,9 +62,11 @@ export function parseEntityTransformParams(
     const output: RecursivePartial<Entity> = {};
 
     for (const field of fields) {
-      const value = lodash.get(input, field);
+      const pathArray = getPathArray(input, field);
+
+      const value = lodash.get(input, pathArray);
       if (value !== undefined) {
-        lodash.set(output, field, value);
+        lodash.set(output, pathArray, value);
       }
     }
 
