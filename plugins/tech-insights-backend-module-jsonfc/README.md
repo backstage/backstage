@@ -28,6 +28,7 @@ and modify the `techInsights.ts` file to contain a reference to the FactCheckers
    config: env.config,
    database: env.database,
    discovery: env.discovery,
+   tokenManager: env.tokenManager,
    factRetrievers: [myFactRetrieverRegistration],
 +  factCheckerFactory: myFactCheckerFactory
  });

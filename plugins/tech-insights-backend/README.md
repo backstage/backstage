@@ -35,6 +35,7 @@ export default async function createPlugin(
     database: env.database,
     discovery: env.discovery,
     scheduler: env.scheduler,
+    tokenManager: env.tokenManager,
     factRetrievers: [], // Fact retrievers registrations you want tech insights to use
   });
 
@@ -104,6 +105,7 @@ const builder = buildTechInsightsContext({
   config: env.config,
   database: env.database,
   discovery: env.discovery,
+  tokenManager: env.tokenManager,
 - factRetrievers: [],
 + factRetrievers: [myFactRetrieverRegistration],
 });
@@ -119,6 +121,7 @@ const builder = buildTechInsightsContext({
   config: env.config,
   database: env.database,
   discovery: env.discovery,
+  tokenManager: env.tokenManager,
 - factRetrievers: [],
 + factRetrievers: process.env.MAIN_FACT_RETRIEVER_INSTANCE ? [myFactRetrieverRegistration] : [],
 });
@@ -158,9 +161,12 @@ const myFactRetriever: FactRetriever = {
     const catalogClient = new CatalogClient({
       discoveryApi: discovery,
     });
-    const entities = await catalogClient.getEntities({
-      filter: [{ kind: 'component' }],
-    });
+    const entities = await catalogClient.getEntities(
+      {
+        filter: [{ kind: 'component' }],
+      },
+      { token },
+    );
     /**
      * snip: Do complex logic to retrieve facts from external system or calculate fact values
      */
@@ -214,6 +220,7 @@ and modify the `techInsights.ts` file to contain a reference to the FactChecker 
    config: env.config,
    database: env.database,
    discovery: env.discovery,
+   tokenManager: env.tokenManager,
    factRetrievers: [myFactRetrieverRegistration],
 +  factCheckerFactory: myFactCheckerFactory
  });
@@ -273,6 +280,7 @@ export default async function createPlugin(
     config: env.config,
     database: env.database,
     discovery: env.discovery,
+    tokenManager: env.tokenManager,
     factRetrievers: [
       createFactRetrieverRegistration({
         cadence: '0 */6 * * *', // Run every 6 hours - https://crontab.guru/#0_*/6_*_*_*
