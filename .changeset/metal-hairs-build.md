@@ -2,4 +2,4 @@
 '@backstage/plugin-rollbar-backend': patch
 ---
 
-Updated rollbar-backend's README to include clearer instructions on how to install and configure.
+Updated README to include clearer installation instructions on how to install and configure.

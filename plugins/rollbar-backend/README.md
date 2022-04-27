@@ -23,12 +23,13 @@ export default async function createPlugin(
 ): Promise<Router> {
   return await createRouter({
     logger: env.logger,
-    config: env.config
+    config: env.config,
   });
 }
 ```
 
 3. Modify your `packages/backend/src/index.ts` to include:
+
 ```diff
  ...
 
