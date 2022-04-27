@@ -21,7 +21,9 @@ const fs = require('fs').promises;
 const IGNORED = [
   /^ADOPTERS\.md$/,
   /^OWNERS\.md$/,
-  /^docs[/\\]releases[/\\]*-changelog\.md$/,
+  /^.*[/\\]CHANGELOG\.md$/,
+  /^.*[/\\]api-report\.md$/,
+  /^docs[/\\]releases[/\\].*-changelog\.md$/,
 ];
 
 const rootDir = resolvePath(__dirname, '..');
