@@ -297,7 +297,9 @@ describe('DocsSynchronizer', () => {
           techdocs: { legacyUseCaseSensitiveTripletPaths: true },
         }),
         logger: getVoidLogger(),
-        buildLogger: getVoidLogger(),
+        buildLogTransport: new winston.transports.Stream({
+          stream: new PassThrough(),
+        }),
         scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
         cache,
       });
@@ -331,7 +333,7 @@ describe('DocsSynchronizer', () => {
       expect(mockResponseHandler.finish).toBeCalledWith({ updated: false });
     });
 
-    it('should log to the build logger', async () => {
+    it("adds the build log transport to the logger's list of transports", async () => {
       let logger: winston.Logger;
       MockedDocsBuilder.prototype.build.mockImplementation(async () => {
         logger = MockedDocsBuilder.mock.calls[0][0].logger;
