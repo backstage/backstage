@@ -14421,9 +14421,9 @@ inquirer@^7.3.3:
     through "^2.3.6"
 
 inquirer@^8.0.0, inquirer@^8.1.1, inquirer@^8.2.0:
-  version "8.2.2"
-  resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.2.tgz#1310517a87a0814d25336c78a20b44c3d9b7629d"
-  integrity sha512-pG7I/si6K/0X7p1qU+rfWnpTE1UIkTONN1wxtzh0d+dHXtT/JG6qBgLxoyHVsQa8cFABxAPh0pD6uUUHiAoaow==
+  version "8.2.3"
+  resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.3.tgz#9c0b8a3fda91fdb00590557ec8530160e908c6e7"
+  integrity sha512-jmoBlmWUChXgVi1wGDZsD7pWCaibJKmL+8+E2jaiWiRj8OlJLwQdQQS2CIjgvdg8UUHX+oyagQKicVVcqwxi9Q==
   dependencies:
     ansi-escapes "^4.2.1"
     chalk "^4.1.1"
@@ -14439,6 +14439,7 @@ inquirer@^8.0.0, inquirer@^8.1.1, inquirer@^8.2.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
     through "^2.3.6"
+    wrap-ansi "^7.0.0"
 
 internal-slot@^1.0.3:
   version "1.0.3"
