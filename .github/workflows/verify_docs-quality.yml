@@ -12,10 +12,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      # Vale does not support file excludes, so we use the script to generate a list of files instead
+      - name: list files to check
+        id: list
+        run: echo "::set-output name=files::$(node scripts/check-docs-quality.js --list)"
+
       - name: documentation quality check
-        uses: errata-ai/vale-action@v1.4.0
+        uses: errata-ai/vale-action@v1.5.0
         # Whitelist excluding ADOPTERS, CHANGELOG and OWNERS (no exclude flag exists)
         with:
-          files: '[".changeset", ".github", "contrib", "docs", "microsite", "packages", "plugins", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "GOVERNANCE.md", "README.md"]'
+          config: .github/vale/config.ini
+          files: '${{ steps.list.files }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
