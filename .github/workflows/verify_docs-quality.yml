@@ -22,7 +22,8 @@ jobs:
         uses: errata-ai/vale-action@v1.5.0
         # Whitelist excluding ADOPTERS, CHANGELOG and OWNERS (no exclude flag exists)
         with:
-          config: .github/vale/config.ini
+          # TODO: Update once this is in master
+          config: https://raw.githubusercontent.com/backstage/backstage/f91974260b7849cd1cf4c7629fc3310f678b0f29/.github/vale/config.ini
           files: '${{ steps.list.files }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
