@@ -79,6 +79,11 @@ describe('Features', () => {
             to="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
           >
             Git releases
+            <span
+              class="Link-visuallyHidden-11"
+            >
+              , Opens in a new window
+            </span>
           </a>
           .
         </p>
