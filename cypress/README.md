@@ -18,6 +18,17 @@ yarn install
 yarn cypress run
 ```
 
+Note that the tests expect to run against a built application, so you'll want to
+run a Docker image and either create an `app-config.cypress.yaml` or pass the
+necessary environment variables:
+
+```sh
+yarn tsc
+yarn build
+yarn workspace example-backend build-image
+docker run -p 7007:7007 example-backend
+```
+
 You can open up the `cypress` console by using `yarn cypress open`.
 
 You can also run towards any Backstage installation by using the Cypress Environment Variable overrides.
