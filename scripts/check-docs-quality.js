@@ -95,8 +95,11 @@ async function runVale(files) {
 async function main() {
   const files = await listFiles();
 
-  if (process.argv.includes('--list')) {
-    process.stdout.write(JSON.stringify(files));
+  if (process.argv.includes('--ci-args')) {
+    process.stdout.write(
+      // Workaround for not being able to pass arguments to the vale action
+      JSON.stringify(['--config=.github/vale/config.ini', ...files]),
+    );
     return;
   }
 

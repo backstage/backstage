@@ -14,16 +14,16 @@ jobs:
       - uses: actions/checkout@v2
 
       # Vale does not support file excludes, so we use the script to generate a list of files instead
-      - name: list files to check
-        id: list
-        run: echo "::set-output name=files::$(node scripts/check-docs-quality.js --list)"
+      # The action also does not allow args or a local config file to be passed in, so the files array
+      # also contains an "--config=.github/vale/config.ini" option
+      - name: generate vale args
+        id: generate-args
+        run: echo "::set-output name=args::$(node scripts/check-docs-quality.js --ci-args)"
 
       - name: documentation quality check
         uses: errata-ai/vale-action@v1.5.0
-        # Whitelist excluding ADOPTERS, CHANGELOG and OWNERS (no exclude flag exists)
         with:
-          # TODO: Update once this is in master
-          config: https://raw.githubusercontent.com/backstage/backstage/f91974260b7849cd1cf4c7629fc3310f678b0f29/.github/vale/config.ini
-          files: '${{ steps.list.files }}'
+          # This also contains --config=.github/vale/config.ini ... :/
+          files: '${{ steps.generate-args.args }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
