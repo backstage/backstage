@@ -15,7 +15,6 @@
  */
 const { spawnSync } = require('child_process');
 const { resolve: resolvePath, join: joinPath } = require('path');
-const commandExists = require('command-exists');
 const fs = require('fs').promises;
 
 const IGNORED = [
@@ -56,7 +55,7 @@ async function listFiles(dir = '') {
 // caused by the script. In CI, we want to ensure vale linter is run.
 async function exitIfMissingVale() {
   try {
-    await commandExists('vale');
+    await require('command-exists')('vale');
   } catch (e) {
     if (process.env.CI) {
       console.log(
