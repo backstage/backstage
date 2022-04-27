@@ -68,13 +68,13 @@
   dependencies:
     "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
 
-"@asyncapi/parser@^1.14.1":
-  version "1.14.1"
-  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.14.1.tgz#2f474f9d5ba1ce5b144e487fd956c0809ab11a9e"
-  integrity sha512-ZsNQc/HXmGDrxkYBRrGou/JrWn+FLHYdQQI0WPOylSL+LNfaWtLlIcYwbcj61l+jLLFqIe0DK/yZbmjxm0ydqw==
+"@asyncapi/parser@^1.15.0":
+  version "1.15.0"
+  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.15.0.tgz#649f88097a6af750ef034c22b8925f674a220dd6"
+  integrity sha512-ff4ljaNry0BFvlM1SOSff3jvZyKkiBVJgIOqHcUZtKBAmXxpvsX0nz9pi8fHbg9NrmNyASPCVTCpiDb7Zasreg==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^9.0.6"
-    "@asyncapi/specs" "^2.13.0"
+    "@asyncapi/specs" "^2.14.0"
     "@fmvilas/pseudo-yaml-ast" "^0.3.1"
     ajv "^6.10.1"
     js-yaml "^3.13.1"
@@ -83,24 +83,24 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@1.0.0-next.36":
-  version "1.0.0-next.36"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.36.tgz#81b2099381f8e77d175a6e04933299f2dd24d97b"
-  integrity sha512-2ruMfFHCJGnIlbmB/x1qBcg9eLhqDUSzWs7OjSoVPEoJQgtyFGy+Wkow7Liu0cYwPFJJfHCu+VOvLVKXmUUTxw==
+"@asyncapi/react-component@1.0.0-next.37":
+  version "1.0.0-next.37"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.37.tgz#d7b8d3efb297ed93c61aee6bf7dcf808ccc0ab79"
+  integrity sha512-LSvz4f3VgFRmzJWnR2QO+jEjZVQEIyrT3FVyVTX0PQuh0xZmbEinXAhPxUFZVUypsHbGXzhvjQiTf3lb/0F29A==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.3.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
-    "@asyncapi/parser" "^1.14.1"
+    "@asyncapi/parser" "^1.15.0"
     highlight.js "^10.7.2"
     isomorphic-dompurify "^0.13.0"
     marked "^4.0.14"
     openapi-sampler "^1.2.1"
     use-resize-observer "^8.0.0"
 
-"@asyncapi/specs@^2.13.0":
-  version "2.13.0"
-  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.13.0.tgz#c0f46d00e8a67c1c9ea445eb3e8bca90f7dca795"
-  integrity sha512-X0OrxJtzwRH8iLILO/gUTDqjGVPmagmdlgdyuBggYAoGXzF6ZuAws3XCLxtPNve5eA/0V/1puwpUYEGekI22og==
+"@asyncapi/specs@^2.14.0":
+  version "2.14.0"
+  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.14.0.tgz#a4535fedde931181f20d41356ed1906d0fb73d48"
+  integrity sha512-hHsYF6XsYNIKb1P2rXaooF4H+uKKQ4b/Ljxrk3rZ3riEDiSxMshMEfb1fUlw9Yj4V4OmJhjXwkNvw8W59AXv1A==
 
 "@azure/abort-controller@^1.0.0":
   version "1.0.2"
