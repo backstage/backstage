@@ -5075,9 +5075,9 @@
   integrity sha512-oVd4hjx2+y0MeUdk1l+ItwVLwlrDlvTlGwXBWMMzPYc7DLyxuxFvDfoHGkAQkrikfAgtdnzxrW6u9a8ywUqdfw==
 
 "@sucrase/jest-plugin@^2.1.1":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@sucrase/jest-plugin/-/jest-plugin-2.2.0.tgz#a176ae754a4e142fd50f9952dc6a8d161a1db951"
-  integrity sha512-eBWmp771YXm0wIftlse4siG98J3HRnZBojhSrvPGYgj+R9Kbf1QeJGMr6iNC0e/0qlKkw01Ig3H8KjPVwUqiGQ==
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/@sucrase/jest-plugin/-/jest-plugin-2.2.1.tgz#659d31f34412fc9c50e6e0622298baaf27b75366"
+  integrity sha512-5fG+kHOlfwPNi82MCvTFQdAg50YQymGbdwH9nzTA9D9FhJVHynTjadXi58gb/Ae17RMvinY0+Fglx33MB056Rg==
   dependencies:
     sucrase "^3.18.0"
 
