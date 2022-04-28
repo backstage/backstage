@@ -16,11 +16,6 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -30,9 +25,6 @@ import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDryRun } from '../DryRunContext';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CheckIcon from '@material-ui/icons/Check';
-import CancelIcon from '@material-ui/icons/Cancel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandLess';
 import { FileBrowser } from '../FileBrowser';
 import CodeMirror from '@uiw/react-codemirror';
@@ -42,9 +34,9 @@ import { LogViewer } from '@backstage/core-components';
 import { usePrevious } from '@react-hookz/web';
 import { TaskStatusStepper } from '../../../TaskPage/TaskPage';
 import { TaskPageLinks } from '../../../TaskPage/TaskPageLinks';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { BackstageTheme } from '@backstage/theme';
 import { DryRunResultsSplitView } from './DryRunResultsSplitView';
+import { DryRunResultsList } from './DryRunResultsList';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   accordionHeader: {
@@ -62,20 +54,6 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     gridTemplateRows: '1fr',
     padding: 0,
     height: 400,
-  },
-  resultList: {
-    overflowY: 'auto',
-    background: theme.palette.background.default,
-  },
-  resultListIconSuccess: {
-    minWidth: 0,
-    marginRight: theme.spacing(1),
-    color: theme.palette.status.ok,
-  },
-  resultListIconFailure: {
-    minWidth: 0,
-    marginRight: theme.spacing(1),
-    color: theme.palette.status.error,
   },
   resultView: {
     display: 'flex',
@@ -137,53 +115,12 @@ export function TemplateEditorDryRunResults() {
         </AccordionSummary>
         <Divider orientation="horizontal" />
         <AccordionDetails className={classes.accordionContent}>
-          <ResultList />
+          <DryRunResultsList />
           <Divider orientation="horizontal" />
           <ResultView />
         </AccordionDetails>
       </Accordion>
     </>
-  );
-}
-
-function ResultList() {
-  const classes = useStyles();
-  const dryRun = useDryRun();
-
-  return (
-    <List className={classes.resultList} dense>
-      {dryRun.results.map(result => {
-        const failed = result.log.some(l => l.status === 'failed');
-        return (
-          <ListItem
-            button
-            key={result.id}
-            selected={dryRun.selectedResult?.id === result.id}
-            onClick={() => dryRun.selectResult(result.id)}
-          >
-            <ListItemIcon
-              className={
-                failed
-                  ? classes.resultListIconFailure
-                  : classes.resultListIconSuccess
-              }
-            >
-              {failed ? <CancelIcon /> : <CheckIcon />}
-            </ListItemIcon>
-            <ListItemText primary={`Result ${result.id}`} />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={() => dryRun.deleteResult(result.id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        );
-      })}
-    </List>
   );
 }
 
