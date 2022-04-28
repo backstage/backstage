@@ -131,6 +131,7 @@ describe('createRouter', () => {
 
     jest.spyOn(taskBroker, 'dispatch');
     jest.spyOn(taskBroker, 'get');
+    jest.spyOn(taskBroker, 'list');
     jest.spyOn(taskBroker, 'event$');
 
     const router = await createRouter({
@@ -294,6 +295,65 @@ describe('createRouter', () => {
     });
   });
 
+  describe('GET /v2/tasks', () => {
+    it('return all tasks', async () => {
+      (taskBroker.list as jest.Mocked<TaskBroker>['list']).mockResolvedValue([
+        {
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          createdBy: '',
+        },
+      ]);
+
+      const response = await request(app).get(`/v2/tasks`);
+      expect(taskBroker.list).toBeCalledWith({
+        createdBy: undefined,
+      });
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual([
+        {
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          createdBy: '',
+        },
+      ]);
+    });
+
+    it('return filtered tasks', async () => {
+      (taskBroker.list as jest.Mocked<TaskBroker>['list']).mockResolvedValue([
+        {
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          createdBy: 'user:default/foo',
+        },
+      ]);
+
+      const response = await request(app).get(
+        `/v2/tasks?createdBy=user:default/foo`,
+      );
+      expect(taskBroker.list).toBeCalledWith({
+        createdBy: 'user:default/foo',
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual([
+        {
+          id: 'a-random-id',
+          spec: {} as any,
+          status: 'completed',
+          createdAt: '',
+          createdBy: 'user:default/foo',
+        },
+      ]);
+    });
+  });
+
   describe('GET /v2/tasks/:taskId', () => {
     it('does not divulge secrets', async () => {
       (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
@@ -302,6 +362,7 @@ describe('createRouter', () => {
         status: 'completed',
         createdAt: '',
         secrets: { backstageToken: 'secret' },
+        createdBy: '',
       });
 
       const response = await request(app).get(`/v2/tasks/a-random-id`);

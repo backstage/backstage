@@ -152,11 +152,7 @@ export class StorageTaskBroker implements TaskBroker {
   ) {}
 
   async list(options?: Partial<SerializedTask>): Promise<SerializedTask[]> {
-    if (!options || !options.createdBy) {
-      throw new Error('Method not implemented.');
-    }
-
-    return await this.storage.list({ createdBy: options.createdBy });
+    return await this.storage.list({ createdBy: options?.createdBy });
   }
 
   private deferredDispatch = defer();

@@ -86,12 +86,15 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   async list(options: Partial<SerializedTask>): Promise<SerializedTask[]> {
-    const results = await this.db<RawDbTaskRow>('tasks')
-      .where({
+    const queryBuilder = this.db<RawDbTaskRow>('tasks');
+
+    if (options.createdBy) {
+      queryBuilder.where({
         created_by: options.createdBy,
-      })
-      .orderBy('created_at', 'desc')
-      .select();
+      });
+    }
+
+    const results = await queryBuilder.orderBy('created_at', 'desc').select();
 
     return results.map(result => ({
       id: result.id,
@@ -153,7 +156,8 @@ export class DatabaseTaskStore implements TaskStore {
       secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
       created_by: options.createdBy ?? null,
       status: 'open',
-      created_by: ('createdBy' in spec && spec.createdBy) || null,
+      created_by:
+        ('createdBy' in options.spec && options.spec.createdBy) || null,
     });
     return { taskId };
   }

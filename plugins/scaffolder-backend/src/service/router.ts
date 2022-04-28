@@ -258,14 +258,7 @@ export async function createRouter(
       res.status(201).json({ id: result.taskId });
     })
     .get('/v2/tasks', async (req, res) => {
-      const token = getBearerToken(req.headers.authorization);
-      const userEntityRef = token && getUserEntityRefFromToken(token);
-
-      if (!userEntityRef) {
-        throw new InputError(
-          'Could not find a valid user entity ref in the request',
-        );
-      }
+      const userEntityRef = req.query.createdBy?.toString();
 
       const tasks = await taskBroker.list({
         createdBy: userEntityRef,
