@@ -8,9 +8,6 @@ airbrake
 Anddddd
 Apdex
 api
-Api
-apis
-args
 asciidoc
 async
 Atlassian
@@ -19,7 +16,6 @@ autoscaling
 Autoscaling
 autoselect
 Avro
-aws
 backported
 backporting
 Bigtable
@@ -38,7 +34,6 @@ changesets
 Changesets
 chanwit
 Chanwit
-ci
 CI/CD
 classname
 cli
@@ -127,7 +122,6 @@ hoc
 horizontalpodautoscalers
 Hostname
 hotspots
-html
 http
 https
 Iain
@@ -314,7 +308,6 @@ templaters
 Templaters
 theia
 thumbsup
-toc
 todo
 tolerations
 Tolerations
@@ -339,7 +332,6 @@ unregistration
 untracked
 upsert
 upvote
-url
 URIs
 URLs
 utils
