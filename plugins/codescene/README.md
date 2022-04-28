@@ -56,7 +56,9 @@ proxy:
     allowedHeaders: ['Authorization']
     headers:
       Authorization: Basic ${CODESCENE_AUTH_CREDENTIALS}
----
+```
+
+```yaml
 codescene:
   baseUrl: https://codescene.my-company.net # replace with your own URL
 ```
