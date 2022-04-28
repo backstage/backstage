@@ -35,10 +35,11 @@ import { useElementFilter } from '@backstage/core-plugin-api';
 import {
   actionsRouteRef,
   editRouteRef,
+  scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../routes';
-import { MyTaskPage } from './MyTasksPage';
+import { ListTasksPage } from './ListTasksPage';
 
 /**
  * The props for the entrypoint `ScaffolderPage` component the plugin.
@@ -119,7 +120,10 @@ export const Router = (props: RouterProps) => {
           </SecretsContextProvider>
         }
       />
-      <Route path="/tasks/me" element={<MyTaskPage />} />
+      <Route
+        path={scaffolderListTaskRouteRef.path}
+        element={<ListTasksPage />}
+      />
       <Route path={scaffolderTaskRouteRef.path} element={<TaskPageElement />} />
       <Route path={actionsRouteRef.path} element={<ActionsPage />} />
       <Route

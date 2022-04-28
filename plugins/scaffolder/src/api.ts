@@ -19,6 +19,7 @@ import {
   createApiRef,
   DiscoveryApi,
   FetchApi,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -36,6 +37,7 @@ import {
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
+  TasksOwnerFilterKind,
 } from './types';
 
 /**
@@ -56,11 +58,13 @@ export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly fetchApi: FetchApi;
+  private readonly identityApi: IdentityApi;
   private readonly useLongPollingLogs: boolean;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    identityApi: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   }) {
@@ -68,11 +72,19 @@ export class ScaffolderClient implements ScaffolderApi {
     this.fetchApi = options.fetchApi ?? { fetch };
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.useLongPollingLogs = options.useLongPollingLogs ?? false;
+    this.identityApi = options.identityApi;
   }
 
-  async listTasks(): Promise<ScaffolderTask[]> {
+  async listTasks(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const url = `${baseUrl}/v2/tasks`;
+
+    let query = '';
+    if (createdBy === 'owned') {
+      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+      query = `createdBy=${encodeURIComponent(userEntityRef)}`;
+    }
+
+    const url = `${baseUrl}/v2/tasks?${query}`;
 
     const response = await this.fetchApi.fetch(url);
     if (!response.ok) {

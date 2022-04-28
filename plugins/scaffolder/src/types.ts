@@ -103,6 +103,13 @@ export type LogEvent = {
 };
 
 /**
+ * The status of each task you can filter from `ScaffolderClient`
+ *
+ * @public
+ */
+export type TasksOwnerFilterKind = 'owned' | 'all';
+
+/**
  * The input options to the `scaffold` method of the `ScaffolderClient`.
  *
  * @public
@@ -170,6 +177,8 @@ export interface ScaffolderApi {
   ): Promise<ScaffolderScaffoldResponse>;
 
   getTask(taskId: string): Promise<ScaffolderTask>;
+
+  listTasks(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]>;
 
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
