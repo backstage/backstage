@@ -13,7 +13,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const CodeSceneIcon: IconComponent;
 
 // @public (undocumented)
-export const CodescenePage: () => JSX.Element;
+export const CodeScenePage: () => JSX.Element;
 
 // @public (undocumented)
 export const codescenePlugin: BackstagePlugin<
@@ -27,7 +27,7 @@ export const codescenePlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const CodesceneProjectDetailsPage: () => JSX.Element;
+export const CodeSceneProjectDetailsPage: () => JSX.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

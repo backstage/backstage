@@ -15,8 +15,8 @@
  */
 export {
   codescenePlugin,
-  CodescenePage,
-  CodesceneProjectDetailsPage,
+  CodeScenePage,
+  CodeSceneProjectDetailsPage,
 } from './plugin';
 import CodeSceneIconComponent from './assets/codescene.icon.svg';
 import { IconComponent } from '@backstage/core-plugin-api';

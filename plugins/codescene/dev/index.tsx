@@ -17,19 +17,19 @@ import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import {
   codescenePlugin,
-  CodescenePage,
-  CodesceneProjectDetailsPage,
+  CodeScenePage,
+  CodeSceneProjectDetailsPage,
 } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(codescenePlugin)
   .addPage({
-    element: <CodescenePage />,
+    element: <CodeScenePage />,
     title: 'Root Page',
     path: '/codescene',
   })
   .addPage({
-    element: <CodesceneProjectDetailsPage />,
+    element: <CodeSceneProjectDetailsPage />,
     title: 'Details Page',
     path: '/codescene/:projectId',
   })

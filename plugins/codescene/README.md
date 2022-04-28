@@ -21,16 +21,16 @@ yarn add --cwd packages/app @backstage/plugin-codescene
 
 ```tsx
 import {
-  CodescenePage,
-  CodesceneProjectDetailsPage,
+  CodeScenePage,
+  CodeSceneProjectDetailsPage,
 } from '@backstage/plugin-codescene';
 
 ...
 
-<Route path="/codescene" element={<CodescenePage />} />
+<Route path="/codescene" element={<CodeScenePage />} />
 <Route
     path="/codescene/:projectId"
-    element={<CodesceneProjectDetailsPage />}
+    element={<CodeSceneProjectDetailsPage />}
 />
 ```
 

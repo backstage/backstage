@@ -43,9 +43,9 @@ export const codescenePlugin = createPlugin({
 /**
  * @public
  */
-export const CodescenePage = codescenePlugin.provide(
+export const CodeScenePage = codescenePlugin.provide(
   createRoutableExtension({
-    name: 'CodescenePage',
+    name: 'CodeScenePage',
     component: () =>
       import('./components/CodeScenePageComponent').then(
         m => m.CodeScenePageComponent,
@@ -57,9 +57,9 @@ export const CodescenePage = codescenePlugin.provide(
 /**
  * @public
  */
-export const CodesceneProjectDetailsPage = codescenePlugin.provide(
+export const CodeSceneProjectDetailsPage = codescenePlugin.provide(
   createRoutableExtension({
-    name: 'CodesceneProjectDetailsPage',
+    name: 'CodeSceneProjectDetailsPage',
     component: () =>
       import('./components/CodeSceneProjectDetailsPage').then(
         m => m.CodeSceneProjectDetailsPage,

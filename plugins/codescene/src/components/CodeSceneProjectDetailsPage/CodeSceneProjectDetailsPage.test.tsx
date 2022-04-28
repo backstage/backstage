@@ -30,7 +30,7 @@ import { Analysis } from '../../api/types';
 import { ConfigReader } from '@backstage/config';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-describe('CodesceneProjectDetailsPage', () => {
+describe('CodeSceneProjectDetailsPage', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
   setupRequestMockHandlers(server);
