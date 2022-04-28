@@ -50,7 +50,7 @@ import {
   useDirectoryEditor,
 } from './DirectoryEditorContext';
 import { DryRunProvider, useDryRun } from './DryRunContext';
-import { TemplateEditorDryRunResults } from './DryRunResults';
+import { DryRunResults } from './DryRunResults';
 
 const useStyles = makeStyles(theme => ({
   // Reset and fix sizing to make sure scrolling behaves correctly
@@ -151,7 +151,7 @@ export const TemplateEditor = (props: {
               />
             </section>
             <section className={classes.results}>
-              <TemplateEditorDryRunResults />
+              <DryRunResults />
             </section>
           </main>
         </div>
