@@ -80,3 +80,4 @@ jobs:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: postgres
