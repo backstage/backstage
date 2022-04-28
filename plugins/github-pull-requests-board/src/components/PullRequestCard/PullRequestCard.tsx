@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import React, { FunctionComponent } from 'react';
-import { getApprovedReviews, getChangeRequests, getCommentedReviews } from '../../utils/functions';
+import {
+  getApprovedReviews,
+  getChangeRequests,
+  getCommentedReviews,
+} from '../../utils/functions';
 import { Reviews, Author } from '../../utils/types';
 import { Card } from '../Card';
 import { UserHeaderList } from '../UserHeaderList';
@@ -28,7 +32,7 @@ type Props = {
   reviews: Reviews;
   repositoryName: string;
   isDraft: boolean;
-}
+};
 
 const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
   const {
@@ -59,16 +63,26 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
       prUrl={url}
     >
       {!!approvedReviews.length && (
-        <UserHeaderList label='👍' users={approvedReviews.map(({ author: reviewAuthor }) => reviewAuthor)} />
+        <UserHeaderList
+          label="👍"
+          users={approvedReviews.map(
+            ({ author: reviewAuthor }) => reviewAuthor,
+          )}
+        />
       )}
       {!!commentsReviews.length && (
         <UserHeaderList
-          label='💬'
-          users={commentsReviews.map(({ author: reviewAuthor }) => reviewAuthor)}
+          label="💬"
+          users={commentsReviews.map(
+            ({ author: reviewAuthor }) => reviewAuthor,
+          )}
         />
       )}
       {!!changeRequests.length && (
-        <UserHeaderList label='🚧' users={changeRequests.map(({ author: reviewAuthor }) => reviewAuthor)} />
+        <UserHeaderList
+          label="🚧"
+          users={changeRequests.map(({ author: reviewAuthor }) => reviewAuthor)}
+        />
       )}
     </Card>
   );

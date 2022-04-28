@@ -25,7 +25,7 @@ type Props = {
   authorName: string;
   authorAvatar?: string;
   repositoryName: string;
-}
+};
 
 const Card: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
   const {
@@ -36,13 +36,13 @@ const Card: FunctionComponent<Props> = (props: PropsWithChildren<Props>) => {
     authorName,
     authorAvatar,
     repositoryName,
-    children
+    children,
   } = props;
 
   return (
     <Box marginBottom={1}>
-      <Paper variant='outlined'>
-        <CardActionArea href={prUrl} target='_blank'>
+      <Paper variant="outlined">
+        <CardActionArea href={prUrl} target="_blank">
           <Box padding={1}>
             <CardHeader
               title={title}

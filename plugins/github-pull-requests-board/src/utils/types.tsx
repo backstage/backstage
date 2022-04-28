@@ -15,31 +15,31 @@
  */
 export type GraphQlPullRequest<T> = {
   repository: {
-    pullRequest: T
-  }
-}
+    pullRequest: T;
+  };
+};
 
 export type GraphQlPullRequests<T> = {
   repository: {
     pullRequests: {
-      edges: T
-    }
-  }
-}
+      edges: T;
+    };
+  };
+};
 
 export type PullRequestsNumber = {
   node: {
     number: number;
-  }
-}
+  };
+};
 
 export type Review = {
   state:
-  | 'PENDING'
-  | 'COMMENTED'
-  | 'APPROVED'
-  | 'CHANGES_REQUESTED'
-  | 'DISMISSED';
+    | 'PENDING'
+    | 'COMMENTED'
+    | 'APPROVED'
+    | 'CHANGES_REQUESTED'
+    | 'DISMISSED';
   author: Author;
 };
 
@@ -69,7 +69,7 @@ export type PullRequest = {
   reviewDecision: ReviewDecision | null;
   isDraft: boolean;
   createdAt: string;
-  author: Author
+  author: Author;
 };
 
 export type PullRequests = PullRequest[];
@@ -81,4 +81,4 @@ export type PullRequestsColumn = {
 
 export type PRCardFormating = 'compacted' | 'fullscreen' | 'draft';
 
-export type ReviewDecision = 'IN_PROGRESS' | 'APPROVED' | 'REVIEW_REQUIRED'
+export type ReviewDecision = 'IN_PROGRESS' | 'APPROVED' | 'REVIEW_REQUIRED';
