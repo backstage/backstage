@@ -44,7 +44,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandLess';
 import { FileBrowser } from './FileBrowser';
 import CodeMirror from '@uiw/react-codemirror';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import { StreamLanguage } from '@codemirror/stream-parser';
+import { StreamLanguage } from '@codemirror/language';
 import { LogViewer } from '@backstage/core-components';
 import { usePrevious } from '@react-hookz/web';
 import { TaskStatusStepper } from '../../TaskPage/TaskPage';
