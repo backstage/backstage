@@ -23,7 +23,6 @@ import MapIcon from '@material-ui/icons/MyLocation';
 import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import Add from '@material-ui/icons/Add';
 import List from '@material-ui/icons/List';
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -48,8 +47,6 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
   useSidebarOpenState,
-  SidebarSubmenu,
-  SidebarSubmenuItem,
 } from '@backstage/core-components';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
@@ -110,16 +107,8 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-        <SidebarItem icon={CreateComponentIcon} to="create" text="Create...">
-          <SidebarSubmenu title="Create">
-            <SidebarSubmenuItem icon={Add} title="Create new" to="create" />
-            <SidebarSubmenuItem
-              icon={List}
-              title="View my jobs"
-              to="create/tasks/me"
-            />
-          </SidebarSubmenu>
-        </SidebarItem>
+        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+        <SidebarItem icon={List} text="Template tasks" to="create/tasks" />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
