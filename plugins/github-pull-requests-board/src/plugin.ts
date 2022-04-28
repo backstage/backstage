@@ -43,7 +43,9 @@ export const TeamPullRequestsPage = githubPullRequestsBoardPlugin.provide(
   createRoutableExtension({
     name: 'PullRequestPage',
     component: () =>
-      import('./components/TeamPullRequestsPage').then(m => m.TeamPullRequestsPage),
+      import('./components/TeamPullRequestsPage').then(
+        m => m.TeamPullRequestsPage,
+      ),
     mountPoint: rootRouteRef,
   }),
 );

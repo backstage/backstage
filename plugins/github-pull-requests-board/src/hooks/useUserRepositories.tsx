@@ -33,14 +33,14 @@ export function useUserRepositories() {
     });
 
     const entitiesNames: string[] = entitiesList.items.map(componentEntity =>
-      getProjectNameFromEntity(componentEntity)
+      getProjectNameFromEntity(componentEntity),
     );
 
     setRepositories([...new Set(entitiesNames)]);
   }, [catalogApi, teamEntity?.metadata?.name]);
 
   useEffect(() => {
-    getRepositoriesNames()
+    getRepositoriesNames();
   }, [getRepositoriesNames]);
 
   return {

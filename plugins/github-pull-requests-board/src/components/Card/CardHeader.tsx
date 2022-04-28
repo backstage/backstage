@@ -25,7 +25,7 @@ type Props = {
   authorName: string;
   authorAvatar?: string;
   repositoryName: string;
-}
+};
 
 const CardHeader = (props: Props) => {
   const {
@@ -39,29 +39,26 @@ const CardHeader = (props: Props) => {
 
   return (
     <>
-      <Box display='flex' justifyContent='space-between'>
-        <Typography color='textSecondary' variant='body2' component='p'>
+      <Box display="flex" justifyContent="space-between">
+        <Typography color="textSecondary" variant="body2" component="p">
           {repositoryName}
         </Typography>
         <UserHeader name={authorName} avatar={authorAvatar} />
       </Box>
-      <Typography component='h3'>
+      <Typography component="h3">
         <b>{title}</b>
       </Typography>
-      <Box display='flex' justifyContent='space-between' marginY={1}>
-        <Typography variant='body2' component='p'>
+      <Box display="flex" justifyContent="space-between" marginY={1}>
+        <Typography variant="body2" component="p">
           Created at: <strong>{getElapsedTime(createdAt)}</strong>
         </Typography>
-        {
-          updatedAt && (
-            <Typography variant='body2' component='p'>
-              Last update: <strong>{getElapsedTime(updatedAt)}</strong>
-            </Typography>
-          )
-        }
+        {updatedAt && (
+          <Typography variant="body2" component="p">
+            Last update: <strong>{getElapsedTime(updatedAt)}</strong>
+          </Typography>
+        )}
       </Box>
     </>
-
   );
 };
 

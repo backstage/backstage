@@ -25,39 +25,42 @@ export function usePullRequestsByTeam(repositories: string[]) {
   const getPullRequests = useGetPullRequestsFromRepository();
   const getPullRequestDetails = useGetPullRequestDetails();
 
-  const getPRsPerRepository = useCallback(async (repository: string): Promise<PullRequests> => {
+  const getPRsPerRepository = useCallback(
+    async (repository: string): Promise<PullRequests> => {
+      const pullRequestsNumbers = await getPullRequests(repository);
 
-    const pullRequestsNumbers = await getPullRequests(repository)
+      const pullRequestsWithDetails = await Promise.all(
+        pullRequestsNumbers.map(async ({ node }) => {
+          const pullRequest = await getPullRequestDetails(
+            repository,
+            node.number,
+          );
 
-    const pullRequestsWithDetails = await Promise.all(
-      pullRequestsNumbers.map(async ({ node }) => {
-        const pullRequest = await getPullRequestDetails(
-          repository,
-          node.number,
-        );
+          return pullRequest;
+        }),
+      );
 
-        return pullRequest;
-      }),
-    );
-
-    return pullRequestsWithDetails;
-  }, [getPullRequests, getPullRequestDetails]);
+      return pullRequestsWithDetails;
+    },
+    [getPullRequests, getPullRequestDetails],
+  );
 
   const getPRsFromTeam = useCallback(
     async (teamRepositories: string[]): Promise<PullRequests> => {
-
       const teamRepositoriesPromises = teamRepositories.map(repository =>
         getPRsPerRepository(repository),
       );
 
-      const teamPullRequests = await Promise.allSettled(teamRepositoriesPromises)
-        .then(promises => promises.reduce((acc, curr) => {
+      const teamPullRequests = await Promise.allSettled(
+        teamRepositoriesPromises,
+      ).then(promises =>
+        promises.reduce((acc, curr) => {
           if (curr.status === 'fulfilled') {
             return [...acc, ...curr.value];
           }
           return acc;
-        }, [] as PullRequests)
-        );
+        }, [] as PullRequests),
+      );
 
       return teamPullRequests;
     },
@@ -70,11 +73,10 @@ export function usePullRequestsByTeam(repositories: string[]) {
     const teamPullRequests = await getPRsFromTeam(repositories);
     setPullRequests(formatPRsByReviewDecision(teamPullRequests));
     setLoading(false);
-
   }, [getPRsFromTeam, repositories]);
 
   useEffect(() => {
-    getAllPullRequests()
+    getAllPullRequests();
   }, [getAllPullRequests]);
 
   return {

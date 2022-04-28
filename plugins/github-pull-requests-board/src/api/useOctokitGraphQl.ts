@@ -28,7 +28,7 @@ export const useOctokitGraphQl = <T>() => {
   const config = useApi(configApiRef);
 
   const baseUrl = readGitHubIntegrationConfigs(
-    config.getOptionalConfigArray('providers.github') ?? [],
+    config.getOptionalConfigArray('integrations.github') ?? [],
   )[0].apiBaseUrl;
 
   return (path: string, options?: any): Promise<T> =>
