@@ -29,6 +29,7 @@ import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+import getRawBody from 'raw-body';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -65,7 +66,7 @@ describe('BitbucketCloudUrlReader', () => {
   setupRequestMockHandlers(worker);
 
   describe('readUrl', () => {
-    it('should be able to readUrl without ETag', async () => {
+    it('should be able to readUrl via buffer without ETag', async () => {
       worker.use(
         rest.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
@@ -85,6 +86,28 @@ describe('BitbucketCloudUrlReader', () => {
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
+    });
+
+    it('should be able to readUrl via stream without ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBeNull();
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'etag-value'),
+            );
+          },
+        ),
+      );
+
+      const result = await reader.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+      );
+      const fromStream = await getRawBody(result.stream!());
+      expect(fromStream.toString()).toBe('foo');
     });
 
     it('should be able to readUrl with matching ETag', async () => {

@@ -25,6 +25,7 @@ import {
   parseGerritJsonResponse,
   parseGerritGitilesUrl,
 } from '@backstage/integration';
+import { Base64Decode } from 'base64-stream';
 import concatStream from 'concat-stream';
 import fs from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
@@ -125,9 +126,18 @@ export class GerritUrlReader implements UrlReader {
       throw new Error(`Unable to read gerrit file ${url}, ${e}`);
     }
     if (response.ok) {
-      const responseBody = await response.text();
+      let responseBody: string;
       return {
-        buffer: async () => Buffer.from(responseBody, 'base64'),
+        buffer: async () => {
+          if (responseBody === undefined) {
+            responseBody = await response.text();
+          }
+          return Buffer.from(responseBody, 'base64');
+        },
+        stream: () => {
+          const readable = new Readable().wrap(response.body);
+          return readable.pipe(new Base64Decode());
+        },
       };
     }
     if (response.status === 404) {

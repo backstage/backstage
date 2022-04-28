@@ -125,12 +125,30 @@ export type ReadUrlResponse = {
   buffer(): Promise<Buffer>;
 
   /**
+   * Returns the data that was read from the remote URL as a Readable stream.
+   *
+   * @remarks
+   *
+   * This method will be required in a future release.
+   */
+  stream?(): Readable;
+
+  /**
    * Etag returned by content provider.
    *
    * @remarks
    *
    * Can be used to compare and cache responses when doing subsequent calls.
    */
+  etag?: string;
+};
+
+/**
+ * An options object for {@link ReadUrlResponseFactory} factory methods.
+ *
+ * @public
+ */
+export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
 };
 
