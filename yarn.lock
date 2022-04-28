@@ -14069,9 +14069,9 @@ inquirer@^7.3.3:
     through "^2.3.6"
 
 inquirer@^8.0.0, inquirer@^8.1.1, inquirer@^8.2.0:
-  version "8.2.3"
-  resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.3.tgz#9c0b8a3fda91fdb00590557ec8530160e908c6e7"
-  integrity sha512-jmoBlmWUChXgVi1wGDZsD7pWCaibJKmL+8+E2jaiWiRj8OlJLwQdQQS2CIjgvdg8UUHX+oyagQKicVVcqwxi9Q==
+  version "8.2.4"
+  resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.4.tgz#ddbfe86ca2f67649a67daa6f1051c128f684f0b4"
+  integrity sha512-nn4F01dxU8VeKfq192IjLsxu0/OmMZ4Lg3xKAns148rCaXP6ntAoEkVYZThWjwON8AlzdZZi6oqnhNbxUG9hVg==
   dependencies:
     ansi-escapes "^4.2.1"
     chalk "^4.1.1"
