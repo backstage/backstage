@@ -17,9 +17,11 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
+import inquirer, { Answers, Question } from 'inquirer';
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import fetch from 'node-fetch';
+import octokit from 'octokit';
 
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
@@ -67,8 +69,41 @@ async function verifyGithubOrg(org: string): Promise<void> {
   }
 
   if (response?.status === 404) {
-    throw new Error(
-      `GitHub organization '${org}' does not exist. Please verify the name and try again.`,
-    );
+    const questions: Question[] = [
+      {
+        type: 'confirm',
+        name: 'shouldCreateOrg',
+        message: `GitHub organization ${chalk.cyan(
+          org,
+        )} does not exist. Would you like to create a demo organization instead?`,
+      },
+      {
+        type: 'input',
+        message: 'What would you like your demo organization to be called?',
+        name: 'orgName',
+        when: (answers: Answers) => answers.shouldCreateOrg,
+        validate: async (orgName: string) => {
+          const { status } = await fetch(
+            `https://api.github.com/orgs/${encodeURIComponent(orgName)}`,
+          );
+          return status === 404 || 'GitHub organization already exists';
+        },
+      },
+      {
+        type: 'token',
+        name: 'token',
+        message: 'GitHub Token',
+        when: () => !process.env.GITHUB_TOKEN,
+      },
+    ];
+
+    const answers = await inquirer.prompt(questions);
+
+    if (!answers.shouldCreateOrg) {
+      console.log(
+        chalk.yellow('GitHub organization must exist to create GitHub app'),
+      );
+      process.exit(1);
+    }
   }
 }
