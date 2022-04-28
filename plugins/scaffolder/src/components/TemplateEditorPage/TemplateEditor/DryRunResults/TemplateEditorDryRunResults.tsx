@@ -28,14 +28,7 @@ import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
-import React, {
-  Children,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import classNames from 'classnames';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDryRun } from '../DryRunContext';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
@@ -51,6 +44,7 @@ import { TaskStatusStepper } from '../../../TaskPage/TaskPage';
 import { TaskPageLinks } from '../../../TaskPage/TaskPageLinks';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { BackstageTheme } from '@backstage/theme';
+import { DryRunResultsSplitView } from './DryRunResultsSplitView';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   accordionHeader: {
@@ -219,41 +213,6 @@ function ResultView() {
   );
 }
 
-const useSplitViewStyles = makeStyles(theme => ({
-  root: {
-    display: 'grid',
-    gridTemplateColumns: '280px auto 3fr',
-    gridTemplateRows: '1fr',
-  },
-  child: {
-    overflowY: 'auto',
-    height: '100%',
-    minHeight: 0,
-  },
-  childPaper: {
-    background: theme.palette.background.paper,
-  },
-}));
-
-function SplitView(props: { children: ReactNode }) {
-  const classes = useSplitViewStyles();
-  const childArray = Children.toArray(props.children);
-
-  if (childArray.length !== 2) {
-    throw new Error('SplitView must have exactly 2 children');
-  }
-
-  return (
-    <div className={classes.root}>
-      <div className={classNames(classes.child, classes.childPaper)}>
-        {childArray[0]}
-      </div>
-      <Divider orientation="horizontal" />
-      <div className={classes.child}>{childArray[1]}</div>
-    </div>
-  );
-}
-
 function FilesContent() {
   const classes = useStyles();
   const { selectedResult } = useDryRun();
@@ -278,7 +237,7 @@ function FilesContent() {
     return null;
   }
   return (
-    <SplitView>
+    <DryRunResultsSplitView>
       <FileBrowser
         selected={selectedPath}
         onSelect={setSelectedPath}
@@ -294,7 +253,7 @@ function FilesContent() {
           selectedFile?.base64Content ? atob(selectedFile.base64Content) : ''
         }
       />
-    </SplitView>
+    </DryRunResultsSplitView>
   );
 }
 function LogContent() {
@@ -325,14 +284,14 @@ function LogContent() {
   const selectedStep = steps.find(s => s.id === currentStepId) ?? steps[0];
 
   return (
-    <SplitView>
+    <DryRunResultsSplitView>
       <TaskStatusStepper
         steps={steps}
         currentStepId={selectedStep.id}
         onUserStepChange={setUserSelectedStepId}
       />
       <LogViewer text={selectedStep?.logString ?? ''} />
-    </SplitView>
+    </DryRunResultsSplitView>
   );
 }
 
@@ -345,7 +304,7 @@ function OutputContent() {
   }
 
   return (
-    <SplitView>
+    <DryRunResultsSplitView>
       <Box pt={2}>
         {selectedResult.output?.links?.length && (
           <TaskPageLinks output={selectedResult.output} />
@@ -359,6 +318,6 @@ function OutputContent() {
         readOnly
         value={JSON.stringify(selectedResult.output, null, 2)}
       />
-    </SplitView>
+    </DryRunResultsSplitView>
   );
 }
