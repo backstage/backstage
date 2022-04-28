@@ -50,7 +50,7 @@ import {
   useDirectoryEditor,
 } from './DirectoryEditorContext';
 import { DryRunProvider, useDryRun } from './DryRunContext';
-import { TemplateEditorDryRunResults } from './TemplateEditorDryRunResults';
+import { TemplateEditorDryRunResults } from './DryRunResults';
 
 const useStyles = makeStyles(theme => ({
   // Reset and fix sizing to make sure scrolling behaves correctly

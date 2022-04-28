@@ -36,19 +36,19 @@ import React, {
   useState,
 } from 'react';
 import classNames from 'classnames';
-import { useDryRun } from './DryRunContext';
+import { useDryRun } from '../DryRunContext';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
 import CancelIcon from '@material-ui/icons/Cancel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandLess';
-import { FileBrowser } from './FileBrowser';
+import { FileBrowser } from '../FileBrowser';
 import CodeMirror from '@uiw/react-codemirror';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import { StreamLanguage } from '@codemirror/language';
 import { LogViewer } from '@backstage/core-components';
 import { usePrevious } from '@react-hookz/web';
-import { TaskStatusStepper } from '../../TaskPage/TaskPage';
-import { TaskPageLinks } from '../../TaskPage/TaskPageLinks';
+import { TaskStatusStepper } from '../../../TaskPage/TaskPage';
+import { TaskPageLinks } from '../../../TaskPage/TaskPageLinks';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { BackstageTheme } from '@backstage/theme';
 
