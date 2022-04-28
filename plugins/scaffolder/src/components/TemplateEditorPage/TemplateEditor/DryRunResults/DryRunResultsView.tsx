@@ -14,56 +14,32 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useDryRun } from '../DryRunContext';
-import ExpandMoreIcon from '@material-ui/icons/ExpandLess';
-import { FileBrowser } from '../FileBrowser';
-import CodeMirror from '@uiw/react-codemirror';
-import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import { StreamLanguage } from '@codemirror/language';
 import { LogViewer } from '@backstage/core-components';
-import { usePrevious } from '@react-hookz/web';
+import { StreamLanguage } from '@codemirror/language';
+import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import { makeStyles } from '@material-ui/core/styles';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import CodeMirror from '@uiw/react-codemirror';
+import React, { useEffect, useMemo, useState } from 'react';
 import { TaskStatusStepper } from '../../../TaskPage/TaskPage';
 import { TaskPageLinks } from '../../../TaskPage/TaskPageLinks';
-import { BackstageTheme } from '@backstage/theme';
+import { useDryRun } from '../DryRunContext';
+import { FileBrowser } from '../FileBrowser';
 import { DryRunResultsSplitView } from './DryRunResultsSplitView';
-import { DryRunResultsList } from './DryRunResultsList';
 
-const useStyles = makeStyles((theme: BackstageTheme) => ({
-  accordionHeader: {
-    height: 48,
-    minHeight: 0,
-    '&.Mui-expanded': {
-      height: 48,
-      minHeight: 0,
-    },
-  },
-  accordionContent: {
-    display: 'grid',
-    background: theme.palette.background.default,
-    gridTemplateColumns: '180px auto 1fr',
-    gridTemplateRows: '1fr',
-    padding: 0,
-    height: 400,
-  },
-  resultView: {
+const useStyles = makeStyles({
+  root: {
     display: 'flex',
     flexFlow: 'column nowrap',
   },
-  resultViewItemWrapper: {
+  contentWrapper: {
     flex: 1,
     position: 'relative',
   },
-  resultViewItem: {
+  content: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -79,76 +55,7 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     height: '100%',
     overflowY: 'auto',
   },
-}));
-
-export function TemplateEditorDryRunResults() {
-  const classes = useStyles();
-  const dryRun = useDryRun();
-  const [expanded, setExpanded] = useState(false);
-  const [hidden, setHidden] = useState(true);
-
-  const resultsLength = dryRun.results.length;
-  const prevResultsLength = usePrevious(resultsLength);
-  useEffect(() => {
-    if (prevResultsLength === 0 && resultsLength === 1) {
-      setHidden(false);
-      setExpanded(true);
-    } else if (prevResultsLength === 1 && resultsLength === 0) {
-      setExpanded(false);
-    }
-  }, [prevResultsLength, resultsLength]);
-
-  return (
-    <>
-      <Accordion
-        variant="outlined"
-        expanded={expanded}
-        hidden={resultsLength === 0 && hidden}
-        onChange={(_, exp) => setExpanded(exp)}
-        onTransitionEnd={() => resultsLength === 0 && setHidden(true)}
-      >
-        <AccordionSummary
-          className={classes.accordionHeader}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography>Dry-run results</Typography>
-        </AccordionSummary>
-        <Divider orientation="horizontal" />
-        <AccordionDetails className={classes.accordionContent}>
-          <DryRunResultsList />
-          <Divider orientation="horizontal" />
-          <ResultView />
-        </AccordionDetails>
-      </Accordion>
-    </>
-  );
-}
-
-function ResultView() {
-  const classes = useStyles();
-  const [selectedTab, setSelectedTab] = useState<'files' | 'log' | 'output'>(
-    'files',
-  );
-
-  return (
-    <div className={classes.resultView}>
-      <Tabs value={selectedTab} onChange={(_, v) => setSelectedTab(v)}>
-        <Tab value="files" label="Files" />
-        <Tab value="log" label="Log" />
-        <Tab value="output" label="Output" />
-      </Tabs>
-      <Divider />
-
-      <div className={classes.resultViewItemWrapper}>
-        <div className={classes.resultViewItem}>
-          {selectedTab === 'files' && <FilesContent />}
-          {selectedTab === 'log' && <LogContent />}
-          {selectedTab === 'output' && <OutputContent />}
-        </div>
-      </div>
-    </div>
-  );
-}
+});
 
 function FilesContent() {
   const classes = useStyles();
@@ -256,5 +163,31 @@ function OutputContent() {
         value={JSON.stringify(selectedResult.output, null, 2)}
       />
     </DryRunResultsSplitView>
+  );
+}
+
+export function DryRunResultsView() {
+  const classes = useStyles();
+  const [selectedTab, setSelectedTab] = useState<'files' | 'log' | 'output'>(
+    'files',
+  );
+
+  return (
+    <div className={classes.root}>
+      <Tabs value={selectedTab} onChange={(_, v) => setSelectedTab(v)}>
+        <Tab value="files" label="Files" />
+        <Tab value="log" label="Log" />
+        <Tab value="output" label="Output" />
+      </Tabs>
+      <Divider />
+
+      <div className={classes.contentWrapper}>
+        <div className={classes.content}>
+          {selectedTab === 'files' && <FilesContent />}
+          {selectedTab === 'log' && <LogContent />}
+          {selectedTab === 'output' && <OutputContent />}
+        </div>
+      </div>
+    </div>
   );
 }

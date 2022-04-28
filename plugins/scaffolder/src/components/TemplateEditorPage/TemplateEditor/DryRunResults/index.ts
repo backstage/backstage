@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { TemplateEditorDryRunResults } from './TemplateEditorDryRunResults';
+export { DryRunResults } from './DryRunResults';
