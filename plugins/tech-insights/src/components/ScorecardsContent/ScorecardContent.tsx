@@ -17,13 +17,21 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import { Progress } from '@backstage/core-components';
+import { Content, Page, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { ChecksOverview } from './ChecksOverview';
+import { ScorecardInfo } from '../ScorecardsInfo';
 import Alert from '@material-ui/lab/Alert';
 import { techInsightsApiRef } from '../../api/TechInsightsApi';
+import { makeStyles } from '@material-ui/core';
 
-export const ScorecardsOverview = ({
+const useStyles = makeStyles(() => ({
+  contentScorecards: {
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+}));
+
+export const ScorecardsContent = ({
   title,
   description,
   checksId,
@@ -32,6 +40,7 @@ export const ScorecardsOverview = ({
   description?: string;
   checksId?: string[];
 }) => {
+  const classes = useStyles();
   const api = useApi(techInsightsApiRef);
   const { namespace, kind, name } = useParams();
   const { value, loading, error } = useAsync(
@@ -45,10 +54,14 @@ export const ScorecardsOverview = ({
   }
 
   return (
-    <ChecksOverview
-      title={title}
-      description={description}
-      checks={value || []}
-    />
+    <Page themeId="home">
+      <Content className={classes.contentScorecards}>
+        <ScorecardInfo
+          title={title}
+          description={description}
+          checks={value || []}
+        />
+      </Content>
+    </Page>
   );
 };
