@@ -38,6 +38,12 @@ export interface AzureDevOpsApi {
     options?: RepoBuildOptions,
   ): Promise<{ items: RepoBuild[] }>;
 
+  getGitTags(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{ items: PullRequest[] }>;
+
   getPullRequests(
     projectName: string,
     repoName: string,
