@@ -51,11 +51,16 @@ import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
-// Warning: (ae-forgotten-export) The symbol "AlertDisplayProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "AlertDisplay" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
+
+// @public
+export type AlertDisplayProps = {
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+};
 
 // @public
 enum Alignment {

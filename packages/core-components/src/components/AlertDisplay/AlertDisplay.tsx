@@ -34,15 +34,18 @@ import pluralize from 'pluralize';
 // TODO: improve on this and promote to a shared component for use by all apps.
 
 export type AlertDisplayProps = {
-  vertical?: 'top' | 'bottom';
-  horizontal?: 'left' | 'center' | 'right';
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
 };
 
+/** @public */
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
 
-  const { vertical = 'top', horizontal = 'center' } = props;
+  const { anchorOrigin = { vertical: 'top', horizontal: 'center' } } = props;
 
   useEffect(() => {
     const subscription = alertApi
@@ -65,7 +68,7 @@ export function AlertDisplay(props: AlertDisplayProps) {
   };
 
   return (
-    <Snackbar open anchorOrigin={{ vertical, horizontal }}>
+    <Snackbar open anchorOrigin={anchorOrigin}>
       <Alert
         action={
           <IconButton
