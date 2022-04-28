@@ -37,7 +37,7 @@ describe('<OwnerEntityColumn />', () => {
     signOut: jest.fn(),
   };
 
-  it('should render the column with the time', async () => {
+  it('should render the column with the user', async () => {
     const props = {
       entityRef: 'user:default/foo',
     };

@@ -27,7 +27,7 @@ describe('<TemplateTitleColumn />', () => {
     getTemplateParameterSchema: jest.fn(),
   } as any;
 
-  it('should render the column with the time', async () => {
+  it('should render the column with the template name', async () => {
     const props = {
       entityRef: 'template:default/one-template',
     };
