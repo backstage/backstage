@@ -43,7 +43,6 @@ const useStyles = makeStyles<BackstageTheme>(
   { name: 'CodeSceneGauge' },
 );
 
-/** @public */
 export type GaugeProps = {
   value: number;
   max: number;
@@ -51,14 +50,12 @@ export type GaugeProps = {
   tooltipText: string;
 };
 
-/** @public */
 export type GaugePropsGetColorOptions = {
   palette: BackstagePalette;
   value: number;
   max: number;
 };
 
-/** @public */
 export type GaugePropsGetColor = (args: GaugePropsGetColorOptions) => string;
 
 export const getProgressColor: GaugePropsGetColor = ({
@@ -81,8 +78,6 @@ export const getProgressColor: GaugePropsGetColor = ({
 
 /**
  * Circular Progress Bar
- *
- * @public
  *
  */
 export function Gauge(props: GaugeProps) {
