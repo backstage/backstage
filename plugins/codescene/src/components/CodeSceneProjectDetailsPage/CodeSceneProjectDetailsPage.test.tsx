@@ -30,15 +30,6 @@ import { Analysis } from '../../api/types';
 import { ConfigReader } from '@backstage/config';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-jest.mock('react-router-dom', () => {
-  return {
-    ...(jest.requireActual('react-router-dom') as any),
-    useParams: () => ({
-      projectId: 123,
-    }),
-  };
-});
-
 describe('CodesceneProjectDetailsPage', () => {
   const server = setupServer();
   // Enable sane handlers for network requests
