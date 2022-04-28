@@ -295,8 +295,7 @@ export type SessionApi = {
 /**
  * Provides authentication towards Google APIs and identities.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
- *
+ * @public
  * @remarks
  *
  * See {@link https://developers.google.com/identity/protocols/googlescopes} for a full list of supported scopes.
@@ -317,8 +316,7 @@ export const googleAuthApiRef: ApiRef<
 /**
  * Provides authentication towards GitHub APIs.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
- *
+ * @public
  * @remarks
  *
  * See {@link https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/}
@@ -333,8 +331,7 @@ export const githubAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Okta APIs.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
- *
+ * @public
  * @remarks
  *
  * See {@link https://developer.okta.com/docs/guides/implement-oauth-for-okta/scopes/}
@@ -353,8 +350,7 @@ export const oktaAuthApiRef: ApiRef<
 /**
  * Provides authentication towards GitLab APIs.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
- *
+ * @public
  * @remarks
  *
  * See {@link https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#limiting-scopes-of-a-personal-access-token}
@@ -369,8 +365,7 @@ export const gitlabAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Microsoft APIs and identities.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
- *
+ * @public
  * @remarks
  *
  * For more info and a full list of supported scopes, see:
@@ -390,7 +385,7 @@ export const microsoftAuthApiRef: ApiRef<
 /**
  * Provides authentication towards OneLogin APIs.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ * @public
  */
 export const oneloginAuthApiRef: ApiRef<
   OAuthApi &
@@ -405,7 +400,7 @@ export const oneloginAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Bitbucket APIs.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ * @public
  * @remarks
  *
  * See {@link https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/}
@@ -420,7 +415,7 @@ export const bitbucketAuthApiRef: ApiRef<
 /**
  * Provides authentication towards Atlassian APIs.
  *
- * @alpha This API is **EXPERIMENTAL** and might change in the future.
+ * @public
  * @remarks
  *
  * See {@link https://developer.atlassian.com/cloud/jira/platform/scopes-for-connect-and-oauth-2-3LO-apps/}

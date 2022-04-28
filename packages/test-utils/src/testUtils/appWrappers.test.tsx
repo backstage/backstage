@@ -159,4 +159,17 @@ describe('wrapInTestApp', () => {
     expect(rendered.getByText('Link S: /my-b-path/y/p')).toBeInTheDocument();
     expect(rendered.getByText('Link E: /my-e-path/z')).toBeInTheDocument();
   });
+
+  it('should not make route mounting elements visible during tests', async () => {
+    const routeRef = createRouteRef({ id: 'foo' });
+
+    const rendered = await renderInTestApp(<span>foo</span>, {
+      mountedRoutes: { '/foo': routeRef },
+    });
+
+    const [root] = rendered.baseElement.children;
+    expect(root).toBeInTheDocument();
+    expect(root.children.length).toBe(1);
+    expect(root.children[0].textContent).toBe('foo');
+  });
 });

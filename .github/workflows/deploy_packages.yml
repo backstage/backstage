@@ -122,6 +122,7 @@ jobs:
           bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
           bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
         env:
+          BACKSTAGE_NEXT_TESTS: 1
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
@@ -129,7 +130,7 @@ jobs:
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: Ilshidur/action-discord@0.2.0
+        uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
@@ -220,7 +221,7 @@ jobs:
 
       # Notify everyone about this great new release :D
       - name: Discord notification
-        uses: Ilshidur/action-discord@0.2.0
+        uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
           TAG_NAME: ${{ steps.create_tag.outputs.tag_name }}

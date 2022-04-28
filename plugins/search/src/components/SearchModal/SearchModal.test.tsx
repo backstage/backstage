@@ -21,7 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../plugin';
-import { searchApiRef } from '../../apis';
+import { searchApiRef } from '@backstage/plugin-search-react';
 
 import { SearchModal } from './SearchModal';
 
@@ -53,6 +53,23 @@ describe('SearchModal', () => {
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(query).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should render a custom Modal correctly', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden={false} toggleModal={toggleModal}>
+          {() => <div>Custom Search Modal</div>}
+        </SearchModal>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('Custom Search Modal')).toBeInTheDocument();
   });
 
   it('Calls toggleModal handler', async () => {

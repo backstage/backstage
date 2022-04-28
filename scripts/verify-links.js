@@ -43,6 +43,13 @@ async function listFiles(dir) {
 const projectRoot = resolvePath(__dirname, '..');
 
 async function verifyUrl(basePath, absUrl, docPages) {
+  const url = absUrl
+    .replace(/#.*$/, '')
+    .replace(
+      /https:\/\/github.com\/backstage\/backstage\/(tree|blob)\/master/,
+      '',
+    );
+
   // Avoid having absolute URL links within docs/, so that links work on the site
   if (
     absUrl.match(
@@ -50,15 +57,17 @@ async function verifyUrl(basePath, absUrl, docPages) {
     ) &&
     basePath.match(/^(?:docs|microsite)\//)
   ) {
+    // Exception for linking to the changelogs, since we encourage those to be browsed in GitHub
+    if (absUrl.match(/docs\/releases\/.+-changelog\.md$/)) {
+      if (docPages.has(url.slice(0, -'.md'.length))) {
+        return undefined;
+      }
+      return { url: absUrl, basePath, problem: 'missing' };
+    }
+
     return { url: absUrl, basePath, problem: 'github' };
   }
 
-  const url = absUrl
-    .replace(/#.*$/, '')
-    .replace(
-      /https:\/\/github.com\/backstage\/backstage\/(tree|blob)\/master/,
-      '',
-    );
   if (!url) {
     return undefined;
   }

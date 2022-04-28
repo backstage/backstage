@@ -25,6 +25,7 @@ const BITBUCKET_API_BASE_URL = 'https://api.bitbucket.org/2.0';
  * The configuration parameters for a single Bitbucket API provider.
  *
  * @public
+ * @deprecated bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
 export type BitbucketIntegrationConfig = {
   /**
@@ -68,6 +69,7 @@ export type BitbucketIntegrationConfig = {
  *
  * @param config - The config object of a single integration
  * @public
+ * @deprecated bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
 export function readBitbucketIntegrationConfig(
   config: Config,
@@ -107,6 +109,7 @@ export function readBitbucketIntegrationConfig(
  *
  * @param configs - All of the integration config objects
  * @public
+ * @deprecated bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
 export function readBitbucketIntegrationConfigs(
   configs: Config[],

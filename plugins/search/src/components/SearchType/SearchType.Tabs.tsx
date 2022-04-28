@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Tab, Tabs } from '@material-ui/core';
 
@@ -77,8 +77,9 @@ export const SearchTypeTabs = (props: SearchTypeTabsProps) => {
       value={types.length === 0 ? '' : types[0]}
       onChange={changeTab}
     >
-      {definedTypes.map(type => (
+      {definedTypes.map((type, idx) => (
         <Tab
+          key={idx}
           className={classes.tab}
           disableRipple
           label={type.name}

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.25-next.1",
+  "version": "0.4.27-next.0",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -35,8 +35,8 @@
   "dependencies": {
     "@backstage/cli-common": "^0.1.8",
     "chalk": "^4.0.0",
-    "commander": "^6.1.0",
-    "fs-extra": "10.0.1",
+    "commander": "^9.1.0",
+    "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
     "inquirer": "^8.2.0",
     "ora": "^5.3.0",
@@ -85,6 +85,7 @@
     "@backstage/plugin-scaffolder": "",
     "@backstage/plugin-scaffolder-backend": "",
     "@backstage/plugin-search": "",
+    "@backstage/plugin-search-react": "",
     "@backstage/plugin-search-backend": "",
     "@backstage/plugin-search-backend-module-pg": "",
     "@backstage/plugin-search-backend-node": "",

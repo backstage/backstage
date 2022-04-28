@@ -16,7 +16,7 @@
 
 import { z } from 'zod';
 import fs from 'fs-extra';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { paths } from '../paths';
 import { PackageRole, PackageRoleInfo } from './types';
 
@@ -108,9 +108,11 @@ export function getRoleFromPackage(pkgJson: unknown): PackageRole | undefined {
   return undefined;
 }
 
-export async function findRoleFromCommand(cmd: Command): Promise<PackageRole> {
-  if (cmd.role) {
-    return getRoleInfo(cmd.role)?.role;
+export async function findRoleFromCommand(
+  opts: OptionValues,
+): Promise<PackageRole> {
+  if (opts.role) {
+    return getRoleInfo(opts.role)?.role;
   }
 
   const pkg = await fs.readJson(paths.resolveTarget('package.json'));

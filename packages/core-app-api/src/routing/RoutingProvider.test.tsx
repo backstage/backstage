@@ -34,11 +34,7 @@ import {
   ExternalRouteRef,
 } from '@backstage/core-plugin-api';
 import { RoutingProvider } from './RoutingProvider';
-import {
-  routePathCollector,
-  routeParentCollector,
-  routeObjectCollector,
-} from './collectors';
+import { routingV1Collector } from './collectors';
 import { validateRouteParameters } from './validation';
 import { RouteResolver } from './RouteResolver';
 import { AnyRouteRef, RouteFunc } from './types';
@@ -135,21 +131,19 @@ function withRoutingProvider(
   root: ReactElement,
   routeBindings: [ExternalRouteRef, RouteRef][] = [],
 ) {
-  const { routePaths, routeParents, routeObjects } = traverseElementTree({
+  const { routing } = traverseElementTree({
     root,
     discoverers: [childDiscoverer, routeElementDiscoverer],
     collectors: {
-      routePaths: routePathCollector,
-      routeParents: routeParentCollector,
-      routeObjects: routeObjectCollector,
+      routing: routingV1Collector,
     },
   });
 
   return (
     <RoutingProvider
-      routePaths={routePaths}
-      routeParents={routeParents}
-      routeObjects={routeObjects}
+      routePaths={routing.paths}
+      routeParents={routing.parents}
+      routeObjects={routing.objects}
       routeBindings={new Map(routeBindings)}
       basePath=""
     >
@@ -314,18 +308,17 @@ describe('discovery', () => {
       </MemoryRouter>
     );
 
-    const { routePaths, routeParents } = traverseElementTree({
+    const { routing } = traverseElementTree({
       root,
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
-        routePaths: routePathCollector,
-        routeParents: routeParentCollector,
+        routing: routingV1Collector,
       },
     });
 
-    expect(() => validateRouteParameters(routePaths, routeParents)).toThrow(
-      'Parameter :id is duplicated in path /foo/:id/bar/:id',
-    );
+    expect(() =>
+      validateRouteParameters(routing.paths, routing.parents),
+    ).toThrow('Parameter :id is duplicated in path /foo/:id/bar/:id');
   });
 });
 

@@ -5,20 +5,14 @@
 ```ts
 /// <reference types="react" />
 
-import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsync';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InputBaseProps } from '@material-ui/core';
-import { JsonObject } from '@backstage/types';
-import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
-import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
-import { SearchResultSet } from '@backstage/plugin-search-common';
 
 // Warning: (ae-missing-release-tag) "DefaultResultListItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -81,19 +75,6 @@ export type HomePageSearchBarProps = Partial<
 // @public (undocumented)
 export const Router: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SearchApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export interface SearchApi {
-  // (undocumented)
-  query(query: SearchQuery): Promise<SearchResultSet>;
-}
-
-// Warning: (ae-missing-release-tag) "searchApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const searchApiRef: ApiRef<SearchApi>;
-
 // @public (undocumented)
 export type SearchAutocompleteFilterProps = SearchFilterComponentProps & {
   filterSelectedOptions?: boolean;
@@ -137,24 +118,6 @@ export const SearchBarNext: ({
 
 // @public
 export type SearchBarProps = Partial<SearchBarBaseProps>;
-
-// Warning: (ae-missing-release-tag) "SearchContextProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const SearchContextProvider: ({
-  initialState,
-  children,
-}: React_2.PropsWithChildren<{
-  initialState?: SearchContextState | undefined;
-}>) => JSX.Element;
-
-// @public
-export type SearchContextState = {
-  term: string;
-  types: string[];
-  filters: JsonObject;
-  pageCursor?: string;
-};
 
 // Warning: (ae-missing-release-tag) "SearchFilter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -211,12 +174,19 @@ export const SearchModal: ({
   open,
   hidden,
   toggleModal,
+  children,
 }: SearchModalProps) => JSX.Element;
+
+// @public (undocumented)
+export interface SearchModalChildrenProps {
+  toggleModal: () => void;
+}
 
 // Warning: (ae-missing-release-tag) "SearchModalProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface SearchModalProps {
+  children?: (props: SearchModalChildrenProps) => JSX.Element;
   hidden?: boolean;
   open?: boolean;
   toggleModal: () => void;
@@ -313,6 +283,7 @@ export const SidebarSearchModal: (
 // @public (undocumented)
 export type SidebarSearchModalProps = {
   icon?: IconComponent;
+  children?: (props: SearchModalChildrenProps) => JSX.Element;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarSearchProps" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -321,13 +292,6 @@ export type SidebarSearchModalProps = {
 export type SidebarSearchProps = {
   icon?: IconComponent;
 };
-
-// Warning: (tsdoc-at-sign-in-word) The "@" character looks like part of a TSDoc tag; use a backslash to escape it
-// Warning: (ae-forgotten-export) The symbol "SearchContextValue" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "useSearch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public @deprecated (undocumented)
-export const useSearch: () => SearchContextValue;
 
 // @public
 export function useSearchModal(initialState?: boolean): {

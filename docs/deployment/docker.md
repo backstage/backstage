@@ -59,17 +59,18 @@ Once the host build is complete, we are ready to build our image. The following
 FROM node:16-bullseye-slim
 
 WORKDIR /app
+
+# install sqlite3 dependencies, you can skip this if you don't use sqlite3 in the image
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
+    rm -rf /var/lib/apt/lists/* && \
+    yarn config set python /usr/bin/python3
+
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
 COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
-
-# install sqlite3 dependencies
-RUN apt-get update && \
-    apt-get install -y libsqlite3-dev python3 cmake g++ && \
-    rm -rf /var/lib/apt/lists/* && \
-    yarn config set python /usr/bin/python3
 
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
@@ -159,7 +160,8 @@ WORKDIR /app
 COPY --from=packages /app .
 
 # install sqlite3 dependencies
-RUN apt-get update && apt-get install -y libsqlite3-dev python3 cmake g++ && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
     yarn config set python /usr/bin/python3
 
 RUN yarn install --frozen-lockfile --network-timeout 600000 && rm -rf "$(yarn cache dir)"
@@ -176,15 +178,15 @@ FROM node:16-bullseye-slim
 
 WORKDIR /app
 
+# install sqlite3 dependencies, you can skip this if you don't use sqlite3 in the image
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libsqlite3-dev python3 build-essential && \
+    rm -rf /var/lib/apt/lists/* && \
+    yarn config set python /usr/bin/python3
+
 # Copy the install dependencies from the build stage and context
 COPY --from=build /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
-
-# install sqlite3 dependencies
-RUN apt-get update && \
-    apt-get install -y libsqlite3-dev python3 cmake g++ && \
-    rm -rf /var/lib/apt/lists/* && \
-    yarn config set python /usr/bin/python3
 
 RUN yarn install --frozen-lockfile --production --network-timeout 600000 && rm -rf "$(yarn cache dir)"
 

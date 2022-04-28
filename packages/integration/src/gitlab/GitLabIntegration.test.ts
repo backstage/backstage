@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { GitLabIntegration, replaceUrlType } from './GitLabIntegration';
+import { GitLabIntegration, replaceGitLabUrlType } from './GitLabIntegration';
 
 describe('GitLabIntegration', () => {
   it('has a working factory', () => {
@@ -55,28 +55,28 @@ describe('GitLabIntegration', () => {
   });
 });
 
-describe('replaceUrlType', () => {
+describe('replaceGitLabUrlType', () => {
   it('should replace with expected type', () => {
     expect(
-      replaceUrlType(
+      replaceGitLabUrlType(
         'https://gitlab.com/my-org/my-project/-/blob/develop/README.md',
         'edit',
       ),
     ).toBe('https://gitlab.com/my-org/my-project/-/edit/develop/README.md');
     expect(
-      replaceUrlType(
+      replaceGitLabUrlType(
         'https://gitlab.com/webmodules/blob/-/blob/develop/test',
         'tree',
       ),
     ).toBe('https://gitlab.com/webmodules/blob/-/tree/develop/test');
     expect(
-      replaceUrlType(
+      replaceGitLabUrlType(
         'https://gitlab.com/blob/blob/-/blob/develop/test',
         'tree',
       ),
     ).toBe('https://gitlab.com/blob/blob/-/tree/develop/test');
     expect(
-      replaceUrlType(
+      replaceGitLabUrlType(
         'https://gitlab.com/blob/blob/-/edit/develop/README.md',
         'tree',
       ),

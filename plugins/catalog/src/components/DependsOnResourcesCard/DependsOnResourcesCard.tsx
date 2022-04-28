@@ -15,6 +15,7 @@
  */
 
 import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
+import { InfoCardVariants } from '@backstage/core-components';
 import React from 'react';
 import {
   asResourceEntities,
@@ -25,7 +26,7 @@ import {
 
 /** @public */
 export interface DependsOnResourcesCardProps {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {

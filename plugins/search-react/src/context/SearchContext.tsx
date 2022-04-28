@@ -17,8 +17,11 @@
 import { JsonObject } from '@backstage/types';
 import { useApi, AnalyticsContext } from '@backstage/core-plugin-api';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 import React, {
-  createContext,
   PropsWithChildren,
   useCallback,
   useContext,
@@ -29,7 +32,11 @@ import useAsync, { AsyncState } from 'react-use/lib/useAsync';
 import usePrevious from 'react-use/lib/usePrevious';
 import { searchApiRef } from '../api';
 
-type SearchContextValue = {
+/**
+ *
+ * @public
+ */
+export type SearchContextValue = {
   result: AsyncState<SearchResultSet>;
   setTerm: React.Dispatch<React.SetStateAction<string>>;
   setTypes: React.Dispatch<React.SetStateAction<string[]>>;
@@ -50,12 +57,37 @@ export type SearchContextState = {
   pageCursor?: string;
 };
 
+const SearchContext = createVersionedContext<{
+  1: SearchContextValue;
+}>('search-context');
+
 /**
  * @public
+ *
+ * React hook which provides the search context
  */
-export const SearchContext = createContext<SearchContextValue | undefined>(
-  undefined,
-);
+export const useSearch = () => {
+  const context = useContext(SearchContext);
+  if (!context) {
+    throw new Error('useSearch must be used within a SearchContextProvider');
+  }
+
+  const value = context.atVersion(1);
+  if (!value) {
+    throw new Error('No SearchContext v1 found');
+  }
+  return value;
+};
+
+/**
+ * @public
+ *
+ * React hook which checks for an existing search context
+ */
+export const useSearchContextCheck = () => {
+  const context = useContext(SearchContext);
+  return context !== undefined;
+};
 
 /**
  * The initial state of `SearchContextProvider`.
@@ -69,12 +101,21 @@ const searchInitialState: SearchContextState = {
 };
 
 /**
+ * Props for {@link SearchContextProvider}
+ *
  * @public
  */
-export const SearchContextProvider = ({
-  initialState = searchInitialState,
-  children,
-}: PropsWithChildren<{ initialState?: SearchContextState }>) => {
+export type SearchContextProviderProps = PropsWithChildren<{
+  initialState?: SearchContextState;
+}>;
+
+/**
+ * @public
+ *
+ * Search context provider which gives you access to shared state between search components
+ */
+export const SearchContextProvider = (props: SearchContextProviderProps) => {
+  const { initialState = searchInitialState, children } = props;
   const searchApi = useApi(searchApiRef);
   const [pageCursor, setPageCursor] = useState<string | undefined>(
     initialState.pageCursor,
@@ -128,20 +169,11 @@ export const SearchContextProvider = ({
     fetchPreviousPage: hasPreviousPage ? fetchPreviousPage : undefined,
   };
 
+  const versionedValue = createVersionedValueMap({ 1: value });
+
   return (
     <AnalyticsContext attributes={{ searchTypes: types.sort().join(',') }}>
-      <SearchContext.Provider value={value} children={children} />
+      <SearchContext.Provider value={versionedValue} children={children} />
     </AnalyticsContext>
   );
-};
-
-/**
- * @public
- */
-export const useSearch = () => {
-  const context = useContext(SearchContext);
-  if (context === undefined) {
-    throw new Error('useSearch must be used within a SearchContextProvider');
-  }
-  return context;
 };

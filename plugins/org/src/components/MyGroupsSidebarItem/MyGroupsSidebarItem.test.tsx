@@ -58,9 +58,7 @@ describe('MyGroupsSidebarItem Test', () => {
           },
         },
       );
-      expect(
-        rendered.getByText('Mounted at /catalog/:namespace/:kind/:name'),
-      ).toBeInTheDocument();
+      expect(rendered.container).toBeEmptyDOMElement();
     });
   });
 

@@ -1,5 +1,11 @@
 # @backstage/version-bridge
 
+## 1.0.1
+
+### Patch Changes
+
+- 7c7919777e: build(deps-dev): bump `@testing-library/react-hooks` from 7.0.2 to 8.0.0
+
 ## 1.0.0
 
 ### Major Changes

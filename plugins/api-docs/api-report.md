@@ -10,6 +10,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { InfoCardVariants } from '@backstage/core-components';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
@@ -128,7 +129,7 @@ export const EntityApiDefinitionCard: () => JSX.Element;
 export const EntityConsumedApisCard: ({
   variant,
 }: {
-  variant?: 'gridItem' | undefined;
+  variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityConsumingComponentsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -137,7 +138,7 @@ export const EntityConsumedApisCard: ({
 export const EntityConsumingComponentsCard: ({
   variant,
 }: {
-  variant?: 'gridItem' | undefined;
+  variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityHasApisCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -146,7 +147,7 @@ export const EntityConsumingComponentsCard: ({
 export const EntityHasApisCard: ({
   variant,
 }: {
-  variant?: 'gridItem' | undefined;
+  variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityProvidedApisCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -155,7 +156,7 @@ export const EntityHasApisCard: ({
 export const EntityProvidedApisCard: ({
   variant,
 }: {
-  variant?: 'gridItem' | undefined;
+  variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "EntityProvidingComponentsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -164,7 +165,7 @@ export const EntityProvidedApisCard: ({
 export const EntityProvidingComponentsCard: ({
   variant,
 }: {
-  variant?: 'gridItem' | undefined;
+  variant?: InfoCardVariants | undefined;
 }) => JSX.Element;
 
 // Warning: (ae-missing-release-tag) "GraphQlDefinitionWidget" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

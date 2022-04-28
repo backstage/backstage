@@ -15,11 +15,12 @@
  */
 
 import { TokenIssuer, TokenParams, KeyStore, AnyJWK } from './types';
-import { JSONWebKey, JWK, JWS } from 'jose';
+import { exportJWK, generateKeyPair, importJWK, JWK, SignJWT } from 'jose';
 import { Logger } from 'winston';
 import { v4 as uuid } from 'uuid';
 import { DateTime } from 'luxon';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { AuthenticationError } from '@backstage/errors';
 
 const MS_IN_S = 1000;
 
@@ -54,7 +55,7 @@ export class TokenFactory implements TokenIssuer {
   private readonly keyDurationSeconds: number;
 
   private keyExpiry?: Date;
-  private privateKeyPromise?: Promise<JSONWebKey>;
+  private privateKeyPromise?: Promise<JWK>;
 
   constructor(options: Options) {
     this.issuer = options.issuer;
@@ -84,10 +85,18 @@ export class TokenFactory implements TokenIssuer {
 
     this.logger.info(`Issuing token for ${sub}, with entities ${ent ?? []}`);
 
-    return JWS.sign({ iss, sub, aud, iat, exp, ent }, key, {
-      alg: key.alg,
-      kid: key.kid,
-    });
+    if (!key.alg) {
+      throw new AuthenticationError('No algorithm was provided in the key');
+    }
+
+    return new SignJWT({ iss, sub, ent, aud, iat, exp })
+      .setProtectedHeader({ alg: key.alg, kid: key.kid })
+      .setIssuer(iss)
+      .setAudience(aud)
+      .setSubject(sub)
+      .setIssuedAt(iat)
+      .setExpirationTime(exp)
+      .sign(await importJWK(key));
   }
 
   // This will be called by other services that want to verify ID tokens.
@@ -127,7 +136,7 @@ export class TokenFactory implements TokenIssuer {
     return { keys: validKeys.map(({ key }) => key) };
   }
 
-  private async getKey(): Promise<JSONWebKey> {
+  private async getKey(): Promise<JWK> {
     // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {
       if (
@@ -147,11 +156,11 @@ export class TokenFactory implements TokenIssuer {
       .toJSDate();
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
-      const key = await JWK.generate('EC', 'P-256', {
-        use: 'sig',
-        kid: uuid(),
-        alg: 'ES256',
-      });
+      const key = await generateKeyPair('ES256');
+      const publicKey = await exportJWK(key.publicKey);
+      const privateKey = await exportJWK(key.privateKey);
+      publicKey.kid = privateKey.kid = uuid();
+      publicKey.alg = privateKey.alg = 'ES256';
 
       // We're not allowed to use the key until it has been successfully stored
       // TODO: some token verification implementations aggressively cache the list of keys, and
@@ -159,11 +168,11 @@ export class TokenFactory implements TokenIssuer {
       //       may want to keep using the existing key for some period of time until we switch to
       //       the new one. This also needs to be implemented cross-service though, meaning new services
       //       that boot up need to be able to grab an existing key to use for signing.
-      this.logger.info(`Created new signing key ${key.kid}`);
-      await this.keyStore.addKey(key.toJWK(false) as unknown as AnyJWK);
+      this.logger.info(`Created new signing key ${publicKey.kid}`);
+      await this.keyStore.addKey(publicKey as AnyJWK);
 
       // At this point we are allowed to start using the new key
-      return key as JSONWebKey;
+      return privateKey;
     })();
 
     this.privateKeyPromise = promise;

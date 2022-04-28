@@ -26,13 +26,14 @@ import { apiEntityColumns } from './presets';
 import {
   CodeSnippet,
   InfoCard,
+  InfoCardVariants,
   Link,
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
 
 type Props = {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 };
 
 export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {

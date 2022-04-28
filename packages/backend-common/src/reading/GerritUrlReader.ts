@@ -14,22 +14,41 @@
  * limitations under the License.
  */
 
-import { NotFoundError } from '@backstage/errors';
+import { Git } from '../scm';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GerritIntegration,
+  getGerritCloneRepoUrl,
+  getGerritBranchApiUrl,
   getGerritFileContentsApiUrl,
   getGerritRequestOptions,
+  parseGerritJsonResponse,
+  parseGerritGitilesUrl,
 } from '@backstage/integration';
+import concatStream from 'concat-stream';
+import fs from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
+import os from 'os';
+import { join as joinPath } from 'path';
+import tar from 'tar';
+import { pipeline as pipelineCb, Readable } from 'stream';
+import { promisify } from 'util';
 import {
   ReaderFactory,
+  ReadTreeOptions,
   ReadTreeResponse,
+  ReadTreeResponseFactory,
   ReadUrlOptions,
   ReadUrlResponse,
   SearchResponse,
   UrlReader,
 } from './types';
 import { ScmIntegrations } from '@backstage/integration';
+
+const pipeline = promisify(pipelineCb);
+
+const createTemporaryDirectory = async (workDir: string): Promise<string> =>
+  await fs.mkdtemp(joinPath(workDir, '/gerrit-clone-'));
 
 /**
  * Implements a {@link UrlReader} for files in Gerrit.
@@ -50,16 +69,22 @@ import { ScmIntegrations } from '@backstage/integration';
  * @public
  */
 export class GerritUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     if (!integrations.gerrit) {
       return [];
     }
+    const workDir =
+      config.getOptionalString('backend.workingDirectory') ?? os.tmpdir();
     return integrations.gerrit.list().map(integration => {
-      const reader = new GerritUrlReader(integration);
+      const reader = new GerritUrlReader(
+        integration,
+        { treeResponseFactory },
+        workDir,
+      );
       const predicate = (url: URL) => {
         const gitilesUrl = new URL(integration.config.gitilesBaseUrl!);
-        // If gitilesUrl is not specfified it will default to
+        // If gitilesUrl is not specified it will default to
         // "integration.config.host".
         return url.host === gitilesUrl.host;
       };
@@ -67,7 +92,11 @@ export class GerritUrlReader implements UrlReader {
     });
   };
 
-  constructor(private readonly integration: GerritIntegration) {}
+  constructor(
+    private readonly integration: GerritIntegration,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    private readonly workDir: string,
+  ) {}
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -109,8 +138,72 @@ export class GerritUrlReader implements UrlReader {
     );
   }
 
-  async readTree(): Promise<ReadTreeResponse> {
-    throw new Error('GerritReader does not implement readTree');
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const { filePath } = parseGerritGitilesUrl(this.integration.config, url);
+    const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
+    let response: Response;
+    try {
+      response = await fetch(apiUrl, {
+        method: 'GET',
+        ...getGerritRequestOptions(this.integration.config),
+      });
+    } catch (e) {
+      throw new Error(`Unable to read branch state ${url}, ${e}`);
+    }
+
+    if (response.status === 404) {
+      throw new NotFoundError(`Not found: ${url}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        `${url} could not be read as ${apiUrl}, ${response.status} ${response.statusText}`,
+      );
+    }
+    const branchInfo = (await parseGerritJsonResponse(response as any)) as {
+      revision: string;
+    };
+    if (options?.etag === branchInfo.revision) {
+      throw new NotModifiedError();
+    }
+
+    const git = Git.fromAuth({
+      username: this.integration.config.username,
+      password: this.integration.config.password,
+    });
+    const tempDir = await createTemporaryDirectory(this.workDir);
+    const cloneUrl = getGerritCloneRepoUrl(this.integration.config, url);
+    try {
+      // The "fromTarArchive" function will strip the top level directory so
+      // an additional directory level is created when we clone.
+      await git.clone({
+        url: cloneUrl,
+        dir: joinPath(tempDir, 'repo'),
+        ref: branchInfo.revision,
+        depth: 1,
+      });
+
+      const data = await new Promise<Buffer>(async resolve => {
+        await pipeline(
+          tar.create({ cwd: tempDir }, ['']),
+          concatStream(resolve),
+        );
+      });
+      const tarArchive = Readable.from(data);
+      return await this.deps.treeResponseFactory.fromTarArchive({
+        stream: tarArchive as unknown as Readable,
+        subpath: filePath === '/' ? undefined : filePath,
+        etag: branchInfo.revision,
+        filter: options?.filter,
+      });
+    } catch (error) {
+      throw new Error(`Could not clone ${cloneUrl}: ${error}`);
+    } finally {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    }
   }
 
   async search(): Promise<SearchResponse> {

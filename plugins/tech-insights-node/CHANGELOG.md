@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.2.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+
+## 0.2.9
+
+### Patch Changes
+
+- 231fee736b: Adds an optional timeout to fact retriever registrations to stop a task if it runs too long.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2
+
 ## 0.2.9-next.1
 
 ### Patch Changes

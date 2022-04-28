@@ -11,11 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
       - name: Install Dependencies
         run: yarn --frozen-lockfile
       - name: Create Release Pull Request
-        uses: changesets/action@master
+        uses: backstage/changesets-action@v2
         with:
           # Calls out to `changeset version`, but also runs prettier
           version: yarn release

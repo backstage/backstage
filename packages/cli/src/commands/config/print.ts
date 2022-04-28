@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { stringify as stringifyYaml } from 'yaml';
 import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../../lib/config';
 import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const { schema, appConfigs } = await loadCliConfig({
-    args: cmd.config,
-    fromPackage: cmd.package,
-    mockEnv: cmd.lax,
-    fullVisibility: !cmd.frontend,
+    args: opts.config,
+    fromPackage: opts.package,
+    mockEnv: opts.lax,
+    fullVisibility: !opts.frontend,
   });
-  const visibility = getVisibilityOption(cmd);
+  const visibility = getVisibilityOption(opts);
   const data = serializeConfigData(appConfigs, schema, visibility);
 
-  if (cmd.format === 'json') {
+  if (opts.format === 'json') {
     process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
   } else {
     process.stdout.write(`${stringifyYaml(data)}\n`);
   }
 };
 
-function getVisibilityOption(cmd: Command): ConfigVisibility {
-  if (cmd.frontend && cmd.withSecrets) {
+function getVisibilityOption(opts: OptionValues): ConfigVisibility {
+  if (opts.frontend && opts.withSecrets) {
     throw new Error('Not allowed to combine frontend and secret config');
   }
-  if (cmd.frontend) {
+  if (opts.frontend) {
     return 'frontend';
-  } else if (cmd.withSecrets) {
+  } else if (opts.withSecrets) {
     return 'secret';
   }
   return 'backend';

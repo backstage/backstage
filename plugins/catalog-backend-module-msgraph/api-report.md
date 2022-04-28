@@ -50,6 +50,9 @@ export type GroupTransformer = (
 ) => Promise<GroupEntity | undefined>;
 
 // @public
+export const MICROSOFT_EMAIL_ANNOTATION = 'microsoft.com/email';
+
+// @public
 export const MICROSOFT_GRAPH_GROUP_ID_ANNOTATION =
   'graph.microsoft.com/group-id';
 

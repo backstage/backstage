@@ -207,6 +207,11 @@ export class KubernetesFanOutHandler {
         'backstage.io/kubernetes-label-selector'
       ] || `backstage.io/kubernetes-id=${entityName}`;
 
+    const namespace =
+      requestBody.entity?.metadata?.annotations?.[
+        'backstage.io/kubernetes-namespace'
+      ];
+
     return Promise.all(
       clusterDetailsDecoratedForAuth.map(clusterDetailsItem => {
         return this.fetcher
@@ -216,19 +221,26 @@ export class KubernetesFanOutHandler {
             objectTypesToFetch: this.objectTypesToFetch,
             labelSelector,
             customResources: this.customResources,
+            namespace,
           })
           .then(result => this.getMetricsForPods(clusterDetailsItem, result))
           .then(r => this.toClusterObjects(clusterDetailsItem, r));
       }),
-    ).then(r => ({
-      items: r.filter(
+    ).then(this.toObjectsByEntityResponse);
+  }
+
+  toObjectsByEntityResponse(
+    clusterObjects: ClusterObjects[],
+  ): ObjectsByEntityResponse {
+    return {
+      items: clusterObjects.filter(
         item =>
           (item.errors !== undefined && item.errors.length >= 1) ||
           (item.resources !== undefined &&
             item.resources.length >= 1 &&
             item.resources.some(fr => fr.resources.length >= 1)),
       ),
-    }));
+    };
   }
 
   toClusterObjects(

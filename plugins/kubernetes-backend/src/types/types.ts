@@ -34,6 +34,7 @@ export interface ObjectFetchParams {
   objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
   customResources: CustomResource[];
+  namespace?: string;
 }
 
 // Fetches information from a kubernetes cluster using the cluster details object

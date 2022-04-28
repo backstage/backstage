@@ -56,6 +56,7 @@ describe('readGerritIntegrationConfig', () => {
       buildConfig({
         host: 'a.com',
         baseUrl: 'https://a.com/api',
+        cloneUrl: 'https:a.com/clone',
         gitilesBaseUrl: 'https://a.com/git',
         username: 'u',
         password: 'p',
@@ -64,6 +65,7 @@ describe('readGerritIntegrationConfig', () => {
     expect(output).toEqual({
       host: 'a.com',
       baseUrl: 'https://a.com/api',
+      cloneUrl: 'https:a.com/clone',
       gitilesBaseUrl: 'https://a.com/git',
       username: 'u',
       password: 'p',
@@ -79,6 +81,7 @@ describe('readGerritIntegrationConfig', () => {
     expect(output).toEqual({
       host: 'a.com',
       baseUrl: 'https://a.com',
+      cloneUrl: 'https://a.com',
       gitilesBaseUrl: 'https://a.com',
       username: undefined,
       password: undefined,
@@ -110,6 +113,7 @@ describe('readGerritIntegrationConfig', () => {
     ).toEqual({
       host: 'a.com',
       baseUrl: 'https://a.com/gerrit',
+      cloneUrl: 'https://a.com/gerrit',
       gitilesBaseUrl: 'https://a.com',
     });
   });
@@ -139,6 +143,7 @@ describe('readGerritIntegrationConfigs', () => {
       {
         host: 'a.com',
         baseUrl: 'https://a.com/api',
+        cloneUrl: 'https://a.com/api',
         gitilesBaseUrl: 'https://a.com',
         username: 'u',
         password: 'p',
@@ -146,6 +151,7 @@ describe('readGerritIntegrationConfigs', () => {
       {
         host: 'b.com',
         baseUrl: 'https://b.com/api',
+        cloneUrl: 'https://b.com/api',
         gitilesBaseUrl: 'https://b.com',
         username: undefined,
         password: undefined,

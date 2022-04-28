@@ -106,7 +106,7 @@ describe('EntityLayout', () => {
     expect(rendered.getByText('tabbed-test-content')).toBeInTheDocument();
   });
 
-  it('renders error message when entity is not found', async () => {
+  it('renders default error message when entity is not found', async () => {
     const rendered = await renderInTestApp(
       <ApiProvider apis={mockApis}>
         <AsyncEntityProvider loading={false}>
@@ -125,6 +125,34 @@ describe('EntityLayout', () => {
     );
 
     expect(rendered.getByText('Warning: Entity not found')).toBeInTheDocument();
+    expect(rendered.queryByText('my-entity')).not.toBeInTheDocument();
+    expect(rendered.queryByText('tabbed-test-title')).not.toBeInTheDocument();
+    expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();
+  });
+
+  it('renders custom message when entity is not found', async () => {
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <AsyncEntityProvider loading={false}>
+          <EntityLayout
+            NotFoundComponent={<div>Oppps.. Your entity was not found</div>}
+          >
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </AsyncEntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(
+      rendered.getByText('Oppps.. Your entity was not found'),
+    ).toBeInTheDocument();
     expect(rendered.queryByText('my-entity')).not.toBeInTheDocument();
     expect(rendered.queryByText('tabbed-test-title')).not.toBeInTheDocument();
     expect(rendered.queryByText('tabbed-test-content')).not.toBeInTheDocument();

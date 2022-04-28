@@ -1,7 +1,7 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.36",
+  "version": "0.1.38-next.0",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/jscodeshift": "^0.11.0",
     "@types/node": "^16.11.26",
-    "commander": "^6.1.0",
+    "commander": "^9.1.0",
     "ts-node": "^10.0.0"
   },
   "nodemonConfig": {

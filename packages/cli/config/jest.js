@@ -20,6 +20,11 @@ const crypto = require('crypto');
 const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
 
+const envOptions = {
+  nextTests: Boolean(process.env.BACKSTAGE_NEXT_TESTS),
+  enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS),
+};
+
 const transformIgnorePattern = [
   '@material-ui',
   '@rjsf',
@@ -118,7 +123,7 @@ async function getProjectConfig(targetPath, displayName) {
     ...(displayName && { displayName }),
     rootDir: path.resolve(targetPath, 'src'),
     coverageDirectory: path.resolve(targetPath, 'coverage'),
-    coverageProvider: 'v8',
+    coverageProvider: envOptions.nextTests ? undefined : 'v8',
     collectCoverageFrom: ['**/*.{js,jsx,ts,tsx,mjs,cjs}', '!**/*.d.ts'],
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
@@ -127,7 +132,9 @@ async function getProjectConfig(targetPath, displayName) {
     transform: {
       '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
         require.resolve('./jestSucraseTransform.js'),
-        { enableSourceMaps: Boolean(process.env.ENABLE_SOURCE_MAPS) },
+        {
+          enableSourceMaps: envOptions.enableSourceMaps || envOptions.nextTests,
+        },
       ],
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg|eot|woff|woff2|ttf)$':
         require.resolve('./jestFileTransform.js'),
@@ -136,6 +143,10 @@ async function getProjectConfig(targetPath, displayName) {
 
     // A bit more opinionated
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
+
+    moduleLoader: envOptions.nextTests
+      ? require.resolve('./jestCachingModuleLoader')
+      : undefined,
 
     transformIgnorePatterns: [`/node_modules/(?:${transformIgnorePattern})/`],
 

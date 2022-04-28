@@ -31,11 +31,24 @@ import { makeStyles } from '@material-ui/core/styles';
 import { SearchBar } from '../SearchBar';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResult } from '../SearchResult';
-import { SearchContextProvider, useSearch } from '../SearchContext';
+import {
+  SearchContextProvider,
+  useSearch,
+} from '@backstage/plugin-search-react';
 import { SearchResultPager } from '../SearchResultPager';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Link, useContent } from '@backstage/core-components';
 import { rootRouteRef } from '../../plugin';
+
+/**
+ * @public
+ **/
+export interface SearchModalChildrenProps {
+  /**
+   * A function that should be invoked when navigating away from the modal.
+   */
+  toggleModal: () => void;
+}
 
 export interface SearchModalProps {
   /**
@@ -54,6 +67,11 @@ export interface SearchModalProps {
    * should be closed.
    */
   toggleModal: () => void;
+  /**
+   * A function that returns custom content to render in the search modal in
+   * place of the default.
+   */
+  children?: (props: SearchModalChildrenProps) => JSX.Element;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -152,6 +170,7 @@ export const SearchModal = ({
   open = true,
   hidden,
   toggleModal,
+  children,
 }: SearchModalProps) => {
   const classes = useStyles();
 
@@ -169,7 +188,9 @@ export const SearchModal = ({
     >
       {open && (
         <SearchContextProvider>
-          <Modal toggleModal={toggleModal} />
+          {(children && children({ toggleModal })) ?? (
+            <Modal toggleModal={toggleModal} />
+          )}
         </SearchContextProvider>
       )}
     </Dialog>

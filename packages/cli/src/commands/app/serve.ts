@@ -17,14 +17,14 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import uniq from 'lodash/uniq';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { serveBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
 import { paths } from '../../lib/paths';
 import { Lockfile } from '../../lib/versioning';
 import { forbiddenDuplicatesFilter, includedFilter } from '../versions/lint';
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   const lockFilePath = paths.resolveTargetRoot('yarn.lock');
   if (fs.existsSync(lockFilePath)) {
     try {
@@ -80,9 +80,9 @@ export default async (cmd: Command) => {
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
   const waitForExit = await serveBundle({
     entry: 'src/index',
-    checksEnabled: cmd.check,
+    checksEnabled: opts.check,
     ...(await loadCliConfig({
-      args: cmd.config,
+      args: opts.config,
       fromPackage: name,
       withFilteredKeys: true,
     })),

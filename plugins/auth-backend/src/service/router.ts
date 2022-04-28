@@ -34,6 +34,7 @@ import { createOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import passport from 'passport';
 import { Minimatch } from 'minimatch';
+import { CatalogAuthResolverContext } from '../lib/resolvers';
 
 type ProviderFactories = { [s: string]: AuthProviderFactory };
 
@@ -122,6 +123,12 @@ export async function createRouter(
           tokenIssuer,
           discovery,
           catalogApi,
+          resolverContext: CatalogAuthResolverContext.create({
+            logger,
+            catalogApi,
+            tokenIssuer,
+            tokenManager,
+          }),
         });
 
         const r = Router();

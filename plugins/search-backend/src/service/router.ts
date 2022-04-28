@@ -76,7 +76,7 @@ export async function createRouter(
   });
 
   let permissionEvaluator: PermissionEvaluator;
-  if ('query' in permissions) {
+  if ('authorizeConditional' in permissions) {
     permissionEvaluator = permissions as PermissionEvaluator;
   } else {
     logger.warn(

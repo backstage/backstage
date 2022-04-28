@@ -1,6 +1,6 @@
 {
   "releases": {
-    "Release Notes": ["releases/v1.0.0"]
+    "Release Notes": ["releases/v1.1.0", "releases/v1.0.0"]
   },
   "docs": {
     "Overview": [
@@ -109,6 +109,7 @@
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
+          "features/techdocs/addons",
           "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
           "features/techdocs/configuration",
@@ -156,7 +157,10 @@
       {
         "type": "subcategory",
         "label": "Gerrit",
-        "ids": ["integrations/gerrit/locations"]
+        "ids": [
+          "integrations/gerrit/locations",
+          "integrations/gerrit/discovery"
+        ]
       },
       {
         "type": "subcategory",
@@ -164,7 +168,8 @@
         "ids": [
           "integrations/github/locations",
           "integrations/github/discovery",
-          "integrations/github/org"
+          "integrations/github/org",
+          "integrations/github/github-apps"
         ]
       },
       {
@@ -202,7 +207,6 @@
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
-          "plugins/github-apps",
           "plugins/url-reader"
         ]
       },
@@ -246,7 +250,6 @@
         ]
       },
       "auth/add-auth-provider",
-      "auth/using-auth",
       "auth/identity-resolver",
       "auth/auth-backend",
       "auth/oauth",

@@ -24,6 +24,7 @@ import {
 import React from 'react';
 import {
   InfoCard,
+  InfoCardVariants,
   Link,
   Progress,
   ResponseErrorPanel,
@@ -32,7 +33,7 @@ import {
 
 /** @public */
 export type RelatedEntitiesCardProps<T extends Entity> = {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
   title: string;
   columns: TableColumn<T>[];
   entityKind?: string;

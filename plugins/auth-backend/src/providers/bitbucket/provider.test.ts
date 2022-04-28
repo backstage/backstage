@@ -16,9 +16,7 @@
 
 import { BitbucketAuthProvider, BitbucketOAuthResult } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient } from '../../lib/catalog';
+import { AuthResolverContext } from '../types';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -29,19 +27,8 @@ const mockFrameHandler = jest.spyOn(
 
 describe('createBitbucketProvider', () => {
   it('should auth', async () => {
-    const tokenIssuer = {
-      issueToken: jest.fn(),
-      listPublicKeys: jest.fn(),
-    };
-    const catalogIdentityClient = {
-      findUser: jest.fn(),
-    };
-
     const provider = new BitbucketAuthProvider({
-      logger: getVoidLogger(),
-      catalogIdentityClient:
-        catalogIdentityClient as unknown as CatalogIdentityClient,
-      tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+      resolverContext: {} as AuthResolverContext,
       authHandler: async ({ fullProfile }) => ({
         profile: {
           email: fullProfile.emails![0]!.value,

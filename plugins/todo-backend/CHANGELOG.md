@@ -1,5 +1,33 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+  - @backstage/integration@1.2.0-next.0
+
+## 0.1.28
+
+### Patch Changes
+
+- 5da036264b: Fix method to get source-location.
+- Updated dependencies
+  - @backstage/integration@1.1.0
+  - @backstage/catalog-model@1.0.1
+  - @backstage/backend-common@0.13.2
+  - @backstage/catalog-client@1.0.1
+
+## 0.1.28-next.2
+
+### Patch Changes
+
+- 5da036264b: Fix method to get source-location.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+  - @backstage/integration@1.1.0-next.2
+
 ## 0.1.28-next.1
 
 ### Patch Changes

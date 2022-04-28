@@ -38,7 +38,6 @@ import React from 'react';
  *
  * @public
  */
-
 export const Content = () => {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const { starredEntities, toggleStarredEntity } = useStarredEntities();
@@ -64,7 +63,7 @@ export const Content = () => {
                 aria-label="unstar"
                 onClick={() => toggleStarredEntity(entity)}
               >
-                <StarIcon />
+                <StarIcon style={{ color: '#f3ba37' }} />
               </IconButton>
             </Tooltip>
           </ListItemSecondaryAction>

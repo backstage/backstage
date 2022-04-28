@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { AbortController } from 'node-abort-controller';
 import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
+import { AbortController } from 'node-abort-controller';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';

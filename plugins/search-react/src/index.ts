@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
+/**
+ * Search Plugin frontend library
+ *
+ * @packageDocumentation
+ */
+
 export { searchApiRef } from './api';
 export type { SearchApi } from './api';
 export {
   SearchContextProvider,
   useSearch,
+  useSearchContextCheck,
   SearchContextProviderForStorybook,
   SearchApiProviderForStorybook,
 } from './context';
-export type { SearchContextState } from './context';
+export type {
+  SearchContextProviderProps,
+  SearchContextState,
+  SearchContextValue,
+  SearchContextProviderForStorybookProps,
+  SearchApiProviderForStorybookProps,
+} from './context';

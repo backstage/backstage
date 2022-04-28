@@ -78,6 +78,9 @@ const mkdocsYmlWithoutPlugins = fs.readFileSync(
 const mkdocsYmlWithAdditionalPlugins = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_additional_plugins.yml'),
 );
+const mkdocsYmlWithEnvTag = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_env_tag.yml'),
+);
 const mockLogger = getVoidLogger();
 const warn = jest.spyOn(mockLogger, 'warn');
 
@@ -582,9 +585,15 @@ describe('helpers', () => {
       ).rejects.toThrow();
     });
 
-    it('should validate files with custom yaml tags', async () => {
+    it('should validate files with custom yaml tags (scalar)', async () => {
       await expect(
         validateMkdocsYaml(inputDir, mkdocsYmlWithExtensions.toString()),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should validate files with custom yaml tags (sequence)', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYmlWithEnvTag.toString()),
       ).resolves.toBeUndefined();
     });
   });

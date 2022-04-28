@@ -20,9 +20,6 @@
  * @packageDocumentation
  */
 
-export { searchApiRef } from './apis';
-export type { SearchApi } from './apis';
-
 export { Filters, FiltersButton } from './components/Filters';
 export type { FiltersState } from './components/Filters';
 export type { HomePageSearchBarProps } from './components/HomePageComponent';
@@ -31,8 +28,6 @@ export type {
   SearchBarBaseProps,
   SearchBarProps,
 } from './components/SearchBar';
-export { SearchContextProvider, useSearch } from './components/SearchContext';
-export type { SearchContextState } from './components/SearchContext';
 export { SearchFilter, SearchFilterNext } from './components/SearchFilter';
 export type {
   SearchAutocompleteFilterProps,
@@ -40,7 +35,10 @@ export type {
   SearchFilterWrapperProps,
 } from './components/SearchFilter';
 export { SearchModal, useSearchModal } from './components/SearchModal';
-export type { SearchModalProps } from './components/SearchModal';
+export type {
+  SearchModalChildrenProps,
+  SearchModalProps,
+} from './components/SearchModal';
 export { SearchPage as Router } from './components/SearchPage';
 export { SearchResultPager } from './components/SearchResultPager';
 export { SearchType } from './components/SearchType';

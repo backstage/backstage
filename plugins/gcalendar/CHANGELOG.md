@@ -1,5 +1,35 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- 1429dbbea9: fixed google API types dependencies
+
+## 0.3.0
+
+### Minor Changes
+
+- c6616e6fc9: Fixed issue when not all calendars were fetched for some accounts
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3
+  - @backstage/core-plugin-api@1.0.1
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-components@0.9.3-next.2
+  - @backstage/core-plugin-api@1.0.1-next.0
+
 ## 0.3.0-next.1
 
 ### Minor Changes

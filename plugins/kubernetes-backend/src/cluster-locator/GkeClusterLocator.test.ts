@@ -202,6 +202,115 @@ describe('GkeClusterLocator', () => {
         parent: 'projects/some-project/locations/some-region',
       });
     });
+    it('dont filter out clusters when no label matcher provided', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+              resourceLabels: {
+                foo: 'bar',
+              },
+            },
+            {
+              name: 'some-other-cluster',
+              endpoint: '6.7.8.9',
+              resourceLabels: {
+                something: 'other',
+              },
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        region: 'some-region',
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(config, {
+        listClusters: mockedListClusters,
+      } as any);
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          authProvider: 'google',
+          name: 'some-cluster',
+          url: 'https://1.2.3.4',
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+        {
+          authProvider: 'google',
+          name: 'some-other-cluster',
+          url: 'https://6.7.8.9',
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+      ]);
+      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledWith({
+        parent: 'projects/some-project/locations/some-region',
+      });
+    });
+    it('filter out clusters without matching resource labels', async () => {
+      mockedListClusters.mockReturnValueOnce([
+        {
+          clusters: [
+            {
+              name: 'some-cluster',
+              endpoint: '1.2.3.4',
+              resourceLabels: {
+                foo: 'bar',
+              },
+            },
+            {
+              name: 'some-other-cluster',
+              endpoint: '6.7.8.9',
+              resourceLabels: {
+                something: 'other',
+              },
+            },
+          ],
+        },
+      ]);
+
+      const config: Config = new ConfigReader({
+        type: 'gke',
+        projectId: 'some-project',
+        region: 'some-region',
+        matchingResourceLabels: [
+          {
+            key: 'foo',
+            value: 'bar',
+          },
+        ],
+      });
+
+      const sut = GkeClusterLocator.fromConfigWithClient(config, {
+        listClusters: mockedListClusters,
+      } as any);
+
+      const result = await sut.getClusters();
+
+      expect(result).toStrictEqual([
+        {
+          authProvider: 'google',
+          name: 'some-cluster',
+          url: 'https://1.2.3.4',
+          skipTLSVerify: false,
+          skipMetricsLookup: false,
+        },
+      ]);
+      expect(mockedListClusters).toBeCalledTimes(1);
+      expect(mockedListClusters).toHaveBeenCalledWith({
+        parent: 'projects/some-project/locations/some-region',
+      });
+    });
     it('Handle errors gracefully', async () => {
       mockedListClusters.mockImplementation(() => {
         throw new Error('some error');

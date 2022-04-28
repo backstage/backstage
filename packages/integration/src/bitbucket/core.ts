@@ -24,6 +24,7 @@ import { BitbucketIntegrationConfig } from './config';
  * @param url - A URL pointing to a path
  * @param config - The relevant provider config
  * @public
+ * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
 export async function getBitbucketDefaultBranch(
   url: string,
@@ -75,6 +76,7 @@ export async function getBitbucketDefaultBranch(
  * @param url - A URL pointing to a path
  * @param config - The relevant provider config
  * @public
+ * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
 export async function getBitbucketDownloadUrl(
   url: string,
@@ -119,6 +121,7 @@ export async function getBitbucketDownloadUrl(
  * @param url - A URL pointing to a file
  * @param config - The relevant provider config
  * @public
+ * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
 export function getBitbucketFileFetchUrl(
   url: string,
@@ -155,6 +158,7 @@ export function getBitbucketFileFetchUrl(
  *
  * @param config - The relevant provider config
  * @public
+ * @deprecated no longer in use, bitbucket integration replaced by integrations bitbucketCloud and bitbucketServer.
  */
 export function getBitbucketRequestOptions(
   config: BitbucketIntegrationConfig,

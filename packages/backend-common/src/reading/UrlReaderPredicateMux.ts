@@ -29,6 +29,14 @@ import {
 
 const MIN_WARNING_INTERVAL_MS = 1000 * 60 * 15;
 
+function notAllowedMessage(url: string) {
+  return (
+    `Reading from '${url}' is not allowed. ` +
+    `You may need to configure an integration for the target host, or add it ` +
+    `to the configured list of allowed hosts at 'backend.reading.allow'`
+  );
+}
+
 /**
  * A UrlReader implementation that selects from a set of UrlReaders
  * based on a predicate tied to each reader.
@@ -52,11 +60,7 @@ export class UrlReaderPredicateMux implements UrlReader {
       }
     }
 
-    throw new NotAllowedError(
-      `Reading from '${url}' is not allowed. ` +
-        `You may need to configure an integration for the target host, or add it ` +
-        `to the configured list of allowed hosts at 'backend.reading.allow'`,
-    );
+    throw new NotAllowedError(notAllowedMessage(url));
   }
 
   async readUrl(
@@ -87,7 +91,7 @@ export class UrlReaderPredicateMux implements UrlReader {
       }
     }
 
-    throw new NotAllowedError(`Reading from '${url}' is not allowed`);
+    throw new NotAllowedError(notAllowedMessage(url));
   }
 
   async readTree(
@@ -102,7 +106,7 @@ export class UrlReaderPredicateMux implements UrlReader {
       }
     }
 
-    throw new NotAllowedError(`Reading from '${url}' is not allowed`);
+    throw new NotAllowedError(notAllowedMessage(url));
   }
 
   async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
@@ -114,7 +118,7 @@ export class UrlReaderPredicateMux implements UrlReader {
       }
     }
 
-    throw new NotAllowedError(`Reading from '${url}' is not allowed`);
+    throw new NotAllowedError(notAllowedMessage(url));
   }
 
   toString() {

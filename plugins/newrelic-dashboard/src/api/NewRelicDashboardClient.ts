@@ -18,7 +18,7 @@ import {
   DashboardSnapshotSummary,
   NewRelicDashboardApi,
 } from './NewRelicDashboardApi';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { DashboardEntity } from '../types/DashboardEntity';
 import { DashboardSnapshot } from '../types/DashboardSnapshot';
 import { getDashboardParentGuidQuery } from '../queries/getDashboardParentGuidQuery';
@@ -27,13 +27,18 @@ import { ResponseError } from '@backstage/errors';
 
 export class NewRelicDashboardClient implements NewRelicDashboardApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: FetchApi;
+
   constructor({
     discoveryApi,
+    fetchApi,
   }: {
     discoveryApi: DiscoveryApi;
+    fetchApi: FetchApi;
     baseUrl?: string;
   }) {
     this.discoveryApi = discoveryApi;
+    this.fetchApi = fetchApi;
   }
 
   private async callApi<T>(
@@ -56,7 +61,7 @@ export class NewRelicDashboardClient implements NewRelicDashboardApi {
     const apiUrl = `${await this.discoveryApi.getBaseUrl(
       'proxy',
     )}/newrelic/api/graphql`;
-    const response = await fetch(apiUrl, requestOptions);
+    const response = await this.fetchApi.fetch(apiUrl, requestOptions);
     if (response.status === 200) {
       return (await response.json()) as T;
     }

@@ -24,7 +24,7 @@ package provides a dedicated API for reading from such URL based remote
 locations like GitHub, GitLab, Bitbucket, Google Cloud Storage, etc. This is
 commonly referred to as "URL Reader". It takes care of making authenticated
 requests to the remote host so that private files can be read securely. If users
-have [GitHub App based authentication](github-apps.md) set up, URL Reader even
+have [GitHub App based authentication](../integrations/github/github-apps.md) set up, URL Reader even
 refreshes the token, to avoid reaching the GitHub API rate limit.
 
 As a result, plugin authors do not have to worry about any of these problems

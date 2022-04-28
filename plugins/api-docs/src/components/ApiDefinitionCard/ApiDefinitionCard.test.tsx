@@ -23,6 +23,9 @@ import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 import { ApiDefinitionCard } from './ApiDefinitionCard';
 
+// Make sure this is in the require cache before the async rendering happens
+import '../OpenApiDefinitionWidget/OpenApiDefinition';
+
 describe('<ApiDefinitionCard />', () => {
   const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
     getApiDefinitionWidget: jest.fn(),

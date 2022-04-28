@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { GitlabAuthProvider, gitlabDefaultSignInResolver } from './provider';
+import {
+  GitlabAuthProvider,
+  gitlabUsernameEntityNameSignInResolver,
+} from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { PassportProfile } from '../../lib/passport/types';
 import { OAuthResult } from '../../lib/oauth';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TokenIssuer } from '../../identity';
-import { CatalogIdentityClient } from '../../lib/catalog';
+import { AuthResolverContext } from '../types';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -28,22 +29,16 @@ const mockFrameHandler = jest.spyOn(
 ) as unknown as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
 
 describe('GitlabAuthProvider', () => {
-  const tokenIssuer = {
-    issueToken: jest.fn(),
-    listPublicKeys: jest.fn(),
-  };
-  const catalogIdentityClient = {
-    findUser: jest.fn(),
-  };
-
   const provider = new GitlabAuthProvider({
     clientId: 'mock',
     clientSecret: 'mock',
     callbackUrl: 'mock',
     baseUrl: 'mock',
-    catalogIdentityClient:
-      catalogIdentityClient as unknown as CatalogIdentityClient,
-    tokenIssuer: tokenIssuer as unknown as TokenIssuer,
+    resolverContext: {
+      signInWithCatalogUser: jest.fn(async ({ entityRef }) => ({
+        token: `token-for-user:${entityRef.name}`,
+      })),
+    } as unknown as AuthResolverContext,
     authHandler: async ({ fullProfile }) => ({
       profile: {
         email: fullProfile.emails![0]!.value,
@@ -51,8 +46,7 @@ describe('GitlabAuthProvider', () => {
         picture: 'http://gitlab.com/lols',
       },
     }),
-    signInResolver: gitlabDefaultSignInResolver,
-    logger: getVoidLogger(),
+    signInResolver: gitlabUsernameEntityNameSignInResolver,
   });
 
   it('should transform to type OAuthResponse', async () => {
@@ -85,7 +79,7 @@ describe('GitlabAuthProvider', () => {
         },
         expect: {
           backstageIdentity: {
-            id: 'jimmymarkum',
+            token: 'token-for-user:jimmymarkum',
           },
           providerInfo: {
             accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -127,7 +121,7 @@ describe('GitlabAuthProvider', () => {
         },
         expect: {
           backstageIdentity: {
-            id: 'daveboyle',
+            token: 'token-for-user:daveboyle',
           },
           providerInfo: {
             accessToken:
@@ -189,7 +183,7 @@ describe('GitlabAuthProvider', () => {
     expect(result).toEqual({
       response: {
         backstageIdentity: {
-          id: 'mockuser',
+          token: 'token-for-user:mockuser',
         },
         profile: {
           displayName: 'Mocked User',

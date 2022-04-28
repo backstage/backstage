@@ -16,11 +16,19 @@
 
 export {
   SearchContextProvider,
-  SearchContext,
   useSearch,
+  useSearchContextCheck,
 } from './SearchContext';
-export type { SearchContextState } from './SearchContext';
+export type {
+  SearchContextProviderProps,
+  SearchContextState,
+  SearchContextValue,
+} from './SearchContext';
 export {
-  SearchContextProvider as SearchContextProviderForStorybook,
-  SearchApiProvider as SearchApiProviderForStorybook,
+  SearchContextProviderForStorybook,
+  SearchApiProviderForStorybook,
+} from './SearchContextForStorybook.stories';
+export type {
+  SearchContextProviderForStorybookProps,
+  SearchApiProviderForStorybookProps,
 } from './SearchContextForStorybook.stories';

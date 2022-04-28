@@ -17,8 +17,8 @@
 import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
-import { TaskScheduler } from './TaskScheduler';
 import waitForExpect from 'wait-for-expect';
+import { TaskScheduler } from './TaskScheduler';
 
 describe('TaskScheduler', () => {
   const logger = getVoidLogger();

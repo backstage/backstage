@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-export * from './Reader';
 export type {
   TechDocsReaderPageProps,
-  TechDocsReaderPageRenderFunction,
+  TechDocsReaderLayoutProps,
 } from './TechDocsReaderPage';
+export { TechDocsReaderLayout } from './TechDocsReaderPage';
 export * from './TechDocsReaderPageHeader';
+export * from './TechDocsReaderPageContent';
+export * from './TechDocsReaderPageSubheader';
 export * from './TechDocsStateIndicator';
-
-/**
- * Note: this component is currently being exported so that we can rapidly
- * iterate on alternative <Reader /> implementations that extend core
- * functionality. There is no guarantee that this component will continue to be
- * exported by the package in the future!
- *
- * Why is this comment here instead of above the component itself? It's a
- * workaround for some kind of bug in @microsoft/api-extractor.
- *
- * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
- * @internal
- */
+export type { ReaderState, ContentStateTypes } from './useReaderState';

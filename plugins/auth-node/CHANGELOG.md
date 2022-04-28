@@ -1,5 +1,24 @@
 # @backstage/plugin-auth-node
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 15d3a3c39a: **BREAKING**: Removed the deprecated `id` and `entity` fields from `BackstageSignInResult`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2
+
 ## 0.2.0-next.0
 
 ### Minor Changes

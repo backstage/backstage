@@ -21,9 +21,10 @@ import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { techdocsStorageApiRef } from '../../api';
 
 /**
+ * @public
  * A state representation that is used to configure the UI of <Reader />
  */
-type ContentStateTypes =
+export type ContentStateTypes =
   /** There is nothing to display but a loading indicator */
   | 'CHECKING'
 
@@ -224,13 +225,10 @@ export function reducer(
 
   return newState;
 }
-
-export function useReaderState(
-  kind: string,
-  namespace: string,
-  name: string,
-  path: string,
-): {
+/**
+ * @public shared reader state
+ */
+export type ReaderState = {
   state: ContentStateTypes;
   path: string;
   contentReload: () => void;
@@ -238,7 +236,14 @@ export function useReaderState(
   contentErrorMessage?: string;
   syncErrorMessage?: string;
   buildLog: string[];
-} {
+};
+
+export function useReaderState(
+  kind: string,
+  namespace: string,
+  name: string,
+  path: string,
+): ReaderState {
   const [state, dispatch] = useReducer(reducer, {
     activeSyncState: 'CHECKING',
     path,

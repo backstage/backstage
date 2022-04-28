@@ -1,5 +1,7 @@
 site_name: 'Backstage'
 site_description: 'Main documentation for Backstage features and platform APIs'
+repo_url: https://github.com/backstage/backstage
+edit_uri: edit/master/docs
 
 plugins:
   - techdocs-core
@@ -99,10 +101,12 @@ nav:
           - Installation: 'integrations/datadog-rum/installation.md'
       - Gerrit:
           - Locations: 'integrations/gerrit/locations.md'
+          - Discovery: 'integrations/gerrit/discovery.md'
       - GitHub:
           - Locations: 'integrations/github/locations.md'
           - Discovery: 'integrations/github/discovery.md'
           - Org Data: 'integrations/github/org.md'
+          - GitHub Apps: 'integrations/github/github-apps.md'
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
@@ -124,7 +128,6 @@ nav:
           - Proxying: 'plugins/proxying.md'
           - Backend plugin: 'plugins/backend-plugin.md'
           - Call existing API: 'plugins/call-existing-api.md'
-          - GitHub Apps for Backend Authentication: 'plugins/github-apps.md'
           - URL Reader: 'plugins/url-reader.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
@@ -150,7 +153,6 @@ nav:
           - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
-      - Using authentication and identity: 'auth/using-auth.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'

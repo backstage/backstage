@@ -162,20 +162,11 @@ The `techDocsPage` is a default techdocs reader page which lives in
 having to set anything up.
 
 ```tsx
-<TechDocsPage>
-  {({ techdocsMetadataValue, entityMetadataValue, entityRef, onReady }) => (
-    <>
-      <TechDocsPageHeader
-        techDocsMetadata={techdocsMetadataValue}
-        entityMetadata={entityMetadataValue}
-        entityRef={entityRef}
-      />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<Page themeId="documentation">
+  <TechDocsReaderPageHeader />
+  <TechDocsReaderPageSubheader />
+  <TechDocsReaderPageContent />
+</Page>
 ```
 
 If you would like to compose your own `techDocsPage`, you can do so by replacing
@@ -183,42 +174,30 @@ the children of TechDocsPage with something else. Maybe you are _just_
 interested in replacing the Header:
 
 ```tsx
-<TechDocsPage>
-  {({ entityRef, onReady }) => (
-    <>
-      <Header type="documentation" title="Custom Header" />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<Page themeId="documentation">
+  <Header type="documentation" title="Custom Header" />
+  <TechDocsReaderPageContent />
+</Page>
 ```
 
 Or maybe you want to disable the in-context search
 
 ```tsx
-<TechDocsPage>
-  {({ entityRef, onReady }) => (
-    <>
-      <Header type="documentation" title="Custom Header" />
-      <Content data-testid="techdocs-content">
-        <Reader onReady={onReady} entityRef={entityRef} withSearch={false} />
-      </Content>
-    </>
-  )}
-</TechDocsPage>
+<Page themeId="documentation">
+  <Header type="documentation" title="Custom Header" />
+  <TechDocsReaderPageContent withSearch={false} />
+</Page>
 ```
 
 Or maybe you want to replace the entire TechDocs Page.
 
 ```tsx
-<TechDocsPage>
+<Page themeId="documentation">
   <Header type="documentation" title="Custom Header" />
   <Content data-testid="techdocs-content">
     <p>my own content</p>
   </Content>
-</TechDocsPage>
+</Page>
 ```
 
 ## How to migrate from TechDocs Alpha to Beta
@@ -458,7 +437,7 @@ FROM python:3.8-alpine
 
 RUN apk update && apk --no-cache add gcc musl-dev openjdk11-jdk curl graphviz ttf-dejavu fontconfig
 
-RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==0.2.1
+RUN pip install --upgrade pip && pip install mkdocs-techdocs-core==1.0.1
 
 RUN pip install mkdocs-kroki-plugin
 

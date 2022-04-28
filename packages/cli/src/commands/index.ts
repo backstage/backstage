@@ -15,17 +15,17 @@
  */
 
 import { assertError } from '@backstage/errors';
-import { CommanderStatic } from 'commander';
+import { Command } from 'commander';
 import { exitWithError } from '../lib/errors';
 
 const configOption = [
   '--config <path>',
   'Config files to load instead of app-config.yaml',
-  (opt: string, opts: string[]) => [...opts, opt],
+  (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
   Array<string>(),
 ] as const;
 
-export function registerRepoCommand(program: CommanderStatic) {
+export function registerRepoCommand(program: Command) {
   const command = program
     .command('repo [command]')
     .description('Command that run across an entire Backstage project');
@@ -69,7 +69,7 @@ export function registerRepoCommand(program: CommanderStatic) {
     );
 }
 
-export function registerScriptCommand(program: CommanderStatic) {
+export function registerScriptCommand(program: Command) {
   const command = program
     .command('package [command]')
     .description('Lifecycle scripts for individual packages');
@@ -110,13 +110,13 @@ export function registerScriptCommand(program: CommanderStatic) {
     .option(
       '--config <path>',
       'Config files to load instead of app-config.yaml. Applies to app packages only.',
-      (opt: string, opts: string[]) => [...opts, opt],
+      (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
       Array<string>(),
     )
     .action(lazy(() => import('./build').then(m => m.command)));
 
   command
-    .command('lint')
+    .command('lint [directories...]')
     .option(
       '--format <format>',
       'Lint report output format',
@@ -131,7 +131,7 @@ export function registerScriptCommand(program: CommanderStatic) {
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./testCommand').then(m => m.default)));
+    .action(lazy(() => import('./test').then(m => m.default)));
 
   command
     .command('fix', { hidden: true })
@@ -155,7 +155,7 @@ export function registerScriptCommand(program: CommanderStatic) {
     .action(lazy(() => import('./pack').then(m => m.post)));
 }
 
-export function registerMigrateCommand(program: CommanderStatic) {
+export function registerMigrateCommand(program: Command) {
   const command = program
     .command('migrate [command]')
     .description('Migration utilities');
@@ -182,7 +182,7 @@ export function registerMigrateCommand(program: CommanderStatic) {
     );
 }
 
-export function registerCommands(program: CommanderStatic) {
+export function registerCommands(program: Command) {
   // TODO(Rugvip): Deprecate in favor of package variant
   program
     .command('app:build')
@@ -302,7 +302,7 @@ export function registerCommands(program: CommanderStatic) {
 
   // TODO(Rugvip): Deprecate in favor of package variant
   program
-    .command('lint')
+    .command('lint [directories...]')
     .option(
       '--format <format>',
       'Lint report output format',
@@ -320,7 +320,7 @@ export function registerCommands(program: CommanderStatic) {
     .description(
       'Run tests, forwarding args to Jest, defaulting to watch mode [DEPRECATED]',
     )
-    .action(lazy(() => import('./testCommand').then(m => m.default)));
+    .action(lazy(() => import('./test').then(m => m.default)));
 
   program
     .command('config:docs')
@@ -423,7 +423,7 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./clean/clean').then(m => m.default)));
 
   program
-    .command('build-workspace <workspace-dir> ...<packages>')
+    .command('build-workspace <workspace-dir> [packages...]')
     .description('Builds a temporary dist workspace from the provided packages')
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
 

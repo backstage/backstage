@@ -1,5 +1,40 @@
 # @backstage/backend-tasks
 
+## 0.3.1-next.0
+
+### Patch Changes
+
+- cfd779a9bc: Scheduled tasks now have an optional `scope` field. If unset, or having the
+  value `'global'`, the old behavior with cross-worker locking is retained. If
+  having the value `'local'`, there is no coordination across workers and the
+  behavior is more like `setInterval`. This can be used to replace usages of
+  `runPeriodically` helpers.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- ab008a0988: Adds the ability to manually trigger tasks which are registered
+
+### Patch Changes
+
+- bdd2773202: Refactored the internal `TaskWorker` class to make it easier to test.
+- a83babdd63: Fixed the `initialDelay` parameter of tasks to properly make task workers
+  _always_ wait before the first invocations on startup, not just the very first
+  time that the task is ever created. This behavior is more in line with
+  expectations. Callers to not need to update their code.
+
+  Also clarified in the doc comment for the field that this wait applies only on
+  an individual worker level. That is, if you have a cluster of workers then each
+  individual machine may postpone its first task invocation by the given amount of
+  time to leave room for the service to settle, but _other_ workers may still
+  continue to invoke the task on the regular cadence in the meantime.
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.2
+
 ## 0.3.0-next.2
 
 ### Patch Changes

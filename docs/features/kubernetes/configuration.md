@@ -228,7 +228,13 @@ For example:
 ```yaml
 - type: 'gke'
   projectId: 'gke-clusters'
-  region: 'europe-west1'
+  region: 'europe-west1' # optional
+  skipTLSVerify: false # optional
+  skipMetricsLookup: false # optional
+  exposeDashboard: false # optional
+  matchingResourceLabels: # optional
+    - key: 'environment'
+      value: 'production'
 ```
 
 Will configure the Kubernetes plugin to connect to all GKE clusters in the
@@ -247,23 +253,28 @@ The Google Cloud project to look for Kubernetes clusters in.
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
 
-##### `skipTLSVerify`
+##### `skipTLSVerify` (optional)
 
 This determines whether the Kubernetes client verifies the TLS certificate
 presented by the API server. Defaults to `false`.
 
-##### `skipMetricsLookup`
+##### `skipMetricsLookup` (optional)
 
 This determines whether the Kubernetes client looks up resource metrics
 CPU/Memory for pods returned by the API server. Defaults to `false`.
 
-##### `exposeDashboard`
+##### `exposeDashboard` (optional)
 
 This determines whether the `dashboardApp` and `dashboardParameters` should be
 automatically configured in order to expose the GKE dashboard from the
 Kubernetes plugin.
 
 Defaults to `false`.
+
+##### `matchingResourceLabels` (optional)
+
+Array of key value labels used to filter out clusters which don't have the matching
+[resource labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels).
 
 #### Custom `KubernetesClustersSupplier`
 
@@ -353,6 +364,16 @@ following annotation should be added to the entity's `catalog-info.yaml`:
 ```yaml
 annotations:
   'backstage.io/kubernetes-id': dice-roller
+```
+
+#### Adding the namespace annotation
+
+Entities can have the `backstage.io/kubernetes-namespace` annotation, this will cause the entity's Kubernetes resources
+to by looked up via that namespace.
+
+```yaml
+annotations:
+  'backstage.io/kubernetes-namespace': dice-space
 ```
 
 #### Labeling Kubernetes components

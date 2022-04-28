@@ -184,7 +184,7 @@ export interface DependencyOfComponentsCardProps {
   // (undocumented)
   title?: string;
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
@@ -192,13 +192,13 @@ export interface DependsOnComponentsCardProps {
   // (undocumented)
   title?: string;
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface DependsOnResourcesCardProps {
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
@@ -247,6 +247,8 @@ export const EntityLayout: {
 export interface EntityLayoutProps {
   // (undocumented)
   children?: React_2.ReactNode;
+  // (undocumented)
+  NotFoundComponent?: React_2.ReactNode;
   // Warning: (ae-forgotten-export) The symbol "contextMenuOptions" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
@@ -283,7 +285,7 @@ export interface EntityLinksCardProps {
   // (undocumented)
   cols?: ColumnBreakpoints | number;
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
@@ -344,25 +346,25 @@ export function hasCatalogProcessingErrors(
 // @public (undocumented)
 export interface HasComponentsCardProps {
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasResourcesCardProps {
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSystemsCardProps {
   // (undocumented)
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 }
 
 // @public
@@ -390,7 +392,7 @@ export const RelatedEntitiesCard: <T extends Entity>(
 
 // @public (undocumented)
 export type RelatedEntitiesCardProps<T extends Entity> = {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
   title: string;
   columns: TableColumn<T>[];
   entityKind?: string;

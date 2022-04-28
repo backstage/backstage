@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import { startBackend } from './startBackend';
 import { startFrontend } from './startFrontend';
 import { findRoleFromCommand } from '../../lib/role';
 
-export async function command(cmd: Command): Promise<void> {
-  const role = await findRoleFromCommand(cmd);
+export async function command(opts: OptionValues): Promise<void> {
+  const role = await findRoleFromCommand(opts);
 
   const options = {
-    configPaths: cmd.config as string[],
-    checksEnabled: Boolean(cmd.check),
-    inspectEnabled: Boolean(cmd.inspect),
-    inspectBrkEnabled: Boolean(cmd.inspectBrk),
+    configPaths: opts.config as string[],
+    checksEnabled: Boolean(opts.check),
+    inspectEnabled: Boolean(opts.inspect),
+    inspectBrkEnabled: Boolean(opts.inspectBrk),
   };
 
   switch (role) {

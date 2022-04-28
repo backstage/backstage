@@ -1,5 +1,43 @@
 # @backstage/plugin-permission-common
 
+## 0.6.0
+
+### Minor Changes
+
+- 8012ac46a0: Add `resourceType` property to `PermissionCondition` type to allow matching them with `ResourcePermission` instances.
+- c98d271466: Refactor api types into more specific, decoupled names.
+
+  - **BREAKING:**
+    - Renamed `AuthorizeDecision` to `EvaluatePermissionResponse`
+    - Renamed `AuthorizeQuery` to `EvaluatePermissionRequest`
+    - Renamed `AuthorizeRequest` to `EvaluatePermissionRequestBatch`
+    - Renamed `AuthorizeResponse` to `EvaluatePermissionResponseBatch`
+    - Renamed `Identified` to `IdentifiedPermissionMessage`
+  - Add `PermissionMessageBatch` helper type
+  - Add `ConditionalPolicyDecision`, `DefinitivePolicyDecision`, and `PolicyDecision` types from `@backstage/plugin-permission-node`
+
+### Patch Changes
+
+- 90754d4fa9: Removed [strict](https://github.com/colinhacks/zod#strict) validation from `PermissionCriteria` schemas to support backward-compatible changes.
+- 2b07063d77: Added `PermissionEvaluator`, which will replace the existing `PermissionAuthorizer` interface. This new interface provides stronger type safety and validation by splitting `PermissionAuthorizer.authorize()` into two methods:
+
+  - `authorize()`: Used when the caller requires a definitive decision.
+  - `authorizeConditional()`: Used when the caller can optimize the evaluation of any conditional decisions. For example, a plugin backend may want to use conditions in a database query instead of evaluating each resource in memory.
+
+- 8012ac46a0: Add `isPermission` helper method.
+- 95284162d6: - Add more specific `Permission` types.
+  - Add `createPermission` helper to infer the appropriate type for some permission input.
+  - Add `isResourcePermission` helper to refine Permissions to ResourcePermissions.
+
+## 0.6.0-next.1
+
+### Patch Changes
+
+- 2b07063d77: Added `PermissionEvaluator`, which will replace the existing `PermissionAuthorizer` interface. This new interface provides stronger type safety and validation by splitting `PermissionAuthorizer.authorize()` into two methods:
+
+  - `authorize()`: Used when the caller requires a definitive decision.
+  - `authorizeConditional()`: Used when the caller can optimize the evaluation of any conditional decisions. For example, a plugin backend may want to use conditions in a database query instead of evaluating each resource in memory.
+
 ## 0.6.0-next.0
 
 ### Minor Changes

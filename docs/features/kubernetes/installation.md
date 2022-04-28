@@ -13,9 +13,7 @@ If you haven't setup Backstage already, read the
 ## Adding the Kubernetes frontend plugin
 
 The first step is to add the Kubernetes frontend plugin to your Backstage
-application. Navigate to your new Backstage application directory, and then to
-your `packages/app` directory, and install the `@backstage/plugin-kubernetes`
-package.
+application.
 
 ```bash
 # From your Backstage root directory

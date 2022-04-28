@@ -22,6 +22,7 @@ import {
   WelcomeTitle,
   HeaderWorldClock,
   ClockConfig,
+  HomePageStarredEntities,
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
@@ -103,6 +104,9 @@ export const homePage = (
         </Grid>
         <Grid item xs={12} md={4}>
           <HomePageCalendar />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <HomePageStarredEntities />
         </Grid>
       </Grid>
     </Content>

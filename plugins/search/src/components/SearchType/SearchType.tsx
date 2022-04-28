@@ -30,7 +30,7 @@ import {
   SearchTypeAccordionProps,
 } from './SearchType.Accordion';
 import { SearchTypeTabs, SearchTypeTabsProps } from './SearchType.Tabs';
-import { useSearch } from '../SearchContext';
+import { useSearch } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles(theme => ({
   label: {

@@ -1,5 +1,37 @@
 # @backstage/test-utils
 
+## 1.0.2-next.0
+
+### Patch Changes
+
+- 7a5ddfd595: Added missing `Routes` element to wrap the `Route` elements of the test app wrapping.
+- 7a5ddfd595: The internal elements created as part of the `mountedRoutes` implementation are now hidden during rendering.
+
+## 1.0.1
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- c98d271466: Use updated types from `@backstage/plugin-permission-common`
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.0
+  - @backstage/plugin-permission-common@0.6.0
+  - @backstage/core-app-api@1.0.1
+  - @backstage/core-plugin-api@1.0.1
+
+## 1.0.1-next.2
+
+### Patch Changes
+
+- 24254fd433: build(deps): bump `@testing-library/user-event` from 13.5.0 to 14.0.0
+- 230ad0826f: Bump to using `@types/node` v16
+- Updated dependencies
+  - @backstage/core-app-api@1.0.1-next.1
+  - @backstage/core-plugin-api@1.0.1-next.0
+  - @backstage/plugin-permission-common@0.6.0-next.1
+  - @backstage/plugin-permission-react@0.4.0-next.1
+
 ## 1.0.1-next.1
 
 ### Patch Changes

@@ -326,8 +326,9 @@ in the package registry, and will update entries both in `yarn.lock` and
 Usage: backstage-cli versions:bump [options]
 
 Options:
-  -h, --help  display help for command
-  -p, --pattern Override glob for matching packages to upgrade
+  -h, --help        display help for command
+  --pattern &lt;glob&gt;  Override glob for matching packages to upgrade
+  --release &lt;version|next|main&gt; Bump to a specific Backstage release line or version (default: "main")
 ```
 
 ## versions:check
@@ -361,7 +362,7 @@ Usage: backstage-cli build-workspace [options] &lt;workspace-dir&gt;
 
 Creates a GitHub App in your GitHub organization. This is an alternative to
 token-based [GitHub integration](../integrations/github/locations.md). See
-[GitHub Apps for Backstage Authentication](../plugins/github-apps.md).
+[GitHub Apps for Backstage Authentication](../integrations/github/github-apps.md).
 
 Launches a browser to create the App through GitHub and saves the result as a
 YAML file that can be referenced in the GitHub integration configuration.

@@ -15,17 +15,11 @@
  */
 
 import { Profile as PassportProfile } from 'passport';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient } from '../../lib/catalog';
-import {
-  GithubAuthProvider,
-  GithubOAuthResult,
-  githubDefaultSignInResolver,
-} from './provider';
+import { GithubAuthProvider, GithubOAuthResult, github } from './provider';
 import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { makeProfileInfo } from '../../lib/passport/PassportStrategyHelper';
 import { OAuthStartRequest, encodeState } from '../../lib/oauth';
+import { AuthResolverContext } from '../types';
 
 const mockFrameHandler = jest.spyOn(
   helpers,
@@ -38,22 +32,13 @@ const mockFrameHandler = jest.spyOn(
 >;
 
 describe('GithubAuthProvider', () => {
-  const tokenIssuer: TokenIssuer = {
-    listPublicKeys: jest.fn(),
-    async issueToken(params) {
-      return `token-for-${params.claims.sub}`;
-    },
-  };
-  const catalogIdentityClient = {
-    findUser: jest.fn(),
-  };
-
   const provider = new GithubAuthProvider({
-    logger: getVoidLogger(),
-    catalogIdentityClient:
-      catalogIdentityClient as unknown as CatalogIdentityClient,
-    tokenIssuer: tokenIssuer as unknown as TokenIssuer,
-    signInResolver: githubDefaultSignInResolver,
+    resolverContext: {
+      signInWithCatalogUser: jest.fn(({ entityRef }) => ({
+        token: `token-for-user:${entityRef.name}`,
+      })),
+    } as unknown as AuthResolverContext,
+    signInResolver: github.resolvers.usernameMatchingUserEntityName(),
     authHandler: async ({ fullProfile }) => ({
       profile: makeProfileInfo(fullProfile),
     }),
@@ -92,8 +77,7 @@ describe('GithubAuthProvider', () => {
 
       const expected = {
         backstageIdentity: {
-          id: 'jimmymarkum',
-          token: 'token-for-user:default/jimmymarkum',
+          token: 'token-for-user:jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -138,8 +122,7 @@ describe('GithubAuthProvider', () => {
 
       const expected = {
         backstageIdentity: {
-          id: 'jimmymarkum',
-          token: 'token-for-user:default/jimmymarkum',
+          token: 'token-for-user:jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -182,8 +165,7 @@ describe('GithubAuthProvider', () => {
       };
       const expected = {
         backstageIdentity: {
-          id: 'jimmymarkum',
-          token: 'token-for-user:default/jimmymarkum',
+          token: 'token-for-user:jimmymarkum',
         },
         providerInfo: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
@@ -226,8 +208,7 @@ describe('GithubAuthProvider', () => {
 
       const expected = {
         backstageIdentity: {
-          id: 'daveboyle',
-          token: 'token-for-user:default/daveboyle',
+          token: 'token-for-user:daveboyle',
         },
         providerInfo: {
           accessToken:
@@ -254,6 +235,7 @@ describe('GithubAuthProvider', () => {
         result: {
           fullProfile: {
             id: 'ipd12039',
+            username: 'daveboyle',
             provider: 'github',
             displayName: 'Dave Boyle',
           },
@@ -271,8 +253,7 @@ describe('GithubAuthProvider', () => {
       expect(response).toEqual({
         response: {
           backstageIdentity: {
-            id: 'ipd12039',
-            token: 'token-for-user:default/ipd12039',
+            token: 'token-for-user:daveboyle',
           },
           providerInfo: {
             accessToken: 'a.b.c',
@@ -285,6 +266,28 @@ describe('GithubAuthProvider', () => {
         },
         refreshToken: 'refresh-me',
       });
+    });
+
+    it('should fail if username is not available', async () => {
+      mockFrameHandler.mockResolvedValueOnce({
+        result: {
+          fullProfile: {
+            id: 'ipd12039',
+            provider: 'github',
+            displayName: 'Dave Boyle',
+          },
+          accessToken: 'a.b.c',
+          params: {
+            scope: 'read:user',
+            expires_in: '123',
+          },
+        },
+        privateInfo: { refreshToken: 'refresh-me' },
+      });
+
+      await expect(provider.handler({} as any)).rejects.toThrow(
+        'GitHub user profile does not contain a username',
+      );
     });
 
     it('should forward a new refresh token on refresh', async () => {
@@ -325,8 +328,7 @@ describe('GithubAuthProvider', () => {
       expect(result).toEqual({
         response: {
           backstageIdentity: {
-            id: 'mockuser',
-            token: 'token-for-user:default/mockuser',
+            token: 'token-for-user:mockuser',
           },
           profile: {
             displayName: 'Mocked User',
@@ -377,8 +379,7 @@ describe('GithubAuthProvider', () => {
       expect(result).toEqual({
         response: {
           backstageIdentity: {
-            id: 'mockuser',
-            token: 'token-for-user:default/mockuser',
+            token: 'token-for-user:mockuser',
           },
           profile: {
             displayName: 'Mocked User',

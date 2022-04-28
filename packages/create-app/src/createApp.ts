@@ -15,7 +15,7 @@
  */
 
 import chalk from 'chalk';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import inquirer, { Answers } from 'inquirer';
 import { resolve as resolvePath } from 'path';
 import { findPaths } from '@backstage/cli-common';
@@ -30,7 +30,7 @@ import {
   templatingTask,
 } from './lib/tasks';
 
-export default async (cmd: Command): Promise<void> => {
+export default async (opts: OptionValues): Promise<void> => {
   /* eslint-disable-next-line no-restricted-syntax */
   const paths = findPaths(__dirname);
 
@@ -65,22 +65,22 @@ export default async (cmd: Command): Promise<void> => {
 
   // Use `--path` argument as application directory when specified, otherwise
   // create a directory using `answers.name`
-  const appDir = cmd.path
-    ? resolvePath(paths.targetDir, cmd.path)
+  const appDir = opts.path
+    ? resolvePath(paths.targetDir, opts.path)
     : resolvePath(paths.targetDir, answers.name);
 
   Task.log();
   Task.log('Creating the app...');
 
   try {
-    if (cmd.path) {
+    if (opts.path) {
       // Template directly to specified path
 
       Task.section('Checking that supplied path exists');
       await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, cmd.path, answers);
+      await templatingTask(templateDir, opts.path, answers);
     } else {
       // Template to temporary location, and then move files
 
@@ -97,7 +97,7 @@ export default async (cmd: Command): Promise<void> => {
       await moveAppTask(tempDir, appDir, answers.name);
     }
 
-    if (!cmd.skipInstall) {
+    if (!opts.skipInstall) {
       Task.section('Building the app');
       await buildAppTask(appDir);
     }

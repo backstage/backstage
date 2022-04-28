@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { Command } from 'commander';
+import { OptionValues } from 'commander';
 import {
   diffTemplateFiles,
   handlers,
@@ -50,13 +50,13 @@ const fileHandlers = [
   },
 ];
 
-export default async (cmd: Command) => {
+export default async (opts: OptionValues) => {
   let promptFunc = inquirerPromptFunc;
   let finalize = () => {};
 
-  if (cmd.check) {
+  if (opts.check) {
     [promptFunc, finalize] = makeCheckPromptFunc();
-  } else if (cmd.yes) {
+  } else if (opts.yes) {
     promptFunc = yesPromptFunc;
   }
 

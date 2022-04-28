@@ -1,5 +1,300 @@
 # @backstage/plugin-auth-backend
 
+## 0.13.1-next.0
+
+### Patch Changes
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 787ae0d541: Add more common predefined sign-in resolvers to auth providers.
+
+  Add the existing resolver to more providers (already available at `google`):
+
+  - `providers.microsoft.resolvers.emailLocalPartMatchingUserEntityName()`
+  - `providers.okta.resolvers.emailLocalPartMatchingUserEntityName()`
+
+  Add a new resolver for simple email-to-email matching:
+
+  - `providers.google.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.microsoft.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.okta.resolvers.emailMatchingUserEntityProfileEmail()`
+
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+  - @backstage/plugin-auth-node@0.2.1-next.0
+
+## 0.13.0
+
+### Minor Changes
+
+- 15d3a3c39a: **BREAKING**: All sign-in resolvers must now return a `token` in their sign-in result. Returning an `id` is no longer supported.
+- c5aeaf339d: **BREAKING**: All auth providers have had their default sign-in resolvers removed. This means that if you want to use a particular provider for sign-in, you must provide an explicit sign-in resolver. For more information on how to configure sign-in resolvers, see the [sign-in resolver documentation](https://backstage.io/docs/auth/identity-resolver).
+
+### Patch Changes
+
+- c5aeaf339d: **DEPRECATION**: The `AuthProviderFactoryOptions` type has been deprecated, as the options are now instead inlined in the `AuthProviderFactory` type. This will make it possible to more easily introduce new options in the future without a possibly breaking change.
+- 794f7542b6: Updated openid-client from 4.1.2 to 5.1.3
+- c5aeaf339d: **DEPRECATION**: The `getEntityClaims` helper has been deprecated, with `getDefaultOwnershipEntityRefs` being added to replace it.
+- de231e5b06: Declare oauth2 `clientSecret` with visibility secret
+- c5aeaf339d: **DEPRECATION**: All `create<Provider>Provider` and `<provider>*SignInResolver` have been deprecated. Instead, a single `providers` object is exported which contains all built-in auth providers.
+
+  If you have a setup that currently looks for example like this:
+
+  ```ts
+  import {
+    createRouter,
+    defaultAuthProviderFactories,
+    createGoogleProvider,
+    googleEmailSignInResolver,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: createGoogleProvider({
+          signIn: {
+            resolver: googleEmailSignInResolver,
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+  You would migrate it to something like this:
+
+  ```ts
+  import {
+    createRouter,
+    providers,
+    defaultAuthProviderFactories,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: providers.google.create({
+          signIn: {
+            resolver:
+              providers.google.resolvers.emailMatchingUserEntityAnnotation(),
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+- 2cc1d1b235: Applied the fix from version 0.12.3 of this package, which is part of the v1.0.1 release of Backstage.
+- c5aeaf339d: **DEPRECATION** The `AuthResolverContext` has received a number of changes, which is the context used by auth handlers and sign-in resolvers.
+
+  The following fields deprecated: `logger`, `tokenIssuer`, `catalogIdentityClient`. If you need to access the `logger`, you can do so through a closure instead. The `tokenIssuer` has been replaced with an `issueToken` method, which is available directory on the context. The `catalogIdentityClient` has been replaced by the `signInWithCatalogUser` method, as well as the lower level `findCatalogUser` method and `getDefaultOwnershipEntityRefs` helper.
+
+  It should be possible to migrate most sign-in resolvers to more or less only use `signInWithCatalogUser`, for example an email lookup resolver like this one:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+
+    const claims = getEntityClaims(entity);
+    const token = await ctx.tokenIssuer.issueToken({ claims });
+
+    return { id: entity.metadata.name, entity, token };
+  };
+  ```
+
+  can be migrated to the following:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    return ctx.signInWithCatalogUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+  };
+  ```
+
+  While a direct entity name lookup using a user ID might look like this:
+
+  ```ts
+  async ({ result: { fullProfile } }, ctx) => {
+    return ctx.signInWithCatalogUser({
+      entityRef: {
+        name: fullProfile.userId,
+      },
+    });
+  };
+  ```
+
+  If you want more control over the way that users are looked up, ownership is assigned, or tokens are issued, you can use a combination of the `findCatalogUser`, `getDefaultOwnershipEntityRefs`, and `issueToken` instead.
+
+- f4cdf4cac1: Defensively encode URL parameters when fetching ELB keys
+- 6ee04078e1: **DEPRECATION**: The `tokenIssuer` option for `OAuthAdapter` is no longer needed and has been deprecated.
+- a45bce06e3: Handle trailing slashes on GitHub `enterpriseInstanceUrl` settings
+- 45f7a261c7: Bumped passport-microsoft to resolve CVE-2021-41580
+- c5aeaf339d: Added exports of the following types: `AuthProviderConfig`, `StateEncoder`, `TokenParams`, `AwsAlbResult`.
+- Updated dependencies
+  - @backstage/catalog-model@1.0.1
+  - @backstage/plugin-auth-node@0.2.0
+  - @backstage/backend-common@0.13.2
+  - @backstage/catalog-client@1.0.1
+
+## 0.13.0-next.2
+
+### Minor Changes
+
+- c5aeaf339d: **BREAKING**: All auth providers have had their default sign-in resolvers removed. This means that if you want to use a particular provider for sign-in, you must provide an explicit sign-in resolver. For more information on how to configure sign-in resolvers, see the [sign-in resolver documentation](https://backstage.io/docs/auth/identity-resolver).
+
+### Patch Changes
+
+- c5aeaf339d: **DEPRECATION**: The `AuthProviderFactoryOptions` type has been deprecated, as the options are now instead inlined in the `AuthProviderFactory` type. This will make it possible to more easily introduce new options in the future without a possibly breaking change.
+- 794f7542b6: Updated openid-client from 4.1.2 to 5.1.3
+- c5aeaf339d: **DEPRECATION**: The `getEntityClaims` helper has been deprecated, with `getDefaultOwnershipEntityRefs` being added to replace it.
+- de231e5b06: Declare oauth2 `clientSecret` with visibility secret
+- c5aeaf339d: **DEPRECATION**: All `create<Provider>Provider` and `<provider>*SignInResolver` have been deprecated. Instead, a single `providers` object is exported which contains all built-in auth providers.
+
+  If you have a setup that currently looks for example like this:
+
+  ```ts
+  import {
+    createRouter,
+    defaultAuthProviderFactories,
+    createGoogleProvider,
+    googleEmailSignInResolver,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: createGoogleProvider({
+          signIn: {
+            resolver: googleEmailSignInResolver,
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+  You would migrate it to something like this:
+
+  ```ts
+  import {
+    createRouter,
+    providers,
+    defaultAuthProviderFactories,
+  } from '@backstage/plugin-auth-backend';
+  import { Router } from 'express';
+  import { PluginEnvironment } from '../types';
+
+  export default async function createPlugin(
+    env: PluginEnvironment,
+  ): Promise<Router> {
+    return await createRouter({
+      ...env,
+      providerFactories: {
+        ...defaultAuthProviderFactories,
+        google: providers.google.create({
+          signIn: {
+            resolver:
+              providers.google.resolvers.emailMatchingUserEntityAnnotation(),
+          },
+        }),
+      },
+    });
+  }
+  ```
+
+- c5aeaf339d: **DEPRECATION** The `AuthResolverContext` has received a number of changes, which is the context used by auth handlers and sign-in resolvers.
+
+  The following fields deprecated: `logger`, `tokenIssuer`, `catalogIdentityClient`. If you need to access the `logger`, you can do so through a closure instead. The `tokenIssuer` has been replaced with an `issueToken` method, which is available directory on the context. The `catalogIdentityClient` has been replaced by the `signInWithCatalogUser` method, as well as the lower level `findCatalogUser` method and `getDefaultOwnershipEntityRefs` helper.
+
+  It should be possible to migrate most sign-in resolvers to more or less only use `signInWithCatalogUser`, for example an email lookup resolver like this one:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+
+    const claims = getEntityClaims(entity);
+    const token = await ctx.tokenIssuer.issueToken({ claims });
+
+    return { id: entity.metadata.name, entity, token };
+  };
+  ```
+
+  can be migrated to the following:
+
+  ```ts
+  async ({ profile }, ctx) => {
+    if (!profile.email) {
+      throw new Error('Profile contained no email');
+    }
+
+    return ctx.signInWithCatalogUser({
+      annotations: {
+        'acme.org/email': profile.email,
+      },
+    });
+  };
+  ```
+
+  While a direct entity name lookup using a user ID might look like this:
+
+  ```ts
+  async ({ result: { fullProfile } }, ctx) => {
+    return ctx.signInWithCatalogUser({
+      entityRef: {
+        name: fullProfile.userId,
+      },
+    });
+  };
+  ```
+
+  If you want more control over the way that users are looked up, ownership is assigned, or tokens are issued, you can use a combination of the `findCatalogUser`, `getDefaultOwnershipEntityRefs`, and `issueToken` instead.
+
+- f4cdf4cac1: Defensively encode URL parameters when fetching ELB keys
+- c5aeaf339d: Added exports of the following types: `AuthProviderConfig`, `StateEncoder`, `TokenParams`, `AwsAlbResult`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.2-next.2
+
 ## 0.13.0-next.1
 
 ### Patch Changes

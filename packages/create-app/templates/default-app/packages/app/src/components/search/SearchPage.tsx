@@ -14,8 +14,8 @@ import {
   SearchResult,
   SearchType,
   DefaultResultListItem,
-  useSearch,
 } from '@backstage/plugin-search';
+import { useSearch } from '@backstage/plugin-search-react';
 import {
   CatalogIcon,
   Content,
