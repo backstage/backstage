@@ -395,6 +395,8 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
+  list(options: Partial<SerializedTask>): Promise<SerializedTask[]>;
+  // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];
   }>;
@@ -493,6 +495,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
+  createdBy: string | null;
 };
 
 // @public
@@ -518,6 +521,8 @@ export interface TaskBroker {
   }>;
   // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
+  // (undocumented)
+  list(options?: Partial<SerializedTask>): Promise<SerializedTask[]>;
   // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
@@ -615,6 +620,8 @@ export interface TaskStore {
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
+  // (undocumented)
+  list(options: Partial<SerializedTask>): Promise<SerializedTask[]>;
   // (undocumented)
   listEvents({ taskId, after }: TaskStoreListEventsOptions): Promise<{
     events: SerializedTaskEvent[];

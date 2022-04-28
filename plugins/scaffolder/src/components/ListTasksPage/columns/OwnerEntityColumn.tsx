@@ -23,11 +23,7 @@ import { ListItemText } from '@material-ui/core';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import { parseEntityRef, UserEntity } from '@backstage/catalog-model';
 
-export const OwnerEntityColumn = ({
-  entityRef,
-}: {
-  entityRef?: string | null;
-}) => {
+export const OwnerEntityColumn = ({ entityRef }: { entityRef?: string }) => {
   const catalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
 
