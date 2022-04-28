@@ -12,6 +12,10 @@ It will help you and your team stay on top of open pull requests, hopefully redu
 
 ## Getting started
 
+Intall the plugin by running the following command **from your Backstage root directory**
+
+`yarn --cwd packages/app add @backstage/plugin-github-pull-requests-board`
+
 The plugin exports the **TeamPullRequestsBoard** component which can be added to the Overview page of the team at `backstage/packages/app/src/components/catalog/EntityPage.tsx`
 
 ```javascript
