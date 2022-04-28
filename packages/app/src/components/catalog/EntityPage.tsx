@@ -36,6 +36,7 @@ import {
 } from '@backstage/plugin-api-docs';
 import {
   EntityAzurePipelinesContent,
+  EntityAzureGitTagsContent,
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
@@ -281,6 +282,14 @@ const errorsContent = (
   </EntitySwitch>
 );
 
+const gitTagsContent = (
+  <EntitySwitch>
+    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
+      <EntityAzureGitTagsContent defaultLimit={25} />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+);
+
 const pullRequestsContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isAzureDevOpsAvailable}>
@@ -476,6 +485,10 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/git-tags" title="Git Tags">
+      {gitTagsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
