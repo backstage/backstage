@@ -44,7 +44,7 @@ import { TemplateParameterSchema } from '../../../types';
 import { MultistepJsonForm } from '../../MultistepJsonForm';
 import { createValidator } from '../../TemplatePage';
 import { TemplateDirectoryAccess } from '../../../lib/filesystem';
-import { FileBrowser } from './FileBrowser';
+import { FileBrowser } from '../../FileBrowser';
 import {
   DirectoryEditorProvider,
   useDirectoryEditor,

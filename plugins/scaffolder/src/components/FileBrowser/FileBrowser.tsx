@@ -20,12 +20,6 @@ import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
-import {
-  TemplateDirectoryAccess,
-  TemplateFileAccess,
-} from '../../../lib/filesystem';
-import { useAsync, useMountEffect } from '@react-hookz/web';
-import { ErrorPanel, Progress } from '@backstage/core-components';
 
 const useStyles = makeStyles({
   root: {
@@ -114,11 +108,15 @@ function FileTreeItem({ entry }: { entry: FileEntry }) {
 }
 
 interface FileBrowserProps {
-  selected?: string;
+  /** A list of all filepaths to show, directories are separated with a `/` */
   filePaths: string[];
+  /** The currently selected file */
+  selected?: string;
+  /** Callback for when a file is selected */
   onSelect?(filePath: string): void;
 }
 
+/** A simple file browser that allows you to select individual files */
 export function FileBrowser(props: FileBrowserProps) {
   const classes = useStyles();
 
@@ -145,41 +143,3 @@ export function FileBrowser(props: FileBrowserProps) {
     </TreeView>
   );
 }
-
-interface TemplateDirectoryAccessBrowserProps {
-  directory: TemplateDirectoryAccess;
-  onSelect?(file: TemplateFileAccess): void;
-}
-
-function TemplateDirectoryAccessBrowser(
-  props: TemplateDirectoryAccessBrowserProps,
-) {
-  const [state, { execute }] = useAsync(async () => {
-    const files = await props.directory.listFiles();
-    return {
-      filePaths: files.map(file => file.path),
-      getFile: (path: string) => files.find(file => file.path === path),
-    };
-  });
-
-  useMountEffect(execute);
-
-  if (state.error) {
-    return <ErrorPanel error={state.error!} />;
-  } else if (!state.result) {
-    return <Progress />;
-  }
-
-  const handleSelect = (path: string) => {
-    const file = state.result?.getFile(path);
-    if (file) {
-      props.onSelect?.(file);
-    }
-  };
-
-  return (
-    <FileBrowser filePaths={state.result.filePaths} onSelect={handleSelect} />
-  );
-}
-
-FileBrowser.TemplateDirectoryAccess = TemplateDirectoryAccessBrowser;
