@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApiHolder } from '@backstage/core-plugin-api';
+import { JsonObject, JsonValue } from '@backstage/types';
+import { Divider, IconButton, makeStyles, Tooltip } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import SaveIcon from '@material-ui/icons/Save';
 import React, {
   Component,
   ReactNode,
@@ -20,37 +26,21 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import { useKeyboardEvent } from '@react-hookz/web';
 import useDebounce from 'react-use/lib/useDebounce';
-import { useApiHolder } from '@backstage/core-plugin-api';
-import { JsonObject, JsonValue } from '@backstage/types';
-import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import { showPanel } from '@codemirror/view';
-import { StreamLanguage } from '@codemirror/language';
-import {
-  IconButton,
-  makeStyles,
-  Divider,
-  Tooltip,
-  Paper,
-} from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import CloseIcon from '@material-ui/icons/Close';
-import CodeMirror from '@uiw/react-codemirror';
 import yaml from 'yaml';
 import { FieldExtensionOptions } from '../../../extensions';
+import { TemplateDirectoryAccess } from '../../../lib/filesystem';
 import { TemplateParameterSchema } from '../../../types';
+import { FileBrowser } from '../../FileBrowser';
 import { MultistepJsonForm } from '../../MultistepJsonForm';
 import { createValidator } from '../../TemplatePage';
-import { TemplateDirectoryAccess } from '../../../lib/filesystem';
-import { FileBrowser } from '../../FileBrowser';
 import {
   DirectoryEditorProvider,
   useDirectoryEditor,
 } from './DirectoryEditorContext';
 import { DryRunProvider, useDryRun } from './DryRunContext';
 import { DryRunResults } from './DryRunResults';
+import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 
 const useStyles = makeStyles(theme => ({
   // Reset and fix sizing to make sure scrolling behaves correctly
@@ -94,26 +84,8 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
   },
   editor: {
-    position: 'relative',
     gridArea: 'editor',
     overflow: 'auto',
-  },
-  editorCodeMirror: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  editorErrorPanel: {
-    color: theme.palette.error.main,
-    lineHeight: 2,
-    margin: theme.spacing(0, 1),
-  },
-  editorFloatingButtons: {
-    position: 'absolute',
-    top: theme.spacing(1),
-    right: theme.spacing(3),
   },
   preview: {
     gridArea: 'preview',
@@ -142,7 +114,7 @@ export const TemplateEditor = (props: {
               <TemplateEditorBrowser onClose={props.onClose} />
             </section>
             <section className={classes.editor}>
-              <TemplateEditorTextArea errorText={errorText} />
+              <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
             </section>
             <section className={classes.preview}>
               <TemplateEditorForm
@@ -213,68 +185,6 @@ function TemplateEditorBrowser(props: { onClose?: () => void }) {
         onSelect={directoryEditor.setSelectedFile}
         filePaths={directoryEditor.files.map(file => file.path)}
       />
-    </>
-  );
-}
-
-function TemplateEditorTextArea(props: { errorText?: string }) {
-  const { errorText } = props;
-  const classes = useStyles();
-  const directoryEditor = useDirectoryEditor();
-
-  const panelExtension = useMemo(() => {
-    if (!errorText) {
-      return showPanel.of(null);
-    }
-
-    const dom = document.createElement('div');
-    dom.classList.add(classes.editorErrorPanel);
-    dom.textContent = errorText;
-    return showPanel.of(() => ({ dom, bottom: true }));
-  }, [classes, errorText]);
-
-  useKeyboardEvent(
-    e => e.key === 's' && (e.ctrlKey || e.metaKey),
-    e => {
-      e.preventDefault();
-      directoryEditor.save();
-    },
-  );
-
-  return (
-    <>
-      <CodeMirror
-        className={classes.editorCodeMirror}
-        theme="dark"
-        height="100%"
-        extensions={[StreamLanguage.define(yamlSupport), panelExtension]}
-        value={directoryEditor.selectedFile?.content}
-        onChange={content =>
-          directoryEditor.selectedFile?.updateContent(content)
-        }
-      />
-      {directoryEditor.selectedFile?.dirty && (
-        <div className={classes.editorFloatingButtons}>
-          <Paper>
-            <Tooltip title="Save file">
-              <IconButton
-                className={classes.browserButton}
-                onClick={() => directoryEditor.save()}
-              >
-                <SaveIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Reload file">
-              <IconButton
-                className={classes.browserButton}
-                onClick={() => directoryEditor.reload()}
-              >
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-          </Paper>
-        </div>
-      )}
     </>
   );
 }
