@@ -58,5 +58,5 @@ proxy:
       Authorization: Basic ${CODESCENE_AUTH_CREDENTIALS}
 ---
 codescene:
-  baseUrl: <INSTANCE_HOSTNAME>
+  baseUrl: https://codescene.my-company.net # replace with your own URL
 ```
