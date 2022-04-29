@@ -19,10 +19,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import yaml from 'yaml';
-import { FieldExtensionOptions } from '../../../extensions';
-import { TemplateParameterSchema } from '../../../types';
-import { MultistepJsonForm } from '../../MultistepJsonForm';
-import { createValidator } from '../../TemplatePage';
+import { FieldExtensionOptions } from '../../extensions';
+import { TemplateParameterSchema } from '../../types';
+import { MultistepJsonForm } from '../MultistepJsonForm';
+import { createValidator } from '../TemplatePage';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { useDryRun } from './DryRunContext';
 

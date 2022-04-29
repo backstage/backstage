@@ -20,7 +20,7 @@ import React, { createContext, ReactNode, useContext, useEffect } from 'react';
 import {
   TemplateDirectoryAccess,
   TemplateFileAccess,
-} from '../../../lib/filesystem';
+} from '../../lib/filesystem';
 
 const MAX_SIZE = 1024 * 1024;
 const MAX_SIZE_MESSAGE = 'This file is too large to be displayed';

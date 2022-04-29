@@ -24,8 +24,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { scaffolderApiRef } from '../../../api';
-import { ScaffolderDryRunResponse } from '../../../types';
+import { scaffolderApiRef } from '../../api';
+import { ScaffolderDryRunResponse } from '../../types';
 
 interface DryRunOptions {
   templateContent: string;

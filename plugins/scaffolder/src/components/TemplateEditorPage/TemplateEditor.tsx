@@ -15,8 +15,8 @@
  */
 import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
-import { FieldExtensionOptions } from '../../../extensions';
-import { TemplateDirectoryAccess } from '../../../lib/filesystem';
+import { FieldExtensionOptions } from '../../extensions';
+import { TemplateDirectoryAccess } from '../../lib/filesystem';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { DryRunProvider } from './DryRunContext';
 import { DryRunResults } from './DryRunResults';
