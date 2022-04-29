@@ -31,7 +31,7 @@ import { AzurePullRequestsIcon } from '../AzurePullRequestsIcon';
 import { DateTime } from 'luxon';
 import { PullRequestStatusButtonGroup } from '../PullRequestStatusButtonGroup';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { usePullRequests } from '../../hooks/usePullRequests';
+import { useGitTags } from '../../hooks/useGitTags';
 
 const columns: TableColumn[] = [
   {
@@ -96,7 +96,7 @@ export const GitTagTable = ({ defaultLimit }: PullRequestTableProps) => {
     useState<PullRequestStatus>(PullRequestStatus.Active);
   const { entity } = useEntity();
 
-  const { items, loading, error } = usePullRequests(
+  const { items, loading, error } = useGitTags(
     entity,
     defaultLimit,
     pullRequestStatusState,
