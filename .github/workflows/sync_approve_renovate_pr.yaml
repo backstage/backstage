@@ -18,6 +18,12 @@ jobs:
             const owner = 'backstage';
             const repo = 'backstage';
 
+            const date = new Date();
+            if (date.getDay() === 2) {
+              console.log('Skipping auto approve because Tuesday is release day');
+              return;
+            }
+
             if (context.payload.pull_request.changed_files !== 1) {
               console.log('Skipping approval because multiple files are changed in this PR');
               return;
