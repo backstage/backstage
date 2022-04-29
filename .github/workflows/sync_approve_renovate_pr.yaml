@@ -24,7 +24,7 @@ jobs:
               return;
             }
 
-            const r = await octokit.rest.pulls.listFiles({
+            const r = await github.rest.pulls.listFiles({
               owner,
               repo,
               pull_number: context.issue.number,
