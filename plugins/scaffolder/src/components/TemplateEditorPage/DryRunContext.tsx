@@ -21,6 +21,7 @@ import React, {
   createContext,
   ReactNode,
   useContext,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -63,65 +64,68 @@ export function DryRunProvider(props: DryRunProviderProps) {
   });
   const idRef = useRef(1);
 
-  const dryRun = {
-    ...state,
-    selectResult: (id: number) => {
-      setState(prevState => {
-        const result = prevState.results.find(r => r.id === id);
-        if (result === prevState.selectedResult) {
-          return prevState;
+  const dryRun = useMemo(
+    () => ({
+      ...state,
+      selectResult: (id: number) => {
+        setState(prevState => {
+          const result = prevState.results.find(r => r.id === id);
+          if (result === prevState.selectedResult) {
+            return prevState;
+          }
+          return {
+            results: prevState.results,
+            selectedResult: result,
+          };
+        });
+      },
+      deleteResult: (id: number) => {
+        setState(prevState => {
+          const index = prevState.results.findIndex(r => r.id === id);
+          if (index === -1) {
+            return prevState;
+          }
+          const newResults = prevState.results.slice();
+          const [deleted] = newResults.splice(index, 1);
+          return {
+            results: newResults,
+            selectedResult:
+              prevState.selectedResult?.id === deleted.id
+                ? newResults[0]
+                : prevState.selectedResult,
+          };
+        });
+      },
+      execute: async (options: DryRunOptions) => {
+        if (!scaffolderApi.dryRun) {
+          throw new Error('Scaffolder API does not support dry-run');
         }
-        return {
-          results: prevState.results,
-          selectedResult: result,
+
+        const parsed = yaml.parse(options.templateContent);
+
+        const response = await scaffolderApi.dryRun({
+          template: parsed,
+          values: options.values,
+          secrets: {},
+          content: options.files.map(file => ({
+            path: file.path,
+            base64Content: btoa(file.content),
+          })),
+        });
+
+        const result = {
+          ...response,
+          id: idRef.current++,
         };
-      });
-    },
-    deleteResult: (id: number) => {
-      setState(prevState => {
-        const index = prevState.results.findIndex(r => r.id === id);
-        if (index === -1) {
-          return prevState;
-        }
-        const newResults = prevState.results.slice();
-        const [deleted] = newResults.splice(index, 1);
-        return {
-          results: newResults,
-          selectedResult:
-            prevState.selectedResult?.id === deleted.id
-              ? newResults[0]
-              : prevState.selectedResult,
-        };
-      });
-    },
-    execute: async (options: DryRunOptions) => {
-      if (!scaffolderApi.dryRun) {
-        throw new Error('Scaffolder API does not support dry-run');
-      }
 
-      const parsed = yaml.parse(options.templateContent);
-
-      const response = await scaffolderApi.dryRun({
-        template: parsed,
-        values: options.values,
-        secrets: {},
-        content: options.files.map(file => ({
-          path: file.path,
-          base64Content: btoa(file.content),
-        })),
-      });
-
-      const result = {
-        ...response,
-        id: idRef.current++,
-      };
-
-      setState(prevState => ({
-        results: [...prevState.results, result],
-        selectedResult: prevState.selectedResult ?? result,
-      }));
-    },
-  };
+        setState(prevState => ({
+          results: [...prevState.results, result],
+          selectedResult: prevState.selectedResult ?? result,
+        }));
+      },
+    }),
+    [scaffolderApi, state],
+  );
 
   return (
     <DryRunContext.Provider value={dryRun}>
