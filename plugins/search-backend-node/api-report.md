@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { DocumentDecoratorFactory } from '@backstage/plugin-search-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
@@ -12,6 +13,7 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { default as lunr_2 } from 'lunr';
+import { Permission } from '@backstage/plugin-permission-common';
 import { QueryTranslator } from '@backstage/plugin-search-common';
 import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-common';
@@ -19,6 +21,7 @@ import { SearchQuery } from '@backstage/plugin-search-common';
 import { TaskFunction } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { Transform } from 'stream';
+import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
 // @beta
@@ -111,6 +114,31 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   // (undocumented)
   initialize(): Promise<void>;
 }
+
+// @beta
+export class NewlineDelimitedJsonCollatorFactory
+  implements DocumentCollatorFactory
+{
+  static fromConfig(
+    _config: Config,
+    options: NewlineDelimitedJsonCollatorFactoryOptions,
+  ): NewlineDelimitedJsonCollatorFactory;
+  // (undocumented)
+  getCollator(): Promise<Readable>;
+  // (undocumented)
+  readonly type: string;
+  // (undocumented)
+  readonly visibilityPermission: Permission | undefined;
+}
+
+// @beta (undocumented)
+export type NewlineDelimitedJsonCollatorFactoryOptions = {
+  type: string;
+  searchPattern: string;
+  reader: UrlReader;
+  logger: Logger;
+  visibilityPermission?: Permission;
+};
 
 // @beta
 export interface RegisterCollatorParameters {
