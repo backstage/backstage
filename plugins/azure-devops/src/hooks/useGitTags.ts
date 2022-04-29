@@ -48,7 +48,7 @@ export function useGitTags(
   const { project, repo } = useProjectRepoFromEntity(entity);
 
   const { value, loading, error } = useAsync(() => {
-    return api.getPullRequests(project, repo, options);
+    return api.getGitTags(project, repo, options);
   }, [api, project, repo, top, status]);
 
   return {

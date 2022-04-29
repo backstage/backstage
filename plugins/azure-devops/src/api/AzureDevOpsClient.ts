@@ -29,7 +29,6 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
 
-// TODO: See red squiggly below
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
@@ -56,6 +55,26 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     )}/${encodeURIComponent(repoName)}?${queryString}`;
 
     const items = await this.get<RepoBuild[]>(urlSegment);
+    return { items };
+  }
+
+  public async getGitTags(
+    projectName: string,
+    repoName: string,
+    options?: PullRequestOptions,
+  ): Promise<{ items: PullRequest[] }> {
+    const queryString = new URLSearchParams();
+    if (options?.top) {
+      queryString.append('top', options.top.toString());
+    }
+    if (options?.status) {
+      queryString.append('status', options.status.toString());
+    }
+    const urlSegment = `pull-requests/${encodeURIComponent(
+      projectName,
+    )}/${encodeURIComponent(repoName)}?${queryString}`;
+
+    const items = await this.get<PullRequest[]>(urlSegment);
     return { items };
   }
 
