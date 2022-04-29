@@ -18,7 +18,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
 import React from 'react';
-import { FileBrowser } from '../../FileBrowser';
+import { FileBrowser } from '../FileBrowser';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 
 const useStyles = makeStyles(theme => ({

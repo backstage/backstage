@@ -33,8 +33,8 @@ import React, { useCallback, useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import yaml from 'yaml';
 import { FieldExtensionOptions } from '../../extensions';
-import { TemplateEditorForm } from './TemplateEditor/TemplateEditorForm';
-import { TemplateEditorTextArea } from './TemplateEditor/TemplateEditorTextArea';
+import { TemplateEditorForm } from './TemplateEditorForm';
+import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
