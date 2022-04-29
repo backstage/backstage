@@ -105,7 +105,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const TemplateFormEditor = ({
+export const TemplateFormPreviewer = ({
   defaultPreviewTemplate = EXAMPLE_TEMPLATE_PARAMS_YAML,
   customFieldExtensions = [],
   onClose,

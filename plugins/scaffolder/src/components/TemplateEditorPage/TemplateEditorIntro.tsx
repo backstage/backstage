@@ -47,7 +47,7 @@ interface EditorIntroProps {
   onSelect?: (option: 'local' | 'form') => void;
 }
 
-export const EditorIntro = (props: EditorIntroProps) => {
+export function TemplateEditorIntro(props: EditorIntroProps) {
   const classes = useStyles();
   const supportsLoad = WebFileSystemAccess.isSupported();
 
@@ -124,4 +124,4 @@ export const EditorIntro = (props: EditorIntroProps) => {
       </div>
     </div>
   );
-};
+}

@@ -19,9 +19,9 @@ import {
   TemplateDirectoryAccess,
   WebFileSystemAccess,
 } from '../../lib/filesystem';
-import { EditorIntro } from './EditorIntro';
+import { TemplateEditorIntro } from './TemplateEditorIntro';
 import { TemplateEditor } from './TemplateEditor';
-import { TemplateFormEditor } from './TemplateFormEditor';
+import { TemplateFormPreviewer } from './TemplateFormPreviewer';
 import { FieldExtensionOptions } from '../../extensions';
 
 type Selection =
@@ -52,7 +52,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
     );
   } else if (selection?.type === 'form') {
     content = (
-      <TemplateFormEditor
+      <TemplateFormPreviewer
         defaultPreviewTemplate={props.defaultPreviewTemplate}
         customFieldExtensions={props.customFieldExtensions}
         onClose={() => setSelection(undefined)}
@@ -61,7 +61,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
   } else {
     content = (
       <Content>
-        <EditorIntro
+        <TemplateEditorIntro
           onSelect={option => {
             if (option === 'local') {
               WebFileSystemAccess.get()
