@@ -137,6 +137,14 @@ export class AzureDevOpsApi {
     const searchCriteria: GitPullRequestSearchCriteria = {
       status: options.status,
     };
+
+    const tagRefs = await client.getRefs(
+      gitRepository.id as string,
+      projectName,
+      'tags',
+    );
+    this.logger?.warn(JSON.stringify(tagRefs));
+
     const gitPullRequests = await client.getPullRequests(
       gitRepository.id as string,
       searchCriteria,
