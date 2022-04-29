@@ -123,6 +123,38 @@ export class AzureDevOpsApi {
     return repoBuilds;
   }
 
+  public async getGitTags(
+    projectName: string,
+    repoName: string,
+    options: PullRequestOptions,
+  ): Promise<PullRequest[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting up to ${options.top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
+    );
+
+    const gitRepository = await this.getGitRepository(projectName, repoName);
+    const client = await this.webApi.getGitApi();
+    const searchCriteria: GitPullRequestSearchCriteria = {
+      status: options.status,
+    };
+    const gitPullRequests = await client.getPullRequests(
+      gitRepository.id as string,
+      searchCriteria,
+      projectName,
+      undefined,
+      undefined,
+      options.top,
+    );
+    const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+      projectName,
+    )}/_git/${encodeURIComponent(repoName)}/pullrequest`;
+    const pullRequests: PullRequest[] = gitPullRequests.map(gitPullRequest => {
+      return mappedPullRequest(gitPullRequest, linkBaseUrl);
+    });
+
+    return pullRequests;
+  }
+
   public async getPullRequests(
     projectName: string,
     repoName: string,

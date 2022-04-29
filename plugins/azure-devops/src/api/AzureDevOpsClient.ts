@@ -70,7 +70,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (options?.status) {
       queryString.append('status', options.status.toString());
     }
-    const urlSegment = `pull-requests/${encodeURIComponent(
+    const urlSegment = `git-tags/${encodeURIComponent(
       projectName,
     )}/${encodeURIComponent(repoName)}?${queryString}`;
 
