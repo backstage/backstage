@@ -37,6 +37,7 @@ import {
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
 import { catalogPlugin } from '@backstage/plugin-catalog';
 import { searchApiRef } from '@backstage/plugin-search-react';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 const techdocsApi = {
   getTechDocsMetadata: jest.fn(),
@@ -51,6 +52,10 @@ const techdocsStorageApi = {
 
 const searchApi = {
   query: jest.fn().mockResolvedValue({ results: [] }),
+};
+
+const scmIntegrationsApi = {
+  fromConfig: jest.fn().mockReturnValue({}),
 };
 
 /** @ignore */
@@ -151,6 +156,7 @@ export class TechDocsAddonTester {
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
+      [scmIntegrationsApiRef, scmIntegrationsApi],
       ...this.options.apis,
     ];
 
