@@ -19,6 +19,7 @@ import {
   createTechDocsAddonExtension,
   TechDocsAddonLocations,
 } from '@backstage/plugin-techdocs-react';
+import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
 import { TextSizeAddon } from './TextSize';
 
@@ -31,6 +32,20 @@ import { TextSizeAddon } from './TextSize';
 export const techdocsModuleAddonsContribPlugin = createPlugin({
   id: 'techdocsModuleAddonsContrib',
 });
+
+/**
+ * TechDocs addon that lets you expand/collapse the TechDocs main navigation.
+ *
+ * @public
+ */
+
+export const ExpandableNavigation = techdocsModuleAddonsContribPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'ExpandableNavigation',
+    location: TechDocsAddonLocations.PrimarySidebar,
+    component: ExpandableNavigationAddon,
+  }),
+);
 
 /**
  * TechDocs addon that lets you select text and open GitHub/Gitlab issues
