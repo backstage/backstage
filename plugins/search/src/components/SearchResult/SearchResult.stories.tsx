@@ -20,8 +20,14 @@ import React, { ComponentType } from 'react';
 import { MemoryRouter } from 'react-router';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 
-import { SearchContextProviderForStorybook } from '@backstage/plugin-search-react';
+import {
+  searchApiRef,
+  MockSearchApi,
+  SearchContextProvider,
+} from '@backstage/plugin-search-react';
 import { SearchResult } from './SearchResult';
+import { TestApiRegistry } from '@backstage/test-utils';
+import { ApiProvider } from '@backstage/core-app-api';
 
 const mockResults = {
   results: [
@@ -58,9 +64,16 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) => (
       <MemoryRouter>
-        <SearchContextProviderForStorybook mockedResults={mockResults}>
-          <Story />
-        </SearchContextProviderForStorybook>
+        <ApiProvider
+          apis={TestApiRegistry.from([
+            searchApiRef,
+            new MockSearchApi(mockResults),
+          ])}
+        >
+          <SearchContextProvider>
+            <Story />
+          </SearchContextProvider>
+        </ApiProvider>
       </MemoryRouter>
     ),
   ],
