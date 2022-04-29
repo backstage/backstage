@@ -49,12 +49,28 @@ export default async (opts: OptionValues): Promise<void> => {
         }
         return true;
       },
+      when: (a: Answers) => {
+        const envName = process.env.BACKSTAGE_APP_NAME;
+        if (envName) {
+          a.name = envName;
+          return false;
+        }
+        return true;
+      },
     },
     {
       type: 'list',
       name: 'dbType',
       message: chalk.blue('Select database for the backend [required]'),
       choices: ['SQLite', 'PostgreSQL'],
+      when: (a: Answers) => {
+        const envDbType = process.env.BACKSTAGE_APP_DB_TYPE;
+        if (envDbType) {
+          a.dbType = envDbType;
+          return false;
+        }
+        return true;
+      },
     },
   ]);
   answers.dbTypePG = answers.dbType === 'PostgreSQL';
