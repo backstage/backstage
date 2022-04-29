@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Divider, IconButton, makeStyles, Tooltip } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import SaveIcon from '@material-ui/icons/Save';
+import { makeStyles } from '@material-ui/core';
 import React, { useState } from 'react';
 import { FieldExtensionOptions } from '../../../extensions';
 import { TemplateDirectoryAccess } from '../../../lib/filesystem';
-import { FileBrowser } from '../../FileBrowser';
-import {
-  DirectoryEditorProvider,
-  useDirectoryEditor,
-} from './DirectoryEditorContext';
+import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { DryRunProvider } from './DryRunContext';
 import { DryRunResults } from './DryRunResults';
+import { TemplateEditorBrowser } from './TemplateEditorBrowser';
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   // Reset and fix sizing to make sure scrolling behaves correctly
   rootWrapper: {
     gridArea: 'pageContent',
@@ -56,21 +50,6 @@ const useStyles = makeStyles(theme => ({
     gridArea: 'browser',
     overflow: 'auto',
   },
-  browserButton: {
-    padding: theme.spacing(1),
-  },
-  browserButtons: {
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  browserButtonsGap: {
-    flex: '1 1 auto',
-  },
-  browserButtonsDivider: {
-    marginBottom: theme.spacing(1),
-  },
   editor: {
     gridArea: 'editor',
     overflow: 'auto',
@@ -82,7 +61,7 @@ const useStyles = makeStyles(theme => ({
   results: {
     gridArea: 'results',
   },
-}));
+});
 
 export const TemplateEditor = (props: {
   directory: TemplateDirectoryAccess;
@@ -119,60 +98,3 @@ export const TemplateEditor = (props: {
     </DirectoryEditorProvider>
   );
 };
-
-function TemplateEditorBrowser(props: { onClose?: () => void }) {
-  const classes = useStyles();
-  const directoryEditor = useDirectoryEditor();
-  const changedFiles = directoryEditor.files.filter(file => file.dirty);
-
-  const handleClose = () => {
-    if (!props.onClose) {
-      return;
-    }
-    if (changedFiles.length > 0) {
-      // eslint-disable-next-line no-alert
-      const accepted = window.confirm(
-        'Are you sure? Unsaved changes will be lost',
-      );
-      if (!accepted) {
-        return;
-      }
-    }
-    props.onClose();
-  };
-
-  return (
-    <>
-      <div className={classes.browserButtons}>
-        <Tooltip title="Save all files">
-          <IconButton
-            className={classes.browserButton}
-            onClick={() => directoryEditor.save()}
-          >
-            <SaveIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Reload directory">
-          <IconButton
-            className={classes.browserButton}
-            onClick={() => directoryEditor.reload()}
-          >
-            <RefreshIcon />
-          </IconButton>
-        </Tooltip>
-        <div className={classes.browserButtonsGap} />
-        <Tooltip title="Close directory">
-          <IconButton className={classes.browserButton} onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
-      <Divider className={classes.browserButtonsDivider} />
-      <FileBrowser
-        selected={directoryEditor.selectedFile?.path ?? ''}
-        onSelect={directoryEditor.setSelectedFile}
-        filePaths={directoryEditor.files.map(file => file.path)}
-      />
-    </>
-  );
-}
