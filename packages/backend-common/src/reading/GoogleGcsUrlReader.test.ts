@@ -21,6 +21,24 @@ import { DefaultReadTreeResponseFactory } from './tree';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { UrlReaderPredicateTuple } from './types';
 
+const bucketGetFilesMock = jest.fn();
+jest.mock('@google-cloud/storage', () => {
+  class Bucket {
+    getFiles(query: any) {
+      return bucketGetFilesMock(query);
+    }
+  }
+  class Storage {
+    bucket() {
+      return new Bucket();
+    }
+  }
+  return {
+    __esModule: true,
+    Storage,
+  };
+});
+
 describe('GcsUrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return GoogleGcsUrlReader.factory({
@@ -90,6 +108,53 @@ describe('GcsUrlReader', () => {
     });
     it('returns false for a completely different host', () => {
       expect(predicate(new URL('https://a.example.com/test'))).toBe(false);
+    });
+  });
+
+  describe('search', () => {
+    const { reader } = createReader({ integrations: { googleGcs: {} } })[0];
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('throws if search url does not end with *', async () => {
+      const glob = 'https://storage.cloud.google.com/bucket/no-asterisk';
+      await expect(() => reader.search(glob)).rejects.toThrow(
+        'GcsUrlReader only supports prefix-based searches',
+      );
+    });
+
+    it('throws if search url looks truly glob-y', async () => {
+      const glob = 'https://storage.cloud.google.com/bucket/**/path*';
+      await expect(() => reader.search(glob)).rejects.toThrowError(
+        'GcsUrlReader only supports prefix-based searches',
+      );
+    });
+
+    it('searches with expected prefix and pagination', () => {
+      bucketGetFilesMock.mockResolvedValue([[]]);
+      const glob = 'https://storage.cloud.google.com/bucket/path/some-prefix-*';
+
+      reader.search(glob);
+      expect(bucketGetFilesMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          autoPaginate: true,
+          prefix: 'path/some-prefix-',
+        }),
+      );
+    });
+
+    it('returns valid SearchResponse object', async () => {
+      const expectedFile = { name: 'path/some-prefix-1.txt' };
+      bucketGetFilesMock.mockResolvedValue([[expectedFile]]);
+      const glob = 'https://storage.cloud.google.com/bucket/path/some-prefix-*';
+
+      const result = await reader.search(glob);
+      expect(result.files).toHaveLength(1);
+      expect(result.files[0].url).toEqual(
+        'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
+      );
     });
   });
 });
