@@ -15,6 +15,7 @@
  */
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import yaml from 'yaml';
@@ -24,6 +25,22 @@ import { MultistepJsonForm } from '../../MultistepJsonForm';
 import { createValidator } from '../../TemplatePage';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { useDryRun } from './DryRunContext';
+
+const useStyles = makeStyles({
+  containerWrapper: {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+  },
+  container: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    overflow: 'auto',
+  },
+});
 
 interface ErrorBoundaryProps {
   invalidator: unknown;
@@ -83,6 +100,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
     setErrorText,
     fieldExtensions = [],
   } = props;
+  const classes = useStyles();
   const apiHolder = useApiHolder();
 
   const [steps, setSteps] = useState<TemplateParameterSchema['steps']>();
@@ -159,17 +177,21 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
   }
 
   return (
-    <ErrorBoundary invalidator={steps} setErrorText={setErrorText}>
-      <MultistepJsonForm
-        steps={steps}
-        fields={fields}
-        formData={data}
-        onChange={e => onUpdate(e.formData)}
-        onReset={() => onUpdate({})}
-        finishButtonLabel={onDryRun && 'Try It'}
-        onFinish={onDryRun && (() => onDryRun(data))}
-      />
-    </ErrorBoundary>
+    <div className={classes.containerWrapper}>
+      <div className={classes.container}>
+        <ErrorBoundary invalidator={steps} setErrorText={setErrorText}>
+          <MultistepJsonForm
+            steps={steps}
+            fields={fields}
+            formData={data}
+            onChange={e => onUpdate(e.formData)}
+            onReset={() => onUpdate({})}
+            finishButtonLabel={onDryRun && 'Try It'}
+            onFinish={onDryRun && (() => onDryRun(data))}
+          />
+        </ErrorBoundary>
+      </div>
+    </div>
   );
 }
 
