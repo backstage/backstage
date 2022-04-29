@@ -1,0 +1,42 @@
+name: Approve renovate lock file changes
+on:
+  pull_request_target:
+    paths:
+      - '.github/workflows/sync_renovate-changesets.yml'
+      - '**/yarn.lock'
+
+jobs:
+  generate-changeset:
+    runs-on: ubuntu-latest
+    if: github.actor == 'renovate[bot]' && github.repository == 'backstage/backstage'
+    steps:
+      - name: Approve
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const owner = 'backstage';
+            const repo = 'backstage';
+
+            if (context.payload.pull_request.changed_files !== 1) {
+              console.log('Skipping approval because multiple files are changed in this PR');
+              return;
+            }
+
+            const r = await octokit.rest.pulls.listFiles({
+              owner,
+              repo,
+              pull_number: context.issue.number,
+            });
+            
+            if (r.data.every((f) => f.filename.endsWith("yarn.lock"))) {
+              console.log('skipping approval since some files are not yarn.lock');
+              return;
+            }
+
+            await github.rest.pulls.createReview({
+              owner,
+              repo,
+              pull_number: context.issue.number,
+              event: 'APPROVE'
+            })
