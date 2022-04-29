@@ -24,11 +24,6 @@ jobs:
               return;
             }
 
-            if (context.payload.pull_request.changed_files !== 1) {
-              console.log('Skipping approval because multiple files are changed in this PR');
-              return;
-            }
-
             const r = await octokit.rest.pulls.listFiles({
               owner,
               repo,
