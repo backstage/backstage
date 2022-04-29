@@ -136,7 +136,9 @@ export function TemplateEditorDirectoryEditorTextArea(props: {
         onSave: () => directoryEditor.save(),
         onReload: () => directoryEditor.reload(),
       }
-    : undefined;
+    : {
+        onReload: () => directoryEditor.reload(),
+      };
 
   return (
     <TemplateEditorTextArea
