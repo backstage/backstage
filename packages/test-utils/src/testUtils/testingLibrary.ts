@@ -15,7 +15,12 @@
  */
 
 import { ReactElement } from 'react';
-import { act, render, RenderResult } from '@testing-library/react';
+import {
+  act,
+  render,
+  RenderOptions,
+  RenderResult,
+} from '@testing-library/react';
 
 /**
  * @public
@@ -31,10 +36,11 @@ import { act, render, RenderResult } from '@testing-library/react';
  */
 export async function renderWithEffects(
   nodes: ReactElement,
+  options?: Pick<RenderOptions, 'wrapper'>,
 ): Promise<RenderResult> {
   let value: RenderResult;
   await act(async () => {
-    value = render(nodes);
+    value = render(nodes, options);
   });
   return value!;
 }
