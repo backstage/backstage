@@ -53,7 +53,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private bulkResult: Promise<any>;
 
   constructor(options: ElasticSearchSearchEngineIndexerOptions) {
-    super({ batchSize: 100 });
+    super({ batchSize: 1000 });
     this.logger = options.logger;
     this.startTimestamp = process.hrtime();
     this.type = options.type;
