@@ -22,8 +22,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, Observable } from '@backstage/types';
+import { Observable } from '@backstage/types';
 import qs from 'qs';
 import ObservableImpl from 'zen-observable';
 import {
@@ -37,6 +36,8 @@ import {
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
+  ScaffolderDryRunOptions,
+  ScaffolderDryRunResponse,
 } from './types';
 
 /**
@@ -173,14 +174,11 @@ export class ScaffolderClient implements ScaffolderApi {
     return this.streamLogsEventStream(options);
   }
 
-  async dryRun(options: {
-    template: TemplateEntityV1beta3;
-    values: JsonObject;
-    secrets: JsonObject;
-    content: { path: string; base64Content: string }[];
-  }): Promise<unknown> {
+  async dryRun(
+    options: ScaffolderDryRunOptions,
+  ): Promise<ScaffolderDryRunResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const res = await this.fetchApi.fetch(`${baseUrl}/v2/dryrun`, {
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/dryrun`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -193,11 +191,11 @@ export class ScaffolderClient implements ScaffolderApi {
       }),
     });
 
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
     }
 
-    return res.json();
+    return response.json();
   }
 
   private streamLogsEventStream({
