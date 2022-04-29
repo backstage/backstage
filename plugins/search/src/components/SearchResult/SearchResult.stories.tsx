@@ -26,8 +26,7 @@ import {
   SearchContextProvider,
 } from '@backstage/plugin-search-react';
 import { SearchResult } from './SearchResult';
-import { TestApiRegistry } from '@backstage/test-utils';
-import { ApiProvider } from '@backstage/core-app-api';
+import { TestApiProvider } from '@backstage/test-utils';
 
 const mockResults = {
   results: [
@@ -64,16 +63,13 @@ export default {
   decorators: [
     (Story: ComponentType<{}>) => (
       <MemoryRouter>
-        <ApiProvider
-          apis={TestApiRegistry.from([
-            searchApiRef,
-            new MockSearchApi(mockResults),
-          ])}
+        <TestApiProvider
+          apis={[[searchApiRef, new MockSearchApi(mockResults)]]}
         >
           <SearchContextProvider>
             <Story />
           </SearchContextProvider>
-        </ApiProvider>
+        </TestApiProvider>
       </MemoryRouter>
     ),
   ],

@@ -20,8 +20,7 @@ import DocsIcon from '@material-ui/icons/Description';
 import UsersGroupsIcon from '@material-ui/icons/Person';
 import React, { ComponentType } from 'react';
 import { SearchType } from './SearchType';
-import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 import {
   searchApiRef,
   MockSearchApi,
@@ -33,9 +32,7 @@ export default {
   component: SearchType,
   decorators: [
     (Story: ComponentType<{}>) => (
-      <ApiProvider
-        apis={TestApiRegistry.from([searchApiRef, new MockSearchApi()])}
-      >
+      <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">
             <Grid item xs={4}>
@@ -43,7 +40,7 @@ export default {
             </Grid>
           </Grid>
         </SearchContextProvider>
-      </ApiProvider>
+      </TestApiProvider>
     ),
   ],
 };

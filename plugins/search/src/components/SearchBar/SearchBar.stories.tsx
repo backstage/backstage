@@ -21,8 +21,7 @@ import {
   MockSearchApi,
   SearchContextProvider,
 } from '@backstage/plugin-search-react';
-import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 import { SearchBar } from './SearchBar';
 
 export default {
@@ -30,9 +29,7 @@ export default {
   component: SearchBar,
   decorators: [
     (Story: ComponentType<{}>) => (
-      <ApiProvider
-        apis={TestApiRegistry.from([searchApiRef, new MockSearchApi()])}
-      >
+      <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
         <SearchContextProvider>
           <Grid container direction="row">
             <Grid item xs={12}>
@@ -40,7 +37,7 @@ export default {
             </Grid>
           </Grid>
         </SearchContextProvider>
-      </ApiProvider>
+      </TestApiProvider>
     ),
   ],
 };

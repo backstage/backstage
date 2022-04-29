@@ -10,12 +10,11 @@ import {
   MockSearchApi,
   SearchContextProvider,
 } from '@backstage/plugin-search-react';
-import { ApiProvider } from '@backstage/core-app-api';
-import { TestApiRegistry } from '@backstage/test-utils';
+import { TestApiProvider } from '@backstage/test-utils';
 
-<ApiProvider apis={TestApiRegistry.from([searchApiRef, new MockSearchApi()])}>
+<TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
   <SearchContextProvider>
     <Component />
   </SearchContextProvider>
-</ApiProvider>;
+</TestApiProvider>;
 ```
