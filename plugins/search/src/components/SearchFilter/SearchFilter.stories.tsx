@@ -16,7 +16,12 @@
 
 import { Grid, Paper } from '@material-ui/core';
 import React, { ComponentType } from 'react';
-import { SearchContextProviderForStorybook } from '@backstage/plugin-search-react';
+import {
+  searchApiRef,
+  MockSearchApi,
+  SearchContextProvider,
+} from '@backstage/plugin-search-react';
+import { TestApiProvider } from '@backstage/test-utils';
 import { SearchFilter } from './SearchFilter';
 
 export default {
@@ -24,13 +29,15 @@ export default {
   component: SearchFilter,
   decorators: [
     (Story: ComponentType<{}>) => (
-      <SearchContextProviderForStorybook>
-        <Grid container direction="row">
-          <Grid item xs={4}>
-            <Story />
+      <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+        <SearchContextProvider>
+          <Grid container direction="row">
+            <Grid item xs={4}>
+              <Story />
+            </Grid>
           </Grid>
-        </Grid>
-      </SearchContextProviderForStorybook>
+        </SearchContextProvider>
+      </TestApiProvider>
     ),
   ],
 };

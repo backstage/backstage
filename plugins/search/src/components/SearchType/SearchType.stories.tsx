@@ -19,21 +19,28 @@ import CatalogIcon from '@material-ui/icons/MenuBook';
 import DocsIcon from '@material-ui/icons/Description';
 import UsersGroupsIcon from '@material-ui/icons/Person';
 import React, { ComponentType } from 'react';
-import { SearchContextProviderForStorybook } from '@backstage/plugin-search-react';
 import { SearchType } from './SearchType';
+import { TestApiProvider } from '@backstage/test-utils';
+import {
+  searchApiRef,
+  MockSearchApi,
+  SearchContextProvider,
+} from '@backstage/plugin-search-react';
 
 export default {
   title: 'Plugins/Search/SearchType',
   component: SearchType,
   decorators: [
     (Story: ComponentType<{}>) => (
-      <SearchContextProviderForStorybook>
-        <Grid container direction="row">
-          <Grid item xs={4}>
-            <Story />
+      <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+        <SearchContextProvider>
+          <Grid container direction="row">
+            <Grid item xs={4}>
+              <Story />
+            </Grid>
           </Grid>
-        </Grid>
-      </SearchContextProviderForStorybook>
+        </SearchContextProvider>
+      </TestApiProvider>
     ),
   ],
 };
