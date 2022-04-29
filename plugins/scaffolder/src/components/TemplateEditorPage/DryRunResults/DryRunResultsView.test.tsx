@@ -31,19 +31,6 @@ jest.mock('react-virtualized-auto-sizer', () => ({
   }) => <>{props.children({ width: 400, height: 200 })}</>,
 }));
 
-// Patch jsdom to add feature used by CodeMirror
-document.createRange = () => {
-  const range = new Range();
-
-  range.getClientRects = () => ({
-    item: () => null,
-    length: 0,
-    [Symbol.iterator]: jest.fn(),
-  });
-
-  return range;
-};
-
 function DryRunRemote() {
   const dryRun = useDryRun();
 
