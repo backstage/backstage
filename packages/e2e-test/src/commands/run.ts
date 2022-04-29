@@ -62,10 +62,10 @@ export async function run() {
   print('Starting the app');
   await testAppServe(pluginName, appDir);
 
-  const appConfig = path.resolve(appDir, 'app-config.yaml');
   if (Boolean(process.env.POSTGRES_USER)) {
     print('Testing the PostgreSQL backend startup');
     await preCleanPostgres();
+    const appConfig = path.resolve(appDir, 'app-config.yaml');
     const productionConfig = path.resolve(appDir, 'app-config.production.yaml');
     await testBackendStart(
       appDir,
@@ -76,7 +76,7 @@ export async function run() {
     );
   }
   print('Testing the SQLite backend startup');
-  await testBackendStart(appDir, '--config', appConfig);
+  await testBackendStart(appDir);
 
   if (process.env.CI) {
     // Cleanup actually takes significant time, so skip it in CI since the
@@ -408,7 +408,7 @@ async function dropDB(database: string) {
   };
 
   try {
-    await pgtools.dropdb({ config }, database);
+    await pgtools.dropdb(config, database);
   } catch (_) {
     /* do nothing*/
   }
