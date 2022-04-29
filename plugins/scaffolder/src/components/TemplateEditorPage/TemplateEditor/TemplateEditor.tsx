@@ -26,17 +26,8 @@ import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 
 const useStyles = makeStyles({
   // Reset and fix sizing to make sure scrolling behaves correctly
-  rootWrapper: {
-    gridArea: 'pageContent',
-    position: 'relative',
-    width: '100%',
-  },
   root: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    gridArea: 'pageContent',
 
     display: 'grid',
     gridTemplateAreas: `
@@ -75,25 +66,23 @@ export const TemplateEditor = (props: {
   return (
     <DirectoryEditorProvider directory={props.directory}>
       <DryRunProvider>
-        <div className={classes.rootWrapper}>
-          <main className={classes.root}>
-            <section className={classes.browser}>
-              <TemplateEditorBrowser onClose={props.onClose} />
-            </section>
-            <section className={classes.editor}>
-              <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
-            </section>
-            <section className={classes.preview}>
-              <TemplateEditorForm.DirectoryEditorDryRun
-                setErrorText={setErrorText}
-                fieldExtensions={props.fieldExtensions}
-              />
-            </section>
-            <section className={classes.results}>
-              <DryRunResults />
-            </section>
-          </main>
-        </div>
+        <main className={classes.root}>
+          <section className={classes.browser}>
+            <TemplateEditorBrowser onClose={props.onClose} />
+          </section>
+          <section className={classes.editor}>
+            <TemplateEditorTextArea.DirectoryEditor errorText={errorText} />
+          </section>
+          <section className={classes.preview}>
+            <TemplateEditorForm.DirectoryEditorDryRun
+              setErrorText={setErrorText}
+              fieldExtensions={props.fieldExtensions}
+            />
+          </section>
+          <section className={classes.results}>
+            <DryRunResults />
+          </section>
+        </main>
       </DryRunProvider>
     </DirectoryEditorProvider>
   );
