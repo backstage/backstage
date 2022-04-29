@@ -20,19 +20,15 @@
  * @packageDocumentation
  */
 
-export { searchApiRef } from './api';
+export { searchApiRef, MockSearchApi } from './api';
 export type { SearchApi } from './api';
 export {
   SearchContextProvider,
   useSearch,
   useSearchContextCheck,
-  SearchContextProviderForStorybook,
-  SearchApiProviderForStorybook,
 } from './context';
 export type {
   SearchContextProviderProps,
   SearchContextState,
   SearchContextValue,
-  SearchContextProviderForStorybookProps,
-  SearchApiProviderForStorybookProps,
 } from './context';
