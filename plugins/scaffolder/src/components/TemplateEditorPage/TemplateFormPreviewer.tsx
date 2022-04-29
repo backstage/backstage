@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import useDebounce from 'react-use/lib/useDebounce';
 import { Entity } from '@backstage/catalog-model';
-import { InfoCard } from '@backstage/core-components';
-import { alertApiRef, useApi, useApiHolder } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { JsonObject } from '@backstage/types';
-import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import { showPanel } from '@codemirror/view';
-import { StreamLanguage } from '@codemirror/language';
 import {
   FormControl,
-  Grid,
   IconButton,
   InputLabel,
   LinearProgress,
@@ -38,13 +29,12 @@ import {
   Select,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { IChangeEvent } from '@rjsf/core';
-import CodeMirror from '@uiw/react-codemirror';
+import React, { useCallback, useState } from 'react';
+import useAsync from 'react-use/lib/useAsync';
 import yaml from 'yaml';
 import { FieldExtensionOptions } from '../../extensions';
-import { TemplateParameterSchema } from '../../types';
-import { MultistepJsonForm } from '../MultistepJsonForm';
-import { createValidator } from '../TemplatePage';
+import { TemplateEditorForm } from './TemplateEditor/TemplateEditorForm';
+import { TemplateEditorTextArea } from './TemplateEditor/TemplateEditorTextArea';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -91,17 +81,28 @@ type TemplateOption = {
 };
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    gridArea: 'pageContent',
+    display: 'grid',
+    gridTemplateAreas: `
+      "controls controls"
+      "textArea preview"
+    `,
+    gridTemplateRows: 'auto 1fr',
+    gridTemplateColumns: '1fr 1fr',
+  },
   controls: {
+    gridArea: 'controls',
     display: 'flex',
     flexFlow: 'row nowrap',
     alignItems: 'center',
-    marginBottom: theme.spacing(1),
+    margin: theme.spacing(1),
   },
-  grid: {
-    height: '100%',
+  textArea: {
+    gridArea: 'textArea',
   },
-  codeMirror: {
-    height: '95%',
+  preview: {
+    gridArea: 'preview',
   },
 }));
 
@@ -117,12 +118,8 @@ export const TemplateFormPreviewer = ({
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
-  const apiHolder = useApiHolder();
   const [selectedTemplate, setSelectedTemplate] = useState('');
-  const [schema, setSchema] = useState<TemplateParameterSchema>({
-    title: '',
-    steps: [],
-  });
+  const [errorText, setErrorText] = useState<string>();
   const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>([]);
   const [templateYaml, setTemplateYaml] = useState(defaultPreviewTemplate);
   const [formState, setFormState] = useState({});
@@ -161,30 +158,6 @@ export const TemplateFormPreviewer = ({
     [catalogApi],
   );
 
-  const errorPanel = document.createElement('div');
-  errorPanel.style.color = 'red';
-
-  useDebounce(
-    () => {
-      try {
-        const parsedTemplate = yaml.parse(templateYaml);
-
-        setSchema({
-          title: 'Preview',
-          steps: parsedTemplate.parameters.map((param: JsonObject) => ({
-            title: param.title,
-            schema: param,
-          })),
-        });
-        setFormState({});
-      } catch (e) {
-        errorPanel.textContent = e.message;
-      }
-    },
-    250,
-    [setFormState, setSchema, templateYaml],
-  );
-
   const handleSelectChange = useCallback(
     selected => {
       setSelectedTemplate(selected);
@@ -193,90 +166,51 @@ export const TemplateFormPreviewer = ({
     [setTemplateYaml],
   );
 
-  const handleFormReset = () => setFormState({});
-  const handleFormChange = useCallback(
-    (e: IChangeEvent) => setFormState(e.formData),
-    [setFormState],
-  );
-
-  const handleCodeChange = useCallback(
-    (code: string) => {
-      setTemplateYaml(code);
-    },
-    [setTemplateYaml],
-  );
-
-  const customFieldComponents = Object.fromEntries(
-    customFieldExtensions.map(({ name, component }) => [name, component]),
-  );
-
-  const customFieldValidators = Object.fromEntries(
-    customFieldExtensions.map(({ name, validation }) => [name, validation]),
-  );
-
   return (
     <>
       {loading && <LinearProgress />}
-      <Grid container className={classes.grid}>
-        <Grid item xs={6}>
-          <div className={classes.controls}>
-            <FormControl variant="outlined" size="small" fullWidth>
-              <InputLabel id="select-template-label">
-                Load Existing Template
-              </InputLabel>
-              <Select
-                value={selectedTemplate}
-                label="Load Existing Template"
-                labelId="select-template-label"
-                onChange={e => handleSelectChange(e.target.value)}
-              >
-                {templateOptions.map((option, idx) => (
-                  <MenuItem key={idx} value={option.value as any}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+      <main className={classes.root}>
+        <div className={classes.controls}>
+          <FormControl variant="outlined" size="small" fullWidth>
+            <InputLabel id="select-template-label">
+              Load Existing Template
+            </InputLabel>
+            <Select
+              value={selectedTemplate}
+              label="Load Existing Template"
+              labelId="select-template-label"
+              onChange={e => handleSelectChange(e.target.value)}
+            >
+              {templateOptions.map((option, idx) => (
+                <MenuItem key={idx} value={option.value as any}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-            <IconButton size="medium" onClick={onClose}>
-              <CloseIcon />
-            </IconButton>
-          </div>
-          <CodeMirror
-            className={classes.codeMirror}
-            value={templateYaml}
-            theme="dark"
-            height="100%"
-            extensions={[
-              StreamLanguage.define(yamlSupport),
-              showPanel.of(() => ({ dom: errorPanel, top: true })),
-            ]}
-            onChange={handleCodeChange}
+          <IconButton size="medium" onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        </div>
+        <div className={classes.textArea}>
+          <TemplateEditorTextArea
+            content={templateYaml}
+            onUpdate={setTemplateYaml}
+            errorText={errorText}
           />
-        </Grid>
-        <Grid item xs={6}>
-          {schema && (
-            <InfoCard key={JSON.stringify(schema)}>
-              <MultistepJsonForm
-                formData={formState}
-                fields={customFieldComponents}
-                onChange={handleFormChange}
-                onReset={handleFormReset}
-                steps={schema.steps.map(step => {
-                  return {
-                    ...step,
-                    validate: createValidator(
-                      step.schema,
-                      customFieldValidators,
-                      { apiHolder },
-                    ),
-                  };
-                })}
-              />
-            </InfoCard>
-          )}
-        </Grid>
-      </Grid>
+        </div>
+        <div className={classes.preview}>
+          <TemplateEditorForm
+            content={templateYaml}
+            contentIsSpec
+            fieldExtensions={customFieldExtensions}
+            data={formState}
+            onUpdate={setFormState}
+            setErrorText={setErrorText}
+          />
+        </div>
+      </main>
     </>
   );
 };
