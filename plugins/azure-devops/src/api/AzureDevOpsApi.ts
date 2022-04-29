@@ -39,6 +39,7 @@ export interface AzureDevOpsApi {
   ): Promise<{ items: RepoBuild[] }>;
 
   getGitTags(
+    // TODO: Keep iterating down this rabbit hole on the client once the service has caught up
     projectName: string,
     repoName: string,
     options?: PullRequestOptions,

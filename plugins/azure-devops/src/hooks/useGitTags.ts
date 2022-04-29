@@ -28,6 +28,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
 
 export function useGitTags(
+  // TODO: Keep iterating down this rabbit hole on the client once the service has caught up
   entity: Entity,
   defaultLimit?: number,
   requestedStatus?: PullRequestStatus,

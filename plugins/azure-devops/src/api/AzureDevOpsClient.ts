@@ -29,6 +29,7 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { ResponseError } from '@backstage/errors';
 
+// TODO: See red squiggly below
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
