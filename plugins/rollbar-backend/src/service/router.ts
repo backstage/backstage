@@ -20,14 +20,14 @@ import { Logger } from 'winston';
 import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { RollbarApi } from '../api';
-import {enableAssignRoute} from "./auto-assign";
-import {RollbarCheckers} from "./auto-assign/type";
+import { enableAssignRoute } from './auto-assign';
+import { RollbarCheckers } from './auto-assign/type';
 
 export interface RouterOptions {
   rollbarApi?: RollbarApi;
   logger: Logger;
   config: Config;
-  rollbarCheck? : RollbarCheckers
+  rollbarCheck?: RollbarCheckers;
 }
 
 export async function createRouter(
@@ -87,18 +87,20 @@ export async function createRouter(
 
     if (config.getOptionalBoolean('assign')) {
       if (options.rollbarCheck) {
-        enableAssignRoute({ router,
+        enableAssignRoute({
+          router,
           logger,
           rollbarApi,
-          rollbarCheck: options.rollbarCheck } )
-      }else {
+          rollbarCheck: options.rollbarCheck,
+        });
+      } else {
         if (process.env.NODE_ENV !== 'development') {
           throw new Error(
-            'The rollbar.assign is enabled but rollbarCheck option isn\'t provided to start the assign API.',
+            "The rollbar.assign is enabled but rollbarCheck option isn't provided to start the assign API.",
           );
         }
         logger.warn(
-          'Failed to initialize assign API, the rollbar.assign is enabled but rollbarCheck option isn\'t provided to start the assign API.',
+          "Failed to initialize assign API, the rollbar.assign is enabled but rollbarCheck option isn't provided to start the assign API.",
         );
       }
     }

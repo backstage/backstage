@@ -13,32 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {RollbarCheckers, RollbarItem, RollbarManagerOptions} from "./type";
+import { RollbarCheckers, RollbarItem, RollbarManagerOptions } from './type';
 
-export const buildRollbarManagerContextBuilder = async (options: RollbarManagerOptions): Promise<RollbarCheckers> => {
-  const {
-    ownerChecks,
-    config,
-    logger,
-  } = options;
+export const buildRollbarManagerContextBuilder = async (
+  options: RollbarManagerOptions,
+): Promise<RollbarCheckers> => {
+  const { ownerChecks, config, logger } = options;
 
-  logger.info("Config for rollbar manager started")
+  logger.info('Config for rollbar manager started');
 
   return {
     runChecks: async (rollbarItem: RollbarItem) => {
       for (let i = 0; i < ownerChecks.length; i++) {
-        const ownerCheck = ownerChecks[i]
-        const ownerUserId = await ownerCheck.check({
-          config,
-          logger
-        }, rollbarItem).catch(error => {
-          logger.error(`Error for checker id ${ownerCheck.id} : ${error}`);
-        })
+        const ownerCheck = ownerChecks[i];
+        const ownerUserId = await ownerCheck
+          .check(
+            {
+              config,
+              logger,
+            },
+            rollbarItem,
+          )
+          .catch(error => {
+            logger.error(`Error for checker id ${ownerCheck.id} : ${error}`);
+          });
 
-        if (ownerUserId) return Promise.resolve({ ownerUserId })
+        if (ownerUserId) return Promise.resolve({ ownerUserId });
       }
 
       return Promise.reject();
-    }
-  }
-}
+    },
+  };
+};

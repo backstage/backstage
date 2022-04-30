@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
+import { AutoAssignOptions, RollbarItem } from './type';
 
-import {AutoAssignOptions, RollbarItem} from "./type";
-
-export const enableAssignRoute = ({router, logger, rollbarApi, rollbarCheck}: AutoAssignOptions) => {
-  router.post("/assign", async (request, response) => {
+export const enableAssignRoute = ({
+  router,
+  logger,
+  rollbarApi,
+  rollbarCheck,
+}: AutoAssignOptions) => {
+  router.post('/assign', async (request, response) => {
     logger.debug(`New Item from Rollbar! ${request.body.data.url}`);
 
     const rollbarData = request.body.data;
     const item = rollbarData.item as RollbarItem;
-    const result = await rollbarCheck.runChecks(item)
+    const result = await rollbarCheck.runChecks(item);
 
     if (result) {
-      const projectId = item.project_id
-      await rollbarApi.updateItem(projectId, item.id, {assigned_user_id: result.ownerUserId})
+      const projectId = item.project_id;
+      await rollbarApi.updateItem(projectId, item.id, {
+        assigned_user_id: result.ownerUserId,
+      });
     }
 
     response.status(200).send();
-  })
-}
+  });
+};

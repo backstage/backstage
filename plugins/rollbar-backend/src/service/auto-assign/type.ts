@@ -14,36 +14,35 @@
  * limitations under the License.
  */
 
-import {Config} from '@backstage/config';
-import {Logger} from 'winston';
-import {Router} from "express";
-import {RollbarApi} from "../../api";
+import { Config } from '@backstage/config';
+import { Logger } from 'winston';
+import { Router } from 'express';
+import { RollbarApi } from '../../api';
 
 export interface AutoAssignOptions {
   rollbarApi: RollbarApi;
   logger: Logger;
-  rollbarCheck: RollbarCheckers
-  router: Router
+  rollbarCheck: RollbarCheckers;
+  router: Router;
 }
-
 
 // Rollbar API types. Just declared enough to use internally
 export type RollbarOccurrenceTraceFrame = {
-  filename: string,
-  method: string,
-  lineno?: string
-}
+  filename: string;
+  method: string;
+  lineno?: string;
+};
 export type RollbarOccurrenceTrace = {
-  frames: RollbarOccurrenceTraceFrame[]
-}
+  frames: RollbarOccurrenceTraceFrame[];
+};
 
 export type RollbarItemLastOccurrenceBody = {
-  trace: RollbarOccurrenceTrace
-}
+  trace: RollbarOccurrenceTrace;
+};
 
 export type RollbarItemLastOccurrence = {
-  body: RollbarItemLastOccurrenceBody
-}
+  body: RollbarItemLastOccurrenceBody;
+};
 
 export type RollbarItem = {
   id: number;
@@ -52,11 +51,10 @@ export type RollbarItem = {
 };
 
 export interface RollbarManagerOptions {
-  ownerChecks: RollbarCheckOwner[]
+  ownerChecks: RollbarCheckOwner[];
   logger: Logger;
   config: Config;
 }
-
 
 export type RollbarCheckOwnerContext = {
   config: Config;
@@ -65,9 +63,14 @@ export type RollbarCheckOwnerContext = {
 
 export interface RollbarCheckOwner {
   id: string;
-  check: (ctx: RollbarCheckOwnerContext, rollbarItem: RollbarItem) => Promise<string | undefined>;
+  check: (
+    ctx: RollbarCheckOwnerContext,
+    rollbarItem: RollbarItem,
+  ) => Promise<string | undefined>;
 }
 
 export interface RollbarCheckers {
-  runChecks(rollbarItem: RollbarItem): Promise<{ ownerUserId: string } | undefined>;
+  runChecks(
+    rollbarItem: RollbarItem,
+  ): Promise<{ ownerUserId: string } | undefined>;
 }
