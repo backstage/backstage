@@ -38,7 +38,7 @@ describe('OidcKubernetesAuthTranslator tests', () => {
         ...baseClusterDetails,
       },
       {
-        auth: { okta: 'fakeToken' },
+        oidc: { okta: 'fakeToken' },
         entity,
       },
     );
@@ -60,6 +60,6 @@ describe('OidcKubernetesAuthTranslator tests', () => {
         { oidcTokenProvider: 'okta', ...baseClusterDetails },
         { entity },
       ),
-    ).rejects.toThrow('Auth token not found under auth.okta in request body');
+    ).rejects.toThrow('Auth token not found under oidc.okta in request body');
   });
 });
