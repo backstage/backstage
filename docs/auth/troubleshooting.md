@@ -32,3 +32,24 @@ You can use the `yarn backstage-cli config:print --lax` command to print your lo
 The backend logs should also provide insight into why the configuration of the provider
 fails. In working setup the backend should log something like `"Configuring provider, oauth2"`,
 while it with otherwise log a warning like `"Skipping oauth2 auth provider, ..."`.
+
+## Auth fails with "Login failed; caused by NotAllowedError: Origin '...' is not allowed"
+
+This will happen if the origin of the configured `app.baseUrl` in the auth backend does not
+match the origin that the frontend is being accessed at. Make sure that `app.baseUrl` matches
+what a user sees in the browser address bar.
+
+If you wish to support multiple different origins at once, there is an experimental configuration
+that lets you do this. The `auth.experimentalExtraAllowedOrigins` key accepts a list of origin
+glob patterns where sign-in should be allowed from.
+
+## Sign-in fails with the error "User not found"
+
+Many built-in sign-in resolvers require user entities to be present in the catalog. This
+error is encountered if authentication is successful, but a matching user entity is not
+present in the catalog. If you wish to enable sign-in without having users be represented
+in the catalog data, see the method that's documented in the
+[sign-in resolver documentation](./identity-resolver.md#sign-in-without-users-in-the-catalog).
+
+If you want to customize this error message, you can create a custom sign-in resolver and
+catch the `NotFoundError` thrown by `ctx.signInWithCatalogUser` or `ctx.findCatalogUser`.
