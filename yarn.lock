@@ -18227,9 +18227,9 @@ node-releases@^2.0.1:
   integrity sha512-CqyzN6z7Q6aMeF/ktcMVTzhAHCEpf8SOarwpzpf8pNBY2k5/oM34UHldUwp8VKI7uxct2HxSRdJjBaZeESzcxA==
 
 nodemon@^2.0.2:
-  version "2.0.15"
-  resolved "https://registry.npmjs.org/nodemon/-/nodemon-2.0.15.tgz#504516ce3b43d9dc9a955ccd9ec57550a31a8d4e"
-  integrity sha512-gdHMNx47Gw7b3kWxJV64NI+Q5nfl0y5DgDbiVtShiwa7Z0IZ07Ll4RLFo6AjrhzMtoEZn5PDE3/c2AbVsiCkpA==
+  version "2.0.16"
+  resolved "https://registry.npmjs.org/nodemon/-/nodemon-2.0.16.tgz#d71b31bfdb226c25de34afea53486c8ef225fdef"
+  integrity sha512-zsrcaOfTWRuUzBn3P44RDliLlp263Z/76FPoHFr3cFFkOz0lTPAcIw8dCzfdVIx/t3AtDYCZRCDkoCojJqaG3w==
   dependencies:
     chokidar "^3.5.2"
     debug "^3.2.7"
