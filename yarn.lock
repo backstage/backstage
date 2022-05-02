@@ -5572,9 +5572,9 @@
   integrity sha512-+0EtEjBfKEDtH9Rk3u3kLOUXM5F+iZK+WvASPb0MhIZl8J8NUvGeZRwKCXl+P3HkYx5TdU4YtcibpqHkSR9n7w==
 
 "@types/d3-force@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/@types/d3-force/-/d3-force-2.1.1.tgz#a18b6f029d056eb0f8f84a09471e6228e4469b14"
-  integrity sha512-3r+CQv2K/uDTAVg0DGxsbBjV02vgOxb8RhPIv3gd6cp3pdPAZ7wEXpDjUZSoqycAQLSDOxG/AZ54Vx6YXZSbmQ==
+  version "2.1.4"
+  resolved "https://registry.npmjs.org/@types/d3-force/-/d3-force-2.1.4.tgz#98919b87db8a0ca5011d189c598d69251d20344d"
+  integrity sha512-1XVRc2QbeUSL1FRVE53Irdz7jY+drTwESHIMVirCwkAAMB/yVC8ezAfx/1Alq0t0uOnphoyhRle1ht5CuPgSJQ==
 
 "@types/d3-interpolate@*":
   version "3.0.1"
