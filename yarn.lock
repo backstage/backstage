@@ -3930,9 +3930,9 @@
     tar "^6.1.0"
 
 "@material-table/core@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@material-table/core/-/core-3.1.0.tgz#4fc3bd1553359e628413437a4102d8469852c253"
-  integrity sha512-46vpm1q9v2B5t/VgaEq2JmnftTBYle1yNAX3cfdQsTRZ1iWkpG34qBkNHx/hbOauQPsm5hmeUo1KJJZdwtGL1g==
+  version "3.2.5"
+  resolved "https://registry.npmjs.org/@material-table/core/-/core-3.2.5.tgz#37b3c665bed3ded6c147ad74adb330bf49efb213"
+  integrity sha512-TmVN/In15faabezW3COb4Ve5+YhqxFEQnf2Q2Cz3FVXXCFqJvtu3pkRLi+7N9UJ5bvistszz6wfHeiZZY1Rf9Q==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@date-io/date-fns" "^1.3.13"
@@ -3945,6 +3945,7 @@
     prop-types "^15.7.2"
     react-beautiful-dnd "^13.0.0"
     react-double-scrollbar "0.0.15"
+    uuid "^3.4.0"
 
 "@material-ui/core@^4.11.0", "@material-ui/core@^4.11.3", "@material-ui/core@^4.12.1", "@material-ui/core@^4.12.2", "@material-ui/core@^4.9.13":
   version "4.12.4"
