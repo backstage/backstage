@@ -1,6 +1,11 @@
 {
   labels: ['dependencies'],
-  extends: ['config:base', ':disableDependencyDashboard', ':gitSignOff'],
+  extends: [
+    'config:base',
+    ':disableDependencyDashboard',
+    ':gitSignOff',
+    ':automergePatch',
+  ],
   rangeStrategy: 'update-lockfile',
   // @elastic/elasticsearch is ignored due to licensing issues. See #10992
   ignoreDeps: ['@elastic/elasticsearch'],
