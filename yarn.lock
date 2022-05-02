@@ -4074,45 +4074,45 @@
   dependencies:
     "@types/gapi.client" "*"
 
-"@microsoft/api-documenter@^7.17.5":
-  version "7.17.9"
-  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.17.9.tgz#d3d4f8a5872c80d542f64195f096f92da92c74ab"
-  integrity sha512-crmuhaqKG0zfeoCjIjvRfUzUe/JZaMGE3HS7FwtH7jROy/AHU8nL2Zpq8RzFRNKV9yHMiF8wVcEgfGmH5oM3hw==
+"@microsoft/api-documenter@^7.17.11":
+  version "7.17.11"
+  resolved "https://registry.npmjs.org/@microsoft/api-documenter/-/api-documenter-7.17.11.tgz#7f1b50e610e45f581ff4344c73b184d822e6bc11"
+  integrity sha512-VdCu4eG5RISGEiG/hFO3jaN3gEgMZVXZRFpch/PQzrLO3Vh2QhZTz2LsZ2SYyb7UwBZCK9Z76ULv5cGoflylNA==
   dependencies:
-    "@microsoft/api-extractor-model" "7.17.1"
+    "@microsoft/api-extractor-model" "7.17.2"
     "@microsoft/tsdoc" "0.14.1"
-    "@rushstack/node-core-library" "3.45.3"
-    "@rushstack/ts-command-line" "4.10.9"
+    "@rushstack/node-core-library" "3.45.4"
+    "@rushstack/ts-command-line" "4.10.10"
     colors "~1.2.1"
     js-yaml "~3.13.1"
     resolve "~1.17.0"
 
-"@microsoft/api-extractor-model@7.17.1", "@microsoft/api-extractor-model@^7.16.1":
-  version "7.17.1"
-  resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.17.1.tgz#2a6b7d8eec510ba1c7713c682d2a0c730074b29c"
-  integrity sha512-DCDtD8TdEpNk2lW4JvXgwwpxKy70P0JLad55iahwO8A+C63KYsrHIpAzo0FUauh5pwJ0v5QVNIJ+OBgKGteemg==
+"@microsoft/api-extractor-model@7.17.2", "@microsoft/api-extractor-model@^7.17.2":
+  version "7.17.2"
+  resolved "https://registry.npmjs.org/@microsoft/api-extractor-model/-/api-extractor-model-7.17.2.tgz#033b39a7bac4f3eee3e5ffd406d2af61cedc727e"
+  integrity sha512-fYfCeBeLm7jnZligC64qHiH4/vzswFLDfyPpX+uKO36OI2kIeMHrYG0zaezmuinKvE4vg1dAz38zZeDbPvBKGg==
   dependencies:
     "@microsoft/tsdoc" "0.14.1"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.45.3"
+    "@rushstack/node-core-library" "3.45.4"
 
-"@microsoft/api-extractor@^7.21.2":
-  version "7.22.2"
-  resolved "https://registry.npmjs.org/@microsoft/api-extractor/-/api-extractor-7.22.2.tgz#8957b5ec81ff8a76b9a8a0e6a1bac70eb9a1a974"
-  integrity sha512-G7vXz6UHz+qoaUGPf2k5Md4bSpHii9nFys3sIe3bmFUbmhAe+HfSB/dCn1PsLhW7tZfEXwMHTj7fbL5vcZkrEw==
+"@microsoft/api-extractor@^7.23.0":
+  version "7.23.0"
+  resolved "https://registry.npmjs.org/@microsoft/api-extractor/-/api-extractor-7.23.0.tgz#8bd5a197e04b0ba92fb85e0f53b4d7cadd0a95b2"
+  integrity sha512-fbdX05RVE1EMA7nvyRHuS9nx1pryhjgURDx6pQlE/9yOXQ5PO7MpYdfWGaRsQwyYuU3+tPxgro819c0R3AK6KA==
   dependencies:
-    "@microsoft/api-extractor-model" "7.17.1"
+    "@microsoft/api-extractor-model" "7.17.2"
     "@microsoft/tsdoc" "0.14.1"
     "@microsoft/tsdoc-config" "~0.16.1"
-    "@rushstack/node-core-library" "3.45.3"
-    "@rushstack/rig-package" "0.3.10"
-    "@rushstack/ts-command-line" "4.10.9"
+    "@rushstack/node-core-library" "3.45.4"
+    "@rushstack/rig-package" "0.3.11"
+    "@rushstack/ts-command-line" "4.10.10"
     colors "~1.2.1"
     lodash "~4.17.15"
     resolve "~1.17.0"
     semver "~7.3.0"
     source-map "~0.6.1"
-    typescript "~4.5.2"
+    typescript "~4.6.3"
 
 "@microsoft/microsoft-graph-types@^2.6.0":
   version "2.19.0"
@@ -4952,10 +4952,10 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
-"@rushstack/node-core-library@3.45.3":
-  version "3.45.3"
-  resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.45.3.tgz#8db2befbbf23969e08d2bc69d5d91ba812c01640"
-  integrity sha512-Rn0mxqC3MPb+YbvaeFcRWfcYHLwyZ99/ffYA8chpq5OpqoY+Mr1ycTbMvzl5AxWf1pYmi/2+Eo3iTOsQdYR8xw==
+"@rushstack/node-core-library@3.45.4":
+  version "3.45.4"
+  resolved "https://registry.npmjs.org/@rushstack/node-core-library/-/node-core-library-3.45.4.tgz#a5e1246c462940d16a5acc667c1ffe460b514087"
+  integrity sha512-FMoEQWjK7nWAO2uFgV1eVpVhY9ZDGOdIIomi9zTej64cKJ+8/Nvu+ny0xKaUDEjw/ALftN2D2ml7L0RDpW/Z9g==
   dependencies:
     "@types/node" "12.20.24"
     colors "~1.2.1"
@@ -4967,18 +4967,18 @@
     timsort "~0.3.0"
     z-schema "~5.0.2"
 
-"@rushstack/rig-package@0.3.10":
-  version "0.3.10"
-  resolved "https://registry.npmjs.org/@rushstack/rig-package/-/rig-package-0.3.10.tgz#cf8ba0935c6acc5bb62ef710d6eaec5895bbb3ed"
-  integrity sha512-4Z2HhXM4YBWOi4ZYFQNK6Yxz641v+cvc8NKiaNZh+RIdNb3D4Rfpy3XUkggbCozpfDriBfL1+KaXlJtfJfAIXw==
+"@rushstack/rig-package@0.3.11":
+  version "0.3.11"
+  resolved "https://registry.npmjs.org/@rushstack/rig-package/-/rig-package-0.3.11.tgz#92a05929822610e8b42f2ad330d9ea20afae5165"
+  integrity sha512-uI1/g5oQPtyrT9nStoyX/xgZSLa2b+srRFaDk3r1eqC7zA5th4/bvTGl2QfV3C9NcP+coSqmk5mFJkUfH6i3Lw==
   dependencies:
     resolve "~1.17.0"
     strip-json-comments "~3.1.1"
 
-"@rushstack/ts-command-line@4.10.9":
-  version "4.10.9"
-  resolved "https://registry.npmjs.org/@rushstack/ts-command-line/-/ts-command-line-4.10.9.tgz#a59958dbbe96ad18af9b93563a517c70014c4230"
-  integrity sha512-TE3eZgHNVHOY3p8lp38FoNEJUr0+swPb24sCcYuwlC+MHgMGXyJNM+p7l3TKSBRiY01XShoL2k601oGwL00KlA==
+"@rushstack/ts-command-line@4.10.10":
+  version "4.10.10"
+  resolved "https://registry.npmjs.org/@rushstack/ts-command-line/-/ts-command-line-4.10.10.tgz#69da17b03ce57795b67ea2aabf7c976c81816078"
+  integrity sha512-F+MH7InPDXqX40qvvcEsnvPpmg566SBpfFqj2fcCh8RjM6AyOoWlXc8zx7giBD3ZN85NVAEjZAgrcLU0z+R2yg==
   dependencies:
     "@types/argparse" "1.0.38"
     argparse "~1.0.9"
@@ -24076,10 +24076,15 @@ typescript-json-schema@^0.53.0:
     typescript "~4.5.0"
     yargs "^17.1.1"
 
-typescript@~4.5.0, typescript@~4.5.2, typescript@~4.5.4:
+typescript@~4.5.0:
   version "4.5.5"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
   integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
+
+typescript@~4.6.3, typescript@~4.6.4:
+  version "4.6.4"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.6.4.tgz#caa78bbc3a59e6a5c510d35703f6a09877ce45e9"
+  integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==
 
 ua-parser-js@^0.7.18:
   version "0.7.28"
