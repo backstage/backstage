@@ -21,8 +21,7 @@ import inquirer, { Answers, Question } from 'inquirer';
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import fetch from 'node-fetch';
-import octokit from 'octokit';
-
+import openBrowser from 'react-dev-utils/openBrowser';
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
@@ -75,25 +74,7 @@ async function verifyGithubOrg(org: string): Promise<void> {
         name: 'shouldCreateOrg',
         message: `GitHub organization ${chalk.cyan(
           org,
-        )} does not exist. Would you like to create a demo organization instead?`,
-      },
-      {
-        type: 'input',
-        message: 'What would you like your demo organization to be called?',
-        name: 'orgName',
-        when: (answers: Answers) => answers.shouldCreateOrg,
-        validate: async (orgName: string) => {
-          const { status } = await fetch(
-            `https://api.github.com/orgs/${encodeURIComponent(orgName)}`,
-          );
-          return status === 404 || 'GitHub organization already exists';
-        },
-      },
-      {
-        type: 'token',
-        name: 'token',
-        message: 'GitHub Token',
-        when: () => !process.env.GITHUB_TOKEN,
+        )} does not exist. Would you like to create a new Organization instead?`,
       },
     ];
 
@@ -105,5 +86,15 @@ async function verifyGithubOrg(org: string): Promise<void> {
       );
       process.exit(1);
     }
+
+    openBrowser('https://github.com/account/organizations/new');
+
+    console.log(
+      chalk.yellow(
+        'Please re-run this command when you have created your new organization',
+      ),
+    );
+
+    process.exit(0);
   }
 }
