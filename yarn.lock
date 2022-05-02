@@ -5367,9 +5367,9 @@
   integrity sha512-dB14TltT1SNq73z3MaZfKyyBZ37NAgAFl8jze59bisR4fJ6pB6AYGxItHFkooZbN7UcVJX/cFudM4p8wp1W4rA==
 
 "@types/aws4@^1.5.1":
-  version "1.11.1"
-  resolved "https://registry.npmjs.org/@types/aws4/-/aws4-1.11.1.tgz#1783c88bd2a2fd0ad5ed497668a6d0df8d5f3c43"
-  integrity sha512-yUnPMlHP5JMZJiiNZElJG5qj1ShezlaET6Bug9SBhYsxKVamh7aOwl7Q/XR1Y//cZ5PoeRb9j4hi9svb2+FLlg==
+  version "1.11.2"
+  resolved "https://registry.npmjs.org/@types/aws4/-/aws4-1.11.2.tgz#7700aabe4646f8868b5d2b20820d9583225e7b78"
+  integrity sha512-x0f96eBPrCCJzJxdPbUvDFRva4yPpINJzTuXXpmS2j9qLUpF2nyGzvXPlRziuGbCsPukwY4JfuO+8xwsoZLzGw==
   dependencies:
     "@types/node" "*"
 
