@@ -53,3 +53,49 @@ in the catalog data, see the method that's documented in the
 
 If you want to customize this error message, you can create a custom sign-in resolver and
 catch the `NotFoundError` thrown by `ctx.signInWithCatalogUser` or `ctx.findCatalogUser`.
+
+## General troubleshooting
+
+This section contains some general troubleshooting tips.
+
+### Stepping through authentication manually
+
+Authentication happens in a popup window that redirects to the identity providers authorization
+endpoint. Once auth is complete the identity provider will redirect back to the auth backend,
+which immediately serves a simple HTML page that posts the result back to the main window, which
+then closes the popup.
+
+Because the popup is closed automatically it can sometimes be difficult to inspect the auth
+flow, especially if one wants to debug the cookies that are being set. One way around this is to
+manually head to the `/start` endpoint of the provider, which is the page that the popup will
+point to initially. For example, if you want to troubleshoot GitHub auth locally, you'd head
+to `http://localhost:7007/api/auth/github/start?env=development`. Note that the `env` parameter
+needs to be set, and it's possible that you may need to set the `scope` parameter for some providers
+as well.
+
+Once you've stepped through the auth flow you should end up at the `/handler/frame` endpoint, which displays
+an empty page. This is where the result is normally posted back to the main window, but since we've
+reached it using the manual flow that won't happen. You can still inspect the result though, both
+by viewing the source code of the page, or printing the value of the `authResponse` variable in the console.
+
+### Inspecting the refresh call
+
+If you're running into problems with session persistence, such as users being signed out when reloading
+the page, it will be something that's going wrong with the call to the `/refresh` endpoint of the
+auth provider. Head to the network inspector and filter by `/refresh`. Find the `GET` request towards
+`<backend.baseUrl>/api/auth/<provider>/refresh` and inspect the request.
+
+Note that extra calls to the refresh endpoint may be made by the frontend in order to check whether
+auth providers have an existing session. This means that there might be multiple calls, including some
+that are failing. Make sure you're looking at the refresh call to the provider that you're troubleshooting,
+and don't worry about other failing refresh calls.
+
+### Inspecting the contents of a Backstage token
+
+The Backstage token that's issues during sign-in is a plain JWT. You can inspect the contents using
+any tool that supports JWTs, or you can parse the payload yourself in for example the browser console
+or a Node.js REPL:
+
+```js
+atob(token.split('.')[1]);
+```
