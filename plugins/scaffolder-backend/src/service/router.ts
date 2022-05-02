@@ -130,10 +130,11 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
+        const { token } = parseBearerToken(req.headers.authorization);
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
-          token: getBearerToken(req.headers.authorization),
+          token,
         });
         if (isSupportedTemplate(template)) {
           const parameters = [template.spec.parameters ?? []].flat();
@@ -168,12 +169,16 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
+      const { token, entityRef: userEntityRef } = parseBearerToken(
+        req.headers.authorization,
+      );
+
       const values = req.body.values;
-      const token = getBearerToken(req.headers.authorization);
+
       const template = await findTemplate({
         catalogApi: catalogClient,
         entityRef: { kind, namespace, name },
-        token: getBearerToken(req.headers.authorization),
+        token,
       });
 
       if (!isSupportedTemplate(template)) {
@@ -215,6 +220,7 @@ export async function createRouter(
 
       const result = await taskBroker.dispatch({
         spec: taskSpec,
+        createdBy: userEntityRef,
         secrets: {
           ...req.body.secrets,
           backstageToken: token,
@@ -315,6 +321,19 @@ export async function createRouter(
   return app;
 }
 
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/Bearer\s+(\S+)/i)?.[1];
+function parseBearerToken(header?: string): {
+  token?: string;
+  entityRef?: string;
+} {
+  const token = header?.match(/Bearer\s+(\S+)/i)?.[1];
+
+  if (!token) return {};
+
+  const [_header, rawPayload, _signature] = token.split('.');
+  const payload: { sub: string } = JSON.parse(atob(rawPayload));
+
+  return {
+    entityRef: payload.sub,
+    token,
+  };
 }

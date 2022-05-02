@@ -47,6 +47,7 @@ export type SerializedTask = {
   status: TaskStatus;
   createdAt: string;
   lastHeartbeatAt?: string;
+  createdBy?: string;
   secrets?: TaskSecrets;
 };
 
@@ -97,6 +98,7 @@ export type TaskBrokerDispatchResult = {
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
   secrets?: TaskSecrets;
+  createdBy?: string;
 };
 
 /**
@@ -157,6 +159,7 @@ export type TaskStoreListEventsOptions = {
  */
 export type TaskStoreCreateTaskOptions = {
   spec: TaskSpec;
+  createdBy?: string;
   secrets?: TaskSecrets;
 };
 

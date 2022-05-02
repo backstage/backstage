@@ -127,6 +127,10 @@ export interface CurrentClaimedTask {
    * The secrets that are stored with the task.
    */
   secrets?: TaskSecrets;
+  /**
+   * The creator of the task.
+   */
+  createdBy?: string;
 }
 
 function defer() {
@@ -156,6 +160,7 @@ export class StorageTaskBroker implements TaskBroker {
             taskId: pendingTask.id,
             spec: pendingTask.spec,
             secrets: pendingTask.secrets,
+            createdBy: pendingTask.createdBy,
           },
           this.storage,
           this.logger,
