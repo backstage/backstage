@@ -157,6 +157,7 @@ nav:
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - Auth backend classes: 'auth/auth-backend-classes.md'
+      - Troubleshooting Auth: 'auth/troubleshooting.md'
       - Glossary: 'auth/glossary.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'
