@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import { Box, Chip } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import {
   Link,
   ResponseErrorPanel,
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import {
-  PullRequest,
-  PullRequestStatus,
-} from '@backstage/plugin-azure-devops-common';
-import React, { useState } from 'react';
+import { GitTag } from '@backstage/plugin-azure-devops-common';
+import React from 'react';
 
 import { AzurePullRequestsIcon } from '../AzurePullRequestsIcon';
-import { DateTime } from 'luxon';
-import { PullRequestStatusButtonGroup } from '../PullRequestStatusButtonGroup';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useGitTags } from '../../hooks/useGitTags';
 
@@ -39,6 +34,11 @@ const columns: TableColumn[] = [
     field: 'name',
     highlight: false,
     width: 'auto',
+    render: (row: Partial<GitTag>) => (
+      <Box display="flex" alignItems="center">
+        <Link to={row.link ?? ''}>{row.name}</Link>
+      </Box>
+    ),
   },
   {
     title: 'Commit',
@@ -52,20 +52,10 @@ const columns: TableColumn[] = [
   },
 ];
 
-type PullRequestTableProps = {
-  defaultLimit?: number;
-};
-
-export const GitTagTable = ({ defaultLimit }: PullRequestTableProps) => {
-  const [pullRequestStatusState, setPullRequestStatusState] =
-    useState<PullRequestStatus>(PullRequestStatus.Active);
+export const GitTagTable = () => {
   const { entity } = useEntity();
 
-  const { items, loading, error } = useGitTags(
-    entity,
-    defaultLimit,
-    pullRequestStatusState,
-  );
+  const { items, loading, error } = useGitTags(entity);
 
   if (error) {
     return (
@@ -90,12 +80,6 @@ export const GitTagTable = ({ defaultLimit }: PullRequestTableProps) => {
           <AzurePullRequestsIcon style={{ fontSize: 30 }} />
           <Box mr={1} />
           Azure Repos - Git Tags ({items ? items.length : 0})
-          <Box position="absolute" right={320} top={20}>
-            <PullRequestStatusButtonGroup
-              status={pullRequestStatusState}
-              setStatus={setPullRequestStatusState}
-            />
-          </Box>
         </Box>
       }
       data={items ?? []}

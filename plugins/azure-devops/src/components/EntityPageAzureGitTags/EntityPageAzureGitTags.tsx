@@ -22,5 +22,5 @@ export const EntityPageAzureGitTags = ({
 }: {
   defaultLimit?: number;
 }) => {
-  return <GitTagTable defaultLimit={defaultLimit} />;
+  return <GitTagTable />;
 };

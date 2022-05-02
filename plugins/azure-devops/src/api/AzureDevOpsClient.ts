@@ -62,18 +62,10 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   public async getGitTags(
     projectName: string,
     repoName: string,
-    options?: PullRequestOptions,
   ): Promise<{ items: GitTag[] }> {
-    const queryString = new URLSearchParams();
-    if (options?.top) {
-      queryString.append('top', options.top.toString());
-    }
-    if (options?.status) {
-      queryString.append('status', options.status.toString());
-    }
     const urlSegment = `git-tags/${encodeURIComponent(
       projectName,
-    )}/${encodeURIComponent(repoName)}?${queryString}`;
+    )}/${encodeURIComponent(repoName)}`;
 
     const items = await this.get<GitTag[]>(urlSegment);
     return { items };

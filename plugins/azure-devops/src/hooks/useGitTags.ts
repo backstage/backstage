@@ -14,42 +14,25 @@
  * limitations under the License.
  */
 
-import {
-  GitTag,
-  PullRequestOptions,
-  PullRequestStatus,
-} from '@backstage/plugin-azure-devops-common';
+import { GitTag } from '@backstage/plugin-azure-devops-common';
 
-import { AZURE_DEVOPS_DEFAULT_TOP } from '../constants';
 import { Entity } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { useProjectRepoFromEntity } from './useProjectRepoFromEntity';
 
-export function useGitTags(
-  // TODO: Keep iterating down this rabbit hole on the client once the service has caught up
-  entity: Entity,
-  defaultLimit?: number,
-  requestedStatus?: PullRequestStatus,
-): {
+export function useGitTags(entity: Entity): {
   items?: GitTag[];
   loading: boolean;
   error?: Error;
 } {
-  const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
-  const status = requestedStatus ?? PullRequestStatus.Active;
-  const options: PullRequestOptions = {
-    top,
-    status,
-  };
-
   const api = useApi(azureDevOpsApiRef);
   const { project, repo } = useProjectRepoFromEntity(entity);
 
   const { value, loading, error } = useAsync(() => {
-    return api.getGitTags(project, repo, options);
-  }, [api, project, repo, top, status]);
+    return api.getGitTags(project, repo);
+  }, [api, project, repo]);
 
   return {
     items: value?.items,

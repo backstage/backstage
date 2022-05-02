@@ -27,7 +27,6 @@ import {
   Policy,
   PullRequest,
   PullRequestOptions,
-  PullRequestStatus,
   RepoBuild,
   Team,
   TeamMember,

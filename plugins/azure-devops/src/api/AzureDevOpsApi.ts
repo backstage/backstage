@@ -42,7 +42,6 @@ export interface AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
-    options?: PullRequestOptions,
   ): Promise<{ items: GitTag[] }>;
 
   getPullRequests(
