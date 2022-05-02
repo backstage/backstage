@@ -25,6 +25,7 @@ import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 
 // @public
@@ -227,6 +228,8 @@ export type RouterProps = {
 // @public
 export interface ScaffolderApi {
   // (undocumented)
+  dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
   ): Promise<ScaffolderGetIntegrationsListResponse>;
@@ -256,6 +259,8 @@ export class ScaffolderClient implements ScaffolderApi {
     useLongPollingLogs?: boolean;
   });
   // (undocumented)
+  dryRun(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
+  // (undocumented)
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,
   ): Promise<ScaffolderGetIntegrationsListResponse>;
@@ -272,6 +277,37 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<ScaffolderScaffoldResponse>;
   // (undocumented)
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
+}
+
+// @public (undocumented)
+export interface ScaffolderDryRunOptions {
+  // (undocumented)
+  content: {
+    path: string;
+    base64Content: string;
+  }[];
+  // (undocumented)
+  secrets: JsonObject;
+  // (undocumented)
+  template: JsonValue;
+  // (undocumented)
+  values: JsonObject;
+}
+
+// @public (undocumented)
+export interface ScaffolderDryRunResponse {
+  // (undocumented)
+  content: Array<{
+    path: string;
+    base64Content: string;
+    executable: boolean;
+  }>;
+  // (undocumented)
+  log: Array<LogEvent['body']>;
+  // (undocumented)
+  output: ScaffolderTaskOutput;
+  // (undocumented)
+  steps: TaskStep[];
 }
 
 // @public

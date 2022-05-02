@@ -150,6 +150,7 @@ export interface ScaffolderStreamLogsOptions {
   after?: number;
 }
 
+/** @public */
 export interface ScaffolderDryRunOptions {
   template: JsonValue;
   values: JsonObject;
@@ -157,6 +158,7 @@ export interface ScaffolderDryRunOptions {
   content: { path: string; base64Content: string }[];
 }
 
+/** @public */
 export interface ScaffolderDryRunResponse {
   content: Array<{
     path: string;
