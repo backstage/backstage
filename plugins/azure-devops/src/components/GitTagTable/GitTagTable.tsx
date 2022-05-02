@@ -33,6 +33,7 @@ const columns: TableColumn[] = [
     title: 'Tag',
     field: 'name',
     highlight: false,
+    defaultSort: 'desc',
     width: 'auto',
     render: (row: Partial<GitTag>) => (
       <Box display="flex" alignItems="center">
