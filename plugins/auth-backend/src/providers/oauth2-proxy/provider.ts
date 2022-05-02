@@ -27,6 +27,7 @@ import {
 import { decodeJwt } from 'jose';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { IncomingHttpHeaders } from 'http';
 
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
@@ -39,13 +40,30 @@ export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 export type OAuth2ProxyResult<JWTPayload> = {
   /**
    * Parsed and decoded JWT payload.
+   *
+   * @deprecated Access through the `headers` instead. This will be removed in a future release.
    */
   fullProfile: JWTPayload;
 
   /**
    * Raw JWT token
+   *
+   * @deprecated Access through the `headers` instead. This will be removed in a future release.
    */
   accessToken: string;
+
+  /**
+   * The headers of the incoming request from the OAuth2 proxy. This will include
+   * both the headers set by the client as well as the ones added by the OAuth2 proxy.
+   * You should only trust the headers that are injected by the OAuth2 proxy.
+   *
+   * Useful headers to use to complete the sign-in are for example `x-forwarded-user`
+   * and `x-forwarded-email`. See the OAuth2 proxy documentation for more information
+   * about the available headers and how to enable them. In particular it is possible
+   * to forward access and identity tokens, which can be user for additional verification
+   * and lookups.
+   */
+  headers: IncomingHttpHeaders;
 };
 
 /**
@@ -96,7 +114,17 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
 
   async refresh(req: express.Request, res: express.Response): Promise<void> {
     try {
-      const result = this.getResult(req);
+      // TODO(Rugvip): This parsing was deprecated in 1.2 and should be removed in a future release.
+      const authHeader = req.header(OAUTH2_PROXY_JWT_HEADER);
+      const jwt = getBearerTokenFromAuthorizationHeader(authHeader);
+      const decodedJWT = jwt && (decodeJwt(jwt) as unknown as JWTPayload);
+
+      const result = {
+        fullProfile: decodedJWT || ({} as JWTPayload),
+        accessToken: jwt || '',
+        headers: req.headers,
+      };
+
       const response = await this.handleResult(result);
       res.json(response);
     } catch (e) {
@@ -129,24 +157,6 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
         backstageSignInResult,
       ),
       profile,
-    };
-  }
-
-  private getResult(req: express.Request): OAuth2ProxyResult<JWTPayload> {
-    const authHeader = req.header(OAUTH2_PROXY_JWT_HEADER);
-    const jwt = getBearerTokenFromAuthorizationHeader(authHeader);
-
-    if (!jwt) {
-      throw new AuthenticationError(
-        `Missing or in incorrect format - Oauth2Proxy OIDC header: ${OAUTH2_PROXY_JWT_HEADER}`,
-      );
-    }
-
-    const decodedJWT = decodeJwt(jwt) as unknown as JWTPayload;
-
-    return {
-      fullProfile: decodedJWT,
-      accessToken: jwt,
     };
   }
 }

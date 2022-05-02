@@ -12,6 +12,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { IncomingHttpHeaders } from 'http';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -566,6 +567,7 @@ export type Oauth2ProxyProviderOptions<JWTPayload> = {
 export type OAuth2ProxyResult<JWTPayload> = {
   fullProfile: JWTPayload;
   accessToken: string;
+  headers: IncomingHttpHeaders;
 };
 
 // Warning: (ae-missing-release-tag) "OAuthAdapter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
