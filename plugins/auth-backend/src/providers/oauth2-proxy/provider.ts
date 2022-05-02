@@ -37,16 +37,17 @@ export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
  *
  * @public
  */
-export type OAuth2ProxyResult<JWTPayload> = {
+export type OAuth2ProxyResult<JWTPayload = {}> = {
   /**
-   * Parsed and decoded JWT payload.
+   * The parsed payload of the `accessToken`. The token is only parsed, not verified.
    *
    * @deprecated Access through the `headers` instead. This will be removed in a future release.
    */
   fullProfile: JWTPayload;
 
   /**
-   * Raw JWT token
+   * The token received via the X-OAUTH2-PROXY-ID-TOKEN header. Will be an empty string
+   * if the header is not set. Note the this is typically an OpenID Connect token.
    *
    * @deprecated Access through the `headers` instead. This will be removed in a future release.
    */
@@ -64,6 +65,13 @@ export type OAuth2ProxyResult<JWTPayload> = {
    * and lookups.
    */
   headers: IncomingHttpHeaders;
+
+  /**
+   * Provides convenient access to the request headers.
+   *
+   * This call is simply forwarded to `req.get(name)`.
+   */
+  getHeader(name: string): string | undefined;
 };
 
 /**
@@ -123,6 +131,12 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
         fullProfile: decodedJWT || ({} as JWTPayload),
         accessToken: jwt || '',
         headers: req.headers,
+        getHeader(name: string) {
+          if (name.toLocaleLowerCase('en-US') === 'set-cookie') {
+            throw new Error('Access Set-Cookie via the headers object instead');
+          }
+          return req.get(name);
+        },
       };
 
       const response = await this.handleResult(result);
