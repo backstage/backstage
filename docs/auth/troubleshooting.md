@@ -19,3 +19,16 @@ of all sign-in resolvers. This was a necessary security fix as well as a step
 towards providing more clarity in the configuration of the sign-in process.
 You may encounter this error if you are upgrading from a previous version, in
 which case you would need to configure a sign-in resolver as described above.
+
+## Auth fails with "Auth provider registered for ... is misconfigured"
+
+This will typically only happen during development, as in a production build the auth
+backend will fail to start up altogether if a provider is misconfigured.
+
+Double check that your configuration for the provider is correct. Note that environment variables
+such as `AUTH_OAUTH2_CLIENT_ID` must be set and will **NOT** be picked up from `.env` files.
+You can use the `yarn backstage-cli config:print --lax` command to print your local configuration.
+
+The backend logs should also provide insight into why the configuration of the provider
+fails. In working setup the backend should log something like `"Configuring provider, oauth2"`,
+while it with otherwise log a warning like `"Skipping oauth2 auth provider, ..."`.
