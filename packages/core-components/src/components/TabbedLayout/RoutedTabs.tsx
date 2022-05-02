@@ -29,7 +29,7 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
 
   const routes = subRoutes.map(({ path, children }) => ({
     caseSensitive: false,
-    path: `${path}/*`,
+    path: path ? `${path}/*` : '.',
     element: children,
   }));
 
@@ -68,20 +68,23 @@ export function RoutedTabs(props: { routes: SubRoute[] }) {
   const headerTabs = useMemo(
     () =>
       routes.map(t => ({
-        id: t.path,
+        id: t.path ?? '.',
         label: t.title,
         tabProps: t.tabProps,
       })),
     [routes],
   );
 
-  const onTabChange = (tabIndex: number) =>
+  const onTabChange = (tabIndex: number) => {
+    let { path = '.' } = routes[tabIndex];
     // Remove trailing /*
+    path = path.replace(/\/\*$/, '');
     // And remove leading / for relative navigation
+    path = path.replace(/^\//, '');
     // Note! route resolves relative to the position in the React tree,
     // not relative to current location
-    navigate(routes[tabIndex].path.replace(/\/\*$/, '').replace(/^\//, ''));
-
+    navigate(path);
+  };
   return (
     <>
       <HeaderTabs

@@ -147,7 +147,7 @@ const overviewContent = (
 
 const serviceEntityPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       {overviewContent}
     </EntityLayout.Route>
 
@@ -185,7 +185,7 @@ const serviceEntityPage = (
 
 const websiteEntityPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       {overviewContent}
     </EntityLayout.Route>
 
@@ -219,7 +219,7 @@ const websiteEntityPage = (
 
 const defaultEntityPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       {overviewContent}
     </EntityLayout.Route>
 
@@ -245,7 +245,7 @@ const componentPage = (
 
 const apiPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item md={6}>
@@ -280,7 +280,7 @@ const apiPage = (
 
 const userPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item xs={12} md={6}>
@@ -296,7 +296,7 @@ const userPage = (
 
 const groupPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item xs={12} md={6}>
@@ -315,7 +315,7 @@ const groupPage = (
 
 const systemPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3} alignItems="stretch">
         {entityWarningContent}
         <Grid item md={6}>
@@ -362,7 +362,7 @@ const systemPage = (
 
 const domainPage = (
   <EntityLayout>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3} alignItems="stretch">
         {entityWarningContent}
         <Grid item md={6}>

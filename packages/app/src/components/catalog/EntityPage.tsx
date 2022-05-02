@@ -388,9 +388,7 @@ const overviewContent = (
 
 const serviceEntityPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
-      {overviewContent}
-    </EntityLayout.Route>
+    <EntityLayout.Route title="Overview">{overviewContent}</EntityLayout.Route>
 
     <EntityLayout.Route path="ci-cd" title="CI/CD">
       {cicdContent}
@@ -488,9 +486,7 @@ const serviceEntityPage = (
 
 const websiteEntityPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
-      {overviewContent}
-    </EntityLayout.Route>
+    <EntityLayout.Route title="Overview">{overviewContent}</EntityLayout.Route>
 
     <EntityLayout.Route path="ci-cd" title="CI/CD">
       {cicdContent}
@@ -567,9 +563,7 @@ const websiteEntityPage = (
 
 const defaultEntityPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
-      {overviewContent}
-    </EntityLayout.Route>
+    <EntityLayout.Route title="Overview">{overviewContent}</EntityLayout.Route>
 
     <EntityLayout.Route path="docs" title="Docs">
       {techdocsContent}
@@ -597,7 +591,7 @@ const componentPage = (
 
 const apiPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item md={6} xs={12}>
@@ -631,7 +625,7 @@ const apiPage = (
 
 const userPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item xs={12} md={6}>
@@ -650,7 +644,7 @@ const userPage = (
 
 const groupPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3}>
         {entityWarningContent}
         <Grid item xs={12} md={6}>
@@ -672,7 +666,7 @@ const groupPage = (
 
 const systemPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3} alignItems="stretch">
         {entityWarningContent}
         <Grid item md={6}>
@@ -716,7 +710,7 @@ const systemPage = (
 
 const domainPage = (
   <EntityLayoutWrapper>
-    <EntityLayout.Route path="." title="Overview">
+    <EntityLayout.Route title="Overview">
       <Grid container spacing={3} alignItems="stretch">
         {entityWarningContent}
         <Grid item md={6}>
