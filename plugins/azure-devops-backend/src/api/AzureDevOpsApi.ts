@@ -129,18 +129,13 @@ export class AzureDevOpsApi {
   public async getGitTags(
     projectName: string,
     repoName: string,
-    options: PullRequestOptions,
-  ): Promise<PullRequest[]> {
+  ): Promise<GitTag[]> {
     this.logger?.debug(
-      `Calling Azure DevOps REST API, getting up to ${options.top} Pull Requests for Repository ${repoName} for Project ${projectName}`,
+      `Calling Azure DevOps REST API, getting Git Tags for Repository ${repoName} for Project ${projectName}`,
     );
 
     const gitRepository = await this.getGitRepository(projectName, repoName);
     const client = await this.webApi.getGitApi();
-    const searchCriteria: GitPullRequestSearchCriteria = {
-      status: options.status,
-    };
-
     const tagRefs: GitRef[] = await client.getRefs(
       gitRepository.id as string,
       projectName,
@@ -151,11 +146,9 @@ export class AzureDevOpsApi {
       false,
       true,
     );
-    this.logger?.warn(JSON.stringify(tagRefs));
-
     const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
       projectName,
-    )}/_git/${encodeURIComponent(repoName)}/pullrequest`;
+    )}/_git/${encodeURIComponent(repoName)}?version=GT`;
     const gitTags: GitTag[] = tagRefs.map(tagRef => {
       return mappedGitTag(tagRef, linkBaseUrl);
     });
@@ -403,9 +396,11 @@ export function mappedGitTag(gitRef: GitRef, linkBaseUrl: string): GitTag {
   return {
     objectId: gitRef.objectId,
     peeledObjectId: gitRef.peeledObjectId,
-    name: gitRef.name,
+    name: gitRef.name?.replace('refs/tags/', ''),
     createdBy: gitRef.creator?.displayName ?? 'N/A',
-    link: `${linkBaseUrl}/5`,
+    link: `${linkBaseUrl}${encodeURIComponent(
+      gitRef.name?.replace('refs/tags/', '') ?? '',
+    )}`,
   };
 }
 
