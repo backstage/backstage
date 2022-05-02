@@ -30,7 +30,7 @@ jobs:
               pull_number: context.issue.number,
             });
 
-            if (r.data.every((f) => f.filename.split('/').slice(-1)[0] !== 'yarn.lock')) {
+            if (r.data.some((f) => f.filename.split('/').slice(-1)[0] !== 'yarn.lock')) {
               console.log('skipping approval since some files are not yarn.lock');
               return;
             }
