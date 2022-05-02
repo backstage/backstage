@@ -242,7 +242,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
             {group.name}
           </Typography>
           <Card className={classes.groupWrapper}>
-            <List disablePadding dense>
+            <List disablePadding dense role="menu">
               {group.items.map(item => (
                 <MenuItem
                   key={item.id}
