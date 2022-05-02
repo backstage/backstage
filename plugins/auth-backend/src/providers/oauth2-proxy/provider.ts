@@ -30,6 +30,11 @@ import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityRes
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { IncomingHttpHeaders } from 'http';
 
+// NOTE: This may come in handy if you're doing work on this provider:
+//
+//   plugins/auth-backend/examples/docker-compose.oauth2-proxy.yaml
+//
+
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
 /**
