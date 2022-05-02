@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public",
-    "main": "dist/index.esm.js",
+    "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
   "backstage": {
