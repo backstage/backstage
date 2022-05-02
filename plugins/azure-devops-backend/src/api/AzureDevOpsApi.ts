@@ -145,6 +145,11 @@ export class AzureDevOpsApi {
       gitRepository.id as string,
       projectName,
       'tags',
+      false,
+      false,
+      false,
+      false,
+      true,
     );
     this.logger?.warn(JSON.stringify(tagRefs));
 
@@ -394,18 +399,12 @@ export function mappedRepoBuild(build: Build): RepoBuild {
   };
 }
 
-export function mappedGitTag(pullRequest: GitRef, linkBaseUrl: string): GitTag {
+export function mappedGitTag(gitRef: GitRef, linkBaseUrl: string): GitTag {
   return {
-    pullRequestId: 5,
-    repoName: 'sup',
-    title: 'hello title',
-    uniqueName: 'N/A',
-    createdBy: 'N/A',
-    creationDate: 'plop',
-    sourceRefName: 'sourceRefName',
-    targetRefName: 'targetRefName',
-    status: PullRequestStatus.NotSet,
-    isDraft: false,
+    objectId: gitRef.objectId,
+    peeledObjectId: gitRef.peeledObjectId,
+    name: gitRef.name,
+    createdBy: gitRef.creator?.displayName ?? 'N/A',
     link: `${linkBaseUrl}/5`,
   };
 }
