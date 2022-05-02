@@ -18,6 +18,7 @@ import {
   BuildRun,
   BuildRunOptions,
   DashboardPullRequest,
+  GitTag,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
@@ -42,7 +43,7 @@ export interface AzureDevOpsApi {
     projectName: string,
     repoName: string,
     options?: PullRequestOptions,
-  ): Promise<{ items: PullRequest[] }>;
+  ): Promise<{ items: GitTag[] }>;
 
   getPullRequests(
     projectName: string,

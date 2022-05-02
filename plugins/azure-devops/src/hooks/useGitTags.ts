@@ -15,7 +15,7 @@
  */
 
 import {
-  PullRequest,
+  GitTag,
   PullRequestOptions,
   PullRequestStatus,
 } from '@backstage/plugin-azure-devops-common';
@@ -33,7 +33,7 @@ export function useGitTags(
   defaultLimit?: number,
   requestedStatus?: PullRequestStatus,
 ): {
-  items?: PullRequest[];
+  items?: GitTag[];
   loading: boolean;
   error?: Error;
 } {

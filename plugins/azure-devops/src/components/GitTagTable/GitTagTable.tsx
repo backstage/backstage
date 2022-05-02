@@ -35,55 +35,20 @@ import { useGitTags } from '../../hooks/useGitTags';
 
 const columns: TableColumn[] = [
   {
-    title: 'ID',
-    field: 'pullRequestId',
+    title: 'Tag',
+    field: 'name',
     highlight: false,
     width: 'auto',
   },
   {
-    title: 'Title',
-    field: 'title',
-    width: 'auto',
-    render: (row: Partial<PullRequest>) => (
-      <Box display="flex" alignItems="center">
-        <Link to={row.link ?? ''}>{row.title}</Link>
-        {row.isDraft && (
-          <Box paddingLeft={1}>
-            <Chip
-              label="Draft"
-              variant="outlined"
-              color="secondary"
-              size="small"
-            />
-          </Box>
-        )}
-      </Box>
-    ),
-  },
-  {
-    title: 'Source',
-    field: 'sourceRefName',
-    width: 'auto',
-  },
-  {
-    title: 'Target',
-    field: 'targetRefName',
+    title: 'Commit',
+    field: 'peeledObjectId',
     width: 'auto',
   },
   {
     title: 'Created By',
     field: 'createdBy',
     width: 'auto',
-  },
-  {
-    title: 'Created',
-    field: 'creationDate',
-    width: 'auto',
-    render: (row: Partial<PullRequest>) =>
-      (row.creationDate
-        ? DateTime.fromISO(row.creationDate)
-        : DateTime.now()
-      ).toRelative(),
   },
 ];
 

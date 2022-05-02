@@ -18,6 +18,7 @@ import {
   BuildRun,
   BuildRunOptions,
   DashboardPullRequest,
+  GitTag,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
@@ -62,7 +63,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     projectName: string,
     repoName: string,
     options?: PullRequestOptions,
-  ): Promise<{ items: PullRequest[] }> {
+  ): Promise<{ items: GitTag[] }> {
     const queryString = new URLSearchParams();
     if (options?.top) {
       queryString.append('top', options.top.toString());
@@ -74,7 +75,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
       projectName,
     )}/${encodeURIComponent(repoName)}?${queryString}`;
 
-    const items = await this.get<PullRequest[]>(urlSegment);
+    const items = await this.get<GitTag[]>(urlSegment);
     return { items };
   }
 
