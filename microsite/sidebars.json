@@ -254,6 +254,7 @@
       "auth/auth-backend",
       "auth/oauth",
       "auth/auth-backend-classes",
+      "auth/troubleshooting",
       "auth/glossary"
     ],
     "Deployment": [
