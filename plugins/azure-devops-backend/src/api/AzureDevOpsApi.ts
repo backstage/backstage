@@ -148,8 +148,11 @@ export class AzureDevOpsApi {
     const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
       projectName,
     )}/_git/${encodeURIComponent(repoName)}?version=GT`;
+    const commitBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+      projectName,
+    )}/_git/${encodeURIComponent(repoName)}/commit`;
     const gitTags: GitTag[] = tagRefs.map(tagRef => {
-      return mappedGitTag(tagRef, linkBaseUrl);
+      return mappedGitTag(tagRef, linkBaseUrl, commitBaseUrl);
     });
 
     return gitTags;
@@ -391,7 +394,11 @@ export function mappedRepoBuild(build: Build): RepoBuild {
   };
 }
 
-export function mappedGitTag(gitRef: GitRef, linkBaseUrl: string): GitTag {
+export function mappedGitTag(
+  gitRef: GitRef,
+  linkBaseUrl: string,
+  commitBaseUrl: string,
+): GitTag {
   return {
     objectId: gitRef.objectId,
     peeledObjectId: gitRef.peeledObjectId,
@@ -399,6 +406,9 @@ export function mappedGitTag(gitRef: GitRef, linkBaseUrl: string): GitTag {
     createdBy: gitRef.creator?.displayName ?? 'N/A',
     link: `${linkBaseUrl}${encodeURIComponent(
       gitRef.name?.replace('refs/tags/', '') ?? '',
+    )}`,
+    commitLink: `${commitBaseUrl}/${encodeURIComponent(
+      gitRef.peeledObjectId ?? '',
     )}`,
   };
 }

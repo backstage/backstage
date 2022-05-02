@@ -44,6 +44,11 @@ const columns: TableColumn[] = [
     title: 'Commit',
     field: 'peeledObjectId',
     width: 'auto',
+    render: (row: Partial<GitTag>) => (
+      <Box display="flex" alignItems="center">
+        <Link to={row.commitLink ?? ''}>{row.peeledObjectId}</Link>
+      </Box>
+    ),
   },
   {
     title: 'Created By',

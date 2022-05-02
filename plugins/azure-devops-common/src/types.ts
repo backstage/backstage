@@ -114,6 +114,7 @@ export type GitTag = {
   name?: string;
   createdBy?: string;
   link: string;
+  commitLink: string;
 };
 
 export type PullRequest = {
