@@ -4,19 +4,20 @@
 # You'll need to provide your own GitHub client ID and secret through
 # GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.
 #
-# The following env vars can be used to configure `yarn dev` to work with the proxy:
-#
-# APP_CONFIG_app_baseUrl=http://localhost APP_CONFIG_app_listen_port=3000 \
-#   APP_CONFIG_backend_baseUrl=http://localhost APP_CONFIG_backend_listen_port=7007 yarn dev
-#
-# The only manual modification you need to make to the app is to switch the
+# The only modifications you need to make to run this example is to switch the
 # SignInPage to the following:
 #
 #   <ProxiedSignInPage {...props} provider="myproxy" />
 #
-# Once done, you can run the following and then navigate to http://localhost:
+# You also need to switch out the baseUrl and listen port of both the frontend and
+# backend, but we can do that through env vars when running `yarn dev`:
 #
-#   ./docker-compose.oauth2-proxy.yaml up
+# APP_CONFIG_app_baseUrl=http://localhost APP_CONFIG_app_listen_port=3000 \
+#   APP_CONFIG_backend_baseUrl=http://localhost APP_CONFIG_backend_listen_port=7007 yarn dev
+#
+# Once done, you can run the following from the root and then navigate to http://localhost
+#
+#   ./plugins/auth-backend/examples/docker-compose.oauth2-proxy.yaml up
 
 version: '3'
 services:
