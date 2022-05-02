@@ -23,9 +23,11 @@ import {
   BuildRun,
   BuildStatus,
   DashboardPullRequest,
+  GitTag,
   Policy,
   PullRequest,
   PullRequestOptions,
+  PullRequestStatus,
   RepoBuild,
   Team,
   TeamMember,
@@ -33,6 +35,7 @@ import {
 import {
   GitPullRequest,
   GitPullRequestSearchCriteria,
+  GitRef,
   GitRepository,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
@@ -138,29 +141,21 @@ export class AzureDevOpsApi {
       status: options.status,
     };
 
-    const tagRefs = await client.getRefs(
+    const tagRefs: GitRef[] = await client.getRefs(
       gitRepository.id as string,
       projectName,
       'tags',
     );
     this.logger?.warn(JSON.stringify(tagRefs));
 
-    const gitPullRequests = await client.getPullRequests(
-      gitRepository.id as string,
-      searchCriteria,
-      projectName,
-      undefined,
-      undefined,
-      options.top,
-    );
     const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
       projectName,
     )}/_git/${encodeURIComponent(repoName)}/pullrequest`;
-    const pullRequests: PullRequest[] = gitPullRequests.map(gitPullRequest => {
-      return mappedPullRequest(gitPullRequest, linkBaseUrl);
+    const gitTags: GitTag[] = tagRefs.map(tagRef => {
+      return mappedGitTag(tagRef, linkBaseUrl);
     });
 
-    return pullRequests;
+    return gitTags;
   }
 
   public async getPullRequests(
@@ -396,6 +391,22 @@ export function mappedRepoBuild(build: Build): RepoBuild {
     finishTime: build.finishTime?.toISOString(),
     source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
+  };
+}
+
+export function mappedGitTag(pullRequest: GitRef, linkBaseUrl: string): GitTag {
+  return {
+    pullRequestId: 5,
+    repoName: 'sup',
+    title: 'hello title',
+    uniqueName: 'N/A',
+    createdBy: 'N/A',
+    creationDate: 'plop',
+    sourceRefName: 'sourceRefName',
+    targetRefName: 'targetRefName',
+    status: PullRequestStatus.NotSet,
+    isDraft: false,
+    link: `${linkBaseUrl}/5`,
   };
 }
 

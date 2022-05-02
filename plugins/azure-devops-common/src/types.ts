@@ -108,6 +108,20 @@ export enum PullRequestStatus {
   All = 4,
 }
 
+export type GitTag = {
+  pullRequestId?: number;
+  repoName?: string;
+  title?: string;
+  uniqueName?: string;
+  createdBy?: string;
+  creationDate?: string;
+  sourceRefName?: string;
+  targetRefName?: string;
+  status?: PullRequestStatus;
+  isDraft?: boolean;
+  link: string;
+};
+
 export type PullRequest = {
   pullRequestId?: number;
   repoName?: string;
