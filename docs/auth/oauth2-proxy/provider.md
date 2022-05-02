@@ -81,25 +81,15 @@ When using `oauth2proxy` auth you can configure it as described
 
 ## Adding the provider to the Backstage frontend
 
-All Backstage apps need a `SignInPage` to be configured. Its purpose is to
-establish who the user is and what their identifying credentials are, blocking
-rendering the rest of the UI until that's complete, and then keeping those
-credentials fresh.
-
-When using the OAuth2-Proxy, the Backstage UI can only be accessed after the
-user has already been authenticated at the proxy. Instead of showing the user
-another login page when accessing Backstage, it will handle the login in the
-background. Backstage provides for this case the `ProxiedSignInPage` component
-which has no UI.
-
-Update your `createApp` call in `packages/app/src/App.tsx`, as follows.
+It is recommended to use the `ProxiedSignInPage` for this provider, which is
+installed in `packages/app/src/App.tsx` like this:
 
 ```diff
 +import { ProxiedSignInPage } from '@backstage/core-components';
+
  const app = createApp({
    components: {
 +    SignInPage: props => <ProxiedSignInPage {...props} provider="oauth2proxy" />,
 ```
 
-After this, your app should be ready to leverage the OAuth2-Proxy for
-authentication!
+See the [Sign-In with Proxy Providers](../index.md#sign-in-with-proxy-providers) section for more information.

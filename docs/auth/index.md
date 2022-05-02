@@ -126,6 +126,28 @@ allows allowing guest access:
    bindRoutes({ bind }) {
 ```
 
+## Sign-In with Proxy Providers
+
+Some auth providers are so-called "proxy" providers, meaning they're meant to be used
+behind an authentication proxy. Examples of these are
+[AWS ALB](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md),
+[GCP IAP](./google/gcp-iap-auth.md), and [OAuth2 Proxy](./oauth2-proxy/provider.md).
+
+When using a proxy provider, you'll end up wanting to use a different sign-in page, as
+there is no need for further user interaction once you've signed in towards the proxy.
+All the sign-in page needs to do is to call the `/refresh` endpoint of the auth providers
+to get the existing session, which is exactly what the `ProxiedSignInPage` does. The only
+thing you need to do to configure the `ProxiedSignInPage` is to pass the ID of the provider like this:
+
+```diff
+ const app = createApp({
+   apis,
++  components: {
++    SignInPage: props => <ProxiedSignInPage {...props} provider="awsalb" />,
++  },
+   bindRoutes({ bind }) {
+```
+
 ## For Plugin Developers
 
 The Backstage frontend core APIs provide a set of Utility APIs for plugin developers
