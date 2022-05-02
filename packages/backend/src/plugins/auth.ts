@@ -98,18 +98,6 @@ export default async function createPlugin(
       // as how to sign a user in without a matching user entity in the catalog.
       // You can try it out using `<ProxiedSignInPage {...props} provider="myproxy" />`
       myproxy: providers.oauth2Proxy.create({
-        async authHandler(result) {
-          const user = result.getHeader('x-forwarded-user');
-          if (!user) {
-            throw new Error('Profile must have a username');
-          }
-          return {
-            profile: {
-              email: result.getHeader('x-forwarded-email'),
-              displayName: user,
-            },
-          };
-        },
         signIn: {
           async resolver({ result }, ctx) {
             const entityRef = stringifyEntityRef({

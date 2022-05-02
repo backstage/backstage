@@ -23,6 +23,7 @@ import {
   AuthProviderRouteHandlers,
   AuthResponse,
   AuthResolverContext,
+  AuthHandlerResult,
 } from '../types';
 import { decodeJwt } from 'jose';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
@@ -175,6 +176,19 @@ export class Oauth2ProxyAuthProvider<JWTPayload>
   }
 }
 
+async function defaultAuthHandler(
+  result: OAuth2ProxyResult<unknown>,
+): Promise<AuthHandlerResult> {
+  return {
+    profile: {
+      email: result.getHeader('x-forwarded-email'),
+      displayName:
+        result.getHeader('x-forwarded-preferred-username') ||
+        result.getHeader('x-forwarded-user'),
+    },
+  };
+}
+
 /**
  * Auth provider integration for oauth2-proxy auth
  *
@@ -184,8 +198,12 @@ export const oauth2Proxy = createAuthProviderIntegration({
   create<JWTPayload>(options: {
     /**
      * Configure an auth handler to generate a profile for the user.
+     *
+     * The default implementation uses the value of the `X-Forwarded-Preferred-Username`
+     * header as the display name, falling back to `X-Forwarded-User`, and the value of
+     * the `X-Forwarded-Email` header as the email address.
      */
-    authHandler: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
+    authHandler?: AuthHandler<OAuth2ProxyResult<JWTPayload>>;
 
     /**
      * Configure sign-in for this provider, without it the provider can not be used to sign users in.
@@ -203,7 +221,7 @@ export const oauth2Proxy = createAuthProviderIntegration({
       return new Oauth2ProxyAuthProvider<JWTPayload>({
         resolverContext,
         signInResolver,
-        authHandler,
+        authHandler: authHandler ?? defaultAuthHandler,
       });
     };
   },
