@@ -163,7 +163,14 @@ export interface KubernetesObjectsProviderOptions {
 
 export type ObjectsByEntityRequest = KubernetesRequestBody;
 
+export interface ProvidedObjectsByEntityRequest extends KubernetesRequestBody {
+  objectsToFetch: ObjectToFetch[]
+}
+
 export interface KubernetesObjectsProvider {
+  getProvidedObjectsByEntity(
+    request: ProvidedObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
   getKubernetesObjectsByEntity(
     request: ObjectsByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;

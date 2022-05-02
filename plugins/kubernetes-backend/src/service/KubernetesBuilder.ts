@@ -30,6 +30,7 @@ import {
   KubernetesFetcher,
   KubernetesServiceLocator,
   KubernetesObjectsProviderOptions,
+  ProvidedObjectsByEntityRequest
 } from '../types/types';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
@@ -223,8 +224,24 @@ export class KubernetesBuilder {
     const router = Router();
     router.use(express.json());
 
+    router.post('/provided-objects', async (req, res) => {
+      const requestBody: ProvidedObjectsByEntityRequest = req.body;
+      
+      try {
+        const response = await objectsProvider.getProvidedObjectsByEntity(
+          requestBody,
+        );
+        res.json(response);
+      } catch (e) {
+        logger.error(
+          `action=ProvidedObjectsByEntity entity=${requestBody.entity.metadata.name}, error=${e}`,
+        );
+        res.status(500).json({ error: e.message });
+      }
+    });
+
+    // TODO rename and remove path param
     router.post('/services/:serviceId', async (req, res) => {
-      const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
         const response = await objectsProvider.getKubernetesObjectsByEntity(
@@ -233,7 +250,7 @@ export class KubernetesBuilder {
         res.json(response);
       } catch (e) {
         logger.error(
-          `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
+          `action=ObjectsByEntity entity=${requestBody.entity.metadata.name}, error=${e}`,
         );
         res.status(500).json({ error: e.message });
       }

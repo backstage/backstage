@@ -24,6 +24,7 @@ import {
   ObjectsByEntityRequest,
   FetchResponseWrapper,
   ObjectToFetch,
+  ProvidedObjectsByEntityRequest
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
@@ -170,9 +171,38 @@ export class KubernetesFanOutHandler {
     this.objectTypesToFetch = new Set(objectTypesToFetch);
   }
 
+  async getProvidedObjectsByEntity(
+    request: ProvidedObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse> {
+
+    const customResources:CustomResource[] = request.objectsToFetch
+    .filter(o => o.objectType==="customresources")
+    .map(o => o as CustomResource) //TODO fix
+
+    const objectTypesToFetch = new Set(request.objectsToFetch.filter(o => o.objectType!=="customresources"))
+
+    return this.fetchResources(
+      request,
+      objectTypesToFetch,
+      customResources
+    )
+  }
+
   async getKubernetesObjectsByEntity(
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse> {
+    return this.fetchResources(
+      requestBody,
+      this.objectTypesToFetch,
+      this.customResources
+    )
+  }
+
+  async fetchResources(
+    requestBody: KubernetesRequestBody,
+    objectTypesToFetch: Set<ObjectToFetch>,
+    customResources: CustomResource[]
+    ) {
     const entityName =
       requestBody.entity?.metadata?.annotations?.[
         'backstage.io/kubernetes-id'
@@ -218,9 +248,9 @@ export class KubernetesFanOutHandler {
           .fetchObjectsForService({
             serviceId: entityName,
             clusterDetails: clusterDetailsItem,
-            objectTypesToFetch: this.objectTypesToFetch,
+            objectTypesToFetch: objectTypesToFetch,
             labelSelector,
-            customResources: this.customResources,
+            customResources: customResources,
             namespace,
           })
           .then(result => this.getMetricsForPods(clusterDetailsItem, result))
