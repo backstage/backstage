@@ -1,5 +1,5 @@
 ---
-id: provider
+id: gcp-iap-auth
 title: Google Identity-Aware Proxy Provider
 sidebar_label: Google IAP
 # prettier-ignore
@@ -43,7 +43,8 @@ Add a `providerFactories` entry to the router in
 `packages/backend/plugin/auth.ts`.
 
 ```ts
-import { createGcpIapProvider } from '@backstage/plugin-auth-backend';
+import { providers } from '@backstage/plugin-auth-backend';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -54,7 +55,7 @@ export default async function createPlugin(
     database: env.database,
     discovery: env.discovery,
     providerFactories: {
-      'gcp-iap': createGcpIapProvider({
+      'gcp-iap': providers.gcpIap.create({
         // Replace the auth handler if you want to customize the returned user
         // profile info (can be left out; the default implementation is shown
         // below which only returns the email). You may want to amend this code
@@ -71,12 +72,10 @@ export default async function createPlugin(
             // Somehow compute the Backstage token claims. Just some dummy code
             // shown here, but you may want to query your LDAP server, or
             // GSuite or similar, based on the IAP token sub/email claims
-            const id = `user:default/${iapToken.email.split('@')[0]}`;
-            const fullEnt = ['group:default/team-name'];
-            const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: id, ent: fullEnt },
-            });
-            return { id, token };
+            const id = iapToken.email.split('@')[0];
+            const sub = stringifyEntityRef({ kind: 'User', name: id });
+            const ent = [sub, stringifyEntityRef({ kind: 'Group', name: 'team-name' });
+            return ctx.issueToken({ claims: { sub, ent } });
           },
         },
       }),
