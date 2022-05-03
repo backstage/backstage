@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-gerrit
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- 57f684f59c: Fix incorrect main path in `publishConfig`
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.1
+  - @backstage/plugin-catalog-backend@1.1.2-next.1
+
 ## 0.1.0-next.0
 
 ### Minor Changes

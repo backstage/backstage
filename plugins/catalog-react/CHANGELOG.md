@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.0-next.1
+
+### Patch Changes
+
+- 0418447669: Added menu parent role for menu items accessibility
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+  - @backstage/plugin-permission-react@0.4.1-next.0
+
 ## 1.1.0-next.0
 
 ### Minor Changes

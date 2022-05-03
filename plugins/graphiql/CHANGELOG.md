@@ -1,5 +1,14 @@
 # @backstage/plugin-graphiql
 
+## 0.2.37-next.0
+
+### Patch Changes
+
+- 8d4ecc30f1: Updated dependency `@types/codemirror` to `^0.0.109`.
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+
 ## 0.2.36
 
 ### Patch Changes
