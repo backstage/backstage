@@ -187,6 +187,56 @@ components: {
  },
 ```
 
+Since [v1.1.0](https://github.com/backstage/backstage/releases/tag/v1.1.0-next.3), you must provide an explicit sign-in resolver.
+
+Open `packages/backend/src/plugins/auth.ts` and replace with following code snippet:
+
+```typescript
+import {
+  createRouter,
+  providers,
+  defaultAuthProviderFactories,
+} from '@backstage/plugin-auth-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    ...env,
+    providerFactories: {
+      ...defaultAuthProviderFactories,
+      github: providers.github.create({
+        signIn: {
+          resolver: async ({ profile }, ctx) => {
+            if (!profile.email) {
+              throw new Error(
+                'Login failed, user profile does not contain an email',
+              );
+            }
+            const [localPart] = profile.email.split('@');
+
+            const userEntityRef = stringifyEntityRef({
+              kind: 'User',
+              name: localPart,
+              namespace: 'DEFAULT_NAMESPACE',
+            });
+            return ctx.issueToken({
+              claims: {
+                sub: userEntityRef,
+                ent: [userEntityRef],
+              },
+            });
+          },
+        },
+      }),
+    },
+  });
+}
+```
+
 That should be it. You can stop your Backstage App. When you start it again and
 go to your Backstage portal in your browser, you should have your login prompt!
 
