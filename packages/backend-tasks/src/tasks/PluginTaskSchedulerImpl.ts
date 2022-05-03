@@ -49,20 +49,6 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     await TaskWorker.trigger(knex, id);
   }
 
-  private parseDuration(
-    frequency: TaskScheduleDefinition['frequency'],
-  ): string {
-    if ('cron' in frequency) {
-      return frequency.cron;
-    }
-
-    if (Duration.isDuration(frequency)) {
-      return frequency.toISO();
-    }
-
-    return Duration.fromObject(frequency).toISO();
-  }
-
   async scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void> {
@@ -76,11 +62,10 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       await worker.start(
         {
           version: 2,
-          cadence: this.parseDuration(task.frequency),
+          cadence: parseDuration(task.frequency),
           initialDelayDuration:
-            task.initialDelay && this.parseDuration(task.initialDelay),
-          timeoutAfterDuration:
-            task.timeout && this.parseDuration(task.timeout),
+            task.initialDelay && parseDuration(task.initialDelay),
+          timeoutAfterDuration: parseDuration(task.timeout),
         },
         {
           signal: task.signal,
@@ -92,11 +77,10 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       worker.start(
         {
           version: 2,
-          cadence: this.parseDuration(task.frequency),
+          cadence: parseDuration(task.frequency),
           initialDelayDuration:
-            task.initialDelay && this.parseDuration(task.initialDelay),
-          timeoutAfterDuration:
-            task.timeout && this.parseDuration(task.timeout),
+            task.initialDelay && parseDuration(task.initialDelay),
+          timeoutAfterDuration: parseDuration(task.timeout),
         },
         {
           signal: task.signal,
@@ -114,4 +98,18 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       },
     };
   }
+}
+
+export function parseDuration(
+  frequency: TaskScheduleDefinition['frequency'],
+): string {
+  if ('cron' in frequency) {
+    return frequency.cron;
+  }
+
+  if (Duration.isDuration(frequency)) {
+    return frequency.toISO();
+  }
+
+  return Duration.fromObject(frequency).toISO();
 }
