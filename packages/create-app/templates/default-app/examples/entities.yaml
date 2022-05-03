@@ -17,6 +17,7 @@ spec:
   lifecycle: experimental
   owner: guests
   system: examples
+  providesApis: [example-grpc-api]
 ---
 apiVersion: backstage.io/v1alpha1
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
