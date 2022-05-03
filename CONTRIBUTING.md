@@ -16,7 +16,7 @@ No one likes bugs. Report bugs as an issue [here](https://github.com/backstage/b
 
 ### Fix bugs or build new features
 
-Look through the GitHub issues for [bugs](https://github.com/backstage/backstage/labels/bugs), [good first issues](https://github.com/backstage/backstage/labels/good%20first%20issue) or [help wanted](https://github.com/backstage/backstage/labels/help%20wanted).
+Look through the GitHub issues for [bugs](https://github.com/backstage/backstage/labels/bug), [good first issues](https://github.com/backstage/backstage/labels/good%20first%20issue) or [help wanted](https://github.com/backstage/backstage/labels/help%20wanted).
 
 ### Build a plugin
 
