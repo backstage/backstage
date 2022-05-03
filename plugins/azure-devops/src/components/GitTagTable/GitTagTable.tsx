@@ -24,7 +24,7 @@ import {
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 import React from 'react';
 
-import { AzurePullRequestsIcon } from '../AzurePullRequestsIcon';
+import { AzureGitTagsIcon } from '../AzureGitTagsIcon';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useGitTags } from '../../hooks/useGitTags';
 
@@ -83,7 +83,7 @@ export const GitTagTable = () => {
       }}
       title={
         <Box display="flex" alignItems="center">
-          <AzurePullRequestsIcon style={{ fontSize: 30 }} />
+          <AzureGitTagsIcon style={{ fontSize: 30 }} />
           <Box mr={1} />
           Azure Repos - Git Tags ({items ? items.length : 0})
         </Box>
