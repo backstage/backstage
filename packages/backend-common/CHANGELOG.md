@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 28b0e4ddef: Update types to match the new version of `@keyv/redis`
+
 ## 0.13.3-next.0
 
 ### Patch Changes

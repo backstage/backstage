@@ -1,5 +1,13 @@
 # @techdocs/cli
 
+## 1.1.1-next.1
+
+### Patch Changes
+
+- 52fddad92d: The TechDocs CLI's embedded app now imports all API refs from the `@backstage/plugin-techdocs-react` package.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.1
+
 ## 1.1.1-next.0
 
 ### Patch Changes

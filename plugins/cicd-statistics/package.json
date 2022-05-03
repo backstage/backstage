@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-cicd-statistics",
   "description": "A frontend plugin visualizing CI/CD pipeline statistics (build time)",
-  "version": "0.1.7-next.0",
+  "version": "0.1.7-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -38,8 +38,8 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.0.1",
-    "@backstage/core-plugin-api": "^1.0.1",
-    "@backstage/plugin-catalog-react": "^1.1.0-next.0",
+    "@backstage/core-plugin-api": "^1.0.2-next.0",
+    "@backstage/plugin-catalog-react": "^1.1.0-next.1",
     "@date-io/luxon": "^1.3.13",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.11.2",

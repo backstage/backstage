@@ -1,5 +1,32 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 3333e20b27: **BREAKING**: The `buildTechInsightsContext` function now takes an additional
+  field in its options argument: `tokenManager`. This is an instance of
+  `TokenManager`, which can be found in your backend initialization code's
+  `env`.
+
+  ```diff
+   const builder = buildTechInsightsContext({
+     logger: env.logger,
+     config: env.config,
+     database: env.database,
+     discovery: env.discovery,
+     scheduler: env.scheduler,
+  +  tokenManager: env.tokenManager,
+     factRetrievers: [ /* ... */ ],
+   });
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.1
+  - @backstage/plugin-tech-insights-node@0.3.0-next.1
+
 ## 0.3.1-next.0
 
 ### Patch Changes
