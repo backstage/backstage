@@ -32,10 +32,7 @@ export default async (org: string) => {
       type: 'list',
       name: 'appType',
       message: chalk.blue('What will the app be used for [required]'),
-      choices: [
-        'Read and Write (needed by Software Templates)',
-        'Read only',
-      ],
+      choices: ['Read and Write (needed by Software Templates)', 'Read only'],
     },
   ]);
   const readWrite = answers.appType !== 'Read only';
