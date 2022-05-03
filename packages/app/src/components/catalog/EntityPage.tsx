@@ -487,7 +487,11 @@ const websiteEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/git-tags" title="Git Tags">
+    <EntityLayout.Route
+      if={isAzureDevOpsAvailable}
+      path="/git-tags"
+      title="Git Tags"
+    >
       {gitTagsContent}
     </EntityLayout.Route>
 
