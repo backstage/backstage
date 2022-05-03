@@ -54,7 +54,7 @@ jobs:
 
             const date = new Date();
             if (date.getDay() === 2) {
-              console.log("Skipping auto approve because Tuesday is release day");
+              console.log("Skipping auto merge because Tuesday is release day");
               return;
             }
 
