@@ -42,6 +42,11 @@ type GraphQL = typeof graphql;
 
 /**
  * Extracts teams and users out of a GitHub org.
+ *
+ * @remarks
+ *
+ * Consider using {@link GitHubOrgEntityProvider} instead.
+ *
  * @public
  */
 export class GithubOrgReaderProcessor implements CatalogProcessor {
