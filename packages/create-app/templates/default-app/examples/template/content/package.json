@@ -1,5 +1,5 @@
 {
-  "name": ${{ values.name | dump }},
+  "name": "${{ values.name }}",
   "private": true,
   "dependencies": {}
 }
