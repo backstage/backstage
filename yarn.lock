@@ -4185,9 +4185,9 @@
     typescript "~4.6.3"
 
 "@microsoft/microsoft-graph-types@^2.6.0":
-  version "2.19.0"
-  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-2.19.0.tgz#df95ab3b59308221a6063fc11a9235d6558e890e"
-  integrity sha512-TvSbalr8bpNN74dqXQQkpfoMCtEyaMECqi6Yk1WcOCYLL7k7z7ABErafFXH9uBmqSIXYchKSyR4IJNh9Sd4BYA==
+  version "2.20.0"
+  resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-2.20.0.tgz#fc532a5dc146c0b8a6f78a633fe930535f8cdc42"
+  integrity sha512-T1EPoYdH4124Rg+h261dvW2qAeSRAotHM/6lv10fDsYX4DWsppvresmfhGbPrLApK/lRTRj93bn4/Nwwmdv4Zg==
 
 "@microsoft/tsdoc-config@~0.16.1":
   version "0.16.1"
