@@ -56,7 +56,7 @@ export default async function createPlugin(
   });
 
   const schedule = env.scheduler.createScheduledTaskRunner({
-    frequency: { seconds: 10 },
+    frequency: { minutes: 10 },
     timeout: { minutes: 15 },
     // A 3 second delay gives the backend server a chance to initialize before
     // any collators are executed, which may attempt requests against the API.
