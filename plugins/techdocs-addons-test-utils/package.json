@@ -46,7 +46,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "react-use": "^17.2.4",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.0.2",
     "@testing-library/react": "^12.1.3",
     "testing-library__dom": "^7.29.4-beta.1"
   },

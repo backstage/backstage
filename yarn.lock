@@ -11946,8 +11946,8 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     react "^17.0.2"
     react-dom "^17.0.2"
     react-hot-loader "^4.13.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
+    react-router "6.0.2"
+    react-router-dom "6.0.2"
     react-use "^17.2.4"
     zen-observable "^0.8.15"
 
@@ -13622,7 +13622,7 @@ highlight.js@^10.1.0, highlight.js@^10.4.1, highlight.js@^10.6.0, highlight.js@^
   resolved "https://registry.npmjs.org/highlight.js/-/highlight.js-10.7.3.tgz#697272e3991356e40c3cac566a74eef681756531"
   integrity sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==
 
-history@^5.0.0, history@^5.2.0:
+history@^5.0.0, history@^5.1.0, history@^5.2.0:
   version "5.3.0"
   resolved "https://registry.npmjs.org/history/-/history-5.3.0.tgz#1548abaa245ba47992f063a0783db91ef201c73b"
   integrity sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==
@@ -20899,12 +20899,27 @@ react-router-dom@6.0.0-beta.0:
     prop-types "^15.7.2"
     react-router "6.0.0-beta.0"
 
+react-router-dom@6.0.2:
+  version "6.0.2"
+  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.0.2.tgz#860cefa697b9d4965eced3f91e82cdbc5995f3ad"
+  integrity sha512-cOpJ4B6raFutr0EG8O/M2fEoyQmwvZWomf1c6W2YXBZuFBx8oTk/zqjXghwScyhfrtnt0lANXV2182NQblRxFA==
+  dependencies:
+    history "^5.1.0"
+    react-router "6.0.2"
+
 react-router@6.0.0-beta.0:
   version "6.0.0-beta.0"
   resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.0-beta.0.tgz#3e11f39b6ded4412c2fed9e4f989dd4c8156724d"
   integrity sha512-VgMdfpVcmFQki/LZuLh8E/MNACekDetz4xqft+a6fBZvvJnVqKbLqebF7hyoawGrV1HcO5tVaUang2Og4W2j1Q==
   dependencies:
     prop-types "^15.7.2"
+
+react-router@6.0.2:
+  version "6.0.2"
+  resolved "https://registry.npmjs.org/react-router/-/react-router-6.0.2.tgz#bd2b0fa84fd1d152671e9f654d9c0b1f5a7c86da"
+  integrity sha512-8/Wm3Ed8t7TuedXjAvV39+c8j0vwrI5qVsYqjFr5WkJjsJpEvNSoLRUbtqSEYzqaTUj1IV+sbPJxvO+accvU0Q==
+  dependencies:
+    history "^5.1.0"
 
 react-router@^6.0.0-beta.0:
   version "6.2.1"
@@ -23552,8 +23567,8 @@ tdigest@^0.1.1:
     history "^5.0.0"
     react "^17.0.2"
     react-dom "^17.0.2"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
+    react-router "6.0.2"
+    react-router-dom "6.0.2"
     react-use "^17.2.4"
 
 teeny-request@^7.1.3:
