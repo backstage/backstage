@@ -59,6 +59,10 @@ export class TaskManager implements TaskContext {
     return this.task.secrets;
   }
 
+  get createdBy() {
+    return this.task.createdBy;
+  }
+
   async getWorkspaceName() {
     return this.task.taskId;
   }

@@ -16,7 +16,11 @@
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
@@ -173,6 +177,10 @@ export async function createRouter(
         req.headers.authorization,
       );
 
+      const userEntity = userEntityRef
+        ? await catalogClient.getEntityByRef(userEntityRef, { token })
+        : undefined;
+
       const values = req.body.values;
 
       const template = await findTemplate({
@@ -208,6 +216,10 @@ export async function createRouter(
         })),
         output: template.spec.output ?? {},
         parameters: values,
+        user: {
+          entity: userEntity as UserEntity,
+          ref: userEntityRef,
+        },
         templateInfo: {
           entityRef: stringifyEntityRef({
             kind,

@@ -109,6 +109,7 @@ export type TaskBrokerDispatchOptions = {
 export interface TaskContext {
   spec: TaskSpec;
   secrets?: TaskSecrets;
+  createdBy?: string;
   done: boolean;
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
