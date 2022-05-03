@@ -33,7 +33,7 @@ export default async (org: string) => {
       name: 'appType',
       message: chalk.blue('What will the app be used for [required]'),
       choices: [
-        'Read and Write(needed by the scaffolding to create new projects)',
+        'Read and Write (needed by Software Templates)',
         'Read only',
       ],
     },
