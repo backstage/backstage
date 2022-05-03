@@ -16,7 +16,11 @@ Lists the top _n_ Active, Completed, or Abandoned Pull Requests for a given repo
 
 ![Azure Repos Pull Requests Example](./docs/azure-devops-pull-requests.png)
 
-Additional Git Tags component that lists all git tags for a given Azure Repo
+### Azure Git Tags
+
+Lists all Git Tags for a given repository
+
+![Azure Repos Pull Requests Example](./docs/azure-devops-git-tags.png)
 
 ## Setup
 
