@@ -231,7 +231,6 @@ You should now be able to add this class to your backend in
 `packages/backend/src/plugins/catalog.ts`:
 
 ```diff
-+import { Duration } from 'luxon';
 +import { FrobsProvider } from '../path/to/class';
 
  export default async function createPlugin(
@@ -248,8 +247,8 @@ You should now be able to add this class to your backend in
 +  await env.scheduler.scheduleTask({
 +    id: 'run_frobs_refresh',
 +    fn: async () => { await frobs.run(); },
-+    frequency: Duration.fromObject({ minutes: 30 }),
-+    timeout: Duration.fromObject({ minutes: 10 }),
++    frequency: { minutes: 30 },
++    timeout: { minutes: 10 },
 +  });
 ```
 
