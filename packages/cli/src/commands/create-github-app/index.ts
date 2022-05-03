@@ -17,10 +17,11 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
+import inquirer, { Question } from 'inquirer';
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import fetch from 'node-fetch';
-
+import openBrowser from 'react-dev-utils/openBrowser';
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
@@ -67,8 +68,33 @@ async function verifyGithubOrg(org: string): Promise<void> {
   }
 
   if (response?.status === 404) {
-    throw new Error(
-      `GitHub organization '${org}' does not exist. Please verify the name and try again.`,
+    const questions: Question[] = [
+      {
+        type: 'confirm',
+        name: 'shouldCreateOrg',
+        message: `GitHub organization ${chalk.cyan(
+          org,
+        )} does not exist. Would you like to create a new Organization instead?`,
+      },
+    ];
+
+    const answers = await inquirer.prompt(questions);
+
+    if (!answers.shouldCreateOrg) {
+      console.log(
+        chalk.yellow('GitHub organization must exist to create GitHub app'),
+      );
+      process.exit(1);
+    }
+
+    openBrowser('https://github.com/account/organizations/new');
+
+    console.log(
+      chalk.yellow(
+        'Please re-run this command when you have created your new organization',
+      ),
     );
+
+    process.exit(0);
   }
 }
