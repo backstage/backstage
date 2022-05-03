@@ -1,8 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: Location
-metadata:
-  name: example-templates
-  description: A collection of all Backstage example templates
-spec:
-  targets:
-    - ./templates/create-react-app/template.yaml

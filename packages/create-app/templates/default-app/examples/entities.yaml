@@ -1,0 +1,40 @@
+---
+apiVersion: backstage.io/v1alpha1
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system
+kind: System
+metadata:
+  name: examples
+spec:
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+kind: Component
+metadata:
+  name: example-website
+spec:
+  type: website
+  lifecycle: experimental
+  owner: guests
+  system: examples
+---
+apiVersion: backstage.io/v1alpha1
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
+kind: API
+metadata:
+  name: example-grpc-api
+spec:
+  type: grpc
+  lifecycle: experimental
+  owner: guests
+  system: examples
+  definition: |
+    syntax = "proto3";
+
+    service Exampler {
+      rpc Example (ExampleMessage) returns (ExampleMessage) {};
+    }
+
+    message ExampleMessage {
+      string example = 1;
+    };
