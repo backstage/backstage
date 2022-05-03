@@ -48,17 +48,25 @@ const getDataKeyByName = (name: string) => {
 };
 
 /**
- * Create a TechDocs addon.
+ * Create a TechDocs addon overload signature without props.
  * @public
  */
 export function createTechDocsAddonExtension(
   options: TechDocsAddonOptions,
 ): Extension<() => JSX.Element | null>;
 
+/**
+ * Create a TechDocs addon overload signature with props.
+ * @public
+ */
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null>;
 
+/**
+ * Create a TechDocs addon implementation.
+ * @public
+ */
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null> {
