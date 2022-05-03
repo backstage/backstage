@@ -15,7 +15,7 @@ jobs:
             const owner = "backstage";
             const repo = "backstage";
             const query = `{
-              repository(name: "backstage", owner: "backstage") {
+              repository(owner: "backstage", name: "backstage") {
                 pullRequests(labels: ["dependencies"], last: 10, states: [OPEN]) {
                   nodes {
                     title
