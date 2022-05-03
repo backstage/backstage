@@ -1,17 +1,17 @@
 ---
-apiVersion: backstage.io/v1alpha1
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-user
+apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: guest
 spec:
   memberOf: [guests]
 ---
-apiVersion: backstage.io/v1alpha1
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
+apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
   name: guests
 spec:
-  type: squad
+  type: team
   children: []

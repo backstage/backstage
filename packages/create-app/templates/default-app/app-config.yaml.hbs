@@ -98,13 +98,13 @@ catalog:
     - type: file
       target: ../../examples/template/template.yaml
       rules:
-      - allow: [Template]
+        - allow: [Template]
 
     # Local example organizational data
     - type: file
       target: ../../examples/org.yaml
       rules:
-      - allow: [User, Group]
+        - allow: [User, Group]
 
     ## Uncomment these lines to add more example data
     # - type: url
@@ -113,3 +113,5 @@ catalog:
     ## Uncomment these lines to add an example org
     # - type: url
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    #   rules:
+    #     - allow: [User, Group]
