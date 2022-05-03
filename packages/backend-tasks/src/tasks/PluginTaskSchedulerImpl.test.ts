@@ -177,8 +177,8 @@ describe('PluginTaskManagerImpl', () => {
       const promise = new Promise(resolve => fn.mockImplementation(resolve));
       await manager.scheduleTask({
         id: 'task1',
-        timeout: Duration.fromMillis(5000),
-        frequency: Duration.fromMillis(5000),
+        timeout: { milliseconds: 5000 },
+        frequency: { milliseconds: 5000 },
         fn,
         scope: 'local',
       });

@@ -15,6 +15,7 @@
  */
 
 import { Knex } from 'knex';
+import { Duration } from 'luxon';
 import { Logger } from 'winston';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
@@ -48,6 +49,20 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
     await TaskWorker.trigger(knex, id);
   }
 
+  private parseDuration(
+    frequency: TaskScheduleDefinition['frequency'],
+  ): string {
+    if ('cron' in frequency) {
+      return frequency.cron;
+    }
+
+    if (frequency instanceof Duration) {
+      return frequency.toISO();
+    }
+
+    return Duration.fromObject(frequency).toISO();
+  }
+
   async scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void> {
@@ -61,12 +76,11 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       await worker.start(
         {
           version: 2,
-          cadence:
-            'cron' in task.frequency
-              ? task.frequency.cron
-              : task.frequency.toISO(),
-          initialDelayDuration: task.initialDelay?.toISO(),
-          timeoutAfterDuration: task.timeout.toISO(),
+          cadence: this.parseDuration(task.frequency),
+          initialDelayDuration:
+            task.initialDelay && this.parseDuration(task.initialDelay),
+          timeoutAfterDuration:
+            task.timeout && this.parseDuration(task.timeout),
         },
         {
           signal: task.signal,
@@ -78,12 +92,11 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       worker.start(
         {
           version: 2,
-          cadence:
-            'cron' in task.frequency
-              ? task.frequency.cron
-              : task.frequency.toISO(),
-          initialDelayDuration: task.initialDelay?.toISO(),
-          timeoutAfterDuration: task.timeout.toISO(),
+          cadence: this.parseDuration(task.frequency),
+          initialDelayDuration:
+            task.initialDelay && this.parseDuration(task.initialDelay),
+          timeoutAfterDuration:
+            task.timeout && this.parseDuration(task.timeout),
         },
         {
           signal: task.signal,

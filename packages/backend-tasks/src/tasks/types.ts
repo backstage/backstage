@@ -20,6 +20,21 @@ import { AbortSignal } from 'node-abort-controller';
 import { z } from 'zod';
 
 /**
+ * Human friendly durations object
+ * @public
+ */
+export type HumanDuration = {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+};
+
+/**
  * A function that can be called as a scheduled task.
  *
  * It may optionally accept an abort signal argument. When the signal triggers,
@@ -74,14 +89,15 @@ export interface TaskScheduleDefinition {
          */
         cron: string;
       }
-    | Duration;
+    | Duration
+    | HumanDuration;
 
   /**
    * The maximum amount of time that a single task invocation can take, before
    * it's considered timed out and gets "released" such that a new invocation
    * is permitted to take place (possibly, then, on a different worker).
    */
-  timeout: Duration;
+  timeout: Duration | HumanDuration;
 
   /**
    * The amount of time that should pass before the first invocation happens.
@@ -100,7 +116,7 @@ export interface TaskScheduleDefinition {
    * work; its main intended use is for individual machines to get a chance to
    * reach some equilibrium at startup before triggering heavy batch workloads.
    */
-  initialDelay?: Duration;
+  initialDelay?: Duration | HumanDuration;
 
   /**
    * Sets the scope of concurrency control / locking to apply for invocations of

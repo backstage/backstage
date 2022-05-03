@@ -21,4 +21,5 @@ export type {
   TaskInvocationDefinition,
   TaskRunner,
   TaskScheduleDefinition,
+  HumanDuration,
 } from './types';
