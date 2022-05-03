@@ -22,6 +22,7 @@ import {
   BuildResult,
   BuildRun,
   BuildStatus,
+  GitTag,
   PullRequest,
   PullRequestStatus,
   RepoBuild,
@@ -46,6 +47,7 @@ describe('createRouter', () => {
       getBuildDefinitions: jest.fn(),
       getRepoBuilds: jest.fn(),
       getDefinitionBuilds: jest.fn(),
+      getGitTags: jest.fn(),
       getPullRequests: jest.fn(),
       getBuilds: jest.fn(),
       getBuildRuns: jest.fn(),
@@ -205,6 +207,43 @@ describe('createRouter', () => {
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(repoBuilds);
+    });
+  });
+
+  describe('GET /git-tags/:projectName/:repoName', () => {
+    it('fetches a list of git tags', async () => {
+      const firstGitTag: GitTag = {
+        name: 'v1.1.2',
+        createdBy: 'Jane Doe',
+        commitLink:
+          'https://host.com/myOrg/_git/super-feature-repo/commit/1234567890abcdef1234567890abcdef12345678',
+        objectId: '1111aaaa2222bbbb3333cccc4444dddd5555eeee',
+        peeledObjectId: '1234567890abcdef1234567890abcdef12345678',
+        link: 'https://host.com/myOrg/_git/super-feature-repo?version=GTv1.1.2',
+      };
+
+      const secondGitTag: GitTag = {
+        name: 'v1.2.0',
+        createdBy: 'Jane Doe',
+        commitLink:
+          'https://host.com/myOrg/_git/super-feature-repo/commit/2222222222222222222222222222222222222222',
+        objectId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        peeledObjectId: '2222222222222222222222222222222222222222',
+        link: 'https://host.com/myOrg/_git/super-feature-repo?version=GTv1.2.0',
+      };
+
+      const gitTags: GitTag[] = [firstGitTag, secondGitTag];
+
+      azureDevOpsApi.getGitTags.mockResolvedValueOnce(gitTags);
+
+      const response = await request(app).get('/git-tags/myProject/myRepo');
+
+      expect(azureDevOpsApi.getGitTags).toHaveBeenCalledWith(
+        'myProject',
+        'myRepo',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(gitTags);
     });
   });
 
