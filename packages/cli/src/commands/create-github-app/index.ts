@@ -16,9 +16,8 @@
 
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import inquirer, { Answers } from 'inquirer';
 import { stringify as stringifyYaml } from 'yaml';
-import inquirer, { Question } from 'inquirer';
+import inquirer, { Question, Answers } from 'inquirer';
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import fetch from 'node-fetch';
