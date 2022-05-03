@@ -56,7 +56,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       return frequency.cron;
     }
 
-    if (frequency instanceof Duration) {
+    if (Duration.isDuration(frequency)) {
       return frequency.toISO();
     }
 
