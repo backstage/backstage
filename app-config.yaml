@@ -267,7 +267,7 @@ catalog:
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
       rules:
-        allow:
+      - allow:
           - User
           - Group
     # Backstage end-to-end tests of TechDocs
