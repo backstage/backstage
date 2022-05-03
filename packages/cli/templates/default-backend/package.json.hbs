@@ -1,0 +1,40 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": true,
+  "backstage": {
+    "role": "backend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "build-image": "docker build ../.. -f Dockerfile --tag {{id}}"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "{{versionQuery '@backstage/backend-common'}}",
+    "@backstage/backend-tasks": "{{versionQuery '@backstage/backend-tasks'}}",
+    "@backstage/catalog-client": "{{versionQuery '@backstage/catalog-client'}}",
+    "@backstage/catalog-model": "{{versionQuery '@backstage/catalog-model'}}",
+    "@backstage/config": "{{versionQuery '@backstage/config'}}",
+    "@backstage/integration": "{{versionQuery '@backstage/integration'}}",
+    "express": "{{versionQuery 'express' '^4.17.1'}}",
+    "express-promise-router": "{{versionQuery 'express-promise-router' '^4.1.0'}}",
+    "pg": "{{versionQuery 'pg' '^8.3.0'}}",
+    "winston": "{{versionQuery 'winston' '^3.2.1'}}"
+  },
+  "devDependencies": {
+    "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+    "better-sqlite3": "{{versionQuery 'better-sqlite3' '^7.5.0'}}",
+    "@types/express": "{{versionQuery '@types/express' '^4.17.6'}}",
+    "@types/express-serve-static-core": "{{versionQuery '@types/express-serve-static-core' '^4.17.5'}}"
+  },
+  "files": [
+    "dist"
+  ]
+}
