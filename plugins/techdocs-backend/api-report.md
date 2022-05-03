@@ -21,6 +21,7 @@ import { PublisherBase } from '@backstage/plugin-techdocs-node';
 import { Readable } from 'stream';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import { TokenManager } from '@backstage/backend-common';
+import * as winston from 'winston';
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -71,22 +72,24 @@ export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
-  logger: Logger;
+  logger: winston.Logger;
   discovery: PluginEndpointDiscovery;
   database?: Knex;
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  buildLogTransport?: winston.transport;
 };
 
 // @public
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
-  logger: Logger;
+  logger: winston.Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  buildLogTransport?: winston.transport;
 };
 
 // @public
