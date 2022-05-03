@@ -282,14 +282,6 @@ const errorsContent = (
   </EntitySwitch>
 );
 
-const gitTagsContent = (
-  <EntitySwitch>
-    <EntitySwitch.Case if={isAzureDevOpsAvailable}>
-      <EntityAzureGitTagsContent defaultLimit={25} />
-    </EntitySwitch.Case>
-  </EntitySwitch>
-);
-
 const pullRequestsContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isAzureDevOpsAvailable}>
@@ -492,7 +484,7 @@ const websiteEntityPage = (
       path="/git-tags"
       title="Git Tags"
     >
-      {gitTagsContent}
+      <EntityAzureGitTagsContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">
