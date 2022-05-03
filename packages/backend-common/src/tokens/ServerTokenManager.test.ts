@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '../logging/voidLogger';
+
 import { ConfigReader } from '@backstage/config';
-import { ServerTokenManager } from './ServerTokenManager';
-import { Logger } from 'winston';
 import * as jose from 'jose';
+import { Logger } from 'winston';
+import { getVoidLogger } from '../logging/voidLogger';
+import { ServerTokenManager } from './ServerTokenManager';
 import { TokenManager } from './types';
 
 const emptyConfig = new ConfigReader({});
@@ -35,6 +36,7 @@ describe('ServerTokenManager', () => {
 
   afterEach(() => {
     process.env = env;
+    jest.useRealTimers();
   });
 
   describe('getToken', () => {
@@ -166,6 +168,28 @@ describe('ServerTokenManager', () => {
         /invalid server token/i,
       );
     });
+
+    it('should throw for expired tokens', async () => {
+      jest.useFakeTimers('modern');
+      jest.setSystemTime(new Date('2020-02-02T02:00:00.0000000Z'));
+
+      const tokenManager = ServerTokenManager.fromConfig(configWithSecret, {
+        logger,
+      });
+
+      const { token } = await tokenManager.getToken();
+      await expect(tokenManager.authenticate(token)).resolves.not.toThrow();
+
+      jest.setSystemTime(new Date('2020-02-02T02:59:00.0000000Z'));
+      await expect(tokenManager.authenticate(token)).resolves.not.toThrow();
+
+      jest.setSystemTime(new Date('2020-02-02T03:00:01.0000000Z'));
+      await expect(
+        tokenManager.authenticate(token),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        '"Invalid server token: JWTExpired: \\"exp\\" claim timestamp check failed"',
+      );
+    });
   });
 
   describe('fromConfig', () => {
@@ -242,7 +266,7 @@ describe('ServerTokenManager', () => {
     });
   });
 
-  describe('ServerTokenManager.noop', () => {
+  describe('noop', () => {
     let noopTokenManager: TokenManager;
 
     beforeEach(() => {
