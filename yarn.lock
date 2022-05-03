@@ -83,10 +83,10 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@1.0.0-next.37":
-  version "1.0.0-next.37"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.37.tgz#d7b8d3efb297ed93c61aee6bf7dcf808ccc0ab79"
-  integrity sha512-LSvz4f3VgFRmzJWnR2QO+jEjZVQEIyrT3FVyVTX0PQuh0xZmbEinXAhPxUFZVUypsHbGXzhvjQiTf3lb/0F29A==
+"@asyncapi/react-component@1.0.0-next.38":
+  version "1.0.0-next.38"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-1.0.0-next.38.tgz#33909f556f18870faca8d8a9e9827a7e341a90ea"
+  integrity sha512-Uq0wcVHqmKXfvYCa74OiCEgNz3CbpVodeeIjrIsKWqyb9H6QjEA0pIJSLbvEwA+YKVGDXb48R3zsMSmRaqnmnA==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.3.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
