@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
-import inquirer, { Question } from 'inquirer';
+import inquirer, { Question, Answers } from 'inquirer';
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
 import fetch from 'node-fetch';
@@ -26,8 +26,20 @@ import openBrowser from 'react-dev-utils/openBrowser';
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest
 export default async (org: string) => {
+  const answers: Answers = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'appType',
+      message: chalk.blue('What will the app be used for [required]'),
+      choices: ['Read and Write (needed by Software Templates)', 'Read only'],
+    },
+  ]);
+  const readWrite = answers.appType !== 'Read only';
   await verifyGithubOrg(org);
-  const { slug, name, ...config } = await GithubCreateAppServer.run({ org });
+  const { slug, name, ...config } = await GithubCreateAppServer.run({
+    org,
+    readWrite,
+  });
 
   const fileName = `github-app-${slug}-credentials.yaml`;
   const content = `# Name: ${name}\n${stringifyYaml(config)}`;
