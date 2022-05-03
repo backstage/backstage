@@ -8,7 +8,7 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // @public
-export const ExpandableNavigation: (props: unknown) => JSX.Element | null;
+export const ExpandableNavigation: () => JSX.Element | null;
 
 // @public
 export const ReportIssue: (props: ReportIssueProps) => JSX.Element | null;

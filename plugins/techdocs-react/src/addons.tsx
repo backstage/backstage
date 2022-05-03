@@ -51,6 +51,14 @@ const getDataKeyByName = (name: string) => {
  * Create a TechDocs addon.
  * @public
  */
+export function createTechDocsAddonExtension(
+  options: TechDocsAddonOptions,
+): Extension<() => JSX.Element | null>;
+
+export function createTechDocsAddonExtension<TComponentProps>(
+  options: TechDocsAddonOptions<TComponentProps>,
+): Extension<(props: TComponentProps) => JSX.Element | null>;
+
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null> {

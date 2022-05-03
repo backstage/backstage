@@ -34,7 +34,39 @@ export const techdocsModuleAddonsContribPlugin = createPlugin({
 });
 
 /**
- * TechDocs addon that lets you expand/collapse the TechDocs main navigation.
+ * TechDocs addon that lets you expand/collapse the TechDocs main navigation
+ * and keep the preferred state in local storage. The addon will render as
+ * a button next to the site name if the documentation has nested navigation.
+ *
+ * @example
+ * Here's a simple example:
+ * ```
+ * import {
+ *   DefaultTechDocsHome,
+ *   TechDocsIndexPage,
+ *   TechDocsReaderPage,
+ * } from '@backstage/plugin-techdocs';
+ * import { TechDocsAddons } from '@backstage/plugin-techdocs-react/alpha';
+ * import { ExpandableNavigation } from '@backstage/plugin-techdocs-module-addons-contrib';
+ *
+ *
+ * const AppRoutes = () => {
+ *   <FlatRoutes>
+ *     // other plugin routes
+ *     <Route path="/docs" element={<TechDocsIndexPage />}>
+ *       <DefaultTechDocsHome />
+ *     </Route>
+ *     <Route
+ *       path="/docs/:namespace/:kind/:name/*"
+ *       element={<TechDocsReaderPage />}
+ *     >
+ *       <TechDocsAddons>
+ *         <ExpandableNavigation />
+ *       </TechDocsAddons>
+ *     </Route>
+ *   </FlatRoutes>;
+ * };
+ * ```
  *
  * @public
  */

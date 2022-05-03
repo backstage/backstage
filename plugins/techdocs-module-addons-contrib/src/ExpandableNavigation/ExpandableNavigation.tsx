@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
 import { Button, withStyles } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { useShadowRoot } from '@backstage/plugin-techdocs-react';
+import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 
 const NESTED_LIST_TOGGLE = '.md-nav__item--nested .md-toggle';
 
@@ -52,12 +52,15 @@ const ExpandedIcon = withStyles({
 })(ExpandMoreIcon);
 
 type expandableNavigationLocalStorage = {
-  navExpanded: boolean;
+  expandAllNestedNavs: boolean;
 };
 
+/**
+ * Show expand/collapse navigation button next to site name in main
+ * navigation menu if documentation site has nested navigation.
+ */
 export const ExpandableNavigationAddon = () => {
-  const shadowRoot = useShadowRoot();
-  const defaultValue = { navExpanded: false };
+  const defaultValue = { expandAllNestedNavs: false };
   const [expanded, setExpanded] =
     useLocalStorageValue<expandableNavigationLocalStorage>(
       EXPANDABLE_NAVIGATION_LOCAL_STORAGE,
@@ -65,25 +68,43 @@ export const ExpandableNavigationAddon = () => {
     );
   const [hasNavSubLevels, setHasNavSubLevels] = useState<boolean>(false);
 
+  const [...checkboxToggles] = useShadowRootElements<HTMLInputElement>([
+    NESTED_LIST_TOGGLE,
+  ]);
+
+  const shouldToggle = useCallback(
+    (item: HTMLInputElement) => {
+      const isExpanded = item.checked;
+      const shouldExpand = expanded?.expandAllNestedNavs;
+
+      // Is collapsed but should expand
+      if (shouldExpand && !isExpanded) {
+        return true;
+      }
+
+      // Is expanded but should collapse
+      if (!shouldExpand && isExpanded) {
+        return true;
+      }
+
+      return false;
+    },
+    [expanded],
+  );
+
   useEffect(() => {
-    const checkboxToggles =
-      shadowRoot?.querySelectorAll<HTMLInputElement>(NESTED_LIST_TOGGLE);
-    if (!checkboxToggles || (checkboxToggles && checkboxToggles.length === 0))
-      return;
+    // There is no nested navs
+    if (!checkboxToggles?.length) return;
+
     setHasNavSubLevels(true);
     checkboxToggles.forEach(item => {
-      if (
-        (expanded?.navExpanded && !item.checked) ||
-        (!expanded?.navExpanded && item.checked)
-      ) {
-        item.click();
-      }
+      if (shouldToggle(item)) item.click();
     });
-  }, [shadowRoot, expanded]);
+  }, [expanded, shouldToggle, checkboxToggles]);
 
   const handleState = () => {
     setExpanded(prevState => ({
-      navExpanded: !prevState?.navExpanded,
+      expandAllNestedNavs: !prevState?.expandAllNestedNavs,
     }));
   };
 
@@ -93,9 +114,11 @@ export const ExpandableNavigationAddon = () => {
         <StyledButton
           size="small"
           onClick={handleState}
-          aria-label={expanded?.navExpanded ? 'collapse-nav' : 'expand-nav'}
+          aria-label={
+            expanded?.expandAllNestedNavs ? 'collapse-nav' : 'expand-nav'
+          }
         >
-          {expanded?.navExpanded ? <ExpandedIcon /> : <CollapsedIcon />}
+          {expanded?.expandAllNestedNavs ? <ExpandedIcon /> : <CollapsedIcon />}
         </StyledButton>
       ) : null}
     </>
