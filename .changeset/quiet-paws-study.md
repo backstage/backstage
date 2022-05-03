@@ -4,11 +4,11 @@
 
 Output logs from a TechDocs build to a logging transport in addition to existing frontend event stream, for capturing these logs to other sources.
 
-This allows users to capture debugging information around why tech docs fail to build without needing to rely on end users ending information from their web browser.
+This allows users to capture debugging information around why tech docs fail to build without needing to rely on end users capturing information from their web browser.
 
 The most common use case is to log to the same place as the rest of the backend application logs.
 
-To use, include
+Sample usage:
 
 ```
 import { DockerContainerRunner } from '@backstage/backend-common';
@@ -57,7 +57,7 @@ export default async function createPlugin(
     generators,
     publisher,
     logger: env.logger,
-    buildTransportLogger: env.logger,
+    buildLogTransport: env.logger,
     config: env.config,
     discovery: env.discovery,
     cache: env.cache,
