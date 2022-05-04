@@ -34,7 +34,7 @@
     "git-url-parse": "^11.6.0",
     "octokit": "^1.7.1",
     "react-markdown": "^8.0.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router-dom": "6.3.0",
     "react-text-truncate": "^0.18.0",
     "react-use": "^17.2.4",
     "remark-gfm": "^3.0.1"

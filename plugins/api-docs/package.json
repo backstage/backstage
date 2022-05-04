@@ -46,8 +46,8 @@
     "graphiql": "^1.8.8",
     "graphql": "^16.0.0",
     "isomorphic-form-data": "^2.0.0",
-    "react-router": "6.0.0-beta.0",
-    "react-router-dom": "6.0.0-beta.0",
+    "react-router": "6.3.0",
+    "react-router-dom": "6.3.0",
     "react-use": "^17.2.4",
     "swagger-ui-react": "^4.1.3"
   },
