@@ -27,7 +27,7 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
   private docStore: Record<string, IndexableDocument> = {};
 
   constructor() {
-    super({ batchSize: 100 });
+    super({ batchSize: 1000 });
 
     this.builder = new lunr.Builder();
     this.builder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
