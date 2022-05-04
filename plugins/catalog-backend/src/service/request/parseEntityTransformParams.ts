@@ -30,6 +30,8 @@ function getPathArray(input: Entity, field: string) {
     if (lodash.has(input, pathArray.concat(currentPathPart))) {
       pathArray.push(currentPathPart);
       currentPathPart = '';
+    } else {
+      currentPathPart += '.';
     }
   }
 

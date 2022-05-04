@@ -25,7 +25,9 @@ describe('parseEntityTransformParams', () => {
       name: 'n',
       tags: ['t1', 't2'],
       annotations: {
-        'test.com/url-like': 'ul1',
+        'example.test/url-like-key': 'ul1',
+        'example.com/other-url-like-key': 'ul2',
+        'other-example.test/next-url-like-key': 'ul3',
       },
     },
     spec: {
@@ -68,20 +70,63 @@ describe('parseEntityTransformParams', () => {
         metadata: {
           name: 'n',
           tags: ['t1', 't2'],
-          annotations: { 'test.com/url-like': 'ul1' },
+          annotations: {
+            'example.test/url-like-key': 'ul1',
+            'example.com/other-url-like-key': 'ul2',
+            'other-example.test/next-url-like-key': 'ul3',
+          },
         },
       },
     );
   });
 
-  it('supports dot notated feilds properly', () => {
+  it('supports dot notated fields properly', () => {
     expect(
       parseEntityTransformParams({
-        fields: 'kind,metadata.annotations.test.com/url-like',
+        fields: 'kind,metadata.annotations.example.com/other-url-like-key',
       })!(entity),
     ).toEqual({
       kind: 'k',
-      metadata: { annotations: { 'test.com/url-like': 'ul1' } },
+      metadata: { annotations: { 'example.com/other-url-like-key': 'ul2' } },
+    });
+  });
+
+  it('supports nested dot notated fields properly', () => {
+    entity.spec = {
+      ...entity.spec,
+      'field-with.dot': 'fd1',
+      'other-field-with.dot-also': {
+        subItem: 'fd2.sub',
+        'subite.with/dot': 'fd2.sub.dot',
+      },
+      'third-field-with.dot-again': 'fd3',
+      type: 't',
+    };
+
+    expect(
+      parseEntityTransformParams({
+        fields: 'kind,spec.other-field-with.dot-also',
+      })!(entity),
+    ).toEqual({
+      kind: 'k',
+      spec: {
+        'other-field-with.dot-also': {
+          subItem: 'fd2.sub',
+          'subite.with/dot': 'fd2.sub.dot',
+        },
+      },
+    });
+    expect(
+      parseEntityTransformParams({
+        fields: 'kind,spec.other-field-with.dot-also.subite.with/dot',
+      })!(entity),
+    ).toEqual({
+      kind: 'k',
+      spec: {
+        'other-field-with.dot-also': {
+          'subite.with/dot': 'fd2.sub.dot',
+        },
+      },
     });
   });
 });
