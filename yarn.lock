@@ -15495,9 +15495,9 @@ jose@^4.1.4:
   integrity sha512-GFcVFQwYQKbQTUOo2JlpFGXTkgBw26uzDsRMD2q1WgSKNSnpKS9Ug7bdQ8dS+p4sZHNH6iRPu6WK2jLIjspaMA==
 
 jose@^4.6.0:
-  version "4.6.2"
-  resolved "https://registry.npmjs.org/jose/-/jose-4.6.2.tgz#45724b4ec9b1e543240dba3da087f80eb979c1e1"
-  integrity sha512-7Jd3kGkgDfhpj+SFqfam70HyVC0gtdfbGc/tHb5dqsWYlQqodgkotqWYEXn1PhQXgdJqsyOAIKT0N4O2riUFiA==
+  version "4.8.1"
+  resolved "https://registry.npmjs.org/jose/-/jose-4.8.1.tgz#dc7c2660b115ba29b44880e588c5ac313c158247"
+  integrity sha512-+/hpTbRcCw9YC0TOfN1W47pej4a9lRmltdOVdRLz5FP5UvUq3CenhXjQK7u/8NdMIIShMXYAh9VLPhc7TjhvFw==
 
 joycon@^3.0.1:
   version "3.1.0"
