@@ -17,10 +17,4 @@
 import { GitTagTable } from '../GitTagTable/GitTagTable';
 import React from 'react';
 
-export const EntityPageAzureGitTags = ({
-  defaultLimit,
-}: {
-  defaultLimit?: number;
-}) => {
-  return <GitTagTable />;
-};
+export const EntityPageAzureGitTags = () => <GitTagTable />;
