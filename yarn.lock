@@ -5414,7 +5414,7 @@
   dependencies:
     ansi-regex "*"
 
-"@types/archiver@^5.1.0", "@types/archiver@^5.1.1":
+"@types/archiver@^5.1.0", "@types/archiver@^5.3.1":
   version "5.3.1"
   resolved "https://registry.npmjs.org/@types/archiver/-/archiver-5.3.1.tgz#02991e940a03dd1a32678fead4b4ca03d0e387ca"
   integrity sha512-wKYZaSXaDvTZuInAWjCeGG7BEAgTWG2zZW0/f7IYFcoHB2X2d9lkVFnrOlXl3W6NrvO6Ml3FLLu8Uksyymcpnw==
@@ -5746,7 +5746,7 @@
     "@types/node" "*"
     "@types/ssh2" "*"
 
-"@types/dockerode@^3.2.7", "@types/dockerode@^3.3.0":
+"@types/dockerode@^3.3.0", "@types/dockerode@^3.3.8":
   version "3.3.8"
   resolved "https://registry.npmjs.org/@types/dockerode/-/dockerode-3.3.8.tgz#afb844b8e8cf54160e1686832903a1444912ff79"
   integrity sha512-/Hip29GzPBWfbSS87lyQDVoB7Ja+kr8oOFWXsySxNFa7jlyj3Yws8LaZRmn1xZl7uJH3Xxsg0oI09GHpT1pIBw==
@@ -7487,7 +7487,7 @@ archiver-utils@^2.1.0:
     normalize-path "^3.0.0"
     readable-stream "^2.0.0"
 
-archiver@^5.0.2, archiver@^5.3.0:
+archiver@^5.0.2, archiver@^5.3.1:
   version "5.3.1"
   resolved "https://registry.npmjs.org/archiver/-/archiver-5.3.1.tgz#21e92811d6f09ecfce649fbefefe8c79e57cbbb6"
   integrity sha512-8KyabkmbYrH+9ibcTScQ1xCJC/CGcugdVIwB+53f5sZziXgwUh3iXlAlANMxcZyDEfTHMe6+Z5FofV8nopXP7w==
@@ -23645,14 +23645,14 @@ test-exclude@^6.0.0:
     minimatch "^3.0.4"
 
 testcontainers@^8.1.2:
-  version "8.6.1"
-  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-8.6.1.tgz#a37b1eb938665f333594837caaed806ea51f7217"
-  integrity sha512-yRRx55tVOwExivh6BSrbZXItmRUm5qdMks1nN3n2P7n4DIJOl4VHIcI3HiRucU4hMsbT8lXx68+xQFqz3W+ZSQ==
+  version "8.9.0"
+  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-8.9.0.tgz#20665caa7618e565e1d82850e73d658a0dfef010"
+  integrity sha512-q46N+P9wyLXmQ8QPM6+NxvvLW+A+0FxIPHl5/GF0s9mKApWB6eCGj73BMT+x7qv0/1JdtxKhcPNOYWTrfS2GeA==
   dependencies:
     "@balena/dockerignore" "^1.0.2"
-    "@types/archiver" "^5.1.1"
-    "@types/dockerode" "^3.2.7"
-    archiver "^5.3.0"
+    "@types/archiver" "^5.3.1"
+    "@types/dockerode" "^3.3.8"
+    archiver "^5.3.1"
     byline "^5.0.0"
     debug "^4.3.4"
     docker-compose "^0.23.17"
