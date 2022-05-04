@@ -571,36 +571,6 @@ describe('DefaultWorkflowRunner', () => {
             input: {},
           },
         ],
-        output: {
-          foo: '${{ parameters.repoUrl | parseRepoUrl }}',
-        },
-        parameters: {
-          repoUrl: 'github.com?repo=repo&owner=owner',
-        },
-      });
-
-      const { output } = await runner.execute(task);
-
-      expect(output.foo).toEqual({
-        host: 'github.com',
-        owner: 'owner',
-        repo: 'repo',
-      });
-    });
-  });
-
-  describe('filters', () => {
-    it('provides the parseRepoUrl filter', async () => {
-      const task = createMockTaskWithSpec({
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        steps: [
-          {
-            id: 'test',
-            name: 'name',
-            action: 'output-action',
-            input: {},
-          },
-        ],
         user: {
           entity: { metadata: { name: 'bob' } } as UserEntity,
           ref: 'user:default/guest',
@@ -616,6 +586,36 @@ describe('DefaultWorkflowRunner', () => {
       const { output } = await runner.execute(task);
 
       expect(output.foo).toEqual('bob user:default/guest');
+    });
+  });
+
+  describe('filters', () => {
+    it('provides the parseRepoUrl filter', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        output: {
+          foo: '${{ parameters.repoUrl | parseRepoUrl }}',
+        },
+        parameters: {
+          repoUrl: 'github.com?repo=repo&owner=owner',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual({
+        host: 'github.com',
+        owner: 'owner',
+        repo: 'repo',
+      });
     });
   });
 });
