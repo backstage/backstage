@@ -194,10 +194,14 @@ export interface KubernetesFetchError {
 export interface KubernetesRequestBody {
   // (undocumented)
   auth?: {
-    google?: string;
+    google: string;
   };
   // (undocumented)
   entity: Entity;
+  // (undocumented)
+  oidc?: {
+    [key: string]: string;
+  };
 }
 
 // Warning: (ae-missing-release-tag) "ObjectsByEntityResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

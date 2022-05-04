@@ -41,6 +41,7 @@ export interface ClusterDetails {
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
   name: string;
+  oidcTokenProvider?: string | undefined;
   // (undocumented)
   serviceAccountToken?: string | undefined;
   skipMetricsLookup?: boolean;

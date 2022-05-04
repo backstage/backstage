@@ -17,6 +17,7 @@ import type { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { V1ConfigMap } from '@kubernetes/client-node';
@@ -225,6 +226,7 @@ export interface KubernetesApi {
     {
       name: string;
       authProvider: string;
+      oidcTokenProvider?: string | undefined;
     }[]
   >;
   // (undocumented)
@@ -242,7 +244,12 @@ export const kubernetesApiRef: ApiRef<KubernetesApi>;
 //
 // @public (undocumented)
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
-  constructor(options: { googleAuthApi: OAuthApi });
+  constructor(options: {
+    googleAuthApi: OAuthApi;
+    oidcProviders?: {
+      [key: string]: OpenIdConnectApi;
+    };
+  });
   // (undocumented)
   decorateRequestBodyForAuth(
     authProvider: string,
