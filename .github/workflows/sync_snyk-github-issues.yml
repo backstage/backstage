@@ -18,7 +18,7 @@ jobs:
 
       # Beginning of yarn setup, keep in sync between all workflows, see ci.yml
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
