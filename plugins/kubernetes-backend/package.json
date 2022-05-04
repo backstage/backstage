@@ -35,6 +35,7 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@azure/identity": "^2.0.4",
     "@backstage/backend-common": "^0.13.3-next.0",
     "@backstage/catalog-model": "^1.0.1",
     "@backstage/config": "^1.0.0",

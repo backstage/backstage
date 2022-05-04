@@ -61,6 +61,9 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
 
             return { assumeRole, externalId, ...clusterDetails };
           }
+          case 'azure': {
+            return clusterDetails;
+          }
           case 'serviceAccount': {
             return clusterDetails;
           }
