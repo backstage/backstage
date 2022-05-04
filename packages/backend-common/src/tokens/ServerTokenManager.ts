@@ -17,11 +17,13 @@
 import { Config } from '@backstage/config';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { base64url, exportJWK, generateSecret, jwtVerify, SignJWT } from 'jose';
+import { DateTime, Duration } from 'luxon';
 import { Logger } from 'winston';
 import { TokenManager } from './types';
 
 const TOKEN_ALG = 'HS256';
 const TOKEN_SUB = 'backstage-server';
+const TOKEN_EXPIRY = Duration.fromObject({ hours: 1 });
 
 /**
  * A token manager that issues static dummy tokens and never fails
@@ -57,9 +59,10 @@ export interface ServerTokenManagerOptions {
  */
 export class ServerTokenManager implements TokenManager {
   private readonly options: ServerTokenManagerOptions;
-  private verificationKeys: Uint8Array[];
+  private readonly verificationKeys: Uint8Array[];
   private signingKey: Uint8Array;
-  private privateKeyPromise?: Promise<void>;
+  private privateKeyPromise: Promise<void> | undefined;
+  private currentTokenPromise: Promise<{ token: string }> | undefined;
 
   /**
    * Creates a token manager that issues static dummy tokens and never fails
@@ -140,13 +143,32 @@ export class ServerTokenManager implements TokenManager {
       await this.generateKeys();
     }
 
-    const jwt = await new SignJWT({})
-      .setProtectedHeader({ alg: TOKEN_ALG })
-      .setSubject(TOKEN_SUB)
-      .setExpirationTime('1h')
-      .sign(this.signingKey);
+    if (this.currentTokenPromise) {
+      return this.currentTokenPromise;
+    }
 
-    return { token: jwt };
+    const result = Promise.resolve().then(async () => {
+      const jwt = await new SignJWT({})
+        .setProtectedHeader({ alg: TOKEN_ALG })
+        .setSubject(TOKEN_SUB)
+        .setExpirationTime(DateTime.now().plus(TOKEN_EXPIRY).toUnixInteger())
+        .sign(this.signingKey);
+      return { token: jwt };
+    });
+
+    this.currentTokenPromise = result;
+
+    result
+      .then(() => {
+        setTimeout(() => {
+          this.currentTokenPromise = undefined;
+        }, TOKEN_EXPIRY.minus({ minutes: 5 }).toMillis());
+      })
+      .catch(() => {
+        this.currentTokenPromise = undefined;
+      });
+
+    return result;
   }
 
   async authenticate(token: string): Promise<void> {
