@@ -3,4 +3,4 @@
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
-add Azure Identity auth provider
+add Azure Identity auth provider and AKS dashboard formatter
