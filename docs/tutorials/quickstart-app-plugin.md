@@ -237,7 +237,7 @@ export const DenseTable = ({ viewer }: DenseTableProps) => {
 
 # The Fetch
 
-We're ready to flush out our fetch component
+We're ready to flesh out our fetch component
 
 1. Add our api hook inside ExampleFetchComponent
 
