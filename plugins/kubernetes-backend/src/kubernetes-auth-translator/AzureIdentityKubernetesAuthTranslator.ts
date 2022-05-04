@@ -18,7 +18,7 @@ import { KubernetesAuthTranslator } from './types';
 import { AzureClusterDetails } from '../types/types';
 import { DefaultAzureCredential } from '@azure/identity';
 
-const aksScope = "6dae42f8-4368-4678-94ff-3960e28e3630/.default" // This scope is the same for all Azure Managed Kubernetes
+const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope is the same for all Azure Managed Kubernetes
 
 export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator
@@ -35,7 +35,7 @@ export class AzureIdentityKubernetesAuthTranslator
 
     // TODO: can we cache this? It's inneficiant to get a new token every time
     const accessToken = await credentials.getToken(aksScope);
-    clusterDetailsWithAuthToken.serviceAccountToken = accessToken.token
+    clusterDetailsWithAuthToken.serviceAccountToken = accessToken.token;
     return clusterDetailsWithAuthToken;
   }
 }

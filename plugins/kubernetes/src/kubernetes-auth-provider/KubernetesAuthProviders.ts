@@ -44,7 +44,10 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       new GoogleServiceAccountAuthProvider(),
     );
     this.kubernetesAuthProviderMap.set('aws', new AwsKubernetesAuthProvider());
-    this.kubernetesAuthProviderMap.set('azure', new AzureKubernetesAuthProvider());
+    this.kubernetesAuthProviderMap.set(
+      'azure',
+      new AzureKubernetesAuthProvider(),
+    );
   }
 
   async decorateRequestBodyForAuth(
