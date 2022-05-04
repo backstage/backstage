@@ -35,6 +35,8 @@ representative of physical spaces in the TechDocs UI:
   line as the title.
 - `Subheader`: For Addons that sit below the header but above all content.
   This is a great location for tooling/configuration of TechDocs display.
+- `Settings`: These addons are items added to the settings menu list and are designed to make
+  the reader experience customizable, for example accessibility options.
 - `PrimarySidebar`: Left of the content, above of the navigation.
 - `SecondarySidebar`: Right of the content, above the table of contents.
 - `Content`: A special location intended for Addons which augment the
