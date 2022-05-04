@@ -32,7 +32,7 @@ function getPathArrayAndValue(input: Entity, field: string) {
 
       return [pathArray, undefined];
     },
-    [[] as unknown as string, input as any],
+    [[] as string[], input as any],
   );
 }
 
