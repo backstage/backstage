@@ -16189,9 +16189,9 @@ ldapjs@^2.2.0:
     verror "^1.8.1"
 
 leasot@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/leasot/-/leasot-12.0.0.tgz#78c5df2c941c7285374c8d992866e22163241b22"
-  integrity sha512-TMe3cJTRUMpXsOFNXCig5U84wM44y84vawkl2fC7iAJif88l/b7BtTt49VrkMsivlxlqHYVu5PjuxB9sRQf39w==
+  version "12.5.0"
+  resolved "https://registry.npmjs.org/leasot/-/leasot-12.5.0.tgz#d2b0273d0eaa3fc20ded2ede81b46b9c6f158451"
+  integrity sha512-bx2hqCDZ6EVzdaM+aIBNO12Ff0BscGVWPf23Wzj5FLCEXZuJR729Wn5Naom8dJcqpEbsk2XXzvdHus/3WZqW5w==
   dependencies:
     async "^3.2.0"
     chalk "^4.1.0"
