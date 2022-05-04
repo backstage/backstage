@@ -67,7 +67,7 @@ jobs:
       # Beginning of yarn setup, keep in sync between all workflows.
       # TODO(Rugvip): move this to composite action once all features we use are supported
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
