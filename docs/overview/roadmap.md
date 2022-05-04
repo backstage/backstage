@@ -60,13 +60,9 @@ The request to better coordinate the increasing contributions coming from the va
 
 ## Future work
 
-The following feature list doesn’t represent a commitment to develop, and the
-list order doesn’t reflect any priority or importance, but these features are on
-the maintainers’ radar, with clear interest expressed by the community.
+The following feature list doesn’t represent a commitment to develop, and the list order doesn’t reflect any priority or importance, but these features are on the maintainers’ radar, with clear interest expressed by the community.
 
-- **Security Plan (and Strategy):** The purpose of the Security Strategy is to
-  move another step along the path to maturing the platform, setting the
-  expectations of any adopters from a security standpoint.
+- **Security Plan (and Strategy):** The purpose of the Security Strategy is to move another step along the path to maturing the platform, setting the expectations of any adopters from a security standpoint.
 - **Composable Homepage 1.0:** Driving this to 1.0 by adding some composable components.
 - **[GraphQL](https://graphql.org/) support:** Introduce the ability to query Backstage backend services with a standard query language for APIs.
 - **Telemetry:** To efficiently generate logging and metrics in such a way that adopters can get insights so that Backstage can be monitored and improved.
@@ -74,66 +70,10 @@ the maintainers’ radar, with clear interest expressed by the community.
 
 ## How to influence the roadmap
 
-As we evolve Backstage, we want you to contribute actively in the journey to
-define the most effective developer experience in the world.
+As we evolve Backstage, we want you to contribute actively in the journey to define the most effective developer experience in the world.
 
-A roadmap is only useful if it captures real needs. If you have success stories,
-feedback, or ideas, we want to hear from you! If you plan to work (or are
-already working) on a new or existing feature, please let us know, so that we
-can update the roadmap accordingly. We are also happy to share knowledge and
-context that will help your feature land successfully.
+A roadmap is only useful if it captures real needs. If you have success stories, feedback, or ideas, we want to hear from you! If you plan to work (or are already working) on a new or existing feature, please let us know, so that we can update the roadmap accordingly. We are also happy to share knowledge and context that will help your feature land successfully.
 
-You can also head over to the
-[CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
-guidelines to get started.
+You can also head over to the [CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) guidelines to get started.
 
-If you have specific questions about the roadmap, please create an
-[issue](https://github.com/backstage/backstage/issues/new/choose), ping us on
-[Discord](https://discord.gg/qxsEfa8Vq8), or
-[book time](http://calendly.com/spotify-backstage) with the Spotify team.
-
-## Completed milestones
-
-Read more about the completed (and released) features for reference.
-
-- [[Search] ElasticSearch integration](https://backstage.io/docs/features/search/search-engines#elasticsearch)
-- [[Search] TechDocs search capabilities](https://backstage.io/docs/features/search/how-to-guides#how-to-index-techdocs-documents)
-- [TechDocs Beta](https://backstage.spotify.com/blog/product-updates/techdocs-beta-has-landed)
-- [[Home] Composable homepage](https://github.com/backstage/backstage/milestone/34)
-- [[Search] Out-of-the-Box Implementation (Alpha)](https://github.com/backstage/backstage/milestone/26)
-- [Deploy a product demo at `demo.backstage.io`](https://demo.backstage.io)
-- [Kubernetes plugin - v1](https://github.com/backstage/backstage/tree/master/plugins/kubernetes)
-- [Helm charts](https://github.com/backstage/backstage/tree/master/contrib/chart/backstage)
-- [Backstage Design System 💅](https://backstage.io/blog/2020/09/30/backstage-design-system)
-- [Cost Insights plugin 💸](https://engineering.atspotify.com/2020/09/29/managing-clouds-from-the-ground-up-cost-engineering-at-spotify/)
-- [Donate Backstage to the CNCF 🎉](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox)
-- [TechDocs v1](https://backstage.io/blog/2020/09/08/announcing-tech-docs)
-- [Plugin marketplace](https://backstage.io/plugins)
-- [Improved and move documentation to backstage.io](https://backstage.io/docs/overview/what-is-backstage)
-- [Backstage Software Catalog (alpha)](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
-- [Backstage Software Templates (alpha)](https://backstage.io/blog/2020/08/05/announcing-backstage-software-templates)
-- [Make it possible to add custom auth providers](https://backstage.io/blog/2020/07/01/how-to-enable-authentication-in-backstage-using-passport)
-- [TechDocs v0](https://github.com/backstage/backstage/milestone/15)
-- CI plugins: CircleCI, Jenkins, GitHub Actions and TravisCI
-- [Service API documentation](https://github.com/backstage/backstage/pull/1737)
-- Backstage Software Catalog can read from: GitHub, GitLab,
-  [Bitbucket](https://github.com/backstage/backstage/pull/1938)
-- Support auth providers: Google, Okta, GitHub, GitLab,
-  [auth0](https://github.com/backstage/backstage/pull/1611),
-  [AWS](https://github.com/backstage/backstage/pull/1990)
-
-- [Donate Backstage to the CNCF 🎉](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox)
-- [TechDocs v1](https://backstage.io/blog/2020/09/08/announcing-tech-docs)
-- [Plugin marketplace](https://backstage.io/plugins)
-- [Improved and move documentation to backstage.io](https://backstage.io/docs/overview/what-is-backstage)
-- [Backstage Software Catalog (alpha)](https://backstage.io/blog/2020/06/22/backstage-service-catalog-alpha)
-- [Backstage Software Templates (beta)](https://backstage.io/blog/2021/07/26/software-templates-are-now-in-beta)
-- [Make it possible to add custom auth providers](https://backstage.io/blog/2020/07/01/how-to-enable-authentication-in-backstage-using-passport)
-- [TechDocs v0](https://github.com/backstage/backstage/milestone/15)
-- CI plugins: CircleCI, Jenkins, GitHub Actions and TravisCI
-- [Service API documentation](https://github.com/backstage/backstage/pull/1737)
-- Backstage Software Catalog can read from: GitHub, GitLab,
-  [Bitbucket](https://github.com/backstage/backstage/pull/1938)
-- Support auth providers: Google, Okta, GitHub, GitLab,
-  [auth0](https://github.com/backstage/backstage/pull/1611),
-  [AWS](https://github.com/backstage/backstage/pull/1990)
+If you have specific questions about the roadmap, please create an [issue](https://github.com/backstage/backstage/issues/new/choose), ping us on [Discord](https://discord.gg/qxsEfa8Vq8), or [book time](http://calendly.com/spotify-backstage) with the Spotify team.
