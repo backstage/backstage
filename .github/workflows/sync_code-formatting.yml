@@ -9,7 +9,7 @@ jobs:
     name: Autofix Markdown files using Prettier
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # Fetch changes to previous commit - required for 'only_changed' in Prettier action
           fetch-depth: 0
