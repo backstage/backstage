@@ -95,7 +95,7 @@ jobs:
 
       - name: update artifact
         if: ${{ always() }}
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: cypress-videos
           path: ./cypress/cypress/videos
