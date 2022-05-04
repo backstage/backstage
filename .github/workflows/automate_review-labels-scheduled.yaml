@@ -22,7 +22,7 @@ jobs:
           node-version: 14
       - run: npm install codeowners
 
-      - uses: actions/github-script@v5
+      - uses: actions/github-script@v6
         id: fix-labels
         with:
           github-token: ${{ steps.get_workflow_token.outputs.token }}
