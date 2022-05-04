@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-insights
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- aa8db01acb: Add new component `EntityTechInsightsScorecardCard`, which can be used in the overview of the `EntityPage` page or display multiple individual `EntityTechInsightsScorecardCard` in `EntityLayout.Route`.
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes

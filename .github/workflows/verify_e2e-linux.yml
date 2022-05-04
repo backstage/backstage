@@ -48,7 +48,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: cache all node_modules
         id: cache-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-v${{ matrix.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
@@ -59,7 +59,7 @@ jobs:
       - name: setup chrome
         uses: browser-actions/setup-chrome@latest
       - name: cache global yarn cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         if: steps.cache-modules.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
@@ -78,3 +78,7 @@ jobs:
           yarn e2e-test run
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}

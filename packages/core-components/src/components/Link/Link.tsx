@@ -18,11 +18,27 @@ import { useAnalytics } from '@backstage/core-plugin-api';
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { ElementType } from 'react';
 import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
+
+const useStyles = makeStyles(
+  {
+    visuallyHidden: {
+      clip: 'rect(0 0 0 0)',
+      clipPath: 'inset(50%)',
+      overflow: 'hidden',
+      position: 'absolute',
+      whiteSpace: 'nowrap',
+      height: 1,
+      width: 1,
+    },
+  },
+  { name: 'Link' },
+);
 
 export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
@@ -62,6 +78,7 @@ const getNodeText = (node: React.ReactNode): string => {
  */
 export const Link = React.forwardRef<any, LinkProps>(
   ({ onClick, noTrack, ...props }, ref) => {
+    const classes = useStyles();
     const analytics = useAnalytics();
     const to = String(props.to);
     const linkText = getNodeText(props.children) || to;
@@ -83,7 +100,10 @@ export const Link = React.forwardRef<any, LinkProps>(
         onClick={handleClick}
         {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
         {...props}
-      />
+      >
+        {props.children}
+        <span className={classes.visuallyHidden}>, Opens in a new window</span>
+      </MaterialLink>
     ) : (
       // Interact with React Router for internal links
       <MaterialLink

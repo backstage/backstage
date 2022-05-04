@@ -283,8 +283,13 @@ export class TaskWorker {
         })}`,
       );
       nextRun = this.knex.client.config.client.includes('sqlite3')
-        ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])
-        : this.knex.raw(`next_run_start_at + interval '${dt} seconds'`);
+        ? this.knex.raw(
+            `max(datetime(next_run_start_at, ?), datetime('now'))`,
+            [`+${dt} seconds`],
+          )
+        : this.knex.raw(
+            `greatest(next_run_start_at + interval '${dt} seconds', now())`,
+          );
     }
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)

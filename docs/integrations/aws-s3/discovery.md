@@ -70,8 +70,8 @@ builder.addEntityProvider(
   ...AwsS3EntityProvider.fromConfig(env.config, {
     logger: env.logger,
     schedule: env.scheduler.createScheduledTaskRunner({
-      frequency: Duration.fromObject({ minutes: 30 }),
-      timeout: Duration.fromObject({ minutes: 3 }),
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
     }),
   }),
 );

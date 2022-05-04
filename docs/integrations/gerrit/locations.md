@@ -34,9 +34,9 @@ a structure with up to six elements:
 - `baseUrl` (optional): Needed if the Gerrit instance is not reachable at
   the base of the `host` option (e.g. `https://gerrit.company.com`) set the
   address here. This is the address that you would open in a browser.
-- `cloneUrl` (optional): The base url for HTTP clones. Will default to `baseUrl` if
+- `cloneUrl` (optional): The base URL for HTTP clones. Will default to `baseUrl` if
   not set. The address used to clone a repo is the `cloneUrl` plus the repo name.
-- `gitilesBaseUrl` (optional): This is needed for creating a valid user-friendly url
+- `gitilesBaseUrl` (optional): This is needed for creating a valid user-friendly URL
   that can be used for browsing the content of the provider. If not set a default
   value will be created in the same way as the "baseUrl" option. There is no
   requirement to have Gitiles for the Backstage Gerrit integration but without it

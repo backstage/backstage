@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs-react
 
+## 0.1.1-next.1
+
+### Patch Changes
+
+- 52fddad92d: The `TechDocsStorageApi` and its associated ref are now exported by `@backstage/plugin-techdocs-react`. The API interface, ref, and types are now deprecated in `@backstage/plugin-techdocs` and will be removed in a future release.
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+
 ## 0.1.1-next.0
 
 ### Patch Changes

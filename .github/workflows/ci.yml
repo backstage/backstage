@@ -75,7 +75,7 @@ jobs:
       # Cache every node_modules folder inside the monorepo
       - name: cache all node_modules
         id: cache-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: '**/node_modules'
           # We use both yarn.lock and package.json as cache keys to ensure that
@@ -91,7 +91,7 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: cache global yarn cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         if: steps.cache-modules.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}

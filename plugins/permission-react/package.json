@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-react",
-  "version": "0.4.0",
+  "version": "0.4.1-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@backstage/config": "^1.0.0",
-    "@backstage/core-plugin-api": "^1.0.1",
+    "@backstage/core-plugin-api": "^1.0.2-next.0",
     "@backstage/plugin-permission-common": "^0.6.0",
     "cross-fetch": "^3.1.5",
     "react-router": "6.0.0-beta.0",
@@ -44,8 +44,8 @@
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1-next.0",
-    "@backstage/test-utils": "^1.0.2-next.0",
+    "@backstage/cli": "^0.17.1-next.1",
+    "@backstage/test-utils": "^1.1.0-next.1",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@types/jest": "^26.0.7"

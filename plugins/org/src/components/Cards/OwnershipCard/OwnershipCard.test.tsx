@@ -265,6 +265,10 @@ describe('OwnershipCard', () => {
           type: 'memberOf',
           targetRef: 'group:default/my-team',
         },
+        {
+          type: 'memberOf',
+          targetRef: 'group:custom/some-team',
+        },
       ],
     };
     const catalogApi: jest.Mocked<CatalogApi> = {
@@ -288,7 +292,7 @@ describe('OwnershipCard', () => {
 
     expect(getByText('OPENAPI').closest('a')).toHaveAttribute(
       'href',
-      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=the-user&filters%5Bowners%5D=my-team&filters%5Buser%5D=all',
+      '/create/?filters%5Bkind%5D=API&filters%5Btype%5D=openapi&filters%5Bowners%5D=user%3Athe-user&filters%5Bowners%5D=my-team&filters%5Bowners%5D=custom%2Fsome-team&filters%5Buser%5D=all',
     );
   });
 

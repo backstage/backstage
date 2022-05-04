@@ -76,7 +76,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         callbackURL: options.callbackUrl,
         authorizationURL: options.authorizationUrl,
         tokenURL: options.tokenUrl,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
         scope: options.scope,
         customHeaders: options.includeBasicAuth
           ? {

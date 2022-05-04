@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 52fb9920ac: Fixed coverage configuration when using `BACKSTAGE_NEXT_TESTS`.
+- 6cd1f50ae1: Extended lint rule to prevents imports of stories or tests from production code.
+- 4d8736eded: Changed Rollup configuration for TypeScript definition plugin to ignore `css`,
+  `scss`, `sass`, `svg`, `eot`, `woff`, `woff2` and `ttf` files.
+- 2737777e02: Added the ability to help a user get started with a new organization
+
 ## 0.17.1-next.0
 
 ### Patch Changes
