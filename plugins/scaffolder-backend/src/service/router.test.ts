@@ -229,6 +229,8 @@ describe('createRouter', () => {
           },
         });
 
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       expect(broker).toHaveBeenCalledWith(
         expect.objectContaining({
           createdBy: 'user:default/guest',
@@ -278,6 +280,8 @@ describe('createRouter', () => {
             required: 'required-value',
           },
         });
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       expect(broker).toHaveBeenCalledWith(
         expect.objectContaining({
