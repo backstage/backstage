@@ -21,7 +21,7 @@ export class AzureKubernetesAuthProvider implements KubernetesAuthProvider {
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
-    // No-op, with aws auth, server's Azire credentials are used for access
+    // No-op, with aws auth, server's Azure credentials are used for access
     return requestBody;
   }
 }
