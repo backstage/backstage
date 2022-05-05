@@ -216,18 +216,22 @@ describe('createRouter', () => {
       const mockToken =
         'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
 
-      await request(app)
-        .post('/v2/tasks')
-        .set('Authorization', `Bearer ${mockToken}`)
-        .send({
-          templateRef: stringifyEntityRef({
-            kind: 'template',
-            name: 'create-react-app-template',
-          }),
-          values: {
-            required: 'required-value',
-          },
-        });
+      console.log(
+        JSON.stringify(
+          await request(app)
+            .post('/v2/tasks')
+            .set('Authorization', `Bearer ${mockToken}`)
+            .send({
+              templateRef: stringifyEntityRef({
+                kind: 'template',
+                name: 'create-react-app-template',
+              }),
+              values: {
+                required: 'required-value',
+              },
+            }),
+        ),
+      );
 
       await new Promise(resolve => setTimeout(resolve, 1000));
 
