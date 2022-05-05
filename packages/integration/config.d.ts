@@ -94,6 +94,11 @@ export interface Config {
        * @visibility frontend
        */
       apiBaseUrl?: string;
+      /**
+       * Custom request headers to Bitbucket Server provider.
+       * @visibility secret
+       */
+      headers?: Record<string, string>;
     }>;
 
     /** Integration configuration for Gerrit */

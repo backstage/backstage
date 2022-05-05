@@ -46,6 +46,11 @@ export type BitbucketServerIntegrationConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+
+  /**
+   * Custom headers to use for request to a Bitbucket Server provider.
+   */
+  headers?: Record<string, string>;
 };
 
 /**
@@ -71,6 +76,19 @@ export function readBitbucketServerIntegrationConfig(
     apiBaseUrl = trimEnd(apiBaseUrl, '/');
   } else {
     apiBaseUrl = `https://${host}/rest/api/1.0`;
+  }
+
+  if (config.getOptionalConfig('headers')) {
+    const headers: Record<string, string> = {};
+    for (const itemKey of config.getConfig('headers').keys()) {
+      headers[`${itemKey}`] = config.getString(`headers.${itemKey}`);
+    }
+    return {
+      host,
+      apiBaseUrl,
+      token,
+      headers,
+    };
   }
 
   return {

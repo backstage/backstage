@@ -61,12 +61,18 @@ describe('readBitbucketServerIntegrationConfig', () => {
         host: 'a.com',
         apiBaseUrl: 'https://a.com/api',
         token: 't',
+        headers: {
+          foo: 'bar',
+        },
       }),
     );
     expect(output).toEqual({
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
       token: 't',
+      headers: {
+        foo: 'bar',
+      },
     });
   });
 
@@ -87,6 +93,21 @@ describe('readBitbucketServerIntegrationConfig', () => {
     expect(() =>
       readBitbucketServerIntegrationConfig(buildConfig({ ...valid, token: 7 })),
     ).toThrow(/token/);
+    expect(() =>
+      readBitbucketServerIntegrationConfig(
+        buildConfig({ ...valid, headers: 7 }),
+      ),
+    ).toThrow(/headers/);
+    expect(() =>
+      readBitbucketServerIntegrationConfig(
+        buildConfig({ ...valid, headers: 'foo' }),
+      ),
+    ).toThrow(/headers/);
+    expect(() =>
+      readBitbucketServerIntegrationConfig(
+        buildConfig({ ...valid, headers: true }),
+      ),
+    ).toThrow(/headers/);
   });
 
   it('works on the frontend', async () => {
@@ -119,6 +140,9 @@ describe('readBitbucketServerIntegrationConfigs', () => {
           host: 'a.com',
           apiBaseUrl: 'https://a.com/api',
           token: 't',
+          headers: {
+            foo: 'bar',
+          },
         },
       ]),
     );
@@ -126,6 +150,9 @@ describe('readBitbucketServerIntegrationConfigs', () => {
       host: 'a.com',
       apiBaseUrl: 'https://a.com/api',
       token: 't',
+      headers: {
+        foo: 'bar',
+      },
     });
   });
 

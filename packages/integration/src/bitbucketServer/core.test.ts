@@ -49,6 +49,32 @@ describe('bitbucketServer core', () => {
           .Authorization,
       ).toBeUndefined();
     });
+
+    it('inserts custom headers when needed', () => {
+      const withHeaders: BitbucketServerIntegrationConfig = {
+        host: '',
+        apiBaseUrl: '',
+        token: 'A',
+        headers: {
+          foo: 'bar',
+        },
+      };
+      const withoutHeaders: BitbucketServerIntegrationConfig = {
+        host: '',
+        apiBaseUrl: '',
+        token: 'A',
+      };
+      expect(
+        (getBitbucketServerRequestOptions(withHeaders).headers as any).foo,
+      ).toEqual('bar');
+      expect(
+        (getBitbucketServerRequestOptions(withHeaders).headers as any)
+          .Authorization,
+      ).toEqual('Bearer A');
+      expect(
+        (getBitbucketServerRequestOptions(withoutHeaders).headers as any).foo,
+      ).toBeUndefined();
+    });
   });
 
   describe('getBitbucketServerFileFetchUrl', () => {

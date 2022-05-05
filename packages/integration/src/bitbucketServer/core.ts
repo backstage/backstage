@@ -139,6 +139,12 @@ export function getBitbucketServerRequestOptions(
     headers.Authorization = `Bearer ${config.token}`;
   }
 
+  if (config.headers) {
+    for (const key of Object.keys(config.headers)) {
+      headers[`${key}`] = config.headers[`${key}`];
+    }
+  }
+
   return {
     headers,
   };

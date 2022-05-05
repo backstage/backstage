@@ -150,6 +150,7 @@ export type BitbucketServerIntegrationConfig = {
   host: string;
   apiBaseUrl: string;
   token?: string;
+  headers?: Record<string, string>;
 };
 
 // @public
