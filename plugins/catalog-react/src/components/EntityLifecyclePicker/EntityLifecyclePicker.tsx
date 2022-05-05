@@ -99,31 +99,38 @@ export const EntityLifecyclePicker = () => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Lifecycle</Typography>
-      <Autocomplete
-        aria-label="Lifecycle"
-        multiple
-        options={availableLifecycles}
-        value={selectedLifecycles}
-        onChange={(_: object, value: string[]) => setSelectedLifecycles(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={option}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
-        renderInput={params => (
-          <TextField {...params} className={classes.input} variant="outlined" />
-        )}
-      />
+      <Typography variant="button" component="label">
+        Lifecycle
+        <Autocomplete
+          multiple
+          options={availableLifecycles}
+          value={selectedLifecycles}
+          onChange={(_: object, value: string[]) =>
+            setSelectedLifecycles(value)
+          }
+          renderOption={(option, { selected }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  checked={selected}
+                />
+              }
+              label={option}
+            />
+          )}
+          size="small"
+          popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              className={classes.input}
+              variant="outlined"
+            />
+          )}
+        />
+      </Typography>
     </Box>
   );
 };

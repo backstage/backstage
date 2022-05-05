@@ -199,6 +199,7 @@ export function SelectComponent(props: SelectProps) {
         <FormControl className={classes.formControl}>
           <InputLabel className={classes.formLabel}>{label}</InputLabel>
           <Select
+            aria-label={label}
             value={value}
             native={native}
             disabled={disabled}

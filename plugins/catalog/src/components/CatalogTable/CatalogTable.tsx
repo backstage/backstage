@@ -41,6 +41,7 @@ import {
 import StarBorder from '@material-ui/icons/StarBorder';
 import { withStyles } from '@material-ui/core/styles';
 import Star from '@material-ui/icons/Star';
+import { Typography } from '@material-ui/core';
 
 /**
  * Props for {@link CatalogTable}.
@@ -115,9 +116,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const defaultActions: TableProps<CatalogTableRow>['actions'] = [
     ({ entity }) => {
       const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
+      const title = 'View';
+
       return {
-        icon: () => <OpenInNew aria-label="View" fontSize="small" />,
-        tooltip: 'View',
+        icon: () => (
+          <>
+            <Typography variant="srOnly" title={title} />
+            <OpenInNew fontSize="small" />
+          </>
+        ),
+        tooltip: title,
         disabled: !url,
         onClick: () => {
           if (!url) return;
@@ -127,9 +135,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
     ({ entity }) => {
       const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
+      const title = 'Edit';
+
       return {
-        icon: () => <Edit aria-label="Edit" fontSize="small" />,
-        tooltip: 'Edit',
+        icon: () => (
+          <>
+            <Typography variant="srOnly" title={title} />
+            <Edit fontSize="small" />
+          </>
+        ),
+        tooltip: title,
         disabled: !url,
         onClick: () => {
           if (!url) return;
@@ -139,10 +154,17 @@ export const CatalogTable = (props: CatalogTableProps) => {
     },
     ({ entity }) => {
       const isStarred = isStarredEntity(entity);
+      const title = isStarred ? 'Remove from favorites' : 'Add to favorites';
+
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => (isStarred ? <YellowStar /> : <StarBorder />),
-        tooltip: isStarred ? 'Remove from favorites' : 'Add to favorites',
+        icon: () => (
+          <>
+            <Typography variant="srOnly" title={title} />
+            {isStarred ? <YellowStar /> : <StarBorder />}
+          </>
+        ),
+        tooltip: title,
         onClick: () => toggleStarredEntity(entity),
       };
     },

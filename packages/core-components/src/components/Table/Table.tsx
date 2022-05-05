@@ -499,7 +499,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
         icons={tableIcons}
         title={
           <>
-            <Typography variant="h5" component="h3">
+            <Typography variant="h5" component="h2">
               {title}
             </Typography>
             {subtitle && (
