@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, UserEntity } from '@backstage/catalog-model';
+import { Entity, UserEntity, GroupEntity } from '@backstage/catalog-model';
 
 function isUserEntity(entity: Entity): entity is UserEntity {
   return entity.kind.toLocaleUpperCase('en-US') === 'USER';
 }
 
-function isGroupEntity(entity: Entity): entity is UserEntity {
+function isGroupEntity(entity: Entity): entity is GroupEntity {
   return entity.kind.toLocaleUpperCase('en-US') === 'GROUP';
 }
 
