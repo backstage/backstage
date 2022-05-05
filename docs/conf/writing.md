@@ -161,7 +161,7 @@ $file: ./my-secret.txt
 
 The `$include` keyword can be used to load configuration values from an external
 file. It's able to load and parse data from `.json`, `.yml`, and `.yaml` files.
-It's also possible to include a url fragment (`#`) to point to a value at the
+It's also possible to include a URL fragment (`#`) to point to a value at the
 given path in the file, using a dot-separated list of keys.
 
 For example, the following would read `my-secret-key` from `my-secrets.json`:

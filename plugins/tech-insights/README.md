@@ -38,10 +38,6 @@ const serviceEntityPage = (
         title="Customized title for the scorecard"
         description="Small description about scorecards"
       />
-      <EntityTechInsightsScorecardContent
-        title="Show only simpleTestCheck in this card"
-        checksId={['simpleTestCheck']}
-      />
     </EntityLayout.Route>
     ...
   </EntityLayoutWrapper>
@@ -50,7 +46,44 @@ const serviceEntityPage = (
 
 It is not obligatory to pass title and description props to `EntityTechInsightsScorecardContent`. If those are left out, default values from `defaultCheckResultRenderers` in `CheckResultRenderer` will be taken, hence `Boolean scorecard` and `This card represents an overview of default boolean Backstage checks`.
 
+If you like to display multiple cards in a `EntityLayout.Route` use `EntityTechInsightsScorecardCard`.
+
 You can pass an array `checksId` as a prop with the [Fact Retrievers ids](../tech-insights-backend#creating-fact-retrievers) to limit which checks you want to show in this card, If you don't pass, the default value is show all checks.
+
+```tsx
+<EntityTechInsightsScorecardContent
+  title="Show only simpleTestCheck in this card"
+  checksId={['simpleTestCheck']}
+/>
+```
+
+If you want to show checks in the overview of an entity use `EntityTechInsightsScorecardCard`.
+
+```tsx
+// packages/app/src/components/catalog/EntityPage.tsx
+
+import { EntityTechInsightsScorecardCard } from '@backstage/plugin-tech-insights';
+
+const overviewContent = (
+  <Grid container spacing={3} alignItems="stretch">
+    {entityWarningContent}
+    <Grid item md={6} xs={12}>
+      <EntityAboutCard variant="gridItem" />
+    </Grid>
+    <Grid item md={6} xs={12}>
+      <EntityCatalogGraphCard variant="gridItem" height={400} />
+    </Grid>
+    ...
+    <Grid item md={8} xs={12}>
+      <EntityTechInsightsScorecardCard
+        title="Customized title for the scorecard"
+        description="Small description about scorecards"
+        checksId={['simpleTestCheck']}
+      />
+    </Grid>
+  </Grid>
+);
+```
 
 ## Boolean Scorecard Example
 

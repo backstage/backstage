@@ -140,7 +140,7 @@ const OverlayMenu = ({
           <CloseIcon />
         </IconButton>
       </Box>
-      <Box>{children}</Box>
+      <Box component="nav">{children}</Box>
     </Drawer>
   );
 };
@@ -226,6 +226,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
         <BottomNavigation
           className={classes.root}
           data-testid="mobile-sidebar-root"
+          component="nav"
         >
           {sidebarGroups}
         </BottomNavigation>

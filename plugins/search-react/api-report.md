@@ -5,30 +5,26 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { AsyncState } from 'react-use/lib/useAsync';
-import { ComponentProps } from 'react';
 import { JsonObject } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 
+// @public
+export class MockSearchApi implements SearchApi {
+  constructor(mockedResults?: SearchResultSet | undefined);
+  // (undocumented)
+  mockedResults?: SearchResultSet | undefined;
+  // (undocumented)
+  query(): Promise<SearchResultSet>;
+}
+
 // @public (undocumented)
 export interface SearchApi {
   // (undocumented)
   query(query: SearchQuery): Promise<SearchResultSet>;
 }
-
-// @public
-export function SearchApiProviderForStorybook(
-  props: SearchApiProviderForStorybookProps,
-): JSX.Element;
-
-// @public
-export type SearchApiProviderForStorybookProps = ComponentProps<
-  typeof SearchContextProvider
-> & {
-  mockedResults?: SearchResultSet;
-};
 
 // @public (undocumented)
 export const searchApiRef: ApiRef<SearchApi>;
@@ -37,16 +33,6 @@ export const searchApiRef: ApiRef<SearchApi>;
 export const SearchContextProvider: (
   props: SearchContextProviderProps,
 ) => JSX.Element;
-
-// @public
-export const SearchContextProviderForStorybook: (
-  props: SearchContextProviderForStorybookProps,
-) => JSX.Element;
-
-// @public
-export type SearchContextProviderForStorybookProps = PropsWithChildren<{
-  mockedResults?: SearchResultSet;
-}>;
 
 // @public
 export type SearchContextProviderProps = PropsWithChildren<{

@@ -41,6 +41,8 @@ export function createFetchRailsAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   containerRunner: ContainerRunner;
+  /** A list of image names that are allowed to be passed as imageName input */
+  allowedImageNames?: string[];
 }) {
   const { reader, integrations, containerRunner } = options;
 
@@ -177,16 +179,16 @@ export function createFetchRailsAction(options: {
 
       const templateRunner = new RailsNewRunner({ containerRunner });
 
-      const values = {
-        ...ctx.input.values,
-        imageName: ctx.input.imageName,
-      };
+      const { imageName } = ctx.input;
+      if (imageName && !options.allowedImageNames?.includes(imageName)) {
+        throw new Error(`Image ${imageName} is not allowed`);
+      }
 
       // Will execute the template in ./template and put the result in ./result
       await templateRunner.run({
         workspacePath: workDir,
         logStream: ctx.logStream,
-        values,
+        values: { ...ctx.input.values, imageName },
       });
 
       // Finally move the template result into the task workspace

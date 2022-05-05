@@ -25,8 +25,9 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { JsonObject } from '@backstage/types';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import { showPanel } from '@codemirror/panel';
-import { StreamLanguage } from '@codemirror/stream-parser';
+import { showPanel } from '@codemirror/view';
+import { StreamLanguage } from '@codemirror/language';
+
 import {
   FormControl,
   Grid,

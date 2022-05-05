@@ -22,6 +22,9 @@ export function createTechDocsAddonExtension<TComponentProps>(
 // @alpha (undocumented)
 export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue;
 
+// @public
+export type SyncResult = 'cached' | 'updated';
+
 // @alpha
 export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 
@@ -102,6 +105,32 @@ export type TechDocsReaderPageValue = {
   setSubtitle: Dispatch<SetStateAction<string>>;
   onReady?: () => void;
 };
+
+// @public
+export interface TechDocsStorageApi {
+  // (undocumented)
+  getApiOrigin(): Promise<string>;
+  // (undocumented)
+  getBaseUrl(
+    oldBaseUrl: string,
+    entityId: CompoundEntityRef,
+    path: string,
+  ): Promise<string>;
+  // (undocumented)
+  getBuilder(): Promise<string>;
+  // (undocumented)
+  getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
+  // (undocumented)
+  getStorageUrl(): Promise<string>;
+  // (undocumented)
+  syncEntityDocs(
+    entityId: CompoundEntityRef,
+    logHandler?: (line: string) => void,
+  ): Promise<SyncResult>;
+}
+
+// @public
+export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
 // @alpha
 export const useShadowRoot: () => ShadowRoot | undefined;

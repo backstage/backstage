@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.2-next.1
+
+### Patch Changes
+
+- 1ccbe081cc: Minor internal tweak to support TypeScript 4.6
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.1
+
 ## 1.1.2-next.0
 
 ### Patch Changes

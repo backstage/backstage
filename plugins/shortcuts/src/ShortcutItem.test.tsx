@@ -19,11 +19,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { ShortcutItem } from './ShortcutItem';
 import { Shortcut } from './types';
 import { LocalStoredShortcuts } from './api';
-import {
-  MockStorageApi,
-  renderInTestApp,
-  wrapInTestApp,
-} from '@backstage/test-utils';
+import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
 import { SidebarContext } from '@backstage/core-components';
 
 describe('ShortcutItem', () => {
@@ -66,12 +62,12 @@ describe('ShortcutItem', () => {
     );
     expect(screen.getByText('On')).toBeInTheDocument();
 
-    rerender(wrapInTestApp(<ShortcutItem api={api} shortcut={shortcut2} />));
+    rerender(<ShortcutItem api={api} shortcut={shortcut2} />);
     await waitFor(() => {
       expect(screen.getByText('TT')).toBeInTheDocument();
     });
 
-    rerender(wrapInTestApp(<ShortcutItem api={api} shortcut={shortcut3} />));
+    rerender(<ShortcutItem api={api} shortcut={shortcut3} />);
     await waitFor(() => {
       expect(screen.getByText('MT')).toBeInTheDocument();
     });

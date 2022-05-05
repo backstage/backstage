@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.13.3-next.0",
+    "@backstage/backend-tasks": "^0.3.1-next.0",
     "@backstage/catalog-model": "^1.0.1",
     "@backstage/config": "^1.0.0",
     "@backstage/errors": "^1.0.0",
@@ -44,6 +45,7 @@
     "lodash": "^4.17.21",
     "msw": "^0.35.0",
     "node-fetch": "^2.6.7",
+    "uuid": "^8.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
