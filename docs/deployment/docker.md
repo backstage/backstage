@@ -96,8 +96,8 @@ root of the repo to speed up the build by reducing build context size:
 ```text
 .git
 node_modules
-packages
-!packages/backend/dist
+packages/*/src
+packages/*/node_modules
 plugins
 ```
 

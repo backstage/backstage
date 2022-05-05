@@ -19,6 +19,7 @@ import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   PluginEndpointDiscovery,
   getVoidLogger,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
@@ -104,6 +105,7 @@ const handlerContext = {
   discovery,
   logger: getVoidLogger(),
   config: ConfigReader.fromConfigs([]),
+  tokenManager: ServerTokenManager.noop(),
 };
 
 const entityFactRetriever = techdocsFactRetriever;

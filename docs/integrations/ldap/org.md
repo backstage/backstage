@@ -49,8 +49,8 @@ schedule it:
 +      target: 'ldaps://ds.example.net',
 +      logger: env.logger,
 +      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: Duration.fromObject({ minutes: 60 }),
-+        timeout: Duration.fromObject({ minutes: 15 }),
++        frequency: { minutes: 60 },
++        timeout: { minutes: 15 },
 +      }),
 +    }),
 +  );

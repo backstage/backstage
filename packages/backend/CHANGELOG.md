@@ -1,5 +1,19 @@
 # example-backend
 
+## 0.2.71-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.13.1-next.1
+  - @backstage/plugin-tech-insights-backend@0.4.0-next.1
+  - @backstage/backend-common@0.13.3-next.1
+  - @backstage/plugin-tech-insights-node@0.3.0-next.1
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.16-next.1
+  - @backstage/plugin-catalog-backend@1.1.2-next.1
+  - @backstage/plugin-rollbar-backend@0.1.29-next.1
+  - example-app@0.2.71-next.1
+
 ## 0.2.71-next.0
 
 ### Patch Changes

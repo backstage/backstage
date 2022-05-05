@@ -23,7 +23,7 @@ import {
 } from './api';
 
 const rings = new Array<RadarRing>();
-rings.push({ id: 'use', name: 'USE', color: '#93c47d' });
+rings.push({ id: 'adopt', name: 'ADOPT', color: '#93c47d' });
 rings.push({ id: 'trial', name: 'TRIAL', color: '#93d2c2' });
 rings.push({ id: 'assess', name: 'ASSESS', color: '#fbdb84' });
 rings.push({ id: 'hold', name: 'HOLD', color: '#efafa9' });
@@ -39,7 +39,7 @@ entries.push({
   timeline: [
     {
       moved: 0,
-      ringId: 'use',
+      ringId: 'adopt',
       date: new Date('2020-08-06'),
       description:
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
@@ -57,7 +57,7 @@ entries.push({
   timeline: [
     {
       moved: -1,
-      ringId: 'use',
+      ringId: 'adopt',
       date: new Date('2020-08-06'),
       description:
         'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
@@ -75,7 +75,7 @@ entries.push({
   timeline: [
     {
       moved: 1,
-      ringId: 'use',
+      ringId: 'adopt',
       date: new Date('2020-08-06'),
       description:
         'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
@@ -91,7 +91,7 @@ entries.push({
   timeline: [
     {
       moved: 0,
-      ringId: 'use',
+      ringId: 'adopt',
       date: new Date('2020-08-06'),
     },
   ],
@@ -105,7 +105,7 @@ entries.push({
   timeline: [
     {
       moved: 0,
-      ringId: 'use',
+      ringId: 'adopt',
       date: new Date('2020-08-06'),
     },
   ],
@@ -133,7 +133,7 @@ entries.push({
   timeline: [
     {
       moved: 0,
-      ringId: 'use',
+      ringId: 'adopt',
       date: new Date('2020-08-06'),
     },
   ],
@@ -159,7 +159,7 @@ entries.push({
 entries.push({
   timeline: [
     {
-      ringId: 'use',
+      ringId: 'adopt',
       date: new Date('2020-08-06'),
       description: 'long description',
     },

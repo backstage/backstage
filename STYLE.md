@@ -146,7 +146,7 @@ There are a few things to pay attention to, in order to make the documentation s
 
 API documenter will not recognize arrow functions as functions, but rather as a constant that shows up in the list of exported variables. By declaring functions using the `function` keyword, they will show up in the list of functions. They will also get a much nicer documentation page for the individual function that shows information about parameters and return types.
 
-This also extends to React components, since API documenter doesn't have any special handling of those. By always defining exported React components using the `function` keyword, we make them show up among the list of functions in the API reference, where they are then easily discoverable through the `(props)` args (which you should be sure to include!).
+This also extends to React components, since API documenter doesn't have any special handling of those. By always defining exported React components using the `function` keyword, we make them show up among the list of functions in the API reference, where they are then easily discoverable through the `(props)` argument (which you should be sure to include!).
 
 ![image](https://user-images.githubusercontent.com/4984472/133120461-59d74c3e-ebd9-44f9-900d-cc30f54a3cd2.png)
 

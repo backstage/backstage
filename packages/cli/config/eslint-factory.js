@@ -130,8 +130,14 @@ function createConfig(dir, extraConfig = {}) {
             ...(restrictedImports ?? []),
             ...(restrictedSrcImports ?? []),
           ],
-          // Avoid cross-package imports
-          patterns: ['**/../../**/*/src/**', '**/../../**/*/src'],
+          patterns: [
+            // Avoid cross-package imports
+            '**/../../**/*/src/**',
+            '**/../../**/*/src',
+            // Prevent imports of stories or tests
+            '*.stories*',
+            '*.test*',
+          ],
         },
       ],
 

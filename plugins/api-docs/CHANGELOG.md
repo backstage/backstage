@@ -1,5 +1,18 @@
 # @backstage/plugin-api-docs
 
+## 0.8.5-next.1
+
+### Patch Changes
+
+- 2c279df4eb: Updated dependency `graphiql` to `^1.8.8`.
+- 165790975d: Updated dependency `@asyncapi/react-component` to `1.0.0-next.37`.
+- 7f6f97d151: Updated dependency `@asyncapi/react-component` to `1.0.0-next.38`.
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+  - @backstage/plugin-catalog@1.2.0-next.1
+  - @backstage/plugin-catalog-react@1.1.0-next.1
+
 ## 0.8.5-next.0
 
 ### Patch Changes

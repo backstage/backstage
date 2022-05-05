@@ -21,7 +21,7 @@ jobs:
     if: github.repository == 'backstage/backstage' && github.event.pull_request.user.login != 'backstage-service'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history

@@ -38,6 +38,7 @@ export default async function createPlugin(
     database: env.database,
     scheduler: env.scheduler,
     discovery: env.discovery,
+    tokenManager: env.tokenManager,
     factRetrievers: [
       createFactRetrieverRegistration({
         cadence: '1 1 1 * *', // Example cron, At 01:01 on day-of-month 1.

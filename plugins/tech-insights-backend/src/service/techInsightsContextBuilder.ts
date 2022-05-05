@@ -21,6 +21,7 @@ import { Config } from '@backstage/config';
 import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
+  TokenManager,
 } from '@backstage/backend-common';
 import {
   FactChecker,
@@ -63,6 +64,7 @@ export interface TechInsightsOptions<
   discovery: PluginEndpointDiscovery;
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
+  tokenManager: TokenManager;
 }
 
 /**
@@ -104,6 +106,7 @@ export const buildTechInsightsContext = async <
     database,
     logger,
     scheduler,
+    tokenManager,
   } = options;
 
   const factRetrieverRegistry = new FactRetrieverRegistry(factRetrievers);
@@ -121,6 +124,7 @@ export const buildTechInsightsContext = async <
       config,
       discovery,
       logger,
+      tokenManager,
     },
   });
 

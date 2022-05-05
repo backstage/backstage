@@ -110,8 +110,34 @@ export class GoogleGcsUrlReader implements UrlReader {
     throw new Error('GcsUrlReader does not implement readTree');
   }
 
-  async search(): Promise<SearchResponse> {
-    throw new Error('GcsUrlReader does not implement search');
+  async search(url: string): Promise<SearchResponse> {
+    const { bucket, key: pattern } = parseURL(url);
+
+    if (!pattern.endsWith('*') || pattern.indexOf('*') !== pattern.length - 1) {
+      throw new Error('GcsUrlReader only supports prefix-based searches');
+    }
+
+    const [files] = await this.storage.bucket(bucket).getFiles({
+      autoPaginate: true,
+      prefix: pattern.split('*').join(''),
+    });
+
+    return {
+      files: files.map(file => {
+        const fullUrl = ['https:/', GOOGLE_GCS_HOST, bucket, file.name].join(
+          '/',
+        );
+        return {
+          url: fullUrl,
+          content: async () => {
+            const readResponse = await this.readUrl(fullUrl);
+            return readResponse.buffer();
+          },
+        };
+      }),
+      // TODO etag is not implemented yet.
+      etag: 'NOT/IMPLEMENTED',
+    };
   }
 
   toString() {

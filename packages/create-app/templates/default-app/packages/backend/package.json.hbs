@@ -30,29 +30,22 @@
     "@backstage/plugin-proxy-backend": "^{{version '@backstage/plugin-proxy-backend'}}",
     "@backstage/plugin-scaffolder-backend": "^{{version '@backstage/plugin-scaffolder-backend'}}",
     "@backstage/plugin-search-backend": "^{{version '@backstage/plugin-search-backend'}}",
-    {{#if dbTypePG}}
     "@backstage/plugin-search-backend-module-pg": "^{{version '@backstage/plugin-search-backend-module-pg'}}",
-    {{/if}}
     "@backstage/plugin-search-backend-node": "^{{version '@backstage/plugin-search-backend-node'}}",
     "@backstage/plugin-techdocs-backend": "^{{version '@backstage/plugin-techdocs-backend'}}",
     "dockerode": "^3.3.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
-    "luxon": "^2.0.2",
-    {{#if dbTypePG}}
     "pg": "^8.3.0",
-    {{/if}}
-    {{#if dbTypeSqlite}}
-    "better-sqlite3": "^7.5.0",
-    {{/if}}
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^{{version '@backstage/cli'}}",
     "@types/dockerode": "^3.3.0",
-    "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
-    "@types/luxon": "^2.0.4"
+    "@types/express": "^4.17.6",
+    "@types/luxon": "^2.0.4",
+    "better-sqlite3": "^7.5.0"
   },
   "files": [
     "dist"

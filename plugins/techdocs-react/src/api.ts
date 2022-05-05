@@ -39,3 +39,40 @@ export interface TechDocsApi {
 export const techdocsApiRef = createApiRef<TechDocsApi>({
   id: 'plugin.techdocs.service',
 });
+
+/**
+ * The outcome of a docs sync operation.
+ *
+ * @public
+ */
+export type SyncResult = 'cached' | 'updated';
+
+/**
+ * API which talks to TechDocs storage to fetch files to render.
+ *
+ * @public
+ */
+export interface TechDocsStorageApi {
+  getApiOrigin(): Promise<string>;
+  getStorageUrl(): Promise<string>;
+  getBuilder(): Promise<string>;
+  getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
+  syncEntityDocs(
+    entityId: CompoundEntityRef,
+    logHandler?: (line: string) => void,
+  ): Promise<SyncResult>;
+  getBaseUrl(
+    oldBaseUrl: string,
+    entityId: CompoundEntityRef,
+    path: string,
+  ): Promise<string>;
+}
+
+/**
+ * Utility API reference for the {@link TechDocsStorageApi}.
+ *
+ * @public
+ */
+export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
+  id: 'plugin.techdocs.storageservice',
+});

@@ -191,7 +191,7 @@ export type ReaderState = {
 // @public
 export const Router: () => JSX.Element;
 
-// @public
+// @public @deprecated
 export type SyncResult = 'cached' | 'updated';
 
 // @public
@@ -394,7 +394,7 @@ export type TechDocsSearchResultListItemProps = {
   title?: string;
 };
 
-// @public
+// @public @deprecated
 export interface TechDocsStorageApi {
   // (undocumented)
   getApiOrigin(): Promise<string>;
@@ -417,7 +417,7 @@ export interface TechDocsStorageApi {
   ): Promise<SyncResult>;
 }
 
-// @public
+// @public @deprecated
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
 // @public

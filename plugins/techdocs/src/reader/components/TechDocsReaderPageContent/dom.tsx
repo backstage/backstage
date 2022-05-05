@@ -26,7 +26,7 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { SidebarPinStateContext } from '@backstage/core-components';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-import { techdocsStorageApiRef } from '../../../api';
+import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
 
 import { useTechDocsReader } from './context';
 

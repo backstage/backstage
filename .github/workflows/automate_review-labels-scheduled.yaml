@@ -16,8 +16,8 @@ jobs:
           application_private_key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
           organization: backstage
 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
       - run: npm install codeowners

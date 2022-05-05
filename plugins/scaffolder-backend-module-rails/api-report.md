@@ -14,6 +14,7 @@ export function createFetchRailsAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
   containerRunner: ContainerRunner;
+  allowedImageNames?: string[];
 }): TemplateAction<{
   url: string;
   targetPath?: string | undefined;

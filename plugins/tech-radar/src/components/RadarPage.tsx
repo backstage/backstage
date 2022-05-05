@@ -20,6 +20,7 @@ import {
   Header,
   Page,
   SupportButton,
+  Link,
 } from '@backstage/core-components';
 import { Grid, Input, makeStyles } from '@material-ui/core';
 import React from 'react';
@@ -74,9 +75,16 @@ export function RadarPage(props: TechRadarPageProps) {
             onChange={e => setSearchText(e.target.value)}
           />
           <SupportButton>
-            This is used for visualizing the official guidelines of different
-            areas of software development such as languages, frameworks,
-            infrastructure and processes.
+            <p>
+              This is used for visualizing the official guidelines of different
+              areas of software development such as languages, frameworks,
+              infrastructure and processes. You can find an explanation for the
+              radar at{' '}
+              <Link to="https://opensource.zalando.com/tech-radar/">
+                Zalando Tech Radar
+              </Link>
+              .
+            </p>
           </SupportButton>
         </ContentHeader>
         <Grid container spacing={3} direction="row">

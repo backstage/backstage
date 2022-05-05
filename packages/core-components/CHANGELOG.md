@@ -1,5 +1,16 @@
 # @backstage/core-components
 
+## 0.9.4-next.0
+
+### Patch Changes
+
+- ac19f82936: Added ARIA landmark <main> to Page component and added ARIA landmark <nav> to DesktopSidebar and Sidebar components
+- c0055ece91: Announce external links to screen readers
+- cfc0f2e5bd: Added optional anchorOrigin alignment prop to AlertDisplay
+- f4380eb602: Add an aria-label to the support button to improve accessibility for screen readers
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2-next.0
+
 ## 0.9.3
 
 ### Patch Changes

@@ -109,6 +109,7 @@
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
+          "features/techdocs/addons",
           "features/techdocs/architecture",
           "features/techdocs/creating-and-publishing",
           "features/techdocs/configuration",
@@ -243,6 +244,7 @@
           "auth/github/provider",
           "auth/gitlab/provider",
           "auth/google/provider",
+          "auth/google/gcp-iap-auth",
           "auth/okta/provider",
           "auth/onelogin/provider",
           "auth/oauth2-proxy/provider"
@@ -253,7 +255,25 @@
       "auth/auth-backend",
       "auth/oauth",
       "auth/auth-backend-classes",
+      "auth/troubleshooting",
       "auth/glossary"
+    ],
+    "Permissions": [
+      "permission/overview",
+      "permission/concepts",
+      "permission/getting-started",
+      "permission/writing-a-policy",
+      "permission/custom-rules",
+      {
+        "type": "subcategory",
+        "label": "Tutorial: using Permissions in your plugin",
+        "ids": [
+          "permission/plugin-authors/01-setup",
+          "permission/plugin-authors/02-adding-a-basic-permission-check",
+          "permission/plugin-authors/03-adding-a-resource-permission-check",
+          "permission/plugin-authors/04-authorizing-access-to-paginated-data"
+        ]
+      }
     ],
     "Deployment": [
       "deployment/index",

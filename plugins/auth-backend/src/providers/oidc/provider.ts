@@ -146,7 +146,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     const strategy = new OidcStrategy(
       {
         client,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
       },
       (
         tokenset: TokenSet,
