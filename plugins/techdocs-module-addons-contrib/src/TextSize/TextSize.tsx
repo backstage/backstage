@@ -27,7 +27,6 @@ import {
   withStyles,
   makeStyles,
   useTheme,
-  Theme,
   Box,
   MenuItem,
   ListItemText,
@@ -95,7 +94,7 @@ const StyledSlider = withStyles(theme => ({
 }))(Slider);
 
 const settings = {
-  key: 'techdocs.addons.settings',
+  key: 'techdocs.addons.settings.textsize',
   defaultValue: 100,
 };
 
@@ -183,8 +182,8 @@ export const TextSizeAddon = () => {
     if (!body) return;
     const htmlFontSize =
       (
-        theme.typography as Theme['typography'] & {
-          htmlFontSize: number;
+        theme.typography as BackstageTheme['typography'] & {
+          htmlFontSize?: number;
         }
       )?.htmlFontSize ?? 16;
     body.style.setProperty(

@@ -50,8 +50,7 @@ export const ReportIssue = techdocsModuleAddonsContribPlugin.provide(
  * This TechDocs addon allows users to customize text size on documentation pages, they can select how much they want to increase or decrease the font size via slider or buttons.
  *
  * @remarks
- * The default value for font size is 100% of the HTML font size and, if the theme does not have an htmlFontSize value in its typography object,
- * the Addon will assume 16px as 100% and this setting is kept in the browser's local storage.
+ * The default value for the font size is 100% of the HTML font size, if the theme does not have a `htmlFontSize` in its typography object, the addon will assume 16px as 100%, and remember, this setting is kept in the browser local storage.
  *
  * @example
  * Here's a simple example:
