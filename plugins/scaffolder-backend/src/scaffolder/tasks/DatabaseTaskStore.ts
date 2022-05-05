@@ -43,6 +43,7 @@ export type RawDbTaskRow = {
   status: TaskStatus;
   last_heartbeat_at?: string;
   created_at: string;
+  created_by: string | null;
   secrets?: string | null;
 };
 
@@ -100,6 +101,7 @@ export class DatabaseTaskStore implements TaskStore {
         status: result.status,
         lastHeartbeatAt: result.last_heartbeat_at,
         createdAt: result.created_at,
+        createdBy: result.created_by ?? undefined,
         secrets,
       };
     } catch (error) {
@@ -115,6 +117,7 @@ export class DatabaseTaskStore implements TaskStore {
       id: taskId,
       spec: JSON.stringify(options.spec),
       secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
+      created_by: options.createdBy ?? null,
       status: 'open',
     });
     return { taskId };
@@ -155,6 +158,7 @@ export class DatabaseTaskStore implements TaskStore {
           status: 'processing',
           lastHeartbeatAt: task.last_heartbeat_at,
           createdAt: task.created_at,
+          createdBy: task.created_by ?? undefined,
           secrets,
         };
       } catch (error) {
