@@ -10,9 +10,9 @@ Backstage is currently under rapid development. This page details the project’
 
 The Backstage roadmap lays out both [“what’s next”](#whats-next) and [“future work”](#future-work). With "next" we mean features planned for release within the ongoing quarter from January through March 2022. With "future" we mean features in the radar, but not yet scheduled.
 
-| [What's next](#whats-next)                                                                                                                                                                                     | [Future work](#future-work)                                                                                                                                             |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Ease of onboarding](#ease-of-onboarding) <br/> [Search 1.0](#search-1.0) <br/> [TechDocs Addon framework](#techdocs-addon-framework) <br/> [Backend Services (initial)](#backend-services-(initial)) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [SIGs for contributors](#sigs-for-contributors) | Security Plan (and Strategy) <br/> Composable Homepage 1.0 <br/> GraphQL <br/> Telemetry <br/> Improved UX design |
+| [What's next](#whats-next)                                                                                                                                                                                                                                                                                            | [Future work](#future-work)                                                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [Ease of onboarding](#ease-of-onboarding) <br/> [Search 1.0](#search-1.0) <br/> [TechDocs Addon framework](#techdocs-addon-framework) <br/> [Backend Services (initial)](#backend-services-initial) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [SIGs for contributors](#sigs-for-contributors) | Security Plan (and Strategy) <br/> Composable Homepage 1.0 <br/> GraphQL <br/> Telemetry <br/> Improved UX design |
 
 The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
 Third-party contributions are also not currently included in the roadmap. Let us know about any ongoing developments and we’re happy to include them here as well.
@@ -28,11 +28,11 @@ A faster (with less development) and easier setup of a POC, as part of the onboa
 
 With this initiative we plan to start facing this important topic with the most commonly used and challenging tasks. More in particular we plan to reduce the effort required to go from zero to production in installing and customising Backstage, as well as reducing the effort required to populate the Software Catalog.
 
-More iterations will be required in the following quarters, but this will be a good improvement in the onboarding experience, especially for the benefit of new adopters. 
+More iterations will be required in the following quarters, but this will be a good improvement in the onboarding experience, especially for the benefit of new adopters.
 
 ### Search 1.0
 
-Fix the few remaining issues to get Backstage Search platform  up to 1.0 ([here](https://github.com/backstage/backstage/milestone/27) and [here](https://github.com/backstage/backstage/milestone/28)).
+Fix the few remaining issues to get Backstage Search platform up to 1.0 ([here](https://github.com/backstage/backstage/milestone/27) and [here](https://github.com/backstage/backstage/milestone/28)).
 
 ### TechDocs Addon framework
 
