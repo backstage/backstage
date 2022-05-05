@@ -342,7 +342,9 @@ function parseBearerToken(header?: string): {
   if (!token) return {};
 
   const [_header, rawPayload, _signature] = token.split('.');
-  const payload: { sub: string } = JSON.parse(atob(rawPayload));
+  const payload: { sub: string } = JSON.parse(
+    Buffer.from(rawPayload, 'base64').toString(),
+  );
 
   return {
     entityRef: payload.sub,
