@@ -18,7 +18,7 @@ import { V1Service } from '@kubernetes/client-node';
 // Warning: (ae-missing-release-tag) "AuthProviderType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws' | 'azure';
 
 // Warning: (ae-missing-release-tag) "ClientContainerStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

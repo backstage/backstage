@@ -84,7 +84,7 @@ export interface ObjectsByEntityResponse {
   items: ClusterObjects[];
 }
 
-export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws' | 'azure';
 
 export type FetchResponse =
   | PodFetchResponse

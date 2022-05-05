@@ -52,7 +52,7 @@ export interface Config {
             /** @visibility secret  */
             serviceAccountToken?: string;
             /** @visibility frontend */
-            authProvider: 'aws' | 'google' | 'serviceAccount';
+            authProvider: 'aws' | 'google' | 'serviceAccount' | 'azure';
             /** @visibility frontend */
             skipTLSVerify?: boolean;
           }>;
