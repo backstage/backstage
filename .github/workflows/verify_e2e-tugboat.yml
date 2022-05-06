@@ -15,7 +15,7 @@ jobs:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           debug: true
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
@@ -39,7 +39,7 @@ jobs:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           debug: true
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
@@ -70,7 +70,7 @@ jobs:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           result-encoding: string
           script: |
-            const result = await github.repos.getDeploymentStatus({
+            const result = await github.rest.repos.getDeploymentStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               deployment_id: context.payload.deployment.id,
@@ -106,7 +106,7 @@ jobs:
         with:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
@@ -121,7 +121,7 @@ jobs:
         with:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
