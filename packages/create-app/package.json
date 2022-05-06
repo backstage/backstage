@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.8",
-    "chalk": "^4.0.0",
+    "chalk": "^5.0.0",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
