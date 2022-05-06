@@ -100,7 +100,6 @@ describe('parseEntityTransformParams', () => {
         'subite.with/dot': 'fd2.sub.dot',
       },
       'third-field-with.dot-again': 'fd3',
-      type: 't',
     };
 
     expect(
@@ -127,6 +126,25 @@ describe('parseEntityTransformParams', () => {
           'subite.with/dot': 'fd2.sub.dot',
         },
       },
+    });
+  });
+
+  it('does not return a sub key if an incorrect longer key is requested', () => {
+    entity.spec = {
+      ...entity.spec,
+      'field-with.dot': 'fd1',
+      plain: true,
+      numLike: 4,
+      arrayLike: [4, 5],
+    };
+
+    expect(
+      parseEntityTransformParams({
+        fields:
+          'kind,spec.field-withdot.other.item,kind.other.other,spec.plain.other,spec.numLike.other,spec.arrayLike.other',
+      })!(entity),
+    ).toEqual({
+      kind: 'k',
     });
   });
 });
