@@ -40,6 +40,7 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
  * Implements a {@link UrlReader} for files from Bitbucket v1 and v2 APIs, such
@@ -123,10 +124,9 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return {
-        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
-      };
+      });
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;

@@ -547,6 +547,24 @@ export type ReadUrlOptions = {
 // @public
 export type ReadUrlResponse = {
   buffer(): Promise<Buffer>;
+  stream?(): Readable;
+  etag?: string;
+};
+
+// @public
+export class ReadUrlResponseFactory {
+  static fromNodeJSReadable(
+    oldStyleStream: NodeJS.ReadableStream,
+    options?: ReadUrlResponseFactoryFromStreamOptions,
+  ): Promise<ReadUrlResponse>;
+  static fromReadable(
+    stream: Readable,
+    options?: ReadUrlResponseFactoryFromStreamOptions,
+  ): Promise<ReadUrlResponse>;
+}
+
+// @public
+export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
 };
 
