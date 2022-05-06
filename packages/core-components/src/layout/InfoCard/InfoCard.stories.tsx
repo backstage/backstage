@@ -20,8 +20,6 @@ import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router';
 import { InfoCard, Props } from './InfoCard';
 
-const linkInfo = { title: 'Go to XYZ Location', link: '#' };
-
 export default {
   title: 'Layout/Information Card',
   component: InfoCard,
