@@ -34,12 +34,15 @@
   },
   "dependencies": {
     "@backstage/config": "^1.0.0",
+    "@backstage/plugin-catalog-backend-module-github": "^0.1.2",
+    "@octokit/auth-app": "^3.4.0",
+    "@octokit/graphql": "^4.8.0",
+    "@octokit/rest": "^18.5.3",
+    "@spotify/prettier-config": "^13.0.1",
     "cross-fetch": "^3.1.5",
     "git-url-parse": "^11.6.0",
-    "@octokit/rest": "^18.5.3",
-    "@octokit/auth-app": "^3.4.0",
-    "luxon": "^2.0.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "luxon": "^2.0.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.17.1-next.1",

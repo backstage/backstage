@@ -1423,6 +1423,79 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@backstage/backend-common@^0.13.2":
+  version "0.13.2"
+  resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.13.2.tgz#c3619dee671936f306f49eae9c8bbde436cbc40d"
+  integrity sha512-FblxaHCw29N4ME1uHb+513EXcbn30vA224+6cj8159Wje2Rcv8EdMFtuf2awCNcYgoIdDD/R1wwBPeRmZhtERw==
+  dependencies:
+    "@backstage/cli-common" "^0.1.8"
+    "@backstage/config" "^1.0.0"
+    "@backstage/config-loader" "^1.1.0"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/integration" "^1.1.0"
+    "@backstage/types" "^1.0.0"
+    "@google-cloud/storage" "^5.8.0"
+    "@keyv/redis" "^2.2.3"
+    "@manypkg/get-packages" "^1.1.3"
+    "@octokit/rest" "^18.5.3"
+    "@types/cors" "^2.8.6"
+    "@types/dockerode" "^3.3.0"
+    "@types/express" "^4.17.6"
+    "@types/luxon" "^2.0.4"
+    "@types/webpack-env" "^1.15.2"
+    archiver "^5.0.2"
+    aws-sdk "^2.840.0"
+    compression "^1.7.4"
+    concat-stream "^2.0.0"
+    cors "^2.8.5"
+    dockerode "^3.3.1"
+    express "^4.17.1"
+    express-promise-router "^4.1.0"
+    fs-extra "10.0.1"
+    git-url-parse "^11.6.0"
+    helmet "^5.0.2"
+    isomorphic-git "^1.8.0"
+    jose "^1.27.1"
+    keyv "^4.0.3"
+    keyv-memcache "^1.2.5"
+    knex "^1.0.2"
+    lodash "^4.17.21"
+    logform "^2.3.2"
+    luxon "^2.0.2"
+    minimatch "^5.0.0"
+    minimist "^1.2.5"
+    morgan "^1.10.0"
+    node-abort-controller "^3.0.1"
+    node-fetch "^2.6.7"
+    raw-body "^2.4.1"
+    selfsigned "^2.0.0"
+    stoppable "^1.1.0"
+    tar "^6.1.2"
+    unzipper "^0.10.11"
+    winston "^3.2.1"
+    yn "^4.0.0"
+
+"@backstage/config-loader@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@backstage/config-loader/-/config-loader-1.1.0.tgz#477127d84705ed9a63451563c31ecb4592e58dbc"
+  integrity sha512-pZJz54pOSfZ5MC8vhDVrq1yM4p/T2O1iQNW5br5iv/e1JjHWpGt00yeZOxsHpsOeAfTl2JRpooUQQxpJQ47uUQ==
+  dependencies:
+    "@backstage/cli-common" "^0.1.8"
+    "@backstage/config" "^1.0.0"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/types" "^1.0.0"
+    "@types/json-schema" "^7.0.6"
+    ajv "^8.10.0"
+    chokidar "^3.5.2"
+    fs-extra "10.0.1"
+    json-schema "^0.4.0"
+    json-schema-merge-allof "^0.8.1"
+    json-schema-traverse "^1.0.0"
+    node-fetch "^2.6.7"
+    typescript-json-schema "^0.53.0"
+    yaml "^1.9.2"
+    yup "^0.32.9"
+
 "@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.3":
   version "0.9.3"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.3.tgz#79d8bcea06281da492730fe8eb14aa18877b27c4"
@@ -1508,6 +1581,74 @@
     lodash "^4.17.21"
     luxon "^2.0.2"
 
+"@backstage/plugin-auth-node@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@backstage/plugin-auth-node/-/plugin-auth-node-0.2.0.tgz#acd5388b95300dd65528e6f6d8d9d45abe4734f0"
+  integrity sha512-aYfC3Hx9De78gofRB0DAIjyTD09XnRLxbjK2JCz9An6eVdX/DOWI8iwwNN07Qem0haLsGNVBhofUuuqQYpfw8w==
+  dependencies:
+    "@backstage/backend-common" "^0.13.2"
+    "@backstage/config" "^1.0.0"
+    "@backstage/errors" "^1.0.0"
+    jose "^1.27.1"
+    node-fetch "^2.6.7"
+    winston "^3.2.1"
+
+"@backstage/plugin-catalog-backend-module-github@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-backend-module-github/-/plugin-catalog-backend-module-github-0.1.2.tgz#5d973d12b4f7ff7121d4f14158eeb7606a0a3372"
+  integrity sha512-1QEVtRS2mfvonzJs7CXigHUAIWVBL0HWsF9XoH2CqYLH/uceETjabc7+ZvPz2IPr+sOlP8YYw3PEWe+4M1ftaA==
+  dependencies:
+    "@backstage/backend-common" "^0.13.2"
+    "@backstage/catalog-model" "^1.0.1"
+    "@backstage/config" "^1.0.0"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/integration" "^1.1.0"
+    "@backstage/plugin-catalog-backend" "^1.1.0"
+    "@backstage/types" "^1.0.0"
+    "@octokit/graphql" "^4.5.8"
+    lodash "^4.17.21"
+    msw "^0.35.0"
+    node-fetch "^2.6.7"
+    winston "^3.2.1"
+
+"@backstage/plugin-catalog-backend@^1.1.0":
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-backend/-/plugin-catalog-backend-1.1.1.tgz#a5925911202cc0db0c306a2fd7cca81f1cadd34b"
+  integrity sha512-o81MnzcdAY3vWyH2H//vHyI/dYQhfXf21PylGPLdDqQgHuxh9yNeM7OlKSeqmpbHBVkvl+vjzrpZUTmrNvKMQg==
+  dependencies:
+    "@backstage/backend-common" "^0.13.2"
+    "@backstage/catalog-client" "^1.0.1"
+    "@backstage/catalog-model" "^1.0.1"
+    "@backstage/config" "^1.0.0"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/integration" "^1.1.0"
+    "@backstage/plugin-catalog-common" "^1.0.1"
+    "@backstage/plugin-permission-common" "^0.6.0"
+    "@backstage/plugin-permission-node" "^0.6.0"
+    "@backstage/plugin-scaffolder-common" "^1.0.1"
+    "@backstage/plugin-search-common" "^0.3.3"
+    "@backstage/types" "^1.0.0"
+    "@types/express" "^4.17.6"
+    codeowners-utils "^1.0.2"
+    core-js "^3.6.5"
+    express "^4.17.1"
+    express-promise-router "^4.1.0"
+    fast-json-stable-stringify "^2.1.0"
+    fs-extra "10.0.1"
+    git-url-parse "^11.6.0"
+    glob "^7.1.6"
+    knex "^1.0.2"
+    lodash "^4.17.21"
+    luxon "^2.0.2"
+    node-fetch "^2.6.7"
+    p-limit "^3.0.2"
+    prom-client "^14.0.1"
+    uuid "^8.0.0"
+    winston "^3.2.1"
+    yaml "^1.9.2"
+    yn "^4.0.0"
+    zod "^3.11.6"
+
 "@backstage/plugin-catalog-react@^1.0.0", "@backstage/plugin-catalog-react@^1.0.1":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-1.0.1.tgz#647cb19bff2885bb4e1e289bb1b751a7e9a36477"
@@ -1555,6 +1696,21 @@
     lodash "^4.17.21"
     react-router "6.0.0-beta.0"
     react-use "^17.2.4"
+
+"@backstage/plugin-permission-node@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-node/-/plugin-permission-node-0.6.0.tgz#55e9178040dea7c3066a4ed62a7ec5eeaf42c22a"
+  integrity sha512-3NUa+0YjYZ9N0MqyKMTsnfrxzCtcahZVPowEXduELvqJ/L4K6pRFFwI+/g+wmLXKmt72eDceuwEa/ZEFsxbKTg==
+  dependencies:
+    "@backstage/backend-common" "^0.13.2"
+    "@backstage/config" "^1.0.0"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/plugin-auth-node" "^0.2.0"
+    "@backstage/plugin-permission-common" "^0.6.0"
+    "@types/express" "^4.17.6"
+    express "^4.17.1"
+    express-promise-router "^4.1.0"
+    zod "^3.11.6"
 
 "@backstage/plugin-permission-react@^0.4.0":
   version "0.4.0"
@@ -4547,7 +4703,7 @@
     is-plain-object "^3.0.0"
     universal-user-agent "^5.0.0"
 
-"@octokit/graphql@^4.5.8":
+"@octokit/graphql@^4.5.8", "@octokit/graphql@^4.8.0":
   version "4.8.0"
   resolved "https://registry.npmjs.org/@octokit/graphql/-/graphql-4.8.0.tgz#664d9b11c0e12112cbf78e10f49a05959aa22cc3"
   integrity sha512-0gv+qLSBLKF0z8TKaSKTsS39scVKF9dbMxJpj3U0vC7wjNWFuIpL/z76Qe2fiuCbDRcJSavkXsVtMS6/dtQQsg==
@@ -5132,7 +5288,7 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-13.0.1.tgz#47801a66d5569074a110f4422eba60aafc6bd7f8"
   integrity sha512-1wLQFyN2H2v+rn/mytA2PGzmGxOmdZdcKBpNyW+4z0qJydpvavp2SeBj/X+FEbwKoYBoUdG9QLr40eLQh1ZHZA==
 
-"@spotify/prettier-config@^13.0.0":
+"@spotify/prettier-config@^13.0.0", "@spotify/prettier-config@^13.0.1":
   version "13.0.1"
   resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-13.0.1.tgz#0fdceb3d4ab543259ce6adc0ec1d10e34898b812"
   integrity sha512-oVd4hjx2+y0MeUdk1l+ItwVLwlrDlvTlGwXBWMMzPYc7DLyxuxFvDfoHGkAQkrikfAgtdnzxrW6u9a8ywUqdfw==
@@ -6333,7 +6489,7 @@
   resolved "https://registry.npmjs.org/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
 
-"@types/react-dom@*", "@types/react-dom@<18.0.0", "@types/react-dom@^17":
+"@types/react-dom@*", "@types/react-dom@<18.0.0":
   version "17.0.16"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.16.tgz#7caba93cf2806c51e64d620d8dff4bae57e06cc4"
   integrity sha512-DWcXf8EbMrO/gWnQU7Z88Ws/p16qxGpPyjTKTpmBSFKeE+HveVubqGO1CVK7FrwlWD5MuOcvh8gtd0/XO38NdQ==
@@ -12758,6 +12914,15 @@ fs-constants@^1.0.0:
   resolved "https://registry.npmjs.org/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
   integrity sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==
 
+fs-extra@10.0.1:
+  version "10.0.1"
+  resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-10.0.1.tgz#27de43b4320e833f6867cc044bfce29fdf0ef3b8"
+  integrity sha512-NbdoVMZso2Lsrn/QwLXOy6rm0ufY2zEOKCDzJR/0kBsb0E6qed0P3iYK+Ath3BfvXEeu4JhEtXLgILx5psUfag==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
 fs-extra@10.1.0, fs-extra@^10.0.0, fs-extra@^10.0.1:
   version "10.1.0"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-10.1.0.tgz#02873cfbc4084dde127eaa5f9905eef2325d1abf"
@@ -15519,6 +15684,13 @@ joi@^17.4.0:
     "@sideway/address" "^4.1.0"
     "@sideway/formula" "^3.0.0"
     "@sideway/pinpoint" "^2.0.0"
+
+jose@^1.27.1:
+  version "1.28.1"
+  resolved "https://registry.npmjs.org/jose/-/jose-1.28.1.tgz#34a0f851a534be59ffab82a6e8845f6874e8c128"
+  integrity sha512-6JK28rFu5ENp/yxMwM+iN7YeaInnY9B9Bggjkz5fuwLiJhbVrl2O4SJr65bdNBPl9y27fdC3Mymh+FVCvozLIg==
+  dependencies:
+    "@panva/asn1.js" "^1.0.0"
 
 jose@^2.0.5:
   version "2.0.5"
@@ -25340,10 +25512,15 @@ ws@8.5.0, ws@^8.4.2:
   resolved "https://registry.npmjs.org/ws/-/ws-8.5.0.tgz#bfb4be96600757fe5382de12c670dab984a1ed4f"
   integrity sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==
 
-ws@^7.3.1, ws@^7.4.6, ws@^8.3.0:
+ws@^7.3.1, ws@^7.4.6:
   version "7.5.7"
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.7.tgz#9e0ac77ee50af70d58326ecff7e85eb3fa375e67"
   integrity sha512-KMvVuFzpKBuiIXW3E4u3mySRO2/mCHSyZDJQM5NQ9Q9KHWHWh0NHgfbRMLLrceUK5qAL4ytALJbpRMjixFZh8A==
+
+ws@^8.3.0:
+  version "8.6.0"
+  resolved "https://registry.npmjs.org/ws/-/ws-8.6.0.tgz#e5e9f1d9e7ff88083d0c0dd8281ea662a42c9c23"
+  integrity sha512-AzmM3aH3gk0aX7/rZLYvjdvZooofDu3fFOzGqcSnQ1tOcTWwhM/o+q++E8mAyVVIyUdajrkzWUGftaVSDLn1bw==
 
 ws@~7.4.2:
   version "7.4.6"
