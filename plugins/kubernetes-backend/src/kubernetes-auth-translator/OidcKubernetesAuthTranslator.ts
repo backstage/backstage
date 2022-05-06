@@ -36,7 +36,8 @@ export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
       );
     }
 
-    const authToken: string | undefined = requestBody.oidc?.[oidcTokenProvider];
+    const authToken: string | undefined =
+      requestBody.auth?.oidc?.[oidcTokenProvider];
 
     if (authToken) {
       clusterDetailsWithAuthToken.serviceAccountToken = authToken;

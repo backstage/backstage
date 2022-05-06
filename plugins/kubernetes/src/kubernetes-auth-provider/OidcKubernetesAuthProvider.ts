@@ -31,11 +31,13 @@ export class OidcKubernetesAuthProvider implements KubernetesAuthProvider {
     requestBody: KubernetesRequestBody,
   ): Promise<KubernetesRequestBody> {
     const authToken: string = await this.authProvider.getIdToken();
-    if ('oidc' in requestBody) {
-      requestBody.oidc![this.providerName] = authToken;
+    const auth = { ...requestBody.auth };
+    if (auth.oidc) {
+      auth.oidc[this.providerName] = authToken;
     } else {
-      requestBody.oidc = { [this.providerName]: authToken };
+      auth.oidc = { [this.providerName]: authToken };
     }
+    requestBody.auth = auth;
     return requestBody;
   }
 }

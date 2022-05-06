@@ -38,7 +38,9 @@ describe('OidcKubernetesAuthTranslator tests', () => {
         ...baseClusterDetails,
       },
       {
-        oidc: { okta: 'fakeToken' },
+        auth: {
+          oidc: { okta: 'fakeToken' },
+        },
         entity,
       },
     );
