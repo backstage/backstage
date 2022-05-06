@@ -1,4 +1,4 @@
-FROM node:14-buster
+FROM node:18-buster
 
 WORKDIR /usr/src/app
 
