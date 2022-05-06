@@ -24,6 +24,11 @@ export interface AWSClusterDetails extends ClusterDetails {
   externalId?: string;
 }
 
+// Warning: (ae-missing-release-tag) "AzureClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AzureClusterDetails extends ClusterDetails {}
+
 // Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

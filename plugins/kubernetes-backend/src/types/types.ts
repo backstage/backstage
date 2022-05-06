@@ -147,6 +147,7 @@ export interface ClusterDetails {
 }
 
 export interface GKEClusterDetails extends ClusterDetails {}
+export interface AzureClusterDetails extends ClusterDetails {}
 export interface ServiceAccountClusterDetails extends ClusterDetails {}
 export interface AWSClusterDetails extends ClusterDetails {
   assumeRole?: string;
