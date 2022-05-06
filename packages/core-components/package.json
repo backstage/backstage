@@ -95,7 +95,7 @@
     "@types/jest": "^26.0.7",
     "@types/node": "^16.11.26",
     "@types/react-helmet": "^6.1.0",
-    "@types/react-syntax-highlighter": "^13.5.2",
+    "@types/react-syntax-highlighter": "^15.0.0",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "@types/zen-observable": "^0.8.0",
