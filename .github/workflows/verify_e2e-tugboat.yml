@@ -10,12 +10,12 @@ jobs:
       # Set an initial commit status message to indicate that the tests are
       # running.
       - name: set pending status
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           debug: true
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
@@ -34,12 +34,12 @@ jobs:
       # Set an initial commit status message to indicate that the tests are
       # running.
       - name: set pending status
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           debug: true
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
@@ -65,12 +65,12 @@ jobs:
       # https://developer.github.com/changes/2016-04-06-deployment-and-deployment-status-enhancements/
       - name: get deployment status
         id: get-status-env
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           result-encoding: string
           script: |
-            const result = await github.repos.getDeploymentStatus({
+            const result = await github.rest.repos.getDeploymentStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               deployment_id: context.payload.deployment.id,
@@ -102,11 +102,11 @@ jobs:
 
       - name: set status
         if: ${{ failure() }}
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
@@ -117,11 +117,11 @@ jobs:
 
       - name: set status
         if: ${{ success() }}
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
           script: |
-            return github.repos.createCommitStatus({
+            return github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: context.sha,
