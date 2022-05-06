@@ -16,11 +16,11 @@ Lists the top _n_ Active, Completed, or Abandoned Pull Requests for a given repo
 
 ![Azure Repos Pull Requests Example](./docs/azure-devops-pull-requests.png)
 
-### Azure Git Tags
+### Azure Repos Git Tags
 
 Lists all Git Tags for a given repository
 
-![Azure Repos Pull Requests Example](./docs/azure-devops-git-tags.png)
+![Azure Repos Git Tags Example](./docs/azure-devops-git-tags.png)
 
 ## Setup
 
@@ -194,7 +194,7 @@ To get the Git Tags component working you'll need to do the following two steps:
 
 **Notes:**
 
-- You'll need to add the `EntityLayout.Route` above from step 2 to all the entity sections you want to see Git Tags in. For example if you wanted to see Pull Requests when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
+- You'll need to add the `EntityLayout.Route` above from step 2 to all the entity sections you want to see Git Tags in. For example if you wanted to see Git Tags when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
 - The `if` prop is optional on the `EntityLayout.Route`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation
 
 ## Limitations

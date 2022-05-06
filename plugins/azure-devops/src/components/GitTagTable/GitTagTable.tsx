@@ -64,11 +64,7 @@ export const GitTagTable = () => {
   const { items, loading, error } = useGitTags(entity);
 
   if (error) {
-    return (
-      <div>
-        <ResponseErrorPanel error={error} />
-      </div>
-    );
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (
