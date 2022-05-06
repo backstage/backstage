@@ -90,9 +90,10 @@ export class GithubUrlReader implements UrlReader {
   }
 
   async readUrl(
-    url: string,
+    aurl: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
+    const url = aurl.replace('/-/','/dummy/');
     const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
