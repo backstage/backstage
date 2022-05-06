@@ -21,6 +21,7 @@ import { ServiceAccountKubernetesAuthProvider } from './ServiceAccountKubernetes
 import { AwsKubernetesAuthProvider } from './AwsKubernetesAuthProvider';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { GoogleServiceAccountAuthProvider } from './GoogleServiceAccountAuthProvider';
+import { AzureKubernetesAuthProvider } from './AzureKubernetesAuthProvider';
 
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   private readonly kubernetesAuthProviderMap: Map<
@@ -43,6 +44,10 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       new GoogleServiceAccountAuthProvider(),
     );
     this.kubernetesAuthProviderMap.set('aws', new AwsKubernetesAuthProvider());
+    this.kubernetesAuthProviderMap.set(
+      'azure',
+      new AzureKubernetesAuthProvider(),
+    );
   }
 
   async decorateRequestBodyForAuth(

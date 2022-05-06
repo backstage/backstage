@@ -91,6 +91,7 @@ cluster. Valid values are:
 | `google`               | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                             |
 | `aws`                  | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                 |
 | `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                        |
+| `azure`                | This will use [Azure Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                               |
 
 ##### `clusters.\*.skipTLSVerify`
 
