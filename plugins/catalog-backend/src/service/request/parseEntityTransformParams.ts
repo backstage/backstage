@@ -23,7 +23,7 @@ import { parseStringsParam } from './common';
 function getPathArrayAndValue(input: Entity, field: string) {
   return field.split('.').reduce(
     ([pathArray, inputSubset], pathPart, index, fieldParts) => {
-      if (inputSubset.hasOwnProperty(pathPart)) {
+      if (lodash.hasIn(inputSubset, pathPart)) {
         return [pathArray.concat(pathPart), inputSubset[pathPart]];
       } else if (fieldParts[index + 1] !== undefined) {
         fieldParts[index + 1] = `${pathPart}.${fieldParts[index + 1]}`;

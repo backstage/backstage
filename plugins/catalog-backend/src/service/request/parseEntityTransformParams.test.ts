@@ -132,19 +132,49 @@ describe('parseEntityTransformParams', () => {
   it('does not return a sub key if an incorrect longer key is requested', () => {
     entity.spec = {
       ...entity.spec,
+      strValue: 'st1',
+      boolValue: true,
+      numValue: 4,
+      arrValue: [4, 5],
+      nullValue: null,
+      undefValue: undefined,
       'field-with.dot': 'fd1',
-      plain: true,
-      numLike: 4,
-      arrayLike: [4, 5],
     };
 
     expect(
-      parseEntityTransformParams({
-        fields:
-          'kind,spec.field-withdot.other.item,kind.other.other,spec.plain.other,spec.numLike.other,spec.arrayLike.other',
-      })!(entity),
-    ).toEqual({
-      kind: 'k',
-    });
+      parseEntityTransformParams({ fields: 'kind,spec.strValue.other' })!(
+        entity,
+      ),
+    ).toEqual({ kind: 'k' });
+    expect(
+      parseEntityTransformParams({ fields: 'kind,spec.boolValue.other' })!(
+        entity,
+      ),
+    ).toEqual({ kind: 'k' });
+    expect(
+      parseEntityTransformParams({ fields: 'kind,spec.numValue.other' })!(
+        entity,
+      ),
+    ).toEqual({ kind: 'k' });
+    expect(
+      parseEntityTransformParams({ fields: 'kind,spec.arrValue.other' })!(
+        entity,
+      ),
+    ).toEqual({ kind: 'k' });
+    expect(
+      parseEntityTransformParams({ fields: 'kind,spec.nullValue.other' })!(
+        entity,
+      ),
+    ).toEqual({ kind: 'k' });
+    expect(
+      parseEntityTransformParams({ fields: 'kind,spec.undefValue.other' })!(
+        entity,
+      ),
+    ).toEqual({ kind: 'k' });
+    expect(
+      parseEntityTransformParams({ fields: 'kind,spec.field-with.dot.other' })!(
+        entity,
+      ),
+    ).toEqual({ kind: 'k' });
   });
 });
