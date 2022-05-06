@@ -195,7 +195,6 @@ export function SelectComponent(props: SelectProps) {
 
   return (
     <div className={classes.root}>
-      {/* <Typography variant="button">{label}</Typography> */}
       <ClickAwayListener onClickAway={handleClickAway}>
         <FormControl className={classes.formControl}>
           <InputLabel className={classes.formLabel}>{label}</InputLabel>
