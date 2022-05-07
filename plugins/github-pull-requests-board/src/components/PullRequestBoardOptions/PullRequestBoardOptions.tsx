@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode } from 'react';
+import React, { ReactNode, FunctionComponent } from 'react';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { Tooltip, Box } from '@material-ui/core';
 import { PRCardFormating } from '../../utils/types';
@@ -30,7 +30,7 @@ type Props = {
   options: Option[];
 };
 
-const PullRequestBoardOptions = (props: Props) => {
+const PullRequestBoardOptions: FunctionComponent<Props> = (props: Props) => {
   const { value, onClickOption, options } = props;
   return (
     <ToggleButtonGroup

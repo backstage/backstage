@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
-const DraftPr = () => (
+const DraftPr: FunctionComponent = () => (
   <svg
     aria-hidden="true"
     height="16"

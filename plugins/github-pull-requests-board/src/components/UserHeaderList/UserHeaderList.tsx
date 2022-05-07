@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { Typography, Box } from '@material-ui/core';
 import { filterSameUser } from '../../utils/functions';
 
@@ -25,7 +25,7 @@ type Props = {
   users: Author[];
 };
 
-const UserHeaderList = (props: Props) => {
+const UserHeaderList: FunctionComponent<Props> = (props: Props) => {
   const { users, label } = props;
 
   return (
