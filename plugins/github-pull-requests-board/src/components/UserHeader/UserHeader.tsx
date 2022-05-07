@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { Typography, Box, Avatar, makeStyles } from '@material-ui/core';
 
 type Props = {
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const UserHeader = (props: Props) => {
+const UserHeader: FunctionComponent<Props> = (props: Props) => {
   const { name, avatar } = props;
   const classes = useStyles();
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { Typography, Box } from '@material-ui/core';
 import { getElapsedTime } from '../../utils/functions';
 import { UserHeader } from '../UserHeader';
@@ -27,7 +27,7 @@ type Props = {
   repositoryName: string;
 };
 
-const CardHeader = (props: Props) => {
+const CardHeader: FunctionComponent<Props> = (props: Props) => {
   const {
     title,
     createdAt,
