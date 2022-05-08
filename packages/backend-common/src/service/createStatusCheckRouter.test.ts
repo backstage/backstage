@@ -26,7 +26,7 @@ describe('createStatusCheckRouter', () => {
     const app = express();
     app.use('', await createStatusCheckRouter({ logger }));
 
-    const response = await request(app).get('/healthcheck');
+    const response = await request(app).get('/');
 
     expect(response.status).toBe(200);
     expect(response.text).toBe(JSON.stringify({ status: 'ok' }));
@@ -49,7 +49,7 @@ describe('createStatusCheckRouter', () => {
     };
     app.use('', await createStatusCheckRouter({ logger, statusCheck }));
 
-    const response = await request(app).get('/healthcheck');
+    const response = await request(app).get('/');
 
     expect(response.status).toBe(500);
   });

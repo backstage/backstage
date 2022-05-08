@@ -23,6 +23,6 @@ export default async function createPlugin(
 ): Promise<Router> {
   return await createStatusCheckRouter({
     logger: env.logger,
-    path: '/healthcheck',
+    path: '/',
   });
 }

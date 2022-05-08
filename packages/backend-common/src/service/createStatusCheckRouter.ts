@@ -25,7 +25,7 @@ import { errorHandler, statusCheckHandler, StatusCheck } from '../middleware';
  *
  * @remarks
  *
- * This adds a `/healthcheck` route (or any other path, if given as an
+ * This adds a `/` route (or any other path, if given as an
  * argument), which your infra can call to see if the service is ready to serve
  * requests.
  *
@@ -37,7 +37,7 @@ export async function createStatusCheckRouter(options: {
    * The path (including a leading slash) that the health check should be
    * mounted on.
    *
-   * @defaultValue '/healthcheck'
+   * @defaultValue '/'
    */
   path?: string;
   /**
@@ -47,7 +47,7 @@ export async function createStatusCheckRouter(options: {
   statusCheck?: StatusCheck;
 }): Promise<express.Router> {
   const router = Router();
-  const { path = '/healthcheck', statusCheck } = options;
+  const { path = '/', statusCheck } = options;
 
   router.use(path, await statusCheckHandler({ statusCheck }));
   router.use(errorHandler());
