@@ -362,11 +362,11 @@ spec:
 #          readinessProbe:
 #            httpGet:
 #              port: 7007
-#              path: /healthcheck
+#              path: /api/healthcheck
 #          livenessProbe:
 #            httpGet:
 #              port: 7007
-#              path: /healthcheck
+#              path: /api/healthcheck
 ```
 
 For production deployments, the `image` reference will usually be a full URL to

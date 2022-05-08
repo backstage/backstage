@@ -38,7 +38,7 @@ An example log line could look as follows:
 ## Health Checks
 
 The example backend in the Backstage repository
-[supplies](https://github.com/backstage/backstage/blob/bc18571b7a742863a770b2a54e785d6bbef7e184/packages/backend/src/index.ts#L99)
-a very basic health check endpoint on the `/healthcheck` route. You may add such
+[supplies](https://github.com/backstage/backstage/blob/e8bb11cba298fdaf9185e4fdcd5d314cee23e1e4/packages/backend/src/index.ts#155)
+a very basic health check endpoint on the `/api/healthcheck` route. You may add such
 a handler to your backend as well, and supply your own logic to it that fits
 your particular health checking needs.
