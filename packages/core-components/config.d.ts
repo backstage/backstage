@@ -20,6 +20,6 @@ export interface Config {
      * The filename of the custom MicDrop SVG. Must be placed in /packages/app/public/ folder.
      * @visibility frontend
      */
-    micDropSvg?: string;
+    micDropSvgUrl?: string;
   };
 }

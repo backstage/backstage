@@ -37,7 +37,7 @@ describe('<MicDrop/>', () => {
             configApiRef,
             new ConfigReader({
               app: {
-                micDropSvg: dummySvg,
+                micDropSvgUrl: dummySvg,
               },
             }),
           ],

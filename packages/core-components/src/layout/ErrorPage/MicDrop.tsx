@@ -51,10 +51,11 @@ const publicPath = () => {
 
 export const MicDrop = () => {
   const classes = useStyles();
-  const customSvg = useApi(configApiRef).getOptionalString('app.micDropSvg');
+  const customSvgUrl =
+    useApi(configApiRef).getOptionalString('app.micDropSvgUrl');
   return (
     <img
-      src={customSvg ? `${publicPath()}${customSvg}` : MicDropSvgUrl}
+      src={customSvgUrl ? `${publicPath()}${customSvgUrl}` : MicDropSvgUrl}
       className={classes.micDrop}
       alt="Girl dropping mic from her hands"
     />
