@@ -38,6 +38,7 @@ import { DocsTableRow } from './types';
  * @public
  */
 export type EntityListDocsTableProps = {
+  options?: object;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
@@ -48,7 +49,7 @@ export type EntityListDocsTableProps = {
  * @public
  */
 export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
-  const { columns, actions } = props;
+  const { options, columns, actions } = props;
   const { loading, error, entities, filters } = useEntityList();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const [, copyToClipboard] = useCopyToClipboard();
@@ -79,6 +80,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
       title={title}
       entities={entities}
       loading={loading}
+      options={options}
       actions={actions || defaultActions}
       columns={columns}
     />
