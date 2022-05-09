@@ -25,6 +25,13 @@
     call-me-maybe "^1.0.1"
     js-yaml "^3.13.1"
 
+"@apollo/explorer@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/@apollo/explorer/-/explorer-0.3.2.tgz#fc8afd7b80ad78218ed5640ce0d9f886a030c52b"
+  integrity sha512-WGTl1O/tOw+iORqFYrzyWseI88JaAe/Q8+NJI+CuSRRstLv2q9maA1K6UFbjGpG6IQ0K307HYo3mOyXV5OAcGA==
+  dependencies:
+    use-deep-compare-effect "^1.8.1"
+
 "@apollo/protobufjs@1.2.2":
   version "1.2.2"
   resolved "https://registry.npmjs.org/@apollo/protobufjs/-/protobufjs-1.2.2.tgz#4bd92cd7701ccaef6d517cdb75af2755f049f87c"
@@ -10792,7 +10799,7 @@ deprecation@^2.0.0, deprecation@^2.3.1:
   resolved "https://registry.npmjs.org/deprecation/-/deprecation-2.3.1.tgz#6368cbdb40abf3373b525ac87e4a260c3a700919"
   integrity sha512-xmHIy4F3scKVwMsQ4WnVaS8bHOx0DmVwRywosKhaILI0ywMDWPtBSku2HNxRvF7jtwDRsoEwYQSfbxj8b7RlJQ==
 
-dequal@^2.0.0:
+dequal@^2.0.0, dequal@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/dequal/-/dequal-2.0.2.tgz#85ca22025e3a87e65ef75a7a437b35284a7e319d"
   integrity sha512-q9K8BlJVxK7hQYqa6XISGmBZbtQQWVXSrRrWreHC94rMt1QL/Impruc+7p2CYSYuVIUr+YCt6hjrs1kkdJRTug==
@@ -11953,6 +11960,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     "@backstage/plugin-airbrake" "^0.3.5-next.1"
     "@backstage/plugin-apache-airflow" "^0.1.13-next.0"
     "@backstage/plugin-api-docs" "^0.8.5-next.1"
+    "@backstage/plugin-apollo-explorer" "^0.0.0"
     "@backstage/plugin-azure-devops" "^0.1.21-next.1"
     "@backstage/plugin-badges" "^0.2.29-next.1"
     "@backstage/plugin-catalog" "^1.2.0-next.1"
@@ -24648,6 +24656,14 @@ url@^0.11.0, url@~0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
+
+use-deep-compare-effect@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.npmjs.org/use-deep-compare-effect/-/use-deep-compare-effect-1.8.1.tgz#ef0ce3b3271edb801da1ec23bf0754ef4189d0c6"
+  integrity sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    dequal "^2.0.2"
 
 use-immer@^0.7.0:
   version "0.7.0"

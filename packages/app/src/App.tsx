@@ -94,6 +94,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { ApolloExplorerPage } from '@backstage/plugin-apollo-explorer';
 
 const app = createApp({
   apis,
@@ -209,6 +210,7 @@ const routes = (
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
     />
+    <Route path="/apollo-explorer" element={<ApolloExplorerPage />} />
     <Route path="/graphiql" element={<GraphiQLPage />} />
     <Route path="/lighthouse" element={<LighthousePage />} />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
