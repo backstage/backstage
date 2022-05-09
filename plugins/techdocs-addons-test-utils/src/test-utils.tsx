@@ -119,7 +119,8 @@ export class TechDocsAddonTester {
     return new TechDocsAddonTester(addons);
   }
 
-  private constructor(addons: ReactElement[]) {
+  // Protected in order to allow extension but not direct instantiation.
+  protected constructor(addons: ReactElement[]) {
     this.addons = addons;
   }
 
