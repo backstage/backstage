@@ -16903,9 +16903,9 @@ lunr@^2.3.9:
   integrity sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==
 
 luxon@^2.0.2, luxon@^2.3.0:
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/luxon/-/luxon-2.3.2.tgz#5f2f3002b8c39b60a7b7ad24b2a85d90dc5db49c"
-  integrity sha512-MlAQQVMFhGk4WUA6gpfsy0QycnKP0+NlCBJRVRNPxxSIbjrCbQ65nrpJD3FVyJNZLuJ0uoqL57ye6BmDYgHaSw==
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/luxon/-/luxon-2.4.0.tgz#9435806545bb32d4234dab766ab8a3d54847a765"
+  integrity sha512-w+NAwWOUL5hO0SgwOHsMBAmZ15SoknmQXhSO0hIbJCAmPKSsGeK8MlmhYh2w6Iib38IxN2M+/ooXWLbeis7GuA==
 
 lz-string@^1.4.4:
   version "1.4.4"
