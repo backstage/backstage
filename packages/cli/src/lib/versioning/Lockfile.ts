@@ -94,6 +94,19 @@ function stringifyLockfile(data: LockfileData, legacy: boolean) {
 // https://github.com/yarnpkg/berry/blob/0c5974f193a9397630e9aee2b3876cca62611149/packages/yarnpkg-parsers/sources/syml.ts#L136
 const LEGACY_REGEX = /^(#.*(\r?\n))*?#\s+yarn\s+lockfile\s+v1\r?\n/i;
 
+// these are special top level yarn keys.
+// https://github.com/yarnpkg/berry/blob/9bd61fbffb83d0b8166a9cc26bec3a58743aa453/packages/yarnpkg-parsers/sources/syml.ts#L9
+const SPECIAL_OBJECT_KEYS = [
+  `__metadata`,
+  `version`,
+  `resolution`,
+  `dependencies`,
+  `peerDependencies`,
+  `dependenciesMeta`,
+  `peerDependenciesMeta`,
+  `binaries`,
+];
+
 export class Lockfile {
   static async load(path: string) {
     const lockfileContents = await fs.readFile(path, 'utf8');
@@ -107,8 +120,10 @@ export class Lockfile {
     const packages = new Map<string, LockfileQueryEntry[]>();
 
     for (const [key, value] of Object.entries(data)) {
+      if (SPECIAL_OBJECT_KEYS.includes(key)) continue;
+
       const [, name, range] = ENTRY_PATTERN.exec(key) ?? [];
-      if (!name && key !== '__metadata') {
+      if (!name) {
         throw new Error(`Failed to parse yarn.lock entry '${key}'`);
       }
 
@@ -150,7 +165,7 @@ export class Lockfile {
     };
 
     for (const [name, allEntries] of this.packages) {
-      if (typeof name !== 'string' || (filter && !filter(name))) {
+      if (filter && !filter(name)) {
         continue;
       }
 
