@@ -211,8 +211,7 @@ describe('GithubDiscoveryProcessor', () => {
         type: 'location',
         location: {
           type: 'url',
-          target:
-            'https://github.com/backstage/tech-docs/blob/main/catalog.yaml',
+          target: 'https://github.com/backstage/tech-docs/blob/-/catalog.yaml',
           presence: 'optional',
         },
       });
@@ -266,7 +265,7 @@ describe('GithubDiscoveryProcessor', () => {
         location: {
           type: 'url',
           target:
-            'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+            'https://github.com/backstage/backstage/blob/-/catalog-info.yaml',
           presence: 'optional',
         },
       });

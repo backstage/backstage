@@ -90,10 +90,13 @@ export class GithubUrlReader implements UrlReader {
   }
 
   async readUrl(
-    aurl: string,
+    originalUrl: string,
     options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
-    const url = aurl.replace('/-/','/dummy/');
+    const { ref } = parseGitUrl(originalUrl);
+    const wildcardBranchName = ref !== 'qwerty' ? 'qwerty' : 'qwerty1';
+    // ensure wildcardBranchName doesn't clash with real name
+    const url = originalUrl.replace('/-/', `/${wildcardBranchName}/`);
     const credentials = await this.deps.credentialsProvider.getCredentials({
       url,
     });
@@ -101,6 +104,7 @@ export class GithubUrlReader implements UrlReader {
       url,
       this.integration.config,
       credentials,
+      wildcardBranchName,
     );
 
     let response: Response;

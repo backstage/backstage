@@ -17,8 +17,6 @@
 import parseGitUrl from 'git-url-parse';
 import { GitHubIntegrationConfig } from './config';
 import { GithubCredentials } from './types';
-import { graphql } from '@octokit/graphql';
-import { getRepository } from '@backstage/plugin-catalog-backend-module-github';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -39,19 +37,18 @@ export function getGitHubFileFetchUrl(
   url: string,
   config: GitHubIntegrationConfig,
   credentials: GithubCredentials,
+  wildcardBranchName?: string,
 ): string {
   try {
-
     // need to resolve the default branch.
-    // need to get the repository to do this. 
-    // copy code from GithubDiscoveryprocessor.ts that gets repos 
-    // then find the correct repo with name 
-    const { owner, name, ref, filepathtype, filepath, organization } = parseGitUrl(url);
-    const branchName = resolveBranchName(ref, organization, name, config.apiBaseUrl, credentials);
+    // need to get the repository to do this.
+    // copy code from GithubDiscoveryprocessor.ts that gets repos
+    // then find the correct repo with name
+    const { owner, name, ref, filepathtype, filepath } = parseGitUrl(url);
     if (
       !owner ||
       !name ||
-      !branchName ||
+      !ref ||
       // GitHub is automatically redirecting tree urls to blob urls so it's
       // fine to pass a tree url.
       (filepathtype !== 'blob' &&
@@ -60,12 +57,13 @@ export function getGitHubFileFetchUrl(
     ) {
       throw new Error('Invalid GitHub URL or file path');
     }
-
     const pathWithoutSlash = filepath.replace(/^\//, '');
     if (chooseEndpoint(config, credentials) === 'api') {
-      return `${config.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${branchName}`;
+      // if branch is the dummy branch, don't add ref to call. then the default branch is used
+      const refSuffix = ref !== wildcardBranchName ? `?ref=${ref}` : '';
+      return `${config.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}${refSuffix}`;
     }
-    return `${config.rawBaseUrl}/${owner}/${name}/${branchName}/${pathWithoutSlash}`;
+    return `${config.rawBaseUrl}/${owner}/${name}/${ref}/${pathWithoutSlash}`;
   } catch (e) {
     throw new Error(`Incorrect URL: ${url}, ${e}`);
   }
@@ -103,26 +101,4 @@ export function chooseEndpoint(
     return 'api';
   }
   return 'raw';
-}
-
-async function resolveBranchName(
-  currentBranchName:string, 
-  org:string, 
-  repoId:string, 
-  githubApiUrl: string|undefined, 
-  credentials: GithubCredentials ) : Promise<string> {
-  if(currentBranchName !== 'dummy'){ 
-    return currentBranchName;
-  }
-    // Building the org url here so that the github creds provider doesn't need to know
-    // about how to handle the wild card which is special for this processor.
-  const { headers } = credentials;
-  const client = graphql.defaults({
-    baseUrl: githubApiUrl,
-    headers,
-  });
-
-  const repository = await getRepository(client, org, repoId);
-  const name = repository?.defaultBranchRef?.name ?? '';
-  return name; 
 }

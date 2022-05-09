@@ -65,6 +65,21 @@ describe('github core', () => {
       );
     });
 
+    it('creates url with no ref parameter when dummy branch name matches branch name', () => {
+      const config: GitHubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(
+        getGitHubFileFetchUrl(
+          'https://github.com/a/b/blob/dummybranchname/path/to/c.yaml',
+          config,
+          appCredentials,
+          'dummybranchname',
+        ),
+      ).toEqual('https://api.github.com/repos/a/b/contents/path/to/c.yaml');
+    });
+
     it('happy path for github api', () => {
       const config: GitHubIntegrationConfig = {
         host: 'github.com',

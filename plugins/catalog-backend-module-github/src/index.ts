@@ -26,4 +26,3 @@ export { GitHubOrgEntityProvider } from './GitHubOrgEntityProvider';
 export type { GitHubOrgEntityProviderOptions } from './GitHubOrgEntityProvider';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export type { GithubMultiOrgConfig } from './lib';
-export { getRepository } from './lib';

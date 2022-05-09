@@ -244,19 +244,6 @@ export async function getOrganizationTeams(
   return { groups, groupMemberUsers };
 }
 
-export async function getRepository(
-  client: typeof graphql,
-  org: string,
-  repoId: string,
-) : Promise<Repository | null>  {
-  const {repositories} = await getOrganizationRepositories(client, org);
-  const repo = repositories.find(r => !r.isArchived && r.name === repoId);
-  if(!repo){
-    return null;
-  }
-  return repo;
-};
-  
 export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
