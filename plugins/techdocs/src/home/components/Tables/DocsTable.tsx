@@ -45,6 +45,7 @@ export type DocsTableProps = {
   entities: Entity[] | undefined;
   title?: string | undefined;
   loading?: boolean | undefined;
+  options?: object | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
@@ -55,7 +56,7 @@ export type DocsTableProps = {
  * @public
  */
 export const DocsTable = (props: DocsTableProps) => {
-  const { entities, title, loading, columns, actions } = props;
+  const { entities, title, loading, options, columns, actions } = props;
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
@@ -82,6 +83,13 @@ export const DocsTable = (props: DocsTableProps) => {
     };
   });
 
+  const defaultOptions: object = {
+    paging: true,
+    pageSize: 20,
+    search: true,
+    actionsColumnIndex: -1,
+  };
+
   const defaultColumns: TableColumn<DocsTableRow>[] = [
     columnFactories.createNameColumn(),
     columnFactories.createOwnerColumn(),
@@ -97,12 +105,7 @@ export const DocsTable = (props: DocsTableProps) => {
       {loading || (documents && documents.length > 0) ? (
         <Table<DocsTableRow>
           isLoading={loading}
-          options={{
-            paging: true,
-            pageSize: 20,
-            search: true,
-            actionsColumnIndex: -1,
-          }}
+          options={options || defaultOptions}
           data={documents}
           columns={columns || defaultColumns}
           actions={actions || defaultActions}
