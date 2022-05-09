@@ -37,12 +37,7 @@ import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { CatalogKindHeader } from '../CatalogKindHeader';
-
-export type DefaultCatalogMetadataProps = {
-  createComponentTitle: string;
-  supportButtonText: string;
-  supportButton: () => JSX.Element;
-};
+import { CatalogPluginMetadata } from '../../plugin';
 
 /**
  * Props for root catalog pages.
@@ -55,7 +50,7 @@ export interface DefaultCatalogPageProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
   tableOptions?: TableProps<CatalogTableRow>['options'];
-  metadata?: DefaultCatalogMetadataProps;
+  metadata?: CatalogPluginMetadata;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {

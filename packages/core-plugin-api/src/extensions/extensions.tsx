@@ -19,7 +19,7 @@ import { AnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
-import { Extension, BackstagePlugin } from '../plugin/types';
+import { Extension, BackstagePlugin, AnyMetadata } from '../plugin/types';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
 
 /**
@@ -73,8 +73,13 @@ export function createRoutableExtension<
    * variable for this extension.
    */
   name?: string;
+
+  /**
+   *
+   */
+  metadata?: AnyMetadata;
 }): Extension<T> {
-  const { component, mountPoint, name } = options;
+  const { component, mountPoint, name, metadata } = options;
   return createReactExtension({
     component: {
       lazy: () =>
@@ -100,7 +105,7 @@ export function createRoutableExtension<
                 }
                 throw error;
               }
-              return <InnerComponent {...props} />;
+              return <InnerComponent {...props} {...metadata} />;
             };
 
             const componentName =

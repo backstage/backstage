@@ -30,6 +30,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
   storageApiRef,
+  AnyMetadata,
 } from '@backstage/core-plugin-api';
 import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
@@ -43,6 +44,19 @@ import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { rootRouteRef } from './routes';
+
+export interface CatalogPluginMetadata extends AnyMetadata {
+  createComponentTitle: string;
+  supportButton: () => Promise<JSX.Element>;
+  supportButtonText: string;
+}
+
+const metadata = {
+  createComponentTitle: 'Create Component',
+  supportButton: () =>
+    import('@backstage/core-components').then(m => m.SupportButton),
+  supportButtonText: 'All your software catalog entities',
+} as CatalogPluginMetadata;
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -72,12 +86,7 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
-  metadata: {
-    createComponentTitle: 'Create Component',
-    supportButton: () =>
-      import('@backstage/core-components').then(m => m.SupportButton),
-    supportButtonText: 'All your software catalog entities',
-  },
+  metadata,
 });
 
 /** @public */
@@ -87,6 +96,7 @@ export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element =
       name: 'CatalogIndexPage',
       component: () =>
         import('./components/CatalogPage').then(m => m.CatalogPage),
+      metadata,
       mountPoint: rootRouteRef,
     }),
   );
