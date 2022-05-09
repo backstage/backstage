@@ -265,3 +265,13 @@ const LogoFull = () => {
 
 In addition to a custom theme, a custom logo, you can also customize the
 homepage of your app. Read the full guide on the [next page](homepage.md).
+
+## Custom MicDrop Image
+
+If you made changes to the theme-colors, you may also want to change colors of the default MicDrop Image shown on the ErrorPage. To do that, add the customized image to your `public`-folder and provide the filename in `micDropSvgUrl` property of `app-config.yaml` under `app`:
+
+```yaml
+# app-config.yaml
+app:
+  micDropSvgUrl: custom-micdrop.svg
+```
