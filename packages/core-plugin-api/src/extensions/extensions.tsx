@@ -19,7 +19,7 @@ import { AnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
-import { Extension, BackstagePlugin, AnyMetadata } from '../plugin/types';
+import { Extension, BackstagePlugin } from '../plugin/types';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
 
 /**
@@ -73,13 +73,8 @@ export function createRoutableExtension<
    * variable for this extension.
    */
   name?: string;
-
-  /**
-   *
-   */
-  metadata?: AnyMetadata;
 }): Extension<T> {
-  const { component, mountPoint, name, metadata } = options;
+  const { component, mountPoint, name } = options;
   return createReactExtension({
     component: {
       lazy: () =>
@@ -105,7 +100,7 @@ export function createRoutableExtension<
                 }
                 throw error;
               }
-              return <InnerComponent {...props} {...metadata} />;
+              return <InnerComponent {...props} />;
             };
 
             const componentName =
@@ -240,6 +235,11 @@ export function createReactExtension<
           | { id?: string }
           | undefined;
 
+        const metadata = plugin.getMetadata();
+        const componentProperties = metadata
+          ? { ...props, metadata }
+          : { ...props };
+
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
@@ -250,7 +250,7 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <Component {...props} />
+                <Component {...componentProperties} />
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>

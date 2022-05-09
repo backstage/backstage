@@ -32,6 +32,7 @@ import {
   storageApiRef,
   AnyMetadata,
 } from '@backstage/core-plugin-api';
+import { SupportButton } from '@backstage/core-components';
 import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
@@ -47,14 +48,14 @@ import { rootRouteRef } from './routes';
 
 export interface CatalogPluginMetadata extends AnyMetadata {
   createComponentTitle: string;
-  supportButton: () => Promise<JSX.Element>;
+  supportButton: () => JSX.Element;
   supportButtonText: string;
 }
 
 const metadata = {
   createComponentTitle: 'Create Component',
-  supportButton: () =>
-    import('@backstage/core-components').then(m => m.SupportButton),
+  // eslint-disable-next-line new-cap
+  supportButton: () => SupportButton({}),
   supportButtonText: 'All your software catalog entities',
 } as CatalogPluginMetadata;
 
@@ -96,7 +97,6 @@ export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element =
       name: 'CatalogIndexPage',
       component: () =>
         import('./components/CatalogPage').then(m => m.CatalogPage),
-      metadata,
       mountPoint: rootRouteRef,
     }),
   );

@@ -94,6 +94,7 @@ import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
+import { CatalogPluginMetadata } from '@backstage/plugin-catalog';
 
 const app = createApp({
   apis,
@@ -133,6 +134,11 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
+
+catalogPlugin.reconfigure({
+  createComponentTitle: 'Create!!',
+  supportButton: () => <div>Contact Support</div>,
+} as CatalogPluginMetadata);
 
 const routes = (
   <FlatRoutes>

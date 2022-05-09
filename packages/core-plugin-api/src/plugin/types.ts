@@ -67,6 +67,7 @@ export type BackstagePlugin<
    * Returns all registered feature flags for this plugin.
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
+  getMetadata(): PluginMetadata;
   provide<T>(extension: Extension<T>): T;
   reconfigure(metadata: PluginMetadata): BackstagePlugin;
   routes: Routes;

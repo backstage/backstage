@@ -54,6 +54,10 @@ export class PluginImpl<
     return this.config.featureFlags?.slice() ?? [];
   }
 
+  getMetadata(): PluginMetadata {
+    return this.config.metadata!!;
+  }
+
   get routes(): Routes {
     return this.config.routes ?? ({} as Routes);
   }
@@ -67,7 +71,7 @@ export class PluginImpl<
   }
 
   reconfigure(metadata: PluginMetadata): BackstagePlugin {
-    this.config.metadata = metadata;
+    this.config.metadata = { ...this.config.metadata, ...metadata };
     return this;
   }
 

@@ -53,6 +53,7 @@ export {
   RelatedEntitiesCard,
 } from './plugin';
 
+export type { CatalogPluginMetadata } from './plugin';
 export type { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
 export type { DependsOnComponentsCardProps } from './components/DependsOnComponentsCard';
 export type { DependsOnResourcesCardProps } from './components/DependsOnResourcesCard';
