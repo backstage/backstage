@@ -23,14 +23,15 @@
     "clean": "backstage-cli package clean"
   },
   "dependencies": {
+    "@acuris/aws-es-connection": "^2.2.0",
     "@backstage/config": "^1.0.0",
     "@backstage/plugin-search-backend-node": "^0.6.1-next.0",
     "@backstage/plugin-search-common": "^0.3.3",
     "@elastic/elasticsearch": "7.13.0",
-    "@acuris/aws-es-connection": "^2.2.0",
     "aws-sdk": "^2.948.0",
     "elastic-builder": "^2.16.0",
     "lodash": "^4.17.21",
+    "uuid": "^8.3.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {

@@ -20,11 +20,6 @@ import { renderInTestApp } from '@backstage/test-utils';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import { DefaultResultListItem } from './DefaultResultListItem';
 
-// Using canvas to render text..
-jest.mock('react-text-truncate', () => {
-  return ({ text }: { text: string }) => <span>{text}</span>;
-});
-
 describe('DefaultResultListItem', () => {
   const result = {
     title: 'title',

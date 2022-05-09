@@ -71,6 +71,7 @@ export const searchPage = (
                         <CatalogResultListItem
                           key={result.document.location}
                           result={result.document}
+                          highlight={result.highlight}
                         />
                       );
                     default:
@@ -78,6 +79,7 @@ export const searchPage = (
                         <DefaultResultListItem
                           key={result.document.location}
                           result={result.document}
+                          highlight={result.highlight}
                         />
                       );
                   }
@@ -266,6 +268,7 @@ an example:
               <CatalogResultListItem
                 key={result.document.location}
                 result={result.document}
+                highlight={result.highlight}
               />
             );
           // ...
