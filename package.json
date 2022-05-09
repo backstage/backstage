@@ -26,7 +26,7 @@
     "backstage-create": "backstage-cli create --scope backstage --no-private",
     "create-plugin": "yarn backstage-create --select plugin",
     "remove-plugin": "backstage-cli remove-plugin",
-    "release": "node scripts/bump-create-app.js && node scripts/prepare-release.js && changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install",
+    "release": "node scripts/prepare-release.js && changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install",
     "prettier:check": "prettier --check .",
     "lerna": "lerna",
     "storybook": "yarn --cwd storybook start",

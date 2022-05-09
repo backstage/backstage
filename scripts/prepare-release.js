@@ -22,6 +22,7 @@ const { getPackages } = require('@manypkg/get-packages');
 const path = require('path');
 const { execFile: execFileCb } = require('child_process');
 const { promisify } = require('util');
+const { default: parseChangeset } = require('@changesets/parse');
 
 const execFile = promisify(execFileCb);
 
@@ -332,6 +333,55 @@ async function updateBackstageReleaseVersion(repo, type) {
   );
 }
 
+/**
+ * Ensures that the changesets include a version bump of create-app otherwise
+ * generates a new patch changeset for create-app.
+ */
+async function ensureCreateAppChangeset() {
+  process.chdir(path.resolve(__dirname, '../.changeset'));
+
+  const fileNames = await fs.readdir('.');
+  const changesetNames = fileNames.filter(
+    name => name.endsWith('.md') && name !== 'README.md',
+  );
+
+  const changesets = await Promise.all(
+    changesetNames.map(async name => {
+      const content = await fs.readFile(name, 'utf8');
+      return { name, ...parseChangeset(content) };
+    }),
+  );
+
+  let excludeList = [];
+  if (await fs.pathExists('pre.json')) {
+    const data = await fs.readJSON('pre.json');
+    excludeList = data.changesets.map(name => `${name}.md`);
+  }
+  const hasCreateAppChanges = changesets
+    .filter(({ name }) => !excludeList.includes(name))
+    .map(changeset =>
+      changeset.releases.some(
+        release => release.name === '@backstage/create-app',
+      ),
+    )
+    .includes(true);
+
+  if (hasCreateAppChanges) {
+    console.log(
+      'Contains create-app changeset, no need to create additional changeset',
+    );
+    return;
+  }
+  const ts = Math.round(new Date().getTime() / 1000);
+  const fileName = `create-app-${ts}.md`;
+  console.log(`Creating ${fileName}`);
+  const data = `---
+'@backstage/create-app': patch
+---\n
+Bumped create-app version.\n`;
+  await fs.writeFile(fileName, data);
+}
+
 async function main() {
   const repo = await getPackages(__dirname);
   const branchName = await getCurrentBranch(repo);
@@ -344,6 +394,7 @@ async function main() {
   }
 
   await updateBackstageReleaseVersion(repo, isMainBranch ? 'minor' : 'patch');
+  await ensureCreateAppChangeset();
 }
 
 main().catch(error => {
