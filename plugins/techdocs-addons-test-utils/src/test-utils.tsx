@@ -46,6 +46,7 @@ const techdocsApi = {
 
 const techdocsStorageApi = {
   getApiOrigin: jest.fn(),
+  getBaseUrl: jest.fn(),
   getEntityDocs: jest.fn(),
   syncEntityDocs: jest.fn(),
 };
@@ -180,7 +181,9 @@ export class TechDocsAddonTester {
     techdocsStorageApi.getApiOrigin.mockResolvedValue(
       'https://backstage.example.com/api/techdocs',
     );
-
+    techdocsStorageApi.getBaseUrl.mockResolvedValue(
+      `https://backstage.example.com/api/techdocs/${entityName.namespace}/${entityName.kind}/${entityName.name}/${this.options.path}`,
+    );
     techdocsStorageApi.getEntityDocs.mockResolvedValue(
       renderToStaticMarkup(this.options.dom || defaultDom),
     );
