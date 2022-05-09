@@ -179,21 +179,21 @@ describe('ServerTokenManager', () => {
       const { token: token1 } = await tokenManager.getToken();
       await expect(tokenManager.authenticate(token1)).resolves.not.toThrow();
 
-      // Less than ten minutes before expiry, it still returns the same token
-      jest.advanceTimersByTime(49 * 60 * 1000);
+      // Right before the reissue timeout, it still returns the same token
+      jest.advanceTimersByTime(9 * 60 * 1000);
       const { token: token1Again } = await tokenManager.getToken();
       expect(token1).toEqual(token1Again);
       await expect(tokenManager.authenticate(token1)).resolves.not.toThrow();
 
-      // Right before the expiry, the old ones are still valid but returning a new token
-      jest.advanceTimersByTime(10 * 60 * 1000);
+      // Right after the reissue timeout, the old ones are still valid but returning a new token
+      jest.advanceTimersByTime(2 * 60 * 1000);
       const { token: token2 } = await tokenManager.getToken();
       expect(token1).not.toEqual(token2);
       await expect(tokenManager.authenticate(token1)).resolves.not.toThrow();
       await expect(tokenManager.authenticate(token2)).resolves.not.toThrow();
 
-      // After expiry, the newest one is still valid
-      jest.advanceTimersByTime(2 * 60 * 1000);
+      // After expiry of the first one, the newest one is still valid
+      jest.advanceTimersByTime(52 * 60 * 1000);
       await expect(
         tokenManager.authenticate(token1),
       ).rejects.toThrowErrorMatchingInlineSnapshot(

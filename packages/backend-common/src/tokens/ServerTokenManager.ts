@@ -23,7 +23,8 @@ import { TokenManager } from './types';
 
 const TOKEN_ALG = 'HS256';
 const TOKEN_SUB = 'backstage-server';
-const TOKEN_EXPIRY = Duration.fromObject({ hours: 1 });
+const TOKEN_EXPIRY_AFTER = Duration.fromObject({ hours: 1 });
+const TOKEN_REISSUE_AFTER = Duration.fromObject({ minutes: 10 });
 
 /**
  * A token manager that issues static dummy tokens and never fails
@@ -151,7 +152,9 @@ export class ServerTokenManager implements TokenManager {
       const jwt = await new SignJWT({})
         .setProtectedHeader({ alg: TOKEN_ALG })
         .setSubject(TOKEN_SUB)
-        .setExpirationTime(DateTime.now().plus(TOKEN_EXPIRY).toUnixInteger())
+        .setExpirationTime(
+          DateTime.now().plus(TOKEN_EXPIRY_AFTER).toUnixInteger(),
+        )
         .sign(this.signingKey);
       return { token: jwt };
     });
@@ -162,7 +165,7 @@ export class ServerTokenManager implements TokenManager {
       .then(() => {
         setTimeout(() => {
           this.currentTokenPromise = undefined;
-        }, TOKEN_EXPIRY.minus({ minutes: 5 }).toMillis());
+        }, TOKEN_REISSUE_AFTER.toMillis());
       })
       .catch(() => {
         this.currentTokenPromise = undefined;
