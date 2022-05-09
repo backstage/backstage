@@ -95,6 +95,7 @@ export type DocsTableProps = {
   entities: Entity[] | undefined;
   title?: string | undefined;
   loading?: boolean | undefined;
+  options?: object | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
@@ -145,6 +146,7 @@ export const EntityListDocsTable: {
 
 // @public
 export type EntityListDocsTableProps = {
+  options?: object;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
