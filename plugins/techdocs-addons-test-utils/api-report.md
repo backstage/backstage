@@ -12,6 +12,7 @@ import { TechDocsMetadata } from '@backstage/plugin-techdocs-react';
 
 // @public (undocumented)
 export class TechDocsAddonTester {
+  protected constructor(addons: ReactElement[]);
   // (undocumented)
   atPath(path: string): this;
   // (undocumented)
