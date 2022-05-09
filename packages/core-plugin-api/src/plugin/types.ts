@@ -45,6 +45,13 @@ export type AnyRoutes = { [name: string]: RouteRef | SubRouteRef };
 export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
 
 /**
+ * Catch-all metadata type.
+ *
+ * @public
+ */
+export type AnyMetadata = { [name: string]: any };
+
+/**
  * Plugin type.
  *
  * @public
@@ -52,6 +59,7 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
+  PluginMetadata extends AnyMetadata = {},
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -60,6 +68,7 @@ export type BackstagePlugin<
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
+  reconfigure(metadata: PluginMetadata): BackstagePlugin;
   routes: Routes;
   externalRoutes: ExternalRoutes;
 };
@@ -82,12 +91,14 @@ export type PluginFeatureFlagConfig = {
 export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
+  PluginMetadata extends AnyMetadata,
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
+  metadata?: PluginMetadata;
 };
 
 /**

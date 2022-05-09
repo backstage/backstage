@@ -72,6 +72,12 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
+  metadata: {
+    createComponentTitle: 'Create Component',
+    supportButton: () =>
+      import('@backstage/core-components').then(m => m.SupportButton),
+    supportButtonText: 'All your software catalog entities',
+  },
 });
 
 /** @public */

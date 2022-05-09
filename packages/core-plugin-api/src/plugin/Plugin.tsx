@@ -20,6 +20,7 @@ import {
   Extension,
   AnyRoutes,
   AnyExternalRoutes,
+  AnyMetadata,
   PluginFeatureFlagConfig,
 } from './types';
 import { AnyApiFactory } from '../apis';
@@ -30,9 +31,16 @@ import { AnyApiFactory } from '../apis';
 export class PluginImpl<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-> implements BackstagePlugin<Routes, ExternalRoutes>
+  PluginMetadata extends AnyMetadata,
+> implements BackstagePlugin<Routes, ExternalRoutes, PluginMetadata>
 {
-  constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
+  constructor(
+    private readonly config: PluginConfig<
+      Routes,
+      ExternalRoutes,
+      PluginMetadata
+    >,
+  ) {}
 
   getId(): string {
     return this.config.id;
@@ -58,6 +66,11 @@ export class PluginImpl<
     return extension.expose(this);
   }
 
+  reconfigure(metadata: PluginMetadata): BackstagePlugin {
+    this.config.metadata = metadata;
+    return this;
+  }
+
   toString() {
     return `plugin{${this.config.id}}`;
   }
@@ -72,8 +85,9 @@ export class PluginImpl<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
+  PluginMetadata extends AnyMetadata = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes>,
-): BackstagePlugin<Routes, ExternalRoutes> {
+  config: PluginConfig<Routes, ExternalRoutes, PluginMetadata>,
+): BackstagePlugin<Routes, ExternalRoutes, PluginMetadata> {
   return new PluginImpl(config);
 }
