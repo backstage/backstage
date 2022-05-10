@@ -37,7 +37,7 @@
     "@backstage/catalog-client": "^1.0.2-next.0",
     "@backstage/catalog-model": "^1.0.2-next.0",
     "@backstage/config": "^1.0.1-next.0",
-    "@backstage/core-components": "^0.9.4-next.1",
+    "@backstage/core-components": "^0.9.4-next.2",
     "@backstage/core-plugin-api": "^1.0.2-next.1",
     "@backstage/errors": "^1.0.0",
     "@backstage/integration": "^1.2.0-next.1",

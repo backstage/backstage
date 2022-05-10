@@ -1,5 +1,13 @@
 # @backstage/plugin-home
 
+## 0.4.21-next.3
+
+### Patch Changes
+
+- 69093c5f91: Display entity titles in `StarredEntities` home page card (if defined) and don't show entities which no longer exist
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.2
+
 ## 0.4.21-next.2
 
 ### Patch Changes
