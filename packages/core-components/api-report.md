@@ -51,8 +51,16 @@ import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
+// @public (undocumented)
+export function AlertDisplay(props: AlertDisplayProps): JSX.Element | null;
+
 // @public
-export function AlertDisplay(_props: {}): JSX.Element | null;
+export type AlertDisplayProps = {
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+};
 
 // @public
 enum Alignment {
@@ -1076,8 +1084,8 @@ export type SidebarSubmenuItemDropdownItem = {
 // @public
 export type SidebarSubmenuItemProps = {
   title: string;
-  to: string;
-  icon: IconComponent;
+  to?: string;
+  icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
 };
 

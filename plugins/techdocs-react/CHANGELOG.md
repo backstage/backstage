@@ -1,5 +1,43 @@
 # @backstage/plugin-techdocs-react
 
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 52419be116: Create a new addon location called "Settings", it is designed for addons that allow users to customize the reading experience in documentation pages.
+
+  Usage example:
+
+  ```tsx
+  const TextSize = techdocsModuleAddonsContribPlugin.provide(
+    createTechDocsAddonExtension({
+      name: 'TextSize',
+      location: TechDocsAddonLocations.Settings,
+      component: TextSizeAddon,
+    }),
+  );
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- 52fddad92d: The `TechDocsStorageApi` and its associated ref are now exported by `@backstage/plugin-techdocs-react`. The API interface, ref, and types are now deprecated in `@backstage/plugin-techdocs` and will be removed in a future release.
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 075a9a067b: Updated the return type of `createTechDocsAddonExtension` to better reflect the fact that passing children to Addon components is not a valid use-case.
+
 ## 0.1.0
 
 ### Minor Changes

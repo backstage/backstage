@@ -15,7 +15,9 @@
  */
 
 import { Knex } from 'knex';
+import { Duration } from 'luxon';
 import { Logger } from 'winston';
+import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
 import {
   PluginTaskScheduler,
@@ -24,62 +26,69 @@ import {
   TaskScheduleDefinition,
 } from './types';
 import { validateId } from './util';
-import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
-import { ConflictError, NotFoundError } from '@backstage/errors';
 
 /**
  * Implements the actual task management.
  */
 export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
+  private readonly localTasksById = new Map<string, LocalTaskWorker>();
+
   constructor(
     private readonly databaseFactory: () => Promise<Knex>,
     private readonly logger: Logger,
   ) {}
 
   async triggerTask(id: string): Promise<void> {
+    const localTask = this.localTasksById.get(id);
+    if (localTask) {
+      localTask.trigger();
+      return;
+    }
+
     const knex = await this.databaseFactory();
-
-    // check if task exists
-    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
-      .select(knex.raw(1))
-      .where('id', '=', id);
-    if (rows.length !== 1) {
-      throw new NotFoundError(`Task ${id} does not exist`);
-    }
-
-    const updatedRows = await knex<DbTasksRow>(DB_TASKS_TABLE)
-      .where('id', '=', id)
-      .whereNull('current_run_ticket')
-      .update({
-        next_run_start_at: knex.fn.now(),
-      });
-    if (updatedRows < 1) {
-      throw new ConflictError(`Task ${id} is currently running`);
-    }
+    await TaskWorker.trigger(knex, id);
   }
 
   async scheduleTask(
     task: TaskScheduleDefinition & TaskInvocationDefinition,
   ): Promise<void> {
     validateId(task.id);
+    const scope = task.scope ?? 'global';
 
-    const knex = await this.databaseFactory();
-    const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
+    if (scope === 'global') {
+      const knex = await this.databaseFactory();
+      const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
 
-    await worker.start(
-      {
-        version: 2,
-        cadence:
-          'cron' in task.frequency
-            ? task.frequency.cron
-            : task.frequency.toISO(),
-        initialDelayDuration: task.initialDelay?.toISO(),
-        timeoutAfterDuration: task.timeout.toISO(),
-      },
-      {
-        signal: task.signal,
-      },
-    );
+      await worker.start(
+        {
+          version: 2,
+          cadence: parseDuration(task.frequency),
+          initialDelayDuration:
+            task.initialDelay && parseDuration(task.initialDelay),
+          timeoutAfterDuration: parseDuration(task.timeout),
+        },
+        {
+          signal: task.signal,
+        },
+      );
+    } else {
+      const worker = new LocalTaskWorker(task.id, task.fn, this.logger);
+
+      worker.start(
+        {
+          version: 2,
+          cadence: parseDuration(task.frequency),
+          initialDelayDuration:
+            task.initialDelay && parseDuration(task.initialDelay),
+          timeoutAfterDuration: parseDuration(task.timeout),
+        },
+        {
+          signal: task.signal,
+        },
+      );
+
+      this.localTasksById.set(task.id, worker);
+    }
   }
 
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner {
@@ -89,4 +98,18 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       },
     };
   }
+}
+
+export function parseDuration(
+  frequency: TaskScheduleDefinition['frequency'],
+): string {
+  if ('cron' in frequency) {
+    return frequency.cron;
+  }
+
+  if (Duration.isDuration(frequency)) {
+    return frequency.toISO();
+  }
+
+  return Duration.fromObject(frequency).toISO();
 }

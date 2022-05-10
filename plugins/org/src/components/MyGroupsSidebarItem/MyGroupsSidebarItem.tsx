@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   SidebarItem,
   SidebarSubmenu,
@@ -31,6 +32,7 @@ import {
   catalogApiRef,
   CatalogApi,
   entityRouteRef,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
 
@@ -80,15 +82,18 @@ export const MyGroupsSidebarItem = (props: {
 
   // Member of more than one group
   return (
-    <SidebarItem icon={icon} to="catalog" text={pluralTitle}>
+    <SidebarItem icon={icon} text={pluralTitle}>
       <SidebarSubmenu title={pluralTitle}>
         {groups?.map(function groupsMap(group) {
           return (
             <SidebarSubmenuItem
-              title={group.metadata.title || group.metadata.name}
+              title={
+                group.metadata.title ||
+                humanizeEntityRef(group, { defaultKind: 'group' })
+              }
               to={catalogEntityRoute(getCompoundEntityRef(group))}
               icon={icon}
-              key={group.metadata.name}
+              key={stringifyEntityRef(group)}
             />
           );
         })}

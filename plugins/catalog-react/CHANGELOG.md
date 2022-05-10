@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 57f41fb8d6: Make Menu item on filters accessible through keyboard
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+  - @backstage/integration@1.2.0-next.1
+  - @backstage/plugin-permission-common@0.6.1-next.0
+  - @backstage/plugin-permission-react@0.4.1-next.1
+  - @backstage/catalog-client@1.0.2-next.0
+  - @backstage/plugin-catalog-common@1.0.2-next.0
+
+## 1.1.0-next.1
+
+### Patch Changes
+
+- 0418447669: Added menu parent role for menu items accessibility
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+  - @backstage/plugin-permission-react@0.4.1-next.0
+
+## 1.1.0-next.0
+
+### Minor Changes
+
+- 4274844a8c: Use InfoCardVariants on custom cards variant attribute
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+
 ## 1.0.1
 
 ### Patch Changes

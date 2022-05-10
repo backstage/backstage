@@ -1,5 +1,53 @@
 # @backstage/plugin-auth-backend
 
+## 0.13.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.2
+  - @backstage/config@1.0.1-next.0
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/plugin-auth-node@0.2.1-next.1
+  - @backstage/catalog-client@1.0.2-next.0
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- cac3ba68a2: Fixed a bug that was introduced in `0.13.1-next.0` which caused the `ent` claim of issued tokens to be dropped.
+- 5d268623dd: Updates the OAuth2 Proxy provider to require less infrastructure configuration.
+
+  The auth result object of the OAuth2 Proxy now provides access to the request headers, both through the `headers` object as well as `getHeader` method. The existing logic that parses and extracts the user information from ID tokens is deprecated and will be removed in a future release. See the OAuth2 Proxy provider documentation for more details.
+
+  The OAuth2 Proxy provider now also has a default `authHandler` implementation that reads the display name and email from the incoming request headers.
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.1
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 787ae0d541: Add more common predefined sign-in resolvers to auth providers.
+
+  Add the existing resolver to more providers (already available at `google`):
+
+  - `providers.microsoft.resolvers.emailLocalPartMatchingUserEntityName()`
+  - `providers.okta.resolvers.emailLocalPartMatchingUserEntityName()`
+
+  Add a new resolver for simple email-to-email matching:
+
+  - `providers.google.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.microsoft.resolvers.emailMatchingUserEntityProfileEmail()`
+  - `providers.okta.resolvers.emailMatchingUserEntityProfileEmail()`
+
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+  - @backstage/plugin-auth-node@0.2.1-next.0
+
 ## 0.13.0
 
 ### Minor Changes

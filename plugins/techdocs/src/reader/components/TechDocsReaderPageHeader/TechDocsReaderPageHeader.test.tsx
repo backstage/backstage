@@ -108,7 +108,7 @@ describe('<TechDocsReaderPageHeader />', () => {
     });
   });
 
-  it('should render a techdocs page header even if metadata is missing', async () => {
+  it('should render a techdocs page header even if metadata is not loaded', async () => {
     await act(async () => {
       const rendered = await renderInTestApp(
         <Wrapper>
@@ -123,6 +123,50 @@ describe('<TechDocsReaderPageHeader />', () => {
       );
 
       expect(rendered.container.innerHTML).toContain('header');
+    });
+  });
+
+  it('should not render a techdocs page header if entity metadata is missing', async () => {
+    getEntityMetadata.mockResolvedValue(undefined);
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageHeader />
+        </Wrapper>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+            '/docs': rootRouteRef,
+          },
+        },
+      );
+
+      await waitFor(() => {
+        expect(rendered.container.innerHTML).not.toContain('header');
+      });
+    });
+  });
+
+  it('should not render a techdocs page header if techdocs metadata is missing', async () => {
+    getTechDocsMetadata.mockResolvedValue(undefined);
+
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <Wrapper>
+          <TechDocsReaderPageHeader />
+        </Wrapper>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+            '/docs': rootRouteRef,
+          },
+        },
+      );
+
+      await waitFor(() => {
+        expect(rendered.container.innerHTML).not.toContain('header');
+      });
     });
   });
 

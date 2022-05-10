@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ConflictError, NotFoundError } from '@backstage/errors';
+import { CronTime } from 'cron';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
@@ -22,12 +24,11 @@ import { Logger } from 'winston';
 import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
 import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
-import { CronTime } from 'cron';
 
 const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
 /**
- * Performs the actual work of a task.
+ * Implements tasks that run across worker hosts, with collaborative locking.
  *
  * @private
  */
@@ -76,12 +77,32 @@ export class TaskWorker {
     })();
   }
 
+  static async trigger(knex: Knex, taskId: string): Promise<void> {
+    // check if task exists
+    const rows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .select(knex.raw(1))
+      .where('id', '=', taskId);
+    if (rows.length !== 1) {
+      throw new NotFoundError(`Task ${taskId} does not exist`);
+    }
+
+    const updatedRows = await knex<DbTasksRow>(DB_TASKS_TABLE)
+      .where('id', '=', taskId)
+      .whereNull('current_run_ticket')
+      .update({
+        next_run_start_at: knex.fn.now(),
+      });
+    if (updatedRows < 1) {
+      throw new ConflictError(`Task ${taskId} is currently running`);
+    }
+  }
+
   /**
    * Makes a single attempt at running the task to completion, if ready.
    *
    * @returns The outcome of the attempt
    */
-  async runOnce(
+  private async runOnce(
     signal?: AbortSignal,
   ): Promise<
     | { result: 'not-ready-yet' }
@@ -262,8 +283,13 @@ export class TaskWorker {
         })}`,
       );
       nextRun = this.knex.client.config.client.includes('sqlite3')
-        ? this.knex.raw('datetime(next_run_start_at, ?)', [`+${dt} seconds`])
-        : this.knex.raw(`next_run_start_at + interval '${dt} seconds'`);
+        ? this.knex.raw(
+            `max(datetime(next_run_start_at, ?), datetime('now'))`,
+            [`+${dt} seconds`],
+          )
+        : this.knex.raw(
+            `greatest(next_run_start_at + interval '${dt} seconds', now())`,
+          );
     }
 
     const rows = await this.knex<DbTasksRow>(DB_TASKS_TABLE)

@@ -12,6 +12,7 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { IncomingHttpHeaders } from 'http';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
@@ -376,7 +377,7 @@ export const createOAuth2Provider: (
 
 // @public @deprecated (undocumented)
 export const createOauth2ProxyProvider: (options: {
-  authHandler: AuthHandler<OAuth2ProxyResult<unknown>>;
+  authHandler?: AuthHandler<OAuth2ProxyResult<unknown>> | undefined;
   signIn: {
     resolver: SignInResolver<OAuth2ProxyResult<unknown>>;
   };
@@ -563,9 +564,11 @@ export type Oauth2ProxyProviderOptions<JWTPayload> = {
 };
 
 // @public
-export type OAuth2ProxyResult<JWTPayload> = {
+export type OAuth2ProxyResult<JWTPayload = {}> = {
   fullProfile: JWTPayload;
   accessToken: string;
+  headers: IncomingHttpHeaders;
+  getHeader(name: string): string | undefined;
 };
 
 // Warning: (ae-missing-release-tag) "OAuthAdapter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -872,6 +875,7 @@ export const providers: Readonly<{
     ) => AuthProviderFactory;
     resolvers: Readonly<{
       emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
@@ -889,6 +893,8 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;
@@ -909,7 +915,7 @@ export const providers: Readonly<{
   }>;
   oauth2Proxy: Readonly<{
     create: (options: {
-      authHandler: AuthHandler<OAuth2ProxyResult<unknown>>;
+      authHandler?: AuthHandler<OAuth2ProxyResult<unknown>> | undefined;
       signIn: {
         resolver: SignInResolver<OAuth2ProxyResult<unknown>>;
       };
@@ -945,6 +951,8 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory;
     resolvers: Readonly<{
+      emailLocalPartMatchingUserEntityName: () => SignInResolver<unknown>;
+      emailMatchingUserEntityProfileEmail: () => SignInResolver<unknown>;
       emailMatchingUserEntityAnnotation(): SignInResolver<OAuthResult>;
     }>;
   }>;

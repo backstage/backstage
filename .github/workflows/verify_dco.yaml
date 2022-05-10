@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Verify DCO status for open pull requests
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             const owner = "backstage";

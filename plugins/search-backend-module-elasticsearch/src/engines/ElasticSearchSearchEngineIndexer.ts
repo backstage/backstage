@@ -46,13 +46,14 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly indexPrefix: string;
   private readonly indexSeparator: string;
   private readonly alias: string;
+  private readonly removableAlias: string;
   private readonly logger: Logger;
   private readonly sourceStream: Readable;
   private readonly elasticSearchClient: Client;
   private bulkResult: Promise<any>;
 
   constructor(options: ElasticSearchSearchEngineIndexerOptions) {
-    super({ batchSize: 100 });
+    super({ batchSize: 1000 });
     this.logger = options.logger;
     this.startTimestamp = process.hrtime();
     this.type = options.type;
@@ -60,6 +61,7 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.indexSeparator = options.indexSeparator;
     this.indexName = this.constructIndexName(`${Date.now()}`);
     this.alias = options.alias;
+    this.removableAlias = `${this.alias}_removable`;
     this.elasticSearchClient = options.elasticSearchClient;
 
     // The ES client bulk helper supports stream-based indexing, but we have to
@@ -90,12 +92,12 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
 
     const aliases = await this.elasticSearchClient.cat.aliases({
       format: 'json',
-      name: this.alias,
+      name: [this.alias, this.removableAlias],
     });
 
-    this.removableIndices = aliases.body.map(
-      (r: Record<string, any>) => r.index,
-    );
+    this.removableIndices = [
+      ...new Set(aliases.body.map((r: Record<string, any>) => r.index)),
+    ] as string[];
 
     await this.elasticSearchClient.indices.create({
       index: this.indexName,
@@ -121,8 +123,9 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     // Wait for the bulk helper to finish processing.
     const result = await this.bulkResult;
 
-    // Rotate aliases upon completion. Allow errors to bubble up so that we can
-    // clean up the create index.
+    // Rotate main alias upon completion. Apply permanent secondary alias so
+    // stale indices can be referenced for deletion in case initial attempt
+    // fails. Allow errors to bubble up so that we can clean up the created index.
     this.logger.info(
       `Indexing completed for index ${this.type} in ${duration(
         this.startTimestamp,
@@ -135,8 +138,18 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
           {
             remove: { index: this.constructIndexName('*'), alias: this.alias },
           },
-          { add: { index: this.indexName, alias: this.alias } },
-        ],
+          this.removableIndices.length
+            ? {
+                add: {
+                  indices: this.removableIndices,
+                  alias: this.removableAlias,
+                },
+              }
+            : undefined,
+          {
+            add: { index: this.indexName, alias: this.alias },
+          },
+        ].filter(Boolean),
       },
     });
 

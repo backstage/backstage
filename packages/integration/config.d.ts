@@ -31,7 +31,10 @@ export interface Config {
       token?: string;
     }>;
 
-    /** Integration configuration for Bitbucket */
+    /**
+     * Integration configuration for Bitbucket
+     * @deprecated replaced by bitbucketCloud and bitbucketServer
+     */
     bitbucket?: Array<{
       /**
        * The hostname of the given Bitbucket instance
@@ -60,6 +63,39 @@ export interface Config {
       appPassword?: string;
     }>;
 
+    /** Integration configuration for Bitbucket Cloud */
+    bitbucketCloud?: Array<{
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username: string;
+      /**
+       * Bitbucket Cloud app password used to authenticate requests.
+       * @visibility secret
+       */
+      appPassword: string;
+    }>;
+
+    /** Integration configuration for Bitbucket Server */
+    bitbucketServer?: Array<{
+      /**
+       * The hostname of the given Bitbucket Server instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * Token used to authenticate requests.
+       * @visibility secret
+       */
+      token?: string;
+      /**
+       * The base url for the Bitbucket Server API, for example https://<host>/rest/api/1.0
+       * @visibility frontend
+       */
+      apiBaseUrl?: string;
+    }>;
+
     /** Integration configuration for Gerrit */
     gerrit?: Array<{
       /**
@@ -72,6 +108,11 @@ export interface Config {
        * @visibility frontend
        */
       baseUrl?: string;
+      /**
+       * The base url for cloning repos.
+       * @visibility frontend
+       */
+      cloneUrl?: string;
       /**
        * The username to use for authenticated requests.
        * @visibility secret

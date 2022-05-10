@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-export { SearchContextProvider, useSearch } from './SearchContext';
+export {
+  SearchContextProvider,
+  useSearch,
+  useSearchContextCheck,
+} from './SearchContext';
 export type {
   SearchContextProviderProps,
   SearchContextState,
   SearchContextValue,
 } from './SearchContext';
-export {
-  SearchContextProviderForStorybook,
-  SearchApiProviderForStorybook,
-} from './SearchContextForStorybook.stories';
-export type {
-  SearchContextProviderForStorybookProps,
-  SearchApiProviderForStorybookProps,
-} from './SearchContextForStorybook.stories';

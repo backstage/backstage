@@ -71,8 +71,8 @@ export const TechDocsReaderPageHeader = (
     subtitle,
     setSubtitle,
     entityRef,
-    metadata: { value: metadata },
-    entityMetadata: { value: entityMetadata },
+    metadata: { value: metadata, loading: metadataLoading },
+    entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
   } = useTechDocsReaderPage();
 
   useEffect(() => {
@@ -145,6 +145,12 @@ export const TechDocsReaderPageHeader = (
       ) : null}
     </>
   );
+
+  // If there is no entity or techdocs metadata, there's no reason to show the
+  // header (hides the header on 404 error pages).
+  const noEntMetadata = !entityMetadataLoading && entityMetadata === undefined;
+  const noTdMetadata = !metadataLoading && metadata === undefined;
+  if (noEntMetadata || noTdMetadata) return null;
 
   return (
     <Header

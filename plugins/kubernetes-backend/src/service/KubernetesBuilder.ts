@@ -246,6 +246,7 @@ export class KubernetesBuilder {
           name: cd.name,
           dashboardUrl: cd.dashboardUrl,
           authProvider: cd.authProvider,
+          oidcTokenProvider: cd.oidcTokenProvider,
         })),
       });
     });

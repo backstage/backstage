@@ -1,5 +1,44 @@
 # @backstage/plugin-home
 
+## 0.4.21-next.3
+
+### Patch Changes
+
+- 69093c5f91: Display entity titles in `StarredEntities` home page card (if defined) and don't show entities which no longer exist
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.2
+
+## 0.4.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/config@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.2
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+  - @backstage/plugin-stack-overflow@0.1.1-next.2
+
+## 0.4.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.1
+  - @backstage/plugin-stack-overflow@0.1.1-next.1
+
+## 0.4.21-next.0
+
+### Patch Changes
+
+- 2b733d9d39: star icons now have the same yellow color as the other star icons when a entity is favourite
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.0-next.0
+  - @backstage/plugin-stack-overflow@0.1.1-next.0
+
 ## 0.4.20
 
 ### Patch Changes

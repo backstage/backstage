@@ -17,6 +17,7 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -191,7 +192,7 @@ export type ReaderState = {
 // @public
 export const Router: () => JSX.Element;
 
-// @public
+// @public @deprecated
 export type SyncResult = 'cached' | 'updated';
 
 // @public
@@ -322,7 +323,7 @@ export type TechDocsReaderPageContentProps = {
 // @public
 export const TechDocsReaderPageHeader: (
   props: TechDocsReaderPageHeaderProps,
-) => JSX.Element;
+) => JSX.Element | null;
 
 // @public @deprecated
 export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
@@ -388,13 +389,14 @@ export const TechDocsSearchResultListItem: (
 // @public
 export type TechDocsSearchResultListItemProps = {
   result: any;
+  highlight?: ResultHighlight;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;
   title?: string;
 };
 
-// @public
+// @public @deprecated
 export interface TechDocsStorageApi {
   // (undocumented)
   getApiOrigin(): Promise<string>;
@@ -417,7 +419,7 @@ export interface TechDocsStorageApi {
   ): Promise<SyncResult>;
 }
 
-// @public
+// @public @deprecated
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
 // @public

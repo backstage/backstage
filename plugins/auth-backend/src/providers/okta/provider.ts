@@ -43,6 +43,10 @@ import {
   AuthResolverContext,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import {
+  commonByEmailLocalPartResolver,
+  commonByEmailResolver,
+} from '../resolvers';
 import { StateStore } from 'passport-oauth2';
 
 type PrivateInfo = {
@@ -90,7 +94,7 @@ export class OktaAuthProvider implements OAuthHandlers {
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
         audience: options.audience,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
         store: this.store,
         response_type: 'code',
       },
@@ -274,6 +278,14 @@ export const okta = createAuthProviderIntegration({
       });
   },
   resolvers: {
+    /**
+     * Looks up the user by matching their email local part to the entity name.
+     */
+    emailLocalPartMatchingUserEntityName: () => commonByEmailLocalPartResolver,
+    /**
+     * Looks up the user by matching their email to the entity email.
+     */
+    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
     /**
      * Looks up the user by matching their email to the `okta.com/email` annotation.
      */

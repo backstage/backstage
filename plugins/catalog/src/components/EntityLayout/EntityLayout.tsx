@@ -152,6 +152,7 @@ export interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: contextMenuOptions;
   children?: React.ReactNode;
+  NotFoundComponent?: React.ReactNode;
 }
 
 /**
@@ -176,6 +177,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
     children,
+    NotFoundComponent,
   } = props;
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
@@ -265,13 +267,17 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {!loading && !error && !entity && (
         <Content>
-          <WarningPanel title="Entity not found">
-            There is no {kind} with the requested{' '}
-            <Link to="https://backstage.io/docs/features/software-catalog/references">
-              kind, namespace, and name
-            </Link>
-            .
-          </WarningPanel>
+          {NotFoundComponent ? (
+            NotFoundComponent
+          ) : (
+            <WarningPanel title="Entity not found">
+              There is no {kind} with the requested{' '}
+              <Link to="https://backstage.io/docs/features/software-catalog/references">
+                kind, namespace, and name
+              </Link>
+              .
+            </WarningPanel>
+          )}
         </Content>
       )}
 

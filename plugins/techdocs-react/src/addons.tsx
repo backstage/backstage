@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import {
@@ -53,7 +53,7 @@ const getDataKeyByName = (name: string) => {
  */
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
-): Extension<ComponentType<TComponentProps>> {
+): Extension<(props: TComponentProps) => JSX.Element | null> {
   const { name, component: TechDocsAddon } = options;
   return createReactExtension({
     name,

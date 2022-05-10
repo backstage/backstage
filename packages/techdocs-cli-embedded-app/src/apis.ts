@@ -35,7 +35,7 @@ import {
   techdocsApiRef,
   TechDocsStorageApi,
   techdocsStorageApiRef,
-} from '@backstage/plugin-techdocs';
+} from '@backstage/plugin-techdocs-react';
 
 // TODO: Export type from plugin-techdocs and import this here
 // import { ParsedEntityId } from '@backstage/plugin-techdocs'

@@ -1,5 +1,47 @@
 # @backstage/plugin-search-react
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 3a74e203a8: Updated search result components to support rendering content with highlighted matched terms
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- bdbe620797: **BREAKING**: `SearchContextProviderForStorybook` and `SearchApiProviderForStorybook` has been deleted. New mock implementation of the `SearchApi` introduced. If you need to mock the api we recommend you to do the following:
+
+  ```tsx
+  import {
+    searchApiRef,
+    MockSearchApi,
+    SearchContextProvider,
+  } from '@backstage/plugin-search-react';
+  import { TestApiProvider } from '@backstage/test-utils';
+
+  <TestApiProvider apis={[[searchApiRef, new MockSearchApi()]]}>
+    <SearchContextProvider>
+      <Component />
+    </SearchContextProvider>
+  </TestApiProvider>;
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2-next.0
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 11a46863de: Export `useSearchContextCheck` hook to check if the search context is available
+- a307a14be0: Removed dependency on `@backstage/core-app-api`.
+
 ## 0.1.0
 
 ### Minor Changes

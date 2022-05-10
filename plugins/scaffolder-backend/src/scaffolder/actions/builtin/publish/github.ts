@@ -47,11 +47,15 @@ export function createPublishGithubAction(options: {
     access?: string;
     defaultBranch?: string;
     deleteBranchOnMerge?: boolean;
+    gitCommitMessage?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
     allowRebaseMerge?: boolean;
     allowSquashMerge?: boolean;
     allowMergeCommit?: boolean;
     sourcePath?: string;
     requireCodeOwnerReviews?: boolean;
+    requiredStatusCheckContexts?: string[];
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<{
       username: string;
@@ -88,6 +92,15 @@ export function createPublishGithubAction(options: {
               'Require an approved review in PR including files with a designated Code Owner',
             type: 'boolean',
           },
+          requiredStatusCheckContexts: {
+            title: 'Required Status Check Contexts',
+            description:
+              'The list of status checks to require in order to merge into this branch',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
           repoVisibility: {
             title: 'Repository Visibility',
             type: 'string',
@@ -102,6 +115,21 @@ export function createPublishGithubAction(options: {
             title: 'Delete Branch On Merge',
             type: 'boolean',
             description: `Delete the branch after merging the PR. The default value is 'false'`,
+          },
+          gitCommitMessage: {
+            title: 'Git Commit Message',
+            type: 'string',
+            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+          },
+          gitAuthorName: {
+            title: 'Default Author Name',
+            type: 'string',
+            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Default Author Email',
+            type: 'string',
+            description: `Sets the default author email for the commit.`,
           },
           allowMergeCommit: {
             title: 'Allow Merge Commits',
@@ -178,9 +206,13 @@ export function createPublishGithubAction(options: {
         description,
         access,
         requireCodeOwnerReviews = false,
+        requiredStatusCheckContexts = [],
         repoVisibility = 'private',
         defaultBranch = 'master',
         deleteBranchOnMerge = false,
+        gitCommitMessage = 'initial commit',
+        gitAuthorName,
+        gitAuthorEmail,
         allowMergeCommit = true,
         allowSquashMerge = true,
         allowRebaseMerge = true,
@@ -290,8 +322,12 @@ export function createPublishGithubAction(options: {
       const repoContentsUrl = `${newRepo.html_url}/blob/${defaultBranch}`;
 
       const gitAuthorInfo = {
-        name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-        email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+        name: gitAuthorName
+          ? gitAuthorName
+          : config.getOptionalString('scaffolder.defaultAuthor.name'),
+        email: gitAuthorEmail
+          ? gitAuthorEmail
+          : config.getOptionalString('scaffolder.defaultAuthor.email'),
       };
 
       await initRepoAndPush({
@@ -303,9 +339,9 @@ export function createPublishGithubAction(options: {
           password: octokitOptions.auth,
         },
         logger: ctx.logger,
-        commitMessage: config.getOptionalString(
-          'scaffolder.defaultCommitMessage',
-        ),
+        commitMessage: gitCommitMessage
+          ? gitCommitMessage
+          : config.getOptionalString('scaffolder.defaultCommitMessage'),
         gitAuthorInfo,
       });
 
@@ -317,6 +353,7 @@ export function createPublishGithubAction(options: {
           logger: ctx.logger,
           defaultBranch,
           requireCodeOwnerReviews,
+          requiredStatusCheckContexts,
         });
       } catch (e) {
         assertError(e);

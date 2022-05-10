@@ -67,15 +67,23 @@ export interface AvatarProps {
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
   const classes = useStyles();
+  let styles = { ...customStyles };
+  // We only calculate the background color if there's not an avatar
+  // picture. If there is a picture, it might have a transparent
+  // background and we don't know whether the calculated background
+  // color will clash.
+  if (!picture) {
+    styles = {
+      backgroundColor: stringToColor(displayName || ''),
+      ...customStyles,
+    };
+  }
   return (
     <MaterialAvatar
       alt={displayName}
       src={picture}
       className={classes.avatar}
-      style={{
-        backgroundColor: stringToColor(displayName || picture || ''),
-        ...customStyles,
-      }}
+      style={styles}
     >
       {displayName && extractInitials(displayName)}
     </MaterialAvatar>

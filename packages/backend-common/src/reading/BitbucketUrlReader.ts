@@ -28,6 +28,7 @@ import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
+import { Logger } from 'winston';
 import {
   ReaderFactory,
   ReadTreeOptions,
@@ -39,30 +40,45 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
  * Implements a {@link UrlReader} for files from Bitbucket v1 and v2 APIs, such
  * as the one exposed by Bitbucket Cloud itself.
  *
  * @public
+ * @deprecated in favor of BitbucketCloudUrlReader and BitbucketServerUrlReader
  */
 export class BitbucketUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
-    return integrations.bitbucket.list().map(integration => {
-      const reader = new BitbucketUrlReader(integration, {
-        treeResponseFactory,
+    return integrations.bitbucket
+      .list()
+      .filter(
+        item =>
+          !integrations.bitbucketCloud.byHost(item.config.host) &&
+          !integrations.bitbucketServer.byHost(item.config.host),
+      )
+      .map(integration => {
+        const reader = new BitbucketUrlReader(integration, logger, {
+          treeResponseFactory,
+        });
+        const predicate = (url: URL) => url.host === integration.config.host;
+        return { reader, predicate };
       });
-      const predicate = (url: URL) => url.host === integration.config.host;
-      return { reader, predicate };
-    });
   };
 
   constructor(
     private readonly integration: BitbucketIntegration,
+    logger: Logger,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
     const { host, token, username, appPassword } = integration.config;
+    const replacement =
+      host === 'bitbucket.org' ? 'bitbucketCloud' : 'bitbucketServer';
+    logger.warn(
+      `[Deprecated] Please migrate from "integrations.bitbucket" to "integrations.${replacement}".`,
+    );
 
     if (!token && username && !appPassword) {
       throw new Error(
@@ -108,10 +124,9 @@ export class BitbucketUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return {
-        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
-      };
+      });
     }
 
     const message = `${url} could not be read as ${bitbucketUrl}, ${response.status} ${response.statusText}`;

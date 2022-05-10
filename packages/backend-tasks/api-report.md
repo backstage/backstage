@@ -10,6 +10,18 @@ import { Duration } from 'luxon';
 import { Logger } from 'winston';
 
 // @public
+export type HumanDuration = {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+};
+
+// @public
 export interface PluginTaskScheduler {
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
   scheduleTask(
@@ -41,9 +53,11 @@ export interface TaskScheduleDefinition {
     | {
         cron: string;
       }
-    | Duration;
-  initialDelay?: Duration;
-  timeout: Duration;
+    | Duration
+    | HumanDuration;
+  initialDelay?: Duration | HumanDuration;
+  scope?: 'global' | 'local';
+  timeout: Duration | HumanDuration;
 }
 
 // @public

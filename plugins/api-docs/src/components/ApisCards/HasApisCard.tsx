@@ -26,6 +26,7 @@ import { createSpecApiTypeColumn } from './presets';
 import {
   CodeSnippet,
   InfoCard,
+  InfoCardVariants,
   Link,
   Progress,
   TableColumn,
@@ -33,7 +34,7 @@ import {
 } from '@backstage/core-components';
 
 type Props = {
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 };
 
 const columns: TableColumn<ApiEntity>[] = [

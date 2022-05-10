@@ -74,11 +74,13 @@ function shouldCheckTypes(pkg) {
 }
 
 function findAllDeps(declSrc) {
-  const importedDeps = (declSrc.match(/from '.*'/g) || [])
-    .map(match => match.replace(/from '(.*)'/, '$1'))
+  const importedDeps = (declSrc.match(/^import .* from '.*';$/gm) || [])
+    .map(match => match.match(/from '(.*)'/)[1])
     .filter(n => !n.startsWith('.'));
-  const referencedDeps = (declSrc.match(/types=".*"/g) || [])
-    .map(match => match.replace(/types="(.*)"/, '$1'))
+  const referencedDeps = (
+    declSrc.match(/^\/\/\/ <reference types=".*" \/>$/gm) || []
+  )
+    .map(match => match.match(/types="(.*)"/)[1])
     .filter(n => !n.startsWith('.'))
     // We allow references to these without an explicit dependency.
     .filter(n => !['node', 'react'].includes(n));

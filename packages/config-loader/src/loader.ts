@@ -160,13 +160,17 @@ export async function loadConfig(
       };
 
       const input = yaml.parse(await readFile(configPath));
-      const substitutionTransform = createSubstitutionTransform(env);
-      const data = await applyConfigTransforms(dir, input, [
-        createIncludeTransform(env, readFile, substitutionTransform),
-        substitutionTransform,
-      ]);
 
-      fileConfigs.push({ data, context: basename(configPath) });
+      // A completely empty file ends up as a null return value
+      if (input !== null) {
+        const substitutionTransform = createSubstitutionTransform(env);
+        const data = await applyConfigTransforms(dir, input, [
+          createIncludeTransform(env, readFile, substitutionTransform),
+          substitutionTransform,
+        ]);
+
+        fileConfigs.push({ data, context: basename(configPath) });
+      }
     }
 
     return { fileConfigs, loadedPaths };

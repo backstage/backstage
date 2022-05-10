@@ -18,7 +18,6 @@ import { ConfigReader } from '@backstage/config';
 import Keyv from 'keyv';
 /* @ts-expect-error */
 import KeyvMemcache from 'keyv-memcache';
-/* @ts-expect-error */
 import KeyvRedis from '@keyv/redis';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManager } from './CacheManager';
@@ -215,7 +214,7 @@ describe('CacheManager', () => {
       ttl: expectedTtl,
     });
     expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvRedis);
-    const redis = KeyvRedis as jest.Mock;
+    const redis = KeyvRedis as unknown as jest.Mock;
     const mockRedisCalls = redis.mock.calls.splice(-1);
     expect(mockRedisCalls[0][0]).toEqual(redisConnection);
   });

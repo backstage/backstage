@@ -1,5 +1,35 @@
 # @backstage/core-components
 
+## 0.9.4-next.2
+
+### Patch Changes
+
+- 52c02ac02b: Don't set the background color on an Avatar component that has a picture.
+- 3603014e0e: Add ARIA landmark( <main>), & label and a heading to OAuthRequestDialog. Removed nested interactive control (button).
+- 2025d7c123: Properly highlight `SidebarSubmenuItem` dropdown items on hover, use ellipsis styling on long labels in `SidebarSubmenu`, allow `icon` and `to` properties to be optional on `SidebarSubmenuItem`, and fix `SidebarPage` padding to be responsive to pinned state
+
+## 0.9.4-next.1
+
+### Patch Changes
+
+- 55f68c386a: Enabled select component to be enabled by keyboard
+- ba97b80421: Updated dependency `@types/react-syntax-highlighter` to `^15.0.0`.
+- 2bcb0a0e2b: Sidebar NAV now includes aria-label. Component AboutField now uses h2 variant instead of subtitle2 (font properties unchanged)
+- Updated dependencies
+  - @backstage/config@1.0.1-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- ac19f82936: Added ARIA landmark <main> to Page component and added ARIA landmark <nav> to DesktopSidebar and Sidebar components
+- c0055ece91: Announce external links to screen readers
+- cfc0f2e5bd: Added optional anchorOrigin alignment prop to AlertDisplay
+- f4380eb602: Add an aria-label to the support button to improve accessibility for screen readers
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2-next.0
+
 ## 0.9.3
 
 ### Patch Changes

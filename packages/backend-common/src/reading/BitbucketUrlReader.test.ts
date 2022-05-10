@@ -29,38 +29,77 @@ import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
+import { getVoidLogger } from '../logging';
+import getRawBody from 'raw-body';
 
-const treeResponseFactory = DefaultReadTreeResponseFactory.create({
-  config: new ConfigReader({}),
+const logger = getVoidLogger();
+
+describe('BitbucketUrlReader.factory', () => {
+  it('only apply integration configs not inherited from bitbucketCloud or bitbucketServer', () => {
+    const config = new ConfigReader({
+      integrations: {
+        bitbucket: [],
+        bitbucketCloud: [
+          {
+            username: 'username',
+            appPassword: 'password',
+          },
+        ],
+        bitbucketServer: [
+          {
+            host: 'bitbucket-server.local',
+            token: 'test-token',
+          },
+        ],
+      },
+    });
+    const treeResponseFactory = DefaultReadTreeResponseFactory.create({
+      config: config,
+    });
+
+    const tuples = BitbucketUrlReader.factory({
+      config,
+      logger,
+      treeResponseFactory,
+    });
+
+    expect(tuples).toHaveLength(0);
+  });
 });
 
-const bitbucketProcessor = new BitbucketUrlReader(
-  new BitbucketIntegration(
-    readBitbucketIntegrationConfig(
-      new ConfigReader({
-        host: 'bitbucket.org',
-        apiBaseUrl: 'https://api.bitbucket.org/2.0',
-      }),
-    ),
-  ),
-  { treeResponseFactory },
-);
-
-const hostedBitbucketProcessor = new BitbucketUrlReader(
-  new BitbucketIntegration(
-    readBitbucketIntegrationConfig(
-      new ConfigReader({
-        host: 'bitbucket.mycompany.net',
-        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
-      }),
-    ),
-  ),
-  { treeResponseFactory },
-);
-
-const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
-
 describe('BitbucketUrlReader', () => {
+  const treeResponseFactory = DefaultReadTreeResponseFactory.create({
+    config: new ConfigReader({}),
+  });
+
+  const bitbucketProcessor = new BitbucketUrlReader(
+    new BitbucketIntegration(
+      readBitbucketIntegrationConfig(
+        new ConfigReader({
+          host: 'bitbucket.org',
+          apiBaseUrl: 'https://api.bitbucket.org/2.0',
+        }),
+      ),
+    ),
+    logger,
+    { treeResponseFactory },
+  );
+
+  const hostedBitbucketProcessor = new BitbucketUrlReader(
+    new BitbucketIntegration(
+      readBitbucketIntegrationConfig(
+        new ConfigReader({
+          host: 'bitbucket.mycompany.net',
+          apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+        }),
+      ),
+    ),
+    logger,
+    { treeResponseFactory },
+  );
+
+  const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+
   beforeEach(() => {
     mockFs({
       [tmpDir]: mockFs.directory(),
@@ -75,7 +114,7 @@ describe('BitbucketUrlReader', () => {
   setupRequestMockHandlers(worker);
 
   describe('readUrl', () => {
-    it('should be able to readUrl without ETag', async () => {
+    it('should be able to readUrl via buffer without ETag', async () => {
       worker.use(
         rest.get(
           'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
@@ -95,6 +134,28 @@ describe('BitbucketUrlReader', () => {
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe('foo');
+    });
+
+    it('should be able to readUrl via stream without ETag', async () => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage-verification/test-template/src/master/template.yaml',
+          (req, res, ctx) => {
+            expect(req.headers.get('If-None-Match')).toBeNull();
+            return res(
+              ctx.status(200),
+              ctx.body('foo'),
+              ctx.set('ETag', 'etag-value'),
+            );
+          },
+        ),
+      );
+
+      const result = await bitbucketProcessor.readUrl(
+        'https://bitbucket.org/backstage-verification/test-template/src/master/template.yaml',
+      );
+      const fromStream = await getRawBody(result.stream!());
+      expect(fromStream.toString()).toBe('foo');
     });
 
     it('should be able to readUrl with matching ETag', async () => {

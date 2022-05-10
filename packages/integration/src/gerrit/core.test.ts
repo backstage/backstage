@@ -20,9 +20,11 @@ import fetch from 'cross-fetch';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { GerritIntegrationConfig } from './config';
 import {
+  getGerritBranchApiUrl,
+  getGerritCloneRepoUrl,
   getGerritRequestOptions,
   parseGerritJsonResponse,
-  parseGitilesUrl,
+  parseGerritGitilesUrl,
   getGerritFileContentsApiUrl,
 } from './core';
 
@@ -55,7 +57,7 @@ describe('gerrit core', () => {
         host: 'gerrit.com',
         gitilesBaseUrl: 'https://gerrit.com/gitiles',
       };
-      const { branch, filePath, project } = parseGitilesUrl(
+      const { branch, filePath, project } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/gitiles/web/project/+/refs/heads/master/README.md',
       );
@@ -63,7 +65,7 @@ describe('gerrit core', () => {
       expect(branch).toEqual('master');
       expect(filePath).toEqual('README.md');
 
-      const { filePath: rootPath } = parseGitilesUrl(
+      const { filePath: rootPath } = parseGerritGitilesUrl(
         config,
         'https://gerrit.com/gitiles/web/project/+/refs/heads/master',
       );
@@ -75,17 +77,82 @@ describe('gerrit core', () => {
         gitilesBaseUrl: 'https://gerrit.com',
       };
       expect(() =>
-        parseGitilesUrl(
+        parseGerritGitilesUrl(
           config,
           'https://gerrit.com/+/refs/heads/master/README.md',
         ),
       ).toThrow(/project/);
       expect(() =>
-        parseGitilesUrl(
+        parseGerritGitilesUrl(
           config,
           'https://gerrit.com/web/project/+/refs/changes/1/11/master/README.md',
         ),
       ).toThrow(/branch/);
+    });
+  });
+
+  describe('getGerritBranchApiUrl', () => {
+    it('can create an url for anonymous access.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      const fileContentUrl = getGerritBranchApiUrl(
+        config,
+        'https://gerrit.com/web/project/+/refs/heads/master/README.md',
+      );
+      expect(fileContentUrl).toEqual(
+        'https://gerrit.com/projects/web%2Fproject/branches/master',
+      );
+    });
+    it('can create an url for authenticated access.', () => {
+      const authConfig: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com',
+        username: 'u',
+        password: 'u',
+      };
+      const authFileContentUrl = getGerritBranchApiUrl(
+        authConfig,
+        'https://gerrit.com/web/project/+/refs/heads/master/README.md',
+      );
+      expect(authFileContentUrl).toEqual(
+        'https://gerrit.com/a/projects/web%2Fproject/branches/master',
+      );
+    });
+  });
+
+  describe('getGerritCloneRepoUrl', () => {
+    it('can create an url for anonymous clone.', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        cloneUrl: 'https://gerrit.com/clone',
+        gitilesBaseUrl: 'https://gerrit.com',
+      };
+      const fileContentUrl = getGerritCloneRepoUrl(
+        config,
+        'https://gerrit.com/web/project/+/refs/heads/master/README.md',
+      );
+      expect(fileContentUrl).toEqual('https://gerrit.com/clone/web/project');
+    });
+    it('can create an url for authenticated clone.', () => {
+      const authConfig: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com',
+        cloneUrl: 'https://gerrit.com/clone',
+        gitilesBaseUrl: 'https://gerrit.com',
+        username: 'u',
+        password: 'u',
+      };
+      const authFileContentUrl = getGerritCloneRepoUrl(
+        authConfig,
+        'https://gerrit.com/web/project/+/refs/heads/master/README.md',
+      );
+      expect(authFileContentUrl).toEqual(
+        'https://gerrit.com/clone/a/web/project',
+      );
     });
   });
 

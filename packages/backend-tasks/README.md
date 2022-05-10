@@ -15,14 +15,13 @@ then make use of its facilities as necessary:
 
 ```typescript
 import { TaskScheduler } from '@backstage/backend-tasks';
-import { Duration } from 'luxon';
 
 const scheduler = TaskScheduler.fromConfig(rootConfig).forPlugin('my-plugin');
 
 await scheduler.scheduleTask({
   id: 'refresh_things',
   frequency: { cron: '*/5 * * * *' }, // every 5 minutes, also supports Duration
-  timeout: Duration.fromObject({ minutes: 15 }),
+  timeout: { minutes: 15 },
   fn: async () => {
     await entityProvider.run();
   },

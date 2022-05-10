@@ -104,6 +104,7 @@ describe('loadConfig', () => {
       `,
       '/root/secrets/substituted.txt': '123abc',
       '/root/${ESCAPE_ME}.txt': 'notSubstituted',
+      '/root/empty.yaml': '# just a comment',
     });
   });
 
@@ -467,6 +468,17 @@ describe('loadConfig', () => {
       },
     });
     await new Promise(resolve => setTimeout(resolve, 1000));
+  });
+
+  it('handles empty files gracefully', async () => {
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configTargets: [{ path: '/root/empty.yaml' }],
+      }),
+    ).resolves.toEqual({
+      appConfigs: [],
+    });
   });
 
   function defer<T>() {

@@ -193,9 +193,7 @@ go to your Backstage portal in your browser, you should have your login prompt!
 To learn more about Authentication in Backstage, here are some docs you
 could read:
 
-- [Adding Authentication](../auth/)
-- [Adding a new Authentication Provider](../auth/add-auth-provider.md)
-- [Using authentication and identity](../auth/using-auth.md)
+- [Authentication in Backstage](../auth/)
 - [Using organizational data from GitHub](../integrations/github/org.md)
 
 ### Setting up a GitHub Integration
@@ -203,7 +201,7 @@ could read:
 The GitHub integration supports loading catalog entities from GitHub or GitHub
 Enterprise. Entities can be added to static catalog configuration, registered
 with the catalog-import plugin, or discovered from a GitHub organization. Users
-and Groups can also be loaded from an organization. While using GitHub Apps
+and Groups can also be loaded from an organization. While using [GitHub Apps](../integrations/github/github-apps.md)
 might be the best way to set up integrations, for this tutorial you'll use a
 Personal Access Token.
 
@@ -217,20 +215,30 @@ for 7 days, it's a lucky number.
   <img src='../assets/getting-started/gh-pat.png' alt='Screenshot of the GitHub Personal Access Token creation page' />
 </p>
 
-Set the scope to your likings. For this tutorial, selecting "repo" and "workflow" is required as the scaffolding job in this guide configures a GitHub actions workflow for the newly created project.
-enough.
+Set the scope to your likings. For this tutorial, selecting `repo` and `workflow` is required as the scaffolding job in this guide configures a GitHub actions workflow for the newly created project.
 
-In the `app-config.yaml`, search for `integrations:` and add your token, like we
-did in below example:
+For this tutorial, we will be writing the token to `app-config.local.yaml`. This file might not exist for you, so if it doesn't go ahead and create it alongside the `app-config.yaml` at the root of the project.
+This file should also be excluded in `.gitignore`, to avoid accidental committing of this file.
+
+In your `app-config.local.yaml` go ahead and add the following:
 
 ```yaml
 integrations:
   github:
     - host: github.com
-      token: ghp_urtokendeinfewinfiwebfweb
+      token: ghp_urtokendeinfewinfiwebfweb # this should be the token from GitHub
 ```
 
 That's settled. This information will be leveraged by other plugins.
+
+If you're looking for a more production way to manage this secret, then you can do the following with the token being stored in an environment variable called `GITHUB_TOKEN`.
+
+```yaml
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN} # this will use the environment variable GITHUB_TOKEN
+```
 
 Some helpful links, for if you want to learn more about:
 

@@ -31,6 +31,9 @@ import { Entity } from '@backstage/catalog-model';
 export interface KubernetesRequestBody {
   auth?: {
     google?: string;
+    oidc?: {
+      [key: string]: string;
+    };
   };
   entity: Entity;
 }
@@ -84,7 +87,7 @@ export interface ObjectsByEntityResponse {
   items: ClusterObjects[];
 }
 
-export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws' | 'azure';
 
 export type FetchResponse =
   | PodFetchResponse

@@ -16,7 +16,7 @@ No one likes bugs. Report bugs as an issue [here](https://github.com/backstage/b
 
 ### Fix bugs or build new features
 
-Look through the GitHub issues for [bugs](https://github.com/backstage/backstage/labels/bugs), [good first issues](https://github.com/backstage/backstage/labels/good%20first%20issue) or [help wanted](https://github.com/backstage/backstage/labels/help%20wanted).
+Look through the GitHub issues for [bugs](https://github.com/backstage/backstage/labels/bug), [good first issues](https://github.com/backstage/backstage/labels/good%20first%20issue) or [help wanted](https://github.com/backstage/backstage/labels/help%20wanted).
 
 ### Build a plugin
 
@@ -78,7 +78,7 @@ If you're contributing to the backend or CLI tooling, be mindful of cross-platfo
 
 Also be sure to skim through our [ADRs](docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
 
-If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) `1.4.0` separately and make sure it is accessed by global command.
+If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
 
 ## Developer Certificate of Origin
 

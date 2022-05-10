@@ -1,0 +1,44 @@
+#!/usr/bin/env docker-compose -f
+
+# This docker compose file can be used to try out the oauth2-proxy auth provider.
+# You'll need to provide your own GitHub client ID and secret through
+# GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.
+#
+# The only modifications you need to make to run this example is to switch the
+# SignInPage to the following:
+#
+#   <ProxiedSignInPage {...props} provider="myproxy" />
+#
+# You also need to switch out the baseUrl and listen port of both the frontend and
+# backend, but we can do that through env vars when running `yarn dev`:
+#
+# APP_CONFIG_app_baseUrl=http://localhost APP_CONFIG_app_listen_port=3000 \
+#   APP_CONFIG_backend_baseUrl=http://localhost APP_CONFIG_backend_listen_port=7007 yarn dev
+#
+# Once done, you can run the following from the root and then navigate to http://localhost
+#
+#   ./plugins/auth-backend/examples/docker-compose.oauth2-proxy.yaml up
+
+version: '3'
+services:
+  proxy:
+    container_name: oauth2-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.2.1
+
+    # The below config assumes that you are running the frontend and backend
+    # in development mode, and that `host.docker.internal` resolves to the host machine.
+    command: >-
+      --cookie-secret=super-super-secret-cookie-secret
+      --cookie-secure=false
+      --http-address=0.0.0.0:80
+      --email-domain=*
+
+      --provider=github
+      --client-id=${GITHUB_CLIENT_ID}
+      --client-secret=${GITHUB_CLIENT_SECRET}
+
+      --redirect-url=http://localhost/oauth2/callback
+      --upstream=http://host.docker.internal:7007/api/,http://host.docker.internal:3000
+
+    ports:
+      - 80:80

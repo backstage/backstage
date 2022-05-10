@@ -103,11 +103,7 @@ export const PullRequestTable = ({ defaultLimit }: PullRequestTableProps) => {
   );
 
   if (error) {
-    return (
-      <div>
-        <ResponseErrorPanel error={error} />
-      </div>
-    );
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (

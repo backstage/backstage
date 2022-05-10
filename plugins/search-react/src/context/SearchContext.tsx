@@ -80,6 +80,16 @@ export const useSearch = () => {
 };
 
 /**
+ * @public
+ *
+ * React hook which checks for an existing search context
+ */
+export const useSearchContextCheck = () => {
+  const context = useContext(SearchContext);
+  return context !== undefined;
+};
+
+/**
  * The initial state of `SearchContextProvider`.
  *
  */

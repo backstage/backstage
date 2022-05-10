@@ -85,12 +85,14 @@ array. Users will see this value in the Software Catalog Kubernetes plugin.
 This determines how the Kubernetes client authenticates with the Kubernetes
 cluster. Valid values are:
 
-| Value                  | Description                                                                                                                                                                                                                       |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set. |
-| `google`               | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                             |
-| `aws`                  | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                 |
-| `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                        |
+| Value                  | Description                                                                                                                                                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `serviceAccount`       | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set.     |
+| `google`               | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                                 |
+| `aws`                  | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                     |
+| `googleServiceAccount` | This will use the Google Cloud service account credentials to access resources in clusters                                                                                                                                            |
+| `azure`                | This will use [Azure Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) to access resources in clusters                                                                   |
+| `oidc`                 | This will use [Oidc Tokens](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) to authenticate to the Kubernetes API. When this is used the `oidcTokenProvider` field should also be set. |
 
 ##### `clusters.\*.skipTLSVerify`
 
@@ -113,6 +115,33 @@ kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOU
 | jq -r '.data["token"]' \
 | base64 --decode
 ```
+
+##### `clusters.\*.oidcTokenProvider` (optional)
+
+This field is to be used when using the `oidc` auth provider. It will use the id tokens
+from a configured [backstage auth provider](https://backstage.io/docs/auth/) to
+authenticate to the cluster. The selected `oidcTokenProvider` needs to be properly
+configured under `auth` for this to work.
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - name: test-cluster
+          url: http://localhost:8080
+          authProvider: oidc
+          oidcTokenProvider: okta # This value needs to match a config under auth.providers
+auth:
+  providers:
+    okta:
+      development:
+        clientId: ${AUTH_OKTA_CLIENT_ID}
+        clientSecret: ${AUTH_OKTA_CLIENT_SECRET}
+        audience: ${AUTH_OKTA_AUDIENCE}
+```
+
+The following values are supported out-of-the-box by the frontend: `google`, `microsoft`, `okta`, `onelogin`.
 
 ##### `clusters.\*.dashboardUrl` (optional)
 

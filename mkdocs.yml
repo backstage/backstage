@@ -101,6 +101,7 @@ nav:
           - Installation: 'integrations/datadog-rum/installation.md'
       - Gerrit:
           - Locations: 'integrations/gerrit/locations.md'
+          - Discovery: 'integrations/gerrit/discovery.md'
       - GitHub:
           - Locations: 'integrations/github/locations.md'
           - Discovery: 'integrations/github/discovery.md'
@@ -147,16 +148,17 @@ nav:
           - GitHub: 'auth/github/provider.md'
           - GitLab: 'auth/gitlab/provider.md'
           - Google: 'auth/google/provider.md'
+          - Google IAP: 'auth/google/gcp-iap-auth.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'
           - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
-      - Using authentication and identity: 'auth/using-auth.md'
       - Sign in resolvers: 'auth/identity-resolver.md'
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - Auth backend classes: 'auth/auth-backend-classes.md'
+      - Troubleshooting Auth: 'auth/troubleshooting.md'
       - Glossary: 'auth/glossary.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'

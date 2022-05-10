@@ -132,13 +132,14 @@ const SearchPage = () => {
             <SearchResult>
               {({ results }) => (
                 <List>
-                  {results.map(({ type, document }) => {
+                  {results.map(({ type, document, highlight }) => {
                     switch (type) {
                       case 'software-catalog':
                         return (
                           <CatalogSearchResultListItem
                             key={document.location}
                             result={document}
+                            highlight={highlight}
                           />
                         );
                       case 'techdocs':
@@ -146,6 +147,7 @@ const SearchPage = () => {
                           <TechDocsSearchResultListItem
                             key={document.location}
                             result={document}
+                            highlight={highlight}
                           />
                         );
                       default:
@@ -153,6 +155,7 @@ const SearchPage = () => {
                           <DefaultResultListItem
                             key={document.location}
                             result={document}
+                            highlight={highlight}
                           />
                         );
                     }

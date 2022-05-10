@@ -1,5 +1,36 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.5.1-next.2
+
+### Patch Changes
+
+- 447e060872: Add support for 'oidc' as authProvider for kubernetes authentication
+  and adds optional 'oidcTokenProvider' config value. This will allow
+  users to authenticate to kubernetes cluster using id tokens obtained
+  from the configured auth provider in their backstage instance.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.2.10-next.1
+
+## 0.5.1-next.1
+
+### Patch Changes
+
+- 1ef98cfe48: add Azure Identity auth provider and AKS dashboard formatter
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.2
+  - @backstage/plugin-kubernetes-common@0.2.10-next.0
+  - @backstage/config@1.0.1-next.0
+  - @backstage/catalog-model@1.0.2-next.0
+
+## 0.5.1-next.0
+
+### Patch Changes
+
+- b9f7ffb162: Add filtering to GKE cluster locator
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+
 ## 0.5.0
 
 ### Minor Changes

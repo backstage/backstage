@@ -1,5 +1,38 @@
 # @backstage/backend-common
 
+## 0.13.3-next.2
+
+### Patch Changes
+
+- e0a6360b80: Added a `stream()` method to complement the `buffer()` method on `ReadUrlResponse`. A `ReadUrlResponseFactory` utility class is now also available, providing a simple, consistent way to provide a valid `ReadUrlResponse`.
+
+  This method, though optional for now, will be required on the responses of `UrlReader.readUrl()` implementations in a future release.
+
+- 4b811aafce: Implemented the `UrlReader.search()` method for Google Cloud Storage. Due to limitations in the underlying storage API, only prefix-based searches are supported right now (for example, `https://storage.cloud.google.com/your-bucket/some-path/*`).
+- Updated dependencies
+  - @backstage/cli-common@0.1.9-next.0
+  - @backstage/config@1.0.1-next.0
+  - @backstage/config-loader@1.1.1-next.1
+  - @backstage/integration@1.2.0-next.1
+
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 28b0e4ddef: Update types to match the new version of `@keyv/redis`
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- 6673babab9: Gerrit integration: Added optional `cloneUrl` string to config.
+- 75bf9e1da9: Split BitbucketUrlReader into BitbucketCloudUrlReader and BitbucketServerUrlReader. Backwards compatible.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+  - @backstage/config-loader@1.1.1-next.0
+
 ## 0.13.2
 
 ### Patch Changes

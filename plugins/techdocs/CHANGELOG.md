@@ -1,5 +1,59 @@
 # @backstage/plugin-techdocs
 
+## 1.1.1-next.3
+
+### Patch Changes
+
+- cc8ddd0979: revert dependency `event-source-polyfill` to `1.0.25`
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.2
+
+## 1.1.1-next.2
+
+### Patch Changes
+
+- 52419be116: Create a menu in the sub header of documentation pages, it is responsible for rendering TechDocs addons that allow users to customize their reading experience.
+- 1af133f779: Updated dependency `event-source-polyfill` to `1.0.26`.
+- 2dcb2c9678: Loading SVGs correctly with `bota` with extended characters
+- 3a74e203a8: Updated search result components to support rendering content with highlighted matched terms
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/plugin-techdocs-react@0.1.1-next.2
+  - @backstage/config@1.0.1-next.0
+  - @backstage/plugin-search-react@0.2.0-next.2
+  - @backstage/plugin-search-common@0.3.4-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.2
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+  - @backstage/integration@1.2.0-next.1
+  - @backstage/integration-react@1.1.0-next.2
+
+## 1.1.1-next.1
+
+### Patch Changes
+
+- 52fddad92d: The `TechDocsStorageApi` and its associated ref are now exported by `@backstage/plugin-techdocs-react`. The API interface, ref, and types are now deprecated in `@backstage/plugin-techdocs` and will be removed in a future release.
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.1
+  - @backstage/plugin-search-react@0.2.0-next.1
+  - @backstage/plugin-techdocs-react@0.1.1-next.1
+  - @backstage/integration-react@1.1.0-next.1
+
+## 1.1.1-next.0
+
+### Patch Changes
+
+- a307a14be0: Removed dependency on `@backstage/core-app-api`.
+- bed0d64ce9: Fixed bugs that prevented a 404 error from being shown when it should have been.
+- Updated dependencies
+  - @backstage/integration@1.2.0-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.0
+  - @backstage/integration-react@1.1.0-next.0
+  - @backstage/plugin-search-react@0.1.1-next.0
+  - @backstage/plugin-techdocs-react@0.1.1-next.0
+
 ## 1.1.0
 
 ### Minor Changes

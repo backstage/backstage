@@ -1,5 +1,41 @@
 # @backstage/backend-tasks
 
+## 0.3.1-next.1
+
+### Patch Changes
+
+- 73480846dd: `TaskScheduleDefinition` has been updated to also accept an options object containing duration information in the form of days, hours, seconds and so on. This allows for scheduling without importing `luxon`.
+
+  ```diff
+  -import { Duration } from 'luxon';
+  // omitted other code
+
+  const schedule = env.scheduler.createScheduledTaskRunner({
+  -  frequency: Duration.fromObject({ minutes: 10 }),
+  -  timeout: Duration.fromObject({ minutes: 15 }),
+  +  frequency: { minutes: 10 },
+  +  timeout: { minutes: 15 },
+     // omitted other code
+  });
+  ```
+
+- ebbec677e1: Correctly set next run time for tasks
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.2
+  - @backstage/config@1.0.1-next.0
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- cfd779a9bc: Scheduled tasks now have an optional `scope` field. If unset, or having the
+  value `'global'`, the old behavior with cross-worker locking is retained. If
+  having the value `'local'`, there is no coordination across workers and the
+  behavior is more like `setInterval`. This can be used to replace usages of
+  `runPeriodically` helpers.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.0
+
 ## 0.3.0
 
 ### Minor Changes

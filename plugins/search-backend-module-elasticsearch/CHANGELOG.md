@@ -1,5 +1,24 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.4-next.1
+
+### Patch Changes
+
+- 71d3432710: Search Engines will now index documents in batches of 1000 instead of 100 (under the hood). This may result in your Backstage backend consuming slightly more memory during index runs, but should dramatically improve indexing performance for large document sets.
+- 3a74e203a8: Support generating highlighted matched terms in search result data
+- Updated dependencies
+  - @backstage/config@1.0.1-next.0
+  - @backstage/plugin-search-backend-node@0.6.1-next.1
+  - @backstage/plugin-search-common@0.3.4-next.0
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- a7f7a63d14: Prevent orphaned stale indices by permanently marking them for deletion so removal can be re-attempted if it failed previously
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.1-next.0
+
 ## 0.1.3
 
 ### Patch Changes

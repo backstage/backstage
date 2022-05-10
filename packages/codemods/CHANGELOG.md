@@ -1,5 +1,18 @@
 # @backstage/codemods
 
+## 0.1.38-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.9-next.0
+
+## 0.1.38-next.0
+
+### Patch Changes
+
+- 344ea56acc: Bump `commander` to version 9.1.0
+
 ## 0.1.37
 
 ### Patch Changes

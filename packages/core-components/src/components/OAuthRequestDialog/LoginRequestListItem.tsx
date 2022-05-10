@@ -59,7 +59,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const IconComponent = request.provider.icon;
 
   return (
-    <ListItem button disabled={busy} classes={{ root: classes.root }}>
+    <ListItem disabled={busy} classes={{ root: classes.root }}>
       <ListItemAvatar>
         <IconComponent fontSize="large" />
       </ListItemAvatar>

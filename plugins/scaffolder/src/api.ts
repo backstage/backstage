@@ -75,7 +75,15 @@ export class ScaffolderClient implements ScaffolderApi {
   ): Promise<ScaffolderGetIntegrationsListResponse> {
     const integrations = [
       ...this.scmIntegrationsApi.azure.list(),
-      ...this.scmIntegrationsApi.bitbucket.list(),
+      ...this.scmIntegrationsApi.bitbucket
+        .list()
+        .filter(
+          item =>
+            !this.scmIntegrationsApi.bitbucketCloud.byHost(item.config.host) &&
+            !this.scmIntegrationsApi.bitbucketServer.byHost(item.config.host),
+        ),
+      ...this.scmIntegrationsApi.bitbucketCloud.list(),
+      ...this.scmIntegrationsApi.bitbucketServer.list(),
       ...this.scmIntegrationsApi.github.list(),
       ...this.scmIntegrationsApi.gitlab.list(),
     ]

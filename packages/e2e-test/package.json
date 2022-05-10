@@ -29,7 +29,7 @@
     "e2e-test": "bin/e2e-test"
   },
   "devDependencies": {
-    "@backstage/cli-common": "^0.1.8",
+    "@backstage/cli-common": "^0.1.9-next.0",
     "@backstage/errors": "^1.0.0",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "^16.11.26",
@@ -37,7 +37,7 @@
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
     "cross-fetch": "^3.1.5",
-    "fs-extra": "10.0.1",
+    "fs-extra": "10.1.0",
     "handlebars": "^4.7.3",
     "pgtools": "^0.3.0",
     "puppeteer": "^13.1.1",

@@ -71,7 +71,7 @@ export class OneLoginProvider implements OAuthHandlers {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
       },
       (
         accessToken: any,

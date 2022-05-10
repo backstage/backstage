@@ -1,5 +1,188 @@
 # @backstage/create-app
 
+## 0.4.27-next.2
+
+### Patch Changes
+
+- 73480846dd: Simplified the search collator scheduling by removing the need for the `luxon` dependency.
+
+  For existing installations the scheduling can be simplified by removing the `luxon` dependency and using the human friendly duration object instead.
+  Please note that this only applies if luxon is not used elsewhere in your installation.
+
+  `packages/backend/package.json`
+
+  ```diff
+       "express": "^4.17.1",
+       "express-promise-router": "^4.1.0",
+  -    "luxon": "^2.0.2",
+  ```
+
+  `packages/backend/src/plugins/search.ts`
+
+  ```diff
+   import { Router } from 'express';
+  -import { Duration } from 'luxon';
+
+   // omitted other code
+
+     const schedule = env.scheduler.createScheduledTaskRunner({
+  -    frequency: Duration.fromObject({ minutes: 10 }),
+  -    timeout: Duration.fromObject({ minutes: 15 }),
+  +    frequency: { minutes: 10 },
+  +    timeout: { minutes: 15 },
+       // A 3 second delay gives the backend server a chance to initialize before
+       // any collators are executed, which may attempt requests against the API.
+  -    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +    initialDelay: { seconds: 3 },
+     });
+  ```
+
+- 7cda923c16: Tweaked the `.dockerignore` file so that it's easier to add additional backend packages if desired.
+
+  To apply this change to an existing app, make the following change to `.dockerignore`:
+
+  ```diff
+   cypress
+   microsite
+   node_modules
+  -packages
+  -!packages/backend/dist
+  +packages/*/src
+  +packages/*/node_modules
+   plugins
+  ```
+
+- f55414f895: Added sample catalog data to the template under a top-level `examples` directory. This includes some simple entities, org data, and a template. You can find the sample data at https://github.com/backstage/backstage/tree/master/packages/create-app/templates/default-app/examples.
+- 3a74e203a8: Implement highlighting matching terms in search results. To enable this for an existing app, make the following changes:
+
+  ```diff
+  // packages/app/src/components/search/SearchPage.tsx
+  ...
+  -  {results.map(({ type, document }) => {
+  +  {results.map(({ type, document, highlight }) => {
+       switch (type) {
+         case 'software-catalog':
+           return (
+             <CatalogSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         case 'techdocs':
+           return (
+             <TechDocsSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         default:
+           return (
+             <DefaultResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+       }
+     })}
+  ...
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.9-next.0
+
+## 0.4.27-next.1
+
+### Patch Changes
+
+- 7b253072c6: Tweaked template to provide an example and guidance for how to configure sign-in in `packages/backend/src/plugins/auth.ts`. There is no need to add this to existing apps, but for more information about sign-in configuration, see https://backstage.io/docs/auth/identity-resolver.
+- 00fa0dada0: Removed the database choice from the `create-app` command.
+
+  This reduces the step from development to production by always installing the dependencies and templating the production configuration in `app-config.production.yaml`.
+
+  Added `app-config.local.yaml` to allow for local configuration overrides.
+  To replicate this behavior in an existing installation simply `touch app-config.local.yaml` in the project root and apply your local configuration.
+
+  `better-sqlite3` has been moved to devDependencies, for existing installations using postgres in production and SQLite in development it's recommended to move SQLite into the devDependencies section to avoid unnecessary dependencies during builds.
+
+  in `packages/backend/package.json`
+
+  ```diff
+    "dependencies": {
+      ...
+      "pg": "^8.3.0",
+  -   "better-sqlite3": "^7.5.0",
+      "winston": "^3.2.1"
+    },
+    "devDependencies": {
+      ...
+      "@types/luxon": "^2.0.4",
+  +   "better-sqlite3": "^7.5.0"
+    }
+  ```
+
+- d41f19ca2a: Bumped the `typescript` version in the template to `~4.6.4`.
+
+  To apply this change to an existing app, make the following change to the root `package.json`:
+
+  ```diff
+     dependencies: {
+       ...
+  -    "typescript": "~4.5.4"
+  +    "typescript": "~4.6.4"
+     },
+  ```
+
+## 0.4.27-next.0
+
+### Patch Changes
+
+- 3983940a21: Optimized the command order in `packages/backend/Dockerfile` as well as added the `--no-install-recommends` to the `apt-get install` and tweaked the installed packages.
+
+  To apply this change to an existing app, update your `packages/backend/Dockerfile` to match the documented `Dockerfile` at https://backstage.io/docs/deployment/docker#host-build.
+
+- 28bbf5aff6: Added some instruction comments to the generated config files, to clarify the
+  usage of `backend.baseUrl` and `backend.listen.host`. Importantly, it also per
+  default now listens on all IPv4 interfaces, to make it easier to take the step
+  over to production. If you want to do the same, update your
+  `app-config.production.yaml` as follows:
+
+  ```diff
+   backend:
+     listen:
+       port: 7007
+  +    host: 0.0.0.0
+  ```
+
+  Also, updated the builtin backend Dockerfile to honor the
+  `app-config.production.yaml` file. If you want to do the same, change
+  `packages/backend/Dockerfile` as follows:
+
+  ```diff
+  -COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
+  +COPY packages/backend/dist/bundle.tar.gz app-config*.yaml ./
+   RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+  -CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+  +CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+  ```
+
+  If you look carefully, this adds a glob match on app-config files. For those
+  that try out the build flows locally, you also want to make sure that the docker
+  daemon does NOT pick up any local/private config files that might contain
+  secrets. You should therefore also update your local `.dockerignore` file at the
+  same time:
+
+  ```diff
+  +*.local.yaml
+  ```
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 806427545f: Added a link to the `${GITHUB_TOKEN}` to document how to generate a token
+
 ## 0.4.26
 
 ### Patch Changes

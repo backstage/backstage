@@ -142,6 +142,21 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
   },
 }));
 
+const fetchResolver = {
+  order: 199, // Use 199 as the built-in http resolver is 200
+  canRead: /^https?:\/\//,
+  async read(file: any) {
+    const response = await fetch(file.url);
+    return response.text();
+  },
+};
+
+const config = {
+  parserOptions: {
+    resolve: { fetch: fetchResolver },
+  },
+};
+
 type Props = {
   definition: string;
 };
@@ -155,7 +170,7 @@ export const AsyncApiDefinition = ({ definition }: Props): JSX.Element => {
 
   return (
     <div className={classNames}>
-      <AsyncApi schema={definition} />
+      <AsyncApi schema={definition} config={config} />
     </div>
   );
 };
