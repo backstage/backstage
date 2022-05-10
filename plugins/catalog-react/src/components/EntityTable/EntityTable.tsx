@@ -23,6 +23,7 @@ import {
   InfoCardVariants,
   Table,
   TableColumn,
+  TableProps,
 } from '@backstage/core-components';
 
 /**
@@ -36,6 +37,7 @@ export interface EntityTableProps<T extends Entity> {
   entities: T[];
   emptyContent?: ReactNode;
   columns: TableColumn<T>[];
+  tableOptions?: TableProps<T>['options'];
 }
 
 const useStyles = makeStyles(theme => ({
@@ -59,6 +61,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
     emptyContent,
     variant = 'gridItem',
     columns,
+    tableOptions,
   } = props;
 
   const classes = useStyles();
@@ -80,11 +83,14 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
         emptyContent && <div className={classes.empty}>{emptyContent}</div>
       }
       options={{
-        // TODO: Toolbar padding if off compared to other cards, should be: padding: 16px 24px;
-        search: false,
-        paging: false,
-        actionsColumnIndex: -1,
-        padding: 'dense',
+        ...{
+          // TODO: Toolbar padding if off compared to other cards, should be: padding: 16px 24px;
+          search: false,
+          paging: false,
+          actionsColumnIndex: -1,
+          padding: 'dense',
+        },
+        ...tableOptions,
       }}
       data={entities}
     />

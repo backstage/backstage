@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
-import { InfoCardVariants } from '@backstage/core-components';
+import { RELATION_HAS_PART, ResourceEntity } from '@backstage/catalog-model';
+import { InfoCardVariants, TableProps } from '@backstage/core-components';
 import React from 'react';
 import {
   asResourceEntities,
@@ -27,10 +27,11 @@ import {
 /** @public */
 export interface HasResourcesCardProps {
   variant?: InfoCardVariants;
+  tableOptions?: TableProps<ResourceEntity>['options'];
 }
 
 export function HasResourcesCard(props: HasResourcesCardProps) {
-  const { variant = 'gridItem' } = props;
+  const { variant = 'gridItem', tableOptions } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}
@@ -41,6 +42,7 @@ export function HasResourcesCard(props: HasResourcesCardProps) {
       asRenderableEntities={asResourceEntities}
       emptyMessage="No resource is part of this system"
       emptyHelpLink={resourceEntityHelpLink}
+      tableOptions={tableOptions}
     />
   );
 }
