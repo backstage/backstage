@@ -19,7 +19,7 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { useAnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp, ErrorBoundaryFallbackProps } from '../app';
-import { createPlugin } from '../plugin';
+import { AnyMetadata, createPlugin } from '../plugin';
 import { createRouteRef } from '../routing';
 import { getComponentData } from './componentData';
 import {
@@ -34,6 +34,17 @@ const mocked = (f: Function) => f as jest.Mock;
 
 const plugin = createPlugin({
   id: 'my-plugin',
+});
+
+type Props = {
+  metadata?: AnyMetadata;
+};
+
+const customPlugin = createPlugin({
+  id: 'custom-plugin',
+  metadata: {
+    pluginLabel: 'initial label',
+  },
 });
 
 describe('extensions', () => {
@@ -138,5 +149,57 @@ describe('extensions', () => {
     expect(result.getByTestId('plugin-id')).toHaveTextContent('my-plugin');
     expect(result.getByTestId('route-ref')).toHaveTextContent('some-ref');
     expect(result.getByTestId('extension')).toHaveTextContent('AnalyticsSpy');
+  });
+
+  it('should allow for the plugin to define default labels via metadata', async () => {
+    const CustomPluginExtension = customPlugin.provide(
+      createReactExtension({
+        name: 'CustomPlugin',
+        component: {
+          sync: (props: Props) => {
+            return (
+              <>
+                <div data-testid="plugin-label">
+                  {props.metadata?.pluginLabel}
+                </div>
+              </>
+            );
+          },
+        },
+      }),
+    );
+
+    const initialComponent = render(<CustomPluginExtension />);
+    expect(initialComponent.getByTestId('plugin-label')).toHaveTextContent(
+      'initial label',
+    );
+  });
+
+  it('should allow for the plugin to redefine default labels', async () => {
+    customPlugin.reconfigure({
+      pluginLabel: 'new label',
+    });
+
+    const CustomPluginExtension = customPlugin.provide(
+      createReactExtension({
+        name: 'CustomPlugin',
+        component: {
+          sync: (props: Props) => {
+            return (
+              <>
+                <div data-testid="plugin-label">
+                  {props.metadata?.pluginLabel}
+                </div>
+              </>
+            );
+          },
+        },
+      }),
+    );
+
+    const updatedComponent = render(<CustomPluginExtension />);
+    expect(updatedComponent.getByTestId('plugin-label')).toHaveTextContent(
+      'new label',
+    );
   });
 });
