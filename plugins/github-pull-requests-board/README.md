@@ -12,7 +12,7 @@ It will help you and your team stay on top of open pull requests, hopefully redu
 
 ## Getting started
 
-Intall the plugin by running the following command **from your Backstage root directory**
+Install the plugin by running the following command **from your Backstage root directory**
 
 `yarn --cwd packages/app add @backstage/plugin-github-pull-requests-board`
 
