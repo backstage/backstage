@@ -32,6 +32,7 @@ export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 export const TechDocsAddonLocations: Readonly<{
   readonly Header: 'Header';
   readonly Subheader: 'Subheader';
+  readonly Settings: 'Settings';
   readonly PrimarySidebar: 'PrimarySidebar';
   readonly SecondarySidebar: 'SecondarySidebar';
   readonly Content: 'Content';

@@ -31,4 +31,7 @@ export type ReportIssueTemplateBuilder = ({
 
 // @public
 export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}>;
+
+// @public
+export const TextSize: (props: unknown) => JSX.Element | null;
 ```

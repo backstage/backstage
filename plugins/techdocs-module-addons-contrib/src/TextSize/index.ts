@@ -13,20 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * A plugin for contributed TechDocs Addons.
- *
- * @packageDocumentation
- */
-
-export {
-  techdocsModuleAddonsContribPlugin,
-  ReportIssue,
-  TextSize,
-} from './plugin';
-export type {
-  ReportIssueProps,
-  ReportIssueTemplate,
-  ReportIssueTemplateBuilder,
-} from './ReportIssue';
+export * from './TextSize';

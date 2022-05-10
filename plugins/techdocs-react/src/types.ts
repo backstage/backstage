@@ -54,6 +54,12 @@ export const TechDocsAddonLocations = Object.freeze({
   Subheader: 'Subheader',
 
   /**
+   * These addons are items added to the settings menu list and are designed to make
+   * the reader experience customizable, for example accessibility options
+   */
+  Settings: 'Settings',
+
+  /**
    * These addons appear left of the content and above the navigation.
    */
   PrimarySidebar: 'PrimarySidebar',
