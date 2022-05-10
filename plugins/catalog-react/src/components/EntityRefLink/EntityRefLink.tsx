@@ -54,7 +54,7 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     let name;
 
     if (typeof entityRef === 'string') {
-      const parsed = parseEntityRef(entityRef);
+      const parsed = parseEntityRef(entityRef, { defaultKind: defaultKind });
       kind = parsed.kind;
       namespace = parsed.namespace;
       name = parsed.name;

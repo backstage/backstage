@@ -185,4 +185,19 @@ describe('<EntityRefLink />', () => {
       '/catalog/test/component/software',
     );
   });
+
+  it('renders link for an unqualified entity name', async () => {
+    const { getByText } = await renderInTestApp(
+      <EntityRefLink entityRef="test/software" defaultKind="component" />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+    expect(getByText('test/software')).toHaveAttribute(
+      'href',
+      '/catalog/test/component/software',
+    );
+  });
 });
