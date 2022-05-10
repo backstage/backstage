@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.2.10-next.0
+
+### Patch Changes
+
+- 1ef98cfe48: add Azure Identity auth provider and AKS dashboard formatter
+- Updated dependencies
+  - @backstage/catalog-model@1.0.2-next.0
+
 ## 0.2.9
 
 ### Patch Changes
