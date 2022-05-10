@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
   decodeJwt,
-  jwtVerify,
+  decodeProtectedHeader,
   FlattenedJWSInput,
   JWSHeaderParameters,
-  decodeProtectedHeader,
+  jwtVerify,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
+
 import { BackstageIdentityResponse } from './types';
 
 const CLOCK_MARGIN_S = 10;
+
+export type IdentityClientOptions = {
+  discovery: PluginEndpointDiscovery;
+  issuer: string;
+  algorithms?: string[]; // A list of accepted JWS "alg" (Algorithm) Header Parameter values. Defaults to ['ES256']
+};
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -39,25 +45,21 @@ const CLOCK_MARGIN_S = 10;
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
   private readonly issuer: string;
+  private readonly algorithms: string[];
   private keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
   private keyStoreUpdated: number = 0;
 
   /**
    * Create a new {@link IdentityClient} instance.
    */
-  static create(options: {
-    discovery: PluginEndpointDiscovery;
-    issuer: string;
-  }): IdentityClient {
+  static create(options: IdentityClientOptions): IdentityClient {
     return new IdentityClient(options);
   }
 
-  private constructor(options: {
-    discovery: PluginEndpointDiscovery;
-    issuer: string;
-  }) {
+  private constructor(options: IdentityClientOptions) {
     this.discovery = options.discovery;
     this.issuer = options.issuer;
+    this.algorithms = options.algorithms || ['ES256'];
   }
 
   /**
@@ -82,7 +84,7 @@ export class IdentityClient {
       throw new AuthenticationError('No keystore exists');
     }
     const decoded = await jwtVerify(token, this.keyStore, {
-      algorithms: ['ES256'],
+      algorithms: this.algorithms,
       audience: 'backstage',
       issuer: this.issuer,
     });
