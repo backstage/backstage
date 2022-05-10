@@ -1,5 +1,98 @@
 # @backstage/create-app
 
+## 0.4.27-next.2
+
+### Patch Changes
+
+- 73480846dd: Simplified the search collator scheduling by removing the need for the `luxon` dependency.
+
+  For existing installations the scheduling can be simplified by removing the `luxon` dependency and using the human friendly duration object instead.
+  Please note that this only applies if luxon is not used elsewhere in your installation.
+
+  `packages/backend/package.json`
+
+  ```diff
+       "express": "^4.17.1",
+       "express-promise-router": "^4.1.0",
+  -    "luxon": "^2.0.2",
+  ```
+
+  `packages/backend/src/plugins/search.ts`
+
+  ```diff
+   import { Router } from 'express';
+  -import { Duration } from 'luxon';
+
+   // omitted other code
+
+     const schedule = env.scheduler.createScheduledTaskRunner({
+  -    frequency: Duration.fromObject({ minutes: 10 }),
+  -    timeout: Duration.fromObject({ minutes: 15 }),
+  +    frequency: { minutes: 10 },
+  +    timeout: { minutes: 15 },
+       // A 3 second delay gives the backend server a chance to initialize before
+       // any collators are executed, which may attempt requests against the API.
+  -    initialDelay: Duration.fromObject({ seconds: 3 }),
+  +    initialDelay: { seconds: 3 },
+     });
+  ```
+
+- 7cda923c16: Tweaked the `.dockerignore` file so that it's easier to add additional backend packages if desired.
+
+  To apply this change to an existing app, make the following change to `.dockerignore`:
+
+  ```diff
+   cypress
+   microsite
+   node_modules
+  -packages
+  -!packages/backend/dist
+  +packages/*/src
+  +packages/*/node_modules
+   plugins
+  ```
+
+- f55414f895: Added sample catalog data to the template under a top-level `examples` directory. This includes some simple entities, org data, and a template. You can find the sample data at https://github.com/backstage/backstage/tree/master/packages/create-app/templates/default-app/examples.
+- 3a74e203a8: Implement highlighting matching terms in search results. To enable this for an existing app, make the following changes:
+
+  ```diff
+  // packages/app/src/components/search/SearchPage.tsx
+  ...
+  -  {results.map(({ type, document }) => {
+  +  {results.map(({ type, document, highlight }) => {
+       switch (type) {
+         case 'software-catalog':
+           return (
+             <CatalogSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         case 'techdocs':
+           return (
+             <TechDocsSearchResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+         default:
+           return (
+             <DefaultResultListItem
+               key={document.location}
+               result={document}
+  +            highlight={highlight}
+             />
+           );
+       }
+     })}
+  ...
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.9-next.0
+
 ## 0.4.27-next.1
 
 ### Patch Changes

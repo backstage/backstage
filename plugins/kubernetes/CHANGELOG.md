@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.5-next.2
+
+### Patch Changes
+
+- 1ef98cfe48: add Azure Identity auth provider and AKS dashboard formatter
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/plugin-kubernetes-common@0.2.10-next.0
+  - @backstage/config@1.0.1-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.2
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
 ## 0.6.5-next.1
 
 ### Patch Changes

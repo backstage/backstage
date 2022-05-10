@@ -29,7 +29,7 @@
     "e2e-test": "bin/e2e-test"
   },
   "devDependencies": {
-    "@backstage/cli-common": "^0.1.8",
+    "@backstage/cli-common": "^0.1.9-next.0",
     "@backstage/errors": "^1.0.0",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "^16.11.26",
