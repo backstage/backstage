@@ -195,6 +195,9 @@ export interface KubernetesRequestBody {
   // (undocumented)
   auth?: {
     google?: string;
+    oidc?: {
+      [key: string]: string;
+    };
   };
   // (undocumented)
   entity: Entity;

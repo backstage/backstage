@@ -105,6 +105,10 @@ export interface ClusterDetails {
   url: string;
   authProvider: string;
   serviceAccountToken?: string | undefined;
+  /**
+   * oidc provider used to get id tokens to authenticate against kubernetes
+   */
+  oidcTokenProvider?: string | undefined;
   skipTLSVerify?: boolean;
   /**
    * Whether to skip the lookup to the metrics server to retrieve pod resource usage.
