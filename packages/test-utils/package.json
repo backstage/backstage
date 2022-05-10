@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.17.2",
-    "@types/jest": "^26.0.7",
+    "@types/jest": "^27.0.0",
     "@types/node": "^16.11.26",
     "msw": "^0.42.0"
   },

@@ -93,7 +93,7 @@
     "@types/ansi-regex": "^5.0.0",
     "@types/dagre": "^0.7.44",
     "@types/google-protobuf": "^3.7.2",
-    "@types/jest": "^26.0.7",
+    "@types/jest": "^27.0.0",
     "@types/node": "^16.11.26",
     "@types/react-helmet": "^6.1.0",
     "@types/react-syntax-highlighter": "^15.0.0",

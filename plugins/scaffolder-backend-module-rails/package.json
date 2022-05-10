@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.17.2",
-    "@types/jest": "^26.0.7",
+    "@types/jest": "^27.0.0",
     "@types/node": "^16.11.26",
     "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",

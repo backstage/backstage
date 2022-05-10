@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.17.2",
-    "@types/jest": "^26.0.7",
+    "@types/jest": "^27.0.0",
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.151",
     "yaml": "^1.9.2"
