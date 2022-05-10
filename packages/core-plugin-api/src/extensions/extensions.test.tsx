@@ -44,6 +44,9 @@ const customPlugin = createPlugin({
   id: 'custom-plugin',
   metadata: {
     pluginLabel: 'initial label',
+    table: {
+      tableHeader: 'table header',
+    },
   },
 });
 
@@ -178,7 +181,7 @@ describe('extensions', () => {
   it('should allow for the plugin to redefine default labels', async () => {
     customPlugin.reconfigure({
       pluginLabel: 'new label',
-    });
+    } as any);
 
     const CustomPluginExtension = customPlugin.provide(
       createReactExtension({
@@ -189,6 +192,9 @@ describe('extensions', () => {
               <>
                 <div data-testid="plugin-label">
                   {props.metadata?.pluginLabel}
+                  <div data-testid="plugin-table-summary">
+                    <h3>{props.metadata?.table.tableHeader}</h3>
+                  </div>
                 </div>
               </>
             );
@@ -201,5 +207,8 @@ describe('extensions', () => {
     expect(updatedComponent.getByTestId('plugin-label')).toHaveTextContent(
       'new label',
     );
+    expect(
+      updatedComponent.getByTestId('plugin-table-summary'),
+    ).toHaveTextContent('table header');
   });
 });

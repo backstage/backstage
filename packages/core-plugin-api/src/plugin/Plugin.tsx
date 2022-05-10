@@ -23,6 +23,7 @@ import {
   AnyMetadata,
   PluginFeatureFlagConfig,
 } from './types';
+import { merge } from 'lodash';
 import { AnyApiFactory } from '../apis';
 
 /**
@@ -71,7 +72,7 @@ export class PluginImpl<
   }
 
   reconfigure(metadata: PluginMetadata): BackstagePlugin {
-    this.config.metadata = { ...this.config.metadata, ...metadata };
+    this.config.metadata = merge(this.config.metadata, metadata);
     return this;
   }
 
