@@ -30,9 +30,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
   storageApiRef,
-  AnyMetadata,
 } from '@backstage/core-plugin-api';
-import { SupportButton } from '@backstage/core-components';
 import { DefaultStarredEntitiesApi } from './apis';
 import { AboutCardProps } from './components/AboutCard';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
@@ -45,19 +43,6 @@ import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
 import { HasSystemsCardProps } from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { rootRouteRef } from './routes';
-
-export interface CatalogPluginMetadata extends AnyMetadata {
-  createComponentTitle: string;
-  supportButton: () => JSX.Element;
-  supportButtonText: string;
-}
-
-const metadata = {
-  createComponentTitle: 'Create Component',
-  // eslint-disable-next-line new-cap
-  supportButton: () => SupportButton({}),
-  supportButtonText: 'All your software catalog entities',
-} as CatalogPluginMetadata;
 
 /** @public */
 export const catalogPlugin = createPlugin({
@@ -87,7 +72,6 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
-  metadata,
 });
 
 /** @public */

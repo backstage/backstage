@@ -19,6 +19,7 @@ import {
   ContentHeader,
   CreateButton,
   PageWithHeader,
+  SupportButton,
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
@@ -37,7 +38,6 @@ import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable, CatalogTableRow } from '../CatalogTable';
 import { CatalogKindHeader } from '../CatalogKindHeader';
-import { CatalogPluginMetadata } from '../../plugin';
 
 /**
  * Props for root catalog pages.
@@ -50,7 +50,6 @@ export interface DefaultCatalogPageProps {
   actions?: TableProps<CatalogTableRow>['actions'];
   initialKind?: string;
   tableOptions?: TableProps<CatalogTableRow>['options'];
-  metadata?: CatalogPluginMetadata;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -73,10 +72,10 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
             titleComponent={<CatalogKindHeader initialFilter={initialKind} />}
           >
             <CreateButton
-              title={props.metadata?.createComponentTitle || ''}
+              title="Create Component"
               to={createComponentLink && createComponentLink()}
             />
-            {props.metadata?.supportButton()}
+            <SupportButton>All your software catalog entities</SupportButton>
           </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>

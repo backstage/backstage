@@ -55,7 +55,7 @@ export class PluginImpl<
   }
 
   getMetadata(): PluginMetadata {
-    return this.config.metadata!!;
+    return this.config.metadata ?? ({} as PluginMetadata);
   }
 
   get routes(): Routes {

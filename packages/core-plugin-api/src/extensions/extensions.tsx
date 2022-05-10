@@ -235,11 +235,6 @@ export function createReactExtension<
           | { id?: string }
           | undefined;
 
-        const metadata = plugin.getMetadata();
-        const componentProperties = metadata
-          ? { ...props, metadata }
-          : { ...props };
-
         return (
           <Suspense fallback={<Progress />}>
             <PluginErrorBoundary app={app} plugin={plugin}>
@@ -250,7 +245,7 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <Component {...componentProperties} />
+                <Component {...{ ...props, metadata: plugin.getMetadata() }} />
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>
