@@ -3,4 +3,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Updated dependency `event-source-polyfill` to `1.0.26`.
+revert dependency `event-source-polyfill` to `1.0.25`
