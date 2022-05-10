@@ -198,6 +198,7 @@
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
+      "plugins/customization",
       "plugins/composability",
       "plugins/analytics",
       {
