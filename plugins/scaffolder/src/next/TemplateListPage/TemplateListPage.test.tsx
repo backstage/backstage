@@ -88,8 +88,8 @@ describe('TemplateListPage', () => {
       { mountedRoutes: { '/': rootRouteRef } },
     );
 
-    expect(getByRole('menuitem', { name: 'All' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Starred' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'All 0' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Starred 0' })).toBeInTheDocument();
   });
 
   it('should render the category picker', async () => {

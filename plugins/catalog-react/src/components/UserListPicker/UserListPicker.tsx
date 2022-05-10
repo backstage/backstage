@@ -267,7 +267,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
                     </ListItemIcon>
                   )}
                   <ListItemText>
-                    <Typography variant="body1">{item.label}</Typography>
+                    <Typography variant="body1">{item.label} </Typography>
                   </ListItemText>
                   <ListItemSecondaryAction>
                     {filterCounts[item.id] ?? '-'}

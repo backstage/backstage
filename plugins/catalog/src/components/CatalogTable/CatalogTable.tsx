@@ -121,7 +121,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography variant="srOnly" title={title} />
+            <Typography variant="srOnly">{title}</Typography>
             <OpenInNew fontSize="small" />
           </>
         ),
@@ -140,7 +140,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography variant="srOnly" title={title} />
+            <Typography variant="srOnly">{title}</Typography>
             <Edit fontSize="small" />
           </>
         ),
@@ -160,7 +160,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         cellStyle: { paddingLeft: '1em' },
         icon: () => (
           <>
-            <Typography variant="srOnly" title={title} />
+            <Typography variant="srOnly">{title}</Typography>
             {isStarred ? <YellowStar /> : <StarBorder />}
           </>
         ),
