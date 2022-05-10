@@ -128,6 +128,7 @@ async function getProjectConfig(targetPath, displayName) {
     moduleNameMapper: {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
+    resolver: require.resolve('./jestResolver.js'),
 
     transform: {
       '\\.(js|jsx|ts|tsx|mjs|cjs)$': [
@@ -144,7 +145,7 @@ async function getProjectConfig(targetPath, displayName) {
     // A bit more opinionated
     testMatch: ['**/*.test.{js,jsx,ts,tsx,mjs,cjs}'],
 
-    moduleLoader: envOptions.nextTests
+    runtime: envOptions.nextTests
       ? require.resolve('./jestCachingModuleLoader')
       : undefined,
 

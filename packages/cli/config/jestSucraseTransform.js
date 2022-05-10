@@ -64,10 +64,10 @@ function createTransformer(config) {
       }
       // We only return the `map` result if source maps are enabled, as they
       // have a negative impact on the coverage accuracy.
-      return code;
+      return { code };
     }
 
-    return source;
+    return { code: source };
   };
 
   // TODO: contribute something like this to @sucrase/jest-plugin

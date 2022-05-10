@@ -90,6 +90,7 @@
     "jest": "^28.0.0",
     "jest-runtime": "^28.0.0",
     "jest-css-modules": "^2.1.0",
+    "jest-environment-jsdom": "^28.0.0",
     "jest-transform-yaml": "^1.0.0",
     "json-schema": "^0.4.0",
     "lodash": "^4.17.21",

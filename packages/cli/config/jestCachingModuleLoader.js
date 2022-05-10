@@ -52,7 +52,8 @@ module.exports = class CachingJestRuntime extends JestRuntime {
         ...entry,
         generation: this.__runtimeGeneration,
       });
-      return entry.code;
+
+      return { code: entry.code };
     }
 
     const code = super.transformFile(filename, options);
@@ -61,7 +62,8 @@ module.exports = class CachingJestRuntime extends JestRuntime {
       mtimeMs: fs.statSync(filename).mtimeMs,
       generation: this.__runtimeGeneration,
     });
-    return code;
+
+    return { code };
   }
 
   // This may or may not be a good idea. Theoretically I don't know why this would impact

@@ -21,22 +21,25 @@ module.exports = {
     const assetFilename = JSON.stringify(path.basename(filename));
 
     if (filename.match(/\.icon\.svg$/)) {
-      return `const React = require('react');
-      const SvgIcon = require('@material-ui/core/SvgIcon').default;
-      module.exports = {
-        __esModule: true,
-        default: props => React.createElement(SvgIcon, props, {
-          $$typeof: Symbol.for('react.element'),
-          type: 'svg',
-          ref: ref,
-          key: null,
-          props: Object.assign({}, props, {
-            children: ${assetFilename}
-          })
-        })
-      };`;
+      return {
+        code: `
+          const React = require('react');
+          const SvgIcon = require('@material-ui/core/SvgIcon').default;
+          module.exports = {
+            __esModule: true,
+            default: props => React.createElement(SvgIcon, props, {
+              $$typeof: Symbol.for('react.element'),
+              type: 'svg',
+              ref: ref,
+              key: null,
+              props: Object.assign({}, props, {
+                children: ${assetFilename}
+              })
+            })
+          };`,
+      };
     }
 
-    return `module.exports = ${assetFilename};`;
+    return { code: `module.exports = ${assetFilename};` };
   },
 };
