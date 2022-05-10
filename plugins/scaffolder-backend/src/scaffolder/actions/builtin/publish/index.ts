@@ -19,6 +19,7 @@ export { createPublishBitbucketAction } from './bitbucket';
 export { createPublishBitbucketCloudAction } from './bitbucketCloud';
 export { createPublishBitbucketServerAction } from './bitbucketServer';
 export { createPublishFileAction } from './file';
+export { createPublishGerritAction } from './gerrit';
 export { createPublishGithubAction } from './github';
 export { createPublishGithubPullRequestAction } from './githubPullRequest';
 export type {
