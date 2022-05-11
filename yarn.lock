@@ -16170,9 +16170,9 @@ kafkajs@^1.16.0-beta.6:
   integrity sha512-+Rcfu2hyQ/jv5skqRY8xA7Ra+mmRkDAzCaLDYbkGtgsNKpzxPWiLbk8ub0dgr4EbWrN1Zb4BCXHUkD6+zYfdWg==
 
 keyv-memcache@^1.2.5:
-  version "1.2.9"
-  resolved "https://registry.npmjs.org/keyv-memcache/-/keyv-memcache-1.2.9.tgz#68776b098233e4305ec729fbeb5ad5905f6ac914"
-  integrity sha512-hcHeihL/LjAhP1qvLSWuwCxDQlSkkGwlvH7RfIIO+57s7J5dhFLQQko1WcAbcd1jlxV6iPHAEvkDwp8c7XQzgA==
+  version "1.3.3"
+  resolved "https://registry.npmjs.org/keyv-memcache/-/keyv-memcache-1.3.3.tgz#07343ae4e4cc1373ecca83657c246c616f9b0b7d"
+  integrity sha512-7k+0Ju2KPkS+a22MdgUW/MPAYyo736joxfrWFUsgiUY7ssu/tT6hxfWjxubQBNeG93dHRTBAF0oFUtSSVYTW0Q==
   dependencies:
     json-buffer "^3.0.1"
     memjs "^1.3.0"
