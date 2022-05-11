@@ -56,7 +56,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@rjsf/core": "^3.2.1",
-    "@rjsf/material-ui": "^3.2.1",
+    "@rjsf/material-ui": "^4.0.0",
     "@types/json-schema": "^7.0.9",
     "@uiw/react-codemirror": "^4.7.0",
     "classnames": "^2.2.6",
