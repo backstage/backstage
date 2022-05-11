@@ -20,9 +20,11 @@ import type {
   FetchResponse,
   KubernetesFetchError,
   KubernetesRequestBody,
+  CustomResourcesKubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
+import { Entity } from '@backstage/catalog-model';
 
 export interface ObjectFetchParams {
   serviceId: string;
@@ -92,7 +94,7 @@ export interface KubernetesClustersSupplier {
 
 // Used to locate which cluster(s) a service is running on
 export interface KubernetesServiceLocator {
-  getClustersByServiceId(serviceId: string): Promise<ClusterDetails[]>;
+  getClustersByServiceId(entity: Entity): Promise<ClusterDetails[]>;
 }
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
@@ -162,9 +164,13 @@ export interface KubernetesObjectsProviderOptions {
 }
 
 export type ObjectsByEntityRequest = KubernetesRequestBody;
+export type CustomResourcesByEntityRequest = CustomResourcesKubernetesRequestBody;
 
 export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
     request: ObjectsByEntityRequest,
+  ): Promise<ObjectsByEntityResponse>;
+  getCustomResourcesByEntity(
+    request: CustomResourcesByEntityRequest,
   ): Promise<ObjectsByEntityResponse>;
 }

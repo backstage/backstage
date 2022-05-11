@@ -30,6 +30,7 @@ import {
   KubernetesFetcher,
   KubernetesServiceLocator,
   KubernetesObjectsProviderOptions,
+  CustomResourcesByEntityRequest
 } from '../types/types';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
@@ -223,6 +224,8 @@ export class KubernetesBuilder {
     const router = Router();
     router.use(express.json());
 
+    // Deprecated, will be removed soon
+    // see https://github.com/backstage/backstage/issues/11309
     router.post('/services/:serviceId', async (req, res) => {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
@@ -234,6 +237,38 @@ export class KubernetesBuilder {
       } catch (e) {
         logger.error(
           `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
+        );
+        res.status(500).json({ error: e.message });
+      }
+    });
+
+    router.post('/resources/workloads', async (req, res) => {
+      const requestBody: ObjectsByEntityRequest = req.body;
+      const entityName = requestBody.entity.metadata.name
+      try {
+        const response = await objectsProvider.getKubernetesObjectsByEntity(
+          requestBody,
+        );
+        res.json(response);
+      } catch (e) {
+        logger.error(
+          `action=/resources/workloads entityName=${entityName}, error=${e}`,
+        );
+        res.status(500).json({ error: e.message });
+      }
+    });
+
+    router.post('/resources/custom', async (req, res) => {
+      const requestBody: CustomResourcesByEntityRequest = req.body;
+      const entityName = requestBody.entity.metadata.name
+      try {
+        const response = await objectsProvider.getKubernetesObjectsByEntity(
+          requestBody,
+        );
+        res.json(response);
+      } catch (e) {
+        logger.error(
+          `action=/resources/custom entityName=${entityName}, error=${e}`,
         );
         res.status(500).json({ error: e.message });
       }

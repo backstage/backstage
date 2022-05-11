@@ -28,6 +28,16 @@ import {
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
+export interface CustomResourceMatcher {
+  group: string
+  apiVersion: string
+  plural: string
+}
+
+export interface CustomResourcesKubernetesRequestBody extends KubernetesRequestBody {
+  customResources: []
+}
+
 export interface KubernetesRequestBody {
   auth?: {
     google?: string;
