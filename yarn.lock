@@ -2245,10 +2245,10 @@
     teeny-request "^7.1.3"
     xdg-basedir "^4.0.0"
 
-"@graphiql/toolkit@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.4.3.tgz#2653d045693d902f7faaf87b9047e8786397ec48"
-  integrity sha512-L0l6BezvTXmWZhtdmZxirhYwKzcZToAciQY0A13KRAWSpJ9bb/ZdkBpcz3fOXrsjuJHf0wBr6Vk9kztJ6lV7uA==
+"@graphiql/toolkit@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.4.4.tgz#c5f2cd0d7fc47707f68406655836aedc5e6ca2b1"
+  integrity sha512-HrppQ5u0uJPYpImLqQUJWNrS9E97Cmz8DO3Dn0dXeCg1iBoKjRnZoFf2rjFF5ge9Uc9RihL181Uph/Iw9YYMFg==
   dependencies:
     "@n1ru4l/push-pull-async-iterable-iterator" "^3.1.0"
     meros "^1.1.4"
@@ -13410,11 +13410,11 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.5.12, graphiql@^1.8.8:
-  version "1.8.8"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.8.8.tgz#eef760097b20901c0427f831ee6403fbdb2711b8"
-  integrity sha512-0AwnT7YnLU0Y+rQSZgdL7HxFJtAC2emyQAzsaqTglur/gSqw+4115LYi9tNRLGnFpxGE8giTslYLh9P0RdhiWg==
+  version "1.8.9"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.8.9.tgz#96063ace9379699e873da078bf0f2ae7062f370e"
+  integrity sha512-X+olqol3VfOrFrsAfYzgNbvHoEE0lDUtg52+f3yLeNY4Ens+rAH4RSdH4wVtoRdh3CafmhVsfLQvn04hHkgftQ==
   dependencies:
-    "@graphiql/toolkit" "^0.4.3"
+    "@graphiql/toolkit" "^0.4.4"
     codemirror "^5.65.3"
     codemirror-graphql "^1.3.0"
     copy-to-clipboard "^3.2.0"
