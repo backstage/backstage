@@ -20,6 +20,7 @@
     "@backstage/plugin-apache-airflow": "^0.1.10-next.0",
     "@backstage/plugin-badges": "^0.2.26-next.0",
     "@backstage/plugin-catalog": "^0.10.0-next.0",
+    "@backstage/plugin-catalog-grid": "^0.10.0-next.0",
     "@backstage/plugin-catalog-common": "^0.2.2-next.0",
     "@backstage/plugin-catalog-graph": "^0.2.14-next.0",
     "@backstage/plugin-catalog-import": "^0.8.5-next.0",
