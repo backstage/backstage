@@ -16,20 +16,21 @@
 
 import { Config } from '@backstage/config';
 import fetch from 'cross-fetch';
+import { getVaultConfig, VaultConfig } from '../config';
 
-type VaultSecretList = {
+export type VaultSecretList = {
   data: {
     keys: string[];
   };
 };
 
-type Secret = {
+export type Secret = {
   name: string;
   showUrl: string;
   editUrl: string;
 };
 
-type RenewTokenResponse = {
+export type RenewTokenResponse = {
   auth: {
     client_token: string;
   };
@@ -42,17 +43,10 @@ export interface VaultApi {
 }
 
 export class VaultClient implements VaultApi {
-  private readonly vaultUrl: string;
-  private vaultToken: string;
-  private readonly kvVersion: number;
-  private readonly secretEngineName: string;
+  private vaultConfig: VaultConfig;
 
   constructor({ config }: { config: Config }) {
-    this.vaultUrl = config.getString('vault.sourceUrl');
-    this.vaultToken = config.getString('vault.token');
-    this.kvVersion = config.getOptionalNumber('vault.kvVersion') ?? 2;
-    this.secretEngineName =
-      config.getOptionalString('vault.secretEngine') ?? 'secrets';
+    this.vaultConfig = getVaultConfig(config);
   }
 
   private async callApi<T>(
@@ -61,12 +55,14 @@ export class VaultClient implements VaultApi {
     method: string = 'GET',
   ): Promise<T | undefined> {
     const response = await fetch(
-      `${this.vaultUrl}/${path}?${new URLSearchParams(query).toString()}`,
+      `${this.vaultConfig.sourceUrl}/${path}?${new URLSearchParams(
+        query,
+      ).toString()}`,
       {
         method,
         headers: {
           Accept: 'application/json',
-          'X-Vault-Token': this.vaultToken,
+          'X-Vault-Token': this.vaultConfig.token,
         },
       },
     );
@@ -82,14 +78,14 @@ export class VaultClient implements VaultApi {
   }
 
   getFrontendSecretsUrl(): string {
-    return `${this.vaultUrl}/ui/vault/secrets/${this.secretEngineName}`;
+    return `${this.vaultConfig.sourceUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}`;
   }
 
   async listSecrets(secretPath: string): Promise<Secret[]> {
     const listUrl =
-      this.kvVersion === 2
-        ? `v1/${this.secretEngineName}/metadata/${secretPath}`
-        : `v1/${this.secretEngineName}/${secretPath}`;
+      this.vaultConfig.kvVersion === 2
+        ? `v1/${this.vaultConfig.secretEngine}/metadata/${secretPath}`
+        : `v1/${this.vaultConfig.secretEngine}/${secretPath}`;
     const result = await this.callApi<VaultSecretList>(listUrl, { list: true });
     if (!result) {
       return [];
@@ -105,8 +101,8 @@ export class VaultClient implements VaultApi {
         } else {
           secrets.push({
             name: secret,
-            editUrl: `${this.vaultUrl}/ui/vault/secrets/${this.secretEngineName}/edit/${secretPath}/${secret}`,
-            showUrl: `${this.vaultUrl}/ui/vault/secrets/${this.secretEngineName}/show/${secretPath}/${secret}`,
+            editUrl: `${this.vaultConfig.sourceUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
+            showUrl: `${this.vaultConfig.sourceUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
           });
         }
       }),
@@ -125,7 +121,7 @@ export class VaultClient implements VaultApi {
       return false;
     }
 
-    this.vaultToken = result.auth.client_token;
+    this.vaultConfig.token = result.auth.client_token;
     return true;
   }
 }

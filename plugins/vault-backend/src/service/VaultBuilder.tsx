@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import express, { Router } from 'express';
@@ -58,8 +59,6 @@ export class VaultBuilder {
 
     const router = this.buildRouter(this.vaultClient);
 
-    await this.renewToken(this.vaultClient);
-
     return {
       router: router,
     };
@@ -96,6 +95,11 @@ export class VaultBuilder {
   protected buildRouter(vaultClient: VaultClient): express.Router {
     const router = Router();
     router.use(express.json());
+
+    router.get('/health', (_, response) => {
+      this.env.logger.info('PONG!');
+      response.send({ status: 'ok' });
+    });
 
     router.get('/v1/secrets', async (req, res) => {
       const path = req.query.path;
