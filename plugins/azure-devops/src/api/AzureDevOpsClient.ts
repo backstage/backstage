@@ -18,6 +18,7 @@ import {
   BuildRun,
   BuildRunOptions,
   DashboardPullRequest,
+  GitTag,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
@@ -55,6 +56,18 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     )}/${encodeURIComponent(repoName)}?${queryString}`;
 
     const items = await this.get<RepoBuild[]>(urlSegment);
+    return { items };
+  }
+
+  public async getGitTags(
+    projectName: string,
+    repoName: string,
+  ): Promise<{ items: GitTag[] }> {
+    const urlSegment = `git-tags/${encodeURIComponent(
+      projectName,
+    )}/${encodeURIComponent(repoName)}`;
+
+    const items = await this.get<GitTag[]>(urlSegment);
     return { items };
   }
 

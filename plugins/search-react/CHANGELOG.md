@@ -1,5 +1,14 @@
 # @backstage/plugin-search-react
 
+## 0.2.0-next.2
+
+### Patch Changes
+
+- 3a74e203a8: Updated search result components to support rendering content with highlighted matched terms
+- Updated dependencies
+  - @backstage/plugin-search-common@0.3.4-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
 ## 0.2.0-next.1
 
 ### Minor Changes

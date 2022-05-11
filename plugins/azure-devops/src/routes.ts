@@ -24,6 +24,10 @@ export const azurePipelinesEntityContentRouteRef = createRouteRef({
   id: 'azure-pipelines-entity-content',
 });
 
+export const azureGitTagsEntityContentRouteRef = createRouteRef({
+  id: 'azure-git-tags-entity-content',
+});
+
 export const azurePullRequestsEntityContentRouteRef = createRouteRef({
   id: 'azure-pull-requests-entity-content',
 });

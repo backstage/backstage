@@ -20,6 +20,22 @@ import lodash from 'lodash';
 import { RecursivePartial } from '../../util/RecursivePartial';
 import { parseStringsParam } from './common';
 
+function getPathArrayAndValue(input: Entity, field: string) {
+  return field.split('.').reduce(
+    ([pathArray, inputSubset], pathPart, index, fieldParts) => {
+      if (lodash.hasIn(inputSubset, pathPart)) {
+        return [pathArray.concat(pathPart), inputSubset[pathPart]];
+      } else if (fieldParts[index + 1] !== undefined) {
+        fieldParts[index + 1] = `${pathPart}.${fieldParts[index + 1]}`;
+        return [pathArray, inputSubset];
+      }
+
+      return [pathArray, undefined];
+    },
+    [[] as string[], input as any],
+  );
+}
+
 export function parseEntityTransformParams(
   params: Record<string, unknown>,
 ): ((entity: Entity) => Entity) | undefined {
@@ -46,9 +62,10 @@ export function parseEntityTransformParams(
     const output: RecursivePartial<Entity> = {};
 
     for (const field of fields) {
-      const value = lodash.get(input, field);
+      const [pathArray, value] = getPathArrayAndValue(input, field);
+
       if (value !== undefined) {
-        lodash.set(output, field, value);
+        lodash.set(output, pathArray, value);
       }
     }
 

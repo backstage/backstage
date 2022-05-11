@@ -32,6 +32,7 @@ export class LunrSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.builder = new lunr.Builder();
     this.builder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
     this.builder.searchPipeline.add(lunr.stemmer);
+    this.builder.metadataWhitelist = ['position'];
   }
 
   // No async initialization required.

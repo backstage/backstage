@@ -46,6 +46,7 @@ const techdocsApi = {
 
 const techdocsStorageApi = {
   getApiOrigin: jest.fn(),
+  getBaseUrl: jest.fn(),
   getEntityDocs: jest.fn(),
   syncEntityDocs: jest.fn(),
 };
@@ -64,14 +65,18 @@ type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
   : never;
 
 /** @ignore */
-type TechdocsAddonTesterApis<T> = TechDocsAddonTesterTestApiPair<T>[];
+type TechdocsAddonTesterApis<TApiPairs> = {
+  [TIndex in keyof TApiPairs]: TechDocsAddonTesterTestApiPair<
+    TApiPairs[TIndex]
+  >;
+};
 
 type TechDocsAddonTesterOptions = {
   dom: ReactElement;
   entity: Partial<TechDocsEntityMetadata>;
   metadata: Partial<TechDocsMetadata>;
   componentId: string;
-  apis: TechdocsAddonTesterApis<any>;
+  apis: TechdocsAddonTesterApis<any[]>;
   path: string;
 };
 
@@ -119,11 +124,12 @@ export class TechDocsAddonTester {
     return new TechDocsAddonTester(addons);
   }
 
-  private constructor(addons: ReactElement[]) {
+  // Protected in order to allow extension but not direct instantiation.
+  protected constructor(addons: ReactElement[]) {
     this.addons = addons;
   }
 
-  withApis<T>(apis: TechdocsAddonTesterApis<T>) {
+  withApis<T extends any[]>(apis: TechdocsAddonTesterApis<T>) {
     const refs = apis.map(([ref]) => ref);
     this.options.apis = this.options.apis
       .filter(([ref]) => !refs.includes(ref))
@@ -152,7 +158,7 @@ export class TechDocsAddonTester {
   }
 
   build() {
-    const apis: TechdocsAddonTesterApis<any> = [
+    const apis: TechdocsAddonTesterApis<any[]> = [
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
@@ -179,7 +185,9 @@ export class TechDocsAddonTester {
     techdocsStorageApi.getApiOrigin.mockResolvedValue(
       'https://backstage.example.com/api/techdocs',
     );
-
+    techdocsStorageApi.getBaseUrl.mockResolvedValue(
+      `https://backstage.example.com/api/techdocs/${entityName.namespace}/${entityName.kind}/${entityName.name}/${this.options.path}`,
+    );
     techdocsStorageApi.getEntityDocs.mockResolvedValue(
       renderToStaticMarkup(this.options.dom || defaultDom),
     );
