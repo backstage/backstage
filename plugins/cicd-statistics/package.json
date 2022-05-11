@@ -33,7 +33,7 @@
     "start": "backstage-cli package start"
   },
   "devDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.0.0",
     "@types/luxon": "^2.0.5"
   },
   "dependencies": {

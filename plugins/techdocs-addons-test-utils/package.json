@@ -51,7 +51,7 @@
     "testing-library__dom": "^7.29.4-beta.1"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.0.0",
     "react": "^16.13.1 || ^17.0.0",
     "react-dom": "^16.13.1 || ^17.0.0"
   },

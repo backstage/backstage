@@ -56,7 +56,7 @@
     "yup": "^0.32.9"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.0.0",
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {

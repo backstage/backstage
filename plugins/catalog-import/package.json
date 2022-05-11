@@ -56,7 +56,7 @@
     "yaml": "^1.10.0"
   },
   "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^18.0.0",
     "react": "^16.13.1 || ^17.0.0"
   },
   "devDependencies": {
