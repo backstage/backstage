@@ -338,24 +338,26 @@ async function updateBackstageReleaseVersion(repo, type) {
  * generates a new patch changeset for create-app.
  */
 async function ensureCreateAppChangeset() {
-  process.chdir(path.resolve(__dirname, '../.changeset'));
-
-  const fileNames = await fs.readdir('.');
+  const changesetPath = path.resolve(__dirname, '../.changeset');
+  const fileNames = await fs.readdir(changesetPath);
   const changesetNames = fileNames.filter(
     name => name.endsWith('.md') && name !== 'README.md',
   );
 
   const changesets = await Promise.all(
     changesetNames.map(async name => {
-      const content = await fs.readFile(name, 'utf8');
+      const content = await fs.readFile(path.join(changesetPath, name), 'utf8');
       return { name, ...parseChangeset(content) };
     }),
   );
 
   let excludeList = [];
-  if (await fs.pathExists('pre.json')) {
-    const data = await fs.readJSON('pre.json');
-    excludeList = data.changesets.map(name => `${name}.md`);
+  const prePath = path.resolve(changesetPath, 'pre.json');
+  if (await fs.pathExists(prePath)) {
+    const data = await fs.readJSON(prePath);
+    // Only exclude changesets in pre-release mode.
+    excludeList =
+      data.mode === 'pre' ? data.changesets.map(name => `${name}.md`) : [];
   }
   const hasCreateAppChanges = changesets
     .filter(({ name }) => !excludeList.includes(name))
@@ -379,7 +381,7 @@ async function ensureCreateAppChangeset() {
 '@backstage/create-app': patch
 ---\n
 Bumped create-app version.\n`;
-  await fs.writeFile(fileName, data);
+  await fs.writeFile(path.join(changesetPath, fileName), data);
 }
 
 async function main() {
