@@ -65,14 +65,18 @@ type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
   : never;
 
 /** @ignore */
-type TechdocsAddonTesterApis<T> = TechDocsAddonTesterTestApiPair<T>[];
+type TechdocsAddonTesterApis<TApiPairs> = {
+  [TIndex in keyof TApiPairs]: TechDocsAddonTesterTestApiPair<
+    TApiPairs[TIndex]
+  >;
+};
 
 type TechDocsAddonTesterOptions = {
   dom: ReactElement;
   entity: Partial<TechDocsEntityMetadata>;
   metadata: Partial<TechDocsMetadata>;
   componentId: string;
-  apis: TechdocsAddonTesterApis<any>;
+  apis: TechdocsAddonTesterApis<any[]>;
   path: string;
 };
 
@@ -125,7 +129,7 @@ export class TechDocsAddonTester {
     this.addons = addons;
   }
 
-  withApis<T>(apis: TechdocsAddonTesterApis<T>) {
+  withApis<T extends any[]>(apis: TechdocsAddonTesterApis<T>) {
     const refs = apis.map(([ref]) => ref);
     this.options.apis = this.options.apis
       .filter(([ref]) => !refs.includes(ref))
@@ -154,7 +158,7 @@ export class TechDocsAddonTester {
   }
 
   build() {
-    const apis: TechdocsAddonTesterApis<any> = [
+    const apis: TechdocsAddonTesterApis<any[]> = [
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
