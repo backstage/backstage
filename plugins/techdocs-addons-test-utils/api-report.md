@@ -10,31 +10,23 @@ import { screen as screen_2 } from 'testing-library__dom';
 import { TechDocsEntityMetadata } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata } from '@backstage/plugin-techdocs-react';
 
-// @public (undocumented)
+// @public
 export class TechDocsAddonTester {
   protected constructor(addons: ReactElement[]);
-  // (undocumented)
   atPath(path: string): this;
-  // (undocumented)
   build(): React_2.ReactElement<
     any,
     string | React_2.JSXElementConstructor<any>
   >;
-  // (undocumented)
   static buildAddonsInTechDocs(addons: ReactElement[]): TechDocsAddonTester;
-  // (undocumented)
   renderWithEffects(): Promise<
     typeof screen_2 & {
       shadowRoot: ShadowRoot | null;
     }
   >;
-  // (undocumented)
   withApis<T extends any[]>(apis: TechdocsAddonTesterApis<T>): this;
-  // (undocumented)
   withDom(dom: ReactElement): this;
-  // (undocumented)
   withEntity(entity: Partial<TechDocsEntityMetadata>): this;
-  // (undocumented)
   withMetadata(metadata: Partial<TechDocsMetadata>): this;
 }
 ```
