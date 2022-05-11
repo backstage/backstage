@@ -109,7 +109,7 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
               title: 'Owner',
               field: 'createdBy',
               render: row => (
-                <OwnerEntityColumn entityRef={row.spec?.createdBy} />
+                <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
               ),
             },
             {

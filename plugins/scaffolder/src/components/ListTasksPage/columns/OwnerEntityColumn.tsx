@@ -39,7 +39,10 @@ export const OwnerEntityColumn = ({ entityRef }: { entityRef?: string }) => {
   return (
     <Link to={catalogEntityRoute(parseEntityRef(entityRef || ''))}>
       <ListItemText
-        primary={(value as UserEntity)?.spec?.profile?.displayName}
+        primary={
+          (value as UserEntity)?.spec?.profile?.displayName ??
+          value?.metadata.name
+        }
       />
     </Link>
   );

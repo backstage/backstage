@@ -100,7 +100,7 @@ export class DatabaseTaskStore implements TaskStore {
       id: result.id,
       spec: JSON.parse(result.spec),
       status: result.status,
-      createdBy: result.created_by,
+      createdBy: result.created_by ?? undefined,
       lastHeartbeatAt:
         typeof result.last_heartbeat_at === 'string'
           ? DateTime.fromSQL(result.last_heartbeat_at, {
@@ -156,8 +156,6 @@ export class DatabaseTaskStore implements TaskStore {
       secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
       created_by: options.createdBy ?? null,
       status: 'open',
-      created_by:
-        ('createdBy' in options.spec && options.spec.createdBy) || null,
     });
     return { taskId };
   }

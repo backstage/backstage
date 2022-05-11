@@ -129,19 +129,6 @@ export async function createRouter(
   actionsToRegister.forEach(action => actionRegistry.register(action));
   workers.forEach(worker => worker.start());
 
-  const getUserEntityRefFromToken = (backstageToken: string) => {
-    try {
-      const [_header, payload, _signature] = backstageToken.split('.');
-      const parsedToken = JSON.parse(Buffer.from(payload, 'base64').toString());
-
-      return parsedToken.sub;
-    } catch (e) {
-      logger.warn('Could not parse token from request to create template');
-      logger.debug(e);
-      return null;
-    }
-  };
-
   router
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
@@ -220,8 +207,6 @@ export async function createRouter(
 
       const baseUrl = getEntityBaseUrl(template);
 
-      const createdBy = token && getUserEntityRefFromToken(token);
-
       const taskSpec: TaskSpec = {
         apiVersion: template.apiVersion,
         steps: template.spec.steps.map((step, index) => ({
@@ -243,7 +228,6 @@ export async function createRouter(
           }),
           baseUrl,
         },
-        createdBy,
       };
 
       const result = await taskBroker.dispatch({

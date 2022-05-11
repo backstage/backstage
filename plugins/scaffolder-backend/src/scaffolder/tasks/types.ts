@@ -49,7 +49,6 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
-  createdBy: string | null;
 };
 
 /**

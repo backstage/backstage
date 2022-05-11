@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
+import { UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
@@ -220,7 +221,9 @@ describe('StorageTaskBroker', () => {
   it('should list only tasks createdBy a specific user', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch({
-      spec: { createdBy: 'user:default/foo' } as TaskSpec,
+      spec: {
+        user: { ref: 'user:default/foo', entity: {} as UserEntity },
+      } as TaskSpec,
     });
 
     const task = await storage.getTask(taskId);
