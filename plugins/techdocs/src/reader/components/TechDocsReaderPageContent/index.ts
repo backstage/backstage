@@ -16,5 +16,8 @@
 
 export { TechDocsReaderPageContent, Reader } from './TechDocsReaderPageContent';
 export type { TechDocsReaderPageContentProps } from './TechDocsReaderPageContent';
-export * from './context';
-export * from './dom';
+export { TechDocsReaderProvider } from './context';
+export type {
+  TechDocsReaderProviderRenderFunction,
+  TechDocsReaderProviderProps,
+} from './context';
