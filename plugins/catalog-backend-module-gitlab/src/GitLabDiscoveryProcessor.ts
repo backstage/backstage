@@ -41,8 +41,12 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly cache: CacheClient;
+  private readonly checkFileExistence: boolean;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: { logger: Logger; checkFileExistence?: boolean },
+  ): GitLabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
     const pluginCache =
       CacheManager.fromConfig(config).forPlugin('gitlab-discovery');
@@ -58,10 +62,12 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     integrations: ScmIntegrationRegistry;
     pluginCache: PluginCacheManager;
     logger: Logger;
+    checkFileExistence?: boolean;
   }) {
     this.integrations = options.integrations;
     this.cache = options.pluginCache.getClient();
     this.logger = options.logger;
+    this.checkFileExistence = options.checkFileExistence || false;
   }
 
   getProcessorName(): string {
@@ -112,6 +118,20 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
 
       if (branch === '*' && project.default_branch === undefined) {
         continue;
+      }
+
+      if (this.checkFileExistence) {
+        const project_branch = branch === '*' ? project.default_branch : branch;
+
+        const projectHasFile: boolean = await client.hasFile(
+          project.path_with_namespace,
+          project_branch,
+          catalogPath,
+        );
+
+        if (!projectHasFile) {
+          continue;
+        }
       }
 
       res.matches.push(project);
