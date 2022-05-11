@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+export { TechDocsReaderProvider } from './TechDocsReaderProvider';
+export type {
+  TechDocsReaderProviderRenderFunction,
+  TechDocsReaderProviderProps,
+} from './TechDocsReaderProvider';
 export type {
   TechDocsReaderPageProps,
   TechDocsReaderLayoutProps,

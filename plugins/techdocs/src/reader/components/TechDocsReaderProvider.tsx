@@ -23,7 +23,7 @@ import React, {
 import { useParams } from 'react-router-dom';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
-import { useReaderState, ReaderState } from '../useReaderState';
+import { useReaderState, ReaderState } from './useReaderState';
 
 const TechDocsReaderContext = createContext<ReaderState>({} as ReaderState);
 

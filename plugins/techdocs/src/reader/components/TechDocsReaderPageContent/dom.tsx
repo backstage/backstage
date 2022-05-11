@@ -28,7 +28,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
 
-import { useTechDocsReader } from './context';
+import { useTechDocsReader } from '../TechDocsReaderProvider';
 
 import {
   addBaseUrl,
