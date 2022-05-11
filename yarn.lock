@@ -4982,9 +4982,9 @@
     zustand "3.6.9"
 
 "@roadiehq/backstage-plugin-github-pull-requests@^2.0.0":
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-2.1.1.tgz#90bc2e82c47ddf5fe40063ddcfff9efdb464f046"
-  integrity sha512-/855fB7F0Ss4h7iTayBu/SVbWLM5iw3401ER5uWf1IoSpXorJECEW0lfzroJtWMGse6LfNfbuWqTKnp2vTSosg==
+  version "2.1.2"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-2.1.2.tgz#1c8289679bb109a70c30b5ba090ea7d751553764"
+  integrity sha512-VXv1D1JhifX0B9nukxFa61MyXouPTXEYkeNwYB+Y3e0VfoPEGzAeE/Ub23rP8aVcYsbuyCA+6u/HQsrw6Vgpxw==
   dependencies:
     "@backstage/catalog-model" "^1.0.0"
     "@backstage/core-components" "^0.9.0"
