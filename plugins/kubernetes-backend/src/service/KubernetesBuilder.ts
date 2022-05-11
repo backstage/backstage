@@ -30,7 +30,7 @@ import {
   KubernetesFetcher,
   KubernetesServiceLocator,
   KubernetesObjectsProviderOptions,
-  CustomResourcesByEntityRequest
+  CustomResourcesByEntityRequest,
 } from '../types/types';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
@@ -244,7 +244,7 @@ export class KubernetesBuilder {
 
     router.post('/resources/workloads', async (req, res) => {
       const requestBody: ObjectsByEntityRequest = req.body;
-      const entityName = requestBody.entity.metadata.name
+      const entityName = requestBody.entity.metadata.name;
       try {
         const response = await objectsProvider.getKubernetesObjectsByEntity(
           requestBody,
@@ -260,7 +260,7 @@ export class KubernetesBuilder {
 
     router.post('/resources/custom', async (req, res) => {
       const requestBody: CustomResourcesByEntityRequest = req.body;
-      const entityName = requestBody.entity.metadata.name
+      const entityName = requestBody.entity.metadata.name;
       try {
         const response = await objectsProvider.getKubernetesObjectsByEntity(
           requestBody,

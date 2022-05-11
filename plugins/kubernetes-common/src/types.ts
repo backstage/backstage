@@ -28,14 +28,32 @@ import {
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
-export interface CustomResourceMatcher {
-  group: string
-  apiVersion: string
-  plural: string
+export interface ObjectToFetch {
+  objectType: KubernetesObjectTypes;
+  group: string;
+  apiVersion: string;
+  plural: string;
 }
 
-export interface CustomResourcesKubernetesRequestBody extends KubernetesRequestBody {
-  customResources: []
+export interface CustomResource extends ObjectToFetch {
+  objectType: 'customresources';
+}
+
+export type KubernetesObjectTypes =
+  | 'pods'
+  | 'services'
+  | 'configmaps'
+  | 'deployments'
+  | 'replicasets'
+  | 'horizontalpodautoscalers'
+  | 'jobs'
+  | 'cronjobs'
+  | 'ingresses'
+  | 'customresources';
+
+export interface CustomResourcesKubernetesRequestBody
+  extends KubernetesRequestBody {
+  customResources: Omit<CustomResource, 'objectType'>[];
 }
 
 export interface KubernetesRequestBody {

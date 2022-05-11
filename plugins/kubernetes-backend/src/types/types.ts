@@ -22,6 +22,8 @@ import type {
   KubernetesRequestBody,
   CustomResourcesKubernetesRequestBody,
   ObjectsByEntityResponse,
+  CustomResource,
+  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
 import { Entity } from '@backstage/catalog-model';
@@ -55,31 +57,6 @@ export interface FetchResponseWrapper {
   errors: KubernetesFetchError[];
   responses: FetchResponse[];
 }
-
-// TODO fairly sure there's a easier way to do this
-
-export interface ObjectToFetch {
-  objectType: KubernetesObjectTypes;
-  group: string;
-  apiVersion: string;
-  plural: string;
-}
-
-export interface CustomResource extends ObjectToFetch {
-  objectType: 'customresources';
-}
-
-export type KubernetesObjectTypes =
-  | 'pods'
-  | 'services'
-  | 'configmaps'
-  | 'deployments'
-  | 'replicasets'
-  | 'horizontalpodautoscalers'
-  | 'jobs'
-  | 'cronjobs'
-  | 'ingresses'
-  | 'customresources';
 
 // Used to load cluster details from different sources
 export interface KubernetesClustersSupplier {
@@ -164,7 +141,8 @@ export interface KubernetesObjectsProviderOptions {
 }
 
 export type ObjectsByEntityRequest = KubernetesRequestBody;
-export type CustomResourcesByEntityRequest = CustomResourcesKubernetesRequestBody;
+export type CustomResourcesByEntityRequest =
+  CustomResourcesKubernetesRequestBody;
 
 export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
