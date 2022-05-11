@@ -4918,10 +4918,10 @@
   resolved "https://registry.npmjs.org/@repeaterjs/repeater/-/repeater-3.0.4.tgz#a04d63f4d1bf5540a41b01a921c9a7fddc3bd1ca"
   integrity sha512-AW8PKd6iX3vAZ0vA43nOUOnbq/X5ihgU+mSXXqunMkeQADGiqw/PY0JNeYtD5sr0PAy51YPgAPbDoeapv9r8WA==
 
-"@rjsf/core@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-3.2.1.tgz#8a7b24c9a6f01f0ecb093fdfc777172c12b1b009"
-  integrity sha512-dk8ihvxFbcuIwU7G+HiJbFgwyIvaumPt5g5zfnuC26mwTUPlaDGFXKK2yITp8tJ3+hcwS5zEXtAN9wUkfuM4jA==
+"@rjsf/core@^4.0.0":
+  version "4.2.0"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-4.2.0.tgz#9ec807737039b5f63433682f332ecbcd6067a847"
+  integrity sha512-bGWWCZjXHhBCkzag1Yh6F7a15/D6AqKRyks1szYWdCe+4jwWU3maC3apUxHJlHFRz3V1aBW6j6i/UB6zHmFXLQ==
   dependencies:
     "@types/json-schema" "^7.0.7"
     ajv "^6.7.0"

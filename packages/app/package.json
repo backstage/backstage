@@ -81,7 +81,7 @@
   },
   "devDependencies": {
     "@backstage/test-utils": "^1.1.0-next.2",
-    "@rjsf/core": "^3.2.1",
+    "@rjsf/core": "^4.0.0",
     "@testing-library/cypress": "^8.0.2",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
