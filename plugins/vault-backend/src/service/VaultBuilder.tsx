@@ -97,7 +97,6 @@ export class VaultBuilder {
     router.use(express.json());
 
     router.get('/health', (_, response) => {
-      this.env.logger.info('PONG!');
       response.send({ status: 'ok' });
     });
 

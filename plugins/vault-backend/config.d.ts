@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-/** Configuration for the Jira plugin */
+/** Configuration for the Vault plugin */
 export interface Config {
   vault?: {
     /**
-     * The sourceUrl for your Vault instance.
+     * The baseUrl for your Vault instance.
      */
-    sourceUrl: string;
+    baseUrl: string;
 
     /**
      * The token used by Backstage to access Vault.

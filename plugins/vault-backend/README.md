@@ -62,7 +62,7 @@ To get started, first you need a running instance of Vault. You can follow [this
 
    ```yaml
    vault:
-     sourceUrl: http://your-vault-url
+     baseUrl: http://your-vault-url
      token: <VAULT_TOKEN>
      secretEngine: 'customSecretEngine' # Optional. By default it uses 'secrets'
      kvVersion: <kv-version> # Optional. The K/V version that your instance is using. The available options are '1' or '2'

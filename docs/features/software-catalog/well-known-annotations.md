@@ -362,9 +362,9 @@ metadata:
     vault.io/secrets-path: test/backstage
 ```
 
-The value of this annotation contains the vault that vault curator is using to fetch
-all the relative secrets for a component. If not present when the Vault plugin is in use,
-a message will be shown instead, letting the user know what is missing in the `catalog-info.yaml`.
+The value of this annotation contains the path to the secrets of the entity in
+Vault. If not present when the Vault plugin is in use, a message will be shown
+instead, letting the user know what is missing in the `catalog-info.yaml`.
 
 ## Deprecated Annotations
 

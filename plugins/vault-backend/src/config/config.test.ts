@@ -32,14 +32,14 @@ describe('GetVaultConfig', () => {
   it('loads default params', () => {
     const config = new ConfigReader({
       vault: {
-        sourceUrl: 'http://www.example.com',
+        baseUrl: 'http://www.example.com',
         token: '123',
       },
     });
 
     const vaultConfig = getVaultConfig(config);
     expect(vaultConfig).toStrictEqual({
-      sourceUrl: 'http://www.example.com',
+      baseUrl: 'http://www.example.com',
       token: '123',
       kvVersion: 2,
       secretEngine: 'secrets',
@@ -49,7 +49,7 @@ describe('GetVaultConfig', () => {
   it('loads custom params', () => {
     const config = new ConfigReader({
       vault: {
-        sourceUrl: 'http://www.example.com',
+        baseUrl: 'http://www.example.com',
         token: '123',
         kvVersion: 1,
         secretEngine: 'test',
@@ -58,7 +58,7 @@ describe('GetVaultConfig', () => {
 
     const vaultConfig = getVaultConfig(config);
     expect(vaultConfig).toStrictEqual({
-      sourceUrl: 'http://www.example.com',
+      baseUrl: 'http://www.example.com',
       token: '123',
       kvVersion: 1,
       secretEngine: 'test',

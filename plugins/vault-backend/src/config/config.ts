@@ -23,9 +23,9 @@ import { Config } from '@backstage/config';
  */
 export interface VaultConfig {
   /**
-   * The sourceUrl for your Vault instance.
+   * The baseUrl for your Vault instance.
    */
-  sourceUrl: string;
+  baseUrl: string;
 
   /**
    * The token used by Backstage to access Vault.
@@ -52,7 +52,7 @@ export interface VaultConfig {
  */
 export function getVaultConfig(config: Config): VaultConfig {
   return {
-    sourceUrl: config.getString('vault.sourceUrl'),
+    baseUrl: config.getString('vault.baseUrl'),
     token: config.getString('vault.token'),
     kvVersion: config.getOptionalNumber('vault.kvVersion') ?? 2,
     secretEngine: config.getOptionalString('vault.secretEngine') ?? 'secrets',

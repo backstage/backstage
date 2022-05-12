@@ -29,7 +29,7 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       config: new ConfigReader({
         vault: {
-          sourceUrl: 'https://www.example.com',
+          baseUrl: 'https://www.example.com',
           token: '1234567890',
         },
       }),

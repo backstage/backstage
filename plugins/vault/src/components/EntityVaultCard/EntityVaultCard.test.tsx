@@ -22,7 +22,7 @@ import { render } from '@testing-library/react';
 import { EntityVaultCard } from './EntityVaultCard';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
-describe('EntityVautCard', () => {
+describe('EntityVaultCard', () => {
   const server = setupServer();
   setupRequestMockHandlers(server);
   const entityAnnotationMissing: ComponentEntity = {

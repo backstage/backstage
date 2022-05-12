@@ -27,7 +27,7 @@ describe('VaultApi', () => {
   const mockBaseUrl = 'https://api-vault.com';
   const config = new ConfigReader({
     vault: {
-      sourceUrl: mockBaseUrl,
+      baseUrl: mockBaseUrl,
       token: '1234567890',
     },
   });

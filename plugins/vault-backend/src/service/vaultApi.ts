@@ -55,7 +55,7 @@ export class VaultClient implements VaultApi {
     method: string = 'GET',
   ): Promise<T | undefined> {
     const response = await fetch(
-      `${this.vaultConfig.sourceUrl}/${path}?${new URLSearchParams(
+      `${this.vaultConfig.baseUrl}/${path}?${new URLSearchParams(
         query,
       ).toString()}`,
       {
@@ -78,7 +78,7 @@ export class VaultClient implements VaultApi {
   }
 
   getFrontendSecretsUrl(): string {
-    return `${this.vaultConfig.sourceUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}`;
+    return `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}`;
   }
 
   async listSecrets(secretPath: string): Promise<Secret[]> {
@@ -101,8 +101,8 @@ export class VaultClient implements VaultApi {
         } else {
           secrets.push({
             name: secret,
-            editUrl: `${this.vaultConfig.sourceUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
-            showUrl: `${this.vaultConfig.sourceUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
+            editUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/edit/${secretPath}/${secret}`,
+            showUrl: `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}/show/${secretPath}/${secret}`,
           });
         }
       }),
