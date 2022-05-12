@@ -153,7 +153,6 @@ export const createOktaProvider: AuthProviderFactory = ({
 
     // Wrap the OAuthProviderHandlers with OAuthProvider, which implements AuthProviderRouteHandlers
     return OAuthProvider.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
       providerId,
       tokenIssuer,
     });
