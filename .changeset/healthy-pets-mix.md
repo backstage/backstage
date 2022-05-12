@@ -2,4 +2,4 @@
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
-cache and refresh Azure tokens to avoid excesive calls to Azure Identity
+cache and refresh Azure tokens to avoid excessive calls to Azure Identity
