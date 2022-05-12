@@ -388,6 +388,7 @@ export const TechDocsSearchResultListItem: (
 
 // @public
 export type TechDocsSearchResultListItemProps = {
+  icon?: ReactNode;
   result: any;
   highlight?: ResultHighlight;
   lineClamp?: number;
