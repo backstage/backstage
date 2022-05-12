@@ -89,26 +89,30 @@ export function Container(props: {
   );
 }
 
+// Extracts a link from a value, if possible
+function findLink(value: string): string | undefined {
+  if (value.match(/^url:https?:\/\//)) {
+    return value.slice('url:'.length);
+  }
+  if (value.match(/^https?:\/\//)) {
+    return value;
+  }
+  return undefined;
+}
+
 export function KeyValueListItem(props: {
   indent?: boolean;
   entry: [string, string];
 }) {
   const [key, value] = props.entry;
+  const link = findLink(value);
+
   return (
     <ListItem>
       {props.indent && <ListItemIcon />}
       <ListItemText
         primary={key}
-        secondary={
-          !value.match(/^url:https?:\/\//) ? (
-            value
-          ) : (
-            <>
-              {value.substring(0, 4)}
-              <Link to={value.substring(4)}>{value.substring(4)}</Link>
-            </>
-          )
-        }
+        secondary={link ? <Link to={link}>{value}</Link> : value}
       />
     </ListItem>
   );
