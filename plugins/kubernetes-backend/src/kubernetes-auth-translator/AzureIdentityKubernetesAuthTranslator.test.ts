@@ -60,25 +60,17 @@ describe('AzureIdentityKubernetesAuthTranslator tests', () => {
     expect(response2.serviceAccountToken).toEqual('MY_TOKEN_1');
   });
 
-  it('should reissue new token 2 minutes befory expiry', async () => {
+  it('should issue new token 2 minutes befory expiry', async () => {
     const authTranslator = new AzureIdentityKubernetesAuthTranslator(
       new StaticTokenCredential(3 * 60 * 1000), // token expires in 3m
     );
 
-    const response = await authTranslator.decorateClusterDetailsWithAuth({
-      authProvider: 'Azure',
-      name: 'My Cluster',
-      url: 'mycluster.privatelink.westeurope.azmk8s.io',
-    });
+    const response = await authTranslator.decorateClusterDetailsWithAuth(cd);
     expect(response.serviceAccountToken).toEqual('MY_TOKEN_1');
 
     jest.useFakeTimers().setSystemTime(Date.now() + 1 * 60 * 1000); // advance time by 1min
 
-    const response2 = await authTranslator.decorateClusterDetailsWithAuth({
-      authProvider: 'Azure',
-      name: 'My Cluster',
-      url: 'mycluster.privatelink.westeurope.azmk8s.io',
-    });
+    const response2 = await authTranslator.decorateClusterDetailsWithAuth(cd);
     expect(response2.serviceAccountToken).toEqual('MY_TOKEN_2');
   });
 });
