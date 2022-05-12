@@ -24,7 +24,10 @@ import {
   Progress,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
+import {
+  CatalogFilterLayout,
+  EntityRefLink,
+} from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/lib/useAsync';
 import MaterialTable from '@material-table/core';
 import React, { useState } from 'react';
@@ -38,6 +41,7 @@ import {
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 export interface MyTaskPageProps {
   initiallySelectedFilter?: TasksOwnerFilterKind;

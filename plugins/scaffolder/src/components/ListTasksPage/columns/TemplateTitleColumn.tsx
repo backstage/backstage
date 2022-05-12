@@ -17,6 +17,8 @@ import { useApi } from '@backstage/core-plugin-api';
 import React from 'react';
 import { scaffolderApiRef } from '../../../api';
 import useAsync from 'react-use/lib/useAsync';
+import { parseEntityRef } from '@backstage/catalog-model';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export const TemplateTitleColumn = ({ entityRef }: { entityRef?: string }) => {
   const scaffolder = useApi(scaffolderApiRef);
@@ -25,9 +27,11 @@ export const TemplateTitleColumn = ({ entityRef }: { entityRef?: string }) => {
     [scaffolder, entityRef],
   );
 
-  if (loading || error) {
+  if (loading || error || !entityRef) {
     return null;
   }
 
-  return <p>{value?.title}</p>;
+  return (
+    <EntityRefLink entityRef={parseEntityRef(entityRef)} title={value?.title} />
+  );
 };

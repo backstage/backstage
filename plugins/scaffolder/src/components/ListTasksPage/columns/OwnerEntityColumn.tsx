@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import React from 'react';
 
 import useAsync from 'react-use/lib/useAsync';
-import { ListItemText } from '@material-ui/core';
 
-import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import { parseEntityRef, UserEntity } from '@backstage/catalog-model';
 
 export const OwnerEntityColumn = ({ entityRef }: { entityRef?: string }) => {
   const catalogApi = useApi(catalogApiRef);
-  const catalogEntityRoute = useRouteRef(entityRouteRef);
 
   const { value, loading, error } = useAsync(
     () => catalogApi.getEntityByRef(entityRef || ''),
     [catalogApi, entityRef],
   );
 
+  if (!entityRef) {
+    return <p>Unknown</p>;
+  }
+
   if (loading || error) {
     return null;
   }
 
   return (
-    <Link to={catalogEntityRoute(parseEntityRef(entityRef || ''))}>
-      <ListItemText
-        primary={
-          (value as UserEntity)?.spec?.profile?.displayName ??
-          value?.metadata.name
-        }
-      />
-    </Link>
+    <EntityRefLink
+      entityRef={parseEntityRef(entityRef)}
+      title={
+        (value as UserEntity)?.spec?.profile?.displayName ??
+        value?.metadata.name
+      }
+    />
   );
 };
