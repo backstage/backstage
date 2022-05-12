@@ -25857,9 +25857,9 @@ zip-stream@^4.1.0:
     readable-stream "^3.6.0"
 
 zod@^3.11.6, zod@^3.9.5:
-  version "3.15.1"
-  resolved "https://registry.npmjs.org/zod/-/zod-3.15.1.tgz#9e404cd8002ccffb03baa94cff2e1638ed49d82f"
-  integrity sha512-WAdjcoOxa4S9oc/u7fTbC3CC7uVqptLLU0LKqS8RDBOrCXp2t5avM8BUfgNVZJymGWAx6SEUYxWPPoYuQ5rgwQ==
+  version "3.16.0"
+  resolved "https://registry.npmjs.org/zod/-/zod-3.16.0.tgz#edfdbf77fcc9a5af13a2630a44bdda5b90e759b7"
+  integrity sha512-szrIkryADbTM+xBt2a1KoS2CJQXec4f9xG78bj5MJeEH/XqmmHpnO+fG3IE115AKBJak+2HrbxLZkc9mhdbDKA==
 
 zustand@3.6.9:
   version "3.6.9"
