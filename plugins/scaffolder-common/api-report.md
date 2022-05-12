@@ -15,8 +15,6 @@ export type TaskSpec = TaskSpecV1beta3;
 // @public
 export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
-  // (undocumented)
-  createdBy?: string;
   output: {
     [name: string]: JsonValue;
   };
