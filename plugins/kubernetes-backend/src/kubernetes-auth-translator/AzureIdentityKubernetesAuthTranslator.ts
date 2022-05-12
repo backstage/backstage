@@ -16,13 +16,24 @@
 
 import { KubernetesAuthTranslator } from './types';
 import { AzureClusterDetails } from '../types/types';
-import { DefaultAzureCredential } from '@azure/identity';
+import {
+  AccessToken,
+  DefaultAzureCredential,
+  TokenCredential,
+} from '@azure/identity';
 
 const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope is the same for all Azure Managed Kubernetes
 
 export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
+  private tokenCredential: TokenCredential;
+  private accessToken: AccessToken | null = null;
+
+  constructor(tokenCredential?: TokenCredential) {
+    this.tokenCredential = tokenCredential || new DefaultAzureCredential();
+  }
+
   async decorateClusterDetailsWithAuth(
     clusterDetails: AzureClusterDetails,
   ): Promise<AzureClusterDetails> {
@@ -31,11 +42,23 @@ export class AzureIdentityKubernetesAuthTranslator
       clusterDetails,
     );
 
-    const credentials = new DefaultAzureCredential();
+    if (!this.accessToken || this.tokenExpired()) {
+      this.accessToken = await this.tokenCredential.getToken(aksScope);
 
-    // TODO: can we cache this? It's inneficiant to get a new token every time
-    const accessToken = await credentials.getToken(aksScope);
-    clusterDetailsWithAuthToken.serviceAccountToken = accessToken.token;
+      if (!this.accessToken) {
+        throw new Error('Unable to retrieve Azure token');
+      }
+    }
+
+    clusterDetailsWithAuthToken.serviceAccountToken = this.accessToken.token;
     return clusterDetailsWithAuthToken;
+  }
+
+  private tokenExpired(): boolean {
+    if (!this.accessToken) return true;
+
+    // Set tokens to expire 2 minutes before its actual expiry time
+    const expiresOn = this.accessToken.expiresOnTimestamp - 2 * 60 * 1000;
+    return Date.now() >= expiresOn;
   }
 }
