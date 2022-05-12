@@ -189,7 +189,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   };
 
   return (
-    <nav style={{}}>
+    <nav style={{}} aria-label="sidebar nav">
       <A11ySkipSidebar />
       <SidebarContext.Provider value={{ isOpen, setOpen }}>
         <div

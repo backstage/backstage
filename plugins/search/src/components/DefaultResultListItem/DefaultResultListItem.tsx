@@ -15,7 +15,11 @@
  */
 
 import React, { ReactNode } from 'react';
-import { SearchDocument } from '@backstage/plugin-search-common';
+import {
+  ResultHighlight,
+  SearchDocument,
+} from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 import {
   ListItem,
   ListItemIcon,
@@ -24,17 +28,18 @@ import {
   Divider,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import TextTruncate from 'react-text-truncate';
 
 type Props = {
   icon?: ReactNode;
   secondaryAction?: ReactNode;
   result: SearchDocument;
+  highlight?: ResultHighlight;
   lineClamp?: number;
 };
 
 export const DefaultResultListItem = ({
   result,
+  highlight,
   icon,
   secondaryAction,
   lineClamp = 5,
@@ -45,14 +50,36 @@ export const DefaultResultListItem = ({
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
           primaryTypographyProps={{ variant: 'h6' }}
-          primary={result.title}
+          primary={
+            highlight?.fields.title ? (
+              <HighlightedSearchResultText
+                text={highlight.fields.title}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
+              />
+            ) : (
+              result.title
+            )
+          }
           secondary={
-            <TextTruncate
-              line={lineClamp}
-              truncateText="…"
-              text={result.text}
-              element="span"
-            />
+            <span
+              style={{
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: lineClamp,
+                overflow: 'hidden',
+              }}
+            >
+              {highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                result.text
+              )}
+            </span>
           }
         />
         {secondaryAction && <Box alignItems="flex-end">{secondaryAction}</Box>}

@@ -98,6 +98,18 @@ export interface DashboardPullRequest {
   title?: string;
 }
 
+// Warning: (ae-missing-release-tag) "GitTag" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type GitTag = {
+  objectId?: string;
+  peeledObjectId?: string;
+  name?: string;
+  createdBy?: string;
+  link: string;
+  commitLink: string;
+};
+
 // Warning: (ae-missing-release-tag) "Policy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

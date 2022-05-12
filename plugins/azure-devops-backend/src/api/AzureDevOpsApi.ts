@@ -23,6 +23,7 @@ import {
   BuildRun,
   BuildStatus,
   DashboardPullRequest,
+  GitTag,
   Policy,
   PullRequest,
   PullRequestOptions,
@@ -33,6 +34,7 @@ import {
 import {
   GitPullRequest,
   GitPullRequestSearchCriteria,
+  GitRef,
   GitRepository,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
@@ -121,6 +123,39 @@ export class AzureDevOpsApi {
     });
 
     return repoBuilds;
+  }
+
+  public async getGitTags(
+    projectName: string,
+    repoName: string,
+  ): Promise<GitTag[]> {
+    this.logger?.debug(
+      `Calling Azure DevOps REST API, getting Git Tags for Repository ${repoName} for Project ${projectName}`,
+    );
+
+    const gitRepository = await this.getGitRepository(projectName, repoName);
+    const client = await this.webApi.getGitApi();
+    const tagRefs: GitRef[] = await client.getRefs(
+      gitRepository.id as string,
+      projectName,
+      'tags',
+      false,
+      false,
+      false,
+      false,
+      true,
+    );
+    const linkBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+      projectName,
+    )}/_git/${encodeURIComponent(repoName)}?version=GT`;
+    const commitBaseUrl = `${this.webApi.serverUrl}/${encodeURIComponent(
+      projectName,
+    )}/_git/${encodeURIComponent(repoName)}/commit`;
+    const gitTags: GitTag[] = tagRefs.map(tagRef => {
+      return mappedGitTag(tagRef, linkBaseUrl, commitBaseUrl);
+    });
+
+    return gitTags;
   }
 
   public async getPullRequests(
@@ -356,6 +391,25 @@ export function mappedRepoBuild(build: Build): RepoBuild {
     finishTime: build.finishTime?.toISOString(),
     source: `${build.sourceBranch} (${build.sourceVersion?.substr(0, 8)})`,
     uniqueName: build.requestedFor?.uniqueName ?? 'N/A',
+  };
+}
+
+export function mappedGitTag(
+  gitRef: GitRef,
+  linkBaseUrl: string,
+  commitBaseUrl: string,
+): GitTag {
+  return {
+    objectId: gitRef.objectId,
+    peeledObjectId: gitRef.peeledObjectId,
+    name: gitRef.name?.replace('refs/tags/', ''),
+    createdBy: gitRef.creator?.displayName ?? 'N/A',
+    link: `${linkBaseUrl}${encodeURIComponent(
+      gitRef.name?.replace('refs/tags/', '') ?? '',
+    )}`,
+    commitLink: `${commitBaseUrl}/${encodeURIComponent(
+      gitRef.peeledObjectId ?? '',
+    )}`,
   };
 }
 

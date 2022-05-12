@@ -67,7 +67,7 @@ describe('<PreparePullRequestForm />', () => {
     );
 
     await act(async () => {
-      userEvent.clear(getByLabelText('Main Field'));
+      await userEvent.clear(getByLabelText('Main Field'));
       await userEvent.type(getByLabelText('Main Field'), 'My Text');
       await userEvent.click(getByRole('button', { name: /submit/i }));
     });

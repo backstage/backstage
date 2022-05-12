@@ -39,6 +39,7 @@ import {
   ReadUrlOptions,
   ReadUrlResponse,
 } from './types';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 export type GhRepoResponse =
   RestEndpointMethodTypes['repos']['get']['response']['data'];
@@ -127,10 +128,9 @@ export class GithubUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return {
-        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
-      };
+      });
     }
 
     let message = `${url} could not be read as ${ghUrl}, ${response.status} ${response.statusText}`;

@@ -32,6 +32,7 @@ module.exports = ({ args }) => {
   return {
     stories,
     addons: [
+      '@storybook/addon-controls',
       '@storybook/addon-a11y',
       '@storybook/addon-actions',
       '@storybook/addon-links',

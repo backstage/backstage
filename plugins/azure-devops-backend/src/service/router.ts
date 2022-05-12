@@ -97,6 +97,12 @@ export async function createRouter(
     res.status(200).json(gitRepository);
   });
 
+  router.get('/git-tags/:projectName/:repoName', async (req, res) => {
+    const { projectName, repoName } = req.params;
+    const gitTags = await azureDevOpsApi.getGitTags(projectName, repoName);
+    res.status(200).json(gitTags);
+  });
+
   router.get('/pull-requests/:projectName/:repoName', async (req, res) => {
     const { projectName, repoName } = req.params;
 

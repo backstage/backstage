@@ -38,7 +38,7 @@ export type TechDocsEntityMetadata = Entity & {
 
 /**
  * Locations for which TechDocs addons may be declared and rendered.
- * @alpha
+ * @public
  */
 export const TechDocsAddonLocations = Object.freeze({
   /**
@@ -52,6 +52,12 @@ export const TechDocsAddonLocations = Object.freeze({
    * can be inserted for convenience.
    */
   Subheader: 'Subheader',
+
+  /**
+   * These addons are items added to the settings menu list and are designed to make
+   * the reader experience customizable, for example accessibility options
+   */
+  Settings: 'Settings',
 
   /**
    * These addons appear left of the content and above the navigation.
@@ -102,7 +108,7 @@ export const TechDocsAddonLocations = Object.freeze({
 
 /**
  * Options for creating a TechDocs addon.
- * @alpha
+ * @public
  */
 export type TechDocsAddonOptions<TAddonProps = {}> = {
   name: string;

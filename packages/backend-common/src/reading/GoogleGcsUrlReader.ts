@@ -28,6 +28,8 @@ import {
   GoogleGcsIntegrationConfig,
   readGoogleGcsIntegrationConfig,
 } from '@backstage/integration';
+import { Readable } from 'stream';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -85,13 +87,14 @@ export class GoogleGcsUrlReader implements UrlReader {
     private readonly storage: Storage,
   ) {}
 
+  private readStreamFromUrl(url: string): Readable {
+    const { bucket, key } = parseURL(url);
+    return this.storage.bucket(bucket).file(key).createReadStream();
+  }
+
   async read(url: string): Promise<Buffer> {
     try {
-      const { bucket, key } = parseURL(url);
-
-      return await getRawBody(
-        this.storage.bucket(bucket).file(key).createReadStream(),
-      );
+      return await getRawBody(this.readStreamFromUrl(url));
     } catch (error) {
       throw new Error(`unable to read gcs file from ${url}, ${error}`);
     }
@@ -102,8 +105,8 @@ export class GoogleGcsUrlReader implements UrlReader {
     _options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
     // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
+    const stream = this.readStreamFromUrl(url);
+    return ReadUrlResponseFactory.fromReadable(stream);
   }
 
   async readTree(): Promise<ReadTreeResponse> {

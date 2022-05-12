@@ -99,12 +99,34 @@ export interface ElasticSearchClientOptions {
 }
 
 // @public (undocumented)
+export type ElasticSearchHighlightConfig = {
+  fragmentDelimiter: string;
+  fragmentSize: number;
+  numFragments: number;
+  preTag: string;
+  postTag: string;
+};
+
+// @public (undocumented)
+export type ElasticSearchHighlightOptions = {
+  fragmentDelimiter?: string;
+  fragmentSize?: number;
+  numFragments?: number;
+};
+
+// @public (undocumented)
+export type ElasticSearchQueryTranslatorOptions = {
+  highlightOptions?: ElasticSearchHighlightConfig;
+};
+
+// @public (undocumented)
 export class ElasticSearchSearchEngine implements SearchEngine {
   constructor(
     elasticSearchClientOptions: ElasticSearchClientOptions,
     aliasPostfix: string,
     indexPrefix: string,
     logger: Logger,
+    highlightOptions?: ElasticSearchHighlightOptions,
   );
   // Warning: (ae-forgotten-export) The symbol "ElasticSearchOptions" needs to be exported by the entry point index.d.ts
   //
@@ -127,7 +149,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   // Warning: (ae-forgotten-export) The symbol "ConcreteElasticSearchQuery" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  protected translator(query: SearchQuery): ConcreteElasticSearchQuery;
+  protected translator(
+    query: SearchQuery,
+    options?: ElasticSearchQueryTranslatorOptions,
+  ): ConcreteElasticSearchQuery;
 }
 
 // Warning: (ae-missing-release-tag) "ElasticSearchSearchEngineIndexer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

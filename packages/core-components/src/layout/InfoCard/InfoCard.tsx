@@ -125,7 +125,7 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
  *
  * `<InfoCard variant="gridItem">...</InfoCard>`
  */
-type Props = {
+export type Props = {
   title?: ReactNode;
   subheader?: ReactNode;
   divider?: boolean;

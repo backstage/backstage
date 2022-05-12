@@ -16,7 +16,7 @@
 
 import TextField from '@material-ui/core/TextField';
 import React, { useState } from 'react';
-import { SimpleStepper } from './SimpleStepper';
+import { SimpleStepper, StepperProps } from './SimpleStepper';
 import { SimpleStepperStep } from './SimpleStepperStep';
 
 export default {
@@ -24,8 +24,13 @@ export default {
   component: SimpleStepper,
 };
 
-export const Default = () => (
-  <SimpleStepper>
+const defaultArgs = {
+  elevated: false,
+  activeStep: 0,
+};
+
+export const Default = (args: StepperProps) => (
+  <SimpleStepper {...args}>
     <SimpleStepperStep title="Step 1">
       <div>This is the content for step 1</div>
     </SimpleStepperStep>
@@ -38,11 +43,13 @@ export const Default = () => (
   </SimpleStepper>
 );
 
-export const ConditionalButtons = () => {
+Default.args = defaultArgs;
+
+export const ConditionalButtons = (args: StepperProps) => {
   const [required, setRequired] = useState(false);
 
   return (
-    <SimpleStepper>
+    <SimpleStepper {...args}>
       <SimpleStepperStep
         title="Step 1 with required field"
         actions={{
@@ -65,9 +72,11 @@ export const ConditionalButtons = () => {
   );
 };
 
-export const CompletionStep = () => {
+ConditionalButtons.args = defaultArgs;
+
+export const CompletionStep = (args: StepperProps) => {
   return (
-    <SimpleStepper>
+    <SimpleStepper {...args}>
       <SimpleStepperStep title="Step 1">
         <div>This is the content for step 1</div>
       </SimpleStepperStep>
@@ -80,3 +89,5 @@ export const CompletionStep = () => {
     </SimpleStepper>
   );
 };
+
+CompletionStep.args = defaultArgs;
