@@ -1,5 +1,4 @@
 ---
-'example-app': minor
 '@backstage/plugin-catalog': minor
 '@backstage/plugin-techdocs': minor
 ---
