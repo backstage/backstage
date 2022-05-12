@@ -64,6 +64,14 @@ export type DatabaseTaskStoreOptions = {
   database: Knex;
 };
 
+const parseSqlDateToIsoString = <T>(input: T): T | string => {
+  if (typeof input === 'string') {
+    return DateTime.fromSQL(input, { zone: 'UTC' }).toISO();
+  }
+
+  return input;
+};
+
 /**
  * DatabaseTaskStore
  *
@@ -85,7 +93,7 @@ export class DatabaseTaskStore implements TaskStore {
     this.db = options.database;
   }
 
-  async list(options: Partial<SerializedTask>): Promise<SerializedTask[]> {
+  async list(options: { createdBy?: string }): Promise<SerializedTask[]> {
     const queryBuilder = this.db<RawDbTaskRow>('tasks');
 
     if (options.createdBy) {
@@ -101,16 +109,8 @@ export class DatabaseTaskStore implements TaskStore {
       spec: JSON.parse(result.spec),
       status: result.status,
       createdBy: result.created_by ?? undefined,
-      lastHeartbeatAt:
-        typeof result.last_heartbeat_at === 'string'
-          ? DateTime.fromSQL(result.last_heartbeat_at, {
-              zone: 'UTC',
-            }).toISO()
-          : result.last_heartbeat_at,
-      createdAt:
-        typeof result.created_at === 'string'
-          ? DateTime.fromSQL(result.created_at, { zone: 'UTC' }).toISO()
-          : result.created_at,
+      lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
+      createdAt: parseSqlDateToIsoString(result.created_at),
     }));
   }
 
@@ -128,16 +128,8 @@ export class DatabaseTaskStore implements TaskStore {
         id: result.id,
         spec,
         status: result.status,
-        lastHeartbeatAt:
-          typeof result.last_heartbeat_at === 'string'
-            ? DateTime.fromSQL(result.last_heartbeat_at, {
-                zone: 'UTC',
-              }).toISO()
-            : result.last_heartbeat_at,
-        createdAt:
-          typeof result.created_at === 'string'
-            ? DateTime.fromSQL(result.created_at, { zone: 'UTC' }).toISO()
-            : result.created_at,
+        lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
+        createdAt: parseSqlDateToIsoString(result.created_at),
         createdBy: result.created_by ?? undefined,
         secrets,
       };
@@ -329,10 +321,7 @@ export class DatabaseTaskStore implements TaskStore {
           taskId,
           body,
           type: event.event_type,
-          createdAt:
-            typeof event.created_at === 'string'
-              ? DateTime.fromSQL(event.created_at, { zone: 'UTC' }).toISO()
-              : event.created_at,
+          createdAt: parseSqlDateToIsoString(event.created_at),
         };
       } catch (error) {
         throw new Error(
