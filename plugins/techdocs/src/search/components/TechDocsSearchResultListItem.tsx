@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { Divider, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import React, { PropsWithChildren, ReactNode } from 'react';
+import {
+  Divider,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+} from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
@@ -36,6 +42,7 @@ const useStyles = makeStyles({
  * @public
  */
 export type TechDocsSearchResultListItemProps = {
+  icon?: ReactNode;
   result: any;
   highlight?: ResultHighlight;
   lineClamp?: number;
@@ -59,6 +66,7 @@ export const TechDocsSearchResultListItem = (
     asListItem = true,
     asLink = true,
     title,
+    icon,
   } = props;
   const classes = useStyles();
   const TextItem = () => {
@@ -135,8 +143,9 @@ export const TechDocsSearchResultListItem = (
   const ListItemWrapper = ({ children }: PropsWithChildren<{}>) =>
     asListItem ? (
       <>
-        <ListItem alignItems="flex-start" className={classes.flexContainer}>
-          {children}
+        <ListItem alignItems="flex-start">
+          {icon && <ListItemIcon>{icon}</ListItemIcon>}
+          <div className={classes.flexContainer}>{children}</div>
         </ListItem>
         <Divider component="li" />
       </>

@@ -26,7 +26,12 @@ import {
   useTheme,
 } from '@material-ui/core';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { Link, useContent } from '@backstage/core-components';
+import {
+  CatalogIcon,
+  DocsIcon,
+  Link,
+  useContent,
+} from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
 import {
@@ -186,6 +191,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                       case 'software-catalog':
                         resultItem = (
                           <CatalogSearchResultListItem
+                            icon={<CatalogIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}
@@ -195,6 +201,7 @@ export const SearchModal = ({ toggleModal }: { toggleModal: () => void }) => {
                       case 'techdocs':
                         resultItem = (
                           <TechDocsSearchResultListItem
+                            icon={<DocsIcon />}
                             key={document.location}
                             result={document}
                             highlight={highlight}
