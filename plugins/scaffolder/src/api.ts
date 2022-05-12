@@ -39,6 +39,7 @@ import {
   ScaffolderTask,
   TasksOwnerFilterKind,
 } from './types';
+import queryString from 'qs';
 
 /**
  * Utility API reference for the {@link ScaffolderApi}.
@@ -77,12 +78,11 @@ export class ScaffolderClient implements ScaffolderApi {
 
   async listTasks(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
 
-    let query = '';
-    if (createdBy === 'owned') {
-      const { userEntityRef } = await this.identityApi.getBackstageIdentity();
-      query = `createdBy=${encodeURIComponent(userEntityRef)}`;
-    }
+    const query = queryString.stringify(
+      createdBy === 'owned' ? { createdBy: userEntityRef } : {},
+    );
 
     const url = `${baseUrl}/v2/tasks?${query}`;
 
