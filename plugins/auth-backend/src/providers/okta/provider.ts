@@ -271,7 +271,6 @@ export const okta = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: false,
           providerId,
           callbackUrl,
         });
