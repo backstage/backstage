@@ -438,6 +438,50 @@ describe('ElasticSearchSearchEngine', () => {
       });
     });
 
+    it('should perform search query with less results than one page', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 20, relation: 'eq' },
+              hits: Array(20)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                })),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(20)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+            })),
+        ),
+      });
+    });
+
     it('should perform search query with more results than one page', async () => {
       mock.clear({
         method: 'POST',
