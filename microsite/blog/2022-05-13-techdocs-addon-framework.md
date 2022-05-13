@@ -8,7 +8,6 @@ authorImageURL: https://avatars.githubusercontent.com/u/65337273?v=4
 
 _This blog post is co-authored by Eric Peterson ([@iamEAP](https://github.com/iamEAP)), Spotify._
 
-
 ![backstage header](assets/22-05-13/techdocs-addon-header.gif)
 
 _TL;DR:_ Introducing the TechDocs Addon Framework — a way for us all to contribute and share additional features, TechDocs Addons, on top of the base docs-like-code experience.
@@ -36,14 +35,15 @@ We encourage you to use Addons that we open source and contribute Addons of your
 Here are some resources to help you get started with new TechDocs Addons:
 
 - [Installing and using Addons](https://backstage.io/docs/features/techdocs/addons#installing-and-using-addons): add an existing TechDocs Addon to your Backstage App
-- [Creating an Addon](https://backstage.io/docs/features/techdocs/addons#creating-an-addon): contribute a new Addon for others to use 
+- [Creating an Addon](https://backstage.io/docs/features/techdocs/addons#creating-an-addon): contribute a new Addon for others to use
 - [TechDocs Addon page](https://backstage.io/docs/features/techdocs/addons): read everything you need to know about TechDocs Addons
 
 # Next steps
-At present, the TechDocs Addon Framework is focused on frontend experiences only. We know what’s available now is a solid foundation, but based on our experience developing and maintaining Addons over several years, we know there’s more to be done. 
 
-One such pattern is the occasional need for Addons to retrieve or compute data that is not easily accessible. Examples of these at Spotify are Last Updated and Top Contributors. Seemingly simple, these Addons require the ability to run non-trivial git commands to determine when documentation itself was last updated, and by whom. 
+At present, the TechDocs Addon Framework is focused on frontend experiences only. We know what’s available now is a solid foundation, but based on our experience developing and maintaining Addons over several years, we know there’s more to be done.
 
- ![techdocs-addon5](assets/22-05-13/techdocs-addon5.png)
+One such pattern is the occasional need for Addons to retrieve or compute data that is not easily accessible. Examples of these at Spotify are Last Updated and Top Contributors. Seemingly simple, these Addons require the ability to run non-trivial git commands to determine when documentation itself was last updated, and by whom.
+
+![techdocs-addon5](assets/22-05-13/techdocs-addon5.png)
 
 This next step is a bit more tricky and we would like to work with you all to make it happen. Take a look at [this issue](https://github.com/backstage/backstage/issues/11110) in the GitHub repo, let us know what you think, and feel free to get involved.
