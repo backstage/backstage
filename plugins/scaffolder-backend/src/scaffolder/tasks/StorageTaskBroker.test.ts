@@ -15,7 +15,6 @@
  */
 
 import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
-import { UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { DatabaseTaskStore } from './DatabaseTaskStore';

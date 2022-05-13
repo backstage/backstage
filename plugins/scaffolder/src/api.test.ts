@@ -17,7 +17,6 @@
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
-import { identity } from 'lodash';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
