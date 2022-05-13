@@ -217,23 +217,18 @@ describe('createRouter', () => {
       const mockToken =
         'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
 
-      console.log(
-        JSON.stringify(
-          await request(app)
-            .post('/v2/tasks')
-            .set('Authorization', `Bearer ${mockToken}`)
-            .send({
-              templateRef: stringifyEntityRef({
-                kind: 'template',
-                name: 'create-react-app-template',
-              }),
-              values: {
-                required: 'required-value',
-              },
-            }),
-        ),
-      );
-
+      await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
       expect(broker).toHaveBeenCalledWith(
         expect.objectContaining({
           createdBy: 'user:default/guest',

@@ -221,9 +221,8 @@ describe('StorageTaskBroker', () => {
   it('should list only tasks createdBy a specific user', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch({
-      spec: {
-        user: { ref: 'user:default/foo', entity: {} as UserEntity },
-      } as TaskSpec,
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/foo',
     });
 
     const task = await storage.getTask(taskId);
