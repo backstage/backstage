@@ -108,6 +108,38 @@ export interface DeploymentResources {
   replicaSets: V1ReplicaSet[];
 }
 
+// Warning: (ae-missing-release-tag) "DetectedError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface DetectedError {
+  // (undocumented)
+  cluster: string;
+  // Warning: (ae-forgotten-export) The symbol "ErrorDetectableKind" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  kind: ErrorDetectableKind;
+  // (undocumented)
+  message: string[];
+  // (undocumented)
+  names: string[];
+  // Warning: (ae-forgotten-export) The symbol "ErrorSeverity" needs to be exported by the entry point index.d.ts
+  //
+  // (undocumented)
+  severity: ErrorSeverity;
+}
+
+// Warning: (ae-missing-release-tag) "DetectedErrorsByCluster" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type DetectedErrorsByCluster = Map<string, DetectedError[]>;
+
+// Warning: (ae-missing-release-tag) "detectErrors" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const detectErrors: (
+  objects: ObjectsByEntityResponse,
+) => DetectedErrorsByCluster;
+
 // Warning: (ae-missing-release-tag) "EntityKubernetesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
