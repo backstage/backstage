@@ -95,6 +95,8 @@ export const useTechDocsReaderDom = (
       } else {
         sidebar.style.top = `${newTop}px`;
       }
+      // Show the sidebar only after updating its position
+      sidebar.style.removeProperty('opacity');
     });
   }, [dom, sidebars]);
 
@@ -725,6 +727,13 @@ export const useTechDocsReaderDom = (
           docStorageUrl: await techdocsStorageApi.getApiOrigin(),
           onLoading: (renderedElement: Element) => {
             (renderedElement as HTMLElement).style.setProperty('opacity', '0');
+            const renderedSidebars = Array.from(
+              renderedElement.querySelectorAll<HTMLElement>('.md-sidebar'),
+            );
+            // Hide sidebars until your position is updated
+            for (const sidebar of renderedSidebars) {
+              sidebar.style.setProperty('opacity', '0');
+            }
           },
           onLoaded: (renderedElement: Element) => {
             (renderedElement as HTMLElement).style.removeProperty('opacity');
@@ -732,9 +741,11 @@ export const useTechDocsReaderDom = (
             renderedElement
               .querySelector('.md-nav__title')
               ?.removeAttribute('for');
-            setSidebars(
-              Array.from(renderedElement.querySelectorAll('.md-sidebar')),
+            const renderedSidebars = Array.from(
+              renderedElement.querySelectorAll<HTMLElement>('.md-sidebar'),
             );
+            // Wait for styles to be calculated to update sidebar position
+            setSidebars(renderedSidebars);
           },
         }),
       ]),
