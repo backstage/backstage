@@ -351,22 +351,23 @@ async function ensureCreateAppChangeset() {
     }),
   );
 
-  let excludeList = [];
+  const excludeList = [];
   const prePath = path.resolve(changesetPath, 'pre.json');
   if (await fs.pathExists(prePath)) {
     const data = await fs.readJSON(prePath);
     // Only exclude changesets in pre-release mode.
-    excludeList =
-      data.mode === 'pre' ? data.changesets.map(name => `${name}.md`) : [];
+    if (data.mode === 'pre') {
+      excludeList.push(...data.changesets.map(name => `${name}.md`));
+    }
   }
+
   const hasCreateAppChanges = changesets
     .filter(({ name }) => !excludeList.includes(name))
-    .map(changeset =>
+    .some(changeset =>
       changeset.releases.some(
         release => release.name === '@backstage/create-app',
       ),
-    )
-    .includes(true);
+    );
 
   if (hasCreateAppChanges) {
     console.log(
