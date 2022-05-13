@@ -113,18 +113,36 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const contentElement = shadowRoot?.querySelector(
       '[data-md-component="content"]',
     );
+
     const primarySidebarElement = shadowRoot?.querySelector(
       'div[data-md-component="sidebar"][data-md-type="navigation"], div[data-md-component="navigation"]',
     );
+    let primarySidebarAddonLocation = primarySidebarElement?.querySelector(
+      '[data-techdocs-addons-location="primary sidebar"]',
+    );
+    if (!primarySidebarAddonLocation) {
+      primarySidebarAddonLocation = document.createElement('div');
+      primarySidebarAddonLocation.setAttribute(
+        'data-techdocs-addons-location',
+        'primary sidebar',
+      );
+      primarySidebarElement?.prepend(primarySidebarAddonLocation);
+    }
+
     const secondarySidebarElement = shadowRoot?.querySelector(
       'div[data-md-component="sidebar"][data-md-type="toc"], div[data-md-component="toc"]',
     );
-
-    const primarySidebarAddonLocation = document.createElement('div');
-    primarySidebarElement?.prepend(primarySidebarAddonLocation);
-
-    const secondarySidebarAddonLocation = document.createElement('div');
-    secondarySidebarElement?.prepend(secondarySidebarAddonLocation);
+    let secondarySidebarAddonLocation = secondarySidebarElement?.querySelector(
+      '[data-techdocs-addons-location="secondary sidebar"]',
+    );
+    if (!secondarySidebarAddonLocation) {
+      secondarySidebarAddonLocation = document.createElement('div');
+      secondarySidebarAddonLocation.setAttribute(
+        'data-techdocs-addons-location',
+        'secondary sidebar',
+      );
+      secondarySidebarElement?.prepend(secondarySidebarAddonLocation);
+    }
 
     // No entity metadata = 404. Don't render content at all.
     if (entityMetadataLoading === false && !entityMetadata)
