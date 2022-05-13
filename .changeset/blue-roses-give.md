@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-react': minor
+'@backstage/plugin-catalog-react': patch
 ---
 
 Accessibility updates:
