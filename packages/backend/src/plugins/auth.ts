@@ -42,7 +42,11 @@ export default async function createPlugin(
       //       It is important that each real user always gets resolved to
       //       the same sign-in identity. The code below will not do that.
       //       It is here for demo purposes only.
-      github: providers.github.create(),
+      github: providers.github.create({
+        signIn: {
+          resolver: providers.github.resolvers.usernameMatchingUserEntityName(),
+        },
+      }),
       gitlab: providers.gitlab.create({
         signIn: {
           async resolver({ result: { fullProfile } }, ctx) {
