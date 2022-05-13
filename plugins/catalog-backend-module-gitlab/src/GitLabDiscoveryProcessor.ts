@@ -41,11 +41,11 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
   private readonly cache: CacheClient;
-  private readonly checkFileExistence: boolean;
+  private readonly skipReposWithoutExactFileMatch: boolean;
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; checkFileExistence?: boolean },
+    options: { logger: Logger; skipReposWithoutExactFileMatch?: boolean },
   ): GitLabDiscoveryProcessor {
     const integrations = ScmIntegrations.fromConfig(config);
     const pluginCache =
@@ -62,12 +62,13 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     integrations: ScmIntegrationRegistry;
     pluginCache: PluginCacheManager;
     logger: Logger;
-    checkFileExistence?: boolean;
+    skipReposWithoutExactFileMatch?: boolean;
   }) {
     this.integrations = options.integrations;
     this.cache = options.pluginCache.getClient();
     this.logger = options.logger;
-    this.checkFileExistence = options.checkFileExistence || false;
+    this.skipReposWithoutExactFileMatch =
+      options.skipReposWithoutExactFileMatch || false;
   }
 
   getProcessorName(): string {
@@ -120,7 +121,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
         continue;
       }
 
-      if (this.checkFileExistence) {
+      if (this.skipReposWithoutExactFileMatch) {
         const project_branch = branch === '*' ? project.default_branch : branch;
 
         const projectHasFile: boolean = await client.hasFile(

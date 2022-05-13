@@ -74,19 +74,12 @@ export class GitLabClient {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     request.searchParams.append('ref', branch);
 
-    this.logger.debug(`Fetching: ${request.toString()}`);
-
     const response = await fetch(request.toString(), {
       headers: getGitLabRequestOptions(this.config).headers,
       method: 'HEAD',
     });
 
     if (!response.ok) {
-      this.logger.debug(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-          response.status
-        } - ${response.statusText}`,
-      );
       return false;
     }
 

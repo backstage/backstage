@@ -29,6 +29,7 @@ const SERVER_URL = `https://${DOMAIN}`;
 const API_URL = `${SERVER_URL}/api/v4`;
 const PROJECTS_URL = `${API_URL}/projects`;
 const GROUP_PROJECTS_URL = `${API_URL}/groups/group%2Fsubgroup/projects`;
+const EXISTING_PROJECT_PATH = 'exist';
 
 const PROJECT_LOCATION: LocationSpec = {
   type: 'gitlab-discovery',
@@ -50,7 +51,7 @@ const GROUP_LOCATION_CUSTOM_BRANCH: LocationSpec = {
 
 function setupFakeServer(
   url: string,
-  list_projects_callback: (request: {
+  listProjectsCallback: (request: {
     page: number;
     include_subgroups: boolean;
   }) => {
@@ -65,7 +66,7 @@ function setupFakeServer(
       }
       const page = req.url.searchParams.get('page');
       const include_subgroups = req.url.searchParams.get('include_subgroups');
-      const response = list_projects_callback({
+      const response = listProjectsCallback({
         page: parseInt(page!, 10),
         include_subgroups: include_subgroups === 'true',
       });
@@ -96,6 +97,11 @@ function setupFakeServer(
         if (ref === 'main' || ref === 'master') {
           return res(ctx.status(200));
         }
+
+        if (EXISTING_PROJECT_PATH === req.params.project_path) {
+          return res(ctx.status(200));
+        }
+
         return res(ctx.status(404));
       },
     ),
@@ -345,7 +351,9 @@ describe('GitlabDiscoveryProcessor', () => {
     });
 
     it('can filter based on file existing', async () => {
-      const processor = getProcessor({ options: { checkFileExistence: true } });
+      const processor = getProcessor({
+        options: { skipReposWithoutExactFileMatch: true },
+      });
       setupFakeServer(GROUP_PROJECTS_URL, request => {
         if (!request.include_subgroups) {
           throw new Error('include_subgroups should be set');
@@ -367,8 +375,8 @@ describe('GitlabDiscoveryProcessor', () => {
                   archived: false,
                   default_branch: 'main',
                   last_activity_at: '2021-08-05T11:03:05.774Z',
-                  web_url: 'https://gitlab.fake/g/2',
-                  path_with_namespace: 'g/2',
+                  web_url: `https://gitlab.fake/${EXISTING_PROJECT_PATH}`,
+                  path_with_namespace: EXISTING_PROJECT_PATH,
                 },
               ],
             };
@@ -382,7 +390,7 @@ describe('GitlabDiscoveryProcessor', () => {
         result.push(e);
       });
       // If everything was set up correctly, we should have received the fake repo specified above
-      expect(result).toHaveLength(0);
+      expect(result).toHaveLength(1);
     });
 
     it('uses the previous scan timestamp to filter', async () => {
