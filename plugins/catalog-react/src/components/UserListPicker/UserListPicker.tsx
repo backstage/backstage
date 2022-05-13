@@ -253,6 +253,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
                   className={classes.menuItem}
                   disabled={filterCounts[item.id] === 0}
                   data-testid={`user-picker-${item.id}`}
+                  tabIndex={0}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>

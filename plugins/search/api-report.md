@@ -10,6 +10,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { InputBaseProps } from '@material-ui/core';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
@@ -19,6 +20,7 @@ import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common'
 // @public (undocumented)
 export const DefaultResultListItem: ({
   result,
+  highlight,
   icon,
   secondaryAction,
   lineClamp,
@@ -26,6 +28,7 @@ export const DefaultResultListItem: ({
   icon?: ReactNode;
   secondaryAction?: ReactNode;
   result: SearchDocument;
+  highlight?: ResultHighlight | undefined;
   lineClamp?: number | undefined;
 }) => JSX.Element;
 

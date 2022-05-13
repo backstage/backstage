@@ -7,6 +7,7 @@ import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
+import { UserEntity } from '@backstage/catalog-model';
 
 // @public
 export type TaskSpec = TaskSpecV1beta3;
@@ -20,6 +21,10 @@ export interface TaskSpecV1beta3 {
   parameters: JsonObject;
   steps: TaskStep[];
   templateInfo?: TemplateInfo;
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
 }
 
 // @public

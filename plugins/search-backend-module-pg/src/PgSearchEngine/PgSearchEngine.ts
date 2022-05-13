@@ -78,7 +78,7 @@ export class PgSearchEngine implements SearchEngine {
 
   async getIndexer(type: string) {
     return new PgSearchEngineIndexer({
-      batchSize: 100,
+      batchSize: 1000,
       type,
       databaseStore: this.databaseStore,
     });

@@ -17,6 +17,7 @@ import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
@@ -108,6 +109,8 @@ export function CatalogSearchResultListItem(
 
 // @public
 export interface CatalogSearchResultListItemProps {
+  // (undocumented)
+  highlight?: ResultHighlight;
   // (undocumented)
   result: IndexableDocument;
 }

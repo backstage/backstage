@@ -69,7 +69,9 @@ export const addBaseUrl = ({
               const svgContent = await svg.text();
               elem.setAttribute(
                 attributeName,
-                `data:image/svg+xml;base64,${btoa(svgContent)}`,
+                `data:image/svg+xml;base64,${btoa(
+                  unescape(encodeURIComponent(svgContent)),
+                )}`,
               );
             } catch (e) {
               elem.setAttribute('alt', `Error: ${elemAttribute}`);

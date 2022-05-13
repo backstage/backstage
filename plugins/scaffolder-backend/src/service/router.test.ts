@@ -48,12 +48,11 @@ import request from 'supertest';
  */
 import { createRouter, DatabaseTaskStore, TaskBroker } from '../index';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-
-const createCatalogClient = (template: any) =>
-  ({
-    getEntityByRef: async () => template,
-  } as unknown as CatalogApi);
+import {
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -76,7 +75,9 @@ const mockUrlReader = UrlReaders.default({
 describe('createRouter', () => {
   let app: express.Express;
   let taskBroker: TaskBroker;
-  const template: TemplateEntityV1beta3 = {
+  const catalogClient = { getEntityByRef: jest.fn() } as unknown as CatalogApi;
+
+  const mockTemplate: TemplateEntityV1beta3 = {
     apiVersion: 'scaffolder.backstage.io/v1beta3',
     kind: 'Template',
     metadata: {
@@ -105,6 +106,22 @@ describe('createRouter', () => {
     },
   };
 
+  const mockUser: UserEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      name: 'guest',
+      annotations: {
+        'google.com/email': 'bobby@tables.com',
+      },
+    },
+    spec: {
+      profile: {
+        displayName: 'Robert Tables of the North',
+      },
+    },
+  };
+
   beforeEach(async () => {
     const logger = getVoidLogger();
     const databaseTaskStore = await DatabaseTaskStore.create({
@@ -120,11 +137,26 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       config: new ConfigReader({}),
       database: createDatabase(),
-      catalogClient: createCatalogClient(template),
+      catalogClient,
       reader: mockUrlReader,
       taskBroker,
     });
     app = express().use(router);
+
+    jest
+      .spyOn(catalogClient, 'getEntityByRef')
+      .mockImplementation(async ref => {
+        const { kind } = parseEntityRef(ref);
+
+        if (kind === 'template') {
+          return mockTemplate;
+        }
+
+        if (kind === 'user') {
+          return mockUser;
+        }
+        throw new Error(`no mock found for kind: ${kind}`);
+      });
   });
 
   afterEach(() => {
@@ -158,9 +190,8 @@ describe('createRouter', () => {
     });
 
     it('return the template id', async () => {
-      (
-        taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch']
-      ).mockResolvedValue({
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      broker.mockResolvedValue({
         taskId: 'a-random-id',
       });
 
@@ -178,6 +209,88 @@ describe('createRouter', () => {
 
       expect(response.body.id).toBe('a-random-id');
       expect(response.status).toEqual(201);
+    });
+
+    it('should call the broker with a correct spec', async () => {
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      const mockToken =
+        'blob.eyJzdWIiOiJ1c2VyOmRlZmF1bHQvZ3Vlc3QiLCJuYW1lIjoiSm9obiBEb2UifQ.blob';
+
+      console.log(
+        JSON.stringify(
+          await request(app)
+            .post('/v2/tasks')
+            .set('Authorization', `Bearer ${mockToken}`)
+            .send({
+              templateRef: stringifyEntityRef({
+                kind: 'template',
+                name: 'create-react-app-template',
+              }),
+              values: {
+                required: 'required-value',
+              },
+            }),
+        ),
+      );
+
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdBy: 'user:default/guest',
+          secrets: {
+            backstageToken: mockToken,
+          },
+
+          spec: {
+            apiVersion: mockTemplate.apiVersion,
+            steps: mockTemplate.spec.steps.map((step, index) => ({
+              ...step,
+              id: step.id ?? `step-${index + 1}`,
+              name: step.name ?? step.action,
+            })),
+            output: mockTemplate.spec.output ?? {},
+            parameters: {
+              required: 'required-value',
+            },
+            user: {
+              entity: mockUser,
+              ref: 'user:default/guest',
+            },
+            templateInfo: {
+              entityRef: stringifyEntityRef({
+                kind: 'Template',
+                namespace: 'Default',
+                name: mockTemplate.metadata?.name,
+              }),
+              baseUrl: 'https://dev.azure.com',
+            },
+          },
+        }),
+      );
+    });
+
+    it('should not decorate a user when no backstage auth is passed', async () => {
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            required: 'required-value',
+          },
+        });
+
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          createdBy: undefined,
+          spec: expect.objectContaining({
+            user: { entity: undefined, ref: undefined },
+          }),
+        }),
+      );
     });
   });
 

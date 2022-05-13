@@ -26,7 +26,6 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
-import getRawBody from 'raw-body';
 import {
   AwsS3Integration,
   ScmIntegrations,
@@ -34,6 +33,7 @@ import {
 } from '@backstage/integration';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
  * Path style URLs: https://s3.(region).amazonaws.com/(bucket)/(key)
@@ -214,13 +214,11 @@ export class AwsS3UrlReader implements UrlReader {
 
       const request = this.deps.s3.getObject(params);
       options?.signal?.addEventListener('abort', () => request.abort());
-      const buffer = await getRawBody(request.createReadStream());
       const etag = (await request.promise()).ETag;
 
-      return {
-        buffer: async () => buffer,
-        etag: etag,
-      };
+      return ReadUrlResponseFactory.fromReadable(request.createReadStream(), {
+        etag,
+      });
     } catch (e) {
       if (e.statusCode === 304) {
         throw new NotModifiedError();

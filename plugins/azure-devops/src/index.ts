@@ -17,6 +17,7 @@
 export {
   azureDevOpsPlugin,
   EntityAzurePipelinesContent,
+  EntityAzureGitTagsContent,
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,

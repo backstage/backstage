@@ -60,6 +60,9 @@ export interface CustomResourcesKubernetesRequestBody
 
 export interface AuthConfig {
   google?: string;
+  oidc?: {
+      [key: string]: string;
+  };
   backstage: string;
 }
 
@@ -117,7 +120,7 @@ export interface ObjectsByEntityResponse {
   items: ClusterObjects[];
 }
 
-export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws' | 'azure';
 
 export type FetchResponse =
   | PodFetchResponse

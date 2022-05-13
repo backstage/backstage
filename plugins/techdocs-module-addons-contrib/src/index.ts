@@ -20,7 +20,11 @@
  * @packageDocumentation
  */
 
-export { techdocsModuleAddonsContribPlugin, ReportIssue } from './plugin';
+export {
+  techdocsModuleAddonsContribPlugin,
+  ReportIssue,
+  TextSize,
+} from './plugin';
 export type {
   ReportIssueProps,
   ReportIssueTemplate,

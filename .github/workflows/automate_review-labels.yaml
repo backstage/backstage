@@ -16,14 +16,14 @@ jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v5
+      # THESE SCRIPTS SHOULD BE INLINED AND NOT IN REPO
+      # DUE TO THE TOKEN PERMISSIONS THAT ARE GIVEN
+      # TO THE WORKFLOW. THIS SCRIPT WILL AND SHOULD
+      # RUN FROM THE BASE REPO ALL TIMES.
+      - uses: actions/github-script@v6
         id: fix-labels
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          # THIS SCRIPT SHOULD BE INLINED AND NOT IN REPO
-          # DUE TO THE TOKEN PERMISSIONS THAT ARE GIVEN
-          # TO THE WORKFLOW. THIS SCRIPT WILL AND SHOULD
-          # RUN FROM THE BASE REPO ALL TIMES.
           script: |
             if (['opened', 'synchronize'].includes('${{ github.event.action }}')) {
               // if it's the author, always add awaiting-review label
@@ -48,3 +48,37 @@ jobs:
                 console.log(e)
               });
             }
+
+      - name: Add PRs to review board
+        uses: actions/github-script@v6
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        env:
+          PROJECT_ID: PN_kwDOBFKqdc02LQ
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN  }}
+          script: |
+            const prLookup = await github.graphql(`
+              query($owner: String!, $repo: String!, $number: Int!){
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    id
+                  }
+                }
+              }
+            `, context.issue);
+
+            await github.graphql(`
+              mutation($projectId: ID!, $contentId: ID!) {
+                addProjectNextItem(input: {
+                  projectId: $projectId,
+                  contentId: $contentId,
+                }) {
+                  projectNextItem {
+                    id
+                  }
+                }
+              }
+            `, {
+              projectId: process.env.PROJECT_ID,
+              contentId: prLookup.repository.pullRequest.id
+            })

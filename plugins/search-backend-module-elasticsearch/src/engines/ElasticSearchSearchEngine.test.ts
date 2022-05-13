@@ -26,6 +26,8 @@ import {
 } from './ElasticSearchSearchEngine';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
 
+jest.mock('uuid', () => ({ v4: () => 'tag' }));
+
 class ElasticSearchSearchEngineForTranslatorTests extends ElasticSearchSearchEngine {
   getTranslator() {
     return this.translator;
@@ -105,10 +107,21 @@ describe('ElasticSearchSearchEngine', () => {
         filters: {},
       });
 
-      expect(translatorSpy).toHaveBeenCalledWith({
-        term: 'testTerm',
-        filters: {},
-      });
+      expect(translatorSpy).toHaveBeenCalledWith(
+        {
+          term: 'testTerm',
+          filters: {},
+        },
+        {
+          highlightOptions: {
+            preTag: `<tag>`,
+            postTag: `</tag>`,
+            fragmentSize: 1000,
+            numFragments: 1,
+            fragmentDelimiter: ' ... ',
+          },
+        },
+      );
     });
 
     it('should return translated query with 1 filter', async () => {
@@ -281,6 +294,59 @@ describe('ElasticSearchSearchEngine', () => {
       });
     });
 
+    it('should accept custom highlight options', async () => {
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest(
+        {
+          types: ['indexName'],
+          term: 'testTerm',
+          pageCursor: 'MQ==',
+        },
+        {
+          highlightOptions: {
+            preTag: `<custom-tag>`,
+            postTag: `</custom-tag>`,
+            fragmentSize: 100,
+            numFragments: 3,
+            fragmentDelimiter: ' ... ',
+          },
+        },
+      ) as ConcreteElasticSearchQuery;
+
+      expect(actualTranslatedQuery).toMatchObject({
+        documentTypes: ['indexName'],
+        elasticSearchQuery: expect.any(Object),
+      });
+
+      const queryBody = actualTranslatedQuery.elasticSearchQuery;
+
+      expect(queryBody).toEqual({
+        query: {
+          bool: {
+            filter: [],
+            must: {
+              multi_match: {
+                query: 'testTerm',
+                fields: ['*'],
+                fuzziness: 'auto',
+                minimum_should_match: 1,
+              },
+            },
+          },
+        },
+        highlight: {
+          fields: { '*': {} },
+          fragment_size: 100,
+          number_of_fragments: 3,
+          pre_tags: ['<custom-tag>'],
+          post_tags: ['</custom-tag>'],
+        },
+        from: 25,
+        size: 25,
+      });
+    });
+
     it('should throw if unsupported filter shapes passed in', async () => {
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
       const actualTranslatedQuery = () =>
@@ -369,6 +435,50 @@ describe('ElasticSearchSearchEngine', () => {
       expect(mockedSearchResult).toMatchObject({
         results: [],
         nextPageCursor: undefined,
+      });
+    });
+
+    it('should perform search query with less results than one page', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 20, relation: 'eq' },
+              hits: Array(20)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                })),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(20)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+            })),
+        ),
       });
     });
 
@@ -465,6 +575,66 @@ describe('ElasticSearchSearchEngine', () => {
       });
     });
 
+    it('should handle parsing highlights in search query results', async () => {
+      mock.clear({
+        method: 'POST',
+        path: '/*__search/_search',
+      });
+      mock.add(
+        {
+          method: 'POST',
+          path: '/*__search/_search',
+        },
+        () => {
+          return {
+            hits: {
+              total: { value: 30, relation: 'eq' },
+              hits: Array(25)
+                .fill(null)
+                .map((_, i) => ({
+                  _index: 'mytype-index__',
+                  _source: {
+                    value: `${i}`,
+                  },
+                  highlight: {
+                    foo: [
+                      'highlighted <tag>test</tag> result',
+                      'another <tag>fragment</tag> result',
+                    ],
+                    bar: ['more <tag>test</tag> results'],
+                  },
+                })),
+            },
+          };
+        },
+      );
+
+      const mockedSearchResult = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: expect.arrayContaining(
+          Array(25)
+            .fill(null)
+            .map((_, i) => ({
+              type: 'mytype',
+              document: { value: `${i}` },
+              highlight: {
+                preTag: '<tag>',
+                postTag: '</tag>',
+                fields: {
+                  foo: 'highlighted <tag>test</tag> result ... another <tag>fragment</tag> result',
+                  bar: 'more <tag>test</tag> results',
+                },
+              },
+            })),
+        ),
+        nextPageCursor: 'MQ==',
+      });
+    });
+
     it('should handle index/search type filtering correctly', async () => {
       const elasticSearchQuerySpy = jest.spyOn(client, 'search');
       await testSearchEngine.query({
@@ -487,6 +657,13 @@ describe('ElasticSearchSearchEngine', () => {
               },
               filter: [],
             },
+          },
+          highlight: {
+            fields: { '*': {} },
+            fragment_size: 1000,
+            number_of_fragments: 1,
+            pre_tags: ['<tag>'],
+            post_tags: ['</tag>'],
           },
           from: 0,
           size: 25,
@@ -515,6 +692,13 @@ describe('ElasticSearchSearchEngine', () => {
               filter: [],
             },
           },
+          highlight: {
+            fields: { '*': {} },
+            fragment_size: 1000,
+            number_of_fragments: 1,
+            pre_tags: ['<tag>'],
+            post_tags: ['</tag>'],
+          },
           from: 0,
           size: 25,
         },
@@ -542,6 +726,13 @@ describe('ElasticSearchSearchEngine', () => {
               },
               filter: [],
             },
+          },
+          highlight: {
+            fields: { '*': {} },
+            fragment_size: 1000,
+            number_of_fragments: 1,
+            pre_tags: ['<tag>'],
+            post_tags: ['</tag>'],
           },
           from: 0,
           size: 25,
@@ -618,7 +809,7 @@ describe('ElasticSearchSearchEngine', () => {
   });
 
   describe('ElasticSearchSearchEngine.fromConfig', () => {
-    it('accesses the clientOptions config', async () => {
+    it('accesses the clientOptions and highlightOptions config', async () => {
       const esOptions = {
         clientOptions: {
           ssl: {
@@ -635,6 +826,7 @@ describe('ElasticSearchSearchEngine', () => {
       const esConfig = new ConfigReader(esOptions);
       jest.spyOn(config, 'getConfig').mockImplementation(() => esConfig);
       const getOptionalConfig = jest.spyOn(esConfig, 'getOptionalConfig');
+      const getOptional = jest.spyOn(config, 'getOptional');
 
       await ElasticSearchSearchEngine.fromConfig({
         logger: getVoidLogger(),
@@ -642,9 +834,12 @@ describe('ElasticSearchSearchEngine', () => {
       });
 
       expect(getOptionalConfig.mock.calls[0][0]).toEqual('clientOptions');
+      expect(getOptional.mock.calls[0][0]).toEqual(
+        'search.elasticsearch.highlightOptions',
+      );
     });
 
-    it('does not require the clientOptions config', async () => {
+    it('does not require the clientOptions or highlightOptions config', async () => {
       const config = new ConfigReader({
         search: {
           elasticsearch: {

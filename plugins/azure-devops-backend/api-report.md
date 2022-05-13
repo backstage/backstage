@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
+import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { Logger } from 'winston';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
@@ -60,6 +61,8 @@ export class AzureDevOpsApi {
     projectName: string,
     repoName: string,
   ): Promise<GitRepository>;
+  // (undocumented)
+  getGitTags(projectName: string, repoName: string): Promise<GitTag[]>;
   // (undocumented)
   getPullRequests(
     projectName: string,

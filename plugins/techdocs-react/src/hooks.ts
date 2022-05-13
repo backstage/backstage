@@ -20,7 +20,7 @@ import { useTechDocsReaderPage } from './context';
 /**
  * Hook for use within TechDocs addons that provides access to the underlying
  * shadow root of the current page, allowing the DOM within to be mutated.
- * @alpha
+ * @public
  */
 export const useShadowRoot = () => {
   const { shadowRoot } = useTechDocsReaderPage();
@@ -31,7 +31,7 @@ export const useShadowRoot = () => {
  * Convenience hook for use within TechDocs addons that provides access to
  * elements that match a given selector within the shadow root.
  *
- * @alpha
+ * @public
  */
 export const useShadowRootElements = <
   TReturnedElement extends HTMLElement = HTMLElement,
@@ -58,7 +58,7 @@ const isValidSelection = (newSelection: Selection) => {
 
 /**
  * Hook for retreiving a selection within the ShadowRoot.
- * @alpha
+ * @public
  */
 export const useShadowRootSelection = (wait: number = 0) => {
   const shadowRoot = useShadowRoot();

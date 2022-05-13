@@ -31,6 +31,7 @@ import { getVoidLogger } from '../logging';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { GerritUrlReader } from './GerritUrlReader';
+import getRawBody from 'raw-body';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -128,7 +129,7 @@ describe('GerritUrlReader', () => {
 
   describe('readUrl', () => {
     const responseBuffer = Buffer.from('Apache License');
-    it('should be able to read file contents', async () => {
+    it('should be able to read file contents as buffer', async () => {
       worker.use(
         rest.get(
           'https://gerrit.com/projects/web%2Fproject/branches/master/files/LICENSE/content',
@@ -146,6 +147,26 @@ describe('GerritUrlReader', () => {
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe(responseBuffer.toString());
+    });
+
+    it('should be able to read file contents as stream', async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/web%2Fproject/branches/master/files/LICENSE/content',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.body(responseBuffer.toString('base64')),
+            );
+          },
+        ),
+      );
+
+      const result = await gerritProcessor.readUrl(
+        'https://gerrit.com/web/project/+/refs/heads/master/LICENSE',
+      );
+      const fromStream = await getRawBody(result.stream!());
+      expect(fromStream.toString()).toBe(responseBuffer.toString());
     });
 
     it('should raise NotFoundError on 404.', async () => {

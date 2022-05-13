@@ -109,7 +109,7 @@ describe('<SelectedKindsFilter/>', () => {
     );
 
     await userEvent.click(getByRole('combobox'));
-    userEvent.tab();
+    await userEvent.tab();
 
     await waitFor(() => {
       expect(onChange).toBeCalledWith(undefined);

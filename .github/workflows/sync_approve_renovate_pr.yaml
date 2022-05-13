@@ -18,12 +18,6 @@ jobs:
             const owner = 'backstage';
             const repo = 'backstage';
 
-            const date = new Date();
-            if (date.getDay() === 2) {
-              console.log('Skipping auto approve because Tuesday is release day');
-              return;
-            }
-
             const r = await github.rest.pulls.listFiles({
               owner,
               repo,

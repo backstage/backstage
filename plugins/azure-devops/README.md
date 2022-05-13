@@ -16,6 +16,12 @@ Lists the top _n_ Active, Completed, or Abandoned Pull Requests for a given repo
 
 ![Azure Repos Pull Requests Example](./docs/azure-devops-pull-requests.png)
 
+### Azure Repos Git Tags
+
+Lists all Git Tags for a given repository
+
+![Azure Repos Git Tags Example](./docs/azure-devops-git-tags.png)
+
 ## Setup
 
 The following sections will help you get the Azure DevOps plugin setup and running
@@ -154,6 +160,42 @@ To get the Azure Repos component working you'll need to do the following two ste
 - You'll need to add the `EntityLayout.Route` above from step 2 to all the entity sections you want to see Pull Requests in. For example if you wanted to see Pull Requests when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
 - The `if` prop is optional on the `EntityLayout.Route`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation
 - The `defaultLimit` property on the `EntityAzurePullRequestsContent` will set the max number of Pull Requests you would like to see, if not set this will default to 10
+
+### Git Tags Component
+
+To get the Git Tags component working you'll need to do the following two steps:
+
+1. First we need to add the @backstage/plugin-azure-devops package to your frontend app:
+
+   ```bash
+   # From your Backstage root directory
+   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   ```
+
+2. Second we need to add the `EntityAzureGitTagsContent` extension to the entity page in your app:
+
+   ```tsx
+   // In packages/app/src/components/catalog/EntityPage.tsx
+   import {
+     EntityAzureGitTagsContent,
+     isAzureDevOpsAvailable,
+   } from '@backstage/plugin-azure-devops';
+
+   // For example in the Service section
+   const serviceEntityPage = (
+     <EntityLayout>
+       // ...
+       <EntityLayout.Route if={isAzureDevOpsAvailable} path="/git-tags" title="Git Tags">
+         <EntityAzureGitTagsContent />
+       </EntityLayout.Route>
+       // ...
+     </EntityLayout>
+   ```
+
+**Notes:**
+
+- You'll need to add the `EntityLayout.Route` above from step 2 to all the entity sections you want to see Git Tags in. For example if you wanted to see Git Tags when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
+- The `if` prop is optional on the `EntityLayout.Route`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation
 
 ## Limitations
 

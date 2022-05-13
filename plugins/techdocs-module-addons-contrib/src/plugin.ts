@@ -20,6 +20,7 @@ import {
   TechDocsAddonLocations,
 } from '@backstage/plugin-techdocs-react';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
+import { TextSizeAddon } from './TextSize';
 
 /**
  * The TechDocs addons contrib plugin
@@ -42,5 +43,51 @@ export const ReportIssue = techdocsModuleAddonsContribPlugin.provide(
     name: 'ReportIssue',
     location: TechDocsAddonLocations.Content,
     component: ReportIssueAddon,
+  }),
+);
+
+/**
+ * This TechDocs addon allows users to customize text size on documentation pages, they can select how much they want to increase or decrease the font size via slider or buttons.
+ *
+ * @remarks
+ * The default value for the font size is 100% of the HTML font size, if the theme does not have a `htmlFontSize` in its typography object, the addon will assume 16px as 100%, and remember, this setting is kept in the browser local storage.
+ *
+ * @example
+ * Here's a simple example:
+ * ```
+ * import {
+ *   DefaultTechDocsHome,
+ *   TechDocsIndexPage,
+ *   TechDocsReaderPage,
+ * } from '@backstage/plugin-techdocs';
+ * import { TechDocsAddons } from '@backstage/plugin-techdocs-react/alpha';
+ * import { TextSize } from '@backstage/plugin-techdocs-module-addons-contrib';
+ *
+ *
+ * const AppRoutes = () => {
+ *   <FlatRoutes>
+ *     // other plugin routes
+ *     <Route path="/docs" element={<TechDocsIndexPage />}>
+ *       <DefaultTechDocsHome />
+ *     </Route>
+ *     <Route
+ *       path="/docs/:namespace/:kind/:name/*"
+ *       element={<TechDocsReaderPage />}
+ *     >
+ *       <TechDocsAddons>
+ *         <TextSize />
+ *       </TechDocsAddons>
+ *     </Route>
+ *   </FlatRoutes>;
+ * };
+ * ```
+ *
+ * @public
+ */
+export const TextSize = techdocsModuleAddonsContribPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'TextSize',
+    location: TechDocsAddonLocations.Settings,
+    component: TextSizeAddon,
   }),
 );

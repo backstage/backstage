@@ -16,6 +16,7 @@
 
 import { GitLabIntegrationConfig } from './config';
 import fetch from 'cross-fetch';
+import { InputError } from '@backstage/errors';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -66,31 +67,34 @@ export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
 }
 
 // Converts
-// from: https://gitlab.example.com/a/b/blob/master/c.yaml
-// to:   https://gitlab.example.com/a/b/raw/master/c.yaml
+// from: https://gitlab.example.com/groupA/teams/repoA/blob/master/c.yaml
+// to:   https://gitlab.example.com/groupA/teams/repoA/raw/master/c.yaml
 export function buildRawUrl(target: string): URL {
   try {
     const url = new URL(target);
 
-    const [empty, userOrOrg, repoName, blobKeyword, ...restOfPath] =
-      url.pathname.split('/');
+    const splitPath = url.pathname.split('/').filter(Boolean);
 
-    if (
-      empty !== '' ||
-      userOrOrg === '' ||
-      repoName === '' ||
-      blobKeyword !== 'blob' ||
-      !restOfPath.join('/').match(/\.(yaml|yml)$/)
-    ) {
-      throw new Error('Wrong GitLab URL');
+    // Check blob existence
+    const blobIndex = splitPath.indexOf('blob', 2);
+    if (blobIndex < 2 || blobIndex === splitPath.length - 1) {
+      throw new InputError('Wrong GitLab URL');
+    }
+
+    // Take repo path
+    const repoPath = splitPath.slice(0, blobIndex);
+    const restOfPath = splitPath.slice(blobIndex + 1);
+
+    if (!restOfPath.join('/').match(/\.(yaml|yml)$/)) {
+      throw new InputError('Wrong GitLab URL');
     }
 
     // Replace 'blob' with 'raw'
-    url.pathname = [empty, userOrOrg, repoName, 'raw', ...restOfPath].join('/');
+    url.pathname = [...repoPath, 'raw', ...restOfPath].join('/');
 
     return url;
   } catch (e) {
-    throw new Error(`Incorrect url: ${target}, ${e}`);
+    throw new InputError(`Incorrect url: ${target}, ${e}`);
   }
 }
 

@@ -136,6 +136,11 @@ export type CreatedByUserFilter = BaseFilter &
       }
   );
 
+// Warning: (ae-missing-release-tag) "EntityAzureGitTagsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EntityAzureGitTagsContent: () => JSX.Element;
+
 // Warning: (ae-missing-release-tag) "EntityAzurePipelinesContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

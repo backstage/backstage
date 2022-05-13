@@ -21,16 +21,19 @@ import {
 import {
   BuildResult,
   BuildStatus,
+  GitTag,
   PullRequest,
   PullRequestStatus,
   RepoBuild,
 } from '@backstage/plugin-azure-devops-common';
 import {
   GitPullRequest,
+  GitRef,
   GitRepository,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
   mappedBuildRun,
+  mappedGitTag,
   mappedPullRequest,
   mappedRepoBuild,
 } from './AzureDevOpsApi';
@@ -259,6 +262,38 @@ describe('AzureDevOpsApi', () => {
         };
 
         expect(mappedRepoBuild(inputBuild)).toEqual(outputRepoBuild);
+      });
+    });
+  });
+
+  describe('mappedGitTag', () => {
+    describe('mappedGitTag happy path', () => {
+      it('should return GitTag from GitRef', () => {
+        const inputIdentityRef: IdentityRef = {
+          displayName: 'Jane Doe',
+        };
+        const inputGitRef: GitRef = {
+          name: 'refs/tags/v1.1.2',
+          creator: inputIdentityRef,
+          objectId: '1111aaaa2222bbbb3333cccc4444dddd5555eeee',
+          peeledObjectId: '1234567890abcdef1234567890abcdef12345678',
+        };
+        const inputLinkBaseUrl =
+          'https://host.com/myOrg/_git/super-feature-repo?version=GT';
+        const inputCommitBaseUrl =
+          'https://host.com/myOrg/_git/super-feature-repo/commit';
+        const outputGitTag: GitTag = {
+          name: 'v1.1.2',
+          createdBy: 'Jane Doe',
+          commitLink:
+            'https://host.com/myOrg/_git/super-feature-repo/commit/1234567890abcdef1234567890abcdef12345678',
+          objectId: '1111aaaa2222bbbb3333cccc4444dddd5555eeee',
+          peeledObjectId: '1234567890abcdef1234567890abcdef12345678',
+          link: 'https://host.com/myOrg/_git/super-feature-repo?version=GTv1.1.2',
+        };
+        expect(
+          mappedGitTag(inputGitRef, inputLinkBaseUrl, inputCommitBaseUrl),
+        ).toEqual(outputGitTag);
       });
     });
   });

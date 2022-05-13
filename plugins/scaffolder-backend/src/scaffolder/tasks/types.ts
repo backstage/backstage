@@ -47,6 +47,7 @@ export type SerializedTask = {
   status: TaskStatus;
   createdAt: string;
   lastHeartbeatAt?: string;
+  createdBy?: string;
   secrets?: TaskSecrets;
 };
 
@@ -97,6 +98,7 @@ export type TaskBrokerDispatchResult = {
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
   secrets?: TaskSecrets;
+  createdBy?: string;
 };
 
 /**
@@ -107,6 +109,7 @@ export type TaskBrokerDispatchOptions = {
 export interface TaskContext {
   spec: TaskSpec;
   secrets?: TaskSecrets;
+  createdBy?: string;
   done: boolean;
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
@@ -157,6 +160,7 @@ export type TaskStoreListEventsOptions = {
  */
 export type TaskStoreCreateTaskOptions = {
   spec: TaskSpec;
+  createdBy?: string;
   secrets?: TaskSecrets;
 };
 

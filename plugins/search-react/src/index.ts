@@ -22,6 +22,7 @@
 
 export { searchApiRef, MockSearchApi } from './api';
 export type { SearchApi } from './api';
+export * from './components';
 export {
   SearchContextProvider,
   useSearch,

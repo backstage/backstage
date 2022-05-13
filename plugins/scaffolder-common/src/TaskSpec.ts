@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { UserEntity } from '@backstage/catalog-model';
 import { JsonValue, JsonObject } from '@backstage/types';
 
 /**
@@ -91,6 +92,19 @@ export interface TaskSpecV1beta3 {
    * Some information about the template that is stored on the task spec.
    */
   templateInfo?: TemplateInfo;
+  /**
+   * Some decoration of the author of the task that should be available in the context
+   */
+  user?: {
+    /**
+     * The decorated entity from the Catalog
+     */
+    entity?: UserEntity;
+    /**
+     * An entity ref for the author of the task
+     */
+    ref?: string;
+  };
 }
 
 /**

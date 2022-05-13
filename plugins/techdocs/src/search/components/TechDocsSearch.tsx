@@ -143,13 +143,14 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
       noOptionsText="No results found"
       value={null}
       options={options}
-      renderOption={({ document }) => (
+      renderOption={({ document, highlight }) => (
         <TechDocsSearchResultListItem
           result={document}
           lineClamp={3}
           asListItem={false}
           asLink={false}
           title={document.title}
+          highlight={highlight}
         />
       )}
       loading={loading}

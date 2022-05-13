@@ -342,6 +342,7 @@ export type CreateWorkerOptions = {
 
 // @public
 export interface CurrentClaimedTask {
+  createdBy?: string;
   secrets?: TaskSecrets;
   spec: TaskSpec;
   taskId: string;
@@ -476,6 +477,7 @@ export type SerializedTask = {
   status: TaskStatus;
   createdAt: string;
   lastHeartbeatAt?: string;
+  createdBy?: string;
   secrets?: TaskSecrets;
 };
 
@@ -510,6 +512,7 @@ export interface TaskBroker {
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
   secrets?: TaskSecrets;
+  createdBy?: string;
 };
 
 // @public
@@ -524,6 +527,8 @@ export type TaskCompletionState = 'failed' | 'completed';
 export interface TaskContext {
   // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  createdBy?: string;
   // (undocumented)
   done: boolean;
   // (undocumented)
@@ -549,6 +554,8 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     logger: Logger,
   ): TaskManager;
+  // (undocumented)
+  get createdBy(): string | undefined;
   // (undocumented)
   get done(): boolean;
   // (undocumented)
@@ -609,6 +616,7 @@ export interface TaskStore {
 // @public
 export type TaskStoreCreateTaskOptions = {
   spec: TaskSpec;
+  createdBy?: string;
   secrets?: TaskSecrets;
 };
 
