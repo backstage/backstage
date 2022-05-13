@@ -32,7 +32,11 @@ const CLOCK_MARGIN_S = 10;
 export type IdentityClientOptions = {
   discovery: PluginEndpointDiscovery;
   issuer: string;
-  algorithms?: string[]; // A list of accepted JWS "alg" (Algorithm) Header Parameter values. Defaults to ['ES256']
+
+  /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+   * Must match the algorithm defined in TokenFactory.
+   * More info on supported algorithms: https://github.com/panva/jose */
+  algorithm?: string;
 };
 
 /**
@@ -45,7 +49,7 @@ export type IdentityClientOptions = {
 export class IdentityClient {
   private readonly discovery: PluginEndpointDiscovery;
   private readonly issuer: string;
-  private readonly algorithms: string[];
+  private readonly algorithm: string;
   private keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
   private keyStoreUpdated: number = 0;
 
@@ -59,7 +63,7 @@ export class IdentityClient {
   private constructor(options: IdentityClientOptions) {
     this.discovery = options.discovery;
     this.issuer = options.issuer;
-    this.algorithms = options.algorithms || ['ES256'];
+    this.algorithm = options.algorithm ?? 'ES256';
   }
 
   /**
@@ -84,7 +88,7 @@ export class IdentityClient {
       throw new AuthenticationError('No keystore exists');
     }
     const decoded = await jwtVerify(token, this.keyStore, {
-      algorithms: this.algorithms,
+      algorithms: [this.algorithm],
       audience: 'backstage',
       issuer: this.issuer,
     });

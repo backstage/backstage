@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { IdentityClient } from '@backstage/plugin-auth-node';
 import { createRouter } from '@backstage/plugin-permission-backend';
 import {
@@ -22,6 +21,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { Router } from 'express';
+
 import { PluginEnvironment } from '../types';
 
 class AllowAllPermissionPolicy implements PermissionPolicy {
