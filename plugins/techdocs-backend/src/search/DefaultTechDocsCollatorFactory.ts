@@ -179,7 +179,18 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
                   },
                 },
               );
-              const searchIndex = await searchIndexResponse.json();
+
+              // todo(@backstage/techdocs-core): remove Promise.race() when node-fetch is 3.x+
+              // workaround for fetch().json() hanging in node-fetch@2.x.x, fixed in 3.x.x
+              // https://github.com/node-fetch/node-fetch/issues/665
+              const searchIndex = await Promise.race([
+                searchIndexResponse.json(),
+                new Promise((_resolve, reject) => {
+                  setTimeout(() => {
+                    reject('Could not parse JSON in 5 seconds.');
+                  }, 5000);
+                }),
+              ]);
 
               return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
                 title: unescape(doc.title),

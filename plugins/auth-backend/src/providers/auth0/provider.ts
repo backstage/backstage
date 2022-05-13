@@ -243,7 +243,6 @@ export const auth0 = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: true,
           providerId,
           callbackUrl,
         });

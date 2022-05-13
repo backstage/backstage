@@ -87,6 +87,26 @@ describe('gitlab core', () => {
         url: 'https://gitlab.example.com/a/b/blob/master/c.yaml',
         result: 'https://gitlab.example.com/a/b/raw/master/c.yaml',
       },
+      {
+        config: configWithNoToken,
+        url: 'https://gitlab.example.com/a/b/repo/blob/master/c.yaml',
+        result: 'https://gitlab.example.com/a/b/repo/raw/master/c.yaml',
+      },
+      {
+        config: configWithNoToken,
+        url: 'https://gitlab.example.com/a/blob/blob/master/c.yaml',
+        result: 'https://gitlab.example.com/a/blob/raw/master/c.yaml',
+      },
+      {
+        config: configWithNoToken,
+        url: 'https://gitlab.example.com/a/b/blob/blob/c.yaml',
+        result: 'https://gitlab.example.com/a/b/raw/blob/c.yaml',
+      },
+      {
+        config: configWithNoToken,
+        url: 'https://gitlab.example.com/a//blob/blob/c.yaml',
+        result: 'https://gitlab.example.com/a/blob/raw/c.yaml',
+      },
     ])('should handle happy path %#', async ({ config, url, result }) => {
       await expect(getGitLabFileFetchUrl(url, config)).resolves.toBe(result);
     });

@@ -617,16 +617,18 @@ export class ServerTokenManager implements TokenManager {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options: {
-      logger: Logger;
-    },
+    options: ServerTokenManagerOptions,
   ): ServerTokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;
   }>;
-  // (undocumented)
   static noop(): TokenManager;
+}
+
+// @public
+export interface ServerTokenManagerOptions {
+  logger: Logger;
 }
 
 // @public
@@ -687,10 +689,8 @@ export interface StatusCheckHandlerOptions {
 
 // @public
 export interface TokenManager {
-  // (undocumented)
-  authenticate: (token: string) => Promise<void>;
-  // (undocumented)
-  getToken: () => Promise<{
+  authenticate(token: string): Promise<void>;
+  getToken(): Promise<{
     token: string;
   }>;
 }

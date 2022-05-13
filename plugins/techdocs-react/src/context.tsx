@@ -66,10 +66,7 @@ export type TechDocsReaderPageValue = {
   onReady?: () => void;
 };
 
-/**
- * @alpha
- */
-export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
+const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   title: '',
   subtitle: '',
   setTitle: () => {},
@@ -153,7 +150,7 @@ export const TechDocsReaderPageProvider = memo(
 
 /**
  * Hook used to get access to shared state between reader page components.
- * @alpha
+ * @public
  */
 export const useTechDocsReaderPage = () => {
   const versionedContext = useContext(TechDocsReaderPageContext);

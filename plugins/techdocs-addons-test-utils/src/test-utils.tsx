@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { ReactElement, Fragment } from 'react';
-
-// Shadow DOM support for the simple and complete DOM testing utilities
-// https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
-import { screen } from 'testing-library__dom';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { Route } from 'react-router-dom';
-import { act, render } from '@testing-library/react';
-
-import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { ApiRef } from '@backstage/core-plugin-api';
-
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { catalogPlugin } from '@backstage/plugin-catalog';
+import { searchApiRef } from '@backstage/plugin-search-react';
+import { techdocsPlugin, TechDocsReaderPage } from '@backstage/plugin-techdocs';
 import {
   TechDocsAddons,
   techdocsApiRef,
@@ -34,11 +26,15 @@ import {
   TechDocsMetadata,
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
-import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
-import { catalogPlugin } from '@backstage/plugin-catalog';
-import { searchApiRef } from '@backstage/plugin-search-react';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
+import { act, render } from '@testing-library/react';
+import React, { Fragment, ReactElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Route } from 'react-router-dom';
+import { screen } from 'testing-library__dom';
 
+// Shadow DOM support for the simple and complete DOM testing utilities
+// https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
 const techdocsApi = {
   getTechDocsMetadata: jest.fn(),
   getEntityMetadata: jest.fn(),
@@ -65,14 +61,18 @@ type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
   : never;
 
 /** @ignore */
-type TechdocsAddonTesterApis<T> = TechDocsAddonTesterTestApiPair<T>[];
+type TechdocsAddonTesterApis<TApiPairs> = {
+  [TIndex in keyof TApiPairs]: TechDocsAddonTesterTestApiPair<
+    TApiPairs[TIndex]
+  >;
+};
 
 type TechDocsAddonTesterOptions = {
   dom: ReactElement;
   entity: Partial<TechDocsEntityMetadata>;
   metadata: Partial<TechDocsMetadata>;
   componentId: string;
-  apis: TechdocsAddonTesterApis<any>;
+  apis: TechdocsAddonTesterApis<any[]>;
   path: string;
 };
 
@@ -109,13 +109,27 @@ const defaultDom = (
 );
 
 /**
+ * Utility class for rendering TechDocs Addons end-to-end within the TechDocs
+ * reader page, with a set of givens (e.g. page DOM, metadata, etc).
+ *
+ * @example
+ * ```tsx
+ * const { getByText } = await TechDocsAddonTester.buildAddonsInTechDocs([<AnAddon />])
+ *   .withDom(<body>TEST_CONTENT</body>)
+ *   .renderWithEffects();
+ *
+ * expect(getByText('TEST_CONTENT')).toBeInTheDocument();
+ * ```
+ *
  * @public
  */
-
 export class TechDocsAddonTester {
   private options: TechDocsAddonTesterOptions = defaultOptions;
   private addons: ReactElement[];
 
+  /**
+   * Get a TechDocsAddonTester instance for a given set of Addons.
+   */
   static buildAddonsInTechDocs(addons: ReactElement[]) {
     return new TechDocsAddonTester(addons);
   }
@@ -125,7 +139,10 @@ export class TechDocsAddonTester {
     this.addons = addons;
   }
 
-  withApis<T>(apis: TechdocsAddonTesterApis<T>) {
+  /**
+   * Provide mock API implementations if your Addon expects any.
+   */
+  withApis<T extends any[]>(apis: TechdocsAddonTesterApis<T>) {
     const refs = apis.map(([ref]) => ref);
     this.options.apis = this.options.apis
       .filter(([ref]) => !refs.includes(ref))
@@ -133,28 +150,46 @@ export class TechDocsAddonTester {
     return this;
   }
 
+  /**
+   * Provide mock HTML if your Addon expects it in the shadow DOM.
+   */
   withDom(dom: ReactElement) {
     this.options.dom = dom;
     return this;
   }
 
+  /**
+   * Provide mock techdocs_metadata.json values if your Addon needs it.
+   */
   withMetadata(metadata: Partial<TechDocsMetadata>) {
     this.options.metadata = metadata;
     return this;
   }
 
+  /**
+   * Provide a mock entity if your Addon needs it. This also controls the base
+   * path at which the Addon is rendered.
+   */
   withEntity(entity: Partial<TechDocsEntityMetadata>) {
     this.options.entity = entity;
     return this;
   }
 
+  /**
+   * Provide the TechDocs page path at which the Addon is rendered (e.g. the
+   * part of the path after the entity namespace/kind/name).
+   */
   atPath(path: string) {
     this.options.path = path;
     return this;
   }
 
+  /**
+   * Return a fully configured and mocked TechDocs reader page within a test
+   * App instance, using the given Addon(s).
+   */
   build() {
-    const apis: TechdocsAddonTesterApis<any> = [
+    const apis: TechdocsAddonTesterApis<any[]> = [
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],
@@ -219,11 +254,19 @@ export class TechDocsAddonTester {
     });
   }
 
-  // Components using useEffect to perform an asynchronous action (such as fetch) must be rendered within an async
-  // act call to properly get the final state, even with mocked responses. This utility method makes the signature a bit
-  // cleaner, since act doesn't return the result of the evaluated function.
-  // https://github.com/testing-library/react-testing-library/issues/281
-  // https://github.com/facebook/react/pull/14853
+  /**
+   * Render the Addon within a fully configured and mocked TechDocs reader.
+   *
+   * @remarks
+   * Components using useEffect to perform an asynchronous action (such as
+   * fetch) must be rendered within an async act call to properly get the final
+   * state, even with mocked responses. This utility method makes the signature
+   * a bit cleaner, since act doesn't return the result of the evaluated
+   * function.
+   *
+   * @see https://github.com/testing-library/react-testing-library/issues/281
+   * @see https://github.com/facebook/react/pull/14853
+   */
   async renderWithEffects(): Promise<
     typeof screen & { shadowRoot: ShadowRoot | null }
   > {
