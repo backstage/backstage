@@ -371,6 +371,7 @@ following objects:
 - replicasets
 - horizontalpodautoscalers
 - ingresses
+- statefulsets
 
 The following RBAC permissions are required on the batch API group for the
 following objects:

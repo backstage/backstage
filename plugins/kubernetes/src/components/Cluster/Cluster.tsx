@@ -29,6 +29,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DeploymentsAccordions } from '../DeploymentsAccordions';
+import { StatefulSetsAccordions } from '../StatefulSetsAccordions';
 import { groupResponses } from '../../utils/response';
 import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
@@ -141,6 +142,9 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   </Grid>
                   <Grid item>
                     <DeploymentsAccordions />
+                  </Grid>
+                  <Grid item>
+                    <StatefulSetsAccordions />
                   </Grid>
                   <Grid item>
                     <IngressesAccordions />

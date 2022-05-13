@@ -248,6 +248,7 @@ rebase
 Recharts
 Redash
 replicasets
+statefulsets
 repo
 Repo
 repos

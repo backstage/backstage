@@ -54,6 +54,9 @@ export const groupResponses = (
         case 'customresources':
           prev.customResources.push(...next.resources);
           break;
+        case 'statefulsets':
+          prev.statefulsets.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -69,6 +72,7 @@ export const groupResponses = (
       jobs: [],
       cronJobs: [],
       customResources: [],
+      statefulsets: [],
     } as GroupedResponses,
   );
 };

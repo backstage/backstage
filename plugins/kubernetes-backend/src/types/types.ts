@@ -77,7 +77,8 @@ export type KubernetesObjectTypes =
   | 'jobs'
   | 'cronjobs'
   | 'ingresses'
-  | 'customresources';
+  | 'customresources'
+  | 'statefulsets';
 
 // Used to load cluster details from different sources
 export interface KubernetesClustersSupplier {

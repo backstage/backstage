@@ -25,6 +25,7 @@ import {
   V1Ingress,
   V1Job,
   V1CronJob,
+  V1StatefulSet,
 } from '@kubernetes/client-node';
 
 export interface DeploymentResources {
@@ -41,6 +42,7 @@ export interface GroupedResponses extends DeploymentResources {
   jobs: V1Job[];
   cronJobs: V1CronJob[];
   customResources: any[];
+  statefulsets: V1StatefulSet[];
 }
 
 export interface ClusterLinksFormatterOptions {

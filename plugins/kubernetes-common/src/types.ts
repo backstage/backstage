@@ -25,6 +25,7 @@ import {
   V1Pod,
   V1ReplicaSet,
   V1Service,
+  V1StatefulSet,
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
@@ -99,7 +100,8 @@ export type FetchResponse =
   | JobsFetchResponse
   | CronJobsFetchResponse
   | IngressesFetchResponse
-  | CustomResourceFetchResponse;
+  | CustomResourceFetchResponse
+  | StatefulSetsFetchResponse;
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -149,6 +151,11 @@ export interface IngressesFetchResponse {
 export interface CustomResourceFetchResponse {
   type: 'customresources';
   resources: Array<any>;
+}
+
+export interface StatefulSetsFetchResponse {
+  type: 'statefulsets';
+  resources: Array<V1StatefulSet>;
 }
 
 export interface KubernetesFetchError {
