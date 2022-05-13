@@ -1,12 +1,13 @@
 ---
 # prettier-ignore
 title: "Introducing the TechDocs Addon Framework"
-author: Gary Niemen and Eric Peterson, Spotify
+author: Gary Niemen, Spotify
 authorURL: https://github.com/garyniemen/
-authorImageURL: https://github.com/garyniemen/.png
-authorURL: https://github.com/iamEAP/
-authorImageURL: https://github.com/iamEAP/.png
+authorImageURL: https://avatars.githubusercontent.com/u/65337273?v=4
 ---
+
+_This blog post is co-authored by Eric Peterson ([@iamEAP](https://github.com/iamEAP)), Spotify._
+
 
 ![backstage header](assets/22-05-13/techdocs-addon-header.gif)
 
