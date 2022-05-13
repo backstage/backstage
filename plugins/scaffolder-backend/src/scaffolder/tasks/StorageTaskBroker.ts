@@ -151,7 +151,7 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly logger: Logger,
   ) {}
 
-  async list(options?: Partial<SerializedTask>): Promise<SerializedTask[]> {
+  async list(options?: { createdBy?: string }): Promise<SerializedTask[]> {
     return await this.storage.list({ createdBy: options?.createdBy });
   }
 
