@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback } from 'react';
-import { create } from 'jss';
+import React, { useCallback } from 'react';
 
-import { makeStyles, Grid, Portal } from '@material-ui/core';
-import { StylesProvider, jssPreset } from '@material-ui/styles';
+import { makeStyles, Grid } from '@material-ui/core';
 
 import {
-  useTechDocsAddons,
-  TechDocsAddonLocations as locations,
+  TechDocsShadowDom,
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -33,6 +30,7 @@ import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 
 import { useTechDocsReaderDom } from './dom';
 import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
+import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
 
 const useStyles = makeStyles({
   search: {
@@ -71,78 +69,24 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
   (props: TechDocsReaderPageContentProps) => {
     const { withSearch = true, onReady } = props;
     const classes = useStyles();
-    const addons = useTechDocsAddons();
+
     const {
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
-      shadowRoot,
       setShadowRoot,
     } = useTechDocsReaderPage();
+
     const dom = useTechDocsReaderDom(entityRef);
 
-    const [jss, setJss] = useState(
-      create({
-        ...jssPreset(),
-        insertionPoint: undefined,
-      }),
-    );
-
-    const ref = useCallback(
-      (shadowHost: HTMLDivElement) => {
-        if (!dom || !shadowHost) return;
-
-        setJss(
-          create({
-            ...jssPreset(),
-            insertionPoint: dom.querySelector('head') || undefined,
-          }),
-        );
-
-        const newShadowRoot =
-          shadowHost.shadowRoot ?? shadowHost.attachShadow({ mode: 'open' });
-        newShadowRoot.innerHTML = '';
-        newShadowRoot.appendChild(dom);
+    const handleAppend = useCallback(
+      (newShadowRoot: ShadowRoot) => {
         setShadowRoot(newShadowRoot);
         if (onReady instanceof Function) {
           onReady();
         }
       },
-      [dom, setShadowRoot, onReady],
+      [setShadowRoot, onReady],
     );
-
-    const contentElement = shadowRoot?.querySelector(
-      '[data-md-component="content"]',
-    );
-
-    const primarySidebarElement = shadowRoot?.querySelector(
-      'div[data-md-component="sidebar"][data-md-type="navigation"], div[data-md-component="navigation"]',
-    );
-    let primarySidebarAddonLocation = primarySidebarElement?.querySelector(
-      '[data-techdocs-addons-location="primary sidebar"]',
-    );
-    if (!primarySidebarAddonLocation) {
-      primarySidebarAddonLocation = document.createElement('div');
-      primarySidebarAddonLocation.setAttribute(
-        'data-techdocs-addons-location',
-        'primary sidebar',
-      );
-      primarySidebarElement?.prepend(primarySidebarAddonLocation);
-    }
-
-    const secondarySidebarElement = shadowRoot?.querySelector(
-      'div[data-md-component="sidebar"][data-md-type="toc"], div[data-md-component="toc"]',
-    );
-    let secondarySidebarAddonLocation = secondarySidebarElement?.querySelector(
-      '[data-techdocs-addons-location="secondary sidebar"]',
-    );
-    if (!secondarySidebarAddonLocation) {
-      secondarySidebarAddonLocation = document.createElement('div');
-      secondarySidebarAddonLocation.setAttribute(
-        'data-techdocs-addons-location',
-        'secondary sidebar',
-      );
-      secondarySidebarElement?.prepend(secondarySidebarAddonLocation);
-    }
 
     // No entity metadata = 404. Don't render content at all.
     if (entityMetadataLoading === false && !entityMetadata)
@@ -174,19 +118,10 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
             </Grid>
           )}
           <Grid xs={12} item>
-            {/* sheetsManager={new Map()} is needed in order to deduplicate the injection of CSS in the page. */}
-            <StylesProvider jss={jss} sheetsManager={new Map()}>
-              <div ref={ref} data-testid="techdocs-native-shadowroot" />
-              <Portal container={primarySidebarAddonLocation}>
-                {addons.renderComponentsByLocation(locations.PrimarySidebar)}
-              </Portal>
-              <Portal container={contentElement}>
-                {addons.renderComponentsByLocation(locations.Content)}
-              </Portal>
-              <Portal container={secondarySidebarAddonLocation}>
-                {addons.renderComponentsByLocation(locations.SecondarySidebar)}
-              </Portal>
-            </StylesProvider>
+            {/* Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times */}
+            <TechDocsShadowDom element={dom} onAppend={handleAppend}>
+              <TechDocsReaderPageContentAddons />
+            </TechDocsShadowDom>
           </Grid>
         </Grid>
       </Content>
