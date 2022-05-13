@@ -370,15 +370,13 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   const { isOpen } = useContext(SidebarContext);
 
   const divStyle =
-    !isOpen && children ? { marginLeft: '24px', marginBottom: '4px' } : {};
+    !isOpen && children ? { display: 'flex', marginLeft: '24px' } : {};
 
   const displayItemIcon = (
-    <>
-      <div style={divStyle}>
-        <Icon fontSize="small" />
-        {!isOpen && children ? <ArrowRightIcon /> : <></>}
-      </div>
-    </>
+    <div style={divStyle}>
+      <Icon fontSize="small" />
+      {!isOpen && children ? <ArrowRightIcon /> : <></>}
+    </div>
   );
 
   const itemIcon = (
