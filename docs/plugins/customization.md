@@ -16,12 +16,24 @@ When you are creating your plugin, you have a possibility to use a metadata fiel
 customizable elements. For example
 
 ```typescript jsx
+export type MyPluginMetadataProps = {
+  createButtonTitle: string;
+};
+
+export const myPluginMetadataRef = createMetadataRef<MyPluginMetadataProps>({
+  id: 'MyPluginMetadataProvider',
+});
+
+export const myPluginMetadata = {
+  MyPluginMetadataProvider: {
+    // or [myPluginMetadataRef.id]
+    createButtonTitle: 'Create Component',
+  },
+};
+
 const plugin = createPlugin({
   id: 'myPlugin',
-  metadata: {
-    mainHeaderText: 'Welcome to my plugin',
-    submitButton: () => <button>Save</button>,
-  },
+  metadata: [myPluginMetadata],
 });
 ```
 
@@ -29,12 +41,12 @@ And the rendering part of the exposed component can retrieve that metadata as:
 
 ```typescript jsx
 export function DefaultMyPluginWelcomePage(props: DefaultMyPluginWelcomeProps) {
-  const { mainHeaderText, submitButton } = this.props.metadata;
+  const { createButtonTitle } =
+    useMetadata<DefaultMyPluginWelcomeProps>(myPluginMetadataRef);
 
   return (
     <div>
-      <h1>{mainHeaderText}</h1>
-      <div>{submitButton}</div>
+      <button>{createButtonTitle}</button>
     </div>
   );
 }
@@ -49,7 +61,9 @@ plugin. Example:
 import { myPlugin } from '@backstage/my-plugin';
 
 myPlugin.reconfigure({
-  mainHeaderText: 'Custom header',
-  submitButton: () => <button>Apply</button>,
+  MyPluginMetadataProvider: {
+    // or [myPluginMetadataRef.id]
+    createButtonTitle: 'Make Component',
+  },
 });
 ```
