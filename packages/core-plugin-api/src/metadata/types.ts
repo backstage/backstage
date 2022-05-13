@@ -15,16 +15,20 @@
  */
 
 /**
- * Core API used by Backstage plugins
+ * Metadata reference.
  *
- * @packageDocumentation
+ * @public
  */
+export type MetadataRef<T> = {
+  id: string;
+  T: T;
+};
 
-export * from './analytics';
-export * from './apis';
-export * from './metadata';
-export * from './app';
-export * from './extensions';
-export * from './icons';
-export * from './plugin';
-export * from './routing';
+/**
+ * Provides lookup of metadata through their {@link MetadataRef}s.
+ *
+ * @public
+ */
+export type MetadataHolder = {
+  get<T>(key: MetadataRef<T>): T | undefined;
+};

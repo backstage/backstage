@@ -59,7 +59,7 @@ export type AnyMetadata = { [name: string]: any };
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginMetadata extends AnyMetadata = {},
+  PluginMetadata extends AnyMetadata = { [name: string]: any },
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -67,9 +67,9 @@ export type BackstagePlugin<
    * Returns all registered feature flags for this plugin.
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
-  getMetadata(): PluginMetadata;
+  getMetadata(): Iterable<PluginMetadata>;
   provide<T>(extension: Extension<T>): T;
-  reconfigure(metadata: PluginMetadata): BackstagePlugin;
+  reconfigure(metadata: PluginMetadata): void;
   routes: Routes;
   externalRoutes: ExternalRoutes;
 };
@@ -99,7 +99,7 @@ export type PluginConfig<
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  metadata?: PluginMetadata;
+  metadata?: Iterable<PluginMetadata>;
 };
 
 /**

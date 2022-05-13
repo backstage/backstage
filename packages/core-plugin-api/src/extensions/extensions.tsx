@@ -245,7 +245,7 @@ export function createReactExtension<
                   ...(mountPoint && { routeRef: mountPoint.id }),
                 }}
               >
-                <Component {...{ ...props, metadata: plugin.getMetadata() }} />
+                <Component {...props} />
               </AnalyticsContext>
             </PluginErrorBoundary>
           </Suspense>

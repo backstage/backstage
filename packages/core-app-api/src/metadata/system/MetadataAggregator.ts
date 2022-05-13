@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-/**
- * Core API used by Backstage plugins
- *
- * @packageDocumentation
- */
+import { MetadataRef, MetadataHolder } from '@backstage/core-plugin-api';
 
-export * from './analytics';
-export * from './apis';
-export * from './metadata';
-export * from './app';
-export * from './extensions';
-export * from './icons';
-export * from './plugin';
-export * from './routing';
+/**
+ * An MetadataHolder that queries multiple other holders from for
+ * an metadata implementation, returning the first one encountered..
+ */
+export class MetadataAggregator implements MetadataHolder {
+  private readonly holders: MetadataHolder[];
+
+  constructor(...holders: MetadataHolder[]) {
+    this.holders = holders;
+  }
+
+  get<T>(ref: MetadataRef<T>): T | undefined {
+    for (const holder of this.holders) {
+      const metadata = holder.get(ref);
+      if (metadata) {
+        return metadata;
+      }
+    }
+    return undefined;
+  }
+}

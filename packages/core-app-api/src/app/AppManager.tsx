@@ -47,6 +47,7 @@ import {
   IdentityApi,
   identityApiRef,
   BackstagePlugin,
+  MetadataHolder,
 } from '@backstage/core-plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -80,6 +81,7 @@ import { defaultConfigLoader } from './defaultConfigLoader';
 import { ApiRegistry } from '../apis/system/ApiRegistry';
 import { resolveRouteBindings } from './resolveRouteBindings';
 import { BackstageRouteObject } from '../routing/types';
+import { MetadataProvider, MetadataRegistry } from '../metadata';
 
 type CompatiblePlugin =
   | BackstagePlugin<any, any>
@@ -173,6 +175,7 @@ export class AppManager implements BackstageApp {
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
+  private readonly metadataRegistry: MetadataRegistry;
 
   constructor(options: AppOptions) {
     this.apis = options.apis ?? [];
@@ -184,6 +187,7 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
+    this.metadataRegistry = new MetadataRegistry();
   }
 
   getPlugins(): BackstagePlugin<any, any>[] {
@@ -298,23 +302,25 @@ export class AppManager implements BackstageApp {
 
       return (
         <ApiProvider apis={this.getApiHolder()}>
-          <AppContextProvider appContext={appContext}>
-            <ThemeProvider>
-              <RoutingProvider
-                routePaths={routing.paths}
-                routeParents={routing.parents}
-                routeObjects={routing.objects}
-                routeBindings={routeBindings}
-                basePath={getBasePath(loadedConfig.api)}
-              >
-                <InternalAppContext.Provider
-                  value={{ routeObjects: routing.objects }}
+          <MetadataProvider metadata={this.getMetadataHolder()}>
+            <AppContextProvider appContext={appContext}>
+              <ThemeProvider>
+                <RoutingProvider
+                  routePaths={routing.paths}
+                  routeParents={routing.parents}
+                  routeObjects={routing.objects}
+                  routeBindings={routeBindings}
+                  basePath={getBasePath(loadedConfig.api)}
                 >
-                  {children}
-                </InternalAppContext.Provider>
-              </RoutingProvider>
-            </ThemeProvider>
-          </AppContextProvider>
+                  <InternalAppContext.Provider
+                    value={{ routeObjects: routing.objects }}
+                  >
+                    {children}
+                  </InternalAppContext.Provider>
+                </RoutingProvider>
+              </ThemeProvider>
+            </AppContextProvider>
+          </MetadataProvider>
         </ApiProvider>
       );
     };
@@ -393,6 +399,22 @@ export class AppManager implements BackstageApp {
     };
 
     return AppRouter;
+  }
+
+  private getMetadataHolder(): MetadataHolder {
+    for (const plugin of this.plugins) {
+      if (plugin.getMetadata) {
+        for (const entry of plugin.getMetadata()) {
+          for (const entryKey in entry) {
+            if (entry.hasOwnProperty(entryKey)) {
+              this.metadataRegistry.register(entryKey, entry[entryKey]);
+            }
+          }
+        }
+      }
+    }
+
+    return this.metadataRegistry;
   }
 
   private getApiHolder(): ApiHolder {

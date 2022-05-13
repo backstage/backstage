@@ -23,7 +23,6 @@ import {
   AnyMetadata,
   PluginFeatureFlagConfig,
 } from './types';
-import { merge } from 'lodash';
 import { AnyApiFactory } from '../apis';
 
 /**
@@ -43,6 +42,8 @@ export class PluginImpl<
     >,
   ) {}
 
+  private reconfiguredMetadata: Array<PluginMetadata> = [];
+
   getId(): string {
     return this.config.id;
   }
@@ -55,8 +56,11 @@ export class PluginImpl<
     return this.config.featureFlags?.slice() ?? [];
   }
 
-  getMetadata(): PluginMetadata {
-    return this.config.metadata ?? ({} as PluginMetadata);
+  getMetadata(): Iterable<PluginMetadata> {
+    return [
+      ...Array.from(this.config.metadata ?? []),
+      ...this.reconfiguredMetadata,
+    ];
   }
 
   get routes(): Routes {
@@ -71,9 +75,8 @@ export class PluginImpl<
     return extension.expose(this);
   }
 
-  reconfigure(metadata: PluginMetadata): BackstagePlugin {
-    this.config.metadata = merge(this.config.metadata, metadata);
-    return this;
+  reconfigure(metadata: PluginMetadata): void {
+    this.reconfiguredMetadata.push(metadata);
   }
 
   toString() {

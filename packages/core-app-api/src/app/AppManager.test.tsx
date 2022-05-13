@@ -34,6 +34,8 @@ import {
   createSubRouteRef,
   createRoutableExtension,
   analyticsApiRef,
+  createMetadataRef,
+  useMetadata,
 } from '@backstage/core-plugin-api';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
@@ -164,6 +166,179 @@ describe('Integration Test', () => {
   };
 
   const icons = {} as AppIcons;
+
+  it('should be possible to define customizable values via metadata', async () => {
+    type CustomPluginMetadataProps = {
+      pluginLabel: string;
+    };
+
+    const customPluginMetadataRef =
+      createMetadataRef<CustomPluginMetadataProps>({
+        id: 'custom.plugin.provider',
+      });
+
+    const customPluginMetadata = {
+      [customPluginMetadataRef.id]: {
+        pluginLabel: 'Default Label',
+      },
+    };
+
+    const extRouteCustomRef = createExternalRouteRef({
+      id: 'extRouteCustomRef',
+      params: ['x'],
+    });
+
+    const customPlugin = createPlugin({
+      id: 'custom-plugin',
+      externalRoutes: {
+        extRouteCustomRef,
+      },
+      metadata: [customPluginMetadata],
+    });
+
+    const customPluginRef = createRouteRef({ id: 'custom-ref', params: ['x'] });
+
+    const CustomPlugin = () => {
+      const { pluginLabel } = useMetadata<CustomPluginMetadataProps>(
+        customPluginMetadataRef,
+      );
+
+      return (
+        <>
+          <div data-testid="plugin-label">{pluginLabel}</div>
+        </>
+      );
+    };
+
+    const CustomComponent = customPlugin.provide(
+      createRoutableExtension({
+        name: 'CustomComponent',
+        component: () => Promise.resolve(() => <CustomPlugin />),
+        mountPoint: customPluginRef,
+      }),
+    );
+
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes: [],
+      icons,
+      plugins: [customPlugin],
+      components,
+      configLoader: async () => [],
+      bindRoutes: ({ bind }) => {
+        bind(customPlugin.externalRoutes, {
+          extRouteCustomRef: customPluginRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<CustomComponent />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(await screen.getByText('Default Label')).toBeInTheDocument();
+  });
+
+  it('should be possible to reconfigure customizable values via metadata', async () => {
+    type CustomPluginMetadataProps = {
+      pluginLabel: string;
+    };
+
+    const customPluginMetadataRef =
+      createMetadataRef<CustomPluginMetadataProps>({
+        id: 'custom.plugin.provider',
+      });
+
+    const customPluginMetadata = {
+      [customPluginMetadataRef.id]: {
+        pluginLabel: 'Default Label',
+      },
+    };
+
+    const extRouteCustomRef = createExternalRouteRef({
+      id: 'extRouteCustomRef',
+      params: ['x'],
+    });
+
+    const customPlugin = createPlugin({
+      id: 'custom-plugin',
+      externalRoutes: {
+        extRouteCustomRef,
+      },
+      metadata: [customPluginMetadata],
+    });
+
+    customPlugin.reconfigure({
+      [customPluginMetadataRef.id]: {
+        pluginLabel: 'Custom Label',
+      },
+    });
+
+    const customPluginRef = createRouteRef({
+      id: 'custom-ref-2',
+      params: ['x'],
+    });
+
+    const RedefinedCustom = () => {
+      const { pluginLabel } = useMetadata<CustomPluginMetadataProps>(
+        customPluginMetadataRef,
+      );
+
+      return (
+        <>
+          <div data-testid="plugin-label">{pluginLabel}</div>
+        </>
+      );
+    };
+
+    const RedefinedCustomPlugin = customPlugin.provide(
+      createRoutableExtension({
+        name: 'RedefinedCustomPlugin',
+        component: () => Promise.resolve(() => <RedefinedCustom />),
+        mountPoint: customPluginRef,
+      }),
+    );
+
+    const app = new AppManager({
+      apis: [],
+      defaultApis: [],
+      themes: [],
+      icons,
+      plugins: [customPlugin],
+      components,
+      configLoader: async () => [],
+      bindRoutes: ({ bind }) => {
+        bind(customPlugin.externalRoutes, {
+          extRouteCustomRef: customPluginRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<RedefinedCustomPlugin />} />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(screen.getByText('Custom Label')).toBeInTheDocument();
+  });
 
   it('runs happy paths', async () => {
     const app = new AppManager({

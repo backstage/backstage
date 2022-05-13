@@ -32,35 +32,3 @@ describe('Plugin Feature Flag', () => {
     ).toEqual([]);
   });
 });
-
-describe('Plugin metadata', () => {
-  it('should be able to define metadata', () => {
-    expect(
-      createPlugin({
-        id: 'test',
-        metadata: {
-          key: 'value',
-        },
-      }).getMetadata(),
-    ).toEqual({
-      key: 'value',
-    });
-  });
-
-  it('should be able to reconfigure metadata', () => {
-    const plugin = createPlugin({
-      id: 'test',
-      metadata: {
-        key: 'original-value',
-      },
-    });
-
-    plugin.reconfigure({
-      key: 'modified-value',
-    });
-
-    expect(plugin.getMetadata()).toEqual({
-      key: 'modified-value',
-    });
-  });
-});
