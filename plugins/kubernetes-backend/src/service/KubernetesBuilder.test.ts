@@ -73,7 +73,11 @@ describe('KubernetesBuilder', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
-    const { router } = await KubernetesBuilder.createBuilder({ config, logger, catalogApi: mockCatalog })
+    const { router } = await KubernetesBuilder.createBuilder({
+      config,
+      logger,
+      catalogApi: mockCatalog,
+    })
       .setObjectsProvider(kubernetesFanOutHandler)
       .setClusterSupplier(clusterSupplier)
       .build();
@@ -212,7 +216,7 @@ describe('KubernetesBuilder', () => {
       };
 
       const serviceLocator: KubernetesServiceLocator = {
-        getClustersByServiceId(entity: Entity): Promise<ClusterDetails[]> {
+        getClustersByServiceId(_entity: Entity): Promise<ClusterDetails[]> {
           return Promise.resolve([someCluster]);
         },
       };
@@ -242,7 +246,7 @@ describe('KubernetesBuilder', () => {
       const { router } = await KubernetesBuilder.createBuilder({
         logger,
         config,
-        catalogApi: mockCatalog
+        catalogApi: mockCatalog,
       })
         .setClusterSupplier(clusterSupplier)
         .setServiceLocator(serviceLocator)

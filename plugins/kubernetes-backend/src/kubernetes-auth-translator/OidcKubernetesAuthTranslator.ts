@@ -16,12 +16,12 @@
 
 import { KubernetesAuthTranslator } from './types';
 import { ClusterDetails } from '../types/types';
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import { AuthConfig } from '@backstage/plugin-kubernetes-common';
 
 export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
   async decorateClusterDetailsWithAuth(
     clusterDetails: ClusterDetails,
-    requestBody: KubernetesRequestBody,
+    authConfig: AuthConfig,
   ): Promise<ClusterDetails> {
     const clusterDetailsWithAuthToken: ClusterDetails = Object.assign(
       {},
@@ -36,8 +36,7 @@ export class OidcKubernetesAuthTranslator implements KubernetesAuthTranslator {
       );
     }
 
-    const authToken: string | undefined =
-      requestBody.auth?.oidc?.[oidcTokenProvider];
+    const authToken: string | undefined = authConfig?.oidc?.[oidcTokenProvider];
 
     if (authToken) {
       clusterDetailsWithAuthToken.serviceAccountToken = authToken;

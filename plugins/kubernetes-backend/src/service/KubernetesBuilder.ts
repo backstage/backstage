@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CompoundEntityRef, parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
-import express, {Request} from 'express';
+import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Duration } from 'luxon';
@@ -34,8 +38,8 @@ import {
 } from '../types/types';
 import {
   CustomResource,
-  KubernetesObjectTypes
-} from "@backstage/plugin-kubernetes-common"
+  KubernetesObjectTypes,
+} from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
   DEFAULT_OBJECTS,
@@ -118,7 +122,11 @@ export class KubernetesBuilder {
         objectTypesToFetch: this.getObjectTypesToFetch(),
       });
 
-    const router = this.buildRouter(objectsProvider, clusterSupplier, this.env.catalogApi);
+    const router = this.buildRouter(
+      objectsProvider,
+      clusterSupplier,
+      this.env.catalogApi,
+    );
 
     return {
       clusterSupplier,
@@ -225,7 +233,7 @@ export class KubernetesBuilder {
   protected buildRouter(
     objectsProvider: KubernetesObjectsProvider,
     clusterSupplier: KubernetesClustersSupplier,
-    catalogClient: CatalogApi
+    catalogClient: CatalogApi,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
@@ -233,29 +241,32 @@ export class KubernetesBuilder {
 
     // TODO fix any
     const getEntityByReq = async (req: Request<any>) => {
-      const rawEntityRef = req.query.entity; 
-      if (rawEntityRef && typeof rawEntityRef !== 'string') { 
-        throw new InputError(`entity query must be a string`); 
-      } else if (!rawEntityRef){
-        throw new InputError("entity is a required field")
+      const rawEntityRef = req.query.entity;
+      if (rawEntityRef && typeof rawEntityRef !== 'string') {
+        throw new InputError(`entity query must be a string`);
+      } else if (!rawEntityRef) {
+        throw new InputError('entity is a required field');
       }
-      let entityRef: CompoundEntityRef | undefined = undefined; 
-      
-      try { 
-        entityRef = parseEntityRef(rawEntityRef); 
-      } catch (error) { 
-        throw new InputError(`Invalid entity ref, ${error}`); 
-      } 
+      let entityRef: CompoundEntityRef | undefined = undefined;
 
+      try {
+        entityRef = parseEntityRef(rawEntityRef);
+      } catch (error) {
+        throw new InputError(`Invalid entity ref, ${error}`);
+      }
+
+      function getBearerToken(header?: string): string | undefined {
+        return header?.match(/Bearer\s+(\S+)/i)?.[1];
+      }
       const entity = await catalogClient.getEntityByRef(entityRef, {
-        token: req.body.auth.backstage,
+        token: getBearerToken(req.headers.authorization),
       });
 
-      if(!entity){
-        throw new InputError(`Entity ref missing, ${entityRef}`); 
+      if (!entity) {
+        throw new InputError(`Entity ref missing, ${entityRef}`);
       }
       return entity;
-    }
+    };
 
     // Deprecated, will be removed soon
     // see https://github.com/backstage/backstage/issues/11309
@@ -265,7 +276,7 @@ export class KubernetesBuilder {
       try {
         const response = await objectsProvider.getKubernetesObjectsByEntity(
           requestBody.entity,
-          requestBody.auth
+          requestBody.auth!,
         );
         res.json(response);
       } catch (e) {
@@ -277,35 +288,39 @@ export class KubernetesBuilder {
     });
 
     router.post('/resources/workloads', async (req, res) => {
-      const entity = await getEntityByReq(req)
+      const entity = await getEntityByReq(req);
 
       try {
         const response = await objectsProvider.getKubernetesObjectsByEntity(
           entity,
-          req.body.auth
+          req.body.auth,
         );
         res.json(response);
       } catch (e) {
         logger.error(
-          `action=/resources/workloads entityRef=${stringifyEntityRef(entity)}, error=${e}`,
+          `action=/resources/workloads entityRef=${stringifyEntityRef(
+            entity,
+          )}, error=${e}`,
         );
         res.status(500).json({ error: e.message });
       }
     });
 
     router.post('/resources/custom', async (req, res) => {
-      const entity = await getEntityByReq(req)
+      const entity = await getEntityByReq(req);
 
       try {
         const response = await objectsProvider.getCustomResourcesByEntity(
           entity,
           req.body.customResources,
-          req.body.auth
+          req.body.auth,
         );
         res.json(response);
       } catch (e) {
         logger.error(
-          `action=/resources/workloads entityRef=${stringifyEntityRef(entity)}, error=${e}`,
+          `action=/resources/workloads entityRef=${stringifyEntityRef(
+            entity,
+          )}, error=${e}`,
         );
         res.status(500).json({ error: e.message });
       }

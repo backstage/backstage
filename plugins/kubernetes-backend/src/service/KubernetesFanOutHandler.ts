@@ -37,7 +37,7 @@ import {
   AuthConfig,
   CustomResourceMatcher,
   ObjectToFetch,
-  CustomResource
+  CustomResource,
 } from '@backstage/plugin-kubernetes-common';
 import {
   ContainerStatus,
@@ -153,7 +153,7 @@ const toClientSafePodMetrics = (
 type responseWithMetrics = [FetchResponseWrapper, PodStatus[][]];
 
 export class KubernetesFanOutHandler {
-  private readonly EMPTY_SET = new Set<ObjectToFetch>()
+  private readonly EMPTY_SET = new Set<ObjectToFetch>();
   private readonly logger: Logger;
   private readonly fetcher: KubernetesFetcher;
   private readonly serviceLocator: KubernetesServiceLocator;
@@ -175,30 +175,38 @@ export class KubernetesFanOutHandler {
   }
 
   async getCustomResourcesByEntity(
-    entity: Entity, auth :AuthConfig, customResources: CustomResourceMatcher[]
-  ): Promise<ObjectsByEntityResponse>{
+    entity: Entity,
+    auth: AuthConfig,
+    customResources: CustomResourceMatcher[],
+  ): Promise<ObjectsByEntityResponse> {
     // Don't fetch the default object types only the provided custom resources
-    return this.fanOutRequests(entity, auth, this.EMPTY_SET, customResources)
+    return this.fanOutRequests(entity, auth, this.EMPTY_SET, customResources);
   }
 
   async getKubernetesObjectsByEntity(
-    entity: Entity, auth :AuthConfig,
+    entity: Entity,
+    auth: AuthConfig,
   ): Promise<ObjectsByEntityResponse> {
-    return this.fanOutRequests(entity, auth, this.objectTypesToFetch, this.customResources)
+    return this.fanOutRequests(
+      entity,
+      auth,
+      this.objectTypesToFetch,
+      this.customResources,
+    );
   }
 
   private async fanOutRequests(
     entity: Entity,
-    auth :AuthConfig,
+    auth: AuthConfig,
     objectTypesToFetch: Set<ObjectToFetch>,
     customResources: CustomResourceMatcher[],
-    ){
+  ) {
     const entityName =
-      entity.metadata?.annotations?.[
-        'backstage.io/kubernetes-id'
-      ] || entity.metadata?.name;
+      entity.metadata?.annotations?.['backstage.io/kubernetes-id'] ||
+      entity.metadata?.name;
 
-    const clusterDetailsDecoratedForAuth: ClusterDetails[] = await this.decorateClusterDetailsWithAuth(entity, auth);
+    const clusterDetailsDecoratedForAuth: ClusterDetails[] =
+      await this.decorateClusterDetailsWithAuth(entity, auth);
 
     this.logger.info(
       `entity.metadata.name=${entityName} clusterDetails=[${clusterDetailsDecoratedForAuth
@@ -212,9 +220,7 @@ export class KubernetesFanOutHandler {
       ] || `backstage.io/kubernetes-id=${entityName}`;
 
     const namespace =
-      entity.metadata?.annotations?.[
-        'backstage.io/kubernetes-namespace'
-      ];
+      entity.metadata?.annotations?.['backstage.io/kubernetes-namespace'];
 
     return Promise.all(
       clusterDetailsDecoratedForAuth.map(clusterDetailsItem => {
@@ -233,21 +239,26 @@ export class KubernetesFanOutHandler {
     ).then(this.toObjectsByEntityResponse);
   }
 
-  private async decorateClusterDetailsWithAuth(entity: Entity, auth :AuthConfig,){
+  private async decorateClusterDetailsWithAuth(
+    entity: Entity,
+    auth: AuthConfig,
+  ) {
     const clusterDetails: ClusterDetails[] =
       await this.serviceLocator.getClustersByServiceId(entity);
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
-    return await Promise.all(clusterDetails.map(cd => {
-      const kubernetesAuthTranslator: KubernetesAuthTranslator =
-        KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
-          cd.authProvider,
+    return await Promise.all(
+      clusterDetails.map(cd => {
+        const kubernetesAuthTranslator: KubernetesAuthTranslator =
+          KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+            cd.authProvider,
+          );
+        return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
+          cd,
+          auth,
         );
-      return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
-        cd,
-        auth,
-      );
-    }));
+      }),
+    );
   }
 
   toObjectsByEntityResponse(

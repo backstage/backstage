@@ -63,11 +63,10 @@ export interface AuthConfig {
   oidc?: {
       [key: string]: string;
   };
-  backstage: string;
 }
 
 export interface KubernetesRequestBody {
-  auth: AuthConfig;
+  auth?: AuthConfig;
   entity: Entity;
 }
 

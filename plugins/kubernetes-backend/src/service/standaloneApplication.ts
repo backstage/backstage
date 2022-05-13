@@ -18,6 +18,7 @@ import {
   errorHandler,
   notFoundHandler,
   requestLoggingHandler,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import compression from 'compression';
 import cors from 'cors';
@@ -27,17 +28,10 @@ import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { CatalogClient } from '@backstage/catalog-client';
-import {
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
 
 export interface ApplicationOptions {
   enableCors: boolean;
   logger: Logger;
-   /**
-   * Plugin Endpoint Discovery client
-   */
-    discovery: PluginEndpointDiscovery;
 }
 
 export async function createStandaloneApplication(
@@ -52,7 +46,9 @@ export async function createStandaloneApplication(
     app.use(cors());
   }
 
-  const catalog = new CatalogClient({ discoveryApi: options.discovery });
+  const catalog = new CatalogClient({
+    discoveryApi: SingleHostDiscovery.fromConfig(config),
+  });
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());

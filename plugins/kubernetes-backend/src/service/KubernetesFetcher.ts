@@ -21,14 +21,14 @@ import {
   ClusterDetails,
   FetchResponseWrapper,
   KubernetesFetcher,
-  KubernetesObjectTypes,
   ObjectFetchParams,
-  ObjectToFetch,
 } from '../types/types';
 import {
   FetchResponse,
   KubernetesFetchError,
   KubernetesErrorTypes,
+  KubernetesObjectTypes,
+  ObjectToFetch,
 } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
@@ -73,6 +73,8 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
   }
 };
 
+type NewType = ObjectToFetch;
+
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
   private readonly kubernetesClientProvider: KubernetesClientProvider;
   private readonly logger: Logger;
@@ -89,12 +91,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper> {
     const fetchResults = Array.from(params.objectTypesToFetch)
-      .concat(params.customResources.map(cr => {
-        return {
-          ...cr,
-          objectType: "customresources",
-        }
-      }))
+      .concat(
+        params.customResources.map(cr => {
+          return {
+            ...cr,
+            objectType: 'customresources',
+          };
+        }),
+      )
       .map(toFetch => {
         return this.fetchResource(
           params.clusterDetails,
@@ -141,7 +145,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   private fetchResource(
     clusterDetails: ClusterDetails,
-    resource: ObjectToFetch,
+    resource: NewType,
     labelSelector: string,
     objectType: KubernetesObjectTypes,
     namespace?: string,

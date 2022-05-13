@@ -153,9 +153,12 @@ export type CustomResourcesByEntityRequest =
 
 export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
-    entity: Entity, auth: AuthConfig
+    entity: Entity,
+    auth: AuthConfig,
   ): Promise<ObjectsByEntityResponse>;
   getCustomResourcesByEntity(
-    entity: Entity, auth: AuthConfig, customResources: CustomResourceMatcher[]
+    entity: Entity,
+    auth: AuthConfig,
+    customResources: CustomResourceMatcher[],
   ): Promise<ObjectsByEntityResponse>;
 }

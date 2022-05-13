@@ -16,14 +16,16 @@
 
 import { KubernetesAuthTranslator } from './types';
 import { ServiceAccountClusterDetails } from '../types/types';
-import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
+import {
+  AuthConfig,
+} from '@backstage/plugin-kubernetes-common';
 
 export class ServiceAccountKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   async decorateClusterDetailsWithAuth(
     clusterDetails: ServiceAccountClusterDetails,
-    _requestBody: KubernetesRequestBody,
+    _authConfig: AuthConfig,
   ): Promise<ServiceAccountClusterDetails> {
     return clusterDetails;
   }
