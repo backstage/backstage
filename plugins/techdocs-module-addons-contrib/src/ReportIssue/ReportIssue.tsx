@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { useState, useEffect } from 'react';
-
-import { makeStyles, Portal, Paper } from '@material-ui/core';
-
-import { useGitTemplate, useGitRepository } from './hooks';
-import { ReportIssueTemplateBuilder } from './types';
-import {
-  PAGE_MAIN_CONTENT_SELECTOR,
-  PAGE_FEEDBACK_LINK_SELECTOR,
-  ADDON_FEEDBACK_CONTAINER_ID,
-  ADDON_FEEDBACK_CONTAINER_SELECTOR,
-} from './constants';
-import { IssueLink } from './IssueLink';
-
 import {
   useShadowRootElements,
   useShadowRootSelection,
 } from '@backstage/plugin-techdocs-react';
+import { makeStyles, Paper, Portal } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+
+import {
+  ADDON_FEEDBACK_CONTAINER_ID,
+  ADDON_FEEDBACK_CONTAINER_SELECTOR,
+  PAGE_FEEDBACK_LINK_SELECTOR,
+  PAGE_MAIN_CONTENT_SELECTOR,
+} from './constants';
+import { useGitRepository, useGitTemplate } from './hooks';
+import { IssueLink } from './IssueLink';
+import { ReportIssueTemplateBuilder } from './types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,10 +46,21 @@ type Style = {
 };
 
 /**
+ * Props customizing the <ReportIssue /> Addon.
+ *
  * @public
  */
 export type ReportIssueProps = {
+  /**
+   * Number of milliseconds after a user highlights some text before the report
+   * issue link appears above the highlighted text. Defaults to 500ms.
+   */
   debounceTime?: number;
+
+  /**
+   * An optional function defining how a custom issue title and body should be
+   * constructed, given some selected text.
+   */
   templateBuilder?: ReportIssueTemplateBuilder;
 };
 

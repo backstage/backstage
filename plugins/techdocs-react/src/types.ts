@@ -38,7 +38,7 @@ export type TechDocsEntityMetadata = Entity & {
 
 /**
  * Locations for which TechDocs addons may be declared and rendered.
- * @alpha
+ * @public
  */
 export const TechDocsAddonLocations = Object.freeze({
   /**
@@ -108,7 +108,7 @@ export const TechDocsAddonLocations = Object.freeze({
 
 /**
  * Options for creating a TechDocs addon.
- * @alpha
+ * @public
  */
 export type TechDocsAddonOptions<TAddonProps = {}> = {
   name: string;

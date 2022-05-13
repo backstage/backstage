@@ -10,19 +10,19 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 // @public
 export const ReportIssue: (props: ReportIssueProps) => JSX.Element | null;
 
-// @public (undocumented)
+// @public
 export type ReportIssueProps = {
   debounceTime?: number;
   templateBuilder?: ReportIssueTemplateBuilder;
 };
 
-// @public (undocumented)
+// @public
 export type ReportIssueTemplate = {
   title: string;
   body: string;
 };
 
-// @public (undocumented)
+// @public
 export type ReportIssueTemplateBuilder = ({
   selection,
 }: {

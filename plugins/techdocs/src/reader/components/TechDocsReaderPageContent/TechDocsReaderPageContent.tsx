@@ -32,7 +32,7 @@ import { TechDocsSearch } from '../../../search';
 import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 
 import { useTechDocsReaderDom } from './dom';
-import { withTechDocsReaderProvider } from './context';
+import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
 
 const useStyles = makeStyles({
   search: {
