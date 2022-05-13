@@ -105,19 +105,23 @@ describe('<ListTasksPage />', () => {
       {
         id: 'a-random-id',
         spec: {
-          createdBy: 'user:default/foo',
+          user: { ref: 'user:default/foo' },
+          templateInfo: {
+            entityRef: 'template:default/test',
+          },
         } as any,
         status: 'completed',
         createdAt: '',
         lastHeartbeatAt: '',
       },
     ]);
+
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
       title: 'One Template',
       steps: [],
     });
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, findByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -139,8 +143,8 @@ describe('<ListTasksPage />', () => {
     expect(getByText('List template tasks')).toBeInTheDocument();
     expect(getByText('All tasks that have been started')).toBeInTheDocument();
     expect(getByText('Tasks')).toBeInTheDocument();
-    expect(getByText('One Template')).toBeInTheDocument();
-    expect(getByText('BackUser')).toBeInTheDocument();
+    expect(await findByText('One Template')).toBeInTheDocument();
+    expect(await findByText('BackUser')).toBeInTheDocument();
   });
 
   it('should render all tasks', async () => {
@@ -172,7 +176,10 @@ describe('<ListTasksPage />', () => {
         {
           id: 'a-random-id',
           spec: {
-            createdBy: 'user:default/foo',
+            user: { ref: 'user:default/foo' },
+            templateInfo: {
+              entityRef: 'template:default/mock',
+            },
           } as any,
           status: 'completed',
           createdAt: '',
@@ -183,7 +190,12 @@ describe('<ListTasksPage />', () => {
         {
           id: 'b-random-id',
           spec: {
-            createdBy: 'user:default/boo',
+            templateInfo: {
+              entityRef: 'template:default/mock',
+            },
+            user: {
+              ref: 'user:default/boo',
+            },
           } as any,
           status: 'completed',
           createdAt: '',
@@ -196,7 +208,7 @@ describe('<ListTasksPage />', () => {
       steps: [],
     });
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, findByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [catalogApiRef, catalogApi],
@@ -220,7 +232,7 @@ describe('<ListTasksPage />', () => {
     });
 
     expect(scaffolderApiMock.listTasks).toBeCalledWith('all');
-    expect(getByText('One Template')).toBeInTheDocument();
-    expect(getByText('OtherUser')).toBeInTheDocument();
+    expect(await findByText('One Template')).toBeInTheDocument();
+    expect(await findByText('OtherUser')).toBeInTheDocument();
   });
 });

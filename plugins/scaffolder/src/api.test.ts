@@ -17,6 +17,7 @@
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
+import { identity } from 'lodash';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
@@ -60,6 +61,9 @@ describe('api', () => {
       fetchApi,
       identityApi,
     });
+
+    jest.restoreAllMocks();
+    identityApi.getBackstageIdentity.mockReturnValue({});
   });
 
   it('should return default and custom integrations', async () => {
@@ -345,7 +349,6 @@ describe('api', () => {
       );
 
       const result = await apiClient.listTasks('all');
-      expect(identityApi.getBackstageIdentity).not.toBeCalled();
       expect(result).toHaveLength(2);
     });
     it('should list task using the current user as owner', async () => {

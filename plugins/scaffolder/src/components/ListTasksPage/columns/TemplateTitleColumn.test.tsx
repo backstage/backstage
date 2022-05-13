@@ -20,6 +20,7 @@ import React from 'react';
 import { TemplateTitleColumn } from './TemplateTitleColumn';
 import { scaffolderApiRef } from '../../../api';
 import { ScaffolderApi } from '../../../types';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 describe('<TemplateTitleColumn />', () => {
   const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
@@ -40,6 +41,7 @@ describe('<TemplateTitleColumn />', () => {
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <TemplateTitleColumn {...props} />
       </TestApiProvider>,
+      { mountedRoutes: { '/test': entityRouteRef } },
     );
 
     const text = getByText('One Template');
