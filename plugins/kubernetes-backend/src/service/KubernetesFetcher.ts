@@ -89,7 +89,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper> {
     const fetchResults = Array.from(params.objectTypesToFetch)
-      .concat(params.customResources)
+      .concat(params.customResources.map(cr => {
+        return {
+          ...cr,
+          objectType: "customresources",
+        }
+      }))
       .map(toFetch => {
         return this.fetchResource(
           params.clusterDetails,

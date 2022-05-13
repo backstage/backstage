@@ -19,11 +19,13 @@ import { Logger } from 'winston';
 import { KubernetesClustersSupplier } from '../types/types';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
+import { CatalogApi } from '@backstage/catalog-client';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
   clusterSupplier?: KubernetesClustersSupplier;
+  catalogApi: CatalogApi;
 }
 
 /**

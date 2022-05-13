@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
+import { CatalogApi } from '@backstage/catalog-client';
 import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
@@ -35,6 +37,9 @@ describe('KubernetesBuilder', () => {
   let app: express.Express;
   let kubernetesFanOutHandler: jest.Mocked<KubernetesFanOutHandler>;
   let config: Config;
+  const mockCatalog: jest.Mocked<CatalogApi> = {
+    getEntityByRef: jest.fn(),
+  } as any as jest.Mocked<CatalogApi>;
 
   beforeAll(async () => {
     const logger = getVoidLogger();
@@ -68,7 +73,7 @@ describe('KubernetesBuilder', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
-    const { router } = await KubernetesBuilder.createBuilder({ config, logger })
+    const { router } = await KubernetesBuilder.createBuilder({ config, logger, catalogApi: mockCatalog })
       .setObjectsProvider(kubernetesFanOutHandler)
       .setClusterSupplier(clusterSupplier)
       .build();
@@ -207,7 +212,7 @@ describe('KubernetesBuilder', () => {
       };
 
       const serviceLocator: KubernetesServiceLocator = {
-        getClustersByServiceId(_serviceId: string): Promise<ClusterDetails[]> {
+        getClustersByServiceId(entity: Entity): Promise<ClusterDetails[]> {
           return Promise.resolve([someCluster]);
         },
       };
@@ -237,6 +242,7 @@ describe('KubernetesBuilder', () => {
       const { router } = await KubernetesBuilder.createBuilder({
         logger,
         config,
+        catalogApi: mockCatalog
       })
         .setClusterSupplier(clusterSupplier)
         .setServiceLocator(serviceLocator)

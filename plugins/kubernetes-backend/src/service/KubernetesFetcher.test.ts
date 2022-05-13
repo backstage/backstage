@@ -15,8 +15,8 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ObjectToFetch } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { ObjectToFetch } from '../types/types';
 
 const OBJECTS_TO_FETCH = new Set<ObjectToFetch>([
   {
@@ -270,7 +270,6 @@ describe('KubernetesFetcher', () => {
       labelSelector: '',
       customResources: [
         {
-          objectType: 'customresources',
           group: 'some-group',
           apiVersion: 'v2',
           plural: 'things',

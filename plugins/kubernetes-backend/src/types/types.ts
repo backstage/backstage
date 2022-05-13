@@ -24,6 +24,8 @@ import type {
   ObjectsByEntityResponse,
   CustomResource,
   ObjectToFetch,
+  AuthConfig,
+  CustomResourceMatcher,
 } from '@backstage/plugin-kubernetes-common';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
 import { Entity } from '@backstage/catalog-model';
@@ -37,7 +39,7 @@ export interface ObjectFetchParams {
     | ClusterDetails;
   objectTypesToFetch: Set<ObjectToFetch>;
   labelSelector: string;
-  customResources: CustomResource[];
+  customResources: CustomResourceMatcher[];
   namespace?: string;
 }
 
@@ -146,9 +148,9 @@ export type CustomResourcesByEntityRequest =
 
 export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
-    request: ObjectsByEntityRequest,
+    entity: Entity, auth: AuthConfig
   ): Promise<ObjectsByEntityResponse>;
   getCustomResourcesByEntity(
-    request: CustomResourcesByEntityRequest,
+    entity: Entity, auth: AuthConfig, customResources: CustomResourceMatcher[]
   ): Promise<ObjectsByEntityResponse>;
 }

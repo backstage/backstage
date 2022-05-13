@@ -26,10 +26,18 @@ import helmet from 'helmet';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { CatalogClient } from '@backstage/catalog-client';
+import {
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 
 export interface ApplicationOptions {
   enableCors: boolean;
   logger: Logger;
+   /**
+   * Plugin Endpoint Discovery client
+   */
+    discovery: PluginEndpointDiscovery;
 }
 
 export async function createStandaloneApplication(
@@ -43,10 +51,12 @@ export async function createStandaloneApplication(
   if (enableCors) {
     app.use(cors());
   }
+
+  const catalog = new CatalogClient({ discoveryApi: options.discovery });
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config }));
+  app.use('/', await createRouter({ logger, config, catalogApi: catalog }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

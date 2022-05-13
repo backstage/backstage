@@ -18,6 +18,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ClusterDetails, ObjectFetchParams } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { PodStatus } from '@kubernetes/client-node/dist/top';
+import { AuthConfig } from '@backstage/plugin-kubernetes-common';
 
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespace = jest.fn();
@@ -212,15 +213,8 @@ describe('KubernetesFanOutHandler', () => {
         customResources: [],
       });
 
-      const result = await sut.getCustomResourcesByEntity({
-        customResources: [
-          {
-            group: 'someGroup',
-            apiVersion: 'someApiVersion',
-            plural: 'somePlural',
-          },
-        ],
-        entity: {
+      const result = await sut.getCustomResourcesByEntity(
+        {
           apiVersion: 'backstage.io/v1beta1',
           kind: 'Component',
           metadata: {
@@ -236,7 +230,17 @@ describe('KubernetesFanOutHandler', () => {
             owner: 'joe',
           },
         },
-      });
+        {
+          backstage: "",
+        },
+        [
+          {
+            group: 'someGroup',
+            apiVersion: 'someApiVersion',
+            plural: 'somePlural',
+          },
+        ],
+      );
 
       expect(getClustersByServiceId.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(1);
@@ -305,23 +309,21 @@ describe('KubernetesFanOutHandler', () => {
       });
 
       const result = await sut.getKubernetesObjectsByEntity({
-        entity: {
-          apiVersion: 'backstage.io/v1beta1',
-          kind: 'Component',
-          metadata: {
-            name: 'test-component',
-            annotations: {
-              'backstage.io/kubernetes-labels-selector':
-                'backstage.io/test-label=test-component',
-            },
-          },
-          spec: {
-            type: 'service',
-            lifecycle: 'production',
-            owner: 'joe',
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: {
+          name: 'test-component',
+          annotations: {
+            'backstage.io/kubernetes-labels-selector':
+              'backstage.io/test-label=test-component',
           },
         },
-      });
+        spec: {
+          type: 'service',
+          lifecycle: 'production',
+          owner: 'joe',
+        },
+      }, {backstage: ""});
 
       expect(getClustersByServiceId.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(1);
@@ -434,7 +436,6 @@ describe('KubernetesFanOutHandler', () => {
       });
 
       const result = await sut.getKubernetesObjectsByEntity({
-        entity: {
           apiVersion: 'backstage.io/v1beta1',
           kind: 'Component',
           metadata: {
@@ -450,7 +451,8 @@ describe('KubernetesFanOutHandler', () => {
             owner: 'joe',
           },
         },
-      });
+        {backstage: ""}
+      );
 
       expect(getClustersByServiceId.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(1);
@@ -526,11 +528,8 @@ describe('KubernetesFanOutHandler', () => {
         customResources: [],
       });
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        auth: {
-          google: 'google_token_123',
-        },
-        entity: {
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
           apiVersion: 'backstage.io/v1beta1',
           kind: 'Component',
           metadata: {
@@ -546,7 +545,7 @@ describe('KubernetesFanOutHandler', () => {
             owner: 'joe',
           },
         },
-      });
+      {backstage: "", google: ""});
 
       expect(getClustersByServiceId.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(2);
@@ -673,11 +672,8 @@ describe('KubernetesFanOutHandler', () => {
         customResources: [],
       });
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        auth: {
-          google: 'google_token_123',
-        },
-        entity: {
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
           apiVersion: 'backstage.io/v1beta1',
           kind: 'Component',
           metadata: {
@@ -693,7 +689,10 @@ describe('KubernetesFanOutHandler', () => {
             owner: 'joe',
           },
         },
-      });
+        {
+          backstage: "",
+          google: 'google_token_123',
+        });
 
       expect(getClustersByServiceId.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(3);
@@ -823,11 +822,8 @@ describe('KubernetesFanOutHandler', () => {
         customResources: [],
       });
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        auth: {
-          google: 'google_token_123',
-        },
-        entity: {
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
           apiVersion: 'backstage.io/v1beta1',
           kind: 'Component',
           metadata: {
@@ -842,8 +838,10 @@ describe('KubernetesFanOutHandler', () => {
             lifecycle: 'production',
             owner: 'joe',
           },
-        },
-      });
+        },{
+          backstage: "",
+          google: 'google_token_123',
+        });
 
       expect(getClustersByServiceId.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(4);

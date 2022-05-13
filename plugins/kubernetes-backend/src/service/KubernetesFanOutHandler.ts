@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import {
   ClusterDetails,
-  CustomResource,
   KubernetesFetcher,
   KubernetesObjectsProviderOptions,
   KubernetesServiceLocator,
   ObjectsByEntityRequest,
   FetchResponseWrapper,
-  ObjectToFetch,
-  CustomResourcesByEntityRequest,
 } from '../types/types';
 import { KubernetesAuthTranslator } from '../kubernetes-auth-translator/types';
 import { KubernetesAuthTranslatorGenerator } from '../kubernetes-auth-translator/KubernetesAuthTranslatorGenerator';
@@ -36,6 +34,10 @@ import {
   FetchResponse,
   ObjectsByEntityResponse,
   PodFetchResponse,
+  AuthConfig,
+  CustomResourceMatcher,
+  ObjectToFetch,
+  CustomResource
 } from '@backstage/plugin-kubernetes-common';
 import {
   ContainerStatus,
@@ -151,7 +153,7 @@ const toClientSafePodMetrics = (
 type responseWithMetrics = [FetchResponseWrapper, PodStatus[][]];
 
 export class KubernetesFanOutHandler {
-  private readonly EMPTY_SET = new Set<ObjectToFetch>();
+  private readonly EMPTY_SET = new Set<ObjectToFetch>()
   private readonly logger: Logger;
   private readonly fetcher: KubernetesFetcher;
   private readonly serviceLocator: KubernetesServiceLocator;
@@ -173,38 +175,30 @@ export class KubernetesFanOutHandler {
   }
 
   async getCustomResourcesByEntity(
-    requestBody: CustomResourcesByEntityRequest,
-  ): Promise<ObjectsByEntityResponse> {
+    entity: Entity, auth :AuthConfig, customResources: CustomResourceMatcher[]
+  ): Promise<ObjectsByEntityResponse>{
     // Don't fetch the default object types only the provided custom resources
-    return this.fanOutRequests(
-      requestBody,
-      this.EMPTY_SET,
-      requestBody.customResources,
-    );
+    return this.fanOutRequests(entity, auth, this.EMPTY_SET, customResources)
   }
 
   async getKubernetesObjectsByEntity(
-    requestBody: KubernetesRequestBody,
+    entity: Entity, auth :AuthConfig,
   ): Promise<ObjectsByEntityResponse> {
-    return this.fanOutRequests(
-      requestBody,
-      this.objectTypesToFetch,
-      this.customResources,
-    );
+    return this.fanOutRequests(entity, auth, this.objectTypesToFetch, this.customResources)
   }
 
   private async fanOutRequests(
-    requestBody: KubernetesRequestBody,
+    entity: Entity,
+    auth :AuthConfig,
     objectTypesToFetch: Set<ObjectToFetch>,
-    customResources: CustomResource[],
-  ) {
+    customResources: CustomResourceMatcher[],
+    ){
     const entityName =
-      requestBody.entity?.metadata?.annotations?.[
+      entity.metadata?.annotations?.[
         'backstage.io/kubernetes-id'
-      ] || requestBody.entity?.metadata?.name;
+      ] || entity.metadata?.name;
 
-    const clusterDetailsDecoratedForAuth: ClusterDetails[] =
-      await this.decorateClusterDetailsWithAuth(requestBody);
+    const clusterDetailsDecoratedForAuth: ClusterDetails[] = await this.decorateClusterDetailsWithAuth(entity, auth);
 
     this.logger.info(
       `entity.metadata.name=${entityName} clusterDetails=[${clusterDetailsDecoratedForAuth
@@ -213,12 +207,12 @@ export class KubernetesFanOutHandler {
     );
 
     const labelSelector: string =
-      requestBody.entity?.metadata?.annotations?.[
+      entity.metadata?.annotations?.[
         'backstage.io/kubernetes-label-selector'
       ] || `backstage.io/kubernetes-id=${entityName}`;
 
     const namespace =
-      requestBody.entity?.metadata?.annotations?.[
+      entity.metadata?.annotations?.[
         'backstage.io/kubernetes-namespace'
       ];
 
@@ -239,25 +233,21 @@ export class KubernetesFanOutHandler {
     ).then(this.toObjectsByEntityResponse);
   }
 
-  private async decorateClusterDetailsWithAuth(
-    requestBody: KubernetesRequestBody,
-  ) {
+  private async decorateClusterDetailsWithAuth(entity: Entity, auth :AuthConfig,){
     const clusterDetails: ClusterDetails[] =
-      await this.serviceLocator.getClustersByServiceId(requestBody.entity);
+      await this.serviceLocator.getClustersByServiceId(entity);
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
-    return await Promise.all(
-      clusterDetails.map(cd => {
-        const kubernetesAuthTranslator: KubernetesAuthTranslator =
-          KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
-            cd.authProvider,
-          );
-        return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
-          cd,
-          requestBody,
+    return await Promise.all(clusterDetails.map(cd => {
+      const kubernetesAuthTranslator: KubernetesAuthTranslator =
+        KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+          cd.authProvider,
         );
-      }),
-    );
+      return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
+        cd,
+        auth,
+      );
+    }));
   }
 
   toObjectsByEntityResponse(
