@@ -2246,9 +2246,9 @@
     xdg-basedir "^4.0.0"
 
 "@graphiql/toolkit@^0.4.4":
-  version "0.4.4"
-  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.4.4.tgz#c5f2cd0d7fc47707f68406655836aedc5e6ca2b1"
-  integrity sha512-HrppQ5u0uJPYpImLqQUJWNrS9E97Cmz8DO3Dn0dXeCg1iBoKjRnZoFf2rjFF5ge9Uc9RihL181Uph/Iw9YYMFg==
+  version "0.4.5"
+  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.4.5.tgz#9fb5020444712562eae9581724695c235f610836"
+  integrity sha512-QXuuMSSK/0GfBS7tltrGZdyhIvm6oe9TK4VW9pfa8dALYttpzyJ64Q4Sx9I1Ng++yOMJWziM/ksa043zkNHsjQ==
   dependencies:
     "@n1ru4l/push-pull-async-iterable-iterator" "^3.1.0"
     meros "^1.1.4"
@@ -13485,7 +13485,7 @@ graphql-type-json@^0.3.2:
   resolved "https://registry.npmjs.org/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"
   integrity sha512-J+vjof74oMlCWXSvt0DOf2APEdZOCdubEvGDUAlqH//VBYcOYsGgRW7Xzorr44LvkjiuvecWc8fChxuZZbChtg==
 
-graphql-ws@^5.4.1:
+graphql-ws@5.5.5, graphql-ws@^5.4.1:
   version "5.5.5"
   resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.5.5.tgz#f375486d3f196e2a2527b503644693ae3a8670a9"
   integrity sha512-hvyIS71vs4Tu/yUYHPvGXsTgo0t3arU820+lT5VjZS2go0ewp2LqyCgxEN56CzOG7Iys52eRhHBiD1gGRdiQtw==
