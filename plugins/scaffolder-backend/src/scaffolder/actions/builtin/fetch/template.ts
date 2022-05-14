@@ -189,7 +189,11 @@ export function createFetchTemplateAction(options: {
         additionalTemplateFilters,
       });
 
+      const pathsToSkip: string[] = [];
       for (const location of allEntriesInTemplate) {
+        if (pathsToSkip.some(p => location.startsWith(p))) {
+          continue;
+        }
         let renderFilename: boolean;
         let renderContents: boolean;
 
@@ -206,6 +210,14 @@ export function createFetchTemplateAction(options: {
         if (renderFilename) {
           localOutputPath = renderTemplate(localOutputPath, context);
         }
+
+        if (localOutputPath === '/') {
+          // empty
+          pathsToSkip.push(localOutputPath);
+          continue;
+        }
+
+        console.log(localOutputPath);
         const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
         // variables have been expanded to make an empty file name
         // this is due to a conditional like if values.my_condition then file-name.txt else empty string so skip

@@ -267,6 +267,51 @@ describe('fetch:template', () => {
       });
     });
 
+    describe('file structure', () => {
+      let context: ActionContext<FetchTemplateInput>;
+
+      beforeEach(async () => {
+        context = mockContext({
+          values: {
+            name: 'test-project',
+            count: 1234,
+            itemList: ['first', 'second', 'third'],
+            showDummyFile: false,
+          },
+        });
+
+        mockFetchContents.mockImplementation(({ outputPath }) => {
+          mockFs({
+            ...realFiles,
+            [outputPath]: {
+              'an-executable.sh': mockFs.file({
+                content: '#!/usr/bin/env bash',
+                mode: parseInt('100755', 8),
+              }),
+              testdirectory: {
+                here: 'something',
+                '${{ "broken" if values.something_not_visible }}':
+                  'i shouldnt be templated',
+              },
+              '${{ "broken" if values.something_not_visible }}': {
+                here: 'nope',
+              },
+            },
+          });
+
+          return Promise.resolve();
+        });
+
+        await action.handler(context);
+      });
+
+      it.only('should skip templating for folders and files that the filename resolves to empty', async () => {
+        await expect(
+          fs.pathExists(`${workspacePath}/target/broken`),
+        ).resolves.toEqual(false);
+      });
+    });
+
     describe('copyWithoutRender', () => {
       let context: ActionContext<FetchTemplateInput>;
 
