@@ -51,7 +51,7 @@ export type KubernetesObjectTypes =
   | 'ingresses'
   | 'customresources';
 
-export type CustomResourceMatcher = Omit<CustomResource, 'objectType'>
+export type CustomResourceMatcher = Omit<CustomResource, 'objectType'>;
 
 export interface CustomResourcesKubernetesRequestBody
   extends KubernetesRequestBody {
@@ -61,7 +61,7 @@ export interface CustomResourcesKubernetesRequestBody
 export interface AuthConfig {
   google?: string;
   oidc?: {
-      [key: string]: string;
+    [key: string]: string;
   };
 }
 

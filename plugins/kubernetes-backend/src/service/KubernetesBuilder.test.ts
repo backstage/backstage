@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
-import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import express from 'express';
 import request from 'supertest';
 import {
   ClusterDetails,
-  FetchResponseWrapper,
   KubernetesClustersSupplier,
-  KubernetesFetcher,
-  KubernetesServiceLocator,
-  ObjectFetchParams,
 } from '../types/types';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
-import { PodStatus } from '@kubernetes/client-node';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
@@ -169,95 +162,6 @@ describe('KubernetesBuilder', () => {
 
       expect(response.status).toEqual(500);
       expect(response.body).toEqual({ error: 'some internal error' });
-    });
-
-    it('custom service locator', async () => {
-      const logger = getVoidLogger();
-      const someCluster: ClusterDetails = {
-        name: 'some-cluster',
-        authProvider: 'serviceAccount',
-        url: 'https://localhost:1234',
-        serviceAccountToken: 'someToken',
-      };
-      const clusters: ClusterDetails[] = [
-        someCluster,
-        {
-          name: 'some-other-cluster',
-          url: 'https://localhost:1235',
-          authProvider: 'google',
-        },
-      ];
-      const clusterSupplier: KubernetesClustersSupplier = {
-        async getClusters() {
-          return clusters;
-        },
-      };
-      const pod = {
-        metadata: {
-          name: 'pod1',
-        },
-      };
-      const result: ObjectsByEntityResponse = {
-        items: [
-          {
-            cluster: {
-              name: someCluster.name,
-            },
-            errors: [],
-            podMetrics: [],
-            resources: [
-              {
-                type: 'pods',
-                resources: [pod],
-              },
-            ],
-          },
-        ],
-      };
-
-      const serviceLocator: KubernetesServiceLocator = {
-        getClustersByServiceId(_entity: Entity): Promise<ClusterDetails[]> {
-          return Promise.resolve([someCluster]);
-        },
-      };
-
-      const fetcher: KubernetesFetcher = {
-        fetchPodMetricsByNamespace(
-          _clusterDetails: ClusterDetails,
-          _namespace: string,
-        ): Promise<PodStatus[]> {
-          return Promise.resolve([]);
-        },
-        fetchObjectsForService(
-          _params: ObjectFetchParams,
-        ): Promise<FetchResponseWrapper> {
-          return Promise.resolve({
-            errors: [],
-            responses: [
-              {
-                type: 'pods',
-                resources: [pod],
-              },
-            ],
-          });
-        },
-      };
-
-      const { router } = await KubernetesBuilder.createBuilder({
-        logger,
-        config,
-        catalogApi: mockCatalog,
-      })
-        .setClusterSupplier(clusterSupplier)
-        .setServiceLocator(serviceLocator)
-        .setFetcher(fetcher)
-        .build();
-      app = express().use(router);
-
-      const response = await request(app).post('/services/test-service');
-
-      expect(response.body).toEqual(result);
-      expect(response.status).toEqual(200);
     });
   });
 });

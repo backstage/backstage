@@ -546,7 +546,7 @@ describe('KubernetesFanOutHandler', () => {
             owner: 'joe',
           },
         },
-        { google: '' },
+        { google: 'google_token_123' },
       );
 
       expect(getClustersByServiceId.mock.calls.length).toBe(1);

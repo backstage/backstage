@@ -280,6 +280,7 @@ export class KubernetesBuilder {
         );
         res.json(response);
       } catch (e) {
+        console.log(e)
         logger.error(
           `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
         );

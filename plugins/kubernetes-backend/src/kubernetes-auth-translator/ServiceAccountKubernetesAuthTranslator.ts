@@ -16,9 +16,7 @@
 
 import { KubernetesAuthTranslator } from './types';
 import { ServiceAccountClusterDetails } from '../types/types';
-import {
-  AuthConfig,
-} from '@backstage/plugin-kubernetes-common';
+import { AuthConfig } from '@backstage/plugin-kubernetes-common';
 
 export class ServiceAccountKubernetesAuthTranslator
   implements KubernetesAuthTranslator
