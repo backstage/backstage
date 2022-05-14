@@ -19,10 +19,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import {
-  ClusterDetails,
-  KubernetesClustersSupplier,
-} from '../types/types';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
