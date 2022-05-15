@@ -28,7 +28,10 @@ import {
   errorApiRef,
   useApi,
   featureFlagsApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { parseEntityRef } from '@backstage/catalog-model';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
@@ -113,9 +116,70 @@ export const MultistepJsonForm = (props: Props) => {
   const { formData, onChange, onReset, onFinish, fields, widgets } = props;
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
+  const identityApi = useApi(identityApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
-  const featureFlagKey = 'backstage:featureFlag';
+
+  async function userInGroup(entityRef: string) {
+    const { name, namespace } = parseEntityRef(entityRef);
+
+    const profile = await identityApi.getBackstageIdentity();
+    const response = await catalogApi.getEntities({
+      filter: [{ kind: 'group', 'relations.hasMember': profile.userEntityRef }],
+      fields: ['entityRef'],
+    });
+
+    const userGroups = response.items;
+
+    const matchedGroup = userGroups.find(
+      g => g.metadata.name === name && g.metadata.namespace === namespace,
+    );
+
+    if (matchedGroup) return true;
+
+    return false;
+  }
+
+  const stepFilters: {
+    key: string;
+    stepHandler: (step: Step, filterKey: string) => boolean | Promise<boolean>;
+    propertyHandler: (
+      value: any,
+      filterKey: string,
+    ) => boolean | Promise<boolean>;
+  }[] = [
+    {
+      key: 'backstage:featureFlag',
+      stepHandler: (step, filterKey) => {
+        const featureFlag = step.schema[filterKey];
+        return (
+          typeof featureFlag !== 'string' ||
+          featureFlagApi.isActive(featureFlag)
+        );
+      },
+      propertyHandler: (value, filterKey) => {
+        if (featureFlagApi.isActive(value[filterKey])) {
+          return true;
+        }
+        return false;
+      },
+    },
+    {
+      key: 'backstage:memberOf',
+      stepHandler: async (step, filterKey) => {
+        const entityRef = step.schema[filterKey];
+        return typeof entityRef !== 'string' || userInGroup(entityRef);
+      },
+      propertyHandler: async (value, filterKey) => {
+        if (await userInGroup(value[filterKey])) {
+          return true;
+        }
+        return false;
+      },
+    },
+  ];
+
   const filterOutProperties = (step: Step): Step => {
     const filteredStep = cloneDeep(step);
     const removedPropertyKeys: Array<string> = [];
@@ -123,19 +187,22 @@ export const MultistepJsonForm = (props: Props) => {
       filteredStep.schema.properties = Object.fromEntries(
         Object.entries(filteredStep.schema.properties).filter(
           ([key, value]) => {
-            if (value[featureFlagKey]) {
-              if (featureFlagApi.isActive(value[featureFlagKey])) {
-                return true;
+            for (let i = 0; i < stepFilters.length; i++) {
+              const filter = stepFilters[i];
+              if (value[filter.key]) {
+                // Remove step if handler returns false
+                if (!filter.propertyHandler(value, filter.key)) {
+                  removedPropertyKeys.push(key);
+                  return false;
+                }
               }
-              removedPropertyKeys.push(key);
-              return false;
             }
             return true;
           },
         ),
       );
 
-      // remove the feature flag property key from required if they are not active
+      // remove the filtered property keys from required if they are not active
       filteredStep.schema.required = Array.isArray(filteredStep.schema.required)
         ? filteredStep.schema.required?.filter(
             r => !removedPropertyKeys.includes(r as string),
@@ -147,10 +214,16 @@ export const MultistepJsonForm = (props: Props) => {
 
   const steps = props.steps
     .filter(step => {
-      const featureFlag = step.schema[featureFlagKey];
-      return (
-        typeof featureFlag !== 'string' || featureFlagApi.isActive(featureFlag)
-      );
+      for (let i = 0; i < stepFilters.length; i++) {
+        const filter = stepFilters[i];
+        if (step.schema[filter.key]) {
+          // Remove step if handler returns false
+          if (!filter.stepHandler(step, filter.key)) {
+            return false;
+          }
+        }
+      }
+      return true;
     })
     .map(filterOutProperties);
 
