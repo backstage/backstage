@@ -21,9 +21,9 @@ import { TemplateAction } from './types';
  * This function is used to create new template actions to get type safety.
  * @public
  */
-export const createTemplateAction = <TInput extends JsonObject>(
-  templateAction: TemplateAction<TInput>,
-): TemplateAction<TInput> => {
+export const createTemplateAction = <TInput, TOutput>(
+  templateAction: TemplateAction<TInput, TOutput>,
+): TemplateAction<TInput, TOutput> => {
   // TODO(blam): Can add some more validation here to validate the action later on
   return templateAction;
 };

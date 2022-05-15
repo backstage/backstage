@@ -41,29 +41,7 @@ export function createPublishGithubAction(options: {
 }) {
   const { integrations, config, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    access?: string;
-    defaultBranch?: string;
-    deleteBranchOnMerge?: boolean;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    allowRebaseMerge?: boolean;
-    allowSquashMerge?: boolean;
-    allowMergeCommit?: boolean;
-    sourcePath?: string;
-    requireCodeOwnerReviews?: boolean;
-    requiredStatusCheckContexts?: string[];
-    repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<{
-      username: string;
-      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-    }>;
-    token?: string;
-    topics?: string[];
-  }>({
+  return createTemplateAction({
     id: 'publish:github',
     description:
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
@@ -185,7 +163,7 @@ export function createPublishGithubAction(options: {
             },
           },
         },
-      },
+      } as const,
       output: {
         type: 'object',
         properties: {
@@ -198,7 +176,7 @@ export function createPublishGithubAction(options: {
             type: 'string',
           },
         },
-      },
+      } as const,
     },
     async handler(ctx) {
       const {

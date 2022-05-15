@@ -18,6 +18,8 @@ import { Logger } from 'winston';
 import { Writable } from 'stream';
 import { JsonValue, JsonObject } from '@backstage/types';
 import { Schema } from 'jsonschema';
+import { AsTyped } from 'as-typed';
+import { FromSchema } from 'json-schema-to-ts';
 import { TaskSecrets } from '../tasks/types';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 
@@ -25,12 +27,12 @@ import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
  * ActionContext is passed into scaffolder actions.
  * @public
  */
-export type ActionContext<Input extends JsonObject> = {
+export type ActionContext<Input> = {
   logger: Logger;
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
-  input: Input;
+  input: AsTyped<Input>;
   output(name: string, value: JsonValue): void;
 
   /**
@@ -42,12 +44,12 @@ export type ActionContext<Input extends JsonObject> = {
 };
 
 /** @public */
-export type TemplateAction<Input extends JsonObject> = {
+export type TemplateAction<Input, Output> = {
   id: string;
   description?: string;
   schema?: {
-    input?: Schema;
-    output?: Schema;
+    input?: Input;
+    output?: Output;
   };
   handler: (ctx: ActionContext<Input>) => Promise<void>;
 };

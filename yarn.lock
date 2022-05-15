@@ -6410,9 +6410,9 @@
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
 
 "@types/react-dom@*", "@types/react-dom@<18.0.0", "@types/react-dom@^17":
-  version "17.0.16"
-  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.16.tgz#7caba93cf2806c51e64d620d8dff4bae57e06cc4"
-  integrity sha512-DWcXf8EbMrO/gWnQU7Z88Ws/p16qxGpPyjTKTpmBSFKeE+HveVubqGO1CVK7FrwlWD5MuOcvh8gtd0/XO38NdQ==
+  version "17.0.17"
+  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.17.tgz#2e3743277a793a96a99f1bf87614598289da68a1"
+  integrity sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==
   dependencies:
     "@types/react" "^17"
 
@@ -7791,6 +7791,11 @@ arrify@^2.0.0, arrify@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
+
+as-typed@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.npmjs.org/as-typed/-/as-typed-1.3.2.tgz#65ec38eb651ea6d62646e00dd336c2fd8076e7a6"
+  integrity sha512-94ezeKlKB97OJUyMaU7dQUAB+Cmjlgr4T9/cxCoKaLM4F2HAmuIHm3Q5ClGCsX5PvRwCQehCzAa/6foRFXRbqA==
 
 asap@^2.0.0, asap@^2.0.3, asap@~2.0.3:
   version "2.0.6"
@@ -13485,7 +13490,7 @@ graphql-type-json@^0.3.2:
   resolved "https://registry.npmjs.org/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"
   integrity sha512-J+vjof74oMlCWXSvt0DOf2APEdZOCdubEvGDUAlqH//VBYcOYsGgRW7Xzorr44LvkjiuvecWc8fChxuZZbChtg==
 
-graphql-ws@5.5.5, graphql-ws@^5.4.1:
+graphql-ws@^5.4.1:
   version "5.5.5"
   resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.5.5.tgz#f375486d3f196e2a2527b503644693ae3a8670a9"
   integrity sha512-hvyIS71vs4Tu/yUYHPvGXsTgo0t3arU820+lT5VjZS2go0ewp2LqyCgxEN56CzOG7Iys52eRhHBiD1gGRdiQtw==
@@ -15848,6 +15853,14 @@ json-schema-merge-allof@^0.8.1:
     compute-lcm "^1.1.2"
     json-schema-compare "^0.2.2"
     lodash "^4.17.20"
+
+json-schema-to-ts@1.6.4:
+  version "1.6.4"
+  resolved "https://registry.npmjs.org/json-schema-to-ts/-/json-schema-to-ts-1.6.4.tgz#63e4fe854dff093923be9e8b59b39ee9a7971ba4"
+  integrity sha512-pR4yQ9DHz6itqswtHCm26mw45FSNfQ9rEQjosaZErhn5J3J2sIViQiz8rDaezjKAhFGpmsoczYVBgGHzFw/stA==
+  dependencies:
+    "@types/json-schema" "^7.0.6"
+    ts-toolbelt "^6.15.5"
 
 json-schema-traverse@^0.4.1:
   version "0.4.1"
@@ -24154,6 +24167,11 @@ ts-node@^9:
     make-error "^1.1.1"
     source-map-support "^0.5.17"
     yn "3.1.1"
+
+ts-toolbelt@^6.15.5:
+  version "6.15.5"
+  resolved "https://registry.npmjs.org/ts-toolbelt/-/ts-toolbelt-6.15.5.tgz#cb3b43ed725cb63644782c64fbcad7d8f28c0a83"
+  integrity sha512-FZIXf1ksVyLcfr7M317jbB67XFJhOO1YqdTcuGaq9q5jLUoTikukZ+98TPjKiP2jC5CgmYdWWYs0s2nLSU0/1A==
 
 tsconfig-paths@^3.14.1:
   version "3.14.1"

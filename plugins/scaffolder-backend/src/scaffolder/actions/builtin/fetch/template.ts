@@ -42,16 +42,7 @@ export function createFetchTemplateAction(options: {
 }) {
   const { reader, integrations, additionalTemplateFilters } = options;
 
-  return createTemplateAction<{
-    url: string;
-    targetPath?: string;
-    values: any;
-    templateFileExtension?: string | boolean;
-
-    // Cookiecutter compat options
-    copyWithoutRender?: string[];
-    cookiecutterCompat?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'fetch:template',
     description:
       "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
