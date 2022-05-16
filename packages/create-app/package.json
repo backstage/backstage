@@ -91,6 +91,8 @@
     "@backstage/plugin-search-backend-node": "",
     "@backstage/plugin-tech-radar": "",
     "@backstage/plugin-techdocs": "",
+    "@backstage/plugin-techdocs-react": "",
+    "@backstage/plugin-techdocs-module-addons-contrib": "",
     "@backstage/plugin-techdocs-backend": "",
     "@backstage/plugin-user-settings": "",
     "@backstage/test-utils": "",
