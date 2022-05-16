@@ -50,7 +50,7 @@ describe('AzureIdentityKubernetesAuthTranslator tests', () => {
 
   it('should re-use token before expiry', async () => {
     const authTranslator = new AzureIdentityKubernetesAuthTranslator(
-      new StaticTokenCredential(5 * 60 * 1000),
+      new StaticTokenCredential(20 * 60 * 1000),
     );
 
     const response = await authTranslator.decorateClusterDetailsWithAuth(cd);
@@ -60,9 +60,9 @@ describe('AzureIdentityKubernetesAuthTranslator tests', () => {
     expect(response2.serviceAccountToken).toEqual('MY_TOKEN_1');
   });
 
-  it('should issue new token 2 minutes befory expiry', async () => {
+  it('should issue new token 15 minutes befory expiry', async () => {
     const authTranslator = new AzureIdentityKubernetesAuthTranslator(
-      new StaticTokenCredential(3 * 60 * 1000), // token expires in 3m
+      new StaticTokenCredential(16 * 60 * 1000), // token expires in 11m
     );
 
     const response = await authTranslator.decorateClusterDetailsWithAuth(cd);

@@ -27,12 +27,11 @@ const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope 
 export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
-  private tokenCredential: TokenCredential;
   private accessToken: AccessToken | null = null;
 
-  constructor(tokenCredential?: TokenCredential) {
-    this.tokenCredential = tokenCredential || new DefaultAzureCredential();
-  }
+  constructor(
+    private readonly tokenCredential: TokenCredential = new DefaultAzureCredential(),
+  ) {}
 
   async decorateClusterDetailsWithAuth(
     clusterDetails: AzureClusterDetails,
@@ -42,7 +41,7 @@ export class AzureIdentityKubernetesAuthTranslator
       clusterDetails,
     );
 
-    if (!this.accessToken || this.tokenExpired()) {
+    if (this.tokenExpired()) {
       this.accessToken = await this.tokenCredential.getToken(aksScope);
 
       if (!this.accessToken) {
@@ -50,15 +49,15 @@ export class AzureIdentityKubernetesAuthTranslator
       }
     }
 
-    clusterDetailsWithAuthToken.serviceAccountToken = this.accessToken.token;
+    clusterDetailsWithAuthToken.serviceAccountToken = this.accessToken!.token;
     return clusterDetailsWithAuthToken;
   }
 
   private tokenExpired(): boolean {
     if (!this.accessToken) return true;
 
-    // Set tokens to expire 2 minutes before its actual expiry time
-    const expiresOn = this.accessToken.expiresOnTimestamp - 2 * 60 * 1000;
+    // Set tokens to expire 15 minutes before its actual expiry time
+    const expiresOn = this.accessToken.expiresOnTimestamp - 15 * 60 * 1000;
     return Date.now() >= expiresOn;
   }
 }
