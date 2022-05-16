@@ -110,7 +110,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     };
 
     const lastActivity = (await this.cache.get(this.getCacheKey())) as string;
-    if (lastActivity !== '') {
+    if (lastActivity) {
       opts.last_activity_after = lastActivity;
     }
 
