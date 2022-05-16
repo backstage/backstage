@@ -8,6 +8,9 @@
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 // @public
+export const ExpandableNavigation: () => JSX.Element | null;
+
+// @public
 export const ReportIssue: (props: ReportIssueProps) => JSX.Element | null;
 
 // @public
@@ -33,5 +36,5 @@ export type ReportIssueTemplateBuilder = ({
 export const techdocsModuleAddonsContribPlugin: BackstagePlugin<{}, {}>;
 
 // @public
-export const TextSize: (props: unknown) => JSX.Element | null;
+export const TextSize: () => JSX.Element | null;
 ```
