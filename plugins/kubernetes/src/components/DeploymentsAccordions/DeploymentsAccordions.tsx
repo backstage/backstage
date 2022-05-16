@@ -186,8 +186,11 @@ export const DeploymentsAccordions = ({}: DeploymentsAccordionsProps) => {
           <Grid item xs>
             <DeploymentAccordion
               matchingHpa={getMatchingHpa(
-                deployment.metadata?.name,
-                'deployment',
+                {
+                  name: deployment.metadata?.name,
+                  namespace: deployment.metadata?.namespace,
+                  kind: 'deployment',
+                },
                 groupedResponses.horizontalPodAutoscalers,
               )}
               ownedPods={getOwnedPodsThroughReplicaSets(
