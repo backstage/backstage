@@ -291,6 +291,51 @@ your first step would be shown. The same goes for the nested properties in the
 spec. Make sure to use the key `backstage:featureFlag` in your templates if
 you want to use this functionality.
 
+### Remove sections or fields based on groups
+
+Based on is the current use is a member of a group you can hide sections or even
+only fields of your template. This is a good use case if you want to test
+experimental parameters in a production environment. To use it let's look at the
+following template:
+
+```yaml
+spec:
+  type: website
+  owner: team-a
+  parameters:
+    - name: Enter some stuff
+      description: Enter some stuff
+      backstage:memberOf: group:default/internal
+      properties:
+        inputString:
+          type: string
+          title: string input test
+    - name: Enter more stuff
+      description: Enter more stuff
+      properties:
+        inputString:
+          type: string
+          title: string input test
+        inputObject:
+          type: object
+          title: object input test
+          description: a little nested thing never hurt anyone right?
+          properties:
+            first:
+              type: string
+              title: first
+              backstage:memberOf: group:default/internal
+            second:
+              type: number
+              title: second
+```
+
+If you have a a group entity ref that is `group:default/internal` then your
+first step would be shown if the current user is a member of that group,
+otherwise it would not be shown. The same goes for the nested properties in the
+spec. Make sure to use the key `backstage:memberOf` in your templates if you
+want to use this functionality.
+
 ### The Repository Picker
 
 In order to make working with repository providers easier, we've built a custom
