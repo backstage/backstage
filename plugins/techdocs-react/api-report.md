@@ -15,6 +15,11 @@ import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
 
 // @public
+export function createTechDocsAddonExtension(
+  options: TechDocsAddonOptions,
+): Extension<() => JSX.Element | null>;
+
+// @public
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null>;

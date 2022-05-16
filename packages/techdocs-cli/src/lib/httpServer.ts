@@ -32,7 +32,7 @@ export default class HTTPServer {
     mkdocsPort: number,
     verbose: boolean,
   ) {
-    this.proxyEndpoint = '/api/';
+    this.proxyEndpoint = '/api/techdocs/';
     this.backstageBundleDir = backstageBundleDir;
     this.backstagePort = backstagePort;
     this.mkdocsPort = mkdocsPort;
@@ -46,10 +46,9 @@ export default class HTTPServer {
     });
 
     return (request: http.IncomingMessage): [httpProxy, string] => {
-      // If the request goes to /api/ we want to remove /api/ from the prefix of the request URL.
-      // e.g. ['/', 'api', pathChunks]
-      const [, , ...pathChunks] = request.url?.split('/') ?? [];
-      const forwardPath = pathChunks.join('/');
+      // If the request path is prefixed with this.proxyEndpoint, remove it.
+      const proxyEndpointPath = new RegExp(`^${this.proxyEndpoint}`, 'i');
+      const forwardPath = request.url?.replace(proxyEndpointPath, '') || '';
 
       return [proxy, forwardPath];
     };
