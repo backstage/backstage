@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { DismissableBanner } from './DismissableBanner';
+import { DismissableBanner, Props } from './DismissableBanner';
 import Typography from '@material-ui/core/Typography';
 import { WebStorage } from '@backstage/core-app-api';
 import {
@@ -29,6 +29,12 @@ import { Link } from '../Link';
 export default {
   title: 'Feedback/DismissableBanner',
   component: DismissableBanner,
+  argTypes: {
+    variant: {
+      options: ['info', 'error', 'warning'],
+      control: { type: 'select' },
+    },
+  },
 };
 
 let errorApi: ErrorApi;
@@ -39,47 +45,27 @@ const createWebStorage = (): StorageApi => {
 };
 
 const apis = [[storageApiRef, createWebStorage()] as const];
+const defaultArgs = {
+  message: 'This is a dismissable banner',
+  variant: 'info',
+  fixed: false,
+};
 
-export const Default = () => (
+export const Default = (args: Props) => (
   <div style={containerStyle}>
     <TestApiProvider apis={apis}>
-      <DismissableBanner
-        message="This is a dismissable banner"
-        variant="info"
-        id="default_dismissable"
-      />
+      <DismissableBanner {...args} id="default_dismissable" />
     </TestApiProvider>
   </div>
 );
 
-export const Error = () => (
-  <div style={containerStyle}>
-    <TestApiProvider apis={apis}>
-      <DismissableBanner
-        message="This is a dismissable banner with an error message"
-        variant="error"
-        id="error_dismissable"
-      />
-    </TestApiProvider>
-  </div>
-);
+Default.args = defaultArgs;
 
-export const EmojisIncluded = () => (
+export const WithLink = (args: Props) => (
   <div style={containerStyle}>
     <TestApiProvider apis={apis}>
       <DismissableBanner
-        message="This is a dismissable banner with emojis: 🚀 💚 😆 "
-        variant="info"
-        id="emojis_dismissable"
-      />
-    </TestApiProvider>
-  </div>
-);
-
-export const WithLink = () => (
-  <div style={containerStyle}>
-    <TestApiProvider apis={apis}>
-      <DismissableBanner
+        {...args}
         message={
           <Typography>
             This is a dismissable banner with a link:{' '}
@@ -88,34 +74,10 @@ export const WithLink = () => (
             </Link>
           </Typography>
         }
-        variant="info"
         id="linked_dismissable"
       />
     </TestApiProvider>
   </div>
 );
 
-export const Fixed = () => (
-  <div style={containerStyle}>
-    <TestApiProvider apis={apis}>
-      <DismissableBanner
-        message="This is a dismissable banner with a fixed position fixed at the bottom of the page"
-        variant="info"
-        id="fixed_dismissable"
-        fixed
-      />
-    </TestApiProvider>
-  </div>
-);
-
-export const Warning = () => (
-  <div style={containerStyle}>
-    <TestApiProvider apis={apis}>
-      <DismissableBanner
-        message="This is a dismissable banner with a warning message"
-        variant="warning"
-        id="warning_dismissable"
-      />
-    </TestApiProvider>
-  </div>
-);
+WithLink.args = defaultArgs;

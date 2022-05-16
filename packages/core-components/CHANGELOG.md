@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.9.4-next.2
+
+### Patch Changes
+
+- 52c02ac02b: Don't set the background color on an Avatar component that has a picture.
+- 3603014e0e: Add ARIA landmark( <main>), & label and a heading to OAuthRequestDialog. Removed nested interactive control (button).
+- 2025d7c123: Properly highlight `SidebarSubmenuItem` dropdown items on hover, use ellipsis styling on long labels in `SidebarSubmenu`, allow `icon` and `to` properties to be optional on `SidebarSubmenuItem`, and fix `SidebarPage` padding to be responsive to pinned state
+
 ## 0.9.4-next.1
 
 ### Patch Changes

@@ -22,6 +22,7 @@
 
 export {
   techdocsModuleAddonsContribPlugin,
+  ExpandableNavigation,
   ReportIssue,
   TextSize,
 } from './plugin';

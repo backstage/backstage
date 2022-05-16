@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.5-next.3
+
+### Patch Changes
+
+- 447e060872: Add support for 'oidc' as authProvider for kubernetes authentication
+  and adds optional 'oidcTokenProvider' config value. This will allow
+  users to authenticate to kubernetes cluster using id tokens obtained
+  from the configured auth provider in their backstage instance.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.2.10-next.1
+  - @backstage/core-components@0.9.4-next.2
+
 ## 0.6.5-next.2
 
 ### Patch Changes

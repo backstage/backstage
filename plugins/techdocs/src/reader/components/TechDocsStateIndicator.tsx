@@ -21,7 +21,7 @@ import { Alert } from '@material-ui/lab';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { useTechDocsReader } from './TechDocsReaderPageContent';
+import { useTechDocsReader } from './TechDocsReaderProvider';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,15 +35,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-/**
- * Note: this component is currently being exported so that we can rapidly
- * iterate on alternative <Reader /> implementations that extend core
- * functionality. There is no guarantee that this component will continue to be
- * exported by the package in the future!
- *
- * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
- * @internal
- */
 export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
   const classes = useStyles();

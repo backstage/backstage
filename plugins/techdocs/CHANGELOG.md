@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs
 
+## 1.1.1-next.3
+
+### Patch Changes
+
+- cc8ddd0979: revert dependency `event-source-polyfill` to `1.0.25`
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.2
+
 ## 1.1.1-next.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-org
 
+## 0.5.5-next.3
+
+### Patch Changes
+
+- 2025d7c123: Include namespace in `MyGroupSidebarItem` if not default and remove root item routing if there are multiple groups
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.2
+
 ## 0.5.5-next.2
 
 ### Patch Changes

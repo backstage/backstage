@@ -268,7 +268,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         body: elasticSearchQuery,
       });
       const { page } = decodePageCursor(query.pageCursor);
-      const hasNextPage = result.body.hits.total.value > page * pageSize;
+      const hasNextPage = result.body.hits.total.value > (page + 1) * pageSize;
       const hasPreviousPage = page > 0;
       const nextPageCursor = hasNextPage
         ? encodePageCursor({ page: page + 1 })

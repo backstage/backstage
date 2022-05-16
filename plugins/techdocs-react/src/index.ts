@@ -28,11 +28,7 @@ export {
 } from './addons';
 export { techdocsApiRef, techdocsStorageApiRef } from './api';
 export type { SyncResult, TechDocsApi, TechDocsStorageApi } from './api';
-export {
-  defaultTechDocsReaderPageValue,
-  TechDocsReaderPageProvider,
-  useTechDocsReaderPage,
-} from './context';
+export { TechDocsReaderPageProvider, useTechDocsReaderPage } from './context';
 export type {
   TechDocsReaderPageProviderProps,
   TechDocsReaderPageProviderRenderFunction,

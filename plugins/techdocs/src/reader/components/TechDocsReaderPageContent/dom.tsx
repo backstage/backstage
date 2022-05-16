@@ -28,7 +28,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
 
-import { useTechDocsReader } from './context';
+import { useTechDocsReader } from '../TechDocsReaderProvider';
 
 import {
   addBaseUrl,
@@ -58,14 +58,6 @@ const headings: TypographyHeadingsKeys[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
  * Hook that encapsulates the behavior of getting raw HTML and applying
  * transforms to it in order to make it function at a basic level in the
  * Backstage UI.
- *
- * Note: this hook is currently being exported so that we can rapidly iterate
- * on alternative <Reader /> implementations that extend core functionality.
- * There is no guarantee that this hook will continue to be exported by the
- * package in the future!
- *
- * todo: Make public or stop exporting (see others: "altReaderExperiments")
- * @internal
  */
 export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
