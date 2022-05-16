@@ -72,8 +72,8 @@ export class TaskWorker {
 
         this.logger.info(`Task worker finished: ${this.taskId}`);
       } catch (e) {
-        this.start(settings, options)
         this.logger.warn(`Task worker failed unexpectedly, ${e}`);
+        this.start(settings, options)
       }
     })();
   }
