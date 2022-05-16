@@ -8232,12 +8232,12 @@ better-path-resolve@1.0.0:
     is-windows "^1.0.0"
 
 better-sqlite3@^7.5.0:
-  version "7.5.1"
-  resolved "https://registry.npmjs.org/better-sqlite3/-/better-sqlite3-7.5.1.tgz#22c87135b871afd60f7cb0469d73d5339ad38665"
-  integrity sha512-+i6tH1y9KEIol1iYpZJrqDwBDQZGHioDENU49Rnidorp3bSXvw/QTYDjQGq9+TFF7RX4q0YV1sEOIRq4vDZdRg==
+  version "7.5.3"
+  resolved "https://registry.npmjs.org/better-sqlite3/-/better-sqlite3-7.5.3.tgz#b42e02941f918cb8048971273abc458d937ab2b9"
+  integrity sha512-tNIrDsThpWT8j1mg+svI1pqCYROqNOWMbB2qXVg+TJqH9UR5XnbAHyRsLZoJagldGTTqJPj/sUPVOkW0GRpYqw==
   dependencies:
     bindings "^1.5.0"
-    prebuild-install "^7.0.0"
+    prebuild-install "^7.1.0"
 
 bfj@^7.0.2:
   version "7.0.2"
@@ -20241,10 +20241,10 @@ postgres-interval@^1.1.0:
   dependencies:
     xtend "^4.0.0"
 
-prebuild-install@^7.0.0:
-  version "7.0.1"
-  resolved "https://registry.npmjs.org/prebuild-install/-/prebuild-install-7.0.1.tgz#c10075727c318efe72412f333e0ef625beaf3870"
-  integrity sha512-QBSab31WqkyxpnMWQxubYAHR5S9B2+r81ucocew34Fkl98FhvKIF50jIJnNOBmAZfyNV7vE5T6gd3hTVWgY6tg==
+prebuild-install@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.npmjs.org/prebuild-install/-/prebuild-install-7.1.0.tgz#991b6ac16c81591ba40a6d5de93fb33673ac1370"
+  integrity sha512-CNcMgI1xBypOyGqjp3wOc8AAo1nMhZS3Cwd3iHIxOdAUbb+YxdNuM4Z5iIrZ8RLvOsf3F3bl7b7xGq6DjQoNYA==
   dependencies:
     detect-libc "^2.0.0"
     expand-template "^2.0.3"
