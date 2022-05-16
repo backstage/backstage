@@ -30,8 +30,7 @@ import {
   featureFlagsApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { parseEntityRef } from '@backstage/catalog-model';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import useAsync from 'react-use/lib/useAsync';
 import { FormProps, IChangeEvent, UiSchema, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
@@ -117,37 +116,24 @@ export const MultistepJsonForm = (props: Props) => {
   const [activeStep, setActiveStep] = useState(0);
   const [disableButtons, setDisableButtons] = useState(false);
   const identityApi = useApi(identityApiRef);
-  const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
   const featureFlagApi = useApi(featureFlagsApiRef);
 
-  async function userInGroup(entityRef: string) {
-    const { name, namespace } = parseEntityRef(entityRef);
+  const { value: ownershipRefs } = useAsync(async () => {
+    const { ownershipEntityRefs } = await identityApi.getBackstageIdentity();
+    return ownershipEntityRefs;
+  }, []);
 
-    const profile = await identityApi.getBackstageIdentity();
-    const response = await catalogApi.getEntities({
-      filter: [{ kind: 'group', 'relations.hasMember': profile.userEntityRef }],
-      fields: ['entityRef'],
-    });
-
-    const userGroups = response.items;
-
-    const matchedGroup = userGroups.find(
-      g => g.metadata.name === name && g.metadata.namespace === namespace,
-    );
-
-    if (matchedGroup) return true;
+  function userInGroup(entityRef: string) {
+    if (ownershipRefs?.includes(entityRef)) return true;
 
     return false;
   }
 
   const stepFilters: {
     key: string;
-    stepHandler: (step: Step, filterKey: string) => boolean | Promise<boolean>;
-    propertyHandler: (
-      value: any,
-      filterKey: string,
-    ) => boolean | Promise<boolean>;
+    stepHandler: (step: Step, filterKey: string) => boolean;
+    propertyHandler: (value: any, filterKey: string) => boolean;
   }[] = [
     {
       key: 'backstage:featureFlag',
@@ -167,12 +153,12 @@ export const MultistepJsonForm = (props: Props) => {
     },
     {
       key: 'backstage:memberOf',
-      stepHandler: async (step, filterKey) => {
+      stepHandler: (step, filterKey) => {
         const entityRef = step.schema[filterKey];
         return typeof entityRef !== 'string' || userInGroup(entityRef);
       },
-      propertyHandler: async (value, filterKey) => {
-        if (await userInGroup(value[filterKey])) {
+      propertyHandler: (value, filterKey) => {
+        if (userInGroup(value[filterKey])) {
           return true;
         }
         return false;
