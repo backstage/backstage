@@ -64,6 +64,7 @@ export class LocalTaskWorker {
         this.logger.info(`Task worker finished: ${this.taskId}`);
       } catch (e) {
         this.logger.warn(`Task worker failed unexpectedly, ${e}`);
+        this.start(settings, options)
       }
     })();
   }
