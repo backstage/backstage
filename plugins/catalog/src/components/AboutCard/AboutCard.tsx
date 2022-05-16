@@ -114,8 +114,10 @@ export function AboutCard(props: AboutCardProps) {
     href:
       viewTechdocLink &&
       viewTechdocLink({
-        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-        kind: entity.kind,
+        namespace:
+          entity.metadata.namespace?.toLocaleLowerCase('en-US') ||
+          DEFAULT_NAMESPACE,
+        kind: entity.kind.toLocaleLowerCase('en-US'),
         name: entity.metadata.name,
       }),
   };
