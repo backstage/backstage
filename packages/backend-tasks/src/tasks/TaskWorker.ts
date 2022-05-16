@@ -51,29 +51,35 @@ export class TaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
-
+    const success = false;
+    let attemptNum = 1;
     (async () => {
-      try {
-        if (settings.initialDelayDuration) {
-          await sleep(
-            Duration.fromISO(settings.initialDelayDuration),
-            options?.signal,
-          );
-        }
-
-        while (!options?.signal?.aborted) {
-          const runResult = await this.runOnce(options?.signal);
-          if (runResult.result === 'abort') {
-            break;
+      while (!success) {
+        try {
+          if (settings.initialDelayDuration) {
+            await sleep(
+              Duration.fromISO(settings.initialDelayDuration),
+              options?.signal,
+            );
           }
 
-          await sleep(this.workCheckFrequency, options?.signal);
-        }
+          while (!options?.signal?.aborted) {
+            const runResult = await this.runOnce(options?.signal);
+            if (runResult.result === 'abort') {
+              break;
+            }
 
-        this.logger.info(`Task worker finished: ${this.taskId}`);
-      } catch (e) {
-        this.logger.warn(`Task worker failed unexpectedly, ${e}`);
-        this.start(settings, options)
+            await sleep(this.workCheckFrequency, options?.signal);
+          }
+
+          this.logger.info(`Task worker finished: ${this.taskId}`);
+          break;
+        } catch (e) {
+          attemptNum += 1;
+          this.logger.warn(
+            `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
+          );
+        }
       }
     })();
   }
