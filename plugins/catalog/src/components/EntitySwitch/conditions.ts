@@ -34,13 +34,15 @@ export function isKind(kind: string) {
  * For use in EntitySwitch.Case. Matches if the entity is a Component of a given spec.type.
  * @public
  */
-export function isComponentType(type: string) {
+export function isComponentType(types: string | string[]) {
   return (entity: Entity) => {
     if (!strCmp(entity.kind, 'component')) {
       return false;
     }
     const componentEntity = entity as ComponentEntity;
-    return strCmp(componentEntity.spec.type, type);
+    return typeof types === 'string'
+      ? strCmp(componentEntity.spec.type, types)
+      : types.some(type => strCmp(componentEntity.spec.type, type));
   };
 }
 

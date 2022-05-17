@@ -371,7 +371,9 @@ export interface HasSystemsCardProps {
 }
 
 // @public
-export function isComponentType(type: string): (entity: Entity) => boolean;
+export function isComponentType(
+  types: string | string[],
+): (entity: Entity) => boolean;
 
 // @public
 export function isKind(kind: string): (entity: Entity) => boolean;
