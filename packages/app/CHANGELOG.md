@@ -1,5 +1,64 @@
 # example-app
 
+## 0.2.71
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/plugin-kubernetes@0.6.5
+  - @backstage/plugin-scaffolder@1.2.0
+  - @backstage/plugin-api-docs@0.8.5
+  - @backstage/plugin-tech-insights@0.2.1
+  - @backstage/plugin-tech-radar@0.5.12
+  - @backstage/plugin-org@0.5.5
+  - @backstage/plugin-techdocs@1.1.1
+  - @backstage/cli@0.17.1
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-user-settings@0.4.4
+  - @backstage/plugin-techdocs-module-addons-contrib@1.0.0
+  - @backstage/plugin-home@0.4.21
+  - @backstage/plugin-catalog@1.2.0
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/integration-react@1.1.0
+  - @backstage/plugin-techdocs-react@1.0.0
+  - @backstage/plugin-newrelic-dashboard@0.1.13
+  - @backstage/plugin-graphiql@0.2.37
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search@0.8.1
+  - @backstage/plugin-search-react@0.2.0
+  - @backstage/plugin-catalog-graph@0.2.17
+  - @backstage/core-app-api@1.0.2
+  - @backstage/plugin-gcalendar@0.3.1
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/plugin-azure-devops@0.1.21
+  - @backstage/app-defaults@1.0.2
+  - @backstage/catalog-model@1.0.2
+  - @backstage/plugin-airbrake@0.3.5
+  - @backstage/plugin-apache-airflow@0.1.13
+  - @backstage/plugin-badges@0.2.29
+  - @backstage/plugin-catalog-common@1.0.2
+  - @backstage/plugin-catalog-import@0.8.8
+  - @backstage/plugin-circleci@0.3.5
+  - @backstage/plugin-cloudbuild@0.3.5
+  - @backstage/plugin-code-coverage@0.1.32
+  - @backstage/plugin-cost-insights@0.11.27
+  - @backstage/plugin-explore@0.3.36
+  - @backstage/plugin-gcp-projects@0.3.24
+  - @backstage/plugin-github-actions@0.5.5
+  - @backstage/plugin-gocd@0.1.11
+  - @backstage/plugin-jenkins@0.7.4
+  - @backstage/plugin-kafka@0.3.5
+  - @backstage/plugin-lighthouse@0.3.5
+  - @backstage/plugin-newrelic@0.3.23
+  - @backstage/plugin-pagerduty@0.3.32
+  - @backstage/plugin-permission-react@0.4.1
+  - @backstage/plugin-rollbar@0.4.5
+  - @backstage/plugin-sentry@0.3.43
+  - @backstage/plugin-shortcuts@0.2.6
+  - @backstage/plugin-stack-overflow@0.1.1
+  - @backstage/plugin-todo@0.2.7
+
 ## 0.2.71-next.2
 
 ### Patch Changes

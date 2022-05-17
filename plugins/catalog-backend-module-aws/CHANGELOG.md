@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.1.5
+
+### Patch Changes
+
+- bffec1c96a: Fix S3 object URL creation at AwsS3EntityProvider by
+
+  - handle absence of region config,
+  - handle regions with region-less URIs (us-east-1),
+  - apply URI encoding,
+  - and simplify the logic overall.
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/plugin-catalog-backend@1.1.2
+  - @backstage/backend-tasks@0.3.1
+  - @backstage/integration@1.2.0
+  - @backstage/config@1.0.1
+  - @backstage/catalog-model@1.0.2
+
 ## 0.1.5-next.1
 
 ### Patch Changes

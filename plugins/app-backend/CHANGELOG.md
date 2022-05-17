@@ -1,5 +1,15 @@
 # @backstage/plugin-app-backend
 
+## 0.3.32
+
+### Patch Changes
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/config-loader@1.1.1
+
 ## 0.3.32-next.1
 
 ### Patch Changes

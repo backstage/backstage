@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog
 
+## 1.2.0
+
+### Minor Changes
+
+- 4274844a8c: Use InfoCardVariants on custom cards variant attribute
+- ceca63d149: Added the prop `NotFoundComponent` to `EntityLayout` which can be used to include a custom component when an entity is not found in the catalog
+
+### Patch Changes
+
+- 051fc60258: Lighthouse was reporting this button as having invalid aria- values, as the popover doesn't exist until clicked. This adds additional labels to the button to make it valid aria
+- 2bcb0a0e2b: Sidebar NAV now includes aria-label. Component AboutField now uses h2 variant instead of subtitle2 (font properties unchanged)
+- 3a74e203a8: Updated search result components to support rendering content with highlighted matched terms
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/integration-react@1.1.0
+  - @backstage/plugin-search-react@0.2.0
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+  - @backstage/plugin-catalog-common@1.0.2
+
 ## 1.2.0-next.2
 
 ### Patch Changes

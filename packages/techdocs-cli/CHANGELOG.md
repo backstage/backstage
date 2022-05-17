@@ -1,5 +1,19 @@
 # @techdocs/cli
 
+## 1.1.1
+
+### Patch Changes
+
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 52fddad92d: The TechDocs CLI's embedded app now imports all API refs from the `@backstage/plugin-techdocs-react` package.
+- c14e78a367: Update `techdocs-cli serve`'s `proxyEndpoint` to match the base URL of the embedded techdocs app.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+  - @backstage/plugin-techdocs-node@1.1.1
+  - @backstage/catalog-model@1.0.2
+
 ## 1.1.1-next.2
 
 ### Patch Changes
