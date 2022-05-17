@@ -54,8 +54,48 @@ const AppRoutes = () => {
 };
 ```
 
-That's it! But now, we need the TechDocs Backend plugin for the frontend to
-work.
+It would be nice to decorate your pages with something else... Having a link that redirects you to a new issue page when you highlight text in your documentation would be really cool, right? Let's learn how to do this using the TechDocs Addon Framework!
+
+With the [TechDocs Addon framework](https://backstage.io/docs/features/techdocs/addons#installing-and-using-addons), you can render React components in documentation pages and these Addons can be provided by any Backstage plugin. The framework is exported by the [@backstage/plugin-techdocs-react](https://www.npmjs.com/package/@backstage/plugin-techdocs-react) package and there is a `<ReportIssue />` Addon in the [@backstage/plugin-techdocs-module-addons-contrib](https://www.npmjs.com/package/@backstage/plugin-techdocs-module-addons-contrib) package for you to use once you have these two dependencies installed:
+
+```diff
+import {
+  DefaultTechDocsHome,
+  TechDocsIndexPage,
+  TechDocsReaderPage,
+} from '@backstage/plugin-techdocs';
++ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
++ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+// ...
+
+const AppRoutes = () => {
+  <FlatRoutes>
+    // ... other plugin routes
+    <Route path="/docs" element={<TechDocsIndexPage />}>
+      <DefaultTechDocsHome />
+    </Route>
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    >
++     <TechDocsAddons>
++       <ReportIssue />
++     </TechDocsAddons>
+    </Route>
+  </FlatRoutes>;
+};
+```
+
+I know, you're curious to see how it looks, aren't you? See the image below:
+
+<img data-zoomable src="../../assets/techdocs/report-issue-addon.png" alt="TechDocs Report Issue Add-on" />
+
+By clicking the open new issue button, you will be redirected to the new issue page according to the source code provider you are using:
+
+<img data-zoomable src="../../assets/techdocs/report-issue-template.png" alt="TechDocs Report Issue Template" />
+
+That's it! Now, we need the TechDocs Backend plugin for the frontend to work.
 
 ## Adding TechDocs Backend plugin
 

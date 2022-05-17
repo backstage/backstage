@@ -15,7 +15,10 @@
  */
 
 import { Button } from '@backstage/core-components';
+import { lightTheme } from '@backstage/theme';
 import { Grid } from '@material-ui/core';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@material-ui/core/styles';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import GroupIcon from '@material-ui/icons/Group';
 import React from 'react';
@@ -75,5 +78,49 @@ export const WithSecondaryAction = () => {
         </Button>
       }
     />
+  );
+};
+export const WithHighlightedResults = () => {
+  return (
+    <DefaultResultListItem
+      result={mockSearchResult}
+      highlight={{
+        preTag: '<tag>',
+        postTag: '</tag>',
+        fields: { text: 'some <tag>text</tag> from the search result' },
+      }}
+    />
+  );
+};
+
+export const WithCustomHighlightedResults = () => {
+  const customTheme = {
+    ...lightTheme,
+    overrides: {
+      ...lightTheme.overrides,
+      BackstageHighlightedSearchResultText: {
+        highlight: {
+          color: 'inherit',
+          backgroundColor: 'inherit',
+          fontWeight: 'bold',
+          textDecoration: 'underline',
+        },
+      },
+    },
+  };
+
+  return (
+    <ThemeProvider theme={customTheme}>
+      <CssBaseline>
+        <DefaultResultListItem
+          result={mockSearchResult}
+          highlight={{
+            preTag: '<tag>',
+            postTag: '</tag>',
+            fields: { text: 'some <tag>text</tag> from the search result' },
+          }}
+        />
+      </CssBaseline>
+    </ThemeProvider>
   );
 };

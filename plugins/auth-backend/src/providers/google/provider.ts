@@ -238,7 +238,6 @@ export const google = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: false,
           providerId,
           callbackUrl,
         });

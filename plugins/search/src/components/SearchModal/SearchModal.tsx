@@ -137,7 +137,7 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
         <SearchResult>
           {({ results }) => (
             <List>
-              {results.map(({ document }) => (
+              {results.map(({ document, highlight }) => (
                 <div
                   role="button"
                   tabIndex={0}
@@ -148,6 +148,7 @@ export const Modal = ({ toggleModal }: SearchModalProps) => {
                   <DefaultResultListItem
                     key={document.location}
                     result={document}
+                    highlight={highlight}
                   />
                 </div>
               ))}

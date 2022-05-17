@@ -55,8 +55,7 @@ jobs:
         run: ls microsite/build/backstage && ls microsite/build/backstage/storybook
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: microsite/build/backstage
+          branch: gh-pages
+          folder: microsite/build/backstage

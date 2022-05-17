@@ -19,6 +19,7 @@ import { GoogleKubernetesAuthTranslator } from './GoogleKubernetesAuthTranslator
 import { KubernetesAuthTranslatorGenerator } from './KubernetesAuthTranslatorGenerator';
 import { ServiceAccountKubernetesAuthTranslator } from './ServiceAccountKubernetesAuthTranslator';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
+import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 
 describe('getKubernetesAuthTranslatorInstance', () => {
   const sut = KubernetesAuthTranslatorGenerator;
@@ -41,6 +42,12 @@ describe('getKubernetesAuthTranslatorInstance', () => {
     expect(
       authTranslator instanceof ServiceAccountKubernetesAuthTranslator,
     ).toBe(true);
+  });
+
+  it('can return an auth translator for oidc auth', () => {
+    const authTranslator: KubernetesAuthTranslator =
+      sut.getKubernetesAuthTranslatorInstance('oidc');
+    expect(authTranslator instanceof OidcKubernetesAuthTranslator).toBe(true);
   });
 
   it('throws an error when asked for an auth translator for an unsupported auth type', () => {

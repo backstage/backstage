@@ -15,6 +15,7 @@
  */
 
 import { useAnalytics } from '@backstage/core-plugin-api';
+import classnames from 'classnames';
 import MaterialLink, {
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core/Link';
@@ -35,6 +36,9 @@ const useStyles = makeStyles(
       whiteSpace: 'nowrap',
       height: 1,
       width: 1,
+    },
+    externalLink: {
+      position: 'relative',
     },
   },
   { name: 'Link' },
@@ -100,6 +104,7 @@ export const Link = React.forwardRef<any, LinkProps>(
         onClick={handleClick}
         {...(newWindow ? { target: '_blank', rel: 'noopener' } : {})}
         {...props}
+        className={classnames(classes.externalLink, props.className)}
       >
         {props.children}
         <span className={classes.visuallyHidden}>, Opens in a new window</span>

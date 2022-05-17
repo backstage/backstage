@@ -30,10 +30,35 @@ export interface SearchQuery {
 
 /**
  * @beta
+ * Metadata for result relevant document fields with matched terms highlighted
+ * via wrapping in associated pre/post tags. The UI is expected to parse these
+ * field excerpts by replacing wrapping tags with applicable UI elements for rendering.
+ */
+export interface ResultHighlight {
+  /**
+   * Prefix tag for wrapping terms to be highlighted.
+   */
+  preTag: string;
+  /**
+   * Postfix tag for wrapping terms to be highlighted.
+   */
+  postTag: string;
+  fields: {
+    /**
+     * Matched document fields and associated excerpts containing highlighted
+     * terms wrapped in preTag and postTag to be parsed and rendered in the UI.
+     */
+    [field: string]: string;
+  };
+}
+
+/**
+ * @beta
  */
 export interface Result<TDocument extends SearchDocument> {
   type: string;
   document: TDocument;
+  highlight?: ResultHighlight;
 }
 
 /**

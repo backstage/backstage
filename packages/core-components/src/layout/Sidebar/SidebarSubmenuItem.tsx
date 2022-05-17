@@ -16,6 +16,7 @@
 import React, { useContext, useState } from 'react';
 import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '../../components/Link';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -55,6 +56,9 @@ const useStyles = makeStyles<BackstageTheme>(
       margin: 14,
       marginLeft: 7,
       fontSize: 14,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
     },
     dropdownArrow: {
       position: 'absolute',
@@ -68,16 +72,19 @@ const useStyles = makeStyles<BackstageTheme>(
     dropdownItem: {
       width: '100%',
       padding: '10px 0 10px 0',
+      '&:hover': {
+        background: '#6f6f6f',
+        color: theme.palette.navigation.selectedColor,
+      },
     },
     textContent: {
       color: theme.palette.navigation.color,
-      display: 'flex',
-      justifyContent: 'center',
-      [theme.breakpoints.down('xs')]: {
-        display: 'block',
-        paddingLeft: theme.spacing(4),
-      },
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(1),
       fontSize: '14px',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      'text-overflow': 'ellipsis',
     },
   }),
   { name: 'BackstageSidebarSubmenuItem' },
@@ -106,8 +113,8 @@ export type SidebarSubmenuItemDropdownItem = {
  */
 export type SidebarSubmenuItemProps = {
   title: string;
-  to: string;
-  icon: IconComponent;
+  to?: string;
+  icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
 };
 
@@ -123,7 +130,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };
-  const toLocation = useResolvedPath(to);
+  const toLocation = useResolvedPath(to ?? '');
   const currentLocation = useLocation();
   let isActive = isLocationMatch(currentLocation, toLocation);
 
@@ -139,39 +146,47 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
     });
     return (
       <div className={classes.itemContainer}>
-        <button
-          onClick={handleClickDropdown}
-          onTouchStart={e => e.stopPropagation()}
-          className={classnames(
-            classes.item,
-            isActive ? classes.selected : undefined,
-          )}
-        >
-          <Icon fontSize="small" />
-          <Typography variant="subtitle1" className={classes.label}>
-            {title}
-          </Typography>
-          {showDropDown ? (
-            <ArrowDropUpIcon className={classes.dropdownArrow} />
-          ) : (
-            <ArrowDropDownIcon className={classes.dropdownArrow} />
-          )}
-        </button>
+        <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
+          <button
+            onClick={handleClickDropdown}
+            onTouchStart={e => e.stopPropagation()}
+            className={classnames(
+              classes.item,
+              isActive ? classes.selected : undefined,
+            )}
+          >
+            {Icon && <Icon fontSize="small" />}
+            <Typography variant="subtitle1" className={classes.label}>
+              {title}
+            </Typography>
+            {showDropDown ? (
+              <ArrowDropUpIcon className={classes.dropdownArrow} />
+            ) : (
+              <ArrowDropDownIcon className={classes.dropdownArrow} />
+            )}
+          </button>
+        </Tooltip>
         {dropdownItems && showDropDown && (
           <div className={classes.dropdown}>
             {dropdownItems.map((object, key) => (
-              <Link
-                to={object.to}
-                underline="none"
-                className={classes.dropdownItem}
-                onClick={closeSubmenu}
-                onTouchStart={e => e.stopPropagation()}
+              <Tooltip
                 key={key}
+                title={object.title}
+                enterDelay={500}
+                enterNextDelay={500}
               >
-                <Typography className={classes.textContent}>
-                  {object.title}
-                </Typography>
-              </Link>
+                <Link
+                  to={object.to}
+                  underline="none"
+                  className={classes.dropdownItem}
+                  onClick={closeSubmenu}
+                  onTouchStart={e => e.stopPropagation()}
+                >
+                  <Typography className={classes.textContent}>
+                    {object.title}
+                  </Typography>
+                </Link>
+              </Tooltip>
             ))}
           </div>
         )}
@@ -181,21 +196,23 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
 
   return (
     <div className={classes.itemContainer}>
-      <Link
-        to={to}
-        underline="none"
-        className={classnames(
-          classes.item,
-          isActive ? classes.selected : undefined,
-        )}
-        onClick={closeSubmenu}
-        onTouchStart={e => e.stopPropagation()}
-      >
-        <Icon fontSize="small" />
-        <Typography variant="subtitle1" className={classes.label}>
-          {title}
-        </Typography>
-      </Link>
+      <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
+        <Link
+          to={to!}
+          underline="none"
+          className={classnames(
+            classes.item,
+            isActive ? classes.selected : undefined,
+          )}
+          onClick={closeSubmenu}
+          onTouchStart={e => e.stopPropagation()}
+        >
+          {Icon && <Icon fontSize="small" />}
+          <Typography variant="subtitle1" className={classes.label}>
+            {title}
+          </Typography>
+        </Link>
+      </Tooltip>
     </div>
   );
 };

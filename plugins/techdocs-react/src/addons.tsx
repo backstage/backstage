@@ -31,13 +31,13 @@ export const TECHDOCS_ADDONS_KEY = 'techdocs.addons.addon.v1';
 
 /**
  * Marks the <TechDocsAddons> registry component.
- * @alpha
+ * @public
  */
 export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 
 /**
  * TechDocs Addon registry.
- * @alpha
+ * @public
  */
 export const TechDocsAddons: React.ComponentType = () => null;
 
@@ -48,8 +48,24 @@ const getDataKeyByName = (name: string) => {
 };
 
 /**
- * Create a TechDocs addon.
- * @alpha
+ * Create a TechDocs addon overload signature without props.
+ * @public
+ */
+export function createTechDocsAddonExtension(
+  options: TechDocsAddonOptions,
+): Extension<() => JSX.Element | null>;
+
+/**
+ * Create a TechDocs addon overload signature with props.
+ * @public
+ */
+export function createTechDocsAddonExtension<TComponentProps>(
+  options: TechDocsAddonOptions<TComponentProps>,
+): Extension<(props: TComponentProps) => JSX.Element | null>;
+
+/**
+ * Create a TechDocs addon implementation.
+ * @public
  */
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
@@ -96,7 +112,7 @@ const getAllTechDocsAddonsData = (collection: ElementCollection) => {
 
 /**
  * hook to use addons in components
- * @alpha
+ * @public
  */
 export const useTechDocsAddons = () => {
   const node = useOutlet();

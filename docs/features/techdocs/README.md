@@ -82,13 +82,17 @@ With the Backstage 1.2 release, we plan to introduce the [TechDocs Addon Framewo
 
 In addition to the framework itself, we'll be open sourcing a `<ReportIssue />` addon, helping you to create a feedback loop that drives up documentation quality and fosters a documentation culture at your organization.
 
-### **Future work 🔮**
+### **Next**
 
-Some of the following items are coming soon and some are potential ideas.
+- What can we do in TechDocs to drive up documentation quality?
 
+### **Someday/Maybe**
+
+- Contribute to and deploy from a marketplace of TechDocs Addons
+- Addon: MDX (allows you to use JSX in your Markdown content)
+- Can we go static site generator agnostic?
 - Better integration with
-  [Scaffolder V2](https://github.com/backstage/backstage/issues/2771) (e.g. easy to choose and plug documentation template with Software Templates)
-- Static site generator agnostic, including possible support for MDX (allowing you to use JSX in your Markdown content)
+  [Scaffolder V2](https://github.com/backstage/backstage/issues/2771) (e.g. easy to choose and apply documentation template with Software Templates)
 - Possible to configure several aspects about TechDocs (e.g. URL, homepage,
   theme)
 

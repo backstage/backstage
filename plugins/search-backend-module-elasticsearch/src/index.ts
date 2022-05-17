@@ -23,6 +23,9 @@
 export { ElasticSearchSearchEngine } from './engines';
 export type {
   ElasticSearchClientOptions,
+  ElasticSearchHighlightConfig,
+  ElasticSearchHighlightOptions,
+  ElasticSearchQueryTranslatorOptions,
   ElasticSearchSearchEngineIndexer,
   ElasticSearchSearchEngineIndexerOptions,
 } from './engines';

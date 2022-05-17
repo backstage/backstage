@@ -17,6 +17,7 @@ import { IdentityApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
@@ -388,6 +389,7 @@ export const TechDocsSearchResultListItem: (
 // @public
 export type TechDocsSearchResultListItemProps = {
   result: any;
+  highlight?: ResultHighlight;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;
