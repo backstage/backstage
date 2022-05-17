@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-node
 
+## 1.1.1
+
+### Patch Changes
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- c2a1d8935e: Updated the default version of the `@spotify/techdocs` container used when `techdocs.generator.runIn` is `docker` to `v1.0.3`.
+- b26f4cb6a1: Allow usage of custom tags with sequence node type (such as the !ENV tag) in the techdocs mkdocs config.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/integration@1.2.0
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/catalog-model@1.0.2
+
 ## 1.1.1-next.1
 
 ### Patch Changes

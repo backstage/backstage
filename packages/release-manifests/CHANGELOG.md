@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.3
+
+### Patch Changes
+
+- 6e830352d4: Updated dependency `@types/node` to `^16.0.0`.
+
 ## 0.0.3-next.0
 
 ### Patch Changes

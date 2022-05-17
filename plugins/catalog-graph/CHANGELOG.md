@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-graph
 
+## 0.2.17
+
+### Patch Changes
+
+- f2d4136b72: Fix kind filter error in the dev app
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 0.2.17-next.2
 
 ### Patch Changes

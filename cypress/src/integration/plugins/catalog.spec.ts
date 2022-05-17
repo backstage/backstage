@@ -25,5 +25,62 @@ describe('Catalog', () => {
 
       cy.contains('Owned (10)').should('be.visible');
     });
+
+    it('Should navigate to a docs tab', () => {
+      cy.loginAsGuest();
+
+      cy.visit('/catalog');
+
+      cy.contains('techdocs-e2e-fixture').click();
+
+      cy.location().should(loc => {
+        expect(loc.pathname).to.eq(
+          '/catalog/default/component/techdocs-e2e-fixture',
+        );
+      });
+
+      cy.getCatalogDocsTab().click();
+
+      cy.getTechDocsShadowRoot()
+        .find('h1')
+        .contains('Home page')
+        .should('be.visible');
+    });
+
+    it('Should navigate to a sub-route in docs tab', () => {
+      cy.loginAsGuest();
+
+      cy.visit('/catalog');
+
+      cy.contains('techdocs-e2e-fixture').click();
+
+      cy.location().should(loc => {
+        expect(loc.pathname).to.eq(
+          '/catalog/default/component/techdocs-e2e-fixture',
+        );
+      });
+
+      cy.getCatalogDocsTab().click();
+
+      cy.getTechDocsShadowRoot()
+        .find('h1')
+        .contains('Home page')
+        .should('be.visible');
+
+      cy.getTechDocsShadowRoot().within(() => {
+        cy.getTechDocsNavigation().find('a').contains('Sub-page 1').click();
+      });
+
+      cy.location().should(loc => {
+        expect(loc.pathname).to.eq(
+          '/catalog/default/component/techdocs-e2e-fixture/docs/sub-page-one/',
+        );
+      });
+
+      cy.getTechDocsShadowRoot()
+        .find('h1')
+        .contains('Sub-page 1')
+        .should('be.visible');
+    });
   });
 });
