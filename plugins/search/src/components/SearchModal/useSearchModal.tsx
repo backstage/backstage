@@ -136,7 +136,7 @@ export function useSearchModal(initialState = false) {
   );
 
   // Inherit from parent context, if set.
-  return parentContextValue
+  return parentContextValue?.state
     ? parentContextValue
     : { state, toggleModal, setOpen };
 }
