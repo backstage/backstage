@@ -161,3 +161,20 @@ spec:
           description: My custom name for the component
           ui:field: MyCustomExtension
 ```
+
+## Get data of other fields in Form from a Custom Field Extension
+
+```tsx
+const CustomFieldExtensionComponent(props: FieldExtensionComponentProps<string[]>) => {
+  const { formContext } = props;
+  ...
+};
+
+const CustomFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    name: ...,
+    component: CustomFieldExtensionComponent,
+    validation: ...
+  })
+);
+```
