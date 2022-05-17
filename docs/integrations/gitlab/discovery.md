@@ -47,6 +47,9 @@ of your backend.
  ): Promise<Router> {
    const builder = await CatalogBuilder.create(env);
 +  builder.addProcessor(
-+    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
++    GitLabDiscoveryProcessor.fromConfig(env.config, {
++       logger: env.logger,
++       skipReposWithoutExactFileMatch: true,
++    })
 +  );
 ```
