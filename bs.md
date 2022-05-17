@@ -6,13 +6,13 @@
 
 The new Backend system stems from a couple of needs identified prior to writing this RFC.
 
-### Simplified installations
+### Simplified Installations
 
 The perhaps most important of these is to make it easy for integrators to install new backend plugins without having to jump around in multiple files to wire up the plugin.
 
-The current process is both time consuming and prone to errors in some cases. Ideally the installation should not require more than a few lines of code excluding the configuration itself.
+The current process is both time consuming and prone to errors. Ideally the installation should not require more than a few lines of code excluding the configuration itself.
 
-### Sane defaults
+### Sane Defaults
 
 It should be easy to stay up to date with new backend plugin when upgrading.
 
@@ -20,13 +20,13 @@ Today plugins often have their dependencies constructed in the plugins setup fil
 
 We need to be able to introduce new default APIs without having to change the existing code in order to consume them.
 
-### Extending plugins
+### Extending Plugins
 
 It should be easy for integrators to install extensions to existing plugins in order to gain new functionality.
 
-Plugin developers should be able to provide extensions points for modules to use.
+Plugin developers should be able to provide extension points for other modules to use.
 
-#### Developer friendly
+### Developer Friendly
 
 The concept of installing, extending and providing extension points should be similar across the system and easy for developers to understand.
 
@@ -36,22 +36,21 @@ The development experience should be easy and quick.
 
 The proposal is divided into several sections as the use cases for integrators and plugin developers are different.
 
-### Plugin usage
+### Plugin Usage
 
-In it's simplest form new plugins can be installed by adding them to the backend.
+In its simplest form new plugins can be installed by adding them to the backend.
 
 ```ts
-//src/packages/backend/index.ts
 import { createBackend } from '@backstage/backend-common';
 import { catalogPlugin } from '@backstage/plugin-catalog-backend';
 import { catalogGithubModule } from '@backstage/plugin-catalog-github-module';
 
 async function main() {
   const backend = createBackend();
-  // installs the catalogPlugin
-  backend.add(catalogPlugin);
-  // installs the GitHub org discovery plugin and automatically adds the required processor to the catalog.
-  backend.add(catalogGithubModule.orgDiscovery);
+  // Adds the catalogPlugin
+  backend.add(catalogPlugin());
+  // Installs GitHub org discovery, which adds the entity provider to the catalog
+  backend.add(catalogGithubModule.orgDiscovery());
   await backend.start();
 }
 ```
@@ -59,19 +58,21 @@ async function main() {
 Plugin authors can expose options that can be used alter the default setup.
 
 ```ts
-backend.add(catalogPlugin, { disableProcessing: true });
+backend.add(catalogPlugin({ disableProcessing: true }));
 ```
 
-### Plugin authors
+### Plugin Authors
 
 New plugins are created by exporting the result of `createBackendPlugin`.
 
 `createBackendPlugin` accept a `register` function which takes care of wiring up the plugin to the backend once it has been installed.
 
 The register function is passed a backend environment (`env`) parameter.
-The environment can then be used to register the plugins init function which is called on every startup. `registerInit` must be called once for the plugin to be registered.
+The environment can then be used to register the plugin's init function which is called on startup.
 
-Dependencies to the plugin provided in the `deps` section by mapping them to a name for reference in the init function and the corresponding `serviceRef`. The backend framework then takes care of initializing dependencies prior to calling the init function.
+The init function uses a dependency injection system similar to the Utility APIs found in the frontend core library. For now we refer to these as "Services" rather than "APIs", but naming is to be determined. This is to help separate the concepts, as they don't function in the exact same way.
+
+Dependencies to the plugin provided in the `deps` section by mapping them to a name for reference in the init function and the corresponding `ServiceRef`. The backend framework then takes care of initializing dependencies prior to calling the init function.
 
 ```ts
 export const examplePlugin = createBackendPlugin({
@@ -83,7 +84,7 @@ export const examplePlugin = createBackendPlugin({
       },
       async init({ router }) {
         // plugin specific setup code.
-        router.use('/hello', async (req, res) =>
+        router.use('/hello', async (_req, res) =>
           res.json({ message: 'Hello World' }),
         );
       },
@@ -92,36 +93,37 @@ export const examplePlugin = createBackendPlugin({
 });
 ```
 
-#### Plugins providing extension points
+### Plugins Providing Extension Points
 
 There is a need for plugins to expose extension points which can be extended by other plugins.
-The software catalog is an example of such a plugin which today is extended with custom processors and entity providers.
+The software catalog is an example of such a plugin, which today is extended with custom processors and entity providers.
 
-A plugin can register multiple extension points which act similar to service APIs for other plugins meaning they can be depended on and called in the same way.
+A plugin can register multiple extension points, each of which can be depended on by other plugins through a service reference.
 
-Please note that the `serviceRef` for the extension point is imported from the plugins `node` package as we discourage plugin to plugin imports.
+Please note that the `ServiceRef` for the extension point is imported from the plugins `node` package as we should avoid plugin to plugin imports.
 
 ```ts
 // exported from @backstage/plugin-example-hello-world-node
 
-export interface GreetApi {
+export interface GreetService {
   addGreeting(greeting: string): void;
 }
 
-export const greetingsInitApiRef = createServiceRef<GreetApi>({
+export const greetingsExtensionPoint = createServiceRef<GreetService>({
   id: 'example.greetings',
 });
 ```
 
 ```ts
-import { greetingsInitApiRef } from '@backstage/plugin-example-hello-world-node';
+import { greetingsExtensionPoint } from '@backstage/plugin-example-hello-world-node';
 
 export const examplePlugin = createBackendPlugin({
   id: 'example',
   register(env) {
-    // implements the GreetApi
+    // implements the GreetService
     const greetApi = new GreetApiImpl();
-    env.registerInitApi(myPluginCustomHelloInitApiRef, greetApi);
+
+    env.registerExtensionPoint(greetingsExtensionPoint, greetApi);
 
     env.registerInit({
       async init() {
@@ -133,35 +135,62 @@ export const examplePlugin = createBackendPlugin({
 });
 ```
 
-### Providing APIs
+### Providing Services
 
-There is going to be a set of default APIs provided by the framework such as routing, logging and many others. What's common for many of these APIs are that there is a need to scope the API to a plugin. For example the logging API is more useful when it's able to tell which plugin is outputting a particular log line. To accommodate this use case the API factory is expected to always an instance scoped to the plugin that requests the API.
+There is going to be a set of default services provided by the framework and surrounding packages, such as routing, logging and many others. What's common for many of these services are that there is a need to scope the service implementation to each plugin. For example the logging service is more useful when it's able to tell which plugin is outputting a particular log line. To accommodate this use case, the service factory always creates an instance scoped to the plugin requesting the service.
 
-APIs are created using the `createApiFactory` function connecting the `factory` implementation to the `serviceRef`. The factory function returned is expected to produce an instance of the API given a plugin id.
+Service factories are created using the `createServiceFactory` function connecting the `factory` implementation to the `ServiceRef`. The factory function returned is expected to produce an instance of the service given a plugin ID.
 
 ```ts
-export const loggerApiRef = createServiceRef<Logger>({
+export const loggerServiceRef = createServiceRef<LoggerService>({
   id: 'core.logging',
 });
 
-const loggerFactory = createApiFactory({
-  api: loggerApiRef,
+const loggerServiceFactory = createServiceFactory({
+  api: loggerServiceRef,
   deps: {},
   factory: async () => {
-    const rootLogger = new ToyLogger();
-    return async (pluginId: string) => rootLogger.child({ pluginId });
+    const rootLogger = new RootLogger();
+    return async (pluginId = 'root') => rootLogger.child({ pluginId });
   },
 });
 
 // The backend is then passed the loggerFactory to register it with the backend.
 const backend = createBackend({
-  apis: [loggerFactory],
+  apis: [loggerServiceFactory],
 });
 ```
 
-### Developer experience
+Similar to frontend Utility APIs, service factories may depend on other services. The dependency mechanism is slightly different though, as we receive a factory function rather than the concrete implementation of the service dependency. This factory function is then used to request a service instance for a given plugin ID. Services may also support un-scoped instances, which are retrieved by omitting the plugin ID.
 
-Many have several backend wired together in the same main process. To accommodate for a leaner and less noisy development experience it is desirable to have an option to run a specific set of plugins of those wired up to the backend.
+```ts
+export const dbServiceRef = createServiceRef<DbService>({
+  id: 'core.db',
+});
+
+const dbServiceFactory = createServiceFactory({
+  api: dbServiceRef,
+  deps: {
+    loggerFactory: loggerServiceRef,
+  },
+  factory: async ({ loggerFactory }) => {
+    const rootLogger = await loggerFactory();
+    const dbManager = new DbManager(rootLogger);
+
+    return async (pluginId?: string) => {
+      if (!pluginId) {
+        throw new Error('DB Service must be scoped to a plugin');
+      }
+      const logger = await loggerFactory(pluginId);
+      return dbManager.forPlugin(pluginId, { logger });
+    };
+  },
+});
+```
+
+### Developer Experience
+
+Many installations have several backend plugins running together in the same main process. To accommodate for a leaner and less noisy development experience it is desirable to have an option to run a specific set of plugins of those wired up to the backend.
 
 For example this would just start the catalog and scaffolder backend.
 
@@ -179,7 +208,7 @@ Roadie has also helped out prototyping what the backend system would look like w
 
 <!--- What other things happening could conflict or compete (for example for resources) with the proposal? What risk are there and how do we plan to handle them --->
 
-### Massive backend plugin migration
+### Massive Backend Plugin Migration
 
 The intention is to gradually let existing plugins implement the new Backend API while still exposing the old API for backwards compatibility.
 
