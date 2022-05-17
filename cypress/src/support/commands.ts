@@ -64,6 +64,10 @@ Cypress.Commands.add('getTechDocsNavigation', () => {
   cy.get('[data-md-type="navigation"]');
 });
 
+Cypress.Commands.add('getCatalogDocsTab', () => {
+  cy.get('button[role="tab"]').contains('Docs');
+});
+
 Cypress.Commands.add('mockSockJSNode', () => {
   cy.intercept('GET', '**/sockjs-node/info**', {
     body: {
