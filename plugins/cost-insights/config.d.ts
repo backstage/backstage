@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-interface Config {
+export interface Config {
   costInsights: {
     /**
      * @visibility frontend
