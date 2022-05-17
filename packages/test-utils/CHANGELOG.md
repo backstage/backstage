@@ -1,5 +1,24 @@
 # @backstage/test-utils
 
+## 1.1.0
+
+### Minor Changes
+
+- 1da8b248c2: Added the options parameter to `renderWithEffects`, which if forwarded to the `render` function from `@testling-library/react`. Initially only the `wrapper` option is supported.
+- 1da8b248c2: Added `createTestAppWrapper`, which returns a component that can be used as the `wrapper` option for `render` or `renderWithEffects`.
+
+### Patch Changes
+
+- 1da8b248c2: Fixed `renderInTestApp` so that it is able to re-render the result without removing the app wrapping.
+- 7a5ddfd595: Added missing `Routes` element to wrap the `Route` elements of the test app wrapping.
+- 7a5ddfd595: The internal elements created as part of the `mountedRoutes` implementation are now hidden during rendering.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/config@1.0.1
+  - @backstage/core-app-api@1.0.2
+  - @backstage/plugin-permission-common@0.6.1
+  - @backstage/plugin-permission-react@0.4.1
+
 ## 1.1.0-next.2
 
 ### Patch Changes

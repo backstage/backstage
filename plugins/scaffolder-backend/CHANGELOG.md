@@ -1,5 +1,43 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.2.0
+
+### Minor Changes
+
+- 9818112d12: Update the `github:publish` action to allow passing required status check
+  contexts before merging to the main branch.
+- f8baf7df44: Added the ability to reference the user in the `template.yaml` manifest
+- 8d5a2238a9: Split `publish:bitbucket` into `publish:bitbucketCloud` and `publish:bitbucketServer`.
+
+  In order to migrate from the deprecated action, you need to replace the use of action
+  `publish:bitbucket` in your templates with the use of either `publish:bitbucketCloud`
+  or `publish:bitbucketServer` - depending on which destination SCM provider you use.
+
+  Additionally, these actions will not utilize `integrations.bitbucket` anymore,
+  but `integrations.bitbucketCloud` or `integrations.bitbucketServer` respectively.
+  You may or may not have migrated to these already.
+
+  As described in a previous changeset, using these two replacement integrations configs
+  will not compromise use cases which still rely on `integrations.bitbucket` as this was
+  set up in a backwards compatible way.
+
+  Additionally, please mind that the option `enableLFS` is only available (and always was)
+  for Bitbucket Server use cases and therefore, is not even part of the schema for
+  `publish:bitbucketCloud` anymore.
+
+### Patch Changes
+
+- 0fc65cbf89: Override default commit message and author details in GitHub, Azure, bitbucket
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/plugin-catalog-backend@1.1.2
+  - @backstage/integration@1.2.0
+  - @backstage/plugin-scaffolder-common@1.1.0
+  - @backstage/config@1.0.1
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 1.2.0-next.1
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @backstage/core-app-api
 
+## 1.0.2
+
+### Patch Changes
+
+- 1fae1f57c9: Fix SAML session schema to no longer require the (deprecated) id, to unbreak session data storage.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/config@1.0.1
+
 ## 1.0.2-next.1
 
 ### Patch Changes

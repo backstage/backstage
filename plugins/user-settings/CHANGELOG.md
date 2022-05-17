@@ -1,5 +1,14 @@
 # @backstage/plugin-user-settings
 
+## 0.4.4
+
+### Patch Changes
+
+- ed075219aa: Added alternative text to profile picture
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+
 ## 0.4.4-next.0
 
 ### Patch Changes

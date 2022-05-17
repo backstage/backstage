@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.3.3
+
+### Patch Changes
+
+- 71d3432710: Search Engines will now index documents in batches of 1000 instead of 100 (under the hood). This may result in your Backstage backend consuming slightly more memory during index runs, but should dramatically improve indexing performance for large document sets.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/plugin-search-backend-node@0.6.1
+  - @backstage/plugin-search-common@0.3.4
+
 ## 0.3.3-next.1
 
 ### Patch Changes

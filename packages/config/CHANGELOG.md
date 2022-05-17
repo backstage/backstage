@@ -1,5 +1,11 @@
 # @backstage/config
 
+## 1.0.1
+
+### Patch Changes
+
+- 6e830352d4: Updated dependency `@types/node` to `^16.0.0`.
+
 ## 1.0.1-next.0
 
 ### Patch Changes

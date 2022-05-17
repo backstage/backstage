@@ -1,5 +1,20 @@
 # @backstage/dev-utils
 
+## 1.0.2
+
+### Patch Changes
+
+- 6e830352d4: Updated dependency `@types/node` to `^16.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/test-utils@1.1.0
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/integration-react@1.1.0
+  - @backstage/core-app-api@1.0.2
+  - @backstage/app-defaults@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 1.0.2-next.2
 
 ### Patch Changes
