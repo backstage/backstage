@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.9
+
+### Patch Changes
+
+- 6e830352d4: Updated dependency `@types/node` to `^16.0.0`.
+
 ## 0.1.9-next.0
 
 ### Patch Changes

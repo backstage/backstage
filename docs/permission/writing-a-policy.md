@@ -50,7 +50,7 @@ Let's change the policy to the following:
 + import {
 +   catalogConditions,
 +   createCatalogConditionalDecision,
-+ } from '@backstage/plugin-catalog-backend';
++ } from '@backstage/plugin-catalog-backend/alpha';
 + import {
 +   catalogEntityDeletePermission,
 + } from '@backstage/plugin-catalog-common';
@@ -103,7 +103,7 @@ import {
  import {
    catalogConditions,
    createCatalogConditionalDecision,
- } from '@backstage/plugin-catalog-backend';
+ } from '@backstage/plugin-catalog-backend/alpha';
 - import {
 -   catalogEntityDeletePermission,
 - } from '@backstage/plugin-catalog-common';

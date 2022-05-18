@@ -20,6 +20,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import {
   SearchModal,
   SearchModalChildrenProps,
+  SearchModalProvider,
   useSearchModal,
 } from '../SearchModal';
 
@@ -28,7 +29,7 @@ export type SidebarSearchModalProps = {
   children?: (props: SearchModalChildrenProps) => JSX.Element;
 };
 
-export const SidebarSearchModal = (props: SidebarSearchModalProps) => {
+const SidebarSearchModalContent = (props: SidebarSearchModalProps) => {
   const { state, toggleModal } = useSearchModal();
   const Icon = props.icon ? props.icon : SearchIcon;
 
@@ -46,5 +47,13 @@ export const SidebarSearchModal = (props: SidebarSearchModalProps) => {
         children={props.children}
       />
     </>
+  );
+};
+
+export const SidebarSearchModal = (props: SidebarSearchModalProps) => {
+  return (
+    <SearchModalProvider>
+      <SidebarSearchModalContent {...props} />
+    </SearchModalProvider>
   );
 };

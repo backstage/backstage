@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-node
 
+## 0.2.1
+
+### Patch Changes
+
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+
 ## 0.2.1-next.1
 
 ### Patch Changes

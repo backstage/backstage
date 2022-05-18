@@ -1,5 +1,15 @@
 # @backstage/config-loader
 
+## 1.1.1
+
+### Patch Changes
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 9e8ef53498: Handle empty config files gracefully
+- Updated dependencies
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+
 ## 1.1.1-next.1
 
 ### Patch Changes

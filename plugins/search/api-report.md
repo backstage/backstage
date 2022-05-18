@@ -195,6 +195,28 @@ export interface SearchModalProps {
   toggleModal: () => void;
 }
 
+// @public
+export const SearchModalProvider: ({
+  children,
+  showInitially,
+}: SearchModalProviderProps) => JSX.Element;
+
+// @public
+export type SearchModalProviderProps = {
+  children: ReactNode;
+  showInitially?: boolean;
+};
+
+// @public
+export type SearchModalValue = {
+  state: {
+    hidden: boolean;
+    open: boolean;
+  };
+  toggleModal: () => void;
+  setOpen: (open: boolean) => void;
+};
+
 // Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -297,12 +319,5 @@ export type SidebarSearchProps = {
 };
 
 // @public
-export function useSearchModal(initialState?: boolean): {
-  state: {
-    hidden: boolean;
-    open: boolean;
-  };
-  toggleModal: () => void;
-  setOpen: (open: boolean) => void;
-};
+export function useSearchModal(initialState?: boolean): SearchModalValue;
 ```

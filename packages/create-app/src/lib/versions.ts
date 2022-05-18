@@ -75,6 +75,8 @@ import { version as pluginSearchBackendModulePg } from '../../../../plugins/sear
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
 import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
+import { version as pluginTechdocsReact } from '../../../../plugins/techdocs-react/package.json';
+import { version as pluginTechdocsModuleAddonsContrib } from '../../../../plugins/techdocs-module-addons-contrib/package.json';
 import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
 
@@ -120,6 +122,9 @@ export const packageVersions = {
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
+  '@backstage/plugin-techdocs-react': pluginTechdocsReact,
+  '@backstage/plugin-techdocs-module-addons-contrib':
+    pluginTechdocsModuleAddonsContrib,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,
   '@backstage/plugin-user-settings': pluginUserSettings,
   '@backstage/test-utils': testUtils,
