@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import mockfs from 'mock-fs';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
@@ -24,7 +25,6 @@ jest.doMock('command-exists', () => commandExists);
 
 import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
-import mockfs from 'mock-fs';
 import path from 'path';
 import { PassThrough } from 'stream';
 
