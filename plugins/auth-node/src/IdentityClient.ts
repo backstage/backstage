@@ -29,6 +29,12 @@ import { BackstageIdentityResponse } from './types';
 
 const CLOCK_MARGIN_S = 10;
 
+/**
+ * An identity client options object which allows extra configurations
+ *
+ * @experimental This is not a stable API yet
+ * @public
+ */
 export type IdentityClientOptions = {
   discovery: PluginEndpointDiscovery;
   issuer: string;
