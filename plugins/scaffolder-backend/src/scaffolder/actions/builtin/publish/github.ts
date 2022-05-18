@@ -271,7 +271,7 @@ export function createPublishGithubAction(options: {
         assertError(e);
         if (e.message === 'Resource not accessible by integration') {
           ctx.logger.warn(
-            'The GitHub app or token provided to Backstage may not have the required permissions to create the repository.',
+            `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
           );
         }
         throw new Error(
