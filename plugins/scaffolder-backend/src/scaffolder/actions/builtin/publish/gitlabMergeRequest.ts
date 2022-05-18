@@ -196,7 +196,9 @@ export const createPublishGitlabMergeRequestAction = (options: {
           ctx.input.title,
           {
             description: ctx.input.description,
-            removeSourceBranch: ctx.input.removeSourceBranch,
+            removeSourceBranch: ctx.input.removeSourceBranch
+              ? ctx.input.removeSourceBranch
+              : false,
           },
         ).then((mergeRequest: { web_url: string }) => {
           return mergeRequest.web_url;
