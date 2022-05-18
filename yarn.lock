@@ -11332,11 +11332,11 @@ esbuild-linux-s390x@0.14.39:
   integrity sha512-zEfunpqR8sMomqXhNTFEKDs+ik7HC01m3M60MsEjZOqaywHu5e5682fMsqOlZbesEAAaO9aAtRBsU7CHnSZWyA==
 
 esbuild-loader@^2.18.0:
-  version "2.18.0"
-  resolved "https://registry.npmjs.org/esbuild-loader/-/esbuild-loader-2.18.0.tgz#7b9548578ab954574fd94655693d22aa5ec74120"
-  integrity sha512-AKqxM3bI+gvGPV8o6NAhR+cBxVO8+dh+O0OXBHIXXwuSGumckbPWHzZ17subjBGI2YEGyJ1STH7Haj8aCrwL/w==
+  version "2.19.0"
+  resolved "https://registry.npmjs.org/esbuild-loader/-/esbuild-loader-2.19.0.tgz#54f62d1da8262acfc3c5883c24da35af8324f116"
+  integrity sha512-urGNVE6Tl2rqx92ElKi/LiExXjGvcH6HfDBFzJ9Ppwqh4n6Jmx8x7RKAyMzSM78b6CAaJLhDncG5sPrL0ROh5Q==
   dependencies:
-    esbuild "^0.14.6"
+    esbuild "^0.14.39"
     joycon "^3.0.1"
     json5 "^2.2.0"
     loader-utils "^2.0.0"
@@ -11373,7 +11373,7 @@ esbuild-windows-arm64@0.14.39:
   resolved "https://registry.npmjs.org/esbuild-windows-arm64/-/esbuild-windows-arm64-0.14.39.tgz#00268517e665b33c89778d61f144e4256b39f631"
   integrity sha512-sBZQz5D+Gd0EQ09tZRnz/PpVdLwvp/ufMtJ1iDFYddDaPpZXKqPyaxfYBLs3ueiaksQ26GGa7sci0OqFzNs7KA==
 
-esbuild@^0.14.1, esbuild@^0.14.10, esbuild@^0.14.6:
+esbuild@^0.14.1, esbuild@^0.14.10, esbuild@^0.14.39:
   version "0.14.39"
   resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.14.39.tgz#c926b2259fe6f6d3a94f528fb42e103c5a6d909a"
   integrity sha512-2kKujuzvRWYtwvNjYDY444LQIA3TyJhJIX3Yo4+qkFlDDtGlSicWgeHVJqMUP/2sSfH10PGwfsj+O2ro1m10xQ==
