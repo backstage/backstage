@@ -376,10 +376,12 @@ export function isComponentType(
 ): (entity: Entity) => boolean;
 
 // @public
-export function isKind(kind: string): (entity: Entity) => boolean;
+export function isKind(kinds: string | string[]): (entity: Entity) => boolean;
 
 // @public
-export function isNamespace(namespace: string): (entity: Entity) => boolean;
+export function isNamespace(
+  namespaces: string | string[],
+): (entity: Entity) => boolean;
 
 // @public
 export function isOrphan(entity: Entity): boolean;

@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Updates the `ìsComponentType` to allow an array of possible types
+Updates the `isKind`, `ìsComponentType`, and `isNamespace` to allow an array of possible values

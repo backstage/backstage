@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { isComponentType } from '.';
+import { isComponentType, isKind, isNamespace } from './conditions';
 
 const serviceComponent: Entity = {
   apiVersion: '',
@@ -38,6 +38,27 @@ const notComponent: Entity = {
   spec: { type: 'service' },
 };
 
+const apiKind: Entity = {
+  apiVersion: '',
+  kind: 'api',
+  metadata: { name: 'api' },
+  spec: { type: 'api' },
+};
+
+const aNamespace: Entity = {
+  apiVersion: '',
+  kind: 'component',
+  metadata: { name: 'aService', namespace: 'a' },
+  spec: { type: 'service' },
+};
+
+const bNamespace: Entity = {
+  apiVersion: '',
+  kind: 'component',
+  metadata: { name: 'aService', namespace: 'b' },
+  spec: { type: 'service' },
+};
+
 describe('isComponentType', () => {
   it('should false on non component kinds', () => {
     const checkEntity = isComponentType('service');
@@ -55,5 +76,35 @@ describe('isComponentType', () => {
 
     expect(checkEntity(serviceComponent)).toBeTruthy();
     expect(checkEntity(websiteComponent)).toBeTruthy();
+  });
+});
+
+describe('isKind', () => {
+  it('should check for the intended kind', () => {
+    const checkEntity = isKind('component');
+
+    expect(checkEntity(notComponent)).not.toBeTruthy();
+    expect(checkEntity(serviceComponent)).toBeTruthy();
+  });
+  it('should check for multiple types', () => {
+    const checkEntity = isKind(['component', 'api']);
+
+    expect(checkEntity(serviceComponent)).toBeTruthy();
+    expect(checkEntity(apiKind)).toBeTruthy();
+  });
+});
+
+describe('isNamespace', () => {
+  it('should check for the intended type', () => {
+    const checkEntity = isNamespace('a');
+
+    expect(checkEntity(aNamespace)).toBeTruthy();
+    expect(checkEntity(bNamespace)).not.toBeTruthy();
+  });
+  it('should check for multiple types', () => {
+    const checkEntity = isNamespace(['a', 'b']);
+
+    expect(checkEntity(aNamespace)).toBeTruthy();
+    expect(checkEntity(bNamespace)).toBeTruthy();
   });
 });
