@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
+import { ApiEntity, Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import { Typography } from '@material-ui/core';
 import {
   EntityTable,
@@ -30,11 +30,13 @@ import {
   Link,
   Progress,
   TableColumn,
+  TableProps,
   WarningPanel,
 } from '@backstage/core-components';
 
-type Props = {
+type Props<T extends Entity> = {
   variant?: InfoCardVariants;
+  tableOptions?: TableProps<T>['options'];
 };
 
 const columns: TableColumn<ApiEntity>[] = [
@@ -45,7 +47,10 @@ const columns: TableColumn<ApiEntity>[] = [
   EntityTable.columns.createMetadataDescriptionColumn(),
 ];
 
-export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
+export const HasApisCard = ({
+  variant = 'gridItem',
+  tableOptions = {},
+}: Props<ApiEntity>) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_HAS_PART,
@@ -91,6 +96,7 @@ export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
       }
       columns={columns}
       entities={entities as ApiEntity[]}
+      tableOptions={tableOptions}
     />
   );
 };

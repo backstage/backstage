@@ -16,6 +16,7 @@
 
 import {
   ComponentEntity,
+  Entity,
   RELATION_API_PROVIDED_BY,
 } from '@backstage/catalog-model';
 import { Typography } from '@material-ui/core';
@@ -31,14 +32,19 @@ import {
   InfoCardVariants,
   Link,
   Progress,
+  TableProps,
   WarningPanel,
 } from '@backstage/core-components';
 
-type Props = {
+type Props<T extends Entity> = {
   variant?: InfoCardVariants;
+  tableOptions?: TableProps<T>['options'];
 };
 
-export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const ProvidingComponentsCard = ({
+  variant = 'gridItem',
+  tableOptions = {},
+}: Props<ComponentEntity>) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_API_PROVIDED_BY,
@@ -82,6 +88,7 @@ export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
       }
       columns={EntityTable.componentEntityColumns}
       entities={entities as ComponentEntity[]}
+      tableOptions={tableOptions}
     />
   );
 };

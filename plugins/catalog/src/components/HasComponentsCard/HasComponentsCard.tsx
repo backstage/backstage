@@ -31,7 +31,7 @@ export interface HasComponentsCardProps {
 }
 
 export function HasComponentsCard(props: HasComponentsCardProps) {
-  const { variant = 'gridItem', tableOptions } = props;
+  const { variant = 'gridItem', tableOptions = {} } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}

@@ -68,7 +68,7 @@ export function RelatedEntitiesCard<T extends Entity>(
     relationType,
     emptyMessage,
     emptyHelpLink,
-    tableOptions,
+    tableOptions = {},
     asRenderableEntities,
   } = props;
 

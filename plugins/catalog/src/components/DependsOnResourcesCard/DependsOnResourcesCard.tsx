@@ -31,7 +31,7 @@ export interface DependsOnResourcesCardProps {
 }
 
 export function DependsOnResourcesCard(props: DependsOnResourcesCardProps) {
-  const { variant = 'gridItem', tableOptions } = props;
+  const { variant = 'gridItem', tableOptions = {} } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}

@@ -61,7 +61,7 @@ export const EntityTable = <T extends Entity>(props: EntityTableProps<T>) => {
     emptyContent,
     variant = 'gridItem',
     columns,
-    tableOptions,
+    tableOptions = {},
   } = props;
 
   const classes = useStyles();

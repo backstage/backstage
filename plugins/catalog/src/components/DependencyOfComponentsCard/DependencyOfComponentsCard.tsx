@@ -40,7 +40,7 @@ export function DependencyOfComponentsCard(
   const {
     variant = 'gridItem',
     title = 'Dependency of components',
-    tableOptions,
+    tableOptions = {},
   } = props;
   return (
     <RelatedEntitiesCard

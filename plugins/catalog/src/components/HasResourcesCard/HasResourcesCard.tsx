@@ -31,7 +31,7 @@ export interface HasResourcesCardProps {
 }
 
 export function HasResourcesCard(props: HasResourcesCardProps) {
-  const { variant = 'gridItem', tableOptions } = props;
+  const { variant = 'gridItem', tableOptions = {} } = props;
   return (
     <RelatedEntitiesCard
       variant={variant}

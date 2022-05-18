@@ -35,7 +35,7 @@ export function DependsOnComponentsCard(props: DependsOnComponentsCardProps) {
   const {
     variant = 'gridItem',
     title = 'Depends on components',
-    tableOptions,
+    tableOptions = {},
   } = props;
   return (
     <RelatedEntitiesCard
