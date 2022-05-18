@@ -172,8 +172,10 @@ export class CatalogBuilder {
    *
    * @param policies - One or more policies
    */
-  addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder {
-    this.entityPolicies.push(...policies);
+  addEntityPolicy(
+    ...policies: Array<EntityPolicy | Array<EntityPolicy>>
+  ): CatalogBuilder {
+    this.entityPolicies.push(...policies.flat());
     return this;
   }
 
@@ -268,8 +270,10 @@ export class CatalogBuilder {
    *
    * @param providers - One or more entity providers
    */
-  addEntityProvider(...providers: EntityProvider[]): CatalogBuilder {
-    this.entityProviders.push(...providers);
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): CatalogBuilder {
+    this.entityProviders.push(...providers.flat());
     return this;
   }
 
@@ -279,8 +283,10 @@ export class CatalogBuilder {
    *
    * @param processors - One or more processors
    */
-  addProcessor(...processors: CatalogProcessor[]): CatalogBuilder {
-    this.processors.push(...processors);
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): CatalogBuilder {
+    this.processors.push(...processors.flat());
     return this;
   }
 
@@ -341,8 +347,12 @@ export class CatalogBuilder {
    * @param permissionRules - Additional permission rules
    * @alpha
    */
-  addPermissionRules(...permissionRules: CatalogPermissionRule[]) {
-    this.permissionRules.push(...permissionRules);
+  addPermissionRules(
+    ...permissionRules: Array<
+      CatalogPermissionRule | Array<CatalogPermissionRule>
+    >
+  ) {
+    this.permissionRules.push(...permissionRules.flat());
   }
 
   /**

@@ -110,11 +110,21 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 
 // @public
 export class CatalogBuilder {
-  addEntityPolicy(...policies: EntityPolicy[]): CatalogBuilder;
-  addEntityProvider(...providers: EntityProvider[]): CatalogBuilder;
+  addEntityPolicy(
+    ...policies: Array<EntityPolicy | Array<EntityPolicy>>
+  ): CatalogBuilder;
+  addEntityProvider(
+    ...providers: Array<EntityProvider | Array<EntityProvider>>
+  ): CatalogBuilder;
   // @alpha
-  addPermissionRules(...permissionRules: CatalogPermissionRule[]): void;
-  addProcessor(...processors: CatalogProcessor[]): CatalogBuilder;
+  addPermissionRules(
+    ...permissionRules: Array<
+      CatalogPermissionRule | Array<CatalogPermissionRule>
+    >
+  ): void;
+  addProcessor(
+    ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
+  ): CatalogBuilder;
   build(): Promise<{
     processingEngine: CatalogProcessingEngine;
     router: Router;
