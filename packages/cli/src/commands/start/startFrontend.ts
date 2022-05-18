@@ -62,14 +62,30 @@ export async function startFrontend(options: StartAppOptions) {
   }
 
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
+  const config = await loadCliConfig({
+    args: options.configPaths,
+    fromPackage: name,
+    withFilteredKeys: true,
+  });
+
+  const appBaseUrl = config.frontendConfig.getString('app.baseUrl');
+  const backendBaseUrl = config.frontendConfig.getString('backend.baseUrl');
+  if (appBaseUrl === backendBaseUrl) {
+    console.log(
+      chalk.yellow(
+        `⚠️ Conflict between app baseUrl and backend baseUrl:
+
+  app.baseUrl:     ${appBaseUrl}
+  backend.baseUrl: ${appBaseUrl}
+`,
+      ),
+    );
+  }
+
   const waitForExit = await serveBundle({
     entry: options.entry,
     checksEnabled: options.checksEnabled,
-    ...(await loadCliConfig({
-      args: options.configPaths,
-      fromPackage: name,
-      withFilteredKeys: true,
-    })),
+    ...config,
   });
 
   await waitForExit();
