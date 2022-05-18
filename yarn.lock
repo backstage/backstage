@@ -1986,9 +1986,9 @@
   integrity sha512-d4VSA86eL/AFTe5xtyZX+ePUjE8dIFu2T8zmdeNBSa5/kNgXPCx/o/wbFNHAGLJdGnk1vddRuMESD9HbOC8irw==
 
 "@google-cloud/storage@^5.6.0", "@google-cloud/storage@^5.8.0":
-  version "5.19.4"
-  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.19.4.tgz#d3377f03b575c66f61e2782ffd0f65419a30ebe0"
-  integrity sha512-Jz7ugcPHhsEmMVvIxM9uoBsdEbKIYwDkh3u07tifsIymEWs47F4/D6+/Tv/W7kLhznqjyOjVJ/0frtBeIC0lJA==
+  version "5.20.3"
+  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.20.3.tgz#10e3b75bdfba5dd9b77b26b6bb6d2e2bf545dc2a"
+  integrity sha512-nVrEB4nhJV8ZgTAaJ21pibcMa+kFS/s0JolVZnV/EDveZeGPv7SC09A8C232U1+bsuZI0v/wGwHY+E73vJa8BQ==
   dependencies:
     "@google-cloud/paginator" "^3.0.7"
     "@google-cloud/projectify" "^2.0.0"
@@ -1998,12 +1998,10 @@
     async-retry "^1.3.3"
     compressible "^2.0.12"
     configstore "^5.0.0"
-    date-and-time "^2.0.0"
     duplexify "^4.0.0"
     ent "^2.2.0"
     extend "^3.0.2"
     gaxios "^4.0.0"
-    get-stream "^6.0.0"
     google-auth-library "^7.14.1"
     hash-stream-validation "^0.2.2"
     mime "^3.0.0"
@@ -2011,7 +2009,6 @@
     p-limit "^3.0.1"
     pumpify "^2.0.0"
     retry-request "^4.2.2"
-    snakeize "^0.1.0"
     stream-events "^1.0.4"
     teeny-request "^7.1.3"
     xdg-basedir "^4.0.0"
@@ -10374,11 +10371,6 @@ dataloader@2.1.0, dataloader@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/dataloader/-/dataloader-2.1.0.tgz#c69c538235e85e7ac6c6c444bae8ecabf5de9df7"
   integrity sha512-qTcEYLen3r7ojZNgVUaRggOI+KM7jrKxXeSHhogh/TWxYMeONEMqY+hmkobiYQozsGIyg9OYVzO4ZIfoB4I0pQ==
-
-date-and-time@^2.0.0:
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/date-and-time/-/date-and-time-2.3.0.tgz#1b509be4c938dbbf5fc9c14d66e1daf9fe3cef13"
-  integrity sha512-DY53oj742mykXjZzDxT7NxH5cxwBRb7FsVG5+8pcV96qU9JQd0UhA21pQB18fwwsXOXeSM0RJV4OzgVxu8eatg==
 
 date-fns@^1.27.2:
   version "1.30.1"
@@ -22392,11 +22384,6 @@ snake-case@^3.0.4:
   dependencies:
     dot-case "^3.0.4"
     tslib "^2.0.3"
-
-snakeize@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/snakeize/-/snakeize-0.1.0.tgz#10c088d8b58eb076b3229bb5a04e232ce126422d"
-  integrity sha1-EMCI2LWOsHazIpu1oE4jLOEmQi0=
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
