@@ -31,6 +31,9 @@ export const EntitySentryContent: ({
   tableOptions,
 }: SentryPageProps) => JSX.Element;
 
+// @public
+export const isSentryAvailable: (entity: Entity) => boolean;
+
 // Warning: (ae-missing-release-tag) "MockSentryApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)

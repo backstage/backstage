@@ -18,6 +18,13 @@ import { Entity } from '@backstage/catalog-model';
 
 export const SENTRY_PROJECT_SLUG_ANNOTATION = 'sentry.io/project-slug';
 
+/**
+ * @public
+ * Checks to see if sentry is available
+ */
+export const isSentryAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[SENTRY_PROJECT_SLUG_ANNOTATION]);
+
 export const useProjectSlug = (entity: Entity) => {
   return entity?.metadata.annotations?.[SENTRY_PROJECT_SLUG_ANNOTATION] ?? '';
 };
