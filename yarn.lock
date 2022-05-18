@@ -23555,9 +23555,9 @@ test-exclude@^6.0.0:
     minimatch "^3.0.4"
 
 testcontainers@^8.1.2:
-  version "8.10.0"
-  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-8.10.0.tgz#fae18c4b2016eb4b0d8cc992c47738e26d1d0717"
-  integrity sha512-7Kwcw9JFav2H+J9/0JF9ZYaxn4nvboLHyh0xpKHw8Imtoc8H2w/HgKJGgpn+hi6X1y1I0F24Z+jYkARYBgbdHQ==
+  version "8.10.1"
+  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-8.10.1.tgz#2b3d1d25932f437ba4c46a1f32380ce7987629f8"
+  integrity sha512-MQFoWe6sJrbcZqXb+fM7uN2w9WnV2KZnNyI7Qc9pbxQZS6oLa/or5kgL4DADAuzYFxXJvL3f8inIGI+/1S+rvA==
   dependencies:
     "@balena/dockerignore" "^1.0.2"
     "@types/archiver" "^5.3.1"
