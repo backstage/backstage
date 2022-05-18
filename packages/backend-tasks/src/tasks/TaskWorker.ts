@@ -79,7 +79,7 @@ export class TaskWorker {
           this.logger.warn(
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
-          await sleep(Duration.fromISO('P1S'));
+          await sleep(Duration.fromObject({ seconds: 1 }));
         }
       }
     })();
