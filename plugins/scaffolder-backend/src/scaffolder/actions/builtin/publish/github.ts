@@ -275,7 +275,7 @@ export function createPublishGithubAction(options: {
           );
         }
         throw new Error(
-          `Failed to create the ${user.data.type} repository ${owner}/${repo}: ${e.message}`,
+          `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
         );
       }
 
