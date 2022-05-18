@@ -49,7 +49,7 @@ of your backend.
 +  builder.addProcessor(
 +    GitLabDiscoveryProcessor.fromConfig(env.config, {
 +       logger: env.logger,
-+       skipReposWithoutExactFileMatch: true,
++       skipReposWithoutExactFileMatch: false,
 +    })
 +  );
 ```

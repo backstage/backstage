@@ -80,6 +80,13 @@ export class GitLabClient {
     });
 
     if (!response.ok) {
+      if (response.status >= 500) {
+        this.logger.debug(
+          `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+            response.status
+          } - ${response.statusText}`,
+        );
+      }
       return false;
     }
 
