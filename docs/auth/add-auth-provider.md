@@ -74,7 +74,7 @@ export class ProviderAAuthProvider implements OAuthProviderHandlers {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
         response_type: 'code',
         /// ... etc
       }
@@ -153,7 +153,6 @@ export const createOktaProvider: AuthProviderFactory = ({
 
     // Wrap the OAuthProviderHandlers with OAuthProvider, which implements AuthProviderRouteHandlers
     return OAuthProvider.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
       providerId,
       tokenIssuer,
     });
@@ -230,7 +229,7 @@ name.
 ### Test the new provider
 
 You can `curl -i localhost:7007/api/auth/providerA/start` and which should
-provide a `302` redirect with a `Location` header. Paste the url from that
+provide a `302` redirect with a `Location` header. Paste the URL from that
 header into a web browser and you should be able to trigger the authorization
 flow.
 

@@ -15,6 +15,10 @@
  */
 
 import {
+  DEFAULT_NAMESPACE,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import {
   createRouter,
   providers,
   defaultAuthProviderFactories,
@@ -84,6 +88,27 @@ export default async function createPlugin(
             return ctx.signInWithCatalogUser({
               entityRef: {
                 name: fullProfile.id,
+              },
+            });
+          },
+        },
+      }),
+
+      // This is an example of how to configure the OAuth2Proxy provider as well
+      // as how to sign a user in without a matching user entity in the catalog.
+      // You can try it out using `<ProxiedSignInPage {...props} provider="myproxy" />`
+      myproxy: providers.oauth2Proxy.create({
+        signIn: {
+          async resolver({ result }, ctx) {
+            const entityRef = stringifyEntityRef({
+              kind: 'user',
+              namespace: DEFAULT_NAMESPACE,
+              name: result.getHeader('x-forwarded-user')!,
+            });
+            return ctx.issueToken({
+              claims: {
+                sub: entityRef,
+                ent: [entityRef],
               },
             });
           },

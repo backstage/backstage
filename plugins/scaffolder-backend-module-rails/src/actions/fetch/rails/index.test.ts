@@ -86,6 +86,7 @@ describe('fetch:rails', () => {
     integrations,
     reader: mockReader,
     containerRunner,
+    allowedImageNames: ['foo/rails-custom-image'],
   });
 
   beforeEach(() => {
@@ -136,6 +137,35 @@ describe('fetch:rails', () => {
         imageName: 'foo/rails-custom-image',
       },
     });
+  });
+
+  it('should not allow unknown images', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          imageName: 'foo/bar',
+        },
+      }),
+    ).rejects.toThrow('Image foo/bar is not allowed');
+  });
+
+  it('should not allow any images', async () => {
+    const action2 = createFetchRailsAction({
+      integrations,
+      reader: mockReader,
+      containerRunner,
+    });
+    await expect(
+      action2.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          imageName: 'foo/rails-custom-image',
+        },
+      }),
+    ).rejects.toThrow('Image foo/rails-custom-image is not allowed');
   });
 
   it('should throw if the target directory is outside of the workspace path', async () => {

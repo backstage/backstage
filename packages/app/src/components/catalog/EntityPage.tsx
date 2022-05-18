@@ -36,6 +36,7 @@ import {
 } from '@backstage/plugin-api-docs';
 import {
   EntityAzurePipelinesContent,
+  EntityAzureGitTagsContent,
   EntityAzurePullRequestsContent,
   isAzureDevOpsAvailable,
   isAzurePipelinesAvailable,
@@ -476,6 +477,14 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      if={isAzureDevOpsAvailable}
+      path="/git-tags"
+      title="Git Tags"
+    >
+      <EntityAzureGitTagsContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/pull-requests" title="Pull Requests">

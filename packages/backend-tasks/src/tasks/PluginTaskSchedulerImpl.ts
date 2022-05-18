@@ -15,6 +15,7 @@
  */
 
 import { Knex } from 'knex';
+import { Duration } from 'luxon';
 import { Logger } from 'winston';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
@@ -61,12 +62,10 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       await worker.start(
         {
           version: 2,
-          cadence:
-            'cron' in task.frequency
-              ? task.frequency.cron
-              : task.frequency.toISO(),
-          initialDelayDuration: task.initialDelay?.toISO(),
-          timeoutAfterDuration: task.timeout.toISO(),
+          cadence: parseDuration(task.frequency),
+          initialDelayDuration:
+            task.initialDelay && parseDuration(task.initialDelay),
+          timeoutAfterDuration: parseDuration(task.timeout),
         },
         {
           signal: task.signal,
@@ -78,12 +77,10 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       worker.start(
         {
           version: 2,
-          cadence:
-            'cron' in task.frequency
-              ? task.frequency.cron
-              : task.frequency.toISO(),
-          initialDelayDuration: task.initialDelay?.toISO(),
-          timeoutAfterDuration: task.timeout.toISO(),
+          cadence: parseDuration(task.frequency),
+          initialDelayDuration:
+            task.initialDelay && parseDuration(task.initialDelay),
+          timeoutAfterDuration: parseDuration(task.timeout),
         },
         {
           signal: task.signal,
@@ -101,4 +98,18 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
       },
     };
   }
+}
+
+export function parseDuration(
+  frequency: TaskScheduleDefinition['frequency'],
+): string {
+  if ('cron' in frequency) {
+    return frequency.cron;
+  }
+
+  if (Duration.isDuration(frequency)) {
+    return frequency.toISO();
+  }
+
+  return Duration.fromObject(frequency).toISO();
 }

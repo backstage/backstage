@@ -27,6 +27,7 @@ import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { RenderOptions } from '@testing-library/react';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
@@ -39,6 +40,11 @@ export type AsyncLogCollector = () => Promise<void>;
 export type CollectedLogs<T extends LogFuncs> = {
   [key in T]: string[];
 };
+
+// @public
+export function createTestAppWrapper(
+  options?: TestAppOptions,
+): (props: { children: ReactNode }) => JSX.Element;
 
 // @public
 export type ErrorWithContext = {
@@ -187,7 +193,10 @@ export function renderInTestApp(
 ): Promise<RenderResult>;
 
 // @public
-export function renderWithEffects(nodes: ReactElement): Promise<RenderResult>;
+export function renderWithEffects(
+  nodes: ReactElement,
+  options?: Pick<RenderOptions, 'wrapper'>,
+): Promise<RenderResult>;
 
 // @public
 export function setupRequestMockHandlers(worker: {

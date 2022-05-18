@@ -47,7 +47,9 @@ describe('TokenFactory', () => {
     });
 
     await expect(factory.listPublicKeys()).resolves.toEqual({ keys: [] });
-    const token = await factory.issueToken({ claims: { sub: entityRef } });
+    const token = await factory.issueToken({
+      claims: { sub: entityRef, ent: [entityRef] },
+    });
 
     const { keys } = await factory.listPublicKeys();
     const keyStore = createLocalJWKSet({ keys: keys });
@@ -57,6 +59,7 @@ describe('TokenFactory', () => {
       iss: 'my-issuer',
       aud: 'backstage',
       sub: entityRef,
+      ent: [entityRef],
       iat: expect.any(Number),
       exp: expect.any(Number),
     });

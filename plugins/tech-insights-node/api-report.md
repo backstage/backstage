@@ -10,6 +10,7 @@ import { Duration } from 'luxon';
 import { DurationLike } from 'luxon';
 import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export type CheckValidationResponse = {
@@ -58,6 +59,7 @@ export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
   logger: Logger;
+  tokenManager: TokenManager;
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
     | Record<string, string | symbol | (string | symbol)[]>;

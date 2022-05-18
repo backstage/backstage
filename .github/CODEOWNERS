@@ -5,6 +5,8 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                                                   @backstage/reviewers
+yarn.lock                                           @backstage/reviewers @backstage-service
+*/yarn.lock                                         @backstage/reviewers @backstage-service
 /.changeset/cost-insights-*                         @backstage/reviewers @backstage/silver-lining
 /.changeset/search-*                                @backstage/reviewers @backstage/techdocs-core
 /.changeset/techdocs-*                              @backstage/reviewers @backstage/techdocs-core

@@ -116,6 +116,7 @@ export function SupportButton(props: SupportButtonProps) {
         ) : (
           <Button
             data-testid="support-button"
+            aria-label="support"
             color="primary"
             onClick={onClickHandler}
             startIcon={<HelpIcon />}

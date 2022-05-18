@@ -120,7 +120,7 @@ Generate TechDocs documentation site using MkDocs.
 Options:
   --source-dir <PATH>             Source directory containing mkdocs.yml and docs/ directory. (default: ".")
   --output-dir <PATH>             Output directory containing generated TechDocs site. (default: "./site/")
-  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.0.2")
+  --docker-image <DOCKER_IMAGE>   The mkdocs docker container to use (default: "spotify/techdocs:v1.0.3")
   --no-pull                       Do not pull the latest docker image
   --no-docker                     Do not use Docker, use MkDocs executable and plugins in current user environment.
   --techdocs-ref <HOST_TYPE:URL>  The repository hosting documentation source files e.g.

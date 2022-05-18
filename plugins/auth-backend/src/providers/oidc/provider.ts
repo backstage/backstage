@@ -146,7 +146,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     const strategy = new OidcStrategy(
       {
         client,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
       },
       (
         tokenset: TokenSet,
@@ -262,7 +262,6 @@ export const oidc = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: false,
           providerId,
           callbackUrl,
         });

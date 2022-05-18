@@ -25,7 +25,7 @@ import * as jose from 'jose';
 import { Logger } from 'winston';
 import { AuthHandler, AuthResolverContext, SignInResolver } from '../types';
 import {
-  createOauth2ProxyProvider,
+  oauth2Proxy,
   Oauth2ProxyAuthProvider,
   OAuth2ProxyResult,
   OAUTH2_PROXY_JWT_HEADER,
@@ -64,6 +64,9 @@ describe('Oauth2ProxyAuthProvider', () => {
     mockRequest = {
       body: {},
       header: jest.fn(),
+      headers: {
+        'x-mock': 'mock',
+      },
     } as unknown as jest.Mocked<express.Request>;
 
     provider = new Oauth2ProxyAuthProvider<any>({
@@ -146,6 +149,10 @@ describe('Oauth2ProxyAuthProvider', () => {
           result: {
             accessToken: 'token',
             fullProfile: decodedToken,
+            getHeader: expect.any(Function),
+            headers: {
+              'x-mock': 'mock',
+            },
           },
         },
         { _: 'resolver-context' },
@@ -167,7 +174,7 @@ describe('Oauth2ProxyAuthProvider', () => {
     });
   });
 
-  describe('createOauth2ProxyProvider()', () => {
+  describe('oauth2Proxy.create()', () => {
     beforeEach(() => {
       mockRequest.header.mockReturnValue(`Bearer token`);
       authHandler.mockResolvedValue({
@@ -179,7 +186,7 @@ describe('Oauth2ProxyAuthProvider', () => {
     });
 
     it('should create a valid provider', async () => {
-      const factory = createOauth2ProxyProvider({
+      const factory = oauth2Proxy.create({
         authHandler,
         signIn: { resolver: signInResolver },
       });

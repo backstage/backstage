@@ -246,3 +246,16 @@ steps:
         system: ${{ parameters.system }}
         railsArguments: ${{ parameters.railsArguments }}
 ```
+
+You also need to configure the list of allowed images as part of the creating the action for the scaffolder backend:
+
+```typescript
+const actions = [
+  createFetchRailsAction({
+    integrations,
+    reader: env.reader,
+    containerRunner,
+    allowedImageNames: ['repository/rails:tag'],
+  }),
+];
+```

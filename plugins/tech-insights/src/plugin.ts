@@ -49,7 +49,19 @@ export const EntityTechInsightsScorecardContent = techInsightsPlugin.provide(
   createRoutableExtension({
     name: 'EntityTechInsightsScorecardContent',
     component: () =>
-      import('./components/ScorecardsOverview').then(m => m.ScorecardsOverview),
+      import('./components/ScorecardsContent').then(m => m.ScorecardsContent),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+/**
+ * @public
+ */
+export const EntityTechInsightsScorecardCard = techInsightsPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityTechInsightsScorecardCard',
+    component: () =>
+      import('./components/ScorecardsCard').then(m => m.ScorecardsCard),
     mountPoint: rootRouteRef,
   }),
 );

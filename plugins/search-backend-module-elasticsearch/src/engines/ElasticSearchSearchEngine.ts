@@ -21,6 +21,7 @@ import {
 import { Config } from '@backstage/config';
 import {
   IndexableDocument,
+  IndexableResult,
   IndexableResultSet,
   SearchEngine,
   SearchQuery,
@@ -28,6 +29,7 @@ import {
 import { Client } from '@elastic/elasticsearch';
 import esb from 'elastic-builder';
 import { isEmpty, isNaN as nan, isNumber } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import type { ElasticSearchClientOptions } from './ElasticSearchClientOptions';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
@@ -40,8 +42,16 @@ export type ConcreteElasticSearchQuery = {
   pageSize: number;
 };
 
+/**
+ * @public
+ */
+export type ElasticSearchQueryTranslatorOptions = {
+  highlightOptions?: ElasticSearchHighlightConfig;
+};
+
 type ElasticSearchQueryTranslator = (
   query: SearchQuery,
+  options?: ElasticSearchQueryTranslatorOptions,
 ) => ConcreteElasticSearchQuery;
 
 type ElasticSearchOptions = {
@@ -51,11 +61,34 @@ type ElasticSearchOptions = {
   indexPrefix?: string;
 };
 
+/**
+ * @public
+ */
+export type ElasticSearchHighlightOptions = {
+  fragmentDelimiter?: string;
+  fragmentSize?: number;
+  numFragments?: number;
+};
+
+/**
+ * @public
+ */
+export type ElasticSearchHighlightConfig = {
+  fragmentDelimiter: string;
+  fragmentSize: number;
+  numFragments: number;
+  preTag: string;
+  postTag: string;
+};
+
 type ElasticSearchResult = {
   _index: string;
   _type: string;
   _score: number;
   _source: IndexableDocument;
+  highlight?: {
+    [field: string]: string[];
+  };
 };
 
 function isBlank(str: string) {
@@ -67,14 +100,25 @@ function isBlank(str: string) {
  */
 export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly elasticSearchClient: Client;
+  private readonly highlightOptions: ElasticSearchHighlightConfig;
 
   constructor(
     private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
     private readonly aliasPostfix: string,
     private readonly indexPrefix: string,
     private readonly logger: Logger,
+    highlightOptions?: ElasticSearchHighlightOptions,
   ) {
     this.elasticSearchClient = this.newClient(options => new Client(options));
+    const uuidTag = uuid();
+    this.highlightOptions = {
+      preTag: `<${uuidTag}>`,
+      postTag: `</${uuidTag}>`,
+      fragmentSize: 1000,
+      numFragments: 1,
+      fragmentDelimiter: ' ... ',
+      ...highlightOptions,
+    };
   }
 
   static async fromConfig({
@@ -99,6 +143,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       aliasPostfix,
       indexPrefix,
       logger,
+      config.getOptional<ElasticSearchHighlightOptions>(
+        'search.elasticsearch.highlightOptions',
+      ),
     );
   }
 
@@ -111,7 +158,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     return create(this.elasticSearchClientOptions);
   }
 
-  protected translator(query: SearchQuery): ConcreteElasticSearchQuery {
+  protected translator(
+    query: SearchQuery,
+    options?: ElasticSearchQueryTranslatorOptions,
+  ): ConcreteElasticSearchQuery {
     const { term, filters = {}, types, pageCursor } = query;
 
     const filter = Object.entries(filters)
@@ -143,13 +193,25 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     const pageSize = 25;
     const { page } = decodePageCursor(pageCursor);
 
+    let esbRequestBodySearch = esb
+      .requestBodySearch()
+      .query(esb.boolQuery().filter(filter).must([esbQuery]))
+      .from(page * pageSize)
+      .size(pageSize);
+
+    if (options?.highlightOptions) {
+      esbRequestBodySearch = esbRequestBodySearch.highlight(
+        esb
+          .highlight('*')
+          .numberOfFragments(options.highlightOptions.numFragments as number)
+          .fragmentSize(options.highlightOptions.fragmentSize as number)
+          .preTags(options.highlightOptions.preTag)
+          .postTags(options.highlightOptions.postTag),
+      );
+    }
+
     return {
-      elasticSearchQuery: esb
-        .requestBodySearch()
-        .query(esb.boolQuery().filter(filter).must([esbQuery]))
-        .from(page * pageSize)
-        .size(pageSize)
-        .toJSON(),
+      elasticSearchQuery: esbRequestBodySearch.toJSON(),
       documentTypes: types,
       pageSize,
     };
@@ -193,8 +255,10 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   }
 
   async query(query: SearchQuery): Promise<IndexableResultSet> {
-    const { elasticSearchQuery, documentTypes, pageSize } =
-      this.translator(query);
+    const { elasticSearchQuery, documentTypes, pageSize } = this.translator(
+      query,
+      { highlightOptions: this.highlightOptions },
+    );
     const queryIndices = documentTypes
       ? documentTypes.map(it => this.constructSearchAlias(it))
       : this.constructSearchAlias('*');
@@ -204,7 +268,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         body: elasticSearchQuery,
       });
       const { page } = decodePageCursor(query.pageCursor);
-      const hasNextPage = result.body.hits.total.value > page * pageSize;
+      const hasNextPage = result.body.hits.total.value > (page + 1) * pageSize;
       const hasPreviousPage = page > 0;
       const nextPageCursor = hasNextPage
         ? encodePageCursor({ page: page + 1 })
@@ -214,10 +278,27 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         : undefined;
 
       return {
-        results: result.body.hits.hits.map((d: ElasticSearchResult) => ({
-          type: this.getTypeFromIndex(d._index),
-          document: d._source,
-        })),
+        results: result.body.hits.hits.map((d: ElasticSearchResult) => {
+          const resultItem: IndexableResult = {
+            type: this.getTypeFromIndex(d._index),
+            document: d._source,
+          };
+
+          if (d.highlight) {
+            resultItem.highlight = {
+              preTag: this.highlightOptions.preTag as string,
+              postTag: this.highlightOptions.postTag as string,
+              fields: Object.fromEntries(
+                Object.entries(d.highlight).map(([field, fragments]) => [
+                  field,
+                  fragments.join(this.highlightOptions.fragmentDelimiter),
+                ]),
+              ),
+            };
+          }
+
+          return resultItem;
+        }),
         nextPageCursor,
         previousPageCursor,
       };

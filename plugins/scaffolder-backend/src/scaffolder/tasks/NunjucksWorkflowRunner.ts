@@ -37,6 +37,7 @@ import {
   TaskSpecV1beta3,
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
+import { UserEntity } from '@backstage/catalog-model';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -52,6 +53,10 @@ type TemplateContext = {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
   };
   secrets?: Record<string, string>;
+  user?: {
+    entity?: UserEntity;
+    ref?: string;
+  };
 };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
@@ -203,6 +208,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const context: TemplateContext = {
         parameters: task.spec.parameters,
         steps: {},
+        user: task.spec.user,
       };
 
       for (const step of task.spec.steps) {

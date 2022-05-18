@@ -43,6 +43,7 @@ import {
   SignInResolver,
 } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { InputError } from '@backstage/errors';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -56,6 +57,7 @@ export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
   scope?: string;
   resolverContext: AuthResolverContext;
   includeBasicAuth?: boolean;
+  disableRefresh?: boolean;
 };
 
 export class OAuth2AuthProvider implements OAuthHandlers {
@@ -63,11 +65,13 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   private readonly signInResolver?: SignInResolver<OAuthResult>;
   private readonly authHandler: AuthHandler<OAuthResult>;
   private readonly resolverContext: AuthResolverContext;
+  private readonly disableRefresh: boolean;
 
   constructor(options: OAuth2AuthProviderOptions) {
     this.signInResolver = options.signInResolver;
     this.authHandler = options.authHandler;
     this.resolverContext = options.resolverContext;
+    this.disableRefresh = options.disableRefresh ?? false;
 
     this._strategy = new OAuth2Strategy(
       {
@@ -76,7 +80,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         callbackURL: options.callbackUrl,
         authorizationURL: options.authorizationUrl,
         tokenURL: options.tokenUrl,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
         scope: options.scope,
         customHeaders: options.includeBasicAuth
           ? {
@@ -132,6 +136,9 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   }
 
   async refresh(req: OAuthRefreshRequest) {
+    if (this.disableRefresh) {
+      throw new InputError('Session refreshes have been disabled');
+    }
     const refreshTokenResponse = await executeRefreshTokenStrategy(
       this._strategy,
       req.refreshToken,
@@ -243,10 +250,10 @@ export const oauth2 = createAuthProviderIntegration({
           scope,
           includeBasicAuth,
           resolverContext,
+          disableRefresh,
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh,
           providerId,
           callbackUrl,
         });

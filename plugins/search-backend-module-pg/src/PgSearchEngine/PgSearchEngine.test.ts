@@ -136,7 +136,7 @@ describe('PgSearchEngine', () => {
       // Indexer instantiated with expected args.
       expect(PgSearchEngineIndexer).toHaveBeenCalledWith(
         expect.objectContaining({
-          batchSize: 100,
+          batchSize: 1000,
           type: 'my-type',
           databaseStore: database,
         }),

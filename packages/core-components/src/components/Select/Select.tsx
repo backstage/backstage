@@ -19,6 +19,7 @@ import Chip from '@material-ui/core/Chip';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import FormControl from '@material-ui/core/FormControl';
 import InputBase from '@material-ui/core/InputBase';
+import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import {
@@ -78,6 +79,16 @@ const useStyles = makeStyles(
         maxWidth: 300,
       },
       label: {
+        transform: 'initial',
+        fontWeight: 'bold',
+        fontSize: 14,
+        fontFamily: theme.typography.fontFamily,
+        color: theme.palette.text.primary,
+        '&.Mui-focused': {
+          color: theme.palette.text.primary,
+        },
+      },
+      formLabel: {
         transform: 'initial',
         fontWeight: 'bold',
         fontSize: 14,
@@ -184,9 +195,9 @@ export function SelectComponent(props: SelectProps) {
 
   return (
     <div className={classes.root}>
-      <Typography variant="button">{label}</Typography>
       <ClickAwayListener onClickAway={handleClickAway}>
         <FormControl className={classes.formControl}>
+          <InputLabel className={classes.formLabel}>{label}</InputLabel>
           <Select
             value={value}
             native={native}
@@ -198,6 +209,8 @@ export function SelectComponent(props: SelectProps) {
             onClick={handleClick}
             open={isOpen}
             input={<BootstrapInput />}
+            label={label}
+            tabIndex={0}
             renderValue={s =>
               multiple && (value as any[]).length !== 0 ? (
                 <div className={classes.chips}>

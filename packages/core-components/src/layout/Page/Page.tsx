@@ -52,7 +52,7 @@ export function Page(props: Props) {
         page: baseTheme.getPageTheme({ themeId }),
       })}
     >
-      <div className={classes.root}>{children}</div>
+      <main className={classes.root}>{children}</main>
     </ThemeProvider>
   );
 }

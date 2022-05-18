@@ -74,6 +74,9 @@ export class RailsNewRunner {
         logStream,
       });
     } else {
+      if (!imageName) {
+        throw new Error('No imageName provided');
+      }
       const arrayExtraArguments = railsArgumentResolver(
         '/input',
         railsArguments as RailsRunOptions,

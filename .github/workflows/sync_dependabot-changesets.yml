@@ -11,7 +11,7 @@ jobs:
     if: github.actor == 'dependabot[bot]' && github.repository == 'backstage/backstage'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 2
           ref: ${{ github.head_ref }}
@@ -21,7 +21,7 @@ jobs:
           git config --global user.email noreply@backstage.io
           git config --global user.name 'Github changeset workflow'
       - name: Generate changeset
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             const { promises: fs } = require('fs');

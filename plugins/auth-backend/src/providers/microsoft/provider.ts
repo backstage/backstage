@@ -83,7 +83,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
         callbackURL: options.callbackUrl,
         authorizationURL: options.authorizationUrl,
         tokenURL: options.tokenUrl,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
       },
       (
         accessToken: any,
@@ -267,7 +267,6 @@ export const microsoft = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: false,
           providerId,
           callbackUrl,
         });

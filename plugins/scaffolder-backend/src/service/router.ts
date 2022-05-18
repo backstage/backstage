@@ -16,7 +16,11 @@
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError } from '@backstage/errors';
@@ -130,10 +134,11 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const { namespace, kind, name } = req.params;
+        const { token } = parseBearerToken(req.headers.authorization);
         const template = await findTemplate({
           catalogApi: catalogClient,
           entityRef: { kind, namespace, name },
-          token: getBearerToken(req.headers.authorization),
+          token,
         });
         if (isSupportedTemplate(template)) {
           const parameters = [template.spec.parameters ?? []].flat();
@@ -168,12 +173,20 @@ export async function createRouter(
       const { kind, namespace, name } = parseEntityRef(templateRef, {
         defaultKind: 'template',
       });
+      const { token, entityRef: userEntityRef } = parseBearerToken(
+        req.headers.authorization,
+      );
+
+      const userEntity = userEntityRef
+        ? await catalogClient.getEntityByRef(userEntityRef, { token })
+        : undefined;
+
       const values = req.body.values;
-      const token = getBearerToken(req.headers.authorization);
+
       const template = await findTemplate({
         catalogApi: catalogClient,
         entityRef: { kind, namespace, name },
-        token: getBearerToken(req.headers.authorization),
+        token,
       });
 
       if (!isSupportedTemplate(template)) {
@@ -203,6 +216,10 @@ export async function createRouter(
         })),
         output: template.spec.output ?? {},
         parameters: values,
+        user: {
+          entity: userEntity as UserEntity,
+          ref: userEntityRef,
+        },
         templateInfo: {
           entityRef: stringifyEntityRef({
             kind,
@@ -215,6 +232,7 @@ export async function createRouter(
 
       const result = await taskBroker.dispatch({
         spec: taskSpec,
+        createdBy: userEntityRef,
         secrets: {
           ...req.body.secrets,
           backstageToken: token,
@@ -315,6 +333,21 @@ export async function createRouter(
   return app;
 }
 
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/Bearer\s+(\S+)/i)?.[1];
+function parseBearerToken(header?: string): {
+  token?: string;
+  entityRef?: string;
+} {
+  const token = header?.match(/Bearer\s+(\S+)/i)?.[1];
+
+  if (!token) return {};
+
+  const [_header, rawPayload, _signature] = token.split('.');
+  const payload: { sub: string } = JSON.parse(
+    Buffer.from(rawPayload, 'base64').toString(),
+  );
+
+  return {
+    entityRef: payload.sub,
+    token,
+  };
 }

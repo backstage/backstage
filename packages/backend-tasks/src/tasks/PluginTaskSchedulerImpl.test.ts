@@ -20,7 +20,10 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Duration } from 'luxon';
 import { AbortSignal } from 'node-abort-controller';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
-import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
+import {
+  parseDuration,
+  PluginTaskSchedulerImpl,
+} from './PluginTaskSchedulerImpl';
 
 jest.useFakeTimers();
 
@@ -177,8 +180,8 @@ describe('PluginTaskManagerImpl', () => {
       const promise = new Promise(resolve => fn.mockImplementation(resolve));
       await manager.scheduleTask({
         id: 'task1',
-        timeout: Duration.fromMillis(5000),
-        frequency: Duration.fromMillis(5000),
+        timeout: { milliseconds: 5000 },
+        frequency: { milliseconds: 5000 },
         fn,
         scope: 'local',
       });
@@ -293,5 +296,13 @@ describe('PluginTaskManagerImpl', () => {
       },
       60_000,
     );
+  });
+
+  describe('parseDuration', () => {
+    it('should parse durations', () => {
+      expect(parseDuration({ milliseconds: 5000 })).toEqual('PT5S');
+      expect(parseDuration(Duration.fromMillis(5000))).toEqual('PT5S');
+      expect(parseDuration({ cron: '1 * * * *' })).toEqual('1 * * * *');
+    });
   });
 });

@@ -148,6 +148,7 @@ nav:
           - GitHub: 'auth/github/provider.md'
           - GitLab: 'auth/gitlab/provider.md'
           - Google: 'auth/google/provider.md'
+          - Google IAP: 'auth/google/gcp-iap-auth.md'
           - Okta: 'auth/okta/provider.md'
           - OneLogin: 'auth/onelogin/provider.md'
           - OAuth2Proxy: 'auth/oauth2-proxy/provider.md'
@@ -157,6 +158,7 @@ nav:
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - Auth backend classes: 'auth/auth-backend-classes.md'
+      - Troubleshooting Auth: 'auth/troubleshooting.md'
       - Glossary: 'auth/glossary.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'

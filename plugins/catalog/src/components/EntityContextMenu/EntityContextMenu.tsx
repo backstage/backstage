@@ -109,9 +109,12 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
         aria-label="more"
         aria-controls="long-menu"
         aria-haspopup="true"
+        aria-expanded={!!anchorEl}
+        role="button"
         onClick={onOpen}
         data-testid="menu-button"
         className={classes.button}
+        id="long-menu"
       >
         <MoreVert />
       </IconButton>
@@ -121,6 +124,7 @@ export function EntityContextMenu(props: EntityContextMenuProps) {
         anchorEl={anchorEl}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        aria-labelledby="long-menu"
       >
         <MenuList>
           {extraItems}

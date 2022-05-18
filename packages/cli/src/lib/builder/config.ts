@@ -154,6 +154,16 @@ export async function makeRollupConfigs(
         file: resolvePath(distDir, 'index.d.ts'),
         format: 'es',
       },
+      external: [
+        /\.css$/,
+        /\.scss$/,
+        /\.sass$/,
+        /\.svg$/,
+        /\.eot$/,
+        /\.woff$/,
+        /\.woff2$/,
+        /\.ttf$/,
+      ],
       onwarn,
       plugins: [dts()],
     });

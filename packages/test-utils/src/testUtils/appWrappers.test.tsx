@@ -20,6 +20,7 @@ import {
   createSubRouteRef,
   errorApiRef,
   useApi,
+  useApp,
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import { withLogCollector } from './logCollector';
@@ -171,5 +172,19 @@ describe('wrapInTestApp', () => {
     expect(root).toBeInTheDocument();
     expect(root.children.length).toBe(1);
     expect(root.children[0].textContent).toBe('foo');
+  });
+
+  it('should support rerenders', async () => {
+    const MyComponent = () => {
+      const app = useApp();
+      const { Progress } = app.getComponents();
+      return <Progress />;
+    };
+
+    const rendered = await renderInTestApp(<MyComponent />);
+    expect(rendered.getByTestId('progress')).toBeInTheDocument();
+
+    rendered.rerender(<MyComponent />);
+    expect(rendered.getByTestId('progress')).toBeInTheDocument();
   });
 });

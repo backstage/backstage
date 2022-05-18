@@ -71,7 +71,7 @@ export class OneLoginProvider implements OAuthHandlers {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
-        passReqToCallback: false as true,
+        passReqToCallback: false,
       },
       (
         accessToken: any,
@@ -238,7 +238,6 @@ export const onelogin = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: false,
           providerId,
           callbackUrl,
         });

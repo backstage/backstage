@@ -156,7 +156,7 @@ The Swagger UI package by expects to have a route to `/oauth2-redirect.html` whi
 the redirect callback for the OAuth2 Authorization Code flow, however, this file is not installed
 by this plugin.
 
-Grab a copy of [oauth2-redirect.html](https://github.com/swagger-api/swagger-ui/blob/master/dist/oauth2-redirect.html)
+Grab a copy of [`oauth2-redirect.html`](https://github.com/swagger-api/swagger-ui/blob/master/dist/oauth2-redirect.html)
 and put it in the `app/public/` directory in order to enable Swagger UI to complete this redirection.
 
 This also may require you to adjust `Content Security Policy` header settings of your Backstage application, so that the script in `oauth2-redirect.html` can be executed. Since the script is static we can add the hash of it directly to our CSP policy, which we do by adding the following to the `csp` section of the app configuration:

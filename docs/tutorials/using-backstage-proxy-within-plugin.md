@@ -52,7 +52,7 @@ calling `${backend-url}/api/proxy/<your-proxy-uri>`. The reason why
 `backend-url` is referenced is because the backstage backend creates and runs
 the proxy. Backstage is structured in such a way that you could run the
 backstage frontend independently of the backend. So when calling your API you
-need to prepend the backend url to your http call.
+need to prepend the backend URL to your http call.
 
 The recommended pattern for calling out to services is to wrap your calls in a
 [Utility API](../api/utility-apis.md). This section describes the steps to wrap

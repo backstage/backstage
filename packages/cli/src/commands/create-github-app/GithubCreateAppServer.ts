@@ -60,14 +60,20 @@ export class GithubCreateAppServer {
   private baseUrl?: string;
   private webhookUrl?: string;
 
-  static async run({ org }: { org: string }): Promise<GithubAppConfig> {
-    const encodedOrg = encodeURIComponent(org);
+  static async run(options: {
+    org: string;
+    readWrite: boolean;
+  }): Promise<GithubAppConfig> {
+    const encodedOrg = encodeURIComponent(options.org);
     const actionUrl = `https://github.com/organizations/${encodedOrg}/settings/apps/new`;
-    const server = new GithubCreateAppServer(actionUrl);
+    const server = new GithubCreateAppServer(actionUrl, options.readWrite);
     return server.start();
   }
 
-  constructor(private readonly actionUrl: string) {
+  private constructor(
+    private readonly actionUrl: string,
+    private readonly readWrite: boolean,
+  ) {
     const webhookId = crypto
       .randomBytes(15)
       .toString('base64')
@@ -122,6 +128,13 @@ export class GithubCreateAppServer {
         url: this.webhookUrl,
         active: false,
       },
+      ...(this.readWrite && {
+        default_permissions: {
+          contents: 'write',
+          actions: 'write',
+          metadata: 'read',
+        },
+      }),
     };
     const manifestJson = JSON.stringify(manifest).replace(/\"/g, '&quot;');
 

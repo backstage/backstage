@@ -71,6 +71,7 @@ export const searchPage = (
                         <CatalogResultListItem
                           key={result.document.location}
                           result={result.document}
+                          highlight={result.highlight}
                         />
                       );
                     default:
@@ -78,6 +79,7 @@ export const searchPage = (
                         <DefaultResultListItem
                           key={result.document.location}
                           result={result.document}
+                          highlight={result.highlight}
                         />
                       );
                   }
@@ -149,7 +151,6 @@ import {
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
-import { Duration } from 'luxon';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -163,9 +164,9 @@ export default async function createPlugin(
   });
 
   const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-    frequency: Duration.fromObject({ minutes: 10 }),
-    timeout: Duration.fromObject({ minutes: 15 }),
-    initialDelay: Duration.fromObject({ seconds: 3 }),
+    frequency: { minutes: 10 },
+    timeout: { minutes: 15 },
+    initialDelay: { seconds: 3 },
   });
 
   indexBuilder.addCollator({
@@ -267,6 +268,7 @@ an example:
               <CatalogResultListItem
                 key={result.document.location}
                 result={result.document}
+                highlight={result.highlight}
               />
             );
           // ...
@@ -294,20 +296,18 @@ which are responsible for providing documents
 number of collators with the `IndexBuilder` like this:
 
 ```typescript
-import { Duration } from 'luxon';
-
 const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 
 const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-  frequency: Duration.fromObject({ minutes: 10 }),
-  timeout: Duration.fromObject({ minutes: 15 }),
-  initialDelay: Duration.fromObject({ seconds: 3 }),
+  frequency: { minutes: 10 },
+  timeout: { minutes: 15 },
+  initialDelay: { seconds: 3 },
 });
 
 const everyHourSchedule = env.scheduler.createScheduledTaskRunner({
-  frequency: Duration.fromObject({ hours: 1 }),
-  timeout: Duration.fromObject({ minutes: 90 }),
-  initialDelay: Duration.fromObject({ seconds: 3 }),
+  frequency: { hours: 1 },
+  timeout: { minutes: 90 },
+  initialDelay: { seconds: 3 },
 });
 
 indexBuilder.addCollator({
@@ -332,9 +332,9 @@ a scheduled `TaskRunner` to pass into the `schedule` value, like this:
 
 ```typescript {3}
 const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
-  frequency: Duration.fromObject({ minutes: 10 }),
-  timeout: Duration.fromObject({ minutes: 15 }),
-  initialDelay: Duration.fromObject({ seconds: 3 }),
+  frequency: { minutes: 10 },
+  timeout: { minutes: 15 },
+  initialDelay: { seconds: 3 },
 });
 
 indexBuilder.addCollator({

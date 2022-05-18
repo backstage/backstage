@@ -17,6 +17,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TechInsightCheck } from '@backstage/plugin-tech-insights-node';
 import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
+import { TokenManager } from '@backstage/backend-common';
 
 // @public
 export const buildTechInsightsContext: <
@@ -95,6 +96,8 @@ export interface TechInsightsOptions<
   logger: Logger;
   // (undocumented)
   scheduler: PluginTaskScheduler;
+  // (undocumented)
+  tokenManager: TokenManager;
 }
 
 // (No @packageDocumentation comment for this package)

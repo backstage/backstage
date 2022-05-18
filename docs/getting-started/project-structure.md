@@ -24,7 +24,7 @@ the code.
 - [`.github/`](https://github.com/backstage/backstage/tree/master/.github) -
   Standard GitHub folder. It contains - amongst other things - our workflow
   definitions and templates. Worth noting is the
-  [styles](https://github.com/backstage/backstage/tree/master/.github/styles)
+  [vale](https://github.com/backstage/backstage/tree/master/.github/vale)
   sub-folder which is used for a markdown spellchecker.
 
 - [`.yarn/`](https://github.com/backstage/backstage/tree/master/.yarn) -
@@ -211,9 +211,6 @@ future.
 - [`.npmrc`](https://github.com/backstage/backstage/tree/master/.npmrc) - It's
   common for companies to have their own npm registry, and this file makes sure
   that this folder always uses the public registry.
-
-- [`.vale.ini`](https://github.com/backstage/backstage/tree/master/.vale.ini) -
-  [Spell checker](https://github.com/errata-ai/vale) for Markdown files.
 
 - [`.yarnrc`](https://github.com/backstage/backstage/tree/master/.yarnrc) -
   Enforces "our" version of Yarn.

@@ -15,13 +15,12 @@
  */
 
 import React from 'react';
-import { Progress } from '@backstage/core-components';
 import { CircularProgress, Button, makeStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { useTechDocsReader } from './TechDocsReaderPageContent';
+import { useTechDocsReader } from './TechDocsReaderProvider';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,15 +34,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-/**
- * Note: this component is currently being exported so that we can rapidly
- * iterate on alternative <Reader /> implementations that extend core
- * functionality. There is no guarantee that this component will continue to be
- * exported by the package in the future!
- *
- * todo: Make public or stop exporting (ctrl+f "altReaderExperiments")
- * @internal
- */
 export const TechDocsStateIndicator = () => {
   let StateAlert: JSX.Element | null = null;
   const classes = useStyles();
@@ -55,8 +45,6 @@ export const TechDocsStateIndicator = () => {
     syncErrorMessage,
     buildLog,
   } = useTechDocsReader();
-
-  const ReaderProgress = state === 'CHECKING' ? <Progress /> : null;
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
@@ -139,10 +127,5 @@ export const TechDocsStateIndicator = () => {
     );
   }
 
-  return (
-    <>
-      {ReaderProgress}
-      {StateAlert}
-    </>
-  );
+  return StateAlert;
 };

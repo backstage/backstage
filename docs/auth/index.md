@@ -21,6 +21,7 @@ Backstage comes with many common authentication providers in the core library:
 - [GitHub](github/provider.md)
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
+- [Google IAP](google/gcp-iap-auth.md)
 - [Okta](okta/provider.md)
 - [OneLogin](onelogin/provider.md)
 - [OAuth2Proxy](oauth2-proxy/provider.md)
@@ -125,6 +126,64 @@ allows allowing guest access:
 +  },
    bindRoutes({ bind }) {
 ```
+
+## Sign-In with Proxy Providers
+
+Some auth providers are so-called "proxy" providers, meaning they're meant to be used
+behind an authentication proxy. Examples of these are
+[AWS ALB](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/aws-alb-aad-oidc-auth.md),
+[GCP IAP](./google/gcp-iap-auth.md), and [OAuth2 Proxy](./oauth2-proxy/provider.md).
+
+When using a proxy provider, you'll end up wanting to use a different sign-in page, as
+there is no need for further user interaction once you've signed in towards the proxy.
+All the sign-in page needs to do is to call the `/refresh` endpoint of the auth providers
+to get the existing session, which is exactly what the `ProxiedSignInPage` does. The only
+thing you need to do to configure the `ProxiedSignInPage` is to pass the ID of the provider like this:
+
+```tsx
+const app = createApp({
+  ...,
+  components: {
+    SignInPage: props => <ProxiedSignInPage {...props} provider="awsalb" />,
+  },
+});
+```
+
+A downside of this method is that it can be cumbersome to set up for local development.
+As a workaround for this, it's possible to dynamically select the sign-in page based on
+what environment the app is running in, and then use a different sign-in method for local
+development, if one is needed at all. Depending on the exact setup, one might choose to
+select the sign-in method based on the `process.env.NODE_ENV` environment variable,
+by checking the `hostname` of the current location, or by accessing the configuration API
+to read a configuration value. For example:
+
+```tsx
+const app = createApp({
+  ...,
+  components: {
+    SignInPage: props => {
+      const configApi = useApi(configApiRef);
+      if (configApi.getString('auth.environment') === 'development') {
+        return (
+          <SignInPage
+            {...props}
+            provider={{
+              id: 'google-auth-provider',
+              title: 'Google',
+              message: 'Sign In using Google',
+              apiRef: googleAuthApiRef,
+            }}
+          />
+        );
+      }
+      return <ProxiedSignInPage {...props} provider="gcpiap" />;
+    },
+  },
+});
+```
+
+When using multiple auth providers like this, it's important that you configure the different
+sign-in resolvers so that they resolve to the same identity regardless of the method used.
 
 ## For Plugin Developers
 

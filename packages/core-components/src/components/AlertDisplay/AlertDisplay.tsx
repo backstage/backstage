@@ -28,12 +28,24 @@ import pluralize from 'pluralize';
  * @public
  * @remarks
  *
- * Shown as SnackBar at the top of the page
+ * Shown as SnackBar at the center top of the page by default. Configurable with props.
  */
+
 // TODO: improve on this and promote to a shared component for use by all apps.
-export function AlertDisplay(_props: {}) {
+
+export type AlertDisplayProps = {
+  anchorOrigin?: {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
+  };
+};
+
+/** @public */
+export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
+
+  const { anchorOrigin = { vertical: 'top', horizontal: 'center' } } = props;
 
   useEffect(() => {
     const subscription = alertApi
@@ -56,7 +68,7 @@ export function AlertDisplay(_props: {}) {
   };
 
   return (
-    <Snackbar open anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+    <Snackbar open anchorOrigin={anchorOrigin}>
       <Alert
         action={
           <IconButton

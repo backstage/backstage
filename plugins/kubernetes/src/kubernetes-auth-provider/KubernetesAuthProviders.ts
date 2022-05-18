@@ -19,8 +19,10 @@ import { KubernetesAuthProvider, KubernetesAuthProvidersApi } from './types';
 import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 import { ServiceAccountKubernetesAuthProvider } from './ServiceAccountKubernetesAuthProvider';
 import { AwsKubernetesAuthProvider } from './AwsKubernetesAuthProvider';
-import { OAuthApi } from '@backstage/core-plugin-api';
+import { OAuthApi, OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { GoogleServiceAccountAuthProvider } from './GoogleServiceAccountAuthProvider';
+import { AzureKubernetesAuthProvider } from './AzureKubernetesAuthProvider';
+import { OidcKubernetesAuthProvider } from './OidcKubernetesAuthProvider';
 
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   private readonly kubernetesAuthProviderMap: Map<
@@ -28,7 +30,10 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     KubernetesAuthProvider
   >;
 
-  constructor(options: { googleAuthApi: OAuthApi }) {
+  constructor(options: {
+    googleAuthApi: OAuthApi;
+    oidcProviders?: { [key: string]: OpenIdConnectApi };
+  }) {
     this.kubernetesAuthProviderMap = new Map<string, KubernetesAuthProvider>();
     this.kubernetesAuthProviderMap.set(
       'google',
@@ -43,6 +48,22 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       new GoogleServiceAccountAuthProvider(),
     );
     this.kubernetesAuthProviderMap.set('aws', new AwsKubernetesAuthProvider());
+    this.kubernetesAuthProviderMap.set(
+      'azure',
+      new AzureKubernetesAuthProvider(),
+    );
+
+    if (options.oidcProviders) {
+      Object.keys(options.oidcProviders).forEach(provider => {
+        this.kubernetesAuthProviderMap.set(
+          `oidc.${provider}`,
+          new OidcKubernetesAuthProvider(
+            provider,
+            options.oidcProviders![provider],
+          ),
+        );
+      });
+    }
   }
 
   async decorateRequestBodyForAuth(
@@ -54,6 +75,12 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
     if (kubernetesAuthProvider) {
       return await kubernetesAuthProvider.decorateRequestBodyForAuth(
         requestBody,
+      );
+    }
+
+    if (authProvider.startsWith('oidc.')) {
+      throw new Error(
+        `KubernetesAuthProviders has no oidcProvider configured for ${authProvider}`,
       );
     }
     throw new Error(

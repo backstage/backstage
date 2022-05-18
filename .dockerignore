@@ -3,6 +3,6 @@ docs
 cypress
 microsite
 node_modules
-packages
-!packages/backend/dist
+packages/*/src
+packages/*/node_modules
 plugins

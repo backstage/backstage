@@ -48,8 +48,9 @@ export const addGitFeedbackLink = (
     }
 
     // topmost h1 only contains title for whole page
-    const title = (dom.querySelector('article>h1') as HTMLElement).childNodes[0]
-      .textContent;
+    const title =
+      (dom.querySelector('article>h1') as HTMLElement)?.childNodes[0]
+        .textContent || '';
     const issueTitle = encodeURIComponent(`Documentation Feedback: ${title}`);
     const issueDesc = encodeURIComponent(
       `Page source:\n${sourceAnchor.href}\n\nFeedback:`,

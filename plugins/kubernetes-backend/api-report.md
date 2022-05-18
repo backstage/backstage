@@ -24,6 +24,11 @@ export interface AWSClusterDetails extends ClusterDetails {
   externalId?: string;
 }
 
+// Warning: (ae-missing-release-tag) "AzureClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface AzureClusterDetails extends ClusterDetails {}
+
 // Warning: (ae-missing-release-tag) "ClusterDetails" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -36,6 +41,7 @@ export interface ClusterDetails {
   dashboardParameters?: JsonObject;
   dashboardUrl?: string;
   name: string;
+  oidcTokenProvider?: string | undefined;
   // (undocumented)
   serviceAccountToken?: string | undefined;
   skipMetricsLookup?: boolean;

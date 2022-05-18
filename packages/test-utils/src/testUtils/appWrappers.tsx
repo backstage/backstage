@@ -107,17 +107,15 @@ function isExternalRouteRef(
 }
 
 /**
- * Wraps a component inside a Backstage test app, providing a mocked theme
- * and app context, along with mocked APIs.
+ * Creates a Wrapper component that wraps a component inside a Backstage test app,
+ * providing a mocked theme and app context, along with mocked APIs.
  *
- * @param Component - A component or react node to render inside the test app.
  * @param options - Additional options for the rendering.
  * @public
  */
-export function wrapInTestApp(
-  Component: ComponentType | ReactNode,
+export function createTestAppWrapper(
   options: TestAppOptions = {},
-): ReactElement {
+): (props: { children: ReactNode }) => JSX.Element {
   const { routeEntries = ['/'] } = options;
   const boundRoutes = new Map<ExternalRouteRef, RouteRef>();
 
@@ -162,13 +160,6 @@ export function wrapInTestApp(
     },
   });
 
-  let wrappedElement: React.ReactElement;
-  if (Component instanceof Function) {
-    wrappedElement = <Component />;
-  } else {
-    wrappedElement = Component as React.ReactElement;
-  }
-
   const routeElements = Object.entries(options.mountedRoutes ?? {}).map(
     ([path, routeRef]) => {
       const Page = () => <div>Mounted at {path}</div>;
@@ -189,18 +180,44 @@ export function wrapInTestApp(
   const AppProvider = app.getProvider();
   const AppRouter = app.getRouter();
 
-  return (
+  const TestAppWrapper = ({ children }: { children: ReactNode }) => (
     <AppProvider>
       <AppRouter>
         <NoRender>{routeElements}</NoRender>
         {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
          *  and work with nested routes if they exist too */}
         <Routes>
-          <Route path="/*" element={wrappedElement} />
+          <Route path="/*" element={<>{children}</>} />
         </Routes>
       </AppRouter>
     </AppProvider>
   );
+
+  return TestAppWrapper;
+}
+
+/**
+ * Wraps a component inside a Backstage test app, providing a mocked theme
+ * and app context, along with mocked APIs.
+ *
+ * @param Component - A component or react node to render inside the test app.
+ * @param options - Additional options for the rendering.
+ * @public
+ */
+export function wrapInTestApp(
+  Component: ComponentType | ReactNode,
+  options: TestAppOptions = {},
+): ReactElement {
+  const TestAppWrapper = createTestAppWrapper(options);
+
+  let wrappedElement: React.ReactElement;
+  if (Component instanceof Function) {
+    wrappedElement = <Component />;
+  } else {
+    wrappedElement = Component as React.ReactElement;
+  }
+
+  return <TestAppWrapper>{wrappedElement}</TestAppWrapper>;
 }
 
 /**
@@ -218,5 +235,14 @@ export async function renderInTestApp(
   Component: ComponentType | ReactNode,
   options: TestAppOptions = {},
 ): Promise<RenderResult> {
-  return renderWithEffects(wrapInTestApp(Component, options));
+  let wrappedElement: React.ReactElement;
+  if (Component instanceof Function) {
+    wrappedElement = <Component />;
+  } else {
+    wrappedElement = Component as React.ReactElement;
+  }
+
+  return renderWithEffects(wrappedElement, {
+    wrapper: createTestAppWrapper(options),
+  });
 }

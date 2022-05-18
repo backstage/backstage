@@ -13,81 +13,104 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const { execSync, spawnSync } = require('child_process');
-// eslint-disable-next-line import/no-extraneous-dependencies
-const commandExists = require('command-exists');
+const { spawnSync } = require('child_process');
+const { resolve: resolvePath, join: joinPath } = require('path');
+const fs = require('fs').promises;
 
-const inheritStdIo = {
-  stdio: 'inherit',
-};
+const IGNORED = [
+  /^ADOPTERS\.md$/,
+  /^OWNERS\.md$/,
+  /^.*[/\\]CHANGELOG\.md$/,
+  /^.*[/\\]api-report\.md$/,
+  /^docs[/\\]releases[/\\].*-changelog\.md$/,
+];
 
-const LINT_SKIPPED_MESSAGE =
-  'Skipping documentation quality check (vale not found). Install vale linter (https://docs.errata.ai/vale/install) to enable.\n';
-const LINT_ERROR_MESSAGE = `Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
-  Possibly update .github/styles/vocab.txt to add new valid words.\n`;
-const VALE_NOT_FOUND_MESSAGE = `Language linter (vale) was not found. Please install vale linter (https://docs.errata.ai/vale/install).\n`;
+const rootDir = resolvePath(__dirname, '..');
 
-// Note: Make sure the script is run as `node check-docs-quality.js [FILES]` instead of `./check-docs-quality.js [FILES]`
-// If the script receives arguments (file paths), the script is run exclusively on them. (e.g. when run via pre-commit hook)
-const getFilesToLint = () => {
-  // Files have been provided as arguments
-  if (process.argv.length > 2) {
-    return process.argv.slice(2);
-  }
+// Manual listing to avoid dependency install for listing files in CI
+async function listFiles(dir = '') {
+  const files = await fs.readdir(dir || rootDir);
+  const paths = await Promise.all(
+    files
+      .filter(file => file !== 'node_modules')
+      .map(async file => {
+        const path = joinPath(dir, file);
 
-  let command = `git ls-files | ./node_modules/.bin/shx grep ".md"`;
-  if (process.platform === 'win32') {
-    command = `git ls-files | .\\node_modules\\.bin\\shx grep ".md"`;
-  }
+        if (IGNORED.some(pattern => pattern.test(path))) {
+          return [];
+        }
+        if ((await fs.stat(path)).isDirectory()) {
+          return listFiles(path);
+        }
+        if (!path.endsWith('.md')) {
+          return [];
+        }
+        return path;
+      }),
+  );
+  return paths.flat();
+}
 
-  // Note this ignore list only applies locally, CI runs `.github/workflows/docs-quality-checker.yml`
-  const ignored = ['', 'ADOPTERS.md', 'OWNERS.md'];
-
-  return execSync(command, {
-    stdio: ['ignore', 'pipe', 'inherit'],
-  })
-    .toString()
-    .split('\n')
-    .filter(el => !ignored.includes(el));
-};
-
-// Proceed with the script only if Vale linter is installed. Limit the friction and surprises caused by the script.
-// On CI, we want to ensure vale linter is run.
-commandExists('vale')
-  .catch(() => {
+// Proceed with the script only if Vale linter is installed. Limit the friction and surprises
+// caused by the script. In CI, we want to ensure vale linter is run.
+async function exitIfMissingVale() {
+  try {
+    await require('command-exists')('vale');
+  } catch (e) {
     if (process.env.CI) {
-      console.log(VALE_NOT_FOUND_MESSAGE);
+      console.log(
+        `Language linter (vale) was not found. Please install vale linter (https://docs.errata.ai/vale/install).\n`,
+      );
       process.exit(1);
     }
-    console.log(LINT_SKIPPED_MESSAGE);
+    console.log(`Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
+  Possibly update .github/vale/Vocab/Backstage/accept.txt to add new valid words.\n`);
     process.exit(0);
-  })
-  .then(() => {
-    const filesToLint = getFilesToLint();
+  }
+}
 
-    if (process.platform === 'win32') {
-      // Windows
-      try {
-        const output = spawnSync('vale', filesToLint, inheritStdIo);
+async function runVale(files) {
+  const result = spawnSync(
+    'vale',
+    ['--config', resolvePath(rootDir, '.github/vale/config.ini'), ...files],
+    {
+      stdio: 'inherit',
+    },
+  );
 
-        // If the command does not succeed
-        if (output.status !== 0) {
-          // If it contains system level error. In this case vale does not exist.
-          if (output.error) {
-            console.log(LINT_ERROR_MESSAGE);
-          }
-          process.exit(1);
-        }
-      } catch (e) {
-        console.log(e.message);
-        process.exit(1);
-      }
-    } else {
-      // Unix
-      const output = spawnSync('vale', filesToLint, inheritStdIo);
-      if (output.status !== 0) {
-        console.log(LINT_ERROR_MESSAGE);
-        process.exit(1);
-      }
+  if (result.status !== 0) {
+    // TODO(Rugvip): This logic was here before but seems a bit odd, could use some verification on windows.
+    // If it contains system level error. In this case vale does not exist.
+    if (process.platform !== 'win32' || result.error) {
+      console.log(`Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
+  Possibly update .github/vale/Vocab/Backstage/accept.txt to add new valid words.\n`);
     }
-  });
+    return false;
+  }
+
+  return true;
+}
+
+async function main() {
+  const files = await listFiles();
+
+  if (process.argv.includes('--ci-args')) {
+    process.stdout.write(
+      // Workaround for not being able to pass arguments to the vale action
+      JSON.stringify(['--config=.github/vale/config.ini', ...files]),
+    );
+    return;
+  }
+
+  await exitIfMissingVale();
+
+  const success = await runVale(files);
+  if (!success) {
+    process.exit(2);
+  }
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exit(1);
+});

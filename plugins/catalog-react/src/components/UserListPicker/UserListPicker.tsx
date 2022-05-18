@@ -242,7 +242,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
             {group.name}
           </Typography>
           <Card className={classes.groupWrapper}>
-            <List disablePadding dense>
+            <List disablePadding dense role="menu">
               {group.items.map(item => (
                 <MenuItem
                   key={item.id}
@@ -253,6 +253,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
                   className={classes.menuItem}
                   disabled={filterCounts[item.id] === 0}
                   data-testid={`user-picker-${item.id}`}
+                  tabIndex={0}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>

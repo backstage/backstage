@@ -30,3 +30,16 @@ export const searchApiRef = createApiRef<SearchApi>({
 export interface SearchApi {
   query(query: SearchQuery): Promise<SearchResultSet>;
 }
+
+/**
+ * @public
+ *
+ * Search Api Mock that can be used in tests and storybooks
+ */
+export class MockSearchApi implements SearchApi {
+  constructor(public mockedResults?: SearchResultSet) {}
+
+  query(): Promise<SearchResultSet> {
+    return Promise.resolve(this.mockedResults || { results: [] });
+  }
+}

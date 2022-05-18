@@ -21,6 +21,7 @@ import handlebars from 'handlebars';
 import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
 import puppeteer from 'puppeteer';
+import path from 'path';
 
 import {
   spawnPiped,
@@ -49,9 +50,8 @@ export async function run() {
   print('Building dist workspace');
   const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
-  const isPostgres = Boolean(process.env.POSTGRES_USER);
   print('Creating a Backstage App');
-  const appDir = await createApp('test-app', isPostgres, workspaceDir, rootDir);
+  const appDir = await createApp('test-app', workspaceDir, rootDir);
 
   print('Creating a Backstage Plugin');
   const pluginName = await createPlugin('test-plugin', appDir);
@@ -62,8 +62,21 @@ export async function run() {
   print('Starting the app');
   await testAppServe(pluginName, appDir);
 
-  print('Testing the backend startup');
-  await testBackendStart(appDir, isPostgres);
+  if (Boolean(process.env.POSTGRES_USER)) {
+    print('Testing the PostgreSQL backend startup');
+    await preCleanPostgres();
+    const appConfig = path.resolve(appDir, 'app-config.yaml');
+    const productionConfig = path.resolve(appDir, 'app-config.production.yaml');
+    await testBackendStart(
+      appDir,
+      '--config',
+      appConfig,
+      '--config',
+      productionConfig,
+    );
+  }
+  print('Testing the SQLite backend startup');
+  await testBackendStart(appDir);
 
   if (process.env.CI) {
     // Cleanup actually takes significant time, so skip it in CI since the
@@ -100,8 +113,8 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   }
 
   for (const pkgJsonPath of templatePackagePaths) {
-    const path = paths.resolveOwnRoot(pkgJsonPath);
-    const pkgTemplate = await fs.readFile(path, 'utf8');
+    const jsonPath = paths.resolveOwnRoot(pkgJsonPath);
+    const pkgTemplate = await fs.readFile(jsonPath, 'utf8');
     const pkg = JSON.parse(
       handlebars.compile(pkgTemplate)(
         {
@@ -191,7 +204,6 @@ async function pinYarnVersion(dir: string) {
  */
 async function createApp(
   appName: string,
-  isPostgres: boolean,
   workspaceDir: string,
   rootDir: string,
 ) {
@@ -214,14 +226,6 @@ async function createApp(
 
     await waitFor(() => stdout.includes('Enter a name for the app'));
     child.stdin?.write(`${appName}\n`);
-
-    await waitFor(() => stdout.includes('Select database for the backend'));
-
-    if (isPostgres) {
-      // Simulate down arrow press
-      child.stdin?.write(`\u001B\u005B\u0042`);
-    }
-    child.stdin?.write(`\n`);
 
     print('Waiting for app create script to be done');
     await waitForExit(child);
@@ -404,33 +408,34 @@ async function dropDB(database: string) {
   };
 
   try {
-    await pgtools.dropdb({ config }, database);
+    await pgtools.dropdb(config, database);
   } catch (_) {
     /* do nothing*/
   }
 }
 
+/** Clean remnants from prior e2e runs */
+async function preCleanPostgres() {
+  print('Dropping old DBs');
+  await Promise.all(
+    [
+      'catalog',
+      'scaffolder',
+      'auth',
+      'identity',
+      'proxy',
+      'techdocs',
+      'search',
+    ].map(name => dropDB(`backstage_plugin_${name}`)),
+  );
+  print('Created DBs');
+}
+
 /**
  * Start serving the newly created backend and make sure that all db migrations works correctly
  */
-async function testBackendStart(appDir: string, isPostgres: boolean) {
-  if (isPostgres) {
-    print('Dropping old DBs');
-    await Promise.all(
-      [
-        'catalog',
-        'scaffolder',
-        'auth',
-        'identity',
-        'proxy',
-        'techdocs',
-        'search',
-      ].map(name => dropDB(`backstage_plugin_${name}`)),
-    );
-    print('Created DBs');
-  }
-
-  const child = spawnPiped(['yarn', 'workspace', 'backend', 'start'], {
+async function testBackendStart(appDir: string, ...args: string[]) {
+  const child = spawnPiped(['yarn', 'workspace', 'backend', 'start', ...args], {
     cwd: appDir,
     env: {
       ...process.env,

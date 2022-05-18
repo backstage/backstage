@@ -19,6 +19,8 @@ import { GoogleKubernetesAuthTranslator } from './GoogleKubernetesAuthTranslator
 import { ServiceAccountKubernetesAuthTranslator } from './ServiceAccountKubernetesAuthTranslator';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 import { GoogleServiceAccountAuthTranslator } from './GoogleServiceAccountAuthProvider';
+import { AzureIdentityKubernetesAuthTranslator } from './AzureIdentityKubernetesAuthTranslator';
+import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
@@ -31,11 +33,17 @@ export class KubernetesAuthTranslatorGenerator {
       case 'aws': {
         return new AwsIamKubernetesAuthTranslator();
       }
+      case 'azure': {
+        return new AzureIdentityKubernetesAuthTranslator();
+      }
       case 'serviceAccount': {
         return new ServiceAccountKubernetesAuthTranslator();
       }
       case 'googleServiceAccount': {
         return new GoogleServiceAccountAuthTranslator();
+      }
+      case 'oidc': {
+        return new OidcKubernetesAuthTranslator();
       }
       default: {
         throw new Error(

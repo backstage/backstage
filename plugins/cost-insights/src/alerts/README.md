@@ -35,7 +35,7 @@ export class CostInsightsClient extends CostInsightsApi {
 
 ### Custom Setup
 
-Default properties such as the title, subtitle and instructions page url can be overridden - even default UI such as chart itself. Additionally, alerts can be extended to support actions such as snoozing or dismissing.
+Default properties such as the title, subtitle and instructions page URL can be overridden - even default UI such as chart itself. Additionally, alerts can be extended to support actions such as snoozing or dismissing.
 
 ![project-growth-alert-custom](../assets/project-growth-alert-custom.png)
 

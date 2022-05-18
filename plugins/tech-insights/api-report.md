@@ -31,6 +31,17 @@ export type CheckResultRenderer = {
 };
 
 // @public (undocumented)
+export const EntityTechInsightsScorecardCard: ({
+  title,
+  description,
+  checksId,
+}: {
+  title?: string | undefined;
+  description?: string | undefined;
+  checksId?: string[] | undefined;
+}) => JSX.Element;
+
+// @public (undocumented)
 export const EntityTechInsightsScorecardContent: ({
   title,
   description,

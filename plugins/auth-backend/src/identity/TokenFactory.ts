@@ -89,7 +89,7 @@ export class TokenFactory implements TokenIssuer {
       throw new AuthenticationError('No algorithm was provided in the key');
     }
 
-    return new SignJWT({ iss, sub, aud, iat, exp })
+    return new SignJWT({ iss, sub, ent, aud, iat, exp })
       .setProtectedHeader({ alg: key.alg, kid: key.kid })
       .setIssuer(iss)
       .setAudience(aud)

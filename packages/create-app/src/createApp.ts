@@ -50,15 +50,7 @@ export default async (opts: OptionValues): Promise<void> => {
         return true;
       },
     },
-    {
-      type: 'list',
-      name: 'dbType',
-      message: chalk.blue('Select database for the backend [required]'),
-      choices: ['SQLite', 'PostgreSQL'],
-    },
   ]);
-  answers.dbTypePG = answers.dbType === 'PostgreSQL';
-  answers.dbTypeSqlite = answers.dbType === 'SQLite';
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);

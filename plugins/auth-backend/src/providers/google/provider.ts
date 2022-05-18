@@ -73,9 +73,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
         clientID: options.clientId,
         clientSecret: options.clientSecret,
         callbackURL: options.callbackUrl,
-        // We need passReqToCallback set to false to get params, but there's
-        // no matching type signature for that, so instead behold this beauty
-        passReqToCallback: false as true,
+        passReqToCallback: false,
       },
       (
         accessToken: any,
@@ -240,7 +238,6 @@ export const google = createAuthProviderIntegration({
         });
 
         return OAuthAdapter.fromConfig(globalConfig, provider, {
-          disableRefresh: false,
           providerId,
           callbackUrl,
         });

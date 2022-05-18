@@ -36,5 +36,11 @@ export const UserSettingsSignInAvatar = ({ size }: Props) => {
   const classes = useStyles(size ? { size } : { size: iconSize });
   const { profile } = useUserProfile();
 
-  return <Avatar src={profile.picture} className={classes.avatar} />;
+  return (
+    <Avatar
+      src={profile.picture}
+      className={classes.avatar}
+      alt="Profile picture"
+    />
+  );
 };

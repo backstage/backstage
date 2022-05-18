@@ -72,13 +72,18 @@ describe('Features', () => {
           : The source control system where releases reside in a practical sense. Read more about
            
           <a
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover Link-externalLink-12 MuiTypography-colorPrimary"
             href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
             rel="noopener"
             target="_blank"
             to="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
           >
             Git releases
+            <span
+              class="Link-visuallyHidden-11"
+            >
+              , Opens in a new window
+            </span>
           </a>
           .
         </p>

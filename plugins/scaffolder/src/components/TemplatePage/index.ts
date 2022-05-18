@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { createValidator, TemplatePage } from './TemplatePage';
+export { TemplatePage } from './TemplatePage';
+export { createValidator } from './createValidator';

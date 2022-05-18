@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonObject, JsonValue } from '@backstage/types';
 import { LinearProgress } from '@material-ui/core';
-import { FormValidation, IChangeEvent } from '@rjsf/core';
+import { IChangeEvent } from '@rjsf/core';
 import qs from 'qs';
 import React, { useCallback, useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
 import { scaffolderApiRef } from '../../api';
-import { CustomFieldValidator, FieldExtensionOptions } from '../../extensions';
+import { FieldExtensionOptions } from '../../extensions';
 import { SecretsContext } from '../secrets/SecretsContext';
 import { rootRouteRef, scaffolderTaskRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
+import { createValidator } from './createValidator';
 
 import { Content, Header, InfoCard, Page } from '@backstage/core-components';
 import {
-  ApiHolder,
   errorApiRef,
   useApi,
   useApiHolder,
@@ -44,60 +43,6 @@ const useTemplateParameterSchema = (templateRef: string) => {
     [scaffolderApi, templateRef],
   );
   return { schema: value, loading, error };
-};
-
-function isObject(obj: unknown): obj is JsonObject {
-  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
-}
-
-export const createValidator = (
-  rootSchema: JsonObject,
-  validators: Record<string, undefined | CustomFieldValidator<unknown>>,
-  context: {
-    apiHolder: ApiHolder;
-  },
-) => {
-  function validate(
-    schema: JsonObject,
-    formData: JsonObject,
-    errors: FormValidation,
-  ) {
-    const schemaProps = schema.properties;
-    if (!isObject(schemaProps)) {
-      return;
-    }
-
-    for (const [key, propData] of Object.entries(formData)) {
-      const propValidation = errors[key];
-
-      if (isObject(propData)) {
-        const propSchemaProps = schemaProps[key];
-        if (isObject(propSchemaProps)) {
-          validate(
-            propSchemaProps,
-            propData as JsonObject,
-            propValidation as FormValidation,
-          );
-        }
-      } else {
-        const propSchema = schemaProps[key];
-        const fieldName =
-          isObject(propSchema) && (propSchema['ui:field'] as string);
-        if (fieldName && typeof validators[fieldName] === 'function') {
-          validators[fieldName]!(
-            propData as JsonValue,
-            propValidation,
-            context,
-          );
-        }
-      }
-    }
-  }
-
-  return (formData: JsonObject, errors: FormValidation) => {
-    validate(rootSchema, formData, errors);
-    return errors;
-  };
 };
 
 export const TemplatePage = ({

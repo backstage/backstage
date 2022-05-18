@@ -24,6 +24,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { TaskContext, TaskSecrets } from './types';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { UserEntity } from '@backstage/catalog-model';
 
 // The Stream module is lazy loaded, so make sure it's in the module cache before mocking fs
 void winston.transports.Stream;
@@ -555,6 +556,36 @@ describe('DefaultWorkflowRunner', () => {
       const executedTask = await runner.execute(task);
 
       expect(executedTask.output.b).toBeUndefined();
+    });
+  });
+
+  describe('user', () => {
+    it('allows access to the user entity at the templating level', async () => {
+      const task = createMockTaskWithSpec({
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'output-action',
+            input: {},
+          },
+        ],
+        user: {
+          entity: { metadata: { name: 'bob' } } as UserEntity,
+          ref: 'user:default/guest',
+        },
+        output: {
+          foo: '${{ user.entity.metadata.name }} ${{ user.ref }}',
+        },
+        parameters: {
+          repoUrl: 'github.com?repo=repo&owner=owner',
+        },
+      });
+
+      const { output } = await runner.execute(task);
+
+      expect(output.foo).toEqual('bob user:default/guest');
     });
   });
 

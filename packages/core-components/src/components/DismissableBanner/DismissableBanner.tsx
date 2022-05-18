@@ -87,7 +87,7 @@ const useStyles = makeStyles(
   { name: 'BackstageDismissableBanner' },
 );
 
-type Props = {
+export type Props = {
   variant: 'info' | 'error' | 'warning';
   message: ReactNode;
   id: string;

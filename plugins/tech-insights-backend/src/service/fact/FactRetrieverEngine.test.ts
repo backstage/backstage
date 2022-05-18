@@ -22,7 +22,11 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { FactRetrieverEngine } from './FactRetrieverEngine';
-import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  getVoidLogger,
+  ServerTokenManager,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { TaskScheduler } from '@backstage/backend-tasks';
@@ -129,6 +133,7 @@ describe('FactRetrieverEngine', () => {
       factRetrieverContext: {
         logger: getVoidLogger(),
         config: ConfigReader.fromConfigs([]),
+        tokenManager: ServerTokenManager.noop(),
         discovery: {
           getBaseUrl: (_: string) => Promise.resolve('http://mock.url'),
           getExternalBaseUrl: (_: string) => Promise.resolve('http://mock.url'),

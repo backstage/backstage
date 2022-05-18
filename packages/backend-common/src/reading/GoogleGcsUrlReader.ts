@@ -28,6 +28,8 @@ import {
   GoogleGcsIntegrationConfig,
   readGoogleGcsIntegrationConfig,
 } from '@backstage/integration';
+import { Readable } from 'stream';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -85,13 +87,14 @@ export class GoogleGcsUrlReader implements UrlReader {
     private readonly storage: Storage,
   ) {}
 
+  private readStreamFromUrl(url: string): Readable {
+    const { bucket, key } = parseURL(url);
+    return this.storage.bucket(bucket).file(key).createReadStream();
+  }
+
   async read(url: string): Promise<Buffer> {
     try {
-      const { bucket, key } = parseURL(url);
-
-      return await getRawBody(
-        this.storage.bucket(bucket).file(key).createReadStream(),
-      );
+      return await getRawBody(this.readStreamFromUrl(url));
     } catch (error) {
       throw new Error(`unable to read gcs file from ${url}, ${error}`);
     }
@@ -102,16 +105,42 @@ export class GoogleGcsUrlReader implements UrlReader {
     _options?: ReadUrlOptions,
   ): Promise<ReadUrlResponse> {
     // TODO etag is not implemented yet.
-    const buffer = await this.read(url);
-    return { buffer: async () => buffer };
+    const stream = this.readStreamFromUrl(url);
+    return ReadUrlResponseFactory.fromReadable(stream);
   }
 
   async readTree(): Promise<ReadTreeResponse> {
     throw new Error('GcsUrlReader does not implement readTree');
   }
 
-  async search(): Promise<SearchResponse> {
-    throw new Error('GcsUrlReader does not implement search');
+  async search(url: string): Promise<SearchResponse> {
+    const { bucket, key: pattern } = parseURL(url);
+
+    if (!pattern.endsWith('*') || pattern.indexOf('*') !== pattern.length - 1) {
+      throw new Error('GcsUrlReader only supports prefix-based searches');
+    }
+
+    const [files] = await this.storage.bucket(bucket).getFiles({
+      autoPaginate: true,
+      prefix: pattern.split('*').join(''),
+    });
+
+    return {
+      files: files.map(file => {
+        const fullUrl = ['https:/', GOOGLE_GCS_HOST, bucket, file.name].join(
+          '/',
+        );
+        return {
+          url: fullUrl,
+          content: async () => {
+            const readResponse = await this.readUrl(fullUrl);
+            return readResponse.buffer();
+          },
+        };
+      }),
+      // TODO etag is not implemented yet.
+      etag: 'NOT/IMPLEMENTED',
+    };
   }
 
   toString() {

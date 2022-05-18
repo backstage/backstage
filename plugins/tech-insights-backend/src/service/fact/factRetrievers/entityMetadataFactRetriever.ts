@@ -44,11 +44,19 @@ export const entityMetadataFactRetriever: FactRetriever = {
       description: 'The entity has tags in metadata',
     },
   },
-  handler: async ({ discovery, entityFilter }: FactRetrieverContext) => {
+  handler: async ({
+    discovery,
+    entityFilter,
+    tokenManager,
+  }: FactRetrieverContext) => {
+    const { token } = await tokenManager.getToken();
     const catalogClient = new CatalogClient({
       discoveryApi: discovery,
     });
-    const entities = await catalogClient.getEntities({ filter: entityFilter });
+    const entities = await catalogClient.getEntities(
+      { filter: entityFilter },
+      { token },
+    );
 
     return entities.items.map((entity: Entity) => {
       return {

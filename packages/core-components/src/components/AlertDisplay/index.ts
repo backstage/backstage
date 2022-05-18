@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { AlertDisplay } from './AlertDisplay';
+export * from './AlertDisplay';

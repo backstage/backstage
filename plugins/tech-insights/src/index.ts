@@ -16,6 +16,7 @@
 export {
   techInsightsPlugin,
   EntityTechInsightsScorecardContent,
+  EntityTechInsightsScorecardCard,
 } from './plugin';
 
 export { techInsightsApiRef } from './api/TechInsightsApi';

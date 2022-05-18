@@ -15,7 +15,10 @@
  */
 import { DateTime, Duration, DurationLike } from 'luxon';
 import { Config } from '@backstage/config';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Logger } from 'winston';
 
 /**
@@ -135,6 +138,7 @@ export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
   logger: Logger;
+  tokenManager: TokenManager;
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
     | Record<string, string | symbol | (string | symbol)[]>;

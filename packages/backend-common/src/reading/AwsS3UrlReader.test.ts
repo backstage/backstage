@@ -28,6 +28,7 @@ import AWSMock from 'aws-sdk-mock';
 import aws from 'aws-sdk';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
+import getRawBody from 'raw-body';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -263,7 +264,7 @@ describe('AwsS3UrlReader', () => {
   describe('readUrl', () => {
     let awsS3UrlReader: AwsS3UrlReader;
 
-    beforeAll(() => {
+    beforeEach(() => {
       AWSMock.setSDKInstance(aws);
 
       AWSMock.mock(
@@ -295,12 +296,20 @@ describe('AwsS3UrlReader', () => {
       );
     });
 
-    it('returns contents of an object in a bucket', async () => {
+    it('returns contents of an object in a bucket via buffer', async () => {
       const response = await awsS3UrlReader.readUrl(
         'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
       );
       const buffer = await response.buffer();
       expect(buffer.toString().trim()).toBe('site_name: Test');
+    });
+
+    it('returns contents of an object in a bucket via stream', async () => {
+      const response = await awsS3UrlReader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+      const fromStream = await getRawBody(response.stream!());
+      expect(fromStream.toString().trim()).toBe('site_name: Test');
     });
 
     it('rejects unknown targets', async () => {

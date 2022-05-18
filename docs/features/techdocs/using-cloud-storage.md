@@ -461,7 +461,7 @@ Since the new SDK doesn't use the old way authentication, we don't need the keys
 
 The new SDK needs the OpenStack Swift connection URL for connecting the Swift.
 So you need to add a new key called `openStackSwift.swiftUrl` and give the
-OpenStack Swift url here. Example url should look like that:
+OpenStack Swift URL here. Example URL should look like that:
 `https://example.com:6780/swift/v1`
 
 ##### That's it!

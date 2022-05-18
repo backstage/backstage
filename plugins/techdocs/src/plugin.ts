@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { techdocsApiRef, techdocsStorageApiRef } from './api';
+import {
+  techdocsApiRef,
+  techdocsStorageApiRef,
+} from '@backstage/plugin-techdocs-react';
 import { TechDocsClient, TechDocsStorageClient } from './client';
 import {
   rootDocsRouteRef,

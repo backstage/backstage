@@ -48,7 +48,7 @@ you can check [this documentation page][google gcs docs].
 To use this integration to import entities from a GCS bucket go to the Google
 console and browse the file you would like to import. Then copy the
 `Authenticated URL` and paste it into the text box in the `register component`
-form. This url should look like
+form. This URL should look like
 `https://storage.cloud.google.com/<bucket>/<path>/catalog-info.yaml`.
 
 [google gcs docs]: https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-nodejs

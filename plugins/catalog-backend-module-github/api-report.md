@@ -13,6 +13,7 @@ import { GitHubIntegrationConfig } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TaskRunner } from '@backstage/backend-tasks';
 
 // @public
 export class GithubDiscoveryProcessor implements CatalogProcessor {
@@ -72,7 +73,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   ): Promise<boolean>;
 }
 
-// @public (undocumented)
+// @public
 export class GitHubOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
@@ -86,17 +87,20 @@ export class GitHubOrgEntityProvider implements EntityProvider {
   // (undocumented)
   static fromConfig(
     config: Config,
-    options: {
-      id: string;
-      orgUrl: string;
-      logger: Logger;
-      githubCredentialsProvider?: GithubCredentialsProvider;
-    },
+    options: GitHubOrgEntityProviderOptions,
   ): GitHubOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
-  read(): Promise<void>;
+  read(options?: { logger?: Logger }): Promise<void>;
+}
+
+// @public
+export interface GitHubOrgEntityProviderOptions {
+  githubCredentialsProvider?: GithubCredentialsProvider;
+  id: string;
+  logger: Logger;
+  orgUrl: string;
+  schedule?: 'manual' | TaskRunner;
 }
 
 // @public

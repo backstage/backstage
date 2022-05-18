@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -33,6 +34,7 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { graphql } from '@octokit/graphql';
 import { merge } from 'lodash';
+import * as uuid from 'uuid';
 import { Logger } from 'winston';
 import {
   assignGroupsToUsers,
@@ -42,21 +44,64 @@ import {
   parseGitHubOrgUrl,
 } from './lib';
 
-// TODO: Consider supporting an (optional) webhook that reacts on org changes
-/** @public */
-export class GitHubOrgEntityProvider implements EntityProvider {
-  private connection?: EntityProviderConnection;
-  private githubCredentialsProvider: GithubCredentialsProvider;
+/**
+ * Options for {@link GitHubOrgEntityProvider}.
+ *
+ * @public
+ */
+export interface GitHubOrgEntityProviderOptions {
+  /**
+   * A unique, stable identifier for this provider.
+   *
+   * @example "production"
+   */
+  id: string;
 
-  static fromConfig(
-    config: Config,
-    options: {
-      id: string;
-      orgUrl: string;
-      logger: Logger;
-      githubCredentialsProvider?: GithubCredentialsProvider;
-    },
-  ) {
+  /**
+   * The target that this provider should consume.
+   *
+   * @example "https://github.com/backstage"
+   */
+  orgUrl: string;
+
+  /**
+   * The refresh schedule to use.
+   *
+   * @defaultValue "manual"
+   * @remarks
+   *
+   * If you pass in 'manual', you are responsible for calling the `read` method
+   * manually at some interval.
+   *
+   * But more commonly you will pass in the result of
+   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * to enable automatic scheduling of tasks.
+   */
+  schedule?: 'manual' | TaskRunner;
+
+  /**
+   * The logger to use.
+   */
+  logger: Logger;
+
+  /**
+   * Optionally supply a custom credentials provider, replacing the default one.
+   */
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}
+
+// TODO: Consider supporting an (optional) webhook that reacts on org changes
+/**
+ * Ingests org data (users and groups) from GitHub.
+ *
+ * @public
+ */
+export class GitHubOrgEntityProvider implements EntityProvider {
+  private readonly credentialsProvider: GithubCredentialsProvider;
+  private connection?: EntityProviderConnection;
+  private scheduleFn?: () => Promise<void>;
+
+  static fromConfig(config: Config, options: GitHubOrgEntityProviderOptions) {
     const integrations = ScmIntegrations.fromConfig(config);
     const gitHubConfig = integrations.github.byUrl(options.orgUrl)?.config;
 
@@ -70,7 +115,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       target: options.orgUrl,
     });
 
-    return new GitHubOrgEntityProvider({
+    const provider = new GitHubOrgEntityProvider({
       id: options.id,
       orgUrl: options.orgUrl,
       logger,
@@ -79,6 +124,10 @@ export class GitHubOrgEntityProvider implements EntityProvider {
         options.githubCredentialsProvider ||
         DefaultGithubCredentialsProvider.fromIntegrations(integrations),
     });
+
+    provider.schedule(options.schedule);
+
+    return provider;
   }
 
   constructor(
@@ -90,28 +139,36 @@ export class GitHubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
-    this.githubCredentialsProvider =
+    this.credentialsProvider =
       options.githubCredentialsProvider ||
-      SingleInstanceGithubCredentialsProvider.create(options.gitHubConfig);
+      SingleInstanceGithubCredentialsProvider.create(this.options.gitHubConfig);
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName() {
     return `GitHubOrgEntityProvider:${this.options.id}`;
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
+    await this.scheduleFn?.();
   }
 
-  async read() {
+  /**
+   * Runs one single complete ingestion. This is only necessary if you use
+   * manual scheduling.
+   */
+  async read(options?: { logger?: Logger }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
-    const { markReadComplete } = trackProgress(this.options.logger);
+    const logger = options?.logger ?? this.options.logger;
+    const { markReadComplete } = trackProgress(logger);
 
     const { headers, type: tokenType } =
-      await this.githubCredentialsProvider.getCredentials({
+      await this.credentialsProvider.getCredentials({
         url: this.options.orgUrl,
       });
     const client = graphql.defaults({
@@ -143,6 +200,32 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     });
 
     markCommitComplete();
+  }
+
+  private schedule(schedule: GitHubOrgEntityProviderOptions['schedule']) {
+    if (!schedule || schedule === 'manual') {
+      return;
+    }
+
+    this.scheduleFn = async () => {
+      const id = `${this.getProviderName()}:refresh`;
+      await schedule.run({
+        id,
+        fn: async () => {
+          const logger = this.options.logger.child({
+            class: GitHubOrgEntityProvider.prototype.constructor.name,
+            taskId: id,
+            taskInstanceId: uuid.v4(),
+          });
+
+          try {
+            await this.read({ logger });
+          } catch (error) {
+            logger.error(error);
+          }
+        },
+      });
+    };
   }
 }
 

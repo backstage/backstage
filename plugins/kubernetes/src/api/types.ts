@@ -28,5 +28,11 @@ export interface KubernetesApi {
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse>;
-  getClusters(): Promise<{ name: string; authProvider: string }[]>;
+  getClusters(): Promise<
+    {
+      name: string;
+      authProvider: string;
+      oidcTokenProvider?: string | undefined;
+    }[]
+  >;
 }

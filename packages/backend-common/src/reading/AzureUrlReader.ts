@@ -37,6 +37,7 @@ import {
   ReadUrlOptions,
   ReadUrlResponse,
 } from './types';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
  * Implements a {@link UrlReader} for Azure repos.
@@ -90,9 +91,7 @@ export class AzureUrlReader implements UrlReader {
 
     // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
     if (response.ok && response.status !== 203) {
-      return {
-        buffer: async () => Buffer.from(await response.arrayBuffer()),
-      };
+      return ReadUrlResponseFactory.fromNodeJSReadable(response.body);
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;

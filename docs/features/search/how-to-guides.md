@@ -67,11 +67,24 @@ getting started guide.
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
 ```
 
-2. Register the `DefaultTechDocsCollatorFactory` with the IndexBuilder.
+2. If there isn't an existing schedule you'd like to run the collator on, be
+   sure to create it first. Something like...
+
+```typescript
+import { Duration } from 'luxon';
+
+const every10MinutesSchedule = env.scheduler.createScheduledTaskRunner({
+  frequency: Duration.fromObject({ seconds: 600 }),
+  timeout: Duration.fromObject({ seconds: 900 }),
+  initialDelay: Duration.fromObject({ seconds: 3 }),
+});
+```
+
+3. Register the `DefaultTechDocsCollatorFactory` with the IndexBuilder.
 
 ```typescript
 indexBuilder.addCollator({
-  defaultRefreshIntervalSeconds: 600,
+  schedule: every10MinutesSchedule,
   factory: DefaultTechDocsCollatorFactory.fromConfig(env.config, {
     discovery: env.discovery,
     logger: env.logger,
@@ -396,6 +409,29 @@ export class YourSearchEngine implements SearchEngine {
     return new YourSearchEngineIndexer({ type });
   }
 }
+```
+
+## How to customize search results highlighting styling
+
+The default highlighting styling for matched terms in search results is your
+browsers default styles for the `<mark>` HTML tag. If you want to customize
+how highlighted terms look you can follow Backstage's guide on how to
+[Customize the look-and-feel of your App](https://backstage.io/docs/getting-started/app-custom-theme)
+to create an override with your preferred styling.
+
+For example, the following will result in highlighted terms to be bold & underlined:
+
+```jsx
+const highlightOverride = {
+  BackstageHighlightedSearchResultText: {
+    highlight: {
+      color: 'inherit',
+      backgroundColor: 'inherit',
+      fontWeight: 'bold',
+      textDecoration: 'underline',
+    },
+  },
+};
 ```
 
 [obj-mode]: https://nodejs.org/docs/latest-v14.x/api/stream.html#stream_object_mode

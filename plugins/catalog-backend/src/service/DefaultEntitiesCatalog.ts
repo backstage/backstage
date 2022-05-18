@@ -163,14 +163,14 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     const db = this.database;
 
-    let entitiesQuery = db<DbFinalEntitiesRow>('final_entities');
+    let entitiesQuery =
+      db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
     if (request?.filter) {
       entitiesQuery = parseFilter(request.filter, entitiesQuery, db);
     }
 
     // TODO: move final_entities to use entity_ref
     entitiesQuery = entitiesQuery
-      .select('final_entities.*')
       .whereNotNull('final_entities.final_entity')
       .orderBy('entity_id', 'asc');
 
