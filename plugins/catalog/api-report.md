@@ -7,6 +7,7 @@
 
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
@@ -17,11 +18,13 @@ import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResourceEntity } from '@backstage/catalog-model';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
+import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core';
@@ -185,6 +188,8 @@ export class DefaultStarredEntitiesApi implements StarredEntitiesApi {
 // @public (undocumented)
 export interface DependencyOfComponentsCardProps {
   // (undocumented)
+  tableOptions?: TableProps<ComponentEntity>['options'];
+  // (undocumented)
   title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
@@ -193,6 +198,8 @@ export interface DependencyOfComponentsCardProps {
 // @public (undocumented)
 export interface DependsOnComponentsCardProps {
   // (undocumented)
+  tableOptions?: TableProps<ComponentEntity>['options'];
+  // (undocumented)
   title?: string;
   // (undocumented)
   variant?: InfoCardVariants;
@@ -200,6 +207,8 @@ export interface DependsOnComponentsCardProps {
 
 // @public (undocumented)
 export interface DependsOnResourcesCardProps {
+  // (undocumented)
+  tableOptions?: TableProps<ResourceEntity>['options'];
   // (undocumented)
   variant?: InfoCardVariants;
 }
@@ -349,11 +358,15 @@ export function hasCatalogProcessingErrors(
 // @public (undocumented)
 export interface HasComponentsCardProps {
   // (undocumented)
+  tableOptions?: TableProps<ComponentEntity>['options'];
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasResourcesCardProps {
+  // (undocumented)
+  tableOptions?: TableProps<ResourceEntity>['options'];
   // (undocumented)
   variant?: InfoCardVariants;
 }
@@ -361,11 +374,15 @@ export interface HasResourcesCardProps {
 // @public (undocumented)
 export interface HasSubcomponentsCardProps {
   // (undocumented)
+  tableOptions?: TableProps<ComponentEntity>['options'];
+  // (undocumented)
   variant?: InfoCardVariants;
 }
 
 // @public (undocumented)
 export interface HasSystemsCardProps {
+  // (undocumented)
+  tableOptions?: TableProps<SystemEntity>['options'];
   // (undocumented)
   variant?: InfoCardVariants;
 }
@@ -406,6 +423,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
+  tableOptions?: TableProps<T>['options'];
   asRenderableEntities: (entities: Entity[]) => T[];
 };
 
