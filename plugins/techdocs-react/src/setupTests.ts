@@ -14,22 +14,4 @@
  * limitations under the License.
  */
 
-export const mockStylesheetEventListener = (timeToCallbackMs: number): void => {
-  HTMLLinkElement.prototype.addEventListener = (
-    _eventName: string,
-    eventCallback: any,
-  ) => {
-    setTimeout(() => {
-      eventCallback();
-    }, timeToCallbackMs);
-  };
-};
-
-export const executeStylesheetEventListeners = (): void => {
-  jest.runOnlyPendingTimers();
-};
-
-export const clearStylesheetEventListeners = (): void => {
-  HTMLLinkElement.prototype.addEventListener =
-    Element.prototype.addEventListener;
-};
+import '@testing-library/jest-dom';

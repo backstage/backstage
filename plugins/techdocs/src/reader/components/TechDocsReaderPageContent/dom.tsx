@@ -17,7 +17,7 @@
 import { useContext, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useTheme, Theme } from '@material-ui/core';
+import { Theme, useTheme, useMediaQuery } from '@material-ui/core';
 import { lighten, alpha } from '@material-ui/core/styles';
 
 import { BackstageTheme } from '@backstage/theme';
@@ -26,7 +26,10 @@ import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { SidebarPinStateContext } from '@backstage/core-components';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
+import {
+  techdocsStorageApiRef,
+  useShadowDomStylesLoading,
+} from '@backstage/plugin-techdocs-react';
 
 import { useTechDocsReader } from '../TechDocsReaderProvider';
 
@@ -46,13 +49,21 @@ import {
   copyToClipboard,
 } from '../../transformers';
 
+const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
+
 type TypographyHeadings = Pick<
   Theme['typography'],
   'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 >;
+
 type TypographyHeadingsKeys = keyof TypographyHeadings;
 
 const headings: TypographyHeadingsKeys[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+
+/**
+ * Sidebar pinned status to be used in computing CSS style injections
+ */
+const useSidebar = () => useContext(SidebarPinStateContext);
 
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying
@@ -63,81 +74,82 @@ export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
 ): Element | null => {
   const navigate = useNavigate();
+  const sidebar = useSidebar();
   const theme = useTheme<BackstageTheme>();
+  const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
+
+  const configApi = useApi(configApiRef);
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
-  const techdocsSanitizer = useApi(configApiRef);
-  const { namespace, kind, name } = entityRef;
+
   const { state, path, content: rawPage } = useTechDocsReader();
-  const isDarkTheme = theme.palette.type === 'dark';
 
-  const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const [dom, setDom] = useState<HTMLElement | null>(null);
-
-  // sidebar pinned status to be used in computing CSS style injections
-  const { isPinned } = useContext(SidebarPinStateContext);
+  const isStyleLoading = useShadowDomStylesLoading(dom);
 
   const updateSidebarPosition = useCallback(() => {
-    if (!dom || !sidebars) return;
-    // set sidebar height so they don't initially render in wrong position
-    const mdTabs = dom.querySelector('.md-container > .md-tabs');
-    const sidebarsCollapsed = window.matchMedia(
-      'screen and (max-width: 76.1875em)',
-    ).matches;
-    const newTop = Math.max(dom.getBoundingClientRect().top, 0);
-    sidebars.forEach(sidebar => {
-      if (sidebarsCollapsed) {
-        sidebar.style.top = '0px';
-      } else if (mdTabs) {
-        sidebar.style.top = `${
-          newTop + mdTabs.getBoundingClientRect().height
-        }px`;
+    if (!dom) return;
+
+    const sidebars = dom.querySelectorAll<HTMLElement>('.md-sidebar');
+
+    sidebars.forEach(element => {
+      // set sidebar position to render in correct position
+      if (isMobileMedia) {
+        element.style.top = '0px';
       } else {
-        sidebar.style.top = `${newTop}px`;
+        const domTop = dom.getBoundingClientRect().top ?? 0;
+        const tabs = dom.querySelector('.md-container > .md-tabs');
+        const tabsHeight = tabs?.getBoundingClientRect().height ?? 0;
+        element.style.top = `${Math.max(domTop, 0) + tabsHeight}px`;
       }
+
+      // show the sidebar only after updating its position
+      element.style.setProperty('opacity', '1');
     });
-  }, [dom, sidebars]);
+  }, [dom, isMobileMedia]);
 
   useEffect(() => {
-    updateSidebarPosition();
-    window.addEventListener('scroll', updateSidebarPosition, true);
     window.addEventListener('resize', updateSidebarPosition);
+    window.addEventListener('scroll', updateSidebarPosition, true);
     return () => {
-      window.removeEventListener('scroll', updateSidebarPosition, true);
       window.removeEventListener('resize', updateSidebarPosition);
+      window.removeEventListener('scroll', updateSidebarPosition, true);
     };
-    // an update to "state" might lead to an updated UI so we include it as a trigger
-  }, [updateSidebarPosition, state]);
+  }, [dom, updateSidebarPosition]);
 
   // dynamically set width of footer to accommodate for pinning of the sidebar
   const updateFooterWidth = useCallback(() => {
     if (!dom) return;
-    const footer = dom.querySelector('.md-footer') as HTMLElement;
+    const footer = dom.querySelector<HTMLElement>('.md-footer');
     if (footer) {
       footer.style.width = `${dom.getBoundingClientRect().width}px`;
     }
   }, [dom]);
 
   useEffect(() => {
-    updateFooterWidth();
     window.addEventListener('resize', updateFooterWidth);
     return () => {
       window.removeEventListener('resize', updateFooterWidth);
     };
-  });
+  }, [dom, updateFooterWidth]);
+
+  // an update to "state" might lead to an updated UI so we include it as a trigger
+  useEffect(() => {
+    if (!isStyleLoading) {
+      updateFooterWidth();
+      updateSidebarPosition();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, isStyleLoading, updateFooterWidth, updateSidebarPosition]);
 
   // a function that performs transformations that are executed prior to adding it to the DOM
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
       transformer(rawContent, [
-        sanitizeDOM(techdocsSanitizer.getOptionalConfig('techdocs.sanitizer')),
+        sanitizeDOM(configApi.getOptionalConfig('techdocs.sanitizer')),
         addBaseUrl({
           techdocsStorageApi,
-          entityId: {
-            kind,
-            name,
-            namespace,
-          },
+          entityId: entityRef,
           path: contentPath,
         }),
         rewriteDocLinks(),
@@ -233,22 +245,22 @@ export const useTechDocsReaderDom = (
               --md-code-bg-color: ${theme.palette.background.paper};
               --md-code-hl-color: ${alpha(theme.palette.warning.main, 0.5)};
               --md-code-hl-keyword-color: ${
-                isDarkTheme
+                theme.palette.type === 'dark'
                   ? theme.palette.primary.light
                   : theme.palette.primary.dark
               };
               --md-code-hl-function-color: ${
-                isDarkTheme
+                theme.palette.type === 'dark'
                   ? theme.palette.secondary.light
                   : theme.palette.secondary.dark
               };
               --md-code-hl-string-color: ${
-                isDarkTheme
+                theme.palette.type === 'dark'
                   ? theme.palette.success.light
                   : theme.palette.success.dark
               };
               --md-code-hl-number-color: ${
-                isDarkTheme
+                theme.palette.type === 'dark'
                   ? theme.palette.error.light
                   : theme.palette.error.dark
               };
@@ -267,17 +279,17 @@ export const useTechDocsReaderDom = (
               --md-typeset-a-color: var(--md-accent-fg-color);
               --md-typeset-table-color: ${theme.palette.text.primary};
               --md-typeset-del-color: ${
-                isDarkTheme
+                theme.palette.type === 'dark'
                   ? alpha(theme.palette.error.dark, 0.5)
                   : alpha(theme.palette.error.light, 0.5)
               };
               --md-typeset-ins-color: ${
-                isDarkTheme
+                theme.palette.type === 'dark'
                   ? alpha(theme.palette.success.dark, 0.5)
                   : alpha(theme.palette.success.light, 0.5)
               };
               --md-typeset-mark-color: ${
-                isDarkTheme
+                theme.palette.type === 'dark'
                   ? alpha(theme.palette.warning.dark, 0.5)
                   : alpha(theme.palette.warning.light, 0.5)
               };
@@ -463,7 +475,7 @@ export const useTechDocsReaderDom = (
                   width: 12.1rem !important;
                   z-index: 200;
                   left: ${
-                    isPinned
+                    sidebar.isPinned
                       ? 'calc(-12.1rem + 242px)'
                       : 'calc(-12.1rem + 72px)'
                   } !important;
@@ -609,19 +621,23 @@ export const useTechDocsReaderDom = (
               }
   
               .highlight .nx {
-                color: ${isDarkTheme ? '#ff53a3' : '#ec407a'};
+                color: ${theme.palette.type === 'dark' ? '#ff53a3' : '#ec407a'};
               }
   
               /* CODE HILITE */
               .codehilite .gd {
                 background-color: ${
-                  isDarkTheme ? 'rgba(248,81,73,0.65)' : '#fdd'
+                  theme.palette.type === 'dark'
+                    ? 'rgba(248,81,73,0.65)'
+                    : '#fdd'
                 };
               }
   
               .codehilite .gi {
                 background-color: ${
-                  isDarkTheme ? 'rgba(46,160,67,0.65)' : '#dfd'
+                  theme.palette.type === 'dark'
+                    ? 'rgba(46,160,67,0.65)'
+                    : '#dfd'
                 };
               }
   
@@ -676,15 +692,13 @@ export const useTechDocsReaderDom = (
         }),
       ]),
     [
-      kind,
-      name,
-      namespace,
-      scmIntegrationsApi,
-      techdocsSanitizer,
-      techdocsStorageApi,
+      // only add dependencies that are in state or memorized variables to avoid unnecessary calls between re-renders
+      entityRef,
       theme,
-      isDarkTheme,
-      isPinned,
+      sidebar,
+      configApi,
+      scmIntegrationsApi,
+      techdocsStorageApi,
     ],
   );
 
@@ -721,24 +735,29 @@ export const useTechDocsReaderDom = (
             }
           },
         }),
+        // disable MkDocs drawer toggling ('for' attribute => checkbox mechanism)
         onCssReady({
-          docStorageUrl: await techdocsStorageApi.getApiOrigin(),
-          onLoading: (renderedElement: Element) => {
-            (renderedElement as HTMLElement).style.setProperty('opacity', '0');
-          },
-          onLoaded: (renderedElement: Element) => {
-            (renderedElement as HTMLElement).style.removeProperty('opacity');
-            // disable MkDocs drawer toggling ('for' attribute => checkbox mechanism)
-            renderedElement
+          onLoading: () => {},
+          onLoaded: () => {
+            transformedElement
               .querySelector('.md-nav__title')
               ?.removeAttribute('for');
-            setSidebars(
-              Array.from(renderedElement.querySelectorAll('.md-sidebar')),
-            );
           },
         }),
+        // hide sidebars until their positions are updated
+        onCssReady({
+          onLoading: () => {
+            const sidebars = Array.from(
+              transformedElement.querySelectorAll<HTMLElement>('.md-sidebar'),
+            );
+            sidebars.forEach(element => {
+              element.style.setProperty('opacity', '0');
+            });
+          },
+          onLoaded: () => {},
+        }),
       ]),
-    [theme, navigate, techdocsStorageApi],
+    [theme, navigate],
   );
 
   useEffect(() => {
