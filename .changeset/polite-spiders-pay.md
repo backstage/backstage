@@ -1,6 +1,5 @@
 ---
-'@backstage/plugin-auth-backend': minor
-'@backstage/plugin-auth-node': minor
+'@backstage/plugin-auth-backend': patch
 ---
 
-Added configurable algorithm field for IdentityClient and TokenFactory
+Added configurable algorithm field for TokenFactory

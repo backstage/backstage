@@ -146,11 +146,24 @@ describe('IdentityClient', () => {
       });
     });
 
+    it('should throw error on empty algorithms array', async () => {
+      const identityClient = IdentityClient.create({
+        discovery,
+        issuer: mockBaseUrl,
+        algorithms: [''],
+      });
+
+      const token = await factory.issueToken({ claims: { sub: 'foo' } });
+      return expect(
+        async () => await identityClient.authenticate(token),
+      ).rejects.toThrow();
+    });
+
     it('should throw error on empty algorithm string', async () => {
       const identityClient = IdentityClient.create({
         discovery,
         issuer: mockBaseUrl,
-        algorithm: '',
+        algorithms: [],
       });
 
       const token = await factory.issueToken({ claims: { sub: 'foo' } });

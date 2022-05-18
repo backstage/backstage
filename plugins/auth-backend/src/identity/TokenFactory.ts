@@ -33,7 +33,7 @@ type Options = {
   /** Expiration time of signing keys in seconds */
   keyDurationSeconds: number;
   /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
-   * Must match the algorithm defined in IdentityClient.
+   * Must match one of the algorithms defined for IdentityClient.
    * More info on supported algorithms: https://github.com/panva/jose */
   algorithm?: string;
 };
