@@ -51,10 +51,9 @@ export class TaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
-    const success = false;
     let attemptNum = 1;
     (async () => {
-      while (!success) {
+      for (;;) {
         try {
           if (settings.initialDelayDuration) {
             await sleep(
@@ -73,12 +72,14 @@ export class TaskWorker {
           }
 
           this.logger.info(`Task worker finished: ${this.taskId}`);
+          attemptNum = 0;
           break;
         } catch (e) {
           attemptNum += 1;
           this.logger.warn(
             `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
+          await sleep(Duration.fromISO('P1S'));
         }
       }
     })();
