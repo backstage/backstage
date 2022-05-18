@@ -6,9 +6,12 @@
 import { CatalogProcessor } from '@backstage/plugin-catalog-backend';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
+import { EntityProvider } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { TaskRunner } from '@backstage/backend-tasks';
 
 // @public
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
@@ -31,5 +34,23 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean>;
+}
+
+// @public
+export class AzureDevOpsEntityProvider implements EntityProvider {
+  // (undocumented)
+  connect(connection: EntityProviderConnection): Promise<void>;
+  // (undocumented)
+  static fromConfig(
+    configRoot: Config,
+    options: {
+      logger: Logger;
+      schedule: TaskRunner;
+    },
+  ): AzureDevOpsEntityProvider[];
+  // (undocumented)
+  getProviderName(): string;
+  // (undocumented)
+  refresh(logger: Logger): Promise<void>;
 }
 ```
