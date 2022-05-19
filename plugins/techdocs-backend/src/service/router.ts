@@ -30,7 +30,6 @@ import {
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import { ScmIntegrations } from '@backstage/integration';
 import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { createCacheMiddleware, TechDocsCache } from '../cache';
@@ -39,6 +38,8 @@ import {
   DefaultDocsBuildStrategy,
   DocsBuildStrategy,
 } from './DocsBuildStrategy';
+import * as winston from 'winston';
+import { PassThrough } from 'stream';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -50,12 +51,13 @@ export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
-  logger: Logger;
+  logger: winston.Logger;
   discovery: PluginEndpointDiscovery;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  buildLogTransport?: winston.transport;
 };
 
 /**
@@ -66,11 +68,12 @@ export type OutOfTheBoxDeploymentOptions = {
  */
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
-  logger: Logger;
+  logger: winston.Logger;
   discovery: PluginEndpointDiscovery;
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;
+  buildLogTransport?: winston.transport;
 };
 
 /**
@@ -107,6 +110,9 @@ export async function createRouter(
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
     options.docsBuildStrategy ?? DefaultDocsBuildStrategy.fromConfig(config);
+  const buildLogTransport =
+    options.buildLogTransport ??
+    new winston.transports.Stream({ stream: new PassThrough() });
 
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
@@ -127,6 +133,7 @@ export async function createRouter(
   const docsSynchronizer = new DocsSynchronizer({
     publisher,
     logger,
+    buildLogTransport,
     config,
     scmIntegrations,
     cache,
