@@ -2,4 +2,4 @@
 '@backstage/plugin-sentry': patch
 ---
 
-Providing a way for users to determine if sentry is available.
+Exported `isSentryAvailable` which can be used to determine if sentry is available.
