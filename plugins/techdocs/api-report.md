@@ -51,6 +51,7 @@ export const DefaultTechDocsHome: (
 // @public
 export type DefaultTechDocsHomeProps = {
   initialFilter?: UserListFilterKind;
+  options?: Options<DocsTableRow>;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };

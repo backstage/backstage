@@ -2,7 +2,7 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Extend the DocsTable component to accept custom user-defined options while still providing default values in case of empty.
+Extend the `DocsTable` component to accept custom user-defined options while still providing default values in case of empty.
 
 **packages/app/src/components/techdocs/CustomTechDocsHome.tsx**
 
