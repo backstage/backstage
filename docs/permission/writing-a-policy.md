@@ -53,7 +53,7 @@ Let's change the policy to the following:
 + } from '@backstage/plugin-catalog-backend/alpha';
 + import {
 +   catalogEntityDeletePermission,
-+ } from '@backstage/plugin-catalog-common';
++ } from '@backstage/plugin-catalog-common/alpha';
 
   ...
 
@@ -106,7 +106,7 @@ import {
  } from '@backstage/plugin-catalog-backend/alpha';
 - import {
 -   catalogEntityDeletePermission,
-- } from '@backstage/plugin-catalog-common';
+- } from '@backstage/plugin-catalog-common/alpha';
 
 ...
 
