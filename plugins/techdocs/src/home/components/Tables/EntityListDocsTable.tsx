@@ -31,6 +31,7 @@ import { DocsTable } from './DocsTable';
 import { actionFactories } from './actions';
 import { columnFactories } from './columns';
 import { DocsTableRow } from './types';
+import { Options } from '@material-table/core';
 
 /**
  * Props for {@link EntityListDocsTable}.
@@ -38,7 +39,7 @@ import { DocsTableRow } from './types';
  * @public
  */
 export type EntityListDocsTableProps = {
-  options?: object;
+  options?: Options<DocsTableRow>;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
