@@ -226,7 +226,8 @@ export type KubernetesObjectTypes =
   | 'jobs'
   | 'cronjobs'
   | 'ingresses'
-  | 'customresources';
+  | 'customresources'
+  | 'statefulsets';
 
 // Warning: (ae-missing-release-tag) "KubernetesServiceLocator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

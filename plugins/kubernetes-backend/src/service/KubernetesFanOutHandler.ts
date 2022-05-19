@@ -97,6 +97,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'ingresses',
     objectType: 'ingresses',
   },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'statefulsets',
+    objectType: 'statefulsets',
+  },
 ];
 
 export interface KubernetesFanOutHandlerOptions
