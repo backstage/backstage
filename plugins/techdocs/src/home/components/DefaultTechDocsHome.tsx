@@ -33,6 +33,7 @@ import {
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { TechDocsPicker } from './TechDocsPicker';
 import { DocsTableRow, EntityListDocsTable } from './Tables';
+import { Options } from '@material-table/core';
 
 /**
  * Props for {@link DefaultTechDocsHome}
@@ -41,6 +42,7 @@ import { DocsTableRow, EntityListDocsTable } from './Tables';
  */
 export type DefaultTechDocsHomeProps = {
   initialFilter?: UserListFilterKind;
+  options?: Options<DocsTableRow>;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
@@ -51,7 +53,7 @@ export type DefaultTechDocsHomeProps = {
  * @public
  */
 export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
-  const { initialFilter = 'all', columns, actions } = props;
+  const { initialFilter = 'all', options, columns, actions } = props;
   return (
     <TechDocsPageWrapper>
       <Content>
@@ -69,7 +71,11 @@ export const DefaultTechDocsHome = (props: DefaultTechDocsHomeProps) => {
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>
-              <EntityListDocsTable actions={actions} columns={columns} />
+              <EntityListDocsTable
+                options={options}
+                actions={actions}
+                columns={columns}
+              />
             </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </EntityListProvider>
