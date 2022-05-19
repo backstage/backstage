@@ -44,7 +44,7 @@ export async function startFrontend(options: StartAppOptions) {
     if (problemPackages.length > 1) {
       console.log(
         chalk.yellow(
-          `⚠️ Some of the following packages may be outdated or have duplicate installations:
+          `⚠️   Some of the following packages may be outdated or have duplicate installations:
 
           ${uniq(problemPackages).join(', ')}
         `,
@@ -52,7 +52,7 @@ export async function startFrontend(options: StartAppOptions) {
       );
       console.log(
         chalk.yellow(
-          `⚠️ This can be resolved using the following command:
+          `⚠️   This can be resolved using the following command:
 
           yarn backstage-cli versions:check --fix
       `,
@@ -73,10 +73,14 @@ export async function startFrontend(options: StartAppOptions) {
   if (appBaseUrl === backendBaseUrl) {
     console.log(
       chalk.yellow(
-        `⚠️ Conflict between app baseUrl and backend baseUrl:
+        `⚠️   Conflict between app baseUrl and backend baseUrl:
 
-  app.baseUrl:     ${appBaseUrl}
-  backend.baseUrl: ${appBaseUrl}
+    app.baseUrl:     ${appBaseUrl}
+    backend.baseUrl: ${appBaseUrl}
+
+    Must have unique hostname and/or ports.
+
+    This can be resolved by changing app.baseUrl and backend.baseUrl to point to their respective local development ports.
 `,
       ),
     );
