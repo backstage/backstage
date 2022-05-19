@@ -1,5 +1,11 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.1.2
+
+### Patch Changes
+
+- Added apiKey configuration to prevent encoding the key value
+
 ## 0.1.1
 
 ### Patch Changes

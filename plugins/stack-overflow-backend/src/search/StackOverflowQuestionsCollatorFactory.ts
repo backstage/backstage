@@ -52,6 +52,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   baseUrl?: string;
   requestParams: StackOverflowQuestionsRequestParams;
   logger: Logger;
+  config: Config;
 };
 
 /**
@@ -65,12 +66,14 @@ export class StackOverflowQuestionsCollatorFactory
   protected requestParams: StackOverflowQuestionsRequestParams;
   private readonly baseUrl: string | undefined;
   private readonly logger: Logger;
+  private readonly config: Config;
   public readonly type: string = 'stack-overflow';
 
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {
     this.baseUrl = options.baseUrl;
     this.requestParams = options.requestParams;
     this.logger = options.logger;
+    this.config = options.config;
   }
 
   static fromConfig(
@@ -80,7 +83,11 @@ export class StackOverflowQuestionsCollatorFactory
     const baseUrl =
       config.getOptionalString('stackoverflow.baseUrl') ||
       'https://api.stackexchange.com/2.2';
-    return new StackOverflowQuestionsCollatorFactory({ ...options, baseUrl });
+    return new StackOverflowQuestionsCollatorFactory({
+      ...options,
+      baseUrl,
+      config,
+    });
   }
 
   async getCollator() {
@@ -93,12 +100,16 @@ export class StackOverflowQuestionsCollatorFactory
         `No stackoverflow.baseUrl configured in your app-config.yaml`,
       );
     }
+
     const params = qs.stringify(this.requestParams, {
       arrayFormat: 'comma',
       addQueryPrefix: true,
     });
 
-    const res = await fetch(`${this.baseUrl}/questions${params}`);
+    const apiKey = this.config.getOptionalString('stackoverflow.apiKey');
+    const apiKeyParam = apiKey ? `${params ? '&' : '?'}key=${apiKey}` : '';
+
+    const res = await fetch(`${this.baseUrl}/questions${params}${apiKeyParam}`);
     const data = await res.json();
 
     for (const question of data.items) {
