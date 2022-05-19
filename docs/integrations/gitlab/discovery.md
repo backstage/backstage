@@ -47,9 +47,8 @@ of your backend.
  ): Promise<Router> {
    const builder = await CatalogBuilder.create(env);
 +  builder.addProcessor(
-+    GitLabDiscoveryProcessor.fromConfig(env.config, {
-+       logger: env.logger,
-+       skipReposWithoutExactFileMatch: false,
-+    })
++    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
 +  );
 ```
+
+If you don't want create location object if file with component definition do not exists in project, you can set the `skipReposWithoutExactFileMatch` option. That can reduce count of request to gitlab with 404 status code.
