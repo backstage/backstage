@@ -68,7 +68,7 @@
     "knex": "^1.0.2",
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
-    "luxon": "^2.0.2",
+    "luxon": "^2.3.1",
     "minimatch": "^5.0.0",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
