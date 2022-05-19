@@ -174,6 +174,15 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   );
 };
 
+const techdocsContent = (
+  <EntityTechdocsContent>
+    <TechDocsAddons>
+      <TextSize />
+      <ReportIssue />
+    </TechDocsAddons>
+  </EntityTechdocsContent>
+);
+
 /**
  * NOTE: This page is designed to work on small screens such as mobile devices.
  * This is based on Material UI Grid. If breakpoints are used, each grid item must set the `xs` prop to a column size or to `true`,
@@ -404,12 +413,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent>
-        <TechDocsAddons>
-          <TextSize />
-          <ReportIssue />
-        </TechDocsAddons>
-      </EntityTechdocsContent>
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -476,13 +480,9 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent>
-        <TechDocsAddons>
-          <TextSize />
-          <ReportIssue />
-        </TechDocsAddons>
-      </EntityTechdocsContent>
+      {techdocsContent}
     </EntityLayout.Route>
+
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
       path="/newrelic-dashboard"
@@ -528,12 +528,7 @@ const defaultEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent>
-        <TechDocsAddons>
-          <TextSize />
-          <ReportIssue />
-        </TechDocsAddons>
-      </EntityTechdocsContent>
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">
