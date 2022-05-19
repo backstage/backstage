@@ -1,11 +1,14 @@
 **Status:** Open for comments
 
-<!--- Open for comments |Closed for comments (RFC no longer maintained) --->
+**Authors:** @backstage/maintainers
 
 ## Need
 
 The new Backend system stems from a couple of needs identified prior to writing
 this RFC.
+
+Some of the areas covered in this RFC need much more work, but we would like to
+open up for comments and feedback for this proposal before moving forward.
 
 ### Simplified Installations
 
@@ -130,13 +133,14 @@ plugin's `node` package, as we should avoid plugin-to-plugin imports.
 ```ts
 // exported from @backstage/plugin-example-hello-world-node
 
-export interface GreetService {
+export interface GreetingsExtensionPoint {
   addGreeting(greeting: string): void;
 }
 
-export const greetingsExtensionPoint = createServiceRef<GreetService>({
-  id: 'com.my-company.example.greetings',
-});
+export const greetingsExtensionPoint =
+  createServiceRef<GreetingsExtensionPoint>({
+    id: 'com.my-company.example.greetings',
+  });
 ```
 
 ```ts
@@ -145,17 +149,17 @@ import { greetingsExtensionPoint } from '@backstage/plugin-example-hello-world-n
 export const examplePlugin = createBackendPlugin({
   id: 'com.my-company.example',
   register(env) {
-    // implements the GreetService
-    const greetApi = new GreetApiImpl();
+    // implements the GreetingsExtensionPoint
+    const greetingsExtensions = new GreetingsExtensions();
 
-    env.registerExtensionPoint(greetingsExtensionPoint, greetApi);
+    env.registerExtensionPoint(greetingsExtensionPoint, greetingsExtensions);
 
     env.registerInit({
       async init() {
-        // The greetApi instance is in scope as it's created above.
+        // The greetingsExtensions instance is in scope as it's created above.
         // Note how this uses the private .greet() method which is
         // not exposed in the public API.
-        greetApi.greet();
+        greetingsExtensions.greet();
       },
     });
 });
@@ -165,7 +169,13 @@ export const examplePlugin = createBackendPlugin({
 
 There is going to be a set of default services provided by the framework and
 surrounding packages, for the purposes of for example routing, logging and many
-other aspects. What's common for many of these services is that there is a need
+other aspects. These are common utilities that are intended to be usable by all
+backend plugins. Regardless of what this system ends up looking like, we intend
+for there to be a package that brings together sensible defaults for the average
+backend, just like `@backstage/app-defaults` does for the frontend. These services
+can be overridden with custom implementations or configurations at the backend level.
+
+What's common for many of these services is that there is a need
 to scope the service implementation to each plugin. For example the logging
 service is more useful when it's able to tell which plugin is producing a
 particular log line. To accommodate this use case, the service factory always
@@ -195,17 +205,6 @@ const backend = createBackend({
   apis: [loggerServiceFactory],
 });
 ```
-
-<!--
-  TODO(freben): In this section, I guess it's not entirely clear how/why these are meant to be used.
-  The example shows the core logger, but it looks like it's declared in the same file as a custom
-  plugin - and then the plugin consumes that core thing explicitly. So the question then is, do all
-  plugins have to declare all (core!) services that they want to use? Does the example above mean
-  to showcase how a _replaceable_ service is to be made? We aren't meant to normally make service
-  factories for core things right? I guess I'm generally a bit unclear what the target is overall
-  with this facility, coming into it without prior knowledge. Making new things (as a plugin author)
-  for external use? Do people replace or just consume them? Can you replace core things as well? etc
--->
 
 Similar to frontend Utility APIs, service factories may depend on other
 services. The dependency mechanism is slightly different though, as we receive a
@@ -261,15 +260,9 @@ providing dependencies.
 
 [Roadie](https://roadie.io) have also helped out prototyping what the backend
 system would look like with an off-the-shelf dependency injection framework
-added on top of the existing backend system. See #TODO for more information.
+added on top of the existing backend system. See [#9165](https://github.com/backstage/backstage/pull/9165) for more information.
 
 ## Risks
-
-<!---
-  TODO: What other things happening could conflict or compete (for example for
-  resources) with the proposal? What risk are there and how do we plan to
-  handle them
---->
 
 ### Massive Backend Plugin Migration
 
