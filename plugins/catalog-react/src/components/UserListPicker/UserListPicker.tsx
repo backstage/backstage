@@ -238,13 +238,18 @@ export const UserListPicker = (props: UserListPickerProps) => {
     <Card className={classes.root}>
       {filterGroups.map(group => (
         <Fragment key={group.name}>
-          <Typography variant="subtitle2" className={classes.title}>
+          <Typography
+            variant="subtitle2"
+            component="span"
+            className={classes.title}
+          >
             {group.name}
           </Typography>
           <Card className={classes.groupWrapper}>
-            <List disablePadding dense role="menu">
+            <List disablePadding dense role="menu" aria-label={group.name}>
               {group.items.map(item => (
                 <MenuItem
+                  role="none presentation"
                   key={item.id}
                   button
                   divider
@@ -254,6 +259,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
                   disabled={filterCounts[item.id] === 0}
                   data-testid={`user-picker-${item.id}`}
                   tabIndex={0}
+                  ContainerProps={{ role: 'menuitem' }}
                 >
                   {item.icon && (
                     <ListItemIcon className={classes.listIcon}>
@@ -261,7 +267,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
                     </ListItemIcon>
                   )}
                   <ListItemText>
-                    <Typography variant="body1">{item.label}</Typography>
+                    <Typography variant="body1">{item.label} </Typography>
                   </ListItemText>
                   <ListItemSecondaryAction>
                     {filterCounts[item.id] ?? '-'}

@@ -95,31 +95,36 @@ export const EntityTagPicker = () => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Tags</Typography>
-      <Autocomplete
-        multiple
-        aria-label="Tags"
-        options={availableTags}
-        value={selectedTags}
-        onChange={(_: object, value: string[]) => setSelectedTags(value)}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                checked={selected}
-              />
-            }
-            label={option}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
-        renderInput={params => (
-          <TextField {...params} className={classes.input} variant="outlined" />
-        )}
-      />
+      <Typography variant="button" component="label">
+        Tags
+        <Autocomplete
+          multiple
+          options={availableTags}
+          value={selectedTags}
+          onChange={(_: object, value: string[]) => setSelectedTags(value)}
+          renderOption={(option, { selected }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  checked={selected}
+                />
+              }
+              label={option}
+            />
+          )}
+          size="small"
+          popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
+          renderInput={params => (
+            <TextField
+              {...params}
+              className={classes.input}
+              variant="outlined"
+            />
+          )}
+        />
+      </Typography>
     </Box>
   );
 };
