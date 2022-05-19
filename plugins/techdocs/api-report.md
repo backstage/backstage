@@ -14,6 +14,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { Options } from '@material-table/core';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
@@ -24,7 +25,6 @@ import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/p
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { ToolbarProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
-import { Options } from '@material-table/core';
 
 // @public
 export type ContentStateTypes =
