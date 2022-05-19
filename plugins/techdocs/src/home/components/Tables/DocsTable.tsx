@@ -35,6 +35,7 @@ import { actionFactories } from './actions';
 import { columnFactories } from './columns';
 import { toLowerMaybe } from '../../../helpers';
 import { DocsTableRow } from './types';
+import { Options } from '@material-table/core';
 
 /**
  * Props for {@link DocsTable}.
@@ -45,7 +46,7 @@ export type DocsTableProps = {
   entities: Entity[] | undefined;
   title?: string | undefined;
   loading?: boolean | undefined;
-  options?: object | undefined;
+  options?: Options<DocsTableRow> | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
@@ -83,7 +84,7 @@ export const DocsTable = (props: DocsTableProps) => {
     };
   });
 
-  const defaultOptions: object = {
+  const defaultOptions: Options<DocsTableRow> = {
     paging: true,
     pageSize: 20,
     search: true,
@@ -105,7 +106,7 @@ export const DocsTable = (props: DocsTableProps) => {
       {loading || (documents && documents.length > 0) ? (
         <Table<DocsTableRow>
           isLoading={loading}
-          options={options || defaultOptions}
+          options={{ ...defaultOptions, ...options }}
           data={documents}
           columns={columns || defaultColumns}
           actions={actions || defaultActions}

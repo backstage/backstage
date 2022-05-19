@@ -24,6 +24,7 @@ import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/p
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { ToolbarProps } from '@material-ui/core';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
+import { Options } from '@material-table/core';
 
 // @public
 export type ContentStateTypes =
@@ -95,7 +96,7 @@ export type DocsTableProps = {
   entities: Entity[] | undefined;
   title?: string | undefined;
   loading?: boolean | undefined;
-  options?: object | undefined;
+  options?: Options<DocsTableRow> | undefined;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
@@ -146,7 +147,7 @@ export const EntityListDocsTable: {
 
 // @public
 export type EntityListDocsTableProps = {
-  options?: object;
+  options?: Options<DocsTableRow>;
   columns?: TableColumn<DocsTableRow>[];
   actions?: TableProps<DocsTableRow>['actions'];
 };
