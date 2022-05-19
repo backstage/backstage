@@ -183,8 +183,11 @@ export const StatefulSetsAccordions = ({}: StatefulSetsAccordionsProps) => {
           <Grid item xs>
             <StatefulSetAccordion
               matchingHpa={getMatchingHpa(
-                statefulset.metadata?.name,
-                'statefulset',
+                {
+                  name: statefulset.metadata?.name,
+                  namespace: statefulset.metadata?.namespace,
+                  kind: 'statefulset',
+                },
                 groupedResponses.horizontalPodAutoscalers,
               )}
               ownedPods={getOwnedResources(statefulset, groupedResponses.pods)}
