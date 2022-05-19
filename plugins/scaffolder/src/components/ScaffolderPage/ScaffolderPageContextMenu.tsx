@@ -22,12 +22,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
+import Add from '@material-ui/icons/Add';
 import Description from '@material-ui/icons/Description';
 import Edit from '@material-ui/icons/Edit';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { rootRouteRef } from '../../routes';
+import { rootRouteRef, registerComponentRouteRef } from '../../routes';
 
 const useStyles = makeStyles({
   button: {
@@ -36,6 +37,7 @@ const useStyles = makeStyles({
 });
 
 export type ScaffolderPageContextMenuProps = {
+  registerNew?: boolean;
   editor?: boolean;
   actions?: boolean;
 };
@@ -48,6 +50,9 @@ export function ScaffolderPageContextMenu(
   const pageLink = useRouteRef(rootRouteRef);
   const navigate = useNavigate();
 
+  const registerComponentLink = useRouteRef(registerComponentRouteRef);
+
+  const showRegister = props.registerNew !== false && registerComponentLink;
   const showEditor = props.editor !== false;
   const showActions = props.actions !== false;
 
@@ -84,6 +89,14 @@ export function ScaffolderPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
+          {showRegister && (
+            <MenuItem onClick={() => navigate(registerComponentLink())}>
+              <ListItemIcon>
+                <Add fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Add Template" />
+            </MenuItem>
+          )}
           {showEditor && (
             <MenuItem onClick={() => navigate(`${pageLink()}/edit`)}>
               <ListItemIcon>

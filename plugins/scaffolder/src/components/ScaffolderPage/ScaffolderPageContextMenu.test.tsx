@@ -18,7 +18,7 @@ import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { rootRouteRef } from '../../routes';
+import { registerComponentRouteRef, rootRouteRef } from '../../routes';
 import { ScaffolderPageContextMenu } from './ScaffolderPageContextMenu';
 
 describe('ScaffolderPageContextMenu', () => {
@@ -31,6 +31,23 @@ describe('ScaffolderPageContextMenu', () => {
     );
 
     expect(screen.getByTestId('container')).toBeEmptyDOMElement();
+  });
+
+  it('renders the add template option', async () => {
+    await renderInTestApp(
+      <div data-testid="container">
+        <ScaffolderPageContextMenu actions={false} />
+      </div>,
+      {
+        mountedRoutes: {
+          '/': rootRouteRef,
+          '/register': registerComponentRouteRef,
+        },
+      },
+    );
+
+    await userEvent.click(screen.getByTestId('container').firstElementChild!);
+    expect(screen.queryByText('Add Template')).toBeInTheDocument();
   });
 
   it('renders the editor option', async () => {
