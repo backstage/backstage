@@ -159,5 +159,6 @@ scaffolder backend:
 | Utility actions         | [scaffolder-backend-module-utils](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-utils)                              | [Roadie](https://roadie.io)                  |
 | AWS cli actions         | [scaffolder-backend-module-aws](https://www.npmjs.com/package/@roadiehq/scaffolder-backend-module-aws)                                  | [Roadie](https://roadie.io)                  |
 | Scaffolder .NET Actions | [plugin-scaffolder-dotnet-backend](https://www.npmjs.com/package/@plusultra/plugin-scaffolder-dotnet-backend)                           | [Alef Carlos](https://github.com/alefcarlos) |
+| Scaffolder Git Actions  | [plugin-scaffolder-git-actions](https://www.npmjs.com/package/@mdude2314/backstage-plugin-scaffolder-git-actions)                       | [Drew Hill](https://github.com/arhill05)     |
 
 Have fun! 🚀
