@@ -58,6 +58,7 @@
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
     "@yarnpkg/lockfile": "^1.1.0",
+    "@yarnpkg/parsers": "^3.0.0-rc.4",
     "bfj": "^7.0.2",
     "buffer": "^6.0.3",
     "chalk": "^4.0.0",
