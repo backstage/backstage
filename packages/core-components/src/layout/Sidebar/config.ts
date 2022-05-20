@@ -101,22 +101,6 @@ export const makeSidebarSubmenuConfig = (
 export const SIDEBAR_INTRO_LOCAL_STORAGE =
   '@backstage/core/sidebar-intro-dismissed';
 
-/**
- * Types for the `SidebarContext`
- */
-export type SidebarContextType = {
-  isOpen: boolean;
-  setOpen: (open: boolean) => void;
-};
-
-/**
- * Context whether the `Sidebar` is open
- */
-export const SidebarContext = createContext<SidebarContextType>({
-  isOpen: false,
-  setOpen: () => {},
-});
-
 export type SidebarConfigContextType = {
   sidebarConfig: SidebarConfig;
   submenuConfig: SubmenuConfig;

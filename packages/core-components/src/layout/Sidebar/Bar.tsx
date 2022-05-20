@@ -25,7 +25,6 @@ import {
   makeSidebarConfig,
   makeSidebarSubmenuConfig,
   SidebarConfig,
-  SidebarContext,
   SidebarConfigContext,
   SubmenuConfig,
   SidebarOptions,
@@ -33,6 +32,7 @@ import {
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext, useContent } from './Page';
+import { SidebarContextProvider } from './SidebarContext';
 import { MobileSidebar } from './MobileSidebar';
 
 /** @public */
@@ -191,7 +191,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   return (
     <nav style={{}} aria-label="sidebar nav">
       <A11ySkipSidebar />
-      <SidebarContext.Provider value={{ isOpen, setOpen }}>
+      <SidebarContextProvider value={{ isOpen, setOpen }}>
         <div
           className={classes.root}
           data-testid="sidebar-root"
@@ -208,7 +208,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
             {children}
           </div>
         </div>
-      </SidebarContext.Provider>
+      </SidebarContextProvider>
     </nav>
   );
 };
