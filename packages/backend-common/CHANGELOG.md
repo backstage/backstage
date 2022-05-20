@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.13.4
+
+### Patch Changes
+
+- 739be2b079: Fixed potential crash by bumping the `luxon` dependency to `^2.3.1`.
+
 ## 0.13.3
 
 ### Patch Changes
