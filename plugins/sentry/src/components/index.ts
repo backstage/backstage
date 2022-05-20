@@ -15,4 +15,4 @@
  */
 
 export * from './SentryIssuesWidget';
-export { isSentryAvailable } from './useProjectSlug';
+export { isSentryAvailable } from './isSentryAvailable';
