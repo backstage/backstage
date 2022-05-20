@@ -24,10 +24,7 @@ import {
 
 export const CustomTechDocsHome = () => {
   const options = {
-    paging: false,
-    search: false,
-    showTitle: false,
-    toolbar: false,
+    search: true,
   };
 
   return (
