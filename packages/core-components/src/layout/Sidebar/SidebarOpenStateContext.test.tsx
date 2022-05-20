@@ -19,17 +19,17 @@ import { waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import {
   LegacySidebarContext,
-  SidebarContextProvider,
-  useSidebar,
-} from './SidebarContext';
+  SidebarOpenStateProvider,
+  useSidebarOpenState,
+} from './SidebarOpenStateContext';
 
-describe('SidebarContext', () => {
-  describe('SidebarContextProvider', () => {
+describe('SidebarOpenStateContext', () => {
+  describe('SidebarOpenStateProvider', () => {
     it('should render children', async () => {
       const { findByText } = await renderWithEffects(
-        <SidebarContextProvider value={{ isOpen: false, setOpen: () => {} }}>
+        <SidebarOpenStateProvider value={{ isOpen: false, setOpen: () => {} }}>
           Child
-        </SidebarContextProvider>,
+        </SidebarOpenStateProvider>,
       );
       expect(await findByText('Child')).toBeInTheDocument();
     });
@@ -41,23 +41,23 @@ describe('SidebarContext', () => {
       };
 
       const { findByText } = await renderWithEffects(
-        <SidebarContextProvider
+        <SidebarOpenStateProvider
           value={{
             isOpen: true,
             setOpen: () => {},
           }}
         >
           <LegacyContextSpy />
-        </SidebarContextProvider>,
+        </SidebarOpenStateProvider>,
       );
 
       expect(await findByText('true')).toBeInTheDocument();
     });
   });
 
-  describe('useSidebar', () => {
+  describe('useSidebarOpenState', () => {
     it('does not need to be invoked within provider', () => {
-      const { result } = renderHook(() => useSidebar());
+      const { result } = renderHook(() => useSidebarOpenState());
       expect(result.current.isOpen).toBe(false);
       expect(typeof result.current.setOpen).toBe('function');
     });
@@ -65,7 +65,7 @@ describe('SidebarContext', () => {
     it('should read and update state', async () => {
       let actualValue = true;
       const wrapper = ({ children }: { children: ReactNode }) => (
-        <SidebarContextProvider
+        <SidebarOpenStateProvider
           value={{
             isOpen: actualValue,
             setOpen: value => {
@@ -74,9 +74,11 @@ describe('SidebarContext', () => {
           }}
         >
           {children}
-        </SidebarContextProvider>
+        </SidebarOpenStateProvider>
       );
-      const { result, rerender } = renderHook(() => useSidebar(), { wrapper });
+      const { result, rerender } = renderHook(() => useSidebarOpenState(), {
+        wrapper,
+      });
 
       expect(result.current.isOpen).toBe(true);
 

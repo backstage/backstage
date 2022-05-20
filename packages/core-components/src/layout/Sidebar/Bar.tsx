@@ -32,7 +32,7 @@ import {
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { useContent } from './Page';
-import { SidebarContextProvider } from './SidebarContext';
+import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
 import { MobileSidebar } from './MobileSidebar';
 
@@ -190,7 +190,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   return (
     <nav style={{}} aria-label="sidebar nav">
       <A11ySkipSidebar />
-      <SidebarContextProvider value={{ isOpen, setOpen }}>
+      <SidebarOpenStateProvider value={{ isOpen, setOpen }}>
         <div
           className={classes.root}
           data-testid="sidebar-root"
@@ -207,7 +207,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
             {children}
           </div>
         </div>
-      </SidebarContextProvider>
+      </SidebarOpenStateProvider>
     </nav>
   );
 };

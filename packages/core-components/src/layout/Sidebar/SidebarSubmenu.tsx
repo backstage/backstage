@@ -22,7 +22,7 @@ import {
   SidebarConfigContext,
   SubmenuConfig,
 } from './config';
-import { useSidebar } from './SidebarContext';
+import { useSidebarOpenState } from './SidebarOpenStateContext';
 import { BackstageTheme } from '@backstage/theme';
 
 const useStyles = makeStyles<
@@ -105,7 +105,7 @@ export type SidebarSubmenuProps = {
  * @public
  */
 export const SidebarSubmenu = (props: SidebarSubmenuProps) => {
-  const { isOpen } = useSidebar();
+  const { isOpen } = useSidebarOpenState();
   const { sidebarConfig, submenuConfig } = useContext(SidebarConfigContext);
   const left = isOpen
     ? sidebarConfig.drawerWidthOpen

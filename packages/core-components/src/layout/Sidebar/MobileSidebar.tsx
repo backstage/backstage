@@ -27,7 +27,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router';
-import { SidebarContextProvider } from './SidebarContext';
+import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
 import { SidebarConfigContext, SidebarConfig } from './config';
 
@@ -208,7 +208,7 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
     !sidebarGroups[selectedMenuItemIndex].props.to;
 
   return (
-    <SidebarContextProvider value={{ isOpen: true, setOpen: () => {} }}>
+    <SidebarOpenStateProvider value={{ isOpen: true, setOpen: () => {} }}>
       <MobileSidebarContext.Provider
         value={{ selectedMenuItemIndex, setSelectedMenuItemIndex }}
       >
@@ -232,6 +232,6 @@ export const MobileSidebar = (props: MobileSidebarProps) => {
           {sidebarGroups}
         </BottomNavigation>
       </MobileSidebarContext.Provider>
-    </SidebarContextProvider>
+    </SidebarOpenStateProvider>
   );
 };

@@ -23,9 +23,20 @@ import {
 /**
  * Types for the `SidebarContext`
  *
- * @public
+ * @public @deprecated
+ * Use `SidebarOpenState` instead.
  */
 export type SidebarContextType = {
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+};
+
+/**
+ * The open state of the sidebar.
+ *
+ * @public
+ */
+export type SidebarOpenState = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
 };
@@ -46,20 +57,20 @@ export const LegacySidebarContext = createContext<SidebarContextType>(
 );
 
 const VersionedSidebarContext = createVersionedContext<{
-  1: SidebarContextType;
-}>('sidebar-context');
+  1: SidebarOpenState;
+}>('sidebar-open-state-context');
 
 /**
  * Provides context for reading and updating sidebar state.
  *
  * @public
  */
-export const SidebarContextProvider = ({
+export const SidebarOpenStateProvider = ({
   children,
   value,
 }: {
   children: ReactNode;
-  value: SidebarContextType;
+  value: SidebarOpenState;
 }) => (
   <LegacySidebarContext.Provider value={value}>
     <VersionedSidebarContext.Provider
@@ -71,14 +82,14 @@ export const SidebarContextProvider = ({
 );
 
 /**
- * Hook to read and update sidebar state.
+ * Hook to read and update the sidebar's open state.
  *
  * @public
  */
-export const useSidebar = (): SidebarContextType => {
+export const useSidebarOpenState = (): SidebarOpenState => {
   const versionedSidebarContext = useContext(VersionedSidebarContext);
 
-  // Invoked from outside a SidbarContextProvider, return a default value.
+  // Invoked from outside a SidebarOpenStateProvider, return a default value.
   if (versionedSidebarContext === undefined) {
     return defaultSidebarContext;
   }

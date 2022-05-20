@@ -4,4 +4,4 @@
 '@techdocs/cli': patch
 ---
 
-Updated sidebar-related logic to use `<SidebarPinStateContextProvider>` + `useSidebarPinState()` and/or `<SidebarContextProvider>` + `useSidebar()` from `@backstage/core-components`.
+Updated sidebar-related logic to use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()` from `@backstage/core-components`.

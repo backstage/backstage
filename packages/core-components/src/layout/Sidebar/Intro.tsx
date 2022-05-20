@@ -28,7 +28,7 @@ import {
   SIDEBAR_INTRO_LOCAL_STORAGE,
 } from './config';
 import { SidebarDivider } from './Items';
-import { useSidebar } from './SidebarContext';
+import { useSidebarOpenState } from './SidebarOpenStateContext';
 
 /** @public */
 export type SidebarIntroClassKey =
@@ -151,7 +151,7 @@ const recentlyViewedIntroText =
   'And your recently viewed plugins will pop up here!';
 
 export function SidebarIntro(_props: {}) {
-  const { isOpen } = useSidebar();
+  const { isOpen } = useSidebarOpenState();
   const defaultValue = {
     starredItemsDismissed: false,
     recentlyViewedItemsDismissed: false,
