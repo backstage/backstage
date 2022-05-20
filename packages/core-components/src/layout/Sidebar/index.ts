@@ -50,13 +50,19 @@ export { SIDEBAR_INTRO_LOCAL_STORAGE, sidebarConfig } from './config';
 export type { SidebarOptions, SubmenuOptions } from './config';
 export {
   LegacySidebarContext as SidebarContext,
-  SidebarContextProvider,
-  useSidebar,
-} from './SidebarContext';
-export type { SidebarContextType } from './SidebarContext';
+  SidebarOpenStateProvider,
+  useSidebarOpenState,
+} from './SidebarOpenStateContext';
+export type {
+  SidebarContextType,
+  SidebarOpenState,
+} from './SidebarOpenStateContext';
 export {
   LegacySidebarPinStateContext as SidebarPinStateContext,
-  SidebarPinStateContextProvider,
+  SidebarPinStateProvider,
   useSidebarPinState,
 } from './SidebarPinStateContext';
-export type { SidebarPinStateContextType } from './SidebarPinStateContext';
+export type {
+  SidebarPinStateContextType,
+  SidebarPinState,
+} from './SidebarPinStateContext';

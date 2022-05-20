@@ -19,15 +19,15 @@ import { waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import {
   LegacySidebarPinStateContext,
-  SidebarPinStateContextProvider,
+  SidebarPinStateProvider,
   useSidebarPinState,
 } from './SidebarPinStateContext';
 
 describe('SidebarPinStateContext', () => {
-  describe('SidebarPinStateContextProvider', () => {
+  describe('SidebarPinStateProvider', () => {
     it('should render children', async () => {
       const { findByText } = await renderWithEffects(
-        <SidebarPinStateContextProvider
+        <SidebarPinStateProvider
           value={{
             isPinned: true,
             isMobile: false,
@@ -35,7 +35,7 @@ describe('SidebarPinStateContext', () => {
           }}
         >
           Child
-        </SidebarPinStateContextProvider>,
+        </SidebarPinStateProvider>,
       );
       expect(await findByText('Child')).toBeInTheDocument();
     });
@@ -47,7 +47,7 @@ describe('SidebarPinStateContext', () => {
       };
 
       const { findByText } = await renderWithEffects(
-        <SidebarPinStateContextProvider
+        <SidebarPinStateProvider
           value={{
             isPinned: true,
             isMobile: true,
@@ -55,7 +55,7 @@ describe('SidebarPinStateContext', () => {
           }}
         >
           <LegacyContextSpy />
-        </SidebarPinStateContextProvider>,
+        </SidebarPinStateProvider>,
       );
 
       expect(await findByText('true')).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe('SidebarPinStateContext', () => {
     it('should read and update state', async () => {
       let actualValue = true;
       const wrapper = ({ children }: { children: ReactNode }) => (
-        <SidebarPinStateContextProvider
+        <SidebarPinStateProvider
           value={{
             isPinned: actualValue,
             isMobile: false,
@@ -83,7 +83,7 @@ describe('SidebarPinStateContext', () => {
           }}
         >
           {children}
-        </SidebarPinStateContextProvider>
+        </SidebarPinStateProvider>
       );
       const { result, rerender } = renderHook(() => useSidebarPinState(), {
         wrapper,

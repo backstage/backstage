@@ -45,7 +45,7 @@ import {
   SidebarPage,
   SidebarScrollWrapper,
   SidebarSpace,
-  useSidebar,
+  useSidebarOpenState,
 } from '@backstage/core-components';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
@@ -68,7 +68,7 @@ const useSidebarLogoStyles = makeStyles({
 
 const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
-  const { isOpen } = useSidebar();
+  const { isOpen } = useSidebarOpenState();
 
   return (
     <div className={classes.root}>

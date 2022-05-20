@@ -27,7 +27,7 @@ import {
   SidebarPage,
   sidebarConfig,
   SidebarDivider,
-  useSidebar,
+  useSidebarOpenState,
 } from '@backstage/core-components';
 import { NavLink } from 'react-router-dom';
 
@@ -48,7 +48,7 @@ const useSidebarLogoStyles = makeStyles({
 
 const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
-  const { isOpen } = useSidebar();
+  const { isOpen } = useSidebarOpenState();
 
   return (
     <div className={classes.root}>
