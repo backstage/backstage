@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useContext, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Theme, useTheme, useMediaQuery } from '@material-ui/core';
@@ -23,7 +23,7 @@ import { lighten, alpha } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
-import { SidebarPinStateContext } from '@backstage/core-components';
+import { useSidebarPinState } from '@backstage/core-components';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
 import {
@@ -63,7 +63,7 @@ const headings: TypographyHeadingsKeys[] = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 /**
  * Sidebar pinned status to be used in computing CSS style injections
  */
-const useSidebar = () => useContext(SidebarPinStateContext);
+const useSidebar = () => useSidebarPinState();
 
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying

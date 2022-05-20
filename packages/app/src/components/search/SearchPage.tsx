@@ -21,7 +21,7 @@ import {
   Header,
   Lifecycle,
   Page,
-  SidebarPinStateContext,
+  useSidebarPinState,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
@@ -40,7 +40,7 @@ import {
 import { useSearch } from '@backstage/plugin-search-react';
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, List, makeStyles, Paper, Theme } from '@material-ui/core';
-import React, { useContext } from 'react';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bar: {
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const SearchPage = () => {
   const classes = useStyles();
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
   const { types } = useSearch();
   const catalogApi = useApi(catalogApiRef);
 
