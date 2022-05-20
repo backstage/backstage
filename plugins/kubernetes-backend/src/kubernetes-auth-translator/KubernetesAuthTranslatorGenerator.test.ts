@@ -29,19 +29,19 @@ describe('getKubernetesAuthTranslatorInstance', () => {
 
   it('can return an auth translator for google auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance(logger, 'google');
+      sut.getKubernetesAuthTranslatorInstance('google', { logger });
     expect(authTranslator instanceof GoogleKubernetesAuthTranslator).toBe(true);
   });
 
   it('can return an auth translator for aws auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance(logger, 'aws');
+      sut.getKubernetesAuthTranslatorInstance('aws', { logger });
     expect(authTranslator instanceof AwsIamKubernetesAuthTranslator).toBe(true);
   });
 
   it('can return an auth translator for serviceAccount auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance(logger, 'serviceAccount');
+      sut.getKubernetesAuthTranslatorInstance('serviceAccount', { logger });
     expect(
       authTranslator instanceof ServiceAccountKubernetesAuthTranslator,
     ).toBe(true);
@@ -49,13 +49,13 @@ describe('getKubernetesAuthTranslatorInstance', () => {
 
   it('can return an auth translator for oidc auth', () => {
     const authTranslator: KubernetesAuthTranslator =
-      sut.getKubernetesAuthTranslatorInstance(logger, 'oidc');
+      sut.getKubernetesAuthTranslatorInstance('oidc', { logger });
     expect(authTranslator instanceof OidcKubernetesAuthTranslator).toBe(true);
   });
 
   it('throws an error when asked for an auth translator for an unsupported auth type', () => {
     expect(() =>
-      sut.getKubernetesAuthTranslatorInstance(logger, 'linode'),
+      sut.getKubernetesAuthTranslatorInstance('linode', { logger }),
     ).toThrow(
       'authProvider "linode" has no KubernetesAuthTranslator associated with it',
     );

@@ -29,7 +29,7 @@ export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
   private accessToken: AccessToken = { token: '', expiresOnTimestamp: 0 };
-  private newToken: Promise<string> | undefined;
+  private newTokenPromise: Promise<string> | undefined;
 
   constructor(
     private readonly logger: Logger,
@@ -49,15 +49,15 @@ export class AzureIdentityKubernetesAuthTranslator
   }
 
   private async getToken(): Promise<string> {
-    if (this.isTokenValid()) {
+    if (!this.tokenRequiresRefresh()) {
       return this.accessToken.token;
     }
 
-    if (!this.newToken) {
-      this.newToken = this.fetchNewToken();
+    if (!this.newTokenPromise) {
+      this.newTokenPromise = this.fetchNewToken();
     }
 
-    return this.newToken;
+    return this.newTokenPromise;
   }
 
   private async fetchNewToken(): Promise<string> {
@@ -74,16 +74,24 @@ export class AzureIdentityKubernetesAuthTranslator
       this.accessToken = newAccessToken;
     } catch (err) {
       this.logger.error('Unable to fetch Azure token', err);
-      // don't throw the error, so the existing token will be re-used until we're able to fetch a new token
+
+      // only throw the error if the token has already expired, otherwise re-use existing until we're able to fetch a new token
+      if (this.tokenExpired()) {
+        throw err;
+      }
     }
 
-    this.newToken = undefined;
+    this.newTokenPromise = undefined;
     return this.accessToken.token;
   }
 
-  private isTokenValid(): boolean {
+  private tokenRequiresRefresh(): boolean {
     // Set tokens to expire 15 minutes before its actual expiry time
     const expiresOn = this.accessToken.expiresOnTimestamp - 15 * 60 * 1000;
-    return expiresOn >= Date.now();
+    return Date.now() >= expiresOn;
+  }
+
+  private tokenExpired(): boolean {
+    return Date.now() >= this.accessToken.expiresOnTimestamp;
   }
 }

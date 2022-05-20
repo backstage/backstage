@@ -25,8 +25,10 @@ import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
-    logger: Logger,
     authProvider: string,
+    options: {
+      logger: Logger;
+    },
   ): KubernetesAuthTranslator {
     switch (authProvider) {
       case 'google': {
@@ -36,7 +38,7 @@ export class KubernetesAuthTranslatorGenerator {
         return new AwsIamKubernetesAuthTranslator();
       }
       case 'azure': {
-        return new AzureIdentityKubernetesAuthTranslator(logger);
+        return new AzureIdentityKubernetesAuthTranslator(options.logger);
       }
       case 'serviceAccount': {
         return new ServiceAccountKubernetesAuthTranslator();
