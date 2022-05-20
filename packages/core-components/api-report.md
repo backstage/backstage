@@ -1006,7 +1006,13 @@ export type SidebarPageProps = {
 };
 
 // @public
-export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
+export const SidebarPinStateContextProvider: ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: SidebarPinStateContextType;
+}) => JSX.Element;
 
 // @public
 export type SidebarPinStateContextType = {
@@ -1450,6 +1456,9 @@ export class UserIdentity implements IdentityApi {
 
 // @public
 export const useSidebar: () => SidebarContextType;
+
+// @public
+export const useSidebarPinState: () => SidebarPinStateContextType;
 
 // Warning: (ae-missing-release-tag) "useSupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
