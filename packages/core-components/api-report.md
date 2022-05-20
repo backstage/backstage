@@ -902,6 +902,9 @@ export const sidebarConfig: {
   mobileSidebarHeight: number;
 };
 
+// @public @deprecated
+export const SidebarContext: React_2.Context<SidebarContextType>;
+
 // @public
 export const SidebarContextProvider: ({
   children,
@@ -1004,6 +1007,9 @@ export type SidebarPageClassKey = 'root';
 export type SidebarPageProps = {
   children?: React_2.ReactNode;
 };
+
+// @public @deprecated
+export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
 
 // @public
 export const SidebarPinStateContextProvider: ({

@@ -17,7 +17,7 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import React, { ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 
 /**
  * Type of `SidebarPinStateContext`
@@ -29,6 +29,21 @@ export type SidebarPinStateContextType = {
   toggleSidebarPinState: () => any;
   isMobile?: boolean;
 };
+
+const defaultSidebarPinStateContext = {
+  isPinned: true,
+  toggleSidebarPinState: () => {},
+  isMobile: false,
+};
+
+/**
+ * Contains the state on how the `Sidebar` is rendered
+ *
+ * @public @deprecated
+ * Use `<SidebarPinStateContextProvider>` + `useSidebarPinState()` instead.
+ */
+export const LegacySidebarPinStateContext =
+  createContext<SidebarPinStateContextType>(defaultSidebarPinStateContext);
 
 const VersionedSidebarPinStateContext = createVersionedContext<{
   1: SidebarPinStateContextType;
@@ -46,11 +61,13 @@ export const SidebarPinStateContextProvider = ({
   children: ReactNode;
   value: SidebarPinStateContextType;
 }) => (
-  <VersionedSidebarPinStateContext.Provider
-    value={createVersionedValueMap({ 1: value })}
-  >
-    {children}
-  </VersionedSidebarPinStateContext.Provider>
+  <LegacySidebarPinStateContext.Provider value={value}>
+    <VersionedSidebarPinStateContext.Provider
+      value={createVersionedValueMap({ 1: value })}
+    >
+      {children}
+    </VersionedSidebarPinStateContext.Provider>
+  </LegacySidebarPinStateContext.Provider>
 );
 
 /**
@@ -63,11 +80,7 @@ export const useSidebarPinState = (): SidebarPinStateContextType => {
 
   // Invoked from outside a SidebarPinStateContextProvider: default value.
   if (versionedSidebarContext === undefined) {
-    return {
-      isPinned: true,
-      toggleSidebarPinState: () => {},
-      isMobile: false,
-    };
+    return defaultSidebarPinStateContext;
   }
 
   const sidebarContext = versionedSidebarContext.atVersion(1);
