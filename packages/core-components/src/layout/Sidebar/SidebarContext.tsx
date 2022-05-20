@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import {
   createVersionedContext,
   createVersionedValueMap,
@@ -29,6 +29,21 @@ export type SidebarContextType = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
 };
+
+const defaultSidebarContext = {
+  isOpen: false,
+  setOpen: () => {},
+};
+
+/**
+ * Context whether the `Sidebar` is open
+ *
+ * @public @deprecated
+ * Use `<SidebarContextProvider>` + `useSidebar()` instead.
+ */
+export const LegacySidebarContext = createContext<SidebarContextType>(
+  defaultSidebarContext,
+);
 
 const VersionedSidebarContext = createVersionedContext<{
   1: SidebarContextType;
@@ -46,11 +61,13 @@ export const SidebarContextProvider = ({
   children: ReactNode;
   value: SidebarContextType;
 }) => (
-  <VersionedSidebarContext.Provider
-    value={createVersionedValueMap({ 1: value })}
-  >
-    {children}
-  </VersionedSidebarContext.Provider>
+  <LegacySidebarContext.Provider value={value}>
+    <VersionedSidebarContext.Provider
+      value={createVersionedValueMap({ 1: value })}
+    >
+      {children}
+    </VersionedSidebarContext.Provider>
+  </LegacySidebarContext.Provider>
 );
 
 /**
@@ -63,10 +80,7 @@ export const useSidebar = (): SidebarContextType => {
 
   // Invoked from outside a SidbarContextProvider, return a default value.
   if (versionedSidebarContext === undefined) {
-    return {
-      isOpen: false,
-      setOpen: () => {},
-    };
+    return defaultSidebarContext;
   }
 
   const sidebarContext = versionedSidebarContext.atVersion(1);

@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode } from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { screen, waitFor } from '@testing-library/react';
+import React, { ReactNode, useContext } from 'react';
+import { renderWithEffects } from '@backstage/test-utils';
+import { waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import {
+  LegacySidebarPinStateContext,
   SidebarPinStateContextProvider,
   useSidebarPinState,
 } from './SidebarPinStateContext';
 
-describe('SidebarContext', () => {
-  describe('SidebarContextProvider', () => {
+describe('SidebarPinStateContext', () => {
+  describe('SidebarPinStateContextProvider', () => {
     it('should render children', async () => {
-      await renderInTestApp(
+      const { findByText } = await renderWithEffects(
         <SidebarPinStateContextProvider
           value={{
             isPinned: true,
@@ -36,11 +37,32 @@ describe('SidebarContext', () => {
           Child
         </SidebarPinStateContextProvider>,
       );
-      expect(await screen.findByText('Child')).toBeInTheDocument();
+      expect(await findByText('Child')).toBeInTheDocument();
+    });
+
+    it('should provide the legacy context as well, for now', async () => {
+      const LegacyContextSpy = () => {
+        const { isMobile } = useContext(LegacySidebarPinStateContext);
+        return <>{String(isMobile)}</>;
+      };
+
+      const { findByText } = await renderWithEffects(
+        <SidebarPinStateContextProvider
+          value={{
+            isPinned: true,
+            isMobile: true,
+            toggleSidebarPinState: () => {},
+          }}
+        >
+          <LegacyContextSpy />
+        </SidebarPinStateContextProvider>,
+      );
+
+      expect(await findByText('true')).toBeInTheDocument();
     });
   });
 
-  describe('useSidebar', () => {
+  describe('useSidebarPinState', () => {
     it('does not need to be invoked within provider', () => {
       const { result } = renderHook(() => useSidebarPinState());
       expect(result.current.isPinned).toBe(true);
@@ -63,15 +85,18 @@ describe('SidebarContext', () => {
           {children}
         </SidebarPinStateContextProvider>
       );
-      const { result } = renderHook(() => useSidebarPinState(), { wrapper });
+      const { result, rerender } = renderHook(() => useSidebarPinState(), {
+        wrapper,
+      });
 
       expect(result.current.isPinned).toBe(true);
 
       act(() => {
         result.current.toggleSidebarPinState();
+        rerender();
       });
 
-      waitFor(() => {
+      await waitFor(() => {
         expect(result.current.isPinned).toBe(false);
       });
     });
