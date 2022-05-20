@@ -82,6 +82,7 @@ export class LdapClient {
     logger: Logger,
     target: string,
     bind?: BindConfig,
+    tls?: TLSConfig,
   ): Promise<LdapClient>;
   getRootDSE(): Promise<SearchEntry | undefined>;
   getVendor(): Promise<LdapVendor>;
@@ -154,6 +155,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
 // @public
 export type LdapProviderConfig = {
   target: string;
+  tls?: TLSConfig;
   bind?: BindConfig;
   users: UserConfig;
   groups: GroupConfig;
@@ -191,6 +193,11 @@ export function readLdapOrg(
   users: UserEntity[];
   groups: GroupEntity[];
 }>;
+
+// @public
+export type TLSConfig = {
+  rejectUnauthorized?: boolean;
+};
 
 // @public
 export type UserConfig = {
