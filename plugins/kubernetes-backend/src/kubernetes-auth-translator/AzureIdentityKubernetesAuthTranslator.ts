@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { KubernetesAuthTranslator } from './types';
 import { AzureClusterDetails } from '../types/types';
 import {
@@ -27,9 +28,11 @@ const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope 
 export class AzureIdentityKubernetesAuthTranslator
   implements KubernetesAuthTranslator
 {
-  private accessToken: AccessToken | null = null;
+  private accessToken: AccessToken = { token: '', expiresOnTimestamp: 0 };
+  private newToken: Promise<string> | undefined;
 
   constructor(
+    private readonly logger: Logger,
     private readonly tokenCredential: TokenCredential = new DefaultAzureCredential(),
   ) {}
 
@@ -41,23 +44,45 @@ export class AzureIdentityKubernetesAuthTranslator
       clusterDetails,
     );
 
-    if (this.tokenExpired()) {
-      this.accessToken = await this.tokenCredential.getToken(aksScope);
-
-      if (!this.accessToken) {
-        throw new Error('Unable to retrieve Azure token');
-      }
-    }
-
-    clusterDetailsWithAuthToken.serviceAccountToken = this.accessToken!.token;
+    clusterDetailsWithAuthToken.serviceAccountToken = await this.getToken();
     return clusterDetailsWithAuthToken;
   }
 
-  private tokenExpired(): boolean {
-    if (!this.accessToken) return true;
+  private async getToken(): Promise<string> {
+    if (this.isTokenValid()) {
+      return this.accessToken.token;
+    }
 
+    if (!this.newToken) {
+      this.newToken = this.fetchNewToken();
+    }
+
+    return this.newToken;
+  }
+
+  private async fetchNewToken(): Promise<string> {
+    try {
+      this.logger.info('Fetching new Azure token for AKS');
+
+      const newAccessToken = await this.tokenCredential.getToken(aksScope, {
+        requestOptions: { timeout: 10_000 }, // 10 seconds
+      });
+      if (!newAccessToken) {
+        throw new Error('AccessToken is null');
+      }
+
+      this.accessToken = newAccessToken;
+    } catch (err) {
+      this.logger.error('Unable to fetch Azure token', err);
+    }
+
+    this.newToken = undefined;
+    return this.accessToken.token;
+  }
+
+  private isTokenValid(): boolean {
     // Set tokens to expire 15 minutes before its actual expiry time
     const expiresOn = this.accessToken.expiresOnTimestamp - 15 * 60 * 1000;
-    return Date.now() >= expiresOn;
+    return expiresOn >= Date.now();
   }
 }

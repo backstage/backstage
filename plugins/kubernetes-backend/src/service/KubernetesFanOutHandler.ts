@@ -293,6 +293,7 @@ export class KubernetesFanOutHandler {
 
     this.authTranslators[provider] =
       KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+        this.logger,
         provider,
       );
     return this.authTranslators[provider];
