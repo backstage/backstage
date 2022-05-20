@@ -905,16 +905,7 @@ export const sidebarConfig: {
 // @public @deprecated
 export const SidebarContext: React_2.Context<SidebarContextType>;
 
-// @public
-export const SidebarContextProvider: ({
-  children,
-  value,
-}: {
-  children: ReactNode;
-  value: SidebarContextType;
-}) => JSX.Element;
-
-// @public
+// @public @deprecated
 export type SidebarContextType = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
@@ -987,6 +978,21 @@ export type SidebarItemClassKey =
   | 'arrows'
   | 'selected';
 
+// @public
+export type SidebarOpenState = {
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+};
+
+// @public
+export const SidebarOpenStateProvider: ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: SidebarOpenState;
+}) => JSX.Element;
+
 // @public (undocumented)
 export type SidebarOptions = {
   drawerWidthClosed?: number;
@@ -1008,24 +1014,31 @@ export type SidebarPageProps = {
   children?: React_2.ReactNode;
 };
 
+// @public
+export type SidebarPinState = {
+  isPinned: boolean;
+  toggleSidebarPinState: () => any;
+  isMobile?: boolean;
+};
+
 // @public @deprecated
 export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
 
+// @public @deprecated
+export type SidebarPinStateContextType = {
+  isPinned: boolean;
+  toggleSidebarPinState: () => any;
+  isMobile?: boolean;
+};
+
 // @public
-export const SidebarPinStateContextProvider: ({
+export const SidebarPinStateProvider: ({
   children,
   value,
 }: {
   children: ReactNode;
   value: SidebarPinStateContextType;
 }) => JSX.Element;
-
-// @public
-export type SidebarPinStateContextType = {
-  isPinned: boolean;
-  toggleSidebarPinState: () => any;
-  isMobile?: boolean;
-};
 
 // @public (undocumented)
 export type SidebarProps = {
@@ -1461,10 +1474,10 @@ export class UserIdentity implements IdentityApi {
 }
 
 // @public
-export const useSidebar: () => SidebarContextType;
+export const useSidebarOpenState: () => SidebarOpenState;
 
 // @public
-export const useSidebarPinState: () => SidebarPinStateContextType;
+export const useSidebarPinState: () => SidebarPinState;
 
 // Warning: (ae-missing-release-tag) "useSupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

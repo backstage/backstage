@@ -29,7 +29,7 @@ import { SidebarConfigContext, SidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { SidebarPinStateContextProvider } from './SidebarPinStateContext';
+import { SidebarPinStateProvider } from './SidebarPinStateContext';
 
 export type SidebarPageClassKey = 'root';
 
@@ -114,7 +114,7 @@ export function SidebarPage(props: SidebarPageProps) {
   const classes = useStyles({ isPinned, sidebarConfig });
 
   return (
-    <SidebarPinStateContextProvider
+    <SidebarPinStateProvider
       value={{
         isPinned,
         toggleSidebarPinState,
@@ -124,7 +124,7 @@ export function SidebarPage(props: SidebarPageProps) {
       <PageContext.Provider value={pageContext}>
         <div className={classes.root}>{props.children}</div>
       </PageContext.Provider>
-    </SidebarPinStateContextProvider>
+    </SidebarPinStateProvider>
   );
 }
 

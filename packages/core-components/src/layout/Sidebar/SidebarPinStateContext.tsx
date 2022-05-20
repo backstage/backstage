@@ -22,9 +22,21 @@ import React, { createContext, ReactNode, useContext } from 'react';
 /**
  * Type of `SidebarPinStateContext`
  *
- * @public
+ * @public @deprecated
+ * Use `SidebarPinState` instead.
  */
 export type SidebarPinStateContextType = {
+  isPinned: boolean;
+  toggleSidebarPinState: () => any;
+  isMobile?: boolean;
+};
+
+/**
+ * The pin state of the sidebar.
+ *
+ * @public
+ */
+export type SidebarPinState = {
   isPinned: boolean;
   toggleSidebarPinState: () => any;
   isMobile?: boolean;
@@ -46,7 +58,7 @@ export const LegacySidebarPinStateContext =
   createContext<SidebarPinStateContextType>(defaultSidebarPinStateContext);
 
 const VersionedSidebarPinStateContext = createVersionedContext<{
-  1: SidebarPinStateContextType;
+  1: SidebarPinState;
 }>('sidebar-pin-state-context');
 
 /**
@@ -54,7 +66,7 @@ const VersionedSidebarPinStateContext = createVersionedContext<{
  *
  * @public
  */
-export const SidebarPinStateContextProvider = ({
+export const SidebarPinStateProvider = ({
   children,
   value,
 }: {
@@ -75,10 +87,10 @@ export const SidebarPinStateContextProvider = ({
  *
  * @public
  */
-export const useSidebarPinState = (): SidebarPinStateContextType => {
+export const useSidebarPinState = (): SidebarPinState => {
   const versionedSidebarContext = useContext(VersionedSidebarPinStateContext);
 
-  // Invoked from outside a SidebarPinStateContextProvider: default value.
+  // Invoked from outside a SidebarPinStateProvider: default value.
   if (versionedSidebarContext === undefined) {
     return defaultSidebarPinStateContext;
   }
