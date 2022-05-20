@@ -16,7 +16,6 @@ import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
-import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
@@ -903,13 +902,15 @@ export const sidebarConfig: {
   mobileSidebarHeight: number;
 };
 
-// Warning: (ae-missing-release-tag) "SidebarContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
-export const SidebarContext: Context<SidebarContextType>;
+export const SidebarContextProvider: ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: SidebarContextType;
+}) => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "SidebarContextType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type SidebarContextType = {
   isOpen: boolean;
@@ -1446,6 +1447,9 @@ export class UserIdentity implements IdentityApi {
   // (undocumented)
   signOut(): Promise<void>;
 }
+
+// @public
+export const useSidebar: () => SidebarContextType;
 
 // Warning: (ae-missing-release-tag) "useSupportConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
