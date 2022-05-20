@@ -25,6 +25,5 @@ export * from './copyToClipboard';
 export * from './removeMkdocsHeader';
 export * from './simplifyMkdocsFooter';
 export * from './onCssReady';
-export * from './injectCss';
 export * from './scrollIntoAnchor';
 export * from './transformer';
