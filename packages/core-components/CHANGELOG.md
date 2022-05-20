@@ -1,5 +1,28 @@
 # @backstage/core-components
 
+## 0.9.4
+
+### Patch Changes
+
+- ac19f82936: Added ARIA landmark <main> to Page component and added ARIA landmark <nav> to DesktopSidebar and Sidebar components
+- 55f68c386a: Enabled select component to be enabled by keyboard
+- c0055ece91: Announce external links to screen readers
+- e210c0cab8: Add ability to customize `Read More` destination with `readMoreUrl` prop for `MissingAnnotationEmptyState` component.
+- 52c02ac02b: Don't set the background color on an Avatar component that has a picture.
+- cfc0f2e5bd: Added optional anchorOrigin alignment prop to AlertDisplay
+- f4380eb602: Add an aria-label to the support button to improve accessibility for screen readers
+- ba97b80421: Updated dependency `@types/react-syntax-highlighter` to `^15.0.0`.
+- e462112be5: Updated dependency `rc-progress` to `3.3.2`.
+- 2bcb0a0e2b: Sidebar NAV now includes aria-label. Component AboutField now uses h2 variant instead of subtitle2 (font properties unchanged)
+- c7f32b53a4: Fixed multiple scrolls appearing on Page when added InfoCard with external bottom link
+- 3603014e0e: Add ARIA landmark( <main>), & label and a heading to OAuthRequestDialog. Removed nested interactive control (button).
+- 2025d7c123: Properly highlight `SidebarSubmenuItem` dropdown items on hover, use ellipsis styling on long labels in `SidebarSubmenu`, allow `icon` and `to` properties to be optional on `SidebarSubmenuItem`, and fix `SidebarPage` padding to be responsive to pinned state
+- 2295b4ab2b: Add controls to Storybook stories
+- 521293b22e: Added a chevron Indicator when the sidebar is collapsed and has a sub-menu
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/config@1.0.1
+
 ## 0.9.4-next.2
 
 ### Patch Changes

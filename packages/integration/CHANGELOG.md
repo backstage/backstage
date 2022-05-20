@@ -1,5 +1,51 @@
 # @backstage/integration
 
+## 1.2.0
+
+### Minor Changes
+
+- e295ce87de: added the possibility to handle raw Gitlab URLs with nested namespaces
+- 6673babab9: Gerrit UrlReader: Implemented `readTree`
+- 1b4e1e2306: Split `bitbucket` integration into `bitbucketCloud` and `bitbucketServer`
+  (backwards compatible).
+
+  In order to migrate to the new integration configs,
+  move your configs from `integrations.bitbucket`
+  to `integrations.bitbucketCloud` or `integrations.bitbucketServer`.
+
+  Migration example:
+
+  **Before:**
+
+  ```yaml
+  integrations:
+    bitbucket:
+      - host: bitbucket.org
+        username: bitbucket_user
+        appPassword: app-password
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+  **After:**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: bitbucket_user
+        appPassword: app-password
+    bitbucketServer:
+      - host: bitbucket-server.company.com
+        token: my-token
+  ```
+
+- 566407bf8a: Gerrit Integration: Added the `getGerritProjectsApiUrl` function
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.0.1
+
 ## 1.2.0-next.1
 
 ### Patch Changes

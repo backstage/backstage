@@ -20,5 +20,4 @@ export const FIXTURES = {
   FIXTURE_STANDARD_PAGE,
 };
 
-export * from './stylesheets';
 export * from './shadowDom';

@@ -1,5 +1,14 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.1
+
+### Patch Changes
+
+- 1429dbbea9: fixed google API types dependencies
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+
 ## 0.3.1-next.1
 
 ### Patch Changes

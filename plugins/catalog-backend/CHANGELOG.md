@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 1.1.2
+
+### Patch Changes
+
+- 16a40ac4c0: Fix wrong return type of the `isGroupEntity` function.
+- 55e09b29dd: Fixing broken types for `knex` when checking returned rows
+- 1ccbe081cc: Minor internal tweak to support TypeScript 4.6
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 2909746147: Updated parseEntityTransformParams to handle keys with '.' in them. This will allow for querying of entities based off annotations such as 'backstage.io/orgin-location' or other entity field keys that have '.' in them.
+- 8cc75993a6: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/integration@1.2.0
+  - @backstage/plugin-scaffolder-common@1.1.0
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+  - @backstage/plugin-catalog-common@1.0.2
+  - @backstage/plugin-permission-common@0.6.1
+  - @backstage/plugin-permission-node@0.6.1
+
 ## 1.1.2-next.2
 
 ### Patch Changes

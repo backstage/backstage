@@ -67,7 +67,7 @@ import { AwsS3EntityProvider } from '@backstage/plugin-catalog-backend-module-aw
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
 builder.addEntityProvider(
-  ...AwsS3EntityProvider.fromConfig(env.config, {
+  AwsS3EntityProvider.fromConfig(env.config, {
     logger: env.logger,
     schedule: env.scheduler.createScheduledTaskRunner({
       frequency: { minutes: 30 },

@@ -1,5 +1,23 @@
 # @backstage/plugin-api-docs
 
+## 0.8.5
+
+### Patch Changes
+
+- 2c279df4eb: Updated dependency `graphiql` to `^1.8.8`.
+- 4274844a8c: Use InfoCardVariants on custom cards variant attribute
+- 09fa05e5d7: Bumped @asyncapi/react-component > openapi-sampler > json-pointer to resolve security vulnerability CVE-2021-23820
+- 165790975d: Updated dependency `@asyncapi/react-component` to `1.0.0-next.37`.
+- 7f6f97d151: Updated dependency `@asyncapi/react-component` to `1.0.0-next.38`.
+- 91d0c9d186: Add the dependency `graphql-ws` to fix the latest release of `@graphiql/toolkit` that has a missing dependency
+- 433a609a15: Updated the rendering of AsyncApi definitions to be able to resolve absolute HTTP \$ref references.
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog@1.2.0
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/catalog-model@1.0.2
+
 ## 0.8.5-next.2
 
 ### Patch Changes
