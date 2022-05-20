@@ -140,6 +140,12 @@ import { EntityGoCdContent, isGoCdAvailable } from '@backstage/plugin-gocd';
 
 import React, { ReactNode, useMemo, useState } from 'react';
 
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+import {
+  TextSize,
+  ReportIssue,
+} from '@backstage/plugin-techdocs-module-addons-contrib';
+
 const customEntityFilterKind = ['Component', 'API', 'System'];
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
@@ -167,6 +173,15 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
     </>
   );
 };
+
+const techdocsContent = (
+  <EntityTechdocsContent>
+    <TechDocsAddons>
+      <TextSize />
+      <ReportIssue />
+    </TechDocsAddons>
+  </EntityTechdocsContent>
+);
 
 /**
  * NOTE: This page is designed to work on small screens such as mobile devices.
@@ -398,7 +413,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route
@@ -465,8 +480,9 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
+
     <EntityLayout.Route
       if={isNewRelicDashboardAvailable}
       path="/newrelic-dashboard"
@@ -512,7 +528,7 @@ const defaultEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
-      <EntityTechdocsContent />
+      {techdocsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">
