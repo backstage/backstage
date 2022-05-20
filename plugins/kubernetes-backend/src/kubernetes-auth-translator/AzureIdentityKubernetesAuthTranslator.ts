@@ -74,6 +74,7 @@ export class AzureIdentityKubernetesAuthTranslator
       this.accessToken = newAccessToken;
     } catch (err) {
       this.logger.error('Unable to fetch Azure token', err);
+      // don't throw the error, so the existing token will be re-used until we're able to fetch a new token
     }
 
     this.newToken = undefined;
