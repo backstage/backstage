@@ -59,11 +59,12 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
     return {
       id,
       title,
-      fetcher: async (params: any) => {
+      fetcher: async (params: any, options: any = {}) => {
         const body = JSON.stringify(params);
         const headers = {
           'Content-Type': 'application/json',
           ...config.headers,
+          ...options.headers,
         };
         const res = await fetch(url, {
           method,
@@ -96,7 +97,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
     return {
       id,
       title,
-      fetcher: async (params: any) => {
+      fetcher: async (params: any, options: any = {}) => {
         let retried = false;
 
         const doRequest = async (): Promise<any> => {
@@ -105,6 +106,7 @@ export class GraphQLEndpoints implements GraphQLBrowseApi {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${await githubAuthApi.getAccessToken()}`,
+              ...options.headers,
             },
             body: JSON.stringify(params),
           });
