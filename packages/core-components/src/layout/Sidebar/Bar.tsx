@@ -31,8 +31,9 @@ import {
   SubmenuOptions,
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarPinStateContext, useContent } from './Page';
+import { useContent } from './Page';
 import { SidebarContextProvider } from './SidebarContext';
+import { useSidebarPinState } from './SidebarPinStateContext';
 import { MobileSidebar } from './MobileSidebar';
 
 /** @public */
@@ -133,9 +134,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   );
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
-  const { isPinned, toggleSidebarPinState } = useContext(
-    SidebarPinStateContext,
-  );
+  const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
@@ -226,7 +225,7 @@ export const Sidebar = (props: SidebarProps) => {
     props.submenuOptions ?? {},
   );
   const { children, disableExpandOnHover, openDelayMs, closeDelayMs } = props;
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
 
   return isMobile ? (
     <MobileSidebar>{children}</MobileSidebar>

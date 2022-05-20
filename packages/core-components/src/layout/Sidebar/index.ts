@@ -27,16 +27,8 @@ export type {
   SidebarSubmenuItemDropdownItem,
 } from './SidebarSubmenuItem';
 export type { SidebarClassKey, SidebarProps } from './Bar';
-export {
-  SidebarPage,
-  SidebarPinStateContext as SidebarPinStateContext,
-  useContent,
-} from './Page';
-export type {
-  SidebarPinStateContextType as SidebarPinStateContextType,
-  SidebarPageClassKey,
-  SidebarPageProps,
-} from './Page';
+export { SidebarPage, useContent } from './Page';
+export type { SidebarPageClassKey, SidebarPageProps } from './Page';
 export {
   SidebarDivider,
   SidebarItem,
@@ -58,3 +50,8 @@ export { SIDEBAR_INTRO_LOCAL_STORAGE, sidebarConfig } from './config';
 export type { SidebarOptions, SubmenuOptions } from './config';
 export { SidebarContextProvider, useSidebar } from './SidebarContext';
 export type { SidebarContextType } from './SidebarContext';
+export {
+  SidebarPinStateContextProvider,
+  useSidebarPinState,
+} from './SidebarPinStateContext';
+export type { SidebarPinStateContextType } from './SidebarPinStateContext';
