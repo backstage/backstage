@@ -63,7 +63,9 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
       <Typography variant="body2" paragraph>
         Enter the URL to your source code repository to add it to {appTitle}.
       </Typography>
-      <Typography variant="h4">Link to an existing entity file</Typography>
+      <Typography component="h4" variant="h6">
+        Link to an existing entity file
+      </Typography>
       <Typography variant="subtitle2" color="textSecondary" paragraph>
         Example: <code>{exampleLocationUrl}</code>
       </Typography>
@@ -73,7 +75,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
       </Typography>
       {hasGithubIntegration && (
         <>
-          <Typography variant="h4">
+          <Typography component="h4" variant="h6">
             Link to a repository{' '}
             <Chip label="GitHub only" variant="outlined" size="small" />
           </Typography>
