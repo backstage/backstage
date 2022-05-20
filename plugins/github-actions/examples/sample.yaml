@@ -6,6 +6,7 @@ metadata:
   annotations:
     github.com/project-slug: 'backstage/backstage'
     backstage.io/techdocs-ref: url:https://github.com/backstage/backstage
+    dynatrace.com/dynatrace-entity-id: test
 spec:
   type: website
   lifecycle: production
