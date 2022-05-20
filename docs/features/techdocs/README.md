@@ -83,8 +83,8 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 
 ## Tech stack
 
-| Stack                                           | Location                                                        |
-| ----------------------------------------------- | --------------------------------------------------------------- |
+| Stack                                           | Location                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------- |
 | Frontend Plugin                                 | [@backstage/plugin-techdocs][techdocs/frontend]               |
 | Frontend Plugin Library                         | [@backstage/plugin-techdocs-react][techdocs/frontend-library] |
 | Backend Plugin                                  | [@backstage/plugin-techdocs-backend][techdocs/backend]        |
