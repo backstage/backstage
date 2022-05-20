@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.13.5
+
+### Patch Changes
+
+- 667d2ed6f8: Fix a bug in the URL Reading towards AWS S3 where it would hang indefinitely.
+
 ## 0.13.4
 
 ### Patch Changes
