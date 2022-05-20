@@ -97,6 +97,24 @@ describe('GerritIntegration', () => {
     });
   });
 
+  describe('resolves with an absolute url', () => {
+    it('works for valid urls', () => {
+      const integration = new GerritIntegration({
+        host: 'gerrit-review.example.com',
+        gitilesBaseUrl: 'https://gerrit-review.example.com/gitiles',
+      } as any);
+
+      expect(
+        integration.resolveUrl({
+          url: '/catalog-info.yaml',
+          base: 'https://gerrit-review.example.com/gitiles/repo/+/refs/heads/master/',
+        }),
+      ).toBe(
+        'https://gerrit-review.example.com/gitiles/repo/+/refs/heads/master/catalog-info.yaml',
+      );
+    });
+  });
+
   it('resolve edit URL', () => {
     const integration = new GerritIntegration({
       host: 'gerrit-review.example.com',

@@ -248,6 +248,19 @@ export function createPublishFileAction(): TemplateAction<{
 }>;
 
 // @public
+export function createPublishGerritAction(options: {
+  integrations: ScmIntegrationRegistry;
+  config: Config;
+}): TemplateAction<{
+  repoUrl: string;
+  description: string;
+  defaultBranch?: string | undefined;
+  gitCommitMessage?: string | undefined;
+  gitAuthorName?: string | undefined;
+  gitAuthorEmail?: string | undefined;
+}>;
+
+// @public
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;

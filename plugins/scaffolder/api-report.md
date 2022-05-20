@@ -194,6 +194,7 @@ export interface RepoUrlPickerUiOptions {
   requestUserCredentials?: {
     secretsKey: string;
     additionalScopes?: {
+      gerrit?: string[];
       github?: string[];
       gitlab?: string[];
       bitbucket?: string[];
