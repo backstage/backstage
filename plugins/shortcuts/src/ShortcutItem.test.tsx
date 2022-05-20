@@ -20,7 +20,7 @@ import { ShortcutItem } from './ShortcutItem';
 import { Shortcut } from './types';
 import { LocalStoredShortcuts } from './api';
 import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
-import { SidebarContext } from '@backstage/core-components';
+import { SidebarContextProvider } from '@backstage/core-components';
 
 describe('ShortcutItem', () => {
   const shortcut: Shortcut = {
@@ -32,9 +32,9 @@ describe('ShortcutItem', () => {
 
   it('displays the shortcut', async () => {
     await renderInTestApp(
-      <SidebarContext.Provider value={{ isOpen: true, setOpen: _open => {} }}>
+      <SidebarContextProvider value={{ isOpen: true, setOpen: _open => {} }}>
         <ShortcutItem api={api} shortcut={shortcut} />
-      </SidebarContext.Provider>,
+      </SidebarContextProvider>,
     );
     expect(screen.getByText('ST')).toBeInTheDocument();
     expect(screen.getByText('some title')).toBeInTheDocument();

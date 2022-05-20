@@ -24,12 +24,12 @@ import { screen, waitFor } from '@testing-library/react';
 import { Shortcuts } from './Shortcuts';
 import { LocalStoredShortcuts, shortcutsApiRef } from './api';
 
-import { SidebarContext } from '@backstage/core-components';
+import { SidebarContextProvider } from '@backstage/core-components';
 
 describe('Shortcuts', () => {
   it('displays an add button', async () => {
     await renderInTestApp(
-      <SidebarContext.Provider value={{ isOpen: true, setOpen: _open => {} }}>
+      <SidebarContextProvider value={{ isOpen: true, setOpen: _open => {} }}>
         <TestApiProvider
           apis={[
             [
@@ -40,7 +40,7 @@ describe('Shortcuts', () => {
         >
           <Shortcuts />
         </TestApiProvider>
-      </SidebarContext.Provider>,
+      </SidebarContextProvider>,
     );
     await waitFor(() => !screen.queryByTestId('progress'));
     expect(screen.getByText('Add Shortcuts')).toBeInTheDocument();

@@ -54,13 +54,7 @@ export type {
 } from './Items';
 export { IntroCard, SidebarIntro } from './Intro';
 export type { SidebarIntroClassKey } from './Intro';
-export {
-  SIDEBAR_INTRO_LOCAL_STORAGE,
-  SidebarContext,
-  sidebarConfig,
-} from './config';
-export type {
-  SidebarContextType,
-  SidebarOptions,
-  SubmenuOptions,
-} from './config';
+export { SIDEBAR_INTRO_LOCAL_STORAGE, sidebarConfig } from './config';
+export type { SidebarOptions, SubmenuOptions } from './config';
+export { SidebarContextProvider, useSidebar } from './SidebarContext';
+export type { SidebarContextType } from './SidebarContext';
