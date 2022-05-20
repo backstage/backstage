@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { useMetadata, useMetadataHolder } from './useMetadata';
-export { createMetadataRef } from './MetadataRef';
-export * from './types';
+export { usePluginOptions, PluginOptionsProvider } from './usePluginOptions';

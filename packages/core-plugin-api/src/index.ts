@@ -22,7 +22,7 @@
 
 export * from './analytics';
 export * from './apis';
-export * from './metadata';
+export * from './plugin-options';
 export * from './app';
 export * from './extensions';
 export * from './icons';

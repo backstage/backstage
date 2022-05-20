@@ -49,7 +49,7 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
  *
  * @public
  */
-export type AnyMetadata = { [name: string]: any };
+export type AnyPluginOptions = { [name: string]: any };
 
 /**
  * Plugin type.
@@ -59,7 +59,7 @@ export type AnyMetadata = { [name: string]: any };
 export type BackstagePlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginMetadata extends AnyMetadata = { [name: string]: any },
+  PluginOptions extends AnyPluginOptions = { [name: string]: any },
 > = {
   getId(): string;
   getApis(): Iterable<AnyApiFactory>;
@@ -67,9 +67,9 @@ export type BackstagePlugin<
    * Returns all registered feature flags for this plugin.
    */
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
-  getMetadata(): Iterable<PluginMetadata>;
   provide<T>(extension: Extension<T>): T;
-  reconfigure(metadata: PluginMetadata): void;
+  getPluginOptions(): PluginOptions;
+  reconfigure(pluginOptions: PluginOptions): void;
   routes: Routes;
   externalRoutes: ExternalRoutes;
 };
@@ -92,14 +92,22 @@ export type PluginFeatureFlagConfig = {
 export type PluginConfig<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-  PluginMetadata extends AnyMetadata,
+  PluginOptions extends AnyPluginOptions,
 > = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   routes?: Routes;
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
-  metadata?: Iterable<PluginMetadata>;
+  options?: PluginOptions;
+  /**
+   * TODO: Not clear yet does it make sense to do it as a function.
+   * As for me it makes more sense to provide it as an object with default values.
+   * And keep only reconfigure as a function to update default values.
+   * Otherwise it looks like we have 2 places where it is possible to override default values.
+   * @param inputOptions
+   */
+  pluginOptions(inputOptions: AnyPluginOptions): PluginOptions;
 };
 
 /**

@@ -17,7 +17,7 @@
 export { createPlugin } from './Plugin';
 export type {
   AnyExternalRoutes,
-  AnyMetadata,
+  AnyPluginOptions,
   AnyRoutes,
   BackstagePlugin,
   Extension,

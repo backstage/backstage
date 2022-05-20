@@ -23,6 +23,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { createComponentRouteRef, viewTechDocRouteRef } from './routes';
 import {
+  AnyPluginOptions,
   createApiFactory,
   createComponentExtension,
   createPlugin,
@@ -72,6 +73,10 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
+  pluginOptions: (inputOptions: AnyPluginOptions) => ({
+    // TODO: remove it, only for testing here
+    createButtonTitle: inputOptions.createButtonTitle || 'Create',
+  }),
 });
 
 /** @public */

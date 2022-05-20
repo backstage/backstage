@@ -20,7 +20,7 @@ import {
   Extension,
   AnyRoutes,
   AnyExternalRoutes,
-  AnyMetadata,
+  AnyPluginOptions,
   PluginFeatureFlagConfig,
 } from './types';
 import { AnyApiFactory } from '../apis';
@@ -31,18 +31,16 @@ import { AnyApiFactory } from '../apis';
 export class PluginImpl<
   Routes extends AnyRoutes,
   ExternalRoutes extends AnyExternalRoutes,
-  PluginMetadata extends AnyMetadata,
-> implements BackstagePlugin<Routes, ExternalRoutes, PluginMetadata>
+  PluginOptions extends AnyPluginOptions,
+> implements BackstagePlugin<Routes, ExternalRoutes, PluginOptions>
 {
   constructor(
     private readonly config: PluginConfig<
       Routes,
       ExternalRoutes,
-      PluginMetadata
+      PluginOptions
     >,
   ) {}
-
-  private reconfiguredMetadata: Array<PluginMetadata> = [];
 
   getId(): string {
     return this.config.id;
@@ -54,13 +52,6 @@ export class PluginImpl<
 
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig> {
     return this.config.featureFlags?.slice() ?? [];
-  }
-
-  getMetadata(): Iterable<PluginMetadata> {
-    return [
-      ...Array.from(this.config.metadata ?? []),
-      ...this.reconfiguredMetadata,
-    ];
   }
 
   get routes(): Routes {
@@ -75,8 +66,12 @@ export class PluginImpl<
     return extension.expose(this);
   }
 
-  reconfigure(metadata: PluginMetadata): void {
-    this.reconfiguredMetadata.push(metadata);
+  reconfigure(pluginOptions: PluginOptions): void {
+    this.config.options = pluginOptions;
+  }
+
+  getPluginOptions(): PluginOptions {
+    return this.config.options ?? ({} as PluginOptions);
   }
 
   toString() {
@@ -93,9 +88,9 @@ export class PluginImpl<
 export function createPlugin<
   Routes extends AnyRoutes = {},
   ExternalRoutes extends AnyExternalRoutes = {},
-  PluginMetadata extends AnyMetadata = {},
+  PluginOptions extends AnyPluginOptions = {},
 >(
-  config: PluginConfig<Routes, ExternalRoutes, PluginMetadata>,
-): BackstagePlugin<Routes, ExternalRoutes, PluginMetadata> {
+  config: PluginConfig<Routes, ExternalRoutes, PluginOptions>,
+): BackstagePlugin<Routes, ExternalRoutes, PluginOptions> {
   return new PluginImpl(config);
 }

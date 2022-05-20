@@ -138,6 +138,11 @@ const app = createApp({
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
 
+catalogPlugin.reconfigure({
+  // TODO: remove it, only for testing here
+  createButtonTitle: 'Maybe Create Component',
+});
+
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="catalog" />

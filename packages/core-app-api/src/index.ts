@@ -21,6 +21,5 @@
  */
 
 export * from './apis';
-export * from './metadata';
 export * from './app';
 export * from './routing';
