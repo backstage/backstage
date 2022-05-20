@@ -1,5 +1,19 @@
 # @backstage/plugin-bazaar
 
+## 0.1.20
+
+### Patch Changes
+
+- 84c9e35a2f: Exported the SortView component from the Bazaar plugin for use directly
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/cli@0.17.1
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog@1.2.0
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+
 ## 0.1.20-next.2
 
 ### Patch Changes

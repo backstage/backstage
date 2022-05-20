@@ -1,5 +1,26 @@
 # @backstage/cli
 
+## 0.17.1
+
+### Patch Changes
+
+- 52fb9920ac: Fixed coverage configuration when using `BACKSTAGE_NEXT_TESTS`.
+- 6cd1f50ae1: Extended lint rule to prevents imports of stories or tests from production code.
+- 97cce67ac7: Add instructions to `create-github-app` command.
+- 08e12a3a14: Add package global-agent to support behind a proxy for backstage-cli commands like versions:bump.
+- 4d8736eded: Changed Rollup configuration for TypeScript definition plugin to ignore `css`,
+  `scss`, `sass`, `svg`, `eot`, `woff`, `woff2` and `ttf` files.
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 2737777e02: Added the ability to help a user get started with a new organization
+- 344ea56acc: Bump `commander` to version 9.1.0
+- 8ab2a8226b: Updated the `create-github-app` command to throw an error if the organization argument is a user or a non existing organization.
+- 632be18bbc: Updated `create-github-app` command to prompt for read or write permissions to simplify setup.
+- Updated dependencies
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+  - @backstage/release-manifests@0.0.3
+  - @backstage/config-loader@1.1.1
+
 ## 0.17.1-next.2
 
 ### Patch Changes

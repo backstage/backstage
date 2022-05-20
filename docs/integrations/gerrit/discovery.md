@@ -30,7 +30,7 @@ import { Duration } from 'luxon';
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
 builder.addEntityProvider(
-  ...GerritEntityProvider.fromConfig(env.config, {
+  GerritEntityProvider.fromConfig(env.config, {
     logger: env.logger,
     schedule: env.scheduler.createScheduledTaskRunner({
       frequency: { minutes: 30 },

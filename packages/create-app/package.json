@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "A CLI that helps you create your own Backstage app",
-  "version": "0.4.27-next.2",
+  "version": "0.4.27",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -33,7 +33,7 @@
     "start": "nodemon --"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.9-next.0",
+    "@backstage/cli-common": "^0.1.9",
     "chalk": "^4.0.0",
     "commander": "^9.1.0",
     "fs-extra": "10.1.0",

@@ -4,11 +4,6 @@ title: TechDocs Addons
 description: How to find, use, or create TechDocs Addons.
 ---
 
-> Note: This page contains documentation for features that have not yet been
-> released on a [main-line version](https://backstage.io/docs/overview/versioning-policy#main-release-line)
-> of Backstage and TechDocs. We plan to make Addons generally available in
-> Backstage v1.2.
-
 ## Concepts
 
 TechDocs is a centralized platform for publishing, viewing, and discovering

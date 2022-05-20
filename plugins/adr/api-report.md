@@ -9,6 +9,7 @@ import { AdrDocument } from '@backstage/plugin-adr-common';
 import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { isAdrAvailable } from '@backstage/plugin-adr-common';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
@@ -45,9 +46,11 @@ export const AdrReader: {
 // @public
 export const AdrSearchResultListItem: ({
   lineClamp,
+  highlight,
   result,
 }: {
   lineClamp?: number | undefined;
+  highlight?: ResultHighlight | undefined;
   result: AdrDocument;
 }) => JSX.Element;
 

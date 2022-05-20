@@ -268,8 +268,11 @@ export const RolloutAccordions = ({
             <RolloutAccordion
               defaultExpanded={defaultExpanded}
               matchingHpa={getMatchingHpa(
-                rollout.metadata?.name,
-                'rollout',
+                {
+                  name: rollout.metadata?.name,
+                  namespace: rollout.metadata?.namespace,
+                  kind: 'rollout',
+                },
                 groupedResponses.horizontalPodAutoscalers,
               )}
               ownedPods={getOwnedPodsThroughReplicaSets(

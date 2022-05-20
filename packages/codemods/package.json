@@ -1,7 +1,7 @@
 {
   "name": "@backstage/codemods",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.38-next.1",
+  "version": "0.1.38",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -34,7 +34,7 @@
     "backstage-codemods": "bin/backstage-codemods"
   },
   "dependencies": {
-    "@backstage/cli-common": "^0.1.9-next.0",
+    "@backstage/cli-common": "^0.1.9",
     "chalk": "^4.0.0",
     "jscodeshift": "^0.13.0",
     "jscodeshift-add-imports": "^1.0.10"

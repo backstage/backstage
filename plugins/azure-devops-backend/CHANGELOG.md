@@ -1,5 +1,15 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.3.11
+
+### Patch Changes
+
+- ac14fcaf38: Added entity view for Azure Git Tags, based on existing Pull Requests view
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/config@1.0.1
+  - @backstage/plugin-azure-devops-common@0.2.3
+
 ## 0.3.11-next.1
 
 ### Patch Changes

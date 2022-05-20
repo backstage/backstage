@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.5.5
+
+### Patch Changes
+
+- dfee1002d7: Fixed overflow bug of name and email on EntitiyMembersListCard component which can occur on specific 'screen width' + ’character length' combinations
+- cb0db62344: Fix linking ownership card to catalog owner filter when namespaces are used
+- 8da4a207dd: Fix ref to filtered catalog table view when using aggregated relations.
+- 2025d7c123: Include namespace in `MyGroupSidebarItem` if not default and remove root item routing if there are multiple groups
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/catalog-model@1.0.2
+
 ## 0.5.5-next.3
 
 ### Patch Changes

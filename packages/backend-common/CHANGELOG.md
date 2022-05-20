@@ -1,5 +1,38 @@
 # @backstage/backend-common
 
+## 0.13.3
+
+### Patch Changes
+
+- e0a6360b80: Added a `stream()` method to complement the `buffer()` method on `ReadUrlResponse`. A `ReadUrlResponseFactory` utility class is now also available, providing a simple, consistent way to provide a valid `ReadUrlResponse`.
+
+  This method, though optional for now, will be required on the responses of `UrlReader.readUrl()` implementations in a future release.
+
+- 4b811aafce: Implemented the `UrlReader.search()` method for Google Cloud Storage. Due to limitations in the underlying storage API, only prefix-based searches are supported right now (for example, `https://storage.cloud.google.com/your-bucket/some-path/*`).
+- 6673babab9: Gerrit integration: Added optional `cloneUrl` string to config.
+- 75bf9e1da9: Split BitbucketUrlReader into BitbucketCloudUrlReader and BitbucketServerUrlReader. Backwards compatible.
+- 28b0e4ddef: Update types to match the new version of `@keyv/redis`
+- 5fcbd86960: **DEPRECATION**: Server-to-server authentication tokens issued from a
+  `TokenManager` (specifically, `ServerTokenManager`) now has an expiry time set,
+  for one hour in the future from when issued. This improves security. The ability
+  to pass in and validate tokens that either have a missing `exp` claim, or an
+  `exp` claim that expired in the past, is now deprecated. Trying to do so will
+  lead to logged warnings, and in a future release will instead lead to errors.
+
+  It was always the case that users of this interface were expected to call its
+  `getToken()` method for every outgoing call and never hold on to any given token
+  for reuse. But this now has become even more important advice to heed, and you
+  should verify that you do not hold on to and reuse tokens such as these in your
+  own code.
+
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 9ec4e0613e: Update to `jose` 4.6.0
+- Updated dependencies
+  - @backstage/integration@1.2.0
+  - @backstage/cli-common@0.1.9
+  - @backstage/config@1.0.1
+  - @backstage/config-loader@1.1.1
+
 ## 0.13.3-next.2
 
 ### Patch Changes

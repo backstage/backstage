@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.0
+
+### Minor Changes
+
+- 3d001a3bcf: **BREAKING**: Added a new `allowedImageNames` option, which needs to list any image name for it to be allowed as `imageName` input.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/plugin-scaffolder-backend@1.2.0
+  - @backstage/integration@1.2.0
+  - @backstage/config@1.0.1
+
 ## 0.4.0-next.1
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-search-common
 
+## 0.3.4
+
+### Patch Changes
+
+- 3a74e203a8: Support generating highlighted matched terms in search result data
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.6.1
+
 ## 0.3.4-next.0
 
 ### Patch Changes
