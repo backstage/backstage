@@ -13,21 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode } from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import { screen, waitFor } from '@testing-library/react';
+import React, { ReactNode, useContext } from 'react';
+import { renderWithEffects } from '@backstage/test-utils';
+import { waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { SidebarContextProvider, useSidebar } from './SidebarContext';
+import {
+  LegacySidebarContext,
+  SidebarContextProvider,
+  useSidebar,
+} from './SidebarContext';
 
 describe('SidebarContext', () => {
   describe('SidebarContextProvider', () => {
     it('should render children', async () => {
-      await renderInTestApp(
+      const { findByText } = await renderWithEffects(
         <SidebarContextProvider value={{ isOpen: false, setOpen: () => {} }}>
           Child
         </SidebarContextProvider>,
       );
-      expect(await screen.findByText('Child')).toBeInTheDocument();
+      expect(await findByText('Child')).toBeInTheDocument();
+    });
+
+    it('should provide the legacy context as well, for now', async () => {
+      const LegacyContextSpy = () => {
+        const { isOpen } = useContext(LegacySidebarContext);
+        return <>{String(isOpen)}</>;
+      };
+
+      const { findByText } = await renderWithEffects(
+        <SidebarContextProvider
+          value={{
+            isOpen: true,
+            setOpen: () => {},
+          }}
+        >
+          <LegacyContextSpy />
+        </SidebarContextProvider>,
+      );
+
+      expect(await findByText('true')).toBeInTheDocument();
     });
   });
 
@@ -52,15 +76,16 @@ describe('SidebarContext', () => {
           {children}
         </SidebarContextProvider>
       );
-      const { result } = renderHook(() => useSidebar(), { wrapper });
+      const { result, rerender } = renderHook(() => useSidebar(), { wrapper });
 
       expect(result.current.isOpen).toBe(true);
 
       act(() => {
         result.current.setOpen(false);
+        rerender();
       });
 
-      waitFor(() => {
+      await waitFor(() => {
         expect(result.current.isOpen).toBe(false);
       });
     });
