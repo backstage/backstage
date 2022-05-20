@@ -15,11 +15,11 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { AnalyticsContext } from '../analytics/AnalyticsContext';
+import { AnalyticsContext } from '../analytics';
 import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
-import { Extension, BackstagePlugin } from '../plugin/types';
+import { Extension, BackstagePlugin } from '../plugin';
 import { PluginErrorBoundary } from './PluginErrorBoundary';
 import { PluginOptionsProvider } from '../plugin-options';
 

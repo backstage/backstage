@@ -22,6 +22,7 @@ import {
   AnyExternalRoutes,
   AnyPluginOptions,
   PluginFeatureFlagConfig,
+  ReconfigureFunction,
 } from './types';
 import { AnyApiFactory } from '../apis';
 
@@ -66,8 +67,10 @@ export class PluginImpl<
     return extension.expose(this);
   }
 
-  reconfigure(pluginOptions: PluginOptions): void {
-    this.config.options = pluginOptions;
+  reconfigure(fn: ReconfigureFunction): void {
+    if (this.config.options) {
+      this.config.options = fn(this.config.options) as PluginOptions;
+    }
   }
 
   getPluginOptions(): PluginOptions {

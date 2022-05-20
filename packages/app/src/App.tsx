@@ -97,6 +97,7 @@ import * as plugins from './plugins';
 import { techDocsPage } from './components/techdocs/TechDocsPage';
 import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { PermissionedRoute } from '@backstage/plugin-permission-react';
+import { AnyPluginOptions } from '@backstage/core-plugin-api';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common';
 
 const app = createApp({
@@ -138,10 +139,11 @@ const app = createApp({
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
 
-catalogPlugin.reconfigure({
-  // TODO: remove it, only for testing here
-  createButtonTitle: 'Maybe Create Component',
-});
+// TODO: remove it, only for testing here
+catalogPlugin.reconfigure((options: AnyPluginOptions) => ({
+  ...options,
+  createButtonTitle: 'Maybe Create',
+}));
 
 const routes = (
   <FlatRoutes>

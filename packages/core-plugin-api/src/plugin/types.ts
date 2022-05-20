@@ -15,7 +15,7 @@
  */
 
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
-import { AnyApiFactory } from '../apis/system';
+import { AnyApiFactory } from '../apis';
 
 /**
  * Plugin extension type.
@@ -51,6 +51,10 @@ export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
  */
 export type AnyPluginOptions = { [name: string]: any };
 
+export type ReconfigureFunction = (
+  options: AnyPluginOptions,
+) => AnyPluginOptions;
+
 /**
  * Plugin type.
  *
@@ -69,7 +73,7 @@ export type BackstagePlugin<
   getFeatureFlags(): Iterable<PluginFeatureFlagConfig>;
   provide<T>(extension: Extension<T>): T;
   getPluginOptions(): PluginOptions;
-  reconfigure(pluginOptions: PluginOptions): void;
+  reconfigure(fn: ReconfigureFunction): void;
   routes: Routes;
   externalRoutes: ExternalRoutes;
 };
@@ -100,14 +104,6 @@ export type PluginConfig<
   externalRoutes?: ExternalRoutes;
   featureFlags?: PluginFeatureFlagConfig[];
   options?: PluginOptions;
-  /**
-   * TODO: Not clear yet does it make sense to do it as a function.
-   * As for me it makes more sense to provide it as an object with default values.
-   * And keep only reconfigure as a function to update default values.
-   * Otherwise it looks like we have 2 places where it is possible to override default values.
-   * @param inputOptions
-   */
-  pluginOptions(inputOptions: AnyPluginOptions): PluginOptions;
 };
 
 /**
