@@ -41,16 +41,15 @@ stable.
 
 ### Next
 
-*Not specified*
+_Not specified_
 
 ### Someday/Maybe
 
-*Not specified*
+_Not specified_
 
 ### Done
 
 See [Done](#done) below for a list of completed roadmap items.
-
 
 ## Supported
 
@@ -72,9 +71,9 @@ search engines.
 
 ### Plugins integrated with Backstage Search
 
-| Plugin                                                                                                                            | Support Status |
+| Plugin                                                                                                                                                 | Support Status |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| Software Catalog                                                                                                                                                | ✅             |
+| Software Catalog                                                                                                                                       | ✅             |
 | [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents)                                                                                         | ✅             |
 | [Stack Overflow](https://github.com/backstage/backstage/blob/master/plugins/stack-overflow-backend/README.md#index-stack-overflow-questions-to-search) | ✅             |
 
@@ -118,7 +117,7 @@ there by means of a front-end only, non-extensible MVP.
   lifecycle) when I’ve performed a search.
 - As a software engineer I should be able to hide the filters if I don’t need to
   use them.
-  
+
 **Backstage Search Alpha**
 
 Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog.
@@ -138,7 +137,7 @@ met, but built on top of a flexible, extensible platform.
   having to set up and configure a search engine.
 
 **Backstage Search Beta**
-  
+
 At least one production-ready search engine that supports the same use-cases as in the alpha.
 
 We will consider Backstage Search to be in a beta phase when the above use-cases
@@ -152,4 +151,3 @@ are met, and can be deployed using a production-ready search engine.
 - As an integrator, I should be able to tune the queries sent to my chosen
   search engine according to my organization's needs, but a sensible default
   query should be in place so that I am not required to do so.
-
