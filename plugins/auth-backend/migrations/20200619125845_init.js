@@ -20,6 +20,13 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  /**
+   * key field length. must be enough for the chosen JWT signing algorithm.
+   * the default value is set to be enough for all supported algorithms of the
+   * `jose` library.
+   */
+  const SIGNING_KEY_MAX_LENGTH = 512;
+
   return knex.schema.createTable('signing_keys', table => {
     table.comment(
       'Signing keys that are currently in use or have recently been used to issue tokens',
@@ -34,7 +41,10 @@ exports.up = async function up(knex) {
       .notNullable()
       .defaultTo(knex.fn.now())
       .comment('The creation time of the key');
-    table.string('key').notNullable().comment('The serialized signing key');
+    table
+      .string('key', SIGNING_KEY_MAX_LENGTH)
+      .notNullable()
+      .comment('The serialized signing key');
   });
 };
 
