@@ -134,7 +134,7 @@ export type IndexableDocument = SearchDocument & {
 
 /**
  * Information about a specific document type. Intended to be used in the
- * {@link @backstage/search-backend-node#IndexBuilder} to collect information
+ * {@link @backstage/plugin-search-backend-node#IndexBuilder} to collect information
  * about the types stored in the index.
  * @beta
  */
