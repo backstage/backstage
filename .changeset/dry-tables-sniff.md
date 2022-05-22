@@ -15,7 +15,7 @@ the following changes:
 catalog:
   locations:
     - type: azure-discovery
-      target: https://dev.azure.com/myorg/myproject
+      target: https://dev.azure.com/myorg/myproject/_git/service-*?path=/catalog-info.yaml
 ```
 
 ```ts
@@ -37,8 +37,11 @@ catalog:
   providers:
     azureDevOps:
       anyProviderId:
-        organization: myorg
-        project: myproject
+      host: selfhostedazure.yourcompany.com # This is only really needed for on-premise user, defaults to dev.azure.com
+      organization: myorg # For on-premise this would be your Collection
+      project: myproject
+      repository: service-*
+      path: /catalog-info.yaml
 ```
 
 ```ts
