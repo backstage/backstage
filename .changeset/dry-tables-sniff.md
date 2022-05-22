@@ -37,11 +37,11 @@ catalog:
   providers:
     azureDevOps:
       anyProviderId:
-      host: selfhostedazure.yourcompany.com # This is only really needed for on-premise user, defaults to dev.azure.com
-      organization: myorg # For on-premise this would be your Collection
-      project: myproject
-      repository: service-*
-      path: /catalog-info.yaml
+        host: selfhostedazure.yourcompany.com # This is only really needed for on-premise user, defaults to dev.azure.com
+        organization: myorg # For on-premise this would be your Collection
+        project: myproject
+        repository: service-*
+        path: /catalog-info.yaml
 ```
 
 ```ts
