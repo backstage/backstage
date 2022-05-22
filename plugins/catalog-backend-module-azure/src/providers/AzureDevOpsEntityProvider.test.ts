@@ -78,13 +78,15 @@ describe('AzureDevOpsEntityProvider', () => {
       schedule,
     })[0];
     expect(provider.getProviderName()).toEqual(
-      `azureDevOps-provider:${providerId}`,
+      `AzureDevOpsEntityProvider:${providerId}`,
     );
 
     await provider.connect(entityProviderConnection);
 
     const taskDef = schedule.getTasks()[0];
-    expect(taskDef.id).toEqual(`azureDevOps-provider:${providerId}:refresh`);
+    expect(taskDef.id).toEqual(
+      `AzureDevOpsEntityProvider:${providerId}:refresh`,
+    );
     await (taskDef.fn as () => Promise<void>)();
 
     const expectedEntities = codeSearchResults.map(item => {
@@ -108,7 +110,7 @@ describe('AzureDevOpsEntityProvider', () => {
             type: 'url',
           },
         },
-        locationKey: `azureDevOps-provider:${providerId}`,
+        locationKey: `AzureDevOpsEntityProvider:${providerId}`,
       };
     });
 

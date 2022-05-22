@@ -107,7 +107,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName(): string {
-    return `azureDevOps-provider:${this.config.id}`;
+    return `AzureDevOpsEntityProvider:${this.config.id}`;
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */

@@ -12,6 +12,22 @@ DevOps organization and register entities matching the configured path. This can
 be useful as an alternative to static locations or manually adding things to the
 catalog.
 
+This guide explains how to install and configure the Azure DevOps Entity Provider (recommended) or the Azure DevOps Processor.
+
+## Dependencies
+
+### Code Search Feature
+
+Azure discovery is driven by the Code Search feature in Azure DevOps, this may not be enabled by default. For Azure
+DevOps Services you can confirm this by looking at the installed extensions in your Organization Settings. For Azure
+DevOps Server you'll find this information in your Collection Settings.
+
+If the Code Search extension is not listed then you can install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ms.vss-code-search&targetId=f9352dac-ba6e-434e-9241-a848a510ce3f&utm_source=vstsproduct&utm_medium=SearchExtStatus).
+
+### Azure Integration
+
+Setup [Azure integration](locations.md) with `host` and `token`. Host must be `dev.azure.com` for Cloud users, othersite set this to your on-premise hostname.
+
 ## Installation
 
 At your configuration, you add one or more provider configs:
@@ -40,13 +56,14 @@ catalog:
 The parameters available are:
 
 - `host:` Leave empty for Cloud hosted, otherwise set to your self-hosted instance host.
-- `organization:` Your organization slug. Required.
+- `organization:` Your Organization slug (or Collection for on-premise users). Required.
 - `project:` Your project slug. Required.
 - `repository:` The repository name. Wildcards are supported as show on the examples above. If not set, all repositories will be searched.
 - `path:` Where to find catalog-info.yaml files. Defaults to /catalog-info.yaml.
 
-To use the entity provider, you'll need an Azure integration
-[set up](locations.md) with `host` and `token`.
+_Note:_ the path parameter follows the same rules as the search on Azure DevOps
+web interface. For more details visit the
+[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
 
 As this provider is not one of the default providers, you will first need to install
 the Azure catalog plugin:
@@ -65,7 +82,7 @@ Once you've done that, you'll also need to add the segment below to `packages/ba
 const builder = await CatalogBuilder.create(env);
 /** ... other processors and/or providers ... */
 +builder.addEntityProvider(
-+  ...AzureDevOpsEntityProvider.fromConfig(env.config, {
++  AzureDevOpsEntityProvider.fromConfig(env.config, {
 +    logger: env.logger,
 +    schedule: env.scheduler.createScheduledTaskRunner({
 +      frequency: Duration.fromObject({ minutes: 30 }),
@@ -77,7 +94,7 @@ const builder = await CatalogBuilder.create(env);
 
 ## Alternative Processor
 
-As alternative to the entity provider `AzureDevOpsEntityProvider` you can still use the `AzureDevopsDiscoveryProcessor`.
+As an alternative to the entity provider `AzureDevOpsEntityProvider`, you can still use the `AzureDevopsDiscoveryProcessor`.
 
 ```diff
 // In packages/backend/src/plugins/catalog.ts
@@ -117,13 +134,3 @@ When using a custom pattern, the target is composed of five parts:
 - The path within each repository to find the catalog YAML file. This will
   usually be `/catalog-info.yaml`, `/src/*/catalog-info.yaml` or a similar
   variation for catalog files stored in the root directory of each repository.
-
-_Note:_ the path parameter follows the same rules as the search on Azure DevOps
-web interface. For more details visit the
-[official search documentation](https://docs.microsoft.com/en-us/azure/devops/project/search/get-started-search?view=azure-devops).
-
-Azure discovery is driven by the Code Search feature in Azure DevOps, this may not be enabled by default. For Azure
-DevOps Services you can confirm this by looking at the installed extensions in your Organization Settings. For Azure
-DevOps Server you'll find this information in your Collection Settings.
-
-If the Code Search extension is not listed then you can install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ms.vss-code-search&targetId=f9352dac-ba6e-434e-9241-a848a510ce3f&utm_source=vstsproduct&utm_medium=SearchExtStatus).
