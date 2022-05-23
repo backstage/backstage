@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-export * from './html';
-export * from './styles';
-export * from './addBaseUrl';
-export * from './addGitFeedbackLink';
-export * from './addSidebarToggle';
-export * from './rewriteDocLinks';
-export * from './addLinkClickListener';
-export * from './copyToClipboard';
-export * from './removeMkdocsHeader';
-export * from './simplifyMkdocsFooter';
-export * from './onCssReady';
-export * from './scrollIntoAnchor';
-export * from './transformer';
+import { RuleOptions } from './types';
+
+export default ({ theme }: RuleOptions) => `
+/*==================  Reset  ==================*/
+
+body {
+  --md-text-color: var(--md-default-fg-color);
+  --md-text-link-color: var(--md-accent-fg-color);
+  --md-text-font-family: ${theme.typography.fontFamily};
+  font-family: var(--md-text-font-family);
+  background-color: unset;
+}
+`;
