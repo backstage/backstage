@@ -21,7 +21,7 @@ import { useTheme } from '@material-ui/core';
 import { SidebarPinStateContext } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 
-import { Transformer } from '..';
+import { Transformer } from '../transformer';
 import { rules } from './rules';
 
 /**
