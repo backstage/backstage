@@ -23,6 +23,10 @@ import {
 
 import { VaultClient, vaultApiRef } from './api';
 
+/**
+ * The vault plugin.
+ * @public
+ */
 export const vaultPlugin = createPlugin({
   id: 'vault',
   apis: [
@@ -37,6 +41,10 @@ export const vaultPlugin = createPlugin({
   ],
 });
 
+/**
+ * Card used to show the list of Vault secrets.
+ * @public
+ */
 export const EntityVaultCard = vaultPlugin.provide(
   createComponentExtension({
     name: 'EntityVaultCard',

@@ -18,30 +18,61 @@ import { Config } from '@backstage/config';
 import fetch from 'cross-fetch';
 import { getVaultConfig, VaultConfig } from '../config';
 
+/**
+ * Object received as a response from the Vault API when fetching secrets
+ * @public
+ */
 export type VaultSecretList = {
   data: {
     keys: string[];
   };
 };
 
-export type Secret = {
+/**
+ * Object containing the secret name and some links
+ * @public
+ */
+export type VaultSecret = {
   name: string;
   showUrl: string;
   editUrl: string;
 };
 
+/**
+ * Object received as response when the token is renewed using the Vault API
+ * @public
+ */
 export type RenewTokenResponse = {
   auth: {
     client_token: string;
   };
 };
 
+/**
+ * Interface for the Vault API
+ * @public
+ */
 export interface VaultApi {
+  /**
+   * Returns the URL to acces the Vault UI with the defined config.
+   */
   getFrontendSecretsUrl(): string;
-  listSecrets(secretPath: string): Promise<Secret[]>;
+  /**
+   * Returns a list of secrets used to show in a table.
+   * @param secretPath - The path where the secrets are stored in Vault
+   */
+  listSecrets(secretPath: string): Promise<VaultSecret[]>;
+  /**
+   * Optional, to renew the token used to list the secrets. Returns true
+   * if the action was successfull, false otherwise.
+   */
   renewToken?(): Promise<boolean>;
 }
 
+/**
+ * Implementation of the Vault API to list secrets and renew the token if necessary
+ * @public
+ */
 export class VaultClient implements VaultApi {
   private vaultConfig: VaultConfig;
 
@@ -81,7 +112,7 @@ export class VaultClient implements VaultApi {
     return `${this.vaultConfig.baseUrl}/ui/vault/secrets/${this.vaultConfig.secretEngine}`;
   }
 
-  async listSecrets(secretPath: string): Promise<Secret[]> {
+  async listSecrets(secretPath: string): Promise<VaultSecret[]> {
     const listUrl =
       this.vaultConfig.kvVersion === 2
         ? `v1/${this.vaultConfig.secretEngine}/metadata/${secretPath}`
@@ -91,7 +122,7 @@ export class VaultClient implements VaultApi {
       return [];
     }
 
-    const secrets: Secret[] = [];
+    const secrets: VaultSecret[] = [];
     await Promise.all(
       result.data.keys.map(async secret => {
         if (this.isFolder(secret)) {

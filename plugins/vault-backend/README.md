@@ -33,6 +33,7 @@ To get started, first you need a running instance of Vault. You can follow [this
      return await createRouter({
        logger: env.logger,
        config: env.config,
+       scheduler: env.scheduler,
      });
    }
    ```
@@ -106,25 +107,28 @@ You will set the `vault.io/secret-path` to `test/backstage`. If the folder `back
 
 ## Renew token
 
-In a secure Vault instance, it's usual that the tokens are refreshed after some time. In order to always have a valid token to fetch the secrets, it might be necessary to execute a renew action after some time. By default this is deactivated, but it can be easily activated and configured to be executed periodically. In order to do that, modify your `src/plugins/vault.ts` file to look like this one:
+In a secure Vault instance, it's usual that the tokens are refreshed after some time. In order to always have a valid token to fetch the secrets, it might be necessary to execute a renew action after some time. By default this is deactivated, but it can be easily activated and configured to be executed periodically (hourly by default, but customizable by the user). In order to do that, modify your `src/plugins/vault.ts` file to look like this one:
 
 ```typescript
 import { VaultBuilder } from '@backstage/plugin-vault-backend';
 import { Router } from 'express';
-import { Duration } from 'luxon';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const builder = VaultBuilder.createBuilder({
+  const builder = await VaultBuilder.createBuilder({
     logger: env.logger,
     config: env.config,
-  })
-    .setVaultTokenRefreshInterval(Duration.fromObject({ hours: 5 })) // Optional, by default it's executed every hour
-    .enableTokenRenew();
+    scheduler: env.scheduler,
+  }).enableTokenRenew(
+    env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 10 },
+      timeout: { minutes: 1 },
+    }),
+  );
 
-  const { router } = await builder.build();
+  const { router } = builder.build();
 
   return router;
 }

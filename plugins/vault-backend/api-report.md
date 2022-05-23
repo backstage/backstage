@@ -4,111 +4,85 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { Duration } from 'luxon';
 import express from 'express';
 import { Logger } from 'winston';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { TaskRunner } from '@backstage/backend-tasks';
 
-// Warning: (ae-missing-release-tag) "createRouter" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function createRouter(options: RouterOptions): Promise<express.Router>;
+// @public
+export function createRouter(options: RouterOptions): express.Router;
 
-// Warning: (ae-missing-release-tag) "RenewTokenResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type RenewTokenResponse = {
   auth: {
     client_token: string;
   };
 };
 
-// Warning: (ae-missing-release-tag) "RouterOptions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  scheduler: PluginTaskScheduler;
 }
 
-// Warning: (ae-missing-release-tag) "Secret" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type Secret = {
-  name: string;
-  showUrl: string;
-  editUrl: string;
-};
-
-// Warning: (ae-missing-release-tag) "VaultApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface VaultApi {
-  // (undocumented)
   getFrontendSecretsUrl(): string;
-  // (undocumented)
-  listSecrets(secretPath: string): Promise<Secret[]>;
-  // (undocumented)
+  listSecrets(secretPath: string): Promise<VaultSecret[]>;
   renewToken?(): Promise<boolean>;
 }
 
-// Warning: (ae-missing-release-tag) "VaultBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class VaultBuilder {
   constructor(env: VaultEnvironment);
-  // (undocumented)
   build(): VaultBuilderReturn;
-  // (undocumented)
   protected buildRouter(vaultClient: VaultClient): express.Router;
-  // (undocumented)
   static createBuilder(env: VaultEnvironment): VaultBuilder;
-  // (undocumented)
-  enableTokenRenew(): this;
+  enableTokenRenew(schedule?: TaskRunner): Promise<this>;
   // (undocumented)
   protected readonly env: VaultEnvironment;
-  // (undocumented)
   protected renewToken(vaultClient: VaultClient): Promise<void>;
-  // (undocumented)
   setVaultClient(vaultClient: VaultClient): this;
-  // (undocumented)
-  setVaultTokenRefreshInterval(refreshInterval: Duration): this;
 }
 
-// Warning: (ae-missing-release-tag) "VaultBuilderReturn" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export type VaultBuilderReturn = Promise<{
+// @public
+export type VaultBuilderReturn = {
   router: express.Router;
-}>;
+};
 
-// Warning: (ae-missing-release-tag) "VaultClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class VaultClient implements VaultApi {
   constructor({ config }: { config: Config });
   // (undocumented)
   getFrontendSecretsUrl(): string;
   // (undocumented)
-  listSecrets(secretPath: string): Promise<Secret[]>;
+  listSecrets(secretPath: string): Promise<VaultSecret[]>;
   // (undocumented)
   renewToken(): Promise<boolean>;
 }
 
-// Warning: (ae-missing-release-tag) "VaultEnvironment" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export interface VaultEnvironment {
   // (undocumented)
   config: Config;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  scheduler: PluginTaskScheduler;
 }
 
-// Warning: (ae-missing-release-tag) "VaultSecretList" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
+export type VaultSecret = {
+  name: string;
+  showUrl: string;
+  editUrl: string;
+};
+
+// @public
 export type VaultSecretList = {
   data: {
     keys: string[];

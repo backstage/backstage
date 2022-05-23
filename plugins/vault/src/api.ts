@@ -19,20 +19,14 @@ export const vaultApiRef = createApiRef<VaultApi>({
   id: 'plugin.vault.service',
 });
 
-export type VaultSecretList = {
-  data: {
-    keys: string[];
-  };
-};
-
-export type Secret = {
+export type VaultSecret = {
   name: string;
   showUrl: string;
   editUrl: string;
 };
 
 export interface VaultApi {
-  listSecrets(secretPath: string): Promise<Secret[]>;
+  listSecrets(secretPath: string): Promise<VaultSecret[]>;
 }
 
 export class VaultClient implements VaultApi {
@@ -61,8 +55,8 @@ export class VaultClient implements VaultApi {
     return undefined;
   }
 
-  async listSecrets(secretPath: string): Promise<Secret[]> {
-    const result = await this.callApi<Secret[]>('v1/secrets', {
+  async listSecrets(secretPath: string): Promise<VaultSecret[]> {
+    const result = await this.callApi<VaultSecret[]>('v1/secrets', {
       path: secretPath,
     });
     if (!result) {

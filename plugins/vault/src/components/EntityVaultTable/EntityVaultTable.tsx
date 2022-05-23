@@ -22,7 +22,7 @@ import Edit from '@material-ui/icons/Edit';
 import Visibility from '@material-ui/icons/Visibility';
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
-import { Secret, vaultApiRef } from '../../api';
+import { VaultSecret, vaultApiRef } from '../../api';
 import { VAULT_SECRET_PATH_ANNOTATION } from '../../constants';
 
 export const vaultSecretPath = (entity: Entity) => {
@@ -35,7 +35,9 @@ export const vaultSecretPath = (entity: Entity) => {
 export const EntityVaultTable = ({ entity }: { entity: Entity }) => {
   const vaultApi = useApi(vaultApiRef);
   const { secretPath } = vaultSecretPath(entity);
-  const { value, loading, error } = useAsync(async (): Promise<Secret[]> => {
+  const { value, loading, error } = useAsync(async (): Promise<
+    VaultSecret[]
+  > => {
     return vaultApi.listSecrets(secretPath);
   }, []);
 

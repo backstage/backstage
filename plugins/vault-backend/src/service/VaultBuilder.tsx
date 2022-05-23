@@ -17,31 +17,55 @@
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import express, { Router } from 'express';
-import { Duration } from 'luxon';
 import { VaultClient } from './vaultApi';
-import { runPeriodically } from './runPeriodically';
+import { TaskRunner, PluginTaskScheduler } from '@backstage/backend-tasks';
 
+/**
+ * Environment values needed by the VaultBuilder
+ * @public
+ */
 export interface VaultEnvironment {
   logger: Logger;
   config: Config;
+  scheduler: PluginTaskScheduler;
 }
 
-export type VaultBuilderReturn = Promise<{
+/**
+ * The object returned by the VaultBuilder.build() function
+ * @public
+ */
+export type VaultBuilderReturn = {
   router: express.Router;
-}>;
+};
 
+/**
+ * Implementation for Vault. It creates the routing and initializes the backend
+ * to allow the use of the Vault's frontend plugin.
+ * @public
+ */
 export class VaultBuilder {
-  private vaultTokenRefreshInterval: Duration = Duration.fromObject({
-    minutes: 60,
-  });
+  // private vaultTokenRefreshInterval: Duration = Duration.fromObject({
+  //   minutes: 60,
+  // });
   private vaultClient?: VaultClient;
 
+  /**
+   * Creates a new instance of the VaultBuilder.
+   *
+   * @param env - The backstage environment
+   * @returns A new instance of the VaultBuilder
+   */
   static createBuilder(env: VaultEnvironment) {
     return new VaultBuilder(env);
   }
   constructor(protected readonly env: VaultEnvironment) {}
 
-  public async build(): VaultBuilderReturn {
+  /**
+   * Builds the routes for Vault.
+   *
+   * @returns The router configured for Vault
+   */
+  public build(): VaultBuilderReturn {
     const { logger, config } = this.env;
 
     logger.info('Initializing Vault backend');
@@ -64,25 +88,46 @@ export class VaultBuilder {
     };
   }
 
+  /**
+   * Overwrites the current vault client.
+   *
+   * @param vaultClient - The new Vault client
+   * @returns
+   */
   public setVaultClient(vaultClient: VaultClient) {
     this.vaultClient = vaultClient;
     return this;
   }
 
-  public setVaultTokenRefreshInterval(refreshInterval: Duration) {
-    this.vaultTokenRefreshInterval = refreshInterval;
+  /**
+   * Enables the token renewal for Vault.
+   *
+   * @param schedule - The TaskRunner used to schedule the renewal, if not set, renewing hourly
+   * @returns
+   */
+  public async enableTokenRenew(schedule?: TaskRunner) {
+    const taskRunner = schedule
+      ? schedule
+      : this.env.scheduler.createScheduledTaskRunner({
+          frequency: { hours: 1 },
+          timeout: { hours: 1 },
+        });
+    await taskRunner.run({
+      id: 'refresh-vault-token',
+      fn: async () => {
+        this.env.logger.info('Renewing Vault token');
+        const vaultClient = this.vaultClient ?? new VaultClient(this.env);
+        await this.renewToken(vaultClient);
+      },
+    });
     return this;
   }
 
-  public enableTokenRenew() {
-    runPeriodically(async () => {
-      this.env.logger.info('Renewing Vault token');
-      const vaultClient = this.vaultClient ?? new VaultClient(this.env);
-      await this.renewToken(vaultClient);
-    }, this.vaultTokenRefreshInterval.toMillis());
-    return this;
-  }
-
+  /**
+   * Renews the token for vault using a defined client.
+   *
+   * @param vaultClient - The vault client used to renew the token
+   */
   protected async renewToken(vaultClient: VaultClient) {
     const result = await vaultClient.renewToken();
     if (!result) {
@@ -92,6 +137,12 @@ export class VaultBuilder {
     }
   }
 
+  /**
+   * Builds the backend routes for Vault.
+   *
+   * @param vaultClient - The Vault client used to list the secrets.
+   * @returns The generated backend router
+   */
   protected buildRouter(vaultClient: VaultClient): express.Router {
     const router = Router();
     router.use(express.json());

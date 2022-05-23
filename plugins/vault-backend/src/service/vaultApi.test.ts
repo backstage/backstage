@@ -17,7 +17,7 @@
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { Secret, VaultClient, VaultSecretList } from './vaultApi';
+import { VaultSecret, VaultClient, VaultSecretList } from './vaultApi';
 import { ConfigReader } from '@backstage/config';
 
 describe('VaultApi', () => {
@@ -43,7 +43,7 @@ describe('VaultApi', () => {
     },
   };
 
-  const mockSecretsResult: Secret[] = [
+  const mockSecretsResult: VaultSecret[] = [
     {
       name: 'secret::one',
       editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,

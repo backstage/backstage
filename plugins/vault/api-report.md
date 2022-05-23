@@ -7,14 +7,10 @@
 
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 
-// Warning: (ae-missing-release-tag) "EntityVaultCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const EntityVaultCard: () => JSX.Element;
 
-// Warning: (ae-missing-release-tag) "vaultPlugin" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export const vaultPlugin: BackstagePlugin<{}, {}>;
 
 // (No @packageDocumentation comment for this package)

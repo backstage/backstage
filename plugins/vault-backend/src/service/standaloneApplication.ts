@@ -18,6 +18,8 @@ import {
   errorHandler,
   notFoundHandler,
   requestLoggingHandler,
+  DatabaseManager,
+  getVoidLogger,
 } from '@backstage/backend-common';
 import compression from 'compression';
 import cors from 'cors';
@@ -26,6 +28,8 @@ import helmet from 'helmet';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { TestDatabases } from '@backstage/backend-test-utils';
+import { TaskScheduler } from '@backstage/backend-tasks';
 
 export interface ApplicationOptions {
   enableCors: boolean;
@@ -39,6 +43,20 @@ export async function createStandaloneApplication(
   const config = new ConfigReader({});
   const app = express();
 
+  const databases = TestDatabases.create({
+    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+  });
+  const knex = await databases.init('SQLITE_3');
+  const databaseManager: Partial<DatabaseManager> = {
+    forPlugin: (_: string) => ({
+      getClient: async () => knex,
+    }),
+  };
+  const manager = databaseManager as DatabaseManager;
+  const scheduler = new TaskScheduler(manager, getVoidLogger()).forPlugin(
+    'vault',
+  );
+
   app.use(helmet());
   if (enableCors) {
     app.use(cors());
@@ -46,7 +64,7 @@ export async function createStandaloneApplication(
   app.use(compression());
   app.use(express.json());
   app.use(requestLoggingHandler());
-  app.use('/', await createRouter({ logger, config }));
+  app.use('/', createRouter({ logger, config, scheduler }));
   app.use(notFoundHandler());
   app.use(errorHandler());
 

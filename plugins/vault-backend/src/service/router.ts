@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
 import { VaultBuilder } from './VaultBuilder';
 
+/**
+ * Options for the router creation.
+ * @public
+ */
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  scheduler: PluginTaskScheduler;
 }
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { router } = await VaultBuilder.createBuilder(options).build();
+/**
+ * Creates the routes used for Vault.
+ *
+ * @param options - The options used for the Vault's router creation
+ * @returns The router for Vault
+ * @public
+ */
+export function createRouter(options: RouterOptions): express.Router {
+  const { router } = VaultBuilder.createBuilder(options).build();
 
   return router;
 }

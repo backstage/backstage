@@ -24,7 +24,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import { EntityVaultTable } from './EntityVaultTable';
 import { ApiProvider, UrlPatternDiscovery } from '@backstage/core-app-api';
-import { Secret, vaultApiRef, VaultClient } from '../../api';
+import { VaultSecret, vaultApiRef, VaultClient } from '../../api';
 import { rest } from 'msw';
 
 describe('EntityVautTable', () => {
@@ -68,7 +68,7 @@ describe('EntityVautTable', () => {
     },
   };
 
-  const mockSecretsResult: Secret[] = [
+  const mockSecretsResult: VaultSecret[] = [
     {
       name: 'secret::one',
       editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,

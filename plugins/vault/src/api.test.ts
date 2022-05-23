@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { Secret, VaultClient } from './api';
+import { VaultSecret, VaultClient } from './api';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 
 describe('api', () => {
@@ -27,7 +27,7 @@ describe('api', () => {
   const mockBaseUrl = 'https://api-vault.com/api/vault';
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-  const mockSecretsResult: Secret[] = [
+  const mockSecretsResult: VaultSecret[] = [
     {
       name: 'secret::one',
       editUrl: `${mockBaseUrl}/ui/vault/secrets/secrets/edit/test/success/secret::one`,
