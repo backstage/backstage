@@ -399,11 +399,11 @@ describe('publish:github', () => {
         collaborators: [
           {
             access: 'pull',
-            username: 'robot-1',
+            team: 'robot-1'
           },
           {
             access: 'push',
-            username: 'robot-2',
+            team: 'robot-2',
           },
         ],
       },
@@ -465,11 +465,11 @@ describe('publish:github', () => {
         collaborators: [
           {
             access: 'pull',
-            username: 'robot-1',
+            team: 'robot-1',
           },
           {
             access: 'push',
-            username: 'robot-2',
+            team: 'robot-2',
           },
         ],
       },

@@ -58,7 +58,8 @@ export function createPublishGithubAction(options: {
     requiredStatusCheckContexts?: string[];
     repoVisibility?: 'private' | 'internal' | 'public';
     collaborators?: Array<{
-      username: string;
+      username?: string;
+      team?: string;
       access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
     }>;
     token?: string;
@@ -158,7 +159,7 @@ export function createPublishGithubAction(options: {
             type: 'array',
             items: {
               type: 'object',
-              required: ['username', 'access'],
+              required: ['access'],
               properties: {
                 access: {
                   type: 'string',
@@ -167,8 +168,12 @@ export function createPublishGithubAction(options: {
                 },
                 username: {
                   type: 'string',
-                  description: 'The username or group',
+                  description: 'The username',
                 },
+                team: {
+                  type: 'string',
+                  description: 'The team name'
+                }
               },
             },
           },
@@ -299,22 +304,24 @@ export function createPublishGithubAction(options: {
       }
 
       if (collaborators) {
-        for (const {
-          access: permission,
-          username: team_slug,
-        } of collaborators) {
+        for (const collaborator of collaborators) {
           try {
-            await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
-              org: owner,
-              team_slug,
-              owner,
-              repo,
-              permission,
-            });
+            if (collaborator.username) {
+              await client.rest.repos.addCollaborator({ owner, repo, username: collaborator.username, permissions: collaborator.access });
+            }
+            else {
+              await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
+                org: owner,
+                team_slug: collaborator.team,
+                owner,
+                repo,
+                permission: collaborator.access,
+              });
+            }
           } catch (e) {
             assertError(e);
             ctx.logger.warn(
-              `Skipping ${permission} access for ${team_slug}, ${e.message}`,
+              `Skipping ${collaborator.access} access for ${collaborator.team}, ${e.message}`,
             );
           }
         }
