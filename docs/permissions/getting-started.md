@@ -152,6 +152,6 @@ permission:
 
 3. Now that you’ve made this change, you should find that the unregister entity menu option on the catalog entity page is disabled.
 
-![Entity detail page showing disabled unregister entity context menu entry](../assets/permission/disabled-unregister-entity.png)
+![Entity detail page showing disabled unregister entity context menu entry](../assets/permissions/disabled-unregister-entity.png)
 
 Now that the framework is fully configured, you can craft a permission policy that works best for your organization by utilizing a provided authorization method or by [writing your own policy](./writing-a-policy.md)!
