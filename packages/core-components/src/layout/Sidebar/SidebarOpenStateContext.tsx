@@ -37,7 +37,16 @@ export type SidebarContextType = {
  * @public
  */
 export type SidebarOpenState = {
+  /**
+   * Whether or not the sidebar is open and full-width. When `false`, the
+   * sidebar is "closed" and typically only shows icons with no text.
+   */
   isOpen: boolean;
+
+  /**
+   * A function to set whether or not the sidebar is open. Pass `true` to open
+   * the sidebar. Pass `false` to close it.
+   */
   setOpen: (open: boolean) => void;
 };
 
@@ -82,7 +91,8 @@ export const SidebarOpenStateProvider = ({
 );
 
 /**
- * Hook to read and update the sidebar's open state.
+ * Hook to read and update the sidebar's open state, which controls whether or
+ * not the sidebar is open and full-width, or closed and only displaying icons.
  *
  * @public
  */

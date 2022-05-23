@@ -37,8 +37,22 @@ export type SidebarPinStateContextType = {
  * @public
  */
 export type SidebarPinState = {
+  /**
+   * Whether or not the sidebar is pinned to the `open` state. When `isPinned`
+   * is `false`, the sidebar opens and closes on hover. When `true`, the
+   * sidebar is permanently opened, regardless of user interaction.
+   */
   isPinned: boolean;
+
+  /**
+   * A function to toggle the pin state of the sidebar.
+   */
   toggleSidebarPinState: () => any;
+
+  /**
+   * Whether or not the sidebar is or should be rendered in a mobile-optimized
+   * way.
+   */
   isMobile?: boolean;
 };
 
@@ -83,7 +97,8 @@ export const SidebarPinStateProvider = ({
 );
 
 /**
- * Hook to read and update sidebar pin state.
+ * Hook to read and update sidebar pin state, which controls whether or not the
+ * sidebar is pinned open.
  *
  * @public
  */
