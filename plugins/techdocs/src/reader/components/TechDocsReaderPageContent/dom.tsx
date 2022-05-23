@@ -22,7 +22,7 @@ import { lighten, alpha } from '@material-ui/core/styles';
 
 import { BackstageTheme } from '@backstage/theme';
 import { CompoundEntityRef } from '@backstage/catalog-model';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { SidebarPinStateContext } from '@backstage/core-components';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -42,11 +42,11 @@ import {
   onCssReady,
   removeMkdocsHeader,
   rewriteDocLinks,
-  sanitizeDOM,
   simplifyMkdocsFooter,
   scrollIntoAnchor,
   transform as transformer,
   copyToClipboard,
+  useSanitizerTransformer,
 } from '../../transformers';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
@@ -77,8 +77,8 @@ export const useTechDocsReaderDom = (
   const sidebar = useSidebar();
   const theme = useTheme<BackstageTheme>();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
+  const sanitizerTransformer = useSanitizerTransformer();
 
-  const configApi = useApi(configApiRef);
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
 
@@ -146,7 +146,7 @@ export const useTechDocsReaderDom = (
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
       transformer(rawContent, [
-        sanitizeDOM(configApi.getOptionalConfig('techdocs.sanitizer')),
+        sanitizerTransformer,
         addBaseUrl({
           techdocsStorageApi,
           entityId: entityRef,
@@ -696,9 +696,9 @@ export const useTechDocsReaderDom = (
       entityRef,
       theme,
       sidebar,
-      configApi,
       scmIntegrationsApi,
       techdocsStorageApi,
+      sanitizerTransformer,
     ],
   );
 
