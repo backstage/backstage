@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from './hooks';
+export { removeUnsafeLinks } from './links';
+export { removeUnsafeIframes } from './iframes';

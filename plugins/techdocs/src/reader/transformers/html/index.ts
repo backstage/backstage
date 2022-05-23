@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { useHtmlTransformer } from './transformer';
+export { useSanitizerTransformer } from './transformer';

@@ -46,7 +46,7 @@ import {
   scrollIntoAnchor,
   transform as transformer,
   copyToClipboard,
-  useHtmlTransformer,
+  useSanitizerTransformer,
 } from '../../transformers';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
@@ -77,7 +77,7 @@ export const useTechDocsReaderDom = (
   const sidebar = useSidebar();
   const theme = useTheme<BackstageTheme>();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
-  const htmlTransformer = useHtmlTransformer();
+  const sanitizerTransformer = useSanitizerTransformer();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
@@ -146,7 +146,7 @@ export const useTechDocsReaderDom = (
   const preRender = useCallback(
     (rawContent: string, contentPath: string) =>
       transformer(rawContent, [
-        htmlTransformer,
+        sanitizerTransformer,
         addBaseUrl({
           techdocsStorageApi,
           entityId: entityRef,
@@ -698,7 +698,7 @@ export const useTechDocsReaderDom = (
       sidebar,
       scmIntegrationsApi,
       techdocsStorageApi,
-      htmlTransformer,
+      sanitizerTransformer,
     ],
   );
 

@@ -21,7 +21,7 @@ import { ConfigReader } from '@backstage/core-app-api';
 import { ConfigApi, configApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { useHtmlTransformer } from './transformer';
+import { useSanitizerTransformer } from './transformer';
 
 const configApiMock: ConfigApi = new ConfigReader({
   techdocs: {
@@ -39,7 +39,7 @@ const wrapper: FC = ({ children }) => (
 
 describe('Transformers > Html', () => {
   it('should return a function that removes unsafe links from a given dom element', async () => {
-    const { result } = renderHook(() => useHtmlTransformer(), { wrapper });
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
 
     const dirtyDom = document.createElement('html');
     dirtyDom.innerHTML = `
@@ -62,7 +62,7 @@ describe('Transformers > Html', () => {
   });
 
   it('should return a function that removes unsafe iframes from a given dom element', async () => {
-    const { result } = renderHook(() => useHtmlTransformer(), { wrapper });
+    const { result } = renderHook(() => useSanitizerTransformer(), { wrapper });
 
     const dirtyDom = document.createElement('html');
     dirtyDom.innerHTML = `

@@ -19,7 +19,7 @@ import { useMemo, useCallback } from 'react';
 
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 
-import { Transformer } from '..';
+import { Transformer } from '../transformer';
 import { removeUnsafeLinks, removeUnsafeIframes } from './hooks';
 
 /**
@@ -36,7 +36,7 @@ const useSanitizerConfig = () => {
 /**
  * Returns a transformer that sanitizes the dom's internal html.
  */
-export const useHtmlTransformer = (): Transformer => {
+export const useSanitizerTransformer = (): Transformer => {
   const config = useSanitizerConfig();
 
   return useCallback(
