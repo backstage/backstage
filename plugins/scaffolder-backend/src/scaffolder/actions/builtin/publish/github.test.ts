@@ -399,7 +399,7 @@ describe('publish:github', () => {
         collaborators: [
           {
             access: 'pull',
-            team: 'robot-1'
+            username: 'robot-1',
           },
           {
             access: 'push',
@@ -410,30 +410,24 @@ describe('publish:github', () => {
     });
 
     const commonProperties = {
-      org: 'owner',
       owner: 'owner',
       repo: 'repo',
     };
 
-    expect(
-      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[1],
-    ).toEqual([
-      {
-        ...commonProperties,
-        team_slug: 'robot-1',
-        permission: 'pull',
-      },
-    ]);
+    expect(mockOctokit.rest.repos.addCollaborator).toHaveBeenCalledWith({
+      ...commonProperties,
+      username: 'robot-1',
+      permission: 'pull',
+    });
 
     expect(
-      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
-    ).toEqual([
-      {
-        ...commonProperties,
-        team_slug: 'robot-2',
-        permission: 'push',
-      },
-    ]);
+      mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg,
+    ).toHaveBeenCalledWith({
+      ...commonProperties,
+      org: 'owner',
+      team_slug: 'robot-2',
+      permission: 'push',
+    });
   });
 
   it('should ignore failures when adding multiple collaborators', async () => {

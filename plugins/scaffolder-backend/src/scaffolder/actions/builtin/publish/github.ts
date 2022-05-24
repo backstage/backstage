@@ -172,8 +172,8 @@ export function createPublishGithubAction(options: {
                 },
                 team: {
                   type: 'string',
-                  description: 'The team name'
-                }
+                  description: 'The team name',
+                },
               },
             },
           },
@@ -307,9 +307,13 @@ export function createPublishGithubAction(options: {
         for (const collaborator of collaborators) {
           try {
             if (collaborator.username) {
-              await client.rest.repos.addCollaborator({ owner, repo, username: collaborator.username, permissions: collaborator.access });
-            }
-            else {
+              await client.rest.repos.addCollaborator({
+                owner,
+                repo,
+                username: collaborator.username,
+                permission: collaborator.access,
+              });
+            } else {
               await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
                 org: owner,
                 team_slug: collaborator.team,
