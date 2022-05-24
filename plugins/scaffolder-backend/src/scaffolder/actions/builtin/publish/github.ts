@@ -313,7 +313,7 @@ export function createPublishGithubAction(options: {
                 username: collaborator.username,
                 permission: collaborator.access,
               });
-            } else {
+            } else if (collaborator.team) {
               await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
                 org: owner,
                 team_slug: collaborator.team,
@@ -325,7 +325,7 @@ export function createPublishGithubAction(options: {
           } catch (e) {
             assertError(e);
             ctx.logger.warn(
-              `Skipping ${collaborator.access} access for ${collaborator.team}, ${e.message}`,
+              `Skipping ${collaborator.access} access for ${collaborator.username ?? collaborator.team}, ${e.message}`,
             );
           }
         }
