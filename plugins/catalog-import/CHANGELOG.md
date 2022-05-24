@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-import
 
+## 0.8.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/integration-react@1.1.1-next.0
+
 ## 0.8.8
 
 ### Patch Changes

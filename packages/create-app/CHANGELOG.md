@@ -1,5 +1,80 @@
 # @backstage/create-app
 
+## 0.4.28-next.0
+
+### Patch Changes
+
+- 881fbd7e8d: Register `TechDocs` addons on catalog entity pages, follow the steps below to add them manually:
+
+  ```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
+
+  + import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  + import {
+  +   ReportIssue,
+  + } from '@backstage/plugin-techdocs-module-addons-contrib';
+
+  + const techdocsContent = (
+  +   <EntityTechdocsContent>
+  +     <TechDocsAddons>
+  +       <ReportIssue />
+  +     </TechDocsAddons>
+  +   </EntityTechdocsContent>
+  + );
+
+  const defaultEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const serviceEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+
+  const websiteEntityPage = (
+    ...
+    <EntityLayout.Route path="/docs" title="Docs">
+  +    {techdocsContent}
+    </EntityLayout.Route>
+    ...
+  );
+  ```
+
+- 935d8515da: Updated the `--version` flag to output the version of the current backstage release instead of the version of create-app.
+- 1f70704580: Accessibility updates:
+
+  - Added `aria-label` to the sidebar Logo link. To enable this for an existing app, please make the following changes:
+
+  `packages/app/src/components/Root/Root.tsx`
+
+  ```diff
+  const SidebarLogo = () => {
+    const classes = useSidebarLogoStyles();
+    const { isOpen } = useContext(SidebarContext);
+
+    return (
+      <div className={classes.root}>
+        <Link
+          component={NavLink}
+          to="/"
+          underline="none"
+          className={classes.link}
+  +       aria-label="Home"
+        >
+          {isOpen ? <LogoFull /> : <LogoIcon />}
+        </Link>
+      </div>
+    );
+  };
+  ```
+
 ## 0.4.27
 
 ### Patch Changes
