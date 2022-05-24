@@ -1,5 +1,13 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/integration@1.2.1-next.0
+
 ## 0.1.29
 
 ### Patch Changes

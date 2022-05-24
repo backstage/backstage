@@ -26,9 +26,9 @@
     "@backstage/plugin-permission-common": "^0.6.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1",
+    "@backstage/cli": "^0.17.2-next.0",
     "@backstage/core-app-api": "^1.0.2",
-    "@backstage/dev-utils": "^1.0.2",
+    "@backstage/dev-utils": "^1.0.3-next.0",
     "@backstage/test-utils": "^1.1.0",
     "@types/node": "^16.11.26",
     "msw": "^0.35.0",

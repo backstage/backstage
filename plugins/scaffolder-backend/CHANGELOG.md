@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 72dfcbc8bf: A new scaffolder action has been added: `gerrit:publish`
+
+### Patch Changes
+
+- 6901f6be4a: Adds more of an explanation when the `publish:github` scaffolder action fails to create a repository.
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/plugin-catalog-backend@1.2.0-next.0
+
 ## 1.2.0
 
 ### Minor Changes
