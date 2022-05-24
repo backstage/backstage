@@ -456,4 +456,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     logHandler?: (line: string) => void,
   ): Promise<SyncResult>;
 }
+
+// @public
+export function toLowerMaybe(str: string, config: Config): string;
 ```
