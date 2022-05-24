@@ -1,5 +1,14 @@
 # @backstage/backend-common
 
+## 0.13.6-next.0
+
+### Patch Changes
+
+- f72a6b8c62: Applied the `luxon` dependency fix from the `0.13.4` patch release.
+- 5b22a8c97f: Applied the AWS S3 reading patch from the `0.13.5` patch release.
+- Updated dependencies
+  - @backstage/integration@1.2.1-next.0
+
 ## 0.13.5
 
 ### Patch Changes

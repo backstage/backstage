@@ -1,5 +1,16 @@
 # @backstage/core-components
 
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 65840b17be: Fix issue where right arrow icon was incorrectly added to side bar items without a sub-menu
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- 96d1e01641: Accessibility updates:
+
+  - Added `aria-label` to the `Select` component
+  - Changed heading level used in the header of `Table` component
+
 ## 0.9.4
 
 ### Patch Changes

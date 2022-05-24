@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets
+
 ## 0.2.10
 
 ### Patch Changes

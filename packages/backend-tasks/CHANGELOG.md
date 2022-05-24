@@ -1,5 +1,13 @@
 # @backstage/backend-tasks
 
+## 0.3.2-next.0
+
+### Patch Changes
+
+- fde10d24f6: Allow tasks that fail to retry on a loop emitting a warning log every time it fails with the amount of attempts it has
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+
 ## 0.3.1
 
 ### Patch Changes

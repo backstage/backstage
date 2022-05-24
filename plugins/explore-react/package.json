@@ -36,8 +36,8 @@
     "@backstage/core-plugin-api": "^1.0.2"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1",
-    "@backstage/dev-utils": "^1.0.2",
+    "@backstage/cli": "^0.17.2-next.0",
+    "@backstage/dev-utils": "^1.0.3-next.0",
     "@backstage/test-utils": "^1.1.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
