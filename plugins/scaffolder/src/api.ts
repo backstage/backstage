@@ -194,6 +194,18 @@ export class ScaffolderClient implements ScaffolderApi {
     return await response.json();
   }
 
+  async getGithubRepositories(organization: string): Promise<ScaffolderTask> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const url = `${baseUrl}/v2/repos-list/${encodeURIComponent(organization)}`;
+
+    const response = await this.fetchApi.fetch(url);
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
+  }
+
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent> {
     if (this.useLongPollingLogs) {
       return this.streamLogsPolling(options);

@@ -40,6 +40,12 @@ import { useTemplateSecrets } from '../../secrets';
 export interface RepoUrlPickerUiOptions {
   allowedHosts?: string[];
   allowedOwners?: string[];
+  showRepoDropdown?: {
+    github?: boolean[];
+  };
+  pullReposFromBackend?: {
+    github?: boolean[];
+  };
   requestUserCredentials?: {
     secretsKey: string;
     additionalScopes?: {
@@ -134,6 +140,11 @@ export const RepoUrlPicker = (
   const hostType =
     (state.host && integrationApi.byHost(state.host)?.type) ?? null;
 
+  const repoSelectOptions = {
+    pullReposFromBackend: uiSchema?.['ui:options']?.pullReposFromBackend?.github,
+    showGithubRepoDropdown: uiSchema?.['ui:options']?.showRepoDropdown?.github
+  }
+
   return (
     <>
       <RepoUrlPickerHost
@@ -148,6 +159,7 @@ export const RepoUrlPicker = (
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          repoSelectOptions={repoSelectOptions}
         />
       )}
       {hostType === 'gitlab' && (

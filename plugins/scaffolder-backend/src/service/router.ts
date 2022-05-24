@@ -34,6 +34,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
 import { Logger } from 'winston';
+import { App } from 'octokit';
 import { TemplateFilter } from '../lib';
 import { z } from 'zod';
 import {
@@ -357,6 +358,51 @@ export async function createRouter(
         subscription.unsubscribe();
         clearTimeout(timeout);
       });
+    })
+    .get('/v2/repos-list/:organization', async (req, res) => {
+      const { organization } = req.params;
+
+      let reposList = [];
+      let appConfigs = [];
+
+      try {
+        const githubIntegrations = config.getConfigArray('integrations.github');
+
+
+        githubIntegrations.forEach((integrationConfig) => {
+          const githubApps = integrationConfig.getConfigArray('apps');
+
+          githubApps.forEach((githubAppConfig) => {
+            const appId = githubAppConfig.getNumber('appId');
+            const privateKey = githubAppConfig.getString('privateKey');
+
+            appConfigs.push({
+              appId,
+              privateKey
+            });
+          });
+        });
+
+        for (const appConfig of appConfigs) {
+          const app = new App({appId: appConfig.appId, privateKey: appConfig.privateKey});
+
+          for await (const {repository} of app.eachRepository.iterator()) {
+            reposList.push({label: repository.full_name, value: repository.name});
+          }
+        }
+        // filter only repos for the given org
+        reposList = reposList.filter((repoItem) => String(repoItem.label).startsWith(organization));
+
+        res.json({organization, results: reposList});
+      } catch (error) {
+        logger.error(
+          `Error while fetching Github repositories', ${error}`,
+        );
+        res.status(500).json({error})
+      } finally {
+        appConfigs.length = 0;
+        reposList.length = 0;
+      }
     })
     .post('/v2/dry-run', async (req, res) => {
       const bodySchema = z.object({
