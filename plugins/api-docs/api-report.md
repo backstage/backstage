@@ -113,6 +113,7 @@ export const DefaultApiExplorerPage: ({
   initiallySelectedFilter,
   columns,
   actions,
+  tableOptions,
 }: DefaultApiExplorerPageProps) => JSX.Element;
 
 // @public
@@ -120,6 +121,7 @@ export type DefaultApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  tableOptions?: TableProps<CatalogTableRow>['options'];
 };
 
 // Warning: (ae-missing-release-tag) "defaultDefinitionWidgets" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
