@@ -26,7 +26,12 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  configApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
@@ -50,6 +55,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
+import { Config } from '@backstage/config';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -91,6 +97,7 @@ export function AboutCard(props: AboutCardProps) {
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
+  const config = useApi(configApiRef);
 
   const entitySourceLocation = getEntitySourceLocation(
     entity,
@@ -114,10 +121,8 @@ export function AboutCard(props: AboutCardProps) {
     href:
       viewTechdocLink &&
       viewTechdocLink({
-        namespace:
-          entity.metadata.namespace?.toLocaleLowerCase('en-US') ||
-          DEFAULT_NAMESPACE,
-        kind: entity.kind.toLocaleLowerCase('en-US'),
+        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+        kind: toLowerMaybe(entity.kind, config),
         name: entity.metadata.name,
       }),
   };
@@ -179,4 +184,13 @@ export function AboutCard(props: AboutCardProps) {
       </CardContent>
     </Card>
   );
+}
+
+// Lower-case entity triplets by default, but allow override.
+function toLowerMaybe(str: string, config: Config) {
+  return config.getOptionalBoolean(
+    'techdocs.legacyUseCaseSensitiveTripletPaths',
+  )
+    ? str
+    : str.toLocaleLowerCase('en-US');
 }
