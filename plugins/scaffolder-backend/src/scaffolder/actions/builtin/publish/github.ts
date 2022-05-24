@@ -168,11 +168,13 @@ export function createPublishGithubAction(options: {
                 },
                 username: {
                   type: 'string',
-                  description: 'The username',
+                  description:
+                    'The name of the user that will be added as a collaborator',
                 },
                 team: {
                   type: 'string',
-                  description: 'The team name',
+                  description:
+                    'The name of the team that will be added as a collaborator',
                 },
               },
             },
@@ -325,7 +327,9 @@ export function createPublishGithubAction(options: {
           } catch (e) {
             assertError(e);
             ctx.logger.warn(
-              `Skipping ${collaborator.access} access for ${collaborator.username ?? collaborator.team}, ${e.message}`,
+              `Skipping ${collaborator.access} access for ${
+                collaborator.username ?? collaborator.team
+              }, ${e.message}`,
             );
           }
         }
