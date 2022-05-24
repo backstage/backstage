@@ -20751,6 +20751,15 @@ raw-body@2.5.1, raw-body@^2.4.1:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
+rc-progress@3.2.4:
+  version "3.2.4"
+  resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.2.4.tgz#4036acdae2566438545bc4df2203248babaf7549"
+  integrity sha512-M9WWutRaoVkPUPIrTpRIDpX0SPSrVHzxHdCRCbeoBFrd9UFWTYNWRlHsruJM5FH1AZI+BwB4wOJUNNylg/uFSw==
+  dependencies:
+    "@babel/runtime" "^7.10.1"
+    classnames "^2.2.6"
+    rc-util "^5.16.1"
+
 rc-progress@3.3.2:
   version "3.3.2"
   resolved "https://registry.npmjs.org/rc-progress/-/rc-progress-3.3.2.tgz#57362d49bb6b7b09fec84bf18220619294bde675"

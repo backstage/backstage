@@ -55,7 +55,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import React, { useCallback } from 'react';
 import { viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
-import { Config } from '@backstage/config';
+import { toLowerMaybe } from '@backstage/plugin-techdocs';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -184,13 +184,4 @@ export function AboutCard(props: AboutCardProps) {
       </CardContent>
     </Card>
   );
-}
-
-// Lower-case entity triplets by default, but allow override.
-function toLowerMaybe(str: string, config: Config) {
-  return config.getOptionalBoolean(
-    'techdocs.legacyUseCaseSensitiveTripletPaths',
-  )
-    ? str
-    : str.toLocaleLowerCase('en-US');
 }
