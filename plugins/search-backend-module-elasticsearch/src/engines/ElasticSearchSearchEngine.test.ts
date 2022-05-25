@@ -153,7 +153,7 @@ describe('ElasticSearchSearchEngine', () => {
             },
             filter: {
               match: {
-                kind: 'testKind',
+                'kind.keyword': 'testKind',
               },
             },
           },
@@ -204,7 +204,12 @@ describe('ElasticSearchSearchEngine', () => {
       const actualTranslatedQuery = translatorUnderTest({
         types: ['indexName'],
         term: 'testTerm',
-        filters: { kind: 'testKind', namespace: 'testNameSpace' },
+        filters: {
+          kind: 'testKind',
+          namespace: 'testNameSpace',
+          foo: 123,
+          bar: true,
+        },
       }) as ConcreteElasticSearchQuery;
 
       expect(actualTranslatedQuery).toMatchObject({
@@ -228,12 +233,22 @@ describe('ElasticSearchSearchEngine', () => {
             filter: [
               {
                 match: {
-                  kind: 'testKind',
+                  'kind.keyword': 'testKind',
                 },
               },
               {
                 match: {
-                  namespace: 'testNameSpace',
+                  'namespace.keyword': 'testNameSpace',
+                },
+              },
+              {
+                match: {
+                  foo: '123',
+                },
+              },
+              {
+                match: {
+                  bar: 'true',
                 },
               },
             ],
