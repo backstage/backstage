@@ -1,7 +1,7 @@
 ---
 title: Dynatrace
-author: "@isand3r"
-authorUrl: "https://github.com/isand3r"
+author: "TELUS"
+authorUrl: "https://github.com/telus"
 category: Monitoring
 description: View monitoring info from dynatrace for services in your software catalog.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/dynatrace
