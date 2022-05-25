@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.17.2-next.0
+
+### Patch Changes
+
+- 4f73352608: Updated Lockfile to support new versions of yarn as well as the legacy 1 version
+- 6de866ea74: Added console warning to frontend start when the `app.baseUrl` and `backend.baseUrl` are identical
+
 ## 0.17.1
 
 ### Patch Changes

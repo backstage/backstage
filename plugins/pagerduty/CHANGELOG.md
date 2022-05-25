@@ -1,5 +1,14 @@
 # @backstage/plugin-pagerduty
 
+## 0.3.33-next.0
+
+### Patch Changes
+
+- 76bf6400fe: Fix alert that was not showing after creating an incident.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+
 ## 0.3.32
 
 ### Patch Changes

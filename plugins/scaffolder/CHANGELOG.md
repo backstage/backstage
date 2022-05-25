@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder
 
+## 1.3.0-next.0
+
+### Minor Changes
+
+- 86a4a0f72d: Get data of other fields in Form from a custom field in template Scaffolder.
+  following:
+
+  ```tsx
+  const CustomFieldExtensionComponent = (props: FieldExtensionComponentProps<string[]>) => {
+    const { formData } = props.formContext;
+    ...
+  };
+
+  const CustomFieldExtension = scaffolderPlugin.provide(
+    createScaffolderFieldExtension({
+      name: ...,
+      component: CustomFieldExtensionComponent,
+      validation: ...
+    })
+  );
+  ```
+
+- 72dfcbc8bf: Gerrit Integration: Implemented a `RepoUrlPicker` for Gerrit.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/integration-react@1.1.1-next.0
+
 ## 1.2.0
 
 ### Minor Changes

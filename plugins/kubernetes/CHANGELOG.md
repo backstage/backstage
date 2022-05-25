@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes
 
+## 0.6.6-next.0
+
+### Patch Changes
+
+- 4328737af6: Add support to fetch data for Stateful Sets and display an accordion in the same way as with Deployments
+- 81304e3e91: Fix for HPA matching when deploying same HPA in multiple namespaces
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/plugin-kubernetes-common@0.3.0-next.0
+
 ## 0.6.5
 
 ### Patch Changes

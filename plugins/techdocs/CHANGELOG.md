@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs
 
+## 1.1.2-next.0
+
+### Patch Changes
+
+- 881fbd7e8d: Fix `EntityTechdocsContent` component to use objects instead of `<Route>` elements, otherwise "outlet" will be null on sub-pages and add-ons won't render.
+- 17c059dfd0: Restructures reader style transformations to improve code readability:
+
+  - Extracts the style rules to separate files;
+  - Creates a hook that processes each rule;
+  - And creates another hook that returns a transformer responsible for injecting them into the head tag of a given element.
+
+- 3b45ad701f: Packages a set of tweaks to the TechDocs addons rendering process:
+
+  - Prevents displaying sidebars until page styles are loaded and the sidebar position is updated;
+  - Prevents new sidebar locations from being created every time the reader page is rendered if these locations already exist;
+  - Centers the styles loaded event to avoid having multiple locations setting the opacity style in Shadow Dom causing the screen to flash multiple times.
+
+- 816f7475ec: Convert `sanitizeDOM` transformer to hook as part of code readability improvements in dom file.
+- 50ff56a80f: Change the `EntityDocsPage` path to be more specific and also add integration tests for `sub-routes` on this page.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.1-next.0
+  - @backstage/integration-react@1.1.1-next.0
+
 ## 1.1.1
 
 ### Patch Changes

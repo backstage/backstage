@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './transformer';
-
-type InjectCssOptions = {
-  css: string;
-};
-
-export const injectCss = ({ css }: InjectCssOptions): Transformer => {
-  return dom => {
-    dom
-      .getElementsByTagName('head')[0]
-      .insertAdjacentHTML('beforeend', `<style>${css}</style>`);
-
-    return dom;
-  };
-};
+export default () => `
+/*==================  Animations  ==================*/
+/*
+  Disable CSS animations on link colors as they lead to issues in dark mode.
+  The dark mode color theme is applied later and theirfore there is always an animation from light to dark mode when navigation between pages.
+*/
+.md-dialog, .md-nav__link, .md-footer__link, .md-typeset a, .md-typeset a::before, .md-typeset .headerlink {
+  transition: none;
+}
+`;

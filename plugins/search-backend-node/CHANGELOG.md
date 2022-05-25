@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-node
 
+## 0.6.2-next.0
+
+### Patch Changes
+
+- e7794a0aaa: propagate indexing errors so they don't appear successful to the task scheduler
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.0
+
 ## 0.6.1
 
 ### Patch Changes

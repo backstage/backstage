@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-node
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 9079a78078: Added configurable algorithms array for IdentityClient
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+
 ## 0.2.1
 
 ### Patch Changes

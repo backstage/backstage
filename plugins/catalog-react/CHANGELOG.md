@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 1f70704580: Accessibility updates:
+
+  - Wrapped the `EntityLifecyclePicker`, `EntityOwnerPicker`, `EntityTagPicker`, in `label` elements
+  - Changed group name `Typography` component to `span` (from default `h6`), added `aria-label` to the `List` component, and `role` of `menuitem` to the container of the `MenuItem` component
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/integration@1.2.1-next.0
+
 ## 1.1.0
 
 ### Minor Changes
