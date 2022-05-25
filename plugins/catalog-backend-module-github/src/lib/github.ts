@@ -52,6 +52,7 @@ export type Team = {
   name?: string;
   description?: string;
   avatarUrl?: string;
+  editTeamUrl: string;
   parentTeam?: Team;
   members: Connection<User>;
 };
@@ -165,6 +166,7 @@ export async function getOrganizationTeams(
             name
             description
             avatarUrl
+            editTeamUrl
             parentTeam { slug }
             members(first: 100, membership: IMMEDIATE) {
               pageInfo { hasNextPage }
@@ -186,6 +188,7 @@ export async function getOrganizationTeams(
         name: team.slug,
         annotations: {
           'github.com/team-slug': team.combinedSlug,
+          'backstage.io/edit-url': team.editTeamUrl,
         },
       },
       spec: {
