@@ -29,4 +29,5 @@ jobs:
 
       - name: docker build
         run: |
-          docker image build . -f packages/backend/Dockerfile --tag backstage
+          docker image build . -f packages/backend/Dockerfile -t 828731156495.dkr.ecr.us-east-1.amazonaws.com/backstage:latest
+          docker images
