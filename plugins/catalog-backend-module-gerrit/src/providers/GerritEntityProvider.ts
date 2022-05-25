@@ -89,10 +89,17 @@ export class GerritEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(schedule);
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName(): string {
     return `gerrit-provider:${this.config.id}`;
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getTaskId} */
+  getTaskId(): string {
+    return `${this.getProviderName()}:refresh`;
+  }
+
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.scheduleFn();
@@ -100,7 +107,7 @@ export class GerritEntityProvider implements EntityProvider {
 
   private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
     return async () => {
-      const taskId = `${this.getProviderName()}:refresh`;
+      const taskId = this.getTaskId();
       return schedule.run({
         id: taskId,
         fn: async () => {

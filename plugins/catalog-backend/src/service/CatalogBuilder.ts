@@ -15,6 +15,7 @@
  */
 
 import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -100,6 +101,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  scheduler: PluginTaskScheduler;
 };
 
 /**
@@ -456,7 +458,11 @@ export class CatalogBuilder {
       permissionEvaluator,
     );
     const refreshService = new AuthorizedRefreshService(
-      new DefaultRefreshService({ database: processingDatabase }),
+      new DefaultRefreshService({
+        database: processingDatabase,
+        entityProviders: entityProviders,
+        scheduler: this.env.scheduler,
+      }),
       permissionEvaluator,
     );
     const router = await createRouter({

@@ -46,6 +46,8 @@ export interface EntityProviderConnection {
 export interface EntityProvider {
   /** Unique provider name used internally for caching. */
   getProviderName(): string;
+  /** Optional. ID of the scheduled task which can be used to trigger/find/... it. */
+  getTaskId?(): string;
   /** Connect is called upon initialization by the catalog engine. */
   connect(connection: EntityProviderConnection): Promise<void>;
 }

@@ -55,11 +55,19 @@ export interface LocationService {
  *
  * @public
  */
-export type RefreshOptions = {
-  /** The reference to a single entity that should be refreshed */
-  entityRef: string;
-  authorizationToken?: string;
-};
+export type RefreshOptions =
+  | {
+      /** The reference to a single entity that should be refreshed */
+      entityRef: string;
+      providers?: never;
+      authorizationToken?: string;
+    }
+  | {
+      entityRef?: never;
+      /** The reference to a set of to be refreshed providers or all providers. */
+      providers: 'all' | string[];
+      authorizationToken?: string;
+    };
 
 /**
  * A service that manages refreshes of entities in the catalog.

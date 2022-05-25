@@ -15,10 +15,12 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
+import { EntityProvider } from '../api';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import {
@@ -38,6 +40,9 @@ describe('Refresh integration', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
+
+  const entityProviders: EntityProvider[] = [];
+  const scheduler = {} as any as PluginTaskScheduler;
 
   async function createDatabase(
     databaseId: TestDatabaseId,
@@ -176,7 +181,11 @@ describe('Refresh integration', () => {
     'should refresh the parent location, %p',
     async databaseId => {
       const { knex, db } = await createDatabase(databaseId);
-      const refreshService = new DefaultRefreshService({ database: db });
+      const refreshService = new DefaultRefreshService({
+        database: db,
+        entityProviders,
+        scheduler,
+      });
       const engine = await createPopulatedEngine({
         db,
         knex,
@@ -220,7 +229,11 @@ describe('Refresh integration', () => {
     'should refresh the location further up the tree, %p',
     async databaseId => {
       const { knex, db } = await createDatabase(databaseId);
-      const refreshService = new DefaultRefreshService({ database: db });
+      const refreshService = new DefaultRefreshService({
+        database: db,
+        entityProviders,
+        scheduler,
+      });
       const engine = await createPopulatedEngine({
         db,
         knex,
@@ -273,7 +286,11 @@ describe('Refresh integration', () => {
     async databaseId => {
       let secondRound = false;
       const { knex, db } = await createDatabase(databaseId);
-      const refreshService = new DefaultRefreshService({ database: db });
+      const refreshService = new DefaultRefreshService({
+        database: db,
+        entityProviders,
+        scheduler,
+      });
       const engine = await createPopulatedEngine({
         db,
         knex,
@@ -327,4 +344,65 @@ describe('Refresh integration', () => {
     },
     60_000,
   );
+});
+
+describe('Refresh', () => {
+  const database = {} as DefaultProcessingDatabase;
+  const entityProviders = [
+    {
+      getProviderName: () => 'fake-1',
+      getTaskId: () => 'fake-1:refresh',
+    } as EntityProvider,
+    {
+      getProviderName: () => 'fake-2',
+      getTaskId: () => 'fake-2:read',
+    } as EntityProvider,
+    {
+      getProviderName: () => 'fake-3',
+    } as EntityProvider,
+  ];
+
+  it('should refresh all providers on "all"', async () => {
+    const triggered: string[] = [];
+    const scheduler = {
+      triggerTask: async (id: string): Promise<void> => {
+        triggered.push(id);
+      },
+    } as PluginTaskScheduler;
+    const refreshService = new DefaultRefreshService({
+      database,
+      entityProviders,
+      scheduler,
+    });
+
+    await refreshService.refresh({
+      providers: 'all',
+    });
+
+    expect(triggered).toEqual(['fake-1:refresh', 'fake-2:read']);
+  });
+
+  it('should refresh specified providers', async () => {
+    const triggered: string[] = [];
+    const scheduler = {
+      triggerTask: async (id: string): Promise<void> => {
+        triggered.push(id);
+      },
+    } as PluginTaskScheduler;
+    const refreshService = new DefaultRefreshService({
+      database,
+      entityProviders,
+      scheduler,
+    });
+
+    await refreshService.refresh({
+      providers: [
+        'fake-1', // exists + has getTaskId
+        'fake-3', // exists, but no getTaskId
+        'ignore-non-existing',
+      ],
+    });
+
+    expect(triggered).toEqual(['fake-1:refresh']);
+  });
 });

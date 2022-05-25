@@ -23,6 +23,7 @@ import {
   UrlReaders,
   useHotMemoize,
 } from '@backstage/backend-common';
+import { TaskScheduler } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { Server } from 'http';
@@ -61,6 +62,7 @@ export async function startStandaloneServer(
     discovery,
     tokenManager,
   });
+  const scheduler = TaskScheduler.fromConfig(config).forPlugin('catalog');
 
   logger.debug('Creating application...');
   await applyDatabaseMigrations(await database.getClient());
@@ -70,6 +72,7 @@ export async function startStandaloneServer(
     config,
     reader,
     permissions,
+    scheduler,
   });
   const catalog = await builder.build();
 

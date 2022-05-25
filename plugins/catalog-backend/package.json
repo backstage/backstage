@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.13.6-next.0",
+    "@backstage/backend-tasks": "^0.3.2-next.0",
     "@backstage/catalog-client": "^1.0.2",
     "@backstage/catalog-model": "^1.0.2",
     "@backstage/config": "^1.0.1",

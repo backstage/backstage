@@ -157,6 +157,11 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     return `MicrosoftGraphOrgEntityProvider:${this.options.id}`;
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getTaskId} */
+  getTaskId(): string {
+    return `${this.getProviderName()}:refresh`;
+  }
+
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
@@ -215,7 +220,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     }
 
     this.scheduleFn = async () => {
-      const id = `${this.getProviderName()}:refresh`;
+      const id = this.getTaskId();
       await schedule.run({
         id,
         fn: async () => {

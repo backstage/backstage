@@ -128,6 +128,8 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   ): MicrosoftGraphOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
+  // (undocumented)
+  getTaskId(): string;
   read(options?: { logger?: Logger }): Promise<void>;
 }
 

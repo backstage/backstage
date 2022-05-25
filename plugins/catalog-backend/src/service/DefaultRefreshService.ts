@@ -14,20 +14,68 @@
  * limitations under the License.
  */
 
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { EntityProvider } from '../api';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { RefreshOptions, RefreshService } from './types';
 
 export class DefaultRefreshService implements RefreshService {
   private database: DefaultProcessingDatabase;
+  private entityProviders: EntityProvider[];
+  private scheduler: PluginTaskScheduler;
 
-  constructor(options: { database: DefaultProcessingDatabase }) {
+  constructor(options: {
+    database: DefaultProcessingDatabase;
+    entityProviders: EntityProvider[];
+    scheduler: PluginTaskScheduler;
+  }) {
     this.database = options.database;
+    this.entityProviders = options.entityProviders;
+    this.scheduler = options.scheduler;
   }
 
   async refresh(options: RefreshOptions) {
+    if (options.entityRef) {
+      return this.refreshEntity(options);
+    }
+
+    if (options.providers) {
+      return this.refreshProviders(options);
+    }
+
+    return new Promise<void>(resolve => resolve());
+  }
+
+  private async refreshProviders(options: RefreshOptions) {
+    return new Promise<void>((resolve, reject) => {
+      Promise.allSettled(
+        this.entityProviders
+          .filter(
+            provider =>
+              options.providers === 'all' ||
+              options.providers?.includes(provider.getProviderName()),
+          )
+          .filter(provider => 'getTaskId' in provider)
+          .map(provider => provider.getTaskId!())
+          .map(async taskId => {
+            try {
+              await this.scheduler.triggerTask(taskId);
+            } catch (error) {
+              if (!['ConflictError', 'NotFoundError'].includes(error.name)) {
+                throw error;
+              }
+            }
+          }),
+      )
+        .then(_ => resolve())
+        .catch(reason => reject(reason));
+    });
+  }
+
+  private async refreshEntity(options: RefreshOptions) {
     await this.database.transaction(async tx => {
       const { entityRefs } = await this.database.listAncestors(tx, {
-        entityRef: options.entityRef,
+        entityRef: options.entityRef!,
       });
       const locationAncestor = entityRefs.find(ref =>
         ref.startsWith('location:'),
@@ -41,7 +89,7 @@ export class DefaultRefreshService implements RefreshService {
         });
       }
       await this.database.refresh(tx, {
-        entityRef: options.entityRef,
+        entityRef: options.entityRef!,
       });
     });
   }

@@ -62,6 +62,8 @@ export class AwsS3EntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
+  getTaskId(): string;
+  // (undocumented)
   refresh(logger: Logger): Promise<void>;
 }
 ```

@@ -26,6 +26,7 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Readable } from 'stream';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { Router } from 'express';
@@ -193,6 +194,7 @@ export type CatalogEnvironment = {
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator | PermissionAuthorizer;
+  scheduler: PluginTaskScheduler;
 };
 
 // @alpha
@@ -416,6 +418,7 @@ export type EntityFilter =
 export interface EntityProvider {
   connect(connection: EntityProviderConnection): Promise<void>;
   getProviderName(): string;
+  getTaskId?(): string;
 }
 
 // @public

@@ -112,6 +112,8 @@ export class LdapOrgEntityProvider implements EntityProvider {
   ): LdapOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
+  // (undocumented)
+  getTaskId(): string;
   read(options?: { logger?: Logger }): Promise<void>;
 }
 

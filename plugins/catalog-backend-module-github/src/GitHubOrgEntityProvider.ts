@@ -149,6 +149,11 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     return `GitHubOrgEntityProvider:${this.options.id}`;
   }
 
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getTaskId} */
+  getTaskId(): string {
+    return `${this.getProviderName()}:refresh`;
+  }
+
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
@@ -208,7 +213,7 @@ export class GitHubOrgEntityProvider implements EntityProvider {
     }
 
     this.scheduleFn = async () => {
-      const id = `${this.getProviderName()}:refresh`;
+      const id = this.getTaskId();
       await schedule.run({
         id,
         fn: async () => {

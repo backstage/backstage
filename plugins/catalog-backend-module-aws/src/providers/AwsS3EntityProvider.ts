@@ -104,7 +104,7 @@ export class AwsS3EntityProvider implements EntityProvider {
 
   private createScheduleFn(schedule: TaskRunner): () => Promise<void> {
     return async () => {
-      const taskId = `${this.getProviderName()}:refresh`;
+      const taskId = this.getTaskId();
       return schedule.run({
         id: taskId,
         fn: async () => {
@@ -127,6 +127,11 @@ export class AwsS3EntityProvider implements EntityProvider {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getProviderName} */
   getProviderName(): string {
     return `awsS3-provider:${this.config.id}`;
+  }
+
+  /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.getTaskId} */
+  getTaskId(): string {
+    return `${this.getProviderName()}:refresh`;
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */

@@ -29,12 +29,16 @@ export class AuthorizedRefreshService implements RefreshService {
   ) {}
 
   async refresh(options: RefreshOptions) {
+    if (!options.entityRef) {
+      throw new NotAllowedError();
+    }
+
     const authorizeDecision = (
       await this.permissionApi.authorize(
         [
           {
             permission: catalogEntityRefreshPermission,
-            resourceRef: options.entityRef,
+            resourceRef: options.entityRef!,
           },
         ],
         { token: options.authorizationToken },

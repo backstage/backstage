@@ -91,6 +91,8 @@ export class GitHubOrgEntityProvider implements EntityProvider {
   ): GitHubOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
+  // (undocumented)
+  getTaskId(): string;
   read(options?: { logger?: Logger }): Promise<void>;
 }
 
