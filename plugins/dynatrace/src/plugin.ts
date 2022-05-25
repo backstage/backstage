@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { dynatraceApiRef, DynatraceClient } from './api';
 import {
+  configApiRef,
+  createApiFactory,
   createPlugin,
+  discoveryApiRef,
+  identityApiRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
@@ -25,6 +30,21 @@ export const dynatracePlugin = createPlugin({
   routes: {
     root: rootRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: dynatraceApiRef,
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
+        new DynatraceClient({
+          discoveryApi,
+          identityApi,
+        }),
+    }),
+  ],
 });
 
 export const DynatracePage = dynatracePlugin.provide(

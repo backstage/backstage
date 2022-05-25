@@ -26,9 +26,9 @@ export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
     {
       title: 'Status',
       field: 'status',
-      render: (row: Partial<Problem>) => (
+      render: (row: Partial<Problem | undefined>) => (
         <Box display="flex" alignItems="center">
-          <ProblemStatus status={row.status} />
+          <ProblemStatus status={row?.status} />
         </Box>
       ),
     },
@@ -36,19 +36,19 @@ export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
     {
       title: 'Root Cause',
       field: 'rootCauseEntity',
-      render: (row: Partial<Problem>) => (
+      render: (row: Partial<Problem | undefined>) => (
         <Box display="flex" alignItems="center">
-          <EntityLink name={row.rootCauseEntity?.name} />
+          <EntityLink name={row?.rootCauseEntity?.name} />
         </Box>
       ),
     },
     {
       title: 'Affected',
       field: 'affectedEntities',
-      render: (row: Partial<Problem>) => (
+      render: (row: Partial<Problem | undefined>) => (
         <Box display="flex" alignItems="center">
           <>
-            {row.affectedEntities?.map(e => {
+            {row?.affectedEntities?.map(e => {
               return <EntityLink key={e.name} name={e.name} />;
             })}
           </>

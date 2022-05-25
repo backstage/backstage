@@ -17,36 +17,28 @@ import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { ProblemsTable } from '../ProblemsTable';
-import { Problem } from '../types';
+import { dynatraceApiRef } from '../../../api';
 
 type ProblemsListProps = {
-  entityDynatraceId: string;
+  dynatraceEntityId: string;
 };
 
 export const ProblemsList = (props: ProblemsListProps) => {
-  const { entityDynatraceId } = props;
-  const config = useApi(configApiRef);
+  const { dynatraceEntityId } = props;
+  const dynatraceApi = useApi(dynatraceApiRef);
   const { value, loading, error } = useAsync(async () => {
-    const backendUrl = config.getString('backend.baseUrl');
-    const problemQuerySelector = `?entitySelector=entityId(${entityDynatraceId})`;
-    const response = await fetch(
-      `${backendUrl}/api/proxy/dynatrace/problems${problemQuerySelector}`,
-    );
-    if (response.status !== 200) {
-      throw new Error(response.statusText);
-    }
-    const data = await response.json();
-    return data.problems;
-  }, []);
-  const problems: Problem[] = value;
+    const r = await dynatraceApi.getProblems(dynatraceEntityId);
+    return r;
+  }, [dynatraceApi, dynatraceEntityId]);
+  const problems = value?.problems;
 
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
-
+  if (!problems) return <div>Nothing to report :)</div>;
   return <ProblemsTable problems={problems} />;
 };

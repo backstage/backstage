@@ -29,7 +29,7 @@ import { DYNATRACE_ID_ANNOTATION } from '../../constants';
 
 export const DynatraceTab = () => {
   const { entity } = useEntity();
-  const entityDynatraceId: string =
+  const dynatraceEntityId: string =
     entity?.metadata.annotations?.[DYNATRACE_ID_ANNOTATION] ?? '';
 
   if (!isDynatraceAvailable(entity)) {
@@ -45,7 +45,7 @@ export const DynatraceTab = () => {
         </ContentHeader>
         <Grid container spacing={2}>
           <Grid item xs={12} lg={12}>
-            <ProblemsList entityDynatraceId={`${entityDynatraceId}`} />
+            <ProblemsList dynatraceEntityId={`${dynatraceEntityId}`} />
           </Grid>
         </Grid>
       </Content>

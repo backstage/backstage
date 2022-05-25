@@ -12,7 +12,7 @@ This plugin uses the Backstage proxy to communicate with Dynatrace's REST APIs.
 
 The dynatrace plugin will require the following information, to be used in the configuration options detailed below:
 
-- Dynatrace API URL, e.g. `https://my-dynatrace.dynatrace.com/api/v2`
+- Dynatrace API URL, e.g. `https://my-dynatrace-instance.dynatrace.com/api/v2`
 - Dynatrace API access token (see [documentation](https://www.dynatrace.com/support/help/dynatrace-api/basics/dynatrace-api-authentication)), with the following permissions:
   - `entities.read`
   - `problems.read`
@@ -43,3 +43,7 @@ metadata:
 ```
 
 The `DYNATRACE_ENTITY_ID` can be found in dynatrace by browsing to the entity (a service, synthetic, frontend, workload, etc.). It will be located in the browser address bar in the `id` paramater and has the format `ENTITY_TYPE-ENTITY_ID`, where `ENTITY_TYPE` will be one of `SERVICE`, `SYNTHETIC_TEST`, or other, and `ENTITY_ID` will be a string of characters containing uppercase letters and numbers.
+
+## Disclaimer
+
+This plugin is not officially supported by Dynatrace.
