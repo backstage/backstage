@@ -1,0 +1,32 @@
+name: build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: use node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+
+      - name: tsc
+        run: yarn tsc
+
+      - name: build
+        run: yarn build
+
+      - name: docker build
+        run: |
+          docker image build . -f packages/backend/Dockerfile --tag backstage
