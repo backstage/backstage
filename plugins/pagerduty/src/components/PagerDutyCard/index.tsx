@@ -26,7 +26,7 @@ import { MissingTokenError } from '../Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import { usePagerdutyEntity } from '../../hooks';
-import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
+import { PAGERDUTY_INTEGRATION_KEY, PAGERDUTY_SERVICE_ID } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 import { ChangeEvents } from '../ChangeEvents';
 
@@ -40,7 +40,10 @@ import {
 } from '@backstage/core-components';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
+  Boolean(
+    entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY] ||
+      entity.metadata.annotations?.[PAGERDUTY_SERVICE_ID],
+  );
 
 export const PagerDutyCard = () => {
   const { integrationKey } = usePagerdutyEntity();

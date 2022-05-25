@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { render, waitFor, fireEvent, act } from '@testing-library/react';
-import { PagerDutyCard } from '../PagerDutyCard';
+import { PagerDutyCard, isPluginApplicableToEntity } from '../PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
@@ -35,6 +35,7 @@ const apis = TestApiRegistry.from(
   [pagerDutyApiRef, mockPagerDutyApi],
   [alertApiRef, {}],
 );
+
 const entity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'Component',
@@ -42,6 +43,38 @@ const entity: Entity = {
     name: 'pagerduty-test',
     annotations: {
       'pagerduty.com/integration-key': 'abc123',
+    },
+  },
+};
+
+const entityWithoutAnnotations: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {},
+  },
+};
+
+const entityWithServiceId: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {
+      'pagerduty.com/service-id': 'def456',
+    },
+  },
+};
+
+const entityWithAllAnnotations: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'pagerduty-test',
+    annotations: {
+      'pagerduty.com/integration-key': 'abc123',
+      'pagerduty.com/service-id': 'def456',
     },
   },
 };
@@ -55,7 +88,7 @@ const user: User = {
 };
 
 const service: Service = {
-  id: 'abc',
+  id: 'def456',
   name: 'pagerduty-name',
   html_url: 'www.example.com',
   escalation_policy: {
@@ -63,8 +96,34 @@ const service: Service = {
     user: user,
     html_url: 'http://a.com/id1',
   },
-  integrationKey: 'abcd',
+  integrationKey: 'abc123',
 };
+
+describe('isPluginApplicableToEntity', () => {
+  describe('when entity has no annotations', () => {
+    it('returns false', () => {
+      expect(isPluginApplicableToEntity(entityWithoutAnnotations)).toBe(false);
+    });
+  });
+
+  describe('when entity has the pagerduty.com/integration-key annotation', () => {
+    it('returns true', () => {
+      expect(isPluginApplicableToEntity(entity)).toBe(true);
+    });
+  });
+
+  describe('when entity has the pagerduty.com/service-id annotation', () => {
+    it('returns true', () => {
+      expect(isPluginApplicableToEntity(entityWithServiceId)).toBe(true);
+    });
+  });
+
+  describe('when entity has all annotations', () => {
+    it('returns true', () => {
+      expect(isPluginApplicableToEntity(entityWithAllAnnotations)).toBe(true);
+    });
+  });
+});
 
 describe('PageDutyCard', () => {
   it('Render pagerduty', async () => {
