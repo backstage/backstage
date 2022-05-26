@@ -30,7 +30,7 @@ import {
   createApiRef,
   DiscoveryApi,
   ConfigApi,
-  IdentityApi,
+  FetchApi,
 } from '@backstage/core-plugin-api';
 
 export class UnauthorizedError extends Error {}
@@ -46,7 +46,7 @@ export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
     discoveryApi: DiscoveryApi,
-    identityApi: IdentityApi,
+    fetchApi: FetchApi,
   ) {
     const eventsBaseUrl: string =
       configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
@@ -54,7 +54,7 @@ export class PagerDutyClient implements PagerDutyApi {
     return new PagerDutyClient({
       eventsBaseUrl,
       discoveryApi,
-      identityApi,
+      fetchApi,
     });
   }
   constructor(private readonly config: ClientApiConfig) {}
@@ -144,13 +144,11 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   private async getByUrl<T>(url: string): Promise<T> {
-    const { token: idToken } = await this.config.identityApi.getCredentials();
     const options = {
       method: 'GET',
       headers: {
         Accept: 'application/vnd.pagerduty+json;version=2',
         'Content-Type': 'application/json',
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     };
     const response = await this.request(url, options);
@@ -161,7 +159,7 @@ export class PagerDutyClient implements PagerDutyApi {
     url: string,
     options: RequestOptions,
   ): Promise<Response> {
-    const response = await fetch(url, options);
+    const response = await this.config.fetchApi.fetch(url, options);
     if (response.status === 401) {
       throw new UnauthorizedError();
     }
