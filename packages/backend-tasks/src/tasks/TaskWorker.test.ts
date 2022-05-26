@@ -260,6 +260,42 @@ describe('TaskWorker', () => {
   );
 
   it.each(databases.eachSupportedId())(
+    'restarts next shedule task if repersisted, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await migrateBackendTasks(knex);
+
+      const fn = jest.fn(async () => {});
+      const settings: TaskSettingsV2 = {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: 'PT1S',
+        timeoutAfterDuration: Duration.fromMillis(60000).toISO(),
+      };
+
+      const worker1 = new TaskWorker('task1', fn, knex, logger);
+      await worker1.start(settings);
+
+      await expect(worker1.findReadyTask()).resolves.toEqual({
+        result: 'ready',
+        settings,
+      });
+
+      await expect(worker1.findReadyTask()).resolves.toEqual({
+        result: 'not-ready-yet',
+      });
+
+      await worker1.persistTask(settings);
+
+      await expect(worker1.findReadyTask()).resolves.toEqual({
+        result: 'ready',
+        settings,
+      });
+    },
+    60_000,
+  );
+
+  it.each(databases.eachSupportedId())(
     'respects initialDelayDuration per worker, %p',
     async databaseId => {
       const knex = await databases.init(databaseId);
