@@ -15,7 +15,7 @@
  */
 
 import { Incident, ChangeEvent, OnCall, Service } from '../components/types';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 export type TriggerAlarmRequest = {
   integrationKey: string;
@@ -74,6 +74,7 @@ export type OnCallsResponse = {
 export type ClientApiConfig = {
   eventsBaseUrl?: string;
   discoveryApi: DiscoveryApi;
+  identityApi: IdentityApi;
 };
 
 export type RequestOptions = {

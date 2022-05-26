@@ -21,6 +21,7 @@ import {
   discoveryApiRef,
   configApiRef,
   createComponentExtension,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
@@ -32,9 +33,13 @@ export const pagerDutyPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: pagerDutyApiRef,
-      deps: { discoveryApi: discoveryApiRef, configApi: configApiRef },
-      factory: ({ configApi, discoveryApi }) =>
-        PagerDutyClient.fromConfig(configApi, discoveryApi),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        configApi: configApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
+        PagerDutyClient.fromConfig(configApi, discoveryApi, identityApi),
     }),
   ],
 });
