@@ -27,6 +27,7 @@ import {
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
   entityRouteRef,
+  catalogApiRef,
 } from '@backstage/plugin-catalog-react';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
