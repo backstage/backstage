@@ -40,30 +40,37 @@ export class LocalTaskWorker {
     this.logger.info(
       `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
-
+    let attemptNum = 1;
     (async () => {
-      try {
-        if (settings.initialDelayDuration) {
-          await this.sleep(
-            Duration.fromISO(settings.initialDelayDuration),
-            options?.signal,
-          );
-        }
+      for (;;) {
+        try {
+          if (settings.initialDelayDuration) {
+            await this.sleep(
+              Duration.fromISO(settings.initialDelayDuration),
+              options?.signal,
+            );
+          }
 
-        while (!options?.signal?.aborted) {
-          const startTime = process.hrtime();
-          await this.runOnce(settings, options?.signal);
-          const timeTaken = process.hrtime(startTime);
-          await this.waitUntilNext(
-            settings,
-            (timeTaken[0] + timeTaken[1] / 1e9) * 1000,
-            options?.signal,
+          while (!options?.signal?.aborted) {
+            const startTime = process.hrtime();
+            await this.runOnce(settings, options?.signal);
+            const timeTaken = process.hrtime(startTime);
+            await this.waitUntilNext(
+              settings,
+              (timeTaken[0] + timeTaken[1] / 1e9) * 1000,
+              options?.signal,
+            );
+          }
+          this.logger.info(`Task worker finished: ${this.taskId}`);
+          attemptNum = 0;
+          break;
+        } catch (e) {
+          attemptNum += 1;
+          this.logger.warn(
+            `Task worker failed unexpectedly, attempt number ${attemptNum}, ${e}`,
           );
+          await sleep(Duration.fromObject({ seconds: 1 }));
         }
-
-        this.logger.info(`Task worker finished: ${this.taskId}`);
-      } catch (e) {
-        this.logger.warn(`Task worker failed unexpectedly, ${e}`);
       }
     })();
   }

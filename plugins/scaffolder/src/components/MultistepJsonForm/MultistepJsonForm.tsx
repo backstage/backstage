@@ -198,6 +198,7 @@ export const MultistepJsonForm = (props: Props) => {
                   widgets={widgets}
                   noHtml5Validate
                   formData={formData}
+                  formContext={{ formData }}
                   onChange={onChange}
                   onSubmit={e => {
                     if (e.errors.length === 0) handleNext();

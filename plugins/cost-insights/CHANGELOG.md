@@ -1,5 +1,33 @@
 # @backstage/plugin-cost-insights
 
+## 0.11.28-next.0
+
+### Patch Changes
+
+- eb2544b21b: Add missing `export` in configuration schema.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+
+## 0.11.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/config@1.0.1
+  - @backstage/catalog-model@1.0.2
+
+## 0.11.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/config@1.0.1-next.0
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
 ## 0.11.27-next.0
 
 ### Patch Changes

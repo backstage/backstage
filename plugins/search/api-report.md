@@ -10,6 +10,7 @@ import { IconComponent } from '@backstage/core-plugin-api';
 import { InputBaseProps } from '@material-ui/core';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
@@ -19,6 +20,7 @@ import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common'
 // @public (undocumented)
 export const DefaultResultListItem: ({
   result,
+  highlight,
   icon,
   secondaryAction,
   lineClamp,
@@ -26,6 +28,7 @@ export const DefaultResultListItem: ({
   icon?: ReactNode;
   secondaryAction?: ReactNode;
   result: SearchDocument;
+  highlight?: ResultHighlight | undefined;
   lineClamp?: number | undefined;
 }) => JSX.Element;
 
@@ -192,6 +195,28 @@ export interface SearchModalProps {
   toggleModal: () => void;
 }
 
+// @public
+export const SearchModalProvider: ({
+  children,
+  showInitially,
+}: SearchModalProviderProps) => JSX.Element;
+
+// @public
+export type SearchModalProviderProps = {
+  children: ReactNode;
+  showInitially?: boolean;
+};
+
+// @public
+export type SearchModalValue = {
+  state: {
+    hidden: boolean;
+    open: boolean;
+  };
+  toggleModal: () => void;
+  setOpen: (open: boolean) => void;
+};
+
 // Warning: (ae-missing-release-tag) "SearchPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -294,12 +319,5 @@ export type SidebarSearchProps = {
 };
 
 // @public
-export function useSearchModal(initialState?: boolean): {
-  state: {
-    hidden: boolean;
-    open: boolean;
-  };
-  toggleModal: () => void;
-  setOpen: (open: boolean) => void;
-};
+export function useSearchModal(initialState?: boolean): SearchModalValue;
 ```

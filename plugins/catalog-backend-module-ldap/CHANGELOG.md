@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.0-next.0
+
+### Minor Changes
+
+- 1f83f0bc84: Added the possibility to pass TLS configuration to ldap connection
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.0
+  - @backstage/plugin-catalog-backend@1.2.0-next.0
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.2
+  - @backstage/backend-tasks@0.3.1
+  - @backstage/config@1.0.1
+  - @backstage/catalog-model@1.0.2
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.1.2-next.2
+  - @backstage/backend-tasks@0.3.1-next.1
+  - @backstage/config@1.0.1-next.0
+  - @backstage/catalog-model@1.0.2-next.0
+
 ## 0.4.3-next.0
 
 ### Patch Changes

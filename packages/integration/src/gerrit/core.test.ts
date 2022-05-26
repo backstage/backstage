@@ -20,6 +20,7 @@ import fetch from 'cross-fetch';
 import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { GerritIntegrationConfig } from './config';
 import {
+  builldGerritGitilesUrl,
   getGerritBranchApiUrl,
   getGerritCloneRepoUrl,
   getGerritRequestOptions,
@@ -31,6 +32,20 @@ import {
 describe('gerrit core', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
+
+  describe('builldGerritGitilesUrl', () => {
+    it('can create an url from arguments', () => {
+      const config: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+      };
+      expect(
+        builldGerritGitilesUrl(config, 'repo', 'dev', 'catalog-info.yaml'),
+      ).toEqual(
+        'https://gerrit.com/gitiles/repo/+/refs/heads/dev/catalog-info.yaml',
+      );
+    });
+  });
 
   describe('getGerritRequestOptions', () => {
     it('adds headers when a password is specified', () => {

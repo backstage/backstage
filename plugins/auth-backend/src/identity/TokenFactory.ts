@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { TokenIssuer, TokenParams, KeyStore, AnyJWK } from './types';
-import { exportJWK, generateKeyPair, importJWK, JWK, SignJWT } from 'jose';
-import { Logger } from 'winston';
-import { v4 as uuid } from 'uuid';
-import { DateTime } from 'luxon';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { AuthenticationError } from '@backstage/errors';
+import { exportJWK, generateKeyPair, importJWK, JWK, SignJWT } from 'jose';
+import { DateTime } from 'luxon';
+import { v4 as uuid } from 'uuid';
+import { Logger } from 'winston';
+
+import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
 
 const MS_IN_S = 1000;
 
@@ -32,6 +32,10 @@ type Options = {
   keyStore: KeyStore;
   /** Expiration time of signing keys in seconds */
   keyDurationSeconds: number;
+  /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+   * Must match one of the algorithms defined for IdentityClient.
+   * More info on supported algorithms: https://github.com/panva/jose */
+  algorithm?: string;
 };
 
 /**
@@ -53,6 +57,7 @@ export class TokenFactory implements TokenIssuer {
   private readonly logger: Logger;
   private readonly keyStore: KeyStore;
   private readonly keyDurationSeconds: number;
+  private readonly algorithm: string;
 
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JWK>;
@@ -62,6 +67,7 @@ export class TokenFactory implements TokenIssuer {
     this.logger = options.logger;
     this.keyStore = options.keyStore;
     this.keyDurationSeconds = options.keyDurationSeconds;
+    this.algorithm = options.algorithm ?? 'ES256';
   }
 
   async issueToken(params: TokenParams): Promise<string> {
@@ -156,11 +162,11 @@ export class TokenFactory implements TokenIssuer {
       .toJSDate();
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
-      const key = await generateKeyPair('ES256');
+      const key = await generateKeyPair(this.algorithm);
       const publicKey = await exportJWK(key.publicKey);
       const privateKey = await exportJWK(key.privateKey);
       publicKey.kid = privateKey.kid = uuid();
-      publicKey.alg = privateKey.alg = 'ES256';
+      publicKey.alg = privateKey.alg = this.algorithm;
 
       // We're not allowed to use the key until it has been successfully stored
       // TODO: some token verification implementations aggressively cache the list of keys, and

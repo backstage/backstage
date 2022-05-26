@@ -263,7 +263,22 @@ export function createPublishGithubAction(options: {
               allow_rebase_merge: allowRebaseMerge,
             });
 
-      const { data: newRepo } = await repoCreationPromise;
+      let newRepo;
+
+      try {
+        newRepo = (await repoCreationPromise).data;
+      } catch (e) {
+        assertError(e);
+        if (e.message === 'Resource not accessible by integration') {
+          ctx.logger.warn(
+            `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
+          );
+        }
+        throw new Error(
+          `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
+        );
+      }
+
       if (access?.startsWith(`${owner}/`)) {
         const [, team] = access.split('/');
         await client.rest.teams.addOrUpdateRepoPermissionsInOrg({

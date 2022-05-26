@@ -10,41 +10,48 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Dispatch } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Extension } from '@backstage/core-plugin-api';
+import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 import { SetStateAction } from 'react';
 
-// @alpha
+// @public
+export function createTechDocsAddonExtension(
+  options: TechDocsAddonOptions,
+): Extension<() => JSX.Element | null>;
+
+// @public
 export function createTechDocsAddonExtension<TComponentProps>(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null>;
 
-// @alpha (undocumented)
-export const defaultTechDocsReaderPageValue: TechDocsReaderPageValue;
+// @public
+export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
 
 // @public
 export type SyncResult = 'cached' | 'updated';
 
-// @alpha
+// @public
 export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
 
-// @alpha
+// @public
 export const TechDocsAddonLocations: Readonly<{
   readonly Header: 'Header';
   readonly Subheader: 'Subheader';
+  readonly Settings: 'Settings';
   readonly PrimarySidebar: 'PrimarySidebar';
   readonly SecondarySidebar: 'SecondarySidebar';
   readonly Content: 'Content';
 }>;
 
-// @alpha
+// @public
 export type TechDocsAddonOptions<TAddonProps = {}> = {
   name: string;
   location: keyof typeof TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
 
-// @alpha
+// @public
 export const TechDocsAddons: React_2.ComponentType;
 
 // @public
@@ -107,6 +114,19 @@ export type TechDocsReaderPageValue = {
 };
 
 // @public
+export const TechDocsShadowDom: ({
+  element,
+  onAppend,
+  children,
+}: TechDocsShadowDomProps) => JSX.Element;
+
+// @public
+export type TechDocsShadowDomProps = PropsWithChildren<{
+  element: Element;
+  onAppend?: (shadowRoot: ShadowRoot) => void;
+}>;
+
+// @public
 export interface TechDocsStorageApi {
   // (undocumented)
   getApiOrigin(): Promise<string>;
@@ -132,20 +152,23 @@ export interface TechDocsStorageApi {
 // @public
 export const techdocsStorageApiRef: ApiRef<TechDocsStorageApi>;
 
-// @alpha
+// @public
+export const useShadowDomStylesLoading: (element: Element | null) => boolean;
+
+// @public
 export const useShadowRoot: () => ShadowRoot | undefined;
 
-// @alpha
+// @public
 export const useShadowRootElements: <
   TReturnedElement extends HTMLElement = HTMLElement,
 >(
   selectors: string[],
 ) => TReturnedElement[];
 
-// @alpha
+// @public
 export const useShadowRootSelection: (wait?: number) => Selection | null;
 
-// @alpha
+// @public
 export const useTechDocsAddons: () => {
   renderComponentByName: (name: string) => JSX.Element | null;
   renderComponentsByLocation: (
@@ -153,6 +176,6 @@ export const useTechDocsAddons: () => {
   ) => (JSX.Element | null)[] | null;
 };
 
-// @alpha
+// @public
 export const useTechDocsReaderPage: () => TechDocsReaderPageValue;
 ```

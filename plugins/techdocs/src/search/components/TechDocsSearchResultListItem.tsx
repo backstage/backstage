@@ -17,7 +17,8 @@
 import React, { PropsWithChildren } from 'react';
 import { Divider, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import TextTruncate from 'react-text-truncate';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -36,6 +37,7 @@ const useStyles = makeStyles({
  */
 export type TechDocsSearchResultListItemProps = {
   result: any;
+  highlight?: ResultHighlight;
   lineClamp?: number;
   asListItem?: boolean;
   asLink?: boolean;
@@ -52,31 +54,80 @@ export const TechDocsSearchResultListItem = (
 ) => {
   const {
     result,
+    highlight,
     lineClamp = 5,
     asListItem = true,
     asLink = true,
     title,
   } = props;
   const classes = useStyles();
-  const TextItem = () => (
-    <ListItemText
-      className={classes.itemText}
-      primaryTypographyProps={{ variant: 'h6' }}
-      primary={
-        title
-          ? title
-          : `${result.title} | ${result.entityTitle ?? result.name} docs`
-      }
-      secondary={
-        <TextTruncate
-          line={lineClamp}
-          truncateText="…"
-          text={result.text}
-          element="span"
-        />
-      }
-    />
-  );
+  const TextItem = () => {
+    const resultTitle = highlight?.fields.title ? (
+      <HighlightedSearchResultText
+        text={highlight.fields.title}
+        preTag={highlight.preTag}
+        postTag={highlight.postTag}
+      />
+    ) : (
+      result.title
+    );
+
+    const entityTitle = highlight?.fields.entityTitle ? (
+      <HighlightedSearchResultText
+        text={highlight.fields.entityTitle}
+        preTag={highlight.preTag}
+        postTag={highlight.postTag}
+      />
+    ) : (
+      result.entityTitle
+    );
+
+    const resultName = highlight?.fields.name ? (
+      <HighlightedSearchResultText
+        text={highlight.fields.name}
+        preTag={highlight.preTag}
+        postTag={highlight.postTag}
+      />
+    ) : (
+      result.name
+    );
+
+    return (
+      <ListItemText
+        className={classes.itemText}
+        primaryTypographyProps={{ variant: 'h6' }}
+        primary={
+          title ? (
+            title
+          ) : (
+            <>
+              {resultTitle} | {entityTitle ?? resultName} docs
+            </>
+          )
+        }
+        secondary={
+          <span
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: lineClamp,
+              overflow: 'hidden',
+            }}
+          >
+            {highlight?.fields.text ? (
+              <HighlightedSearchResultText
+                text={highlight.fields.text}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
+              />
+            ) : (
+              result.text
+            )}
+          </span>
+        }
+      />
+    );
+  };
 
   const LinkWrapper = ({ children }: PropsWithChildren<{}>) =>
     asLink ? <Link to={result.location}>{children}</Link> : <>{children}</>;

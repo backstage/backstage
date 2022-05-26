@@ -14,11 +14,12 @@ import { V1Job } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
+import { V1StatefulSet } from '@kubernetes/client-node';
 
 // Warning: (ae-missing-release-tag) "AuthProviderType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws' | 'azure';
 
 // Warning: (ae-missing-release-tag) "ClientContainerStatus" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -135,7 +136,8 @@ export type FetchResponse =
   | JobsFetchResponse
   | CronJobsFetchResponse
   | IngressesFetchResponse
-  | CustomResourceFetchResponse;
+  | CustomResourceFetchResponse
+  | StatefulSetsFetchResponse;
 
 // Warning: (ae-missing-release-tag) "HorizontalPodAutoscalersFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -195,6 +197,9 @@ export interface KubernetesRequestBody {
   // (undocumented)
   auth?: {
     google?: string;
+    oidc?: {
+      [key: string]: string;
+    };
   };
   // (undocumented)
   entity: Entity;
@@ -236,5 +241,15 @@ export interface ServiceFetchResponse {
   resources: Array<V1Service>;
   // (undocumented)
   type: 'services';
+}
+
+// Warning: (ae-missing-release-tag) "StatefulSetsFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface StatefulSetsFetchResponse {
+  // (undocumented)
+  resources: Array<V1StatefulSet>;
+  // (undocumented)
+  type: 'statefulsets';
 }
 ```

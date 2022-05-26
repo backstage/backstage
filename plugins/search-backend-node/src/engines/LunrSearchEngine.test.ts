@@ -25,6 +25,7 @@ import {
   LunrSearchEngine,
   decodePageCursor,
   encodePageCursor,
+  parseHighlightFields,
 } from './LunrSearchEngine';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 import { TestPipeline } from '../test-utils';
@@ -33,6 +34,12 @@ import { TestPipeline } from '../test-utils';
  * Just used to test the default translator shipped with LunrSearchEngine.
  */
 class LunrSearchEngineForTests extends LunrSearchEngine {
+  getHighlightTags() {
+    return {
+      pre: this.highlightPreTag,
+      post: this.highlightPostTag,
+    };
+  }
   getDocStore() {
     return this.docStore;
   }
@@ -461,6 +468,58 @@ describe('LunrSearchEngine', () => {
               title: 'testTitle',
               text: 'testText',
               location: 'test/location',
+            },
+          },
+        ],
+        nextPageCursor: undefined,
+      });
+    });
+
+    it('should perform search query and return highlight metadata on match', async () => {
+      const inspectableSearchEngine = new LunrSearchEngineForTests({
+        logger: getVoidLogger(),
+      });
+
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location',
+        },
+      ];
+
+      // Mock indexing of 1 document
+      const indexer = await getActualIndexer(
+        inspectableSearchEngine,
+        'test-index',
+      );
+      await TestPipeline.withSubject(indexer)
+        .withDocuments(mockDocuments)
+        .execute();
+
+      // Perform search query
+      const mockedSearchResult = await inspectableSearchEngine.query({
+        term: 'test',
+        filters: {},
+      });
+
+      const highlightTags = inspectableSearchEngine.getHighlightTags();
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'testText',
+              location: 'test/location',
+            },
+            highlight: {
+              preTag: highlightTags.pre,
+              postTag: highlightTags.post,
+              fields: {
+                title: `${highlightTags.pre}testTitle${highlightTags.post}`,
+                text: `${highlightTags.pre}testText${highlightTags.post}`,
+                location: `${highlightTags.pre}test/location${highlightTags.post}`,
+              },
             },
           },
         ],
@@ -974,5 +1033,35 @@ describe('decodePageCursor', () => {
 describe('encodePageCursor', () => {
   test('should encode page', () => {
     expect(encodePageCursor({ page: 1 })).toEqual('MQ==');
+  });
+});
+
+describe('parseHighlightFields', () => {
+  it('should parse highlight metadata', () => {
+    expect(
+      parseHighlightFields({
+        preTag: '<>',
+        postTag: '</>',
+        doc: { foo: 'abc def', bar: 'ghi jkl' },
+        positionMetadata: {
+          test: {
+            foo: {
+              position: [[0, 3]],
+            },
+          },
+          anotherTest: {
+            foo: {
+              position: [[4, 3]],
+            },
+            bar: {
+              position: [[4, 3]],
+            },
+          },
+        },
+      }),
+    ).toEqual({
+      foo: '<>abc</> <>def</>',
+      bar: 'ghi <>jkl</>',
+    });
   });
 });

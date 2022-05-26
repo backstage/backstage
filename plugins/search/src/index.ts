@@ -34,10 +34,16 @@ export type {
   SearchFilterComponentProps,
   SearchFilterWrapperProps,
 } from './components/SearchFilter';
-export { SearchModal, useSearchModal } from './components/SearchModal';
+export {
+  SearchModal,
+  SearchModalProvider,
+  useSearchModal,
+} from './components/SearchModal';
 export type {
   SearchModalChildrenProps,
   SearchModalProps,
+  SearchModalProviderProps,
+  SearchModalValue,
 } from './components/SearchModal';
 export { SearchPage as Router } from './components/SearchPage';
 export { SearchResultPager } from './components/SearchResultPager';

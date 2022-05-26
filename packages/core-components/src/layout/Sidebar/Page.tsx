@@ -37,20 +37,20 @@ const useStyles = makeStyles<
   { sidebarConfig: SidebarConfig; isPinned: boolean }
 >(
   theme => ({
-    root: props => ({
+    root: {
       width: '100%',
       transition: 'padding-left 0.1s ease-out',
       isolation: 'isolate',
       [theme.breakpoints.up('sm')]: {
-        paddingLeft: () =>
+        paddingLeft: props =>
           props.isPinned
             ? props.sidebarConfig.drawerWidthOpen
             : props.sidebarConfig.drawerWidthClosed,
       },
       [theme.breakpoints.down('xs')]: {
-        paddingBottom: props.sidebarConfig.mobileSidebarHeight,
+        paddingBottom: props => props.sidebarConfig.mobileSidebarHeight,
       },
-    }),
+    },
     content: {
       zIndex: 0,
       isolation: 'isolate',

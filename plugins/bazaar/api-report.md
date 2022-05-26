@@ -28,5 +28,10 @@ export const bazaarPlugin: BackstagePlugin<
 // @public (undocumented)
 export const EntityBazaarInfoCard: () => JSX.Element | null;
 
+// Warning: (ae-missing-release-tag) "SortView" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const SortView: () => JSX.Element;
+
 // (No @packageDocumentation comment for this package)
 ```

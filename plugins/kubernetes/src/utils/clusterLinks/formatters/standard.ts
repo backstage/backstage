@@ -21,6 +21,7 @@ const kindMappings: Record<string, string> = {
   ingress: 'ingress',
   service: 'service',
   horizontalpodautoscaler: 'deployment',
+  statefulset: 'statefulset',
 };
 
 export function standardFormatter(options: ClusterLinksFormatterOptions) {

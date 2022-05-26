@@ -14,40 +14,30 @@
  * limitations under the License.
  */
 
+import { SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
 import type { Transformer } from './transformer';
 
 type OnCssReadyOptions = {
-  docStorageUrl: string;
-  onLoading: (dom: Element) => void;
-  onLoaded: (dom: Element) => void;
+  onLoading: () => void;
+  onLoaded: () => void;
 };
 
 export const onCssReady = ({
-  docStorageUrl,
   onLoading,
   onLoaded,
 }: OnCssReadyOptions): Transformer => {
   return dom => {
-    const cssPages = Array.from(
-      dom.querySelectorAll('head > link[rel="stylesheet"]'),
-    ).filter(elem => elem.getAttribute('href')?.startsWith(docStorageUrl));
-
-    let count = cssPages.length;
-
-    if (count > 0) {
-      onLoading(dom);
-    }
-
-    cssPages.forEach(cssPage =>
-      cssPage.addEventListener('load', () => {
-        count -= 1;
-
-        if (count === 0) {
-          onLoaded(dom);
-        }
-      }),
+    onLoading();
+    dom.addEventListener(
+      SHADOW_DOM_STYLE_LOAD_EVENT,
+      function handleShadowDomStyleLoad() {
+        onLoaded();
+        dom.removeEventListener(
+          SHADOW_DOM_STYLE_LOAD_EVENT,
+          handleShadowDomStyleLoad,
+        );
+      },
     );
-
     return dom;
   };
 };

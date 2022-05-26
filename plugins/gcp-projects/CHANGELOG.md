@@ -1,5 +1,21 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.25-next.0
+
+### Patch Changes
+
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+
+## 0.3.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+
 ## 0.3.24-next.0
 
 ### Patch Changes

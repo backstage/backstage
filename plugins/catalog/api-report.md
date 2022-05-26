@@ -17,6 +17,7 @@ import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
@@ -108,6 +109,8 @@ export function CatalogSearchResultListItem(
 
 // @public
 export interface CatalogSearchResultListItemProps {
+  // (undocumented)
+  highlight?: ResultHighlight;
   // (undocumented)
   result: IndexableDocument;
 }
@@ -368,13 +371,17 @@ export interface HasSystemsCardProps {
 }
 
 // @public
-export function isComponentType(type: string): (entity: Entity) => boolean;
+export function isComponentType(
+  types: string | string[],
+): (entity: Entity) => boolean;
 
 // @public
-export function isKind(kind: string): (entity: Entity) => boolean;
+export function isKind(kinds: string | string[]): (entity: Entity) => boolean;
 
 // @public
-export function isNamespace(namespace: string): (entity: Entity) => boolean;
+export function isNamespace(
+  namespaces: string | string[],
+): (entity: Entity) => boolean;
 
 // @public
 export function isOrphan(entity: Entity): boolean;

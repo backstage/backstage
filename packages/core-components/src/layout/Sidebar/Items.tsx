@@ -259,6 +259,7 @@ type SidebarItemBaseProps = {
   icon: IconComponent;
   text?: string;
   hasNotifications?: boolean;
+  hasSubmenu?: boolean;
   disableHighlight?: boolean;
   className?: string;
 };
@@ -356,6 +357,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
     icon: Icon,
     text,
     hasNotifications = false,
+    hasSubmenu = false,
     disableHighlight = false,
     onClick,
     children,
@@ -369,6 +371,16 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   // Still waiting on a Q answered to fine tune the implementation
   const { isOpen } = useContext(SidebarContext);
 
+  const divStyle =
+    !isOpen && hasSubmenu ? { display: 'flex', marginLeft: '24px' } : {};
+
+  const displayItemIcon = (
+    <div style={divStyle}>
+      <Icon fontSize="small" />
+      {!isOpen && hasSubmenu ? <ArrowRightIcon /> : <></>}
+    </div>
+  );
+
   const itemIcon = (
     <Badge
       color="secondary"
@@ -377,7 +389,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
       invisible={!hasNotifications}
       className={classnames({ [classes.closedItemIcon]: !isOpen })}
     >
-      <Icon fontSize="small" />
+      {displayItemIcon}
     </Badge>
   );
 
@@ -482,6 +494,7 @@ const SidebarItemWithSubmenu = ({
         className={classnames(isHoveredOn && classes.highlighted)}
       >
         <SidebarItemBase
+          hasSubmenu
           className={isActive ? classes.selected : ''}
           {...props}
         >

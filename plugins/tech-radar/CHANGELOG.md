@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-radar
 
+## 0.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+
+## 0.5.12
+
+### Patch Changes
+
+- 3588a77994: Rename `use` to `adopt`, to reflect Zalando Tech Radar regarding quadrants and add link to Zalando explanation.
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+
 ## 0.5.12-next.0
 
 ### Patch Changes

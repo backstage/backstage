@@ -167,7 +167,7 @@ describe('<UserListPicker />', () => {
 
     expect(
       getAllByRole('menuitem').map(({ textContent }) => textContent),
-    ).toEqual(['Owned', 'Starred', 'All']);
+    ).toEqual(['Owned 1', 'Starred 1', 'All 4']);
   });
 
   it('includes counts alongside each filter', async () => {
@@ -183,10 +183,8 @@ describe('<UserListPicker />', () => {
     // menuitem itself, so we pick off the next sibling.
     await waitFor(() => {
       expect(
-        getAllByRole('menuitem').map(
-          ({ nextSibling }) => nextSibling?.textContent,
-        ),
-      ).toEqual(['1', '1', '4']);
+        getAllByRole('menuitem').map(({ textContent }) => textContent),
+      ).toEqual(['Owned 1', 'Starred 1', 'All 4']);
     });
   });
 
@@ -206,10 +204,8 @@ describe('<UserListPicker />', () => {
 
     await waitFor(() => {
       expect(
-        getAllByRole('menuitem').map(
-          ({ nextSibling }) => nextSibling?.textContent,
-        ),
-      ).toEqual(['1', '0', '2']);
+        getAllByRole('menuitem').map(({ textContent }) => textContent),
+      ).toEqual(['Owned 1', 'Starred 0', 'All 2']);
     });
   });
 

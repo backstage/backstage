@@ -1,5 +1,68 @@
 # @backstage/plugin-catalog-backend
 
+## 1.2.0-next.0
+
+### Minor Changes
+
+- b594679ae3: Allow array as non-spread arguments at the `CatalogBuilder`.
+
+  ```typescript
+  builder.addEntityProvider(...getArrayOfProviders());
+  ```
+
+  can be simplified to
+
+  ```typescript
+  builder.addEntityProvider(getArrayOfProviders());
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.0
+
+## 1.1.2
+
+### Patch Changes
+
+- 16a40ac4c0: Fix wrong return type of the `isGroupEntity` function.
+- 55e09b29dd: Fixing broken types for `knex` when checking returned rows
+- 1ccbe081cc: Minor internal tweak to support TypeScript 4.6
+- cfc0f19699: Updated dependency `fs-extra` to `10.1.0`.
+- 2909746147: Updated parseEntityTransformParams to handle keys with '.' in them. This will allow for querying of entities based off annotations such as 'backstage.io/orgin-location' or other entity field keys that have '.' in them.
+- 8cc75993a6: Fixed issue in `PermissionEvaluator` instance check that would cause unexpected "invalid union" errors.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3
+  - @backstage/integration@1.2.0
+  - @backstage/plugin-scaffolder-common@1.1.0
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+  - @backstage/plugin-catalog-common@1.0.2
+  - @backstage/plugin-permission-common@0.6.1
+  - @backstage/plugin-permission-node@0.6.1
+
+## 1.1.2-next.2
+
+### Patch Changes
+
+- 16a40ac4c0: Fix wrong return type of the `isGroupEntity` function.
+- 2909746147: Updated parseEntityTransformParams to handle keys with '.' in them. This will allow for querying of entities based off annotations such as 'backstage.io/orgin-location' or other entity field keys that have '.' in them.
+- Updated dependencies
+  - @backstage/backend-common@0.13.3-next.2
+  - @backstage/plugin-scaffolder-common@1.1.0-next.0
+  - @backstage/config@1.0.1-next.0
+  - @backstage/plugin-search-common@0.3.4-next.0
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/integration@1.2.0-next.1
+  - @backstage/plugin-permission-common@0.6.1-next.0
+  - @backstage/plugin-permission-node@0.6.1-next.1
+  - @backstage/catalog-client@1.0.2-next.0
+  - @backstage/plugin-catalog-common@1.0.2-next.0
+
 ## 1.1.2-next.1
 
 ### Patch Changes
@@ -455,7 +518,7 @@
 - 022507c860: A `DefaultCatalogCollatorFactory`, which works with the new stream-based
   search indexing subsystem, is now available. The `DefaultCatalogCollator` will
   continue to be available for those unable to upgrade to the stream-based
-  `@backstage/search-backend-node` (and related packages), however it is now
+  `@backstage/plugin-search-backend-node` (and related packages), however it is now
   marked as deprecated and will be removed in a future version.
 
   To upgrade this plugin and the search indexing subsystem in one go, check

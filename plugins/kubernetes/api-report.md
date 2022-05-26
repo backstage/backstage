@@ -17,6 +17,7 @@ import type { JsonObject } from '@backstage/types';
 import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { V1ConfigMap } from '@kubernetes/client-node';
@@ -29,6 +30,7 @@ import { V1ObjectMeta } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
 import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
+import { V1StatefulSet } from '@kubernetes/client-node';
 
 // Warning: (ae-forgotten-export) The symbol "KubernetesAuthProvider" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "AwsKubernetesAuthProvider" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -179,6 +181,8 @@ export interface GroupedResponses extends DeploymentResources {
   jobs: V1Job[];
   // (undocumented)
   services: V1Service[];
+  // (undocumented)
+  statefulsets: V1StatefulSet[];
 }
 
 // Warning: (ae-missing-release-tag) "GroupedResponsesContext" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -225,6 +229,7 @@ export interface KubernetesApi {
     {
       name: string;
       authProvider: string;
+      oidcTokenProvider?: string | undefined;
     }[]
   >;
   // (undocumented)
@@ -242,7 +247,12 @@ export const kubernetesApiRef: ApiRef<KubernetesApi>;
 //
 // @public (undocumented)
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
-  constructor(options: { googleAuthApi: OAuthApi });
+  constructor(options: {
+    googleAuthApi: OAuthApi;
+    oidcProviders?: {
+      [key: string]: OpenIdConnectApi;
+    };
+  });
   // (undocumented)
   decorateRequestBodyForAuth(
     authProvider: string,

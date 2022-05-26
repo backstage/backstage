@@ -4,11 +4,6 @@ title: TechDocs Addons
 description: How to find, use, or create TechDocs Addons.
 ---
 
-> Note: This page contains documentation for features that have not yet been
-> released on a [main-line version](https://backstage.io/docs/overview/versioning-policy#main-release-line)
-> of Backstage and TechDocs. We plan to make Addons generally available in
-> Backstage v1.2.
-
 ## Concepts
 
 TechDocs is a centralized platform for publishing, viewing, and discovering
@@ -35,6 +30,8 @@ representative of physical spaces in the TechDocs UI:
   line as the title.
 - `Subheader`: For Addons that sit below the header but above all content.
   This is a great location for tooling/configuration of TechDocs display.
+- `Settings`: These addons are items added to the settings menu list and are designed to make
+  the reader experience customizable, for example accessibility options.
 - `PrimarySidebar`: Left of the content, above of the navigation.
 - `SecondarySidebar`: Right of the content, above the table of contents.
 - `Content`: A special location intended for Addons which augment the
@@ -109,9 +106,11 @@ page header, TechDocs Addons whose location is `Header` will not be rendered.
 Addons can, in principle, be provided by any plugin! To make it easier to
 discover available Addons, we've compiled a list of them here:
 
-| Addon                                                                                                      | Package/Plugin                                     | Description                                                                                                                                                                                                                                  |
-| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`<ReportIssue />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.reportissue) | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to select a portion of text on a TechDocs page and open an issue against the repository that contains the documentation, populating the issue description with the selected text according to a configurable template. |
+| Addon                                                                                                                        | Package/Plugin                                     | Description                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`<ExpandableNavigation />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.expandablenavigation) | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to expand or collapse the entire TechDocs main navigation, and keeps the user's preferred state between documentation sites.                                                                                                                                                      |
+| [`<ReportIssue />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.reportissue)                   | `@backstage/plugin-techdocs-module-addons-contrib` | Allows TechDocs users to select a portion of text on a TechDocs page and open an issue against the repository that contains the documentation, populating the issue description with the selected text according to a configurable template.                                                            |
+| [`<TextSize />`](https://backstage.io/docs/reference/plugin-techdocs-module-addons-contrib.textsize)                         | `@backstage/plugin-techdocs-module-addons-contrib` | This TechDocs addon allows users to customize text size on documentation pages, they can select how much they want to increase or decrease the font size via slider or buttons. The default value for font size is 100% and this setting is kept in the browser's local storage whenever it is changed. |
 
 Got an Addon to contribute? Feel free to add a row above!
 

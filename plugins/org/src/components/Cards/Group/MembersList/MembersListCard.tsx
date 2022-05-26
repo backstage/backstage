@@ -59,6 +59,17 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1',
       minWidth: '0px',
     },
+    email: {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      display: 'inline-block',
+      maxWidth: '100%',
+      '&:hover': {
+        overflow: 'visible',
+        whiteSpace: 'normal',
+      },
+    },
   }),
 );
 
@@ -88,7 +99,13 @@ const MemberComponent = (props: { member: UserEntity }) => {
               top: '-2rem',
             }}
           />
-          <Box pt={2} textAlign="center">
+          <Box
+            pt={2}
+            sx={{
+              maxWidth: '100%',
+            }}
+            textAlign="center"
+          >
             <Typography variant="h5">
               <Link
                 to={generatePath(
@@ -100,7 +117,9 @@ const MemberComponent = (props: { member: UserEntity }) => {
               </Link>
             </Typography>
             {profile?.email && (
-              <Link to={`mailto:${profile.email}`}>{profile.email}</Link>
+              <Link className={classes.email} to={`mailto:${profile.email}`}>
+                {profile.email}
+              </Link>
             )}
             {description && (
               <Typography variant="subtitle2">{description}</Typography>
