@@ -105,7 +105,7 @@ The source code is available here:
 
 Now if you start your application you should be able to reach the `/todo-list` page:
 
-![Todo List plugin page](../../assets/permission/permission-todo-list-page.png)
+![Todo List plugin page](../../assets/permissions/permission-todo-list-page.png)
 
 ---
 
