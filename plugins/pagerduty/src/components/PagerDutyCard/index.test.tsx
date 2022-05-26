@@ -27,6 +27,7 @@ import { ApiProvider } from '@backstage/core-app-api';
 
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
   getServiceByIntegrationKey: async () => [],
+  getServiceByServiceId: async () => service,
   getOnCallByPolicyId: async () => [],
   getIncidentsByServiceId: async () => [],
 };

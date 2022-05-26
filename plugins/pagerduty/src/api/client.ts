@@ -19,6 +19,7 @@ import {
   PagerDutyApi,
   TriggerAlarmRequest,
   ServicesResponse,
+  ServiceResponse,
   IncidentsResponse,
   OnCallsResponse,
   ClientApiConfig,
@@ -38,6 +39,9 @@ export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
 });
 
+const commonGetServiceParams =
+  'time_zone=UTC&include[]=integrations&include[]=escalation_policies';
+
 export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
@@ -56,13 +60,23 @@ export class PagerDutyClient implements PagerDutyApi {
   constructor(private readonly config: ClientApiConfig) {}
 
   async getServiceByIntegrationKey(integrationKey: string): Promise<Service[]> {
-    const params = `time_zone=UTC&include[]=integrations&include[]=escalation_policies&query=${integrationKey}`;
+    const params = `${commonGetServiceParams}&query=${integrationKey}`;
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
     )}/pagerduty/services?${params}`;
     const { services } = await this.getByUrl<ServicesResponse>(url);
 
     return services;
+  }
+
+  async getServiceByServiceId(serviceId: string): Promise<Service> {
+    const params = commonGetServiceParams;
+    const url = `${await this.config.discoveryApi.getBaseUrl(
+      'proxy',
+    )}/pagerduty/services/${serviceId}?${params}`;
+    const { service } = await this.getByUrl<ServiceResponse>(url);
+
+    return service;
   }
 
   async getIncidentsByServiceId(serviceId: string): Promise<Incident[]> {

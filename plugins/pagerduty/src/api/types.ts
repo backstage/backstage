@@ -32,6 +32,12 @@ export interface PagerDutyApi {
   getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
 
   /**
+   * Fetches the service for the provided service id.
+   *
+   */
+  getServiceByServiceId(serviceId: string): Promise<Service>;
+
+  /**
    * Fetches a list of incidents a provided service has.
    *
    */
@@ -57,6 +63,10 @@ export interface PagerDutyApi {
 
 export type ServicesResponse = {
   services: Service[];
+};
+
+export type ServiceResponse = {
+  service: Service;
 };
 
 export type IncidentsResponse = {
