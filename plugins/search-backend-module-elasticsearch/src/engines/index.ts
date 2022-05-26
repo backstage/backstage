@@ -18,6 +18,9 @@ export { ElasticSearchSearchEngine } from './ElasticSearchSearchEngine';
 export type {
   ConcreteElasticSearchQuery,
   ElasticSearchClientOptions,
+  ElasticSearchHighlightConfig,
+  ElasticSearchHighlightOptions,
+  ElasticSearchQueryTranslatorOptions,
 } from './ElasticSearchSearchEngine';
 export type {
   ElasticSearchSearchEngineIndexer,

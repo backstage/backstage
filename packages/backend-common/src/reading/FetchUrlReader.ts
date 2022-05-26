@@ -25,6 +25,7 @@ import {
   UrlReader,
 } from './types';
 import path from 'path';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
  * A {@link UrlReader} that does a plain fetch of the URL.
@@ -103,10 +104,9 @@ export class FetchUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return {
-        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
-      };
+      });
     }
 
     const message = `could not read ${url}, ${response.status} ${response.statusText}`;

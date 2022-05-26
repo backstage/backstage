@@ -1,5 +1,55 @@
 # @backstage/plugin-catalog-react
 
+## 1.1.1-next.0
+
+### Patch Changes
+
+- 1f70704580: Accessibility updates:
+
+  - Wrapped the `EntityLifecyclePicker`, `EntityOwnerPicker`, `EntityTagPicker`, in `label` elements
+  - Changed group name `Typography` component to `span` (from default `h6`), added `aria-label` to the `List` component, and `role` of `menuitem` to the container of the `MenuItem` component
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/integration@1.2.1-next.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 4274844a8c: Use InfoCardVariants on custom cards variant attribute
+
+### Patch Changes
+
+- 0418447669: Added menu parent role for menu items accessibility
+- b7514d19ff: Update the rendering of links in the entity inspector so that values starting with `https?://` are rendered as links as well.
+- b880c0e092: Fix `EntityTypeFilter` so generating available types is case insensitive
+- 57f41fb8d6: Make Menu item on filters accessible through keyboard
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/integration@1.2.0
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/catalog-client@1.0.2
+  - @backstage/catalog-model@1.0.2
+  - @backstage/plugin-catalog-common@1.0.2
+  - @backstage/plugin-permission-common@0.6.1
+  - @backstage/plugin-permission-react@0.4.1
+
+## 1.1.0-next.2
+
+### Patch Changes
+
+- 57f41fb8d6: Make Menu item on filters accessible through keyboard
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+  - @backstage/integration@1.2.0-next.1
+  - @backstage/plugin-permission-common@0.6.1-next.0
+  - @backstage/plugin-permission-react@0.4.1-next.1
+  - @backstage/catalog-client@1.0.2-next.0
+  - @backstage/plugin-catalog-common@1.0.2-next.0
+
 ## 1.1.0-next.1
 
 ### Patch Changes

@@ -22,6 +22,7 @@ import {
 import {
   azurePipelinesEntityContentRouteRef,
   azurePullRequestDashboardRouteRef,
+  azureGitTagsEntityContentRouteRef,
   azurePullRequestsEntityContentRouteRef,
 } from './routes';
 import {
@@ -75,6 +76,17 @@ export const EntityAzurePipelinesContent = azureDevOpsPlugin.provide(
         m => m.EntityPageAzurePipelines,
       ),
     mountPoint: azurePipelinesEntityContentRouteRef,
+  }),
+);
+
+export const EntityAzureGitTagsContent = azureDevOpsPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityAzureGitTagsContent',
+    component: () =>
+      import('./components/EntityPageAzureGitTags').then(
+        m => m.EntityPageAzureGitTags,
+      ),
+    mountPoint: azureGitTagsEntityContentRouteRef,
   }),
 );
 

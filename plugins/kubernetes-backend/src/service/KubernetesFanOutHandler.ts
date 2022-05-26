@@ -97,6 +97,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'ingresses',
     objectType: 'ingresses',
   },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'statefulsets',
+    objectType: 'statefulsets',
+  },
 ];
 
 export interface KubernetesFanOutHandlerOptions
@@ -155,6 +161,7 @@ export class KubernetesFanOutHandler {
   private readonly serviceLocator: KubernetesServiceLocator;
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: Set<ObjectToFetch>;
+  private readonly authTranslators: Record<string, KubernetesAuthTranslator>;
 
   constructor({
     logger,
@@ -168,6 +175,7 @@ export class KubernetesFanOutHandler {
     this.serviceLocator = serviceLocator;
     this.customResources = customResources;
     this.objectTypesToFetch = new Set(objectTypesToFetch);
+    this.authTranslators = {};
   }
 
   async getKubernetesObjectsByEntity(
@@ -183,14 +191,9 @@ export class KubernetesFanOutHandler {
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
     const promises: Promise<ClusterDetails>[] = clusterDetails.map(cd => {
-      const kubernetesAuthTranslator: KubernetesAuthTranslator =
-        KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
-          cd.authProvider,
-        );
-      return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
-        cd,
-        requestBody,
-      );
+      return this.getAuthTranslator(
+        cd.authProvider,
+      ).decorateClusterDetailsWithAuth(cd, requestBody);
     });
     const clusterDetailsDecoratedForAuth: ClusterDetails[] = await Promise.all(
       promises,
@@ -287,5 +290,20 @@ export class KubernetesFanOutHandler {
     );
 
     return Promise.all([result, Promise.all(podMetrics)]);
+  }
+
+  private getAuthTranslator(provider: string): KubernetesAuthTranslator {
+    if (this.authTranslators[provider]) {
+      return this.authTranslators[provider];
+    }
+
+    this.authTranslators[provider] =
+      KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+        provider,
+        {
+          logger: this.logger,
+        },
+      );
+    return this.authTranslators[provider];
   }
 }

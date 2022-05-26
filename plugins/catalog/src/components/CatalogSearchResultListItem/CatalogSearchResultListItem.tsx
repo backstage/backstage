@@ -24,7 +24,11 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { IndexableDocument } from '@backstage/plugin-search-common';
+import {
+  IndexableDocument,
+  ResultHighlight,
+} from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -44,6 +48,7 @@ const useStyles = makeStyles({
  */
 export interface CatalogSearchResultListItemProps {
   result: IndexableDocument;
+  highlight?: ResultHighlight;
 }
 
 /** @public */
@@ -59,8 +64,28 @@ export function CatalogSearchResultListItem(
         <ListItemText
           className={classes.itemText}
           primaryTypographyProps={{ variant: 'h6' }}
-          primary={result.title}
-          secondary={result.text}
+          primary={
+            props.highlight?.fields.title ? (
+              <HighlightedSearchResultText
+                text={props.highlight.fields.title}
+                preTag={props.highlight.preTag}
+                postTag={props.highlight.postTag}
+              />
+            ) : (
+              result.title
+            )
+          }
+          secondary={
+            props.highlight?.fields.text ? (
+              <HighlightedSearchResultText
+                text={props.highlight.fields.text}
+                preTag={props.highlight.preTag}
+                postTag={props.highlight.postTag}
+              />
+            ) : (
+              result.text
+            )
+          }
         />
         <Box>
           {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}

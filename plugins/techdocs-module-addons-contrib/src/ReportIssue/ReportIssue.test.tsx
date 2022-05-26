@@ -20,7 +20,7 @@ import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react';
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { ReportIssue } from '..';
+import { ReportIssue } from '../plugin';
 
 const byUrl = jest.fn();
 

@@ -63,6 +63,36 @@ export class GitLabClient {
     return this.pagedRequest(`/projects`, options);
   }
 
+  async hasFile(
+    projectPath: string,
+    branch: string,
+    filePath: string,
+  ): Promise<boolean> {
+    const endpoint: string = `/projects/${encodeURIComponent(
+      projectPath,
+    )}/repository/files/${encodeURIComponent(filePath)}`;
+    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
+    request.searchParams.append('ref', branch);
+
+    const response = await fetch(request.toString(), {
+      headers: getGitLabRequestOptions(this.config).headers,
+      method: 'HEAD',
+    });
+
+    if (!response.ok) {
+      if (response.status >= 500) {
+        this.logger.debug(
+          `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+            response.status
+          } - ${response.statusText}`,
+        );
+      }
+      return false;
+    }
+
+    return true;
+  }
+
   /**
    * Performs a request against a given paginated GitLab endpoint.
    *

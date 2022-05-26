@@ -219,7 +219,7 @@ export class TechdocsGenerator implements GeneratorBase {
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });
-  static readonly defaultDockerImage = 'spotify/techdocs:v1.0.2';
+  static readonly defaultDockerImage = 'spotify/techdocs:v1.0.3';
   static fromConfig(
     config: Config,
     options: GeneratorOptions,

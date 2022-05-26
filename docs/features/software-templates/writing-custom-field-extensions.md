@@ -161,3 +161,24 @@ spec:
           description: My custom name for the component
           ui:field: MyCustomExtension
 ```
+
+## Access Data from other Fields
+
+Custom fields extensions can read data from other fields in the form via the form context. This
+is something that we discourage due to the coupling that it creates, but is sometimes still
+the most sensible solution.
+
+```tsx
+const CustomFieldExtensionComponent = (props: FieldExtensionComponentProps<string[]>) => {
+  const { formData } = props.formContext;
+  ...
+};
+
+const CustomFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    name: ...,
+    component: CustomFieldExtensionComponent,
+    validation: ...
+  })
+);
+```

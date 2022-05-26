@@ -21,6 +21,24 @@ export interface Config {
      * Options for ElasticSearch
      */
     elasticsearch?: {
+      /**
+       * Options for configuring highlight settings
+       * See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/highlighting.html
+       */
+      highlightOptions?: {
+        /**
+         * The size of the highlighted fragment in characters. Defaults to 1000.
+         */
+        fragmentSize?: number;
+        /**
+         * Number of result fragments to extract. Fragments will be concatenated with `fragmentDelimiter`. Defaults to 1.
+         */
+        numFragments?: number;
+        /**
+         * Delimiter string used to concatenate fragments. Defaults to " ... ".
+         */
+        fragmentDelimiter?: string;
+      };
       /** Miscellaneous options for the client */
       clientOptions?: {
         ssl?: {

@@ -411,6 +411,29 @@ export class YourSearchEngine implements SearchEngine {
 }
 ```
 
+## How to customize search results highlighting styling
+
+The default highlighting styling for matched terms in search results is your
+browsers default styles for the `<mark>` HTML tag. If you want to customize
+how highlighted terms look you can follow Backstage's guide on how to
+[Customize the look-and-feel of your App](https://backstage.io/docs/getting-started/app-custom-theme)
+to create an override with your preferred styling.
+
+For example, the following will result in highlighted terms to be bold & underlined:
+
+```jsx
+const highlightOverride = {
+  BackstageHighlightedSearchResultText: {
+    highlight: {
+      color: 'inherit',
+      backgroundColor: 'inherit',
+      fontWeight: 'bold',
+      textDecoration: 'underline',
+    },
+  },
+};
+```
+
 [obj-mode]: https://nodejs.org/docs/latest-v14.x/api/stream.html#stream_object_mode
 [read-stream]: https://nodejs.org/docs/latest-v14.x/api/stream.html#stream_readable_streams
 [async-gen]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of#iterating_over_async_generators

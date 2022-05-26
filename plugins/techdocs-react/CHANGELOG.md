@@ -1,5 +1,70 @@
 # @backstage/plugin-techdocs-react
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 3b45ad701f: Creates a `TechDocsShadowDom` component that takes a tree of elements and an `onAppend` handler:
+
+  - Calls the `onAppend` handler when appending the element tree to the shadow root;
+  - Also dispatches an event when styles are loaded to let transformers know that the computed styles are ready to be consumed.
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+
+## 1.0.0
+
+### Major Changes
+
+- 0ad901569f: The TechDocs Addon framework is now generally available.
+
+### Patch Changes
+
+- 52419be116: Create a new addon location called "Settings", it is designed for addons that allow users to customize the reading experience in documentation pages.
+
+  Usage example:
+
+  ```tsx
+  const TextSize = techdocsModuleAddonsContribPlugin.provide(
+    createTechDocsAddonExtension({
+      name: 'TextSize',
+      location: TechDocsAddonLocations.Settings,
+      component: TextSizeAddon,
+    }),
+  );
+  ```
+
+- c25e880e36: Added overload signatures for `createTechDocsAddonExtension` to handle TechDocs addons without props.
+- 52fddad92d: The `TechDocsStorageApi` and its associated ref are now exported by `@backstage/plugin-techdocs-react`. The API interface, ref, and types are now deprecated in `@backstage/plugin-techdocs` and will be removed in a future release.
+- 075a9a067b: Updated the return type of `createTechDocsAddonExtension` to better reflect the fact that passing children to Addon components is not a valid use-case.
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/catalog-model@1.0.2
+
+## 0.1.1-next.2
+
+### Patch Changes
+
+- 52419be116: Create a new addon location called "Settings", it is designed for addons that allow users to customize the reading experience in documentation pages.
+
+  Usage example:
+
+  ```tsx
+  const TextSize = techdocsModuleAddonsContribPlugin.provide(
+    createTechDocsAddonExtension({
+      name: 'TextSize',
+      location: TechDocsAddonLocations.Settings,
+      component: TextSizeAddon,
+    }),
+  );
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
 ## 0.1.1-next.1
 
 ### Patch Changes

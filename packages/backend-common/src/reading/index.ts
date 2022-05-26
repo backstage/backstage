@@ -23,6 +23,7 @@ export { GithubUrlReader } from './GithubUrlReader';
 export { GitlabUrlReader } from './GitlabUrlReader';
 export { AwsS3UrlReader } from './AwsS3UrlReader';
 export { FetchUrlReader } from './FetchUrlReader';
+export { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 export type {
   FromReadableArrayOptions,
   ReaderFactory,
@@ -34,6 +35,7 @@ export type {
   ReadTreeResponseFactoryOptions,
   ReadUrlOptions,
   ReadUrlResponse,
+  ReadUrlResponseFactoryFromStreamOptions,
   SearchOptions,
   SearchResponse,
   SearchResponseFile,

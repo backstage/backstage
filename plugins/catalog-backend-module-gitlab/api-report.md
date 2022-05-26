@@ -16,6 +16,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
     config: Config,
     options: {
       logger: Logger;
+      skipReposWithoutExactFileMatch?: boolean;
     },
   ): GitLabDiscoveryProcessor;
   // (undocumented)

@@ -39,7 +39,7 @@ jobs:
           node generate.js FETCH_HEAD > feedback.txt
 
       - name: Post Feedback
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         env:
           ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         with:

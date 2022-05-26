@@ -15,29 +15,51 @@
  */
 
 import React from 'react';
-import Chip from '@material-ui/core/Chip';
+import AddIcon from '@material-ui/icons/Add';
+import WarningIcon from '@material-ui/icons/Warning';
+import EditIcon from '@material-ui/icons/Edit';
+import Chip, { ChipProps } from '@material-ui/core/Chip';
+
+const icons = {
+  AddIcon: <AddIcon />,
+  WarningIcon: <WarningIcon />,
+  EditIcon: <EditIcon />,
+  None: null,
+};
+
+const defaultArgs = {
+  label: 'Label',
+  size: 'medium',
+  variant: 'default',
+  icon: 'None',
+};
 
 export default {
   title: 'Data Display/Chip',
   component: Chip,
+  argTypes: {
+    size: {
+      options: ['small', 'medium'],
+      control: { type: 'select' },
+    },
+    variant: {
+      options: ['default', 'outlined'],
+      control: { type: 'select' },
+    },
+    icon: {
+      options: Object.keys(icons),
+      mapping: icons,
+      control: {
+        type: 'select',
+      },
+    },
+  },
 };
 
-export const Default = () => <Chip label="Default" />;
+export const Default = (args: ChipProps) => <Chip {...args} />;
+Default.args = defaultArgs;
 
-export const LargeDeletable = () => (
-  <Chip label="Large deletable" size="medium" onDelete={() => ({})} />
+export const Deleteable = (args: ChipProps) => (
+  <Chip {...args} onDelete={() => ({})} />
 );
-
-export const LargeNotDeletable = () => (
-  <Chip label="Large not deletable" size="medium" />
-);
-
-export const SmallDeletable = () => (
-  <Chip label="Small deletable" size="small" onDelete={() => ({})} />
-);
-
-export const SmallNotDeletable = () => (
-  <Chip label="Small not deletable" size="small" />
-);
-
-export const Outline = () => <Chip label="Outline" variant="outlined" />;
+Deleteable.args = defaultArgs;

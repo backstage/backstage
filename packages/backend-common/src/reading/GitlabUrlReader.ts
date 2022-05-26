@@ -38,6 +38,7 @@ import {
   ReadUrlOptions,
 } from './types';
 import { trimEnd } from 'lodash';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
  * Implements a {@link UrlReader} for files on GitLab.
@@ -97,10 +98,9 @@ export class GitlabUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      return {
-        buffer: async () => Buffer.from(await response.arrayBuffer()),
+      return ReadUrlResponseFactory.fromNodeJSReadable(response.body, {
         etag: response.headers.get('ETag') ?? undefined,
-      };
+      });
     }
 
     const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;

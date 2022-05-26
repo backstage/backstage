@@ -60,7 +60,6 @@ describe('OAuthAdapter', () => {
   const oAuthProviderOptions = {
     providerId: 'test-provider',
     secure: false,
-    disableRefresh: true,
     appOrigin: 'http://localhost:3000',
     cookieDomain: 'example.com',
     cookiePath: '/auth/test-provider',
@@ -110,7 +109,6 @@ describe('OAuthAdapter', () => {
   it('sets the refresh cookie if refresh is enabled', async () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
-      disableRefresh: false,
       isOriginAllowed: () => false,
     });
 
@@ -153,7 +151,6 @@ describe('OAuthAdapter', () => {
     };
     const oauthProvider = new OAuthAdapter(handlers, {
       ...oAuthProviderOptions,
-      disableRefresh: false,
       persistScopes: true,
     });
 
@@ -238,36 +235,9 @@ describe('OAuthAdapter', () => {
     );
   });
 
-  it('does not set the refresh cookie if refresh is disabled', async () => {
-    const oauthProvider = new OAuthAdapter(providerInstance, {
-      ...oAuthProviderOptions,
-      disableRefresh: true,
-      isOriginAllowed: () => false,
-    });
-
-    const mockRequest = {
-      cookies: {
-        'test-provider-nonce': 'nonce',
-      },
-      query: {
-        state: 'nonce',
-      },
-    } as unknown as express.Request;
-
-    const mockResponse = {
-      cookie: jest.fn().mockReturnThis(),
-      setHeader: jest.fn().mockReturnThis(),
-      end: jest.fn().mockReturnThis(),
-    } as unknown as express.Response;
-
-    await oauthProvider.frameHandler(mockRequest, mockResponse);
-    expect(mockResponse.cookie).toHaveBeenCalledTimes(0);
-  });
-
   it('removes refresh cookie when logging out', async () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
-      disableRefresh: false,
       isOriginAllowed: () => false,
     });
 
@@ -292,10 +262,8 @@ describe('OAuthAdapter', () => {
   });
 
   it('gets new access-token when refreshing', async () => {
-    oAuthProviderOptions.disableRefresh = false;
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
-      disableRefresh: false,
       isOriginAllowed: () => false,
     });
 
@@ -325,26 +293,6 @@ describe('OAuthAdapter', () => {
         },
       },
     });
-  });
-
-  it('handles refresh without capabilities', async () => {
-    const oauthProvider = new OAuthAdapter(providerInstance, {
-      ...oAuthProviderOptions,
-      disableRefresh: true,
-      isOriginAllowed: () => false,
-    });
-
-    const mockRequest = {
-      header: () => 'XMLHttpRequest',
-    } as unknown as express.Request;
-
-    const mockResponse = {} as unknown as express.Response;
-
-    await expect(
-      oauthProvider.refresh(mockRequest, mockResponse),
-    ).rejects.toThrow(
-      'Refresh token is not supported for provider test-provider',
-    );
   });
 
   it('sets the correct cookie configuration using a callbackUrl', async () => {

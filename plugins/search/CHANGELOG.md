@@ -1,5 +1,43 @@
 # @backstage/plugin-search
 
+## 0.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+
+## 0.8.1
+
+### Patch Changes
+
+- 11a46863de: Fix issue with `HomePageSearchBar` requiring `SearchContext`
+- bef56488ad: Introduced a `<SearchModalProvider>`, which can optionally be placed higher up in the react tree in order to allow control of search modal visibility from outside the modal itself.
+- 3a74e203a8: Updated search result components to support rendering content with highlighted matched terms
+- Updated dependencies
+  - @backstage/core-components@0.9.4
+  - @backstage/core-plugin-api@1.0.2
+  - @backstage/plugin-catalog-react@1.1.0
+  - @backstage/config@1.0.1
+  - @backstage/plugin-search-react@0.2.0
+  - @backstage/plugin-search-common@0.3.4
+  - @backstage/catalog-model@1.0.2
+
+## 0.8.1-next.2
+
+### Patch Changes
+
+- 3a74e203a8: Updated search result components to support rendering content with highlighted matched terms
+- Updated dependencies
+  - @backstage/core-components@0.9.4-next.1
+  - @backstage/config@1.0.1-next.0
+  - @backstage/plugin-search-react@0.2.0-next.2
+  - @backstage/plugin-search-common@0.3.4-next.0
+  - @backstage/plugin-catalog-react@1.1.0-next.2
+  - @backstage/catalog-model@1.0.2-next.0
+  - @backstage/core-plugin-api@1.0.2-next.1
+
 ## 0.8.1-next.1
 
 ### Patch Changes

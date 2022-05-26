@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import TextTruncate from 'react-text-truncate';
 import {
   Box,
   Chip,
@@ -26,6 +25,8 @@ import {
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import { AdrDocument } from '@backstage/plugin-adr-common';
+import { ResultHighlight } from '@backstage/plugin-search-common';
+import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -44,9 +45,11 @@ const useStyles = makeStyles({
  */
 export const AdrSearchResultListItem = ({
   lineClamp = 5,
+  highlight,
   result,
 }: {
   lineClamp?: number;
+  highlight?: ResultHighlight;
   result: AdrDocument;
 }) => {
   const classes = useStyles();
@@ -57,14 +60,36 @@ export const AdrSearchResultListItem = ({
         <ListItemText
           className={classes.itemText}
           primaryTypographyProps={{ variant: 'h6' }}
-          primary={result.title}
+          primary={
+            highlight?.fields.title ? (
+              <HighlightedSearchResultText
+                text={highlight.fields.title}
+                preTag={highlight.preTag}
+                postTag={highlight.postTag}
+              />
+            ) : (
+              result.title
+            )
+          }
           secondary={
-            <TextTruncate
-              line={lineClamp}
-              truncateText="…"
-              text={result.text}
-              element="span"
-            />
+            <span
+              style={{
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: lineClamp,
+                overflow: 'hidden',
+              }}
+            >
+              {highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                result.text
+              )}
+            </span>
           }
         />
         <Box>

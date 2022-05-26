@@ -179,6 +179,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       this.options.logger,
       this.options.provider.target,
       this.options.provider.bind,
+      this.options.provider.tls,
     );
 
     const { users, groups } = await readLdapOrg(

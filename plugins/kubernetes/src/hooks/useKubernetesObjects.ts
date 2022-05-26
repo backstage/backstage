@@ -53,8 +53,16 @@ export const useKubernetesObjects = (
     }
 
     const authProviders: string[] = [
-      ...new Set(clusters.map(c => c.authProvider)),
+      ...new Set(
+        clusters.map(
+          c =>
+            `${c.authProvider}${
+              c.oidcTokenProvider ? `.${c.oidcTokenProvider}` : ''
+            }`,
+        ),
+      ),
     ];
+
     // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
     let requestBody: KubernetesRequestBody = {
       entity,

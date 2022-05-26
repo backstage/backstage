@@ -26,7 +26,6 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
-import getRawBody from 'raw-body';
 import {
   AwsS3Integration,
   ScmIntegrations,
@@ -34,6 +33,7 @@ import {
 } from '@backstage/integration';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
 import { ListObjectsV2Output, ObjectList } from 'aws-sdk/clients/s3';
+import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
  * Path style URLs: https://s3.(region).amazonaws.com/(bucket)/(key)
@@ -214,13 +214,39 @@ export class AwsS3UrlReader implements UrlReader {
 
       const request = this.deps.s3.getObject(params);
       options?.signal?.addEventListener('abort', () => request.abort());
-      const buffer = await getRawBody(request.createReadStream());
-      const etag = (await request.promise()).ETag;
 
-      return {
-        buffer: async () => buffer,
-        etag: etag,
-      };
+      // Since we're consuming the read stream we need to consume headers and errors via events.
+      const etagPromise = new Promise<string | undefined>((resolve, reject) => {
+        request.on('httpHeaders', (status, headers) => {
+          if (status < 400) {
+            if (status === 200) {
+              resolve(headers.etag);
+            } else if (status !== 304 /* not modified */) {
+              reject(
+                new Error(
+                  `S3 readUrl request received unexpected status '${status}' in response`,
+                ),
+              );
+            }
+          }
+        });
+        request.on('error', error => reject(error));
+        request.on('complete', () =>
+          reject(
+            new Error('S3 readUrl request completed without receiving headers'),
+          ),
+        );
+      });
+
+      const stream = request.createReadStream();
+      stream.on('error', () => {
+        // The AWS SDK forwards request errors to the stream, so we need to
+        // ignore those errors here or the process will crash.
+      });
+
+      return ReadUrlResponseFactory.fromReadable(stream, {
+        etag: await etagPromise,
+      });
     } catch (e) {
       if (e.statusCode === 304) {
         throw new NotModifiedError();

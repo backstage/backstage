@@ -25,6 +25,7 @@ import React, { useMemo, useState } from 'react';
 import useObservable from 'react-use/lib/useObservable';
 import LoginRequestListItem from './LoginRequestListItem';
 import { useApi, oauthRequestApiRef } from '@backstage/core-plugin-api';
+import Typography from '@material-ui/core/Typography';
 
 export type OAuthRequestDialogClassKey =
   | 'dialog'
@@ -39,6 +40,9 @@ const useStyles = makeStyles<Theme>(
     },
     title: {
       minWidth: 0,
+    },
+    titleHeading: {
+      fontSize: theme.typography.h6.fontSize,
     },
     contentList: {
       padding: 0,
@@ -69,23 +73,31 @@ export function OAuthRequestDialog(_props: {}) {
       fullWidth
       maxWidth="xs"
       classes={{ paper: classes.dialog }}
+      aria-labelledby="oauth-req-dialog-title"
     >
-      <DialogTitle classes={{ root: classes.title }}>
-        Login Required
-      </DialogTitle>
+      <main>
+        <DialogTitle
+          classes={{ root: classes.title }}
+          id="oauth-req-dialog-title"
+        >
+          <Typography className={classes.titleHeading} variant="h1">
+            Login Required
+          </Typography>
+        </DialogTitle>
 
-      <DialogContent dividers classes={{ root: classes.contentList }}>
-        <List>
-          {requests.map(request => (
-            <LoginRequestListItem
-              key={request.provider.title}
-              request={request}
-              busy={busy}
-              setBusy={setBusy}
-            />
-          ))}
-        </List>
-      </DialogContent>
+        <DialogContent dividers classes={{ root: classes.contentList }}>
+          <List>
+            {requests.map(request => (
+              <LoginRequestListItem
+                key={request.provider.title}
+                request={request}
+                busy={busy}
+                setBusy={setBusy}
+              />
+            ))}
+          </List>
+        </DialogContent>
+      </main>
 
       <DialogActions classes={{ root: classes.actionButtons }}>
         <Button onClick={handleRejectAll}>Reject All</Button>

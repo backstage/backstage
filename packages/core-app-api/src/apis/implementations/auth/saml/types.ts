@@ -34,7 +34,6 @@ export const samlSessionSchema: z.ZodSchema<SamlSession> = z.object({
     picture: z.string().optional(),
   }),
   backstageIdentity: z.object({
-    id: z.string(),
     token: z.string(),
     identity: z.object({
       type: z.literal('user'),

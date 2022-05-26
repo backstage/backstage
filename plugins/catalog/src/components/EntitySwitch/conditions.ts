@@ -22,25 +22,31 @@ function strCmp(a: string | undefined, b: string | undefined): boolean {
   );
 }
 
+function strCmpAll(value: string | undefined, cmpValues: string | string[]) {
+  return typeof cmpValues === 'string'
+    ? strCmp(value, cmpValues)
+    : cmpValues.some(cmpVal => strCmp(value, cmpVal));
+}
+
 /**
  * For use in EntitySwitch.Case. Matches if the entity is of a given kind.
  * @public
  */
-export function isKind(kind: string) {
-  return (entity: Entity) => strCmp(entity.kind, kind);
+export function isKind(kinds: string | string[]) {
+  return (entity: Entity) => strCmpAll(entity.kind, kinds);
 }
 
 /**
  * For use in EntitySwitch.Case. Matches if the entity is a Component of a given spec.type.
  * @public
  */
-export function isComponentType(type: string) {
+export function isComponentType(types: string | string[]) {
   return (entity: Entity) => {
     if (!strCmp(entity.kind, 'component')) {
       return false;
     }
     const componentEntity = entity as ComponentEntity;
-    return strCmp(componentEntity.spec.type, type);
+    return strCmpAll(componentEntity.spec.type, types);
   };
 }
 
@@ -48,6 +54,6 @@ export function isComponentType(type: string) {
  * For use in EntitySwitch.Case. Matches if the entity is in a given namespace.
  * @public
  */
-export function isNamespace(namespace: string) {
-  return (entity: Entity) => strCmp(entity.metadata?.namespace, namespace);
+export function isNamespace(namespaces: string | string[]) {
+  return (entity: Entity) => strCmpAll(entity.metadata?.namespace, namespaces);
 }

@@ -24,6 +24,9 @@ import {
   discoveryApiRef,
   identityApiRef,
   googleAuthApiRef,
+  microsoftAuthApiRef,
+  oktaAuthApiRef,
+  oneloginAuthApiRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
@@ -45,9 +48,26 @@ export const kubernetesPlugin = createPlugin({
     }),
     createApiFactory({
       api: kubernetesAuthProvidersApiRef,
-      deps: { googleAuthApi: googleAuthApiRef },
-      factory: ({ googleAuthApi }) => {
-        return new KubernetesAuthProviders({ googleAuthApi });
+      deps: {
+        googleAuthApi: googleAuthApiRef,
+        microsoftAuthApi: microsoftAuthApiRef,
+        oktaAuthApi: oktaAuthApiRef,
+        oneloginAuthApi: oneloginAuthApiRef,
+      },
+      factory: ({
+        googleAuthApi,
+        microsoftAuthApi,
+        oktaAuthApi,
+        oneloginAuthApi,
+      }) => {
+        const oidcProviders = {
+          google: googleAuthApi,
+          microsoft: microsoftAuthApi,
+          okta: oktaAuthApi,
+          onelogin: oneloginAuthApi,
+        };
+
+        return new KubernetesAuthProviders({ googleAuthApi, oidcProviders });
       },
     }),
   ],
