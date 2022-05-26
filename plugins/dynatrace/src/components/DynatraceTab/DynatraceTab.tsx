@@ -24,7 +24,7 @@ import {
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { ProblemsList } from '../Problems/ProblemsList';
-import { isDynatraceAvailable } from '../DynatraceError';
+import { isDynatraceAvailable } from '../../plugin';
 import { DYNATRACE_ID_ANNOTATION } from '../../constants';
 
 export const DynatraceTab = () => {

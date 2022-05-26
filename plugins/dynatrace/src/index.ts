@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { dynatracePlugin, DynatracePage } from './plugin';
+export { dynatracePlugin, DynatraceTab, isDynatraceAvailable } from './plugin';

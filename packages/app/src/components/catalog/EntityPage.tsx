@@ -74,7 +74,7 @@ import {
 } from '@backstage/plugin-cloudbuild';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 import {
-  DynatracePage,
+  DynatraceTab,
   isDynatraceAvailable,
 } from '@backstage/plugin-dynatrace';
 import {
@@ -452,8 +452,12 @@ const serviceEntityPage = (
       <EntityTodoContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/dynatrace" title="Dynatrace">
-      <DynatracePage />
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
@@ -503,8 +507,12 @@ const websiteEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/dynatrace" title="Dynatrace">
-      <DynatracePage />
+    <EntityLayout.Route
+      path="/dynatrace"
+      title="Dynatrace"
+      if={isDynatraceAvailable}
+    >
+      <DynatraceTab />
     </EntityLayout.Route>
 
     <EntityLayout.Route

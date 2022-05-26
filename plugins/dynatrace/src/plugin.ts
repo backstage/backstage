@@ -15,13 +15,15 @@
  */
 import { dynatraceApiRef, DynatraceClient } from './api';
 import {
-  configApiRef,
   createApiFactory,
   createPlugin,
   discoveryApiRef,
   identityApiRef,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+
+import { Entity } from '@backstage/catalog-model';
+import { DYNATRACE_ID_ANNOTATION } from './constants';
 
 import { rootRouteRef } from './routes';
 
@@ -34,11 +36,10 @@ export const dynatracePlugin = createPlugin({
     createApiFactory({
       api: dynatraceApiRef,
       deps: {
-        configApi: configApiRef,
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ configApi, discoveryApi, identityApi }) =>
+      factory: ({ discoveryApi, identityApi }) =>
         new DynatraceClient({
           discoveryApi,
           identityApi,
@@ -47,9 +48,12 @@ export const dynatracePlugin = createPlugin({
   ],
 });
 
-export const DynatracePage = dynatracePlugin.provide(
+export const isDynatraceAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[DYNATRACE_ID_ANNOTATION]);
+
+export const DynatraceTab = dynatracePlugin.provide(
   createRoutableExtension({
-    name: 'DynatracePage',
+    name: 'DynatraceTab',
     component: () =>
       import('./components/DynatraceTab').then(m => m.DynatraceTab),
     mountPoint: rootRouteRef,
