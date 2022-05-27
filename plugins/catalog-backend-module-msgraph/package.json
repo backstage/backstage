@@ -52,7 +52,7 @@
     "@backstage/backend-test-utils": "^0.1.25-next.0",
     "@backstage/cli": "^0.17.2-next.0",
     "@types/lodash": "^4.14.151",
-    "msw": "^0.35.0"
+    "msw": "^0.41.0"
   },
   "files": [
     "dist",
