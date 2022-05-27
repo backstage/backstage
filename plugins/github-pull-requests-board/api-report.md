@@ -7,15 +7,15 @@
 
 import { FunctionComponent } from 'react';
 
-// Warning: (ae-missing-release-tag) "TeamPullRequestsBoard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "EntityTeamPullRequestsCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const TeamPullRequestsBoard: FunctionComponent<{}>;
+export const EntityTeamPullRequestsCard: FunctionComponent<{}>;
 
-// Warning: (ae-missing-release-tag) "TeamPullRequestsPage" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+// Warning: (ae-missing-release-tag) "EntityTeamPullRequestsContent" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export const TeamPullRequestsPage: FunctionComponent<{}>;
+export const EntityTeamPullRequestsContent: FunctionComponent<{}>;
 
 // (No @packageDocumentation comment for this package)
 ```
