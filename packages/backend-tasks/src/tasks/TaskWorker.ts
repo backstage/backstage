@@ -174,8 +174,9 @@ export class TaskWorker {
     } else if (isCron) {
       const time = new CronTime(settings.cadence)
         .sendAt()
-        .add({ seconds: -1 }) // immediately, if "* * * * * *"
-        .toISOString();
+        .minus({ seconds: 1 }) // immediately, if "* * * * * *"
+        .toUTC()
+        .toISO();
       startAt = this.knex.client.config.client.includes('sqlite3')
         ? this.knex.raw('datetime(?)', [time])
         : this.knex.raw(`?`, [time]);
@@ -278,7 +279,7 @@ export class TaskWorker {
 
     let nextRun: Knex.Raw;
     if (isCron) {
-      const time = new CronTime(settings.cadence).sendAt().toISOString();
+      const time = new CronTime(settings.cadence).sendAt().toUTC().toISO();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
       nextRun = this.knex.client.config.client.includes('sqlite3')
         ? this.knex.raw('datetime(?)', [time])
