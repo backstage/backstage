@@ -43,6 +43,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     /** @deprecated Use projectPath instead */
     projectid?: string;
     removeSourceBranch?: boolean;
+    gitlabAction?: 'create' | 'update' | 'delete';
   }>({
     id: 'publish:gitlab:merge-request',
     schema: {
@@ -91,6 +92,12 @@ export const createPublishGitlabMergeRequestAction = (options: {
             type: 'boolean',
             description:
               'Option to delete source branch once the MR has been merged. Default: false',
+          },
+          gitlabAction: {
+            title: 'GitLab Action',
+            type: 'string',
+            description:
+              'Option to configure gitlab action. Options are: create (by default), update and delete',
           },
         },
       },
