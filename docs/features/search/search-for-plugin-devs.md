@@ -9,8 +9,8 @@ and interfaces needed to offer search experiences within their plugins, while
 abstracting away (and instead empowering application integrators to choose) the
 specific underlying search technologies.
 
-On this page, you'll find concepts, guides, and recipes for how to leverage the
-Backstage Search Platform in your plugin.
+On this page, you'll find concepts and tutorials for leveraging the Backstage
+Search Platform in your plugin.
 
 ## Providing data to the search platform
 
@@ -21,11 +21,12 @@ Backstage Search Platform in your plugin.
 While the core Search plugin offers components and extensions that empower app
 integrators to compose a global search experience, you may find that you want a
 narrower search experience just within your plugin. This could be as literal as
-an autocomplete-style search bar focused on documents provided by your plugin,
-or as abstract as a widget that presents a list of links that relate in some
-way to something else on the page.
+an autocomplete-style search bar focused on documents provided by your plugin
+(for example, the [TechDocsSearch](https://github.com/backstage/backstage/blob/master/plugins/techdocs/src/search/components/TechDocsSearch.tsx)
+component), or as abstract as a widget that presents a list of links that
+are contextually related to something else on the page.
 
-### Concepts
+### Search Experience Concepts
 
 Knowing these high-level concepts will help you as you craft your in-plugin
 search experience.
@@ -34,7 +35,9 @@ search experience.
   is provided by `@backstage/plugin-search-react`. This context keeps track
   of state necessary to perform search queries and display any results. As
   inputs to the query are updated (e.g. a `term` or `filter` values), the
-  updated query is executed and `results` are refreshed.
+  updated query is executed and `results` are refreshed. Check out the
+  [SearchContextValue](https://backstage.io/docs/reference/plugin-search-react.searchcontextvalue)
+  for details.
 - The aforementioned state can be modified and/or consumed via the
   `useSearch()` hook, also exported by `@backstage/plugin-search-react`.
 - For more literal search experiences, reusable components are available
@@ -42,7 +45,20 @@ search experience.
   `<SearchBar />` or `<SearchFilter.Checkbox />`). You can see all such
   components in [Backstage's storybook](https://backstage.io/storybook/?path=/story/plugins-search-searchbar--default).
 
-### Recipes
+### Search Experience Tutorials
+
+The following tutorials make use of packages and plugins that you may not yet
+have as dependencies for your plugin; be sure to add them before you use them!
+
+- [`@backstage/plugin-search-react`](https://www.npmjs.com/package/@backstage/plugin-search-react) - A
+  package containing components, hooks, and types that are shared across all
+  frontend plugins, including plugins like yours!
+- [`@backstage/plugin-search`](https://www.npmjs.com/package/@backstage/plugin-search) - The
+  main search plugin, used by app integrators to compose global search
+  experiences. <!-- todo(@backstage/techdocs-core): remove all references to @backstage/plugin-search once #11676 is resolved -->
+- [`@backstage/core-components`](https://www.npmjs.com/package/@backstage/core-components) - A
+  package containing generic components useful for a variety of experiences
+  built in Backstage.
 
 #### Improved "404" page experience
 
