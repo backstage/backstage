@@ -188,4 +188,136 @@ export const getGroupedProjects = (intervals: string) => [
     id: 'project-c',
     aggregation: aggregationFor(intervals, 1_300),
   },
+  {
+    id: 'project-a1',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b1',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c1',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a2',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b2',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c2',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a3',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b3',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c3',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a4',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b4',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c4',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a5',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b5',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c5',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a6',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b6',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c6',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a7',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b7',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c7',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a8',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b8',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c8',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a10',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b10',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c10',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a11',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b11',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c11',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
+  {
+    id: 'project-a12',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b12',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c12',
+    aggregation: aggregationFor(intervals, 1_300),
+  },
 ];
