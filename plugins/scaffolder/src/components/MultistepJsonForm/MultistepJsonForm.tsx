@@ -94,12 +94,12 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
       }
 
       const review = uiSchema['ui:backstage'].review as JsonObject;
-      if (!review.show) {
-        continue;
-      }
-
       if (review.mask) {
         reviewData[key] = review.mask;
+        continue;
+      }
+      
+      if (!review.show) {
         continue;
       }
       reviewData[key] = formData[key];
