@@ -23,6 +23,7 @@ import {
   AuthorizeResult,
   DefinitivePolicyDecision,
   IdentifiedPermissionMessage,
+  Permission,
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
@@ -174,6 +175,7 @@ export const createPermissionIntegrationRouter = <
   TResource,
 >(options: {
   resourceType: TResourceType;
+  permissions?: Array<Permission>;
   // Do not infer value of TResourceType from supplied rules.
   // instead only consider the resourceType parameter, and
   // consider any rules whose resource type does not match
@@ -183,8 +185,26 @@ export const createPermissionIntegrationRouter = <
     resourceRefs: string[],
   ) => Promise<Array<TResource | undefined>>;
 }): express.Router => {
-  const { resourceType, rules, getResources } = options;
+  const { resourceType, permissions, rules, getResources } = options;
   const router = Router();
+  router.use(express.json());
+
+  router.get('/.well-known/backstage/permissions/permission-list', (_, res) =>
+    res.status(200).json({ permissions }),
+  );
+
+  router.get(
+    '/.well-known/backstage/permissions/permission-rule-list',
+    (_, res) => {
+      const serializableRules = rules.map(rule => ({
+        name: rule.name,
+        description: rule.description,
+        resourceType: rule.resourceType,
+        paramLength: rule.toQuery.length,
+      }));
+      return res.status(200).json({ rules: serializableRules });
+    },
+  );
 
   const getRule = createGetRule(rules);
 
@@ -201,8 +221,6 @@ export const createPermissionIntegrationRouter = <
       );
     }
   };
-
-  router.use(express.json());
 
   router.post(
     '/.well-known/backstage/permissions/apply-conditions',
