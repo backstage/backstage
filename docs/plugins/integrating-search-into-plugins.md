@@ -1,7 +1,7 @@
 ---
-id: for-plugin-devs
-title: Search for Plugin Developers
-description: How to integrate search into a Backstage plugin
+id: integrating-search-into-plugins
+title: Integrating Search into a plugin
+description: How to integrate Search into a Backstage plugin
 ---
 
 The Backstage Search Platform was designed to give plugin developers the APIs
