@@ -21,8 +21,12 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('entities_search', table => {
-    table.index(['key'], 'entities_search_key');
-    table.index(['value'], 'entities_search_value');
+    table.index(['key'], 'entities_search_key', {
+      indexType: 'FULLTEXT',
+    });
+    table.index(['value'], 'entities_search_value', {
+      indexType: 'FULLTEXT',
+    });
   });
 };
 

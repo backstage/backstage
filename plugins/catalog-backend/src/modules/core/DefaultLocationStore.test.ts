@@ -20,7 +20,7 @@ import { DefaultLocationStore } from './DefaultLocationStore';
 
 describe('DefaultLocationStore', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['MYSQL_8', 'POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
   async function createLocationStore(databaseId: TestDatabaseId) {
