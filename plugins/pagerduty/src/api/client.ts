@@ -164,6 +164,11 @@ export class PagerDutyClient implements PagerDutyApi {
     if (response.status === 401) {
       throw new UnauthorizedError();
     }
+
+    if (response.status === 404) {
+      throw new NotFoundError();
+    }
+
     if (!response.ok) {
       const payload = await response.json();
       const errors = payload.errors.map((error: string) => error).join(' ');
