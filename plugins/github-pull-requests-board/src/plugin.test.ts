@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TeamPullRequestsBoard, TeamPullRequestsPage } from './plugin';
+import {
+  EntityTeamPullRequestsCard,
+  EntityTeamPullRequestsContent,
+} from './plugin';
 
 describe('github-pull-requests-board', () => {
-  it('should export TeamPullRequestsBoard', () => {
-    expect(TeamPullRequestsBoard).toBeDefined();
+  it('should export EntityTeamPullRequestsCard', () => {
+    expect(EntityTeamPullRequestsCard).toBeDefined();
   });
-  it('should export TeamPullRequestsPage', () => {
-    expect(TeamPullRequestsPage).toBeDefined();
+  it('should export EntityTeamPullRequestsContent', () => {
+    expect(EntityTeamPullRequestsContent).toBeDefined();
   });
 });

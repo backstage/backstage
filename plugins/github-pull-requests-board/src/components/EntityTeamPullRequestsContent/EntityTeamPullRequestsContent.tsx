@@ -17,16 +17,16 @@ import React, { FunctionComponent, useState } from 'react';
 import { Grid, Typography } from '@material-ui/core';
 import { Progress, InfoCard } from '@backstage/core-components';
 
-import { InfoCardHeader } from '../../components/InfoCardHeader';
-import { PullRequestBoardOptions } from '../../components/PullRequestBoardOptions';
-import { Wrapper } from '../../components/Wrapper';
-import { PullRequestCard } from '../../components/PullRequestCard';
+import { InfoCardHeader } from '../InfoCardHeader';
+import { PullRequestBoardOptions } from '../PullRequestBoardOptions';
+import { Wrapper } from '../Wrapper';
+import { PullRequestCard } from '../PullRequestCard';
 import { usePullRequestsByTeam } from '../../hooks/usePullRequestsByTeam';
 import { PRCardFormating } from '../../utils/types';
-import { DraftPrIcon } from '../../components/icons/DraftPr';
+import { DraftPrIcon } from '../icons/DraftPr';
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
-const TeamPullRequestsPage: FunctionComponent = () => {
+const EntityTeamPullRequestsContent: FunctionComponent = () => {
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
   const { loading, pullRequests, refreshPullRequests } =
@@ -100,4 +100,4 @@ const TeamPullRequestsPage: FunctionComponent = () => {
   return <InfoCard title={header}>{getContent()}</InfoCard>;
 };
 
-export default TeamPullRequestsPage;
+export default EntityTeamPullRequestsContent;

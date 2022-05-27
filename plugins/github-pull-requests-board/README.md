@@ -16,10 +16,10 @@ Install the plugin by running the following command **from your Backstage root d
 
 `yarn --cwd packages/app add @backstage/plugin-github-pull-requests-board`
 
-The plugin exports the **TeamPullRequestsBoard** component which can be added to the Overview page of the team at `backstage/packages/app/src/components/catalog/EntityPage.tsx`
+The plugin exports the **EntityTeamPullRequestsCard** component which can be added to the Overview page of the team at `backstage/packages/app/src/components/catalog/EntityPage.tsx`
 
 ```javascript
-import { TeamPullRequestsBoard } from '@backstage/plugin-github-pull-requests-board';
+import { EntityTeamPullRequestsCard } from '@backstage/plugin-github-pull-requests-board';
 
 const groupPage = (
   <EntityLayoutWrapper>
@@ -39,7 +39,7 @@ const groupPage = (
           <EntityMembersListCard />
         </Grid>
         <Grid item xs={12}>
-          <TeamPullRequestsBoard />
+          <EntityTeamPullRequestsCard />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -47,10 +47,10 @@ const groupPage = (
 );
 ```
 
-Or you can also import the **TeamPullRequestsPage** component which can be used to add a new tab under the group page at `backstage/packages/app/src/components/catalog/EntityPage.tsx`
+Or you can also import the **EntityTeamPullRequestsContent** component which can be used to add a new tab under the group page at `backstage/packages/app/src/components/catalog/EntityPage.tsx`
 
 ```javascript
-import { TeamPullRequestsPage } from '@backstage/plugin-github-pull-requests-board';
+import { EntityTeamPullRequestsContent } from '@backstage/plugin-github-pull-requests-board';
 
 const groupPage = (
     <EntityLayoutWrapper>
@@ -72,7 +72,7 @@ const groupPage = (
             </Grid>
         </EntityLayout.Route>
         <EntityLayout.Route path="/pull-requests" title="Pull Requests">
-            <TeamPullRequestsPage />
+            <EntityTeamPullRequestsContent />
         </EntityLayout.Route>
     </EntityLayoutWrapper>;
 )

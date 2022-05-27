@@ -27,25 +27,26 @@ const githubPullRequestsBoardPlugin = createPlugin({
   },
 });
 
-export const TeamPullRequestsBoard = githubPullRequestsBoardPlugin.provide(
+export const EntityTeamPullRequestsCard = githubPullRequestsBoardPlugin.provide(
   createComponentExtension({
-    name: 'TeamPullRequestsBoard',
+    name: 'EntityTeamPullRequestsCard',
     component: {
       lazy: () =>
-        import('./components/TeamPullRequestsBoard').then(
-          m => m.TeamPullRequestsBoard,
+        import('./components/EntityTeamPullRequestsCard').then(
+          m => m.EntityTeamPullRequestsCard,
         ),
     },
   }),
 );
 
-export const TeamPullRequestsPage = githubPullRequestsBoardPlugin.provide(
-  createRoutableExtension({
-    name: 'PullRequestPage',
-    component: () =>
-      import('./components/TeamPullRequestsPage').then(
-        m => m.TeamPullRequestsPage,
-      ),
-    mountPoint: rootRouteRef,
-  }),
-);
+export const EntityTeamPullRequestsContent =
+  githubPullRequestsBoardPlugin.provide(
+    createRoutableExtension({
+      name: 'PullRequestPage',
+      component: () =>
+        import('./components/EntityTeamPullRequestsContent').then(
+          m => m.EntityTeamPullRequestsContent,
+        ),
+      mountPoint: rootRouteRef,
+    }),
+  );

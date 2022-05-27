@@ -28,7 +28,7 @@ import { PRCardFormating } from '../../utils/types';
 import { DraftPrIcon } from '../icons/DraftPr';
 import { useUserRepositories } from '../../hooks/useUserRepositories';
 
-const TeamPullRequestsBoard: FunctionComponent = () => {
+const EntityTeamPullRequestsCard: FunctionComponent = () => {
   const [infoCardFormat, setInfoCardFormat] = useState<PRCardFormating[]>([]);
   const { repositories } = useUserRepositories();
   const { loading, pullRequests, refreshPullRequests } =
@@ -110,4 +110,4 @@ const TeamPullRequestsBoard: FunctionComponent = () => {
   return <InfoCard title={header}>{getContent()}</InfoCard>;
 };
 
-export default TeamPullRequestsBoard;
+export default EntityTeamPullRequestsCard;
