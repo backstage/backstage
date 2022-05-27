@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useCallback } from 'react';
+import React, { ReactNode, useState, useCallback } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
 import { Incidents } from '../Incident';
@@ -37,7 +37,12 @@ import {
   IconLinkVerticalProps,
   TabbedCard,
   CardTab,
+  InfoCard,
 } from '@backstage/core-components';
+
+const BasicCard = ({ children }: { children: ReactNode }) => (
+  <InfoCard title="PagerDuty">{children}</InfoCard>
+);
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(
@@ -96,7 +101,11 @@ export const PagerDutyCard = () => {
   }
 
   if (loading) {
-    return <Progress />;
+    return (
+      <BasicCard>
+        <Progress />
+      </BasicCard>
+    );
   }
 
   const serviceLink: IconLinkVerticalProps = {
