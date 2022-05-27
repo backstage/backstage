@@ -10,7 +10,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { IdentityApi } from '@backstage/core-plugin-api';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
 // Warning: (ae-missing-release-tag) "EntityPagerDutyCard" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -46,7 +46,7 @@ export class PagerDutyClient implements PagerDutyApi {
   static fromConfig(
     configApi: ConfigApi,
     discoveryApi: DiscoveryApi,
-    identityApi: IdentityApi,
+    fetchApi: FetchApi,
   ): PagerDutyClient;
   // Warning: (ae-forgotten-export) The symbol "ChangeEvent" needs to be exported by the entry point index.d.ts
   //
@@ -64,6 +64,8 @@ export class PagerDutyClient implements PagerDutyApi {
   //
   // (undocumented)
   getServiceByIntegrationKey(integrationKey: string): Promise<Service[]>;
+  // (undocumented)
+  getServiceByServiceId(serviceId: string): Promise<Service>;
   // Warning: (ae-forgotten-export) The symbol "TriggerAlarmRequest" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
