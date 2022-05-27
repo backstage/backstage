@@ -63,6 +63,9 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       { id: 'project-a' },
       { id: 'project-b' },
       { id: 'project-c' },
+      { id: 'project-a1' },
+      { id: 'project-b1' },
+      { id: 'project-c1' },
     ]);
 
     return projects;
