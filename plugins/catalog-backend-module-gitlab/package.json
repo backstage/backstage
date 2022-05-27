@@ -41,7 +41,7 @@
     "@backstage/plugin-catalog-backend": "^1.2.0-next.0",
     "@backstage/types": "^1.0.0",
     "lodash": "^4.17.21",
-    "msw": "^0.35.0",
+    "msw": "^0.41.0",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1"
   },

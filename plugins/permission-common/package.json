@@ -50,6 +50,6 @@
   "devDependencies": {
     "@backstage/cli": "^0.17.2-next.0",
     "@types/jest": "^26.0.7",
-    "msw": "^0.35.0"
+    "msw": "^0.41.0"
   }
 }

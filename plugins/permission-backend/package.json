@@ -43,7 +43,7 @@
     "@types/lodash": "^4.14.151",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.6",
-    "msw": "^0.35.0"
+    "msw": "^0.41.0"
   },
   "files": [
     "dist"
