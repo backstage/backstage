@@ -52,7 +52,7 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   );
 
 export const PagerDutyCard = () => {
-  const { integrationKey } = usePagerdutyEntity();
+  const { integrationKey, serviceId } = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [refreshChangeEvents, setRefreshChangeEvents] =
@@ -77,12 +77,16 @@ export const PagerDutyCard = () => {
     error,
   } = useAsync(async () => {
     let service: Service;
-    const services = await api.getServiceByIntegrationKey(
-      integrationKey as string,
-    );
 
-    service = services[0];
-    if (!service) throw new NotFoundError();
+    if (integrationKey) {
+      const services = await api.getServiceByIntegrationKey(
+        integrationKey as string,
+      );
+      service = services[0];
+      if (!service) throw new NotFoundError();
+    } else {
+      service = await api.getServiceByServiceId(serviceId);
+    }
 
     return {
       id: service.id,
@@ -128,11 +132,21 @@ export const PagerDutyCard = () => {
     icon: <WebIcon />,
   };
 
+  /**
+   * In order to create incidents using the REST API, a valid user email address must be present.
+   * There is no guarantee the current user entity has a valid email association, so instead just
+   * only allow triggering incidents when an integration key is present.
+   */
+  const createIncidentDisabled = !integrationKey;
   const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
     onClick: showDialog,
     icon: <AlarmAddIcon />,
     color: 'secondary',
+    disabled: createIncidentDisabled,
+    title: createIncidentDisabled
+      ? 'Must provide an integration-key to create incidents'
+      : '',
   };
 
   const escalationPolicyLink: IconLinkVerticalProps = {
@@ -171,12 +185,14 @@ export const PagerDutyCard = () => {
           <EscalationPolicy policyId={service!.policyId} />
         </CardContent>
       </Card>
-      <TriggerDialog
-        data-testid="trigger-dialog"
-        showDialog={dialogShown}
-        handleDialog={hideDialog}
-        onIncidentCreated={handleRefresh}
-      />
+      {!createIncidentDisabled && (
+        <TriggerDialog
+          data-testid="trigger-dialog"
+          showDialog={dialogShown}
+          handleDialog={hideDialog}
+          onIncidentCreated={handleRefresh}
+        />
+      )}
     </>
   );
 };
