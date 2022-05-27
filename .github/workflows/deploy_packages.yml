@@ -209,7 +209,7 @@ jobs:
       # Grabs the version in the root package.json and creates a tag on GitHub
       - name: Create a release tag
         id: create_tag
-        run: node scripts/create-release-tag.js --dispatch-workflows
+        run: node scripts/create-release-tag.js
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
@@ -218,6 +218,13 @@ jobs:
         run: node scripts/create-github-release.js ${{ steps.create_tag.outputs.tag_name }} 1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Dispatch repository event
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          event-type: release-published
+          client-payload: '{"version": "${{ steps.create_tag.outputs.version }}"}'
 
       # Notify everyone about this great new release :D
       - name: Discord notification
