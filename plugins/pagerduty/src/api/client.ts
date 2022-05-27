@@ -34,6 +34,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 export class UnauthorizedError extends Error {}
+export class NotFoundError extends Error {}
 
 export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
   id: 'plugin.pagerduty.api',
