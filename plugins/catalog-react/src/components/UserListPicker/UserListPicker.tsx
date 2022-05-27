@@ -133,10 +133,13 @@ export const UserListPicker = (props: UserListPickerProps) => {
   const {
     filters,
     updateFilters,
+    addEntityFields,
     backendEntities,
     queryParameters: { kind: kindParameter, user: userParameter },
     loading: loadingBackendEntities,
   } = useEntityList();
+
+  useEffect(() => addEntityFields(['relationships']), [addEntityFields]);
 
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.

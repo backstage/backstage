@@ -36,3 +36,8 @@ export function reduceEntityFilters(
       filter => !filter.filterEntity || filter.filterEntity(entity),
     );
 }
+
+export function uniqueEntityFields(fields: string[]) {
+  const uniqueFields = [...new Set(fields)];
+  return uniqueFields.sort();
+}

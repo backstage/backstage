@@ -40,7 +40,10 @@ export function useEntityTypeFilter(): {
     filters: { kind: kindFilter, type: typeFilter },
     queryParameters: { type: typeParameter },
     updateFilters,
+    addEntityFields,
   } = useEntityList();
+
+  useEffect(() => addEntityFields(['spec.type']), [addEntityFields]);
 
   const flattenedQueryTypes = useMemo(
     () => [typeParameter].flat().filter(Boolean) as string[],

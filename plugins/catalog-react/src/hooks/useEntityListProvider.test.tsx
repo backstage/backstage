@@ -77,17 +77,19 @@ const mockCatalogApi: Partial<CatalogApi> = {
 const wrapper = ({
   userFilter,
   location,
+  catalogApi,
   children,
 }: PropsWithChildren<{
   userFilter?: UserListFilterKind;
   location?: string;
+  catalogApi?: Partial<CatalogApi>;
 }>) => {
   return (
     <MemoryRouter initialEntries={[location ?? '']}>
       <TestApiProvider
         apis={[
           [configApiRef, mockConfigApi],
-          [catalogApiRef, mockCatalogApi],
+          [catalogApiRef, catalogApi ?? mockCatalogApi],
           [identityApiRef, mockIdentityApi],
           [storageApiRef, MockStorageApi.create()],
           [starredEntitiesApiRef, new MockStarredEntitiesApi()],
@@ -106,14 +108,11 @@ const wrapper = ({
 describe('<EntityListProvider />', () => {
   const origReplaceState = window.history.replaceState;
   beforeEach(() => {
+    jest.clearAllMocks();
     window.history.replaceState = jest.fn();
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
   });
 
   it('resolves backend filters', async () => {
@@ -122,9 +121,11 @@ describe('<EntityListProvider />', () => {
     });
     await waitForValueToChange(() => result.current.backendEntities);
     expect(result.current.backendEntities.length).toBe(2);
-    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
-      filter: { kind: 'component' },
-    });
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: { kind: 'component' },
+      }),
+    );
   });
 
   it('resolves frontend filters', async () => {
@@ -217,21 +218,58 @@ describe('<EntityListProvider />', () => {
   });
 
   it('returns an error on catalogApi failure', async () => {
-    const { result, waitForValueToChange, waitFor } = renderHook(
-      () => useEntityList(),
-      {
-        wrapper,
+    const catalogApi: Partial<CatalogApi> = {
+      getEntities: jest.fn().mockRejectedValue('error'),
+      getEntityByRef: async () => undefined,
+    };
+    const { result, waitFor } = renderHook(() => useEntityList(), {
+      wrapper,
+      initialProps: {
+        catalogApi,
       },
-    );
-    await waitForValueToChange(() => result.current.backendEntities);
-    expect(result.current.backendEntities.length).toBe(2);
-
-    mockCatalogApi.getEntities = jest.fn().mockRejectedValue('error');
+    });
     act(() => {
       result.current.updateFilters({ kind: new EntityKindFilter('api') });
     });
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
     });
+  });
+
+  it('adds fields to the catalogApi request', async () => {
+    const { result, waitForNextUpdate, waitForValueToChange } = renderHook(
+      () => useEntityList(),
+      {
+        wrapper,
+      },
+    );
+    await waitForValueToChange(() => result.current.backendEntities);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'relationships', // from UserListPicker
+        ],
+      }),
+    );
+
+    act(() => {
+      result.current.addEntityFields(['frobs', 'bar']);
+    });
+    await waitForNextUpdate();
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fields: [
+          'bar',
+          'frobs',
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'relationships',
+        ],
+      }),
+    );
   });
 });

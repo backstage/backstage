@@ -73,6 +73,7 @@ export const MockEntityListContextProvider = ({
       backendEntities: value?.backendEntities ?? defaultValues.backendEntities,
       updateFilters: value?.updateFilters ?? updateFilters,
       filters,
+      addEntityFields: jest.fn(),
       loading: value?.loading ?? false,
       queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
       error: value?.error,

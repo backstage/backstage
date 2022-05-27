@@ -52,11 +52,14 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityOwnerPicker = () => {
   const classes = useStyles();
   const {
+    addEntityFields,
     updateFilters,
     backendEntities,
     filters,
     queryParameters: { owners: ownersParameter },
   } = useEntityList();
+
+  useEffect(() => addEntityFields(['spec.owner']), [addEntityFields]);
 
   const queryParamOwners = useMemo(
     () => [ownersParameter].flat().filter(Boolean) as string[],

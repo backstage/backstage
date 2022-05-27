@@ -28,7 +28,7 @@ import {
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableRow } from './types';
 import {
@@ -64,7 +64,8 @@ const YellowStar = withStyles({
 export const CatalogTable = (props: CatalogTableProps) => {
   const { columns, actions, tableOptions } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  const { loading, error, entities, filters } = useEntityList();
+  const { loading, error, entities, filters, addEntityFields } =
+    useEntityList();
 
   const defaultColumns: TableColumn<CatalogTableRow>[] = useMemo(() => {
     return [
@@ -95,6 +96,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
       }
     }
   }, [filters.kind?.value]);
+
+  useEffect(() => {
+    const tableColumns = columns ?? defaultColumns;
+    const entityFields = tableColumns
+      .map(column => column.field)
+      .filter(field => field?.startsWith('entity.'))
+      .map(field => field!.substring('entity.'.length)) as string[];
+    // relations are used in the resolved fields below
+    addEntityFields(['relations', ...entityFields]);
+  }, [columns, defaultColumns, addEntityFields]);
 
   const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
@@ -178,6 +189,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
     return {
       entity,
+      // NOTE: Relying on new fields from the entity here may necessitate a change above to
+      // `addEntityFields`, as this filters the fields returned from the backend.
       resolved: {
         name: humanizeEntityRef(entity, {
           defaultKind: 'Component',

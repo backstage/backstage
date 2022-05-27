@@ -204,6 +204,7 @@ export type EntityListContextProps<
       | Partial<EntityFilters>
       | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
   ) => void;
+  addEntityFields: (fields: string[]) => void;
   queryParameters: Partial<Record<keyof EntityFilters, string | string[]>>;
   loading: boolean;
   error?: Error;

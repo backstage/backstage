@@ -52,10 +52,13 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityTagPicker = () => {
   const classes = useStyles();
   const {
+    addEntityFields,
     updateFilters,
     filters,
     queryParameters: { tags: tagsParameter },
   } = useEntityList();
+
+  useEffect(() => addEntityFields(['metadata.tags']), [addEntityFields]);
 
   const catalogApi = useApi(catalogApiRef);
   const { value: availableTags } = useAsync(async () => {

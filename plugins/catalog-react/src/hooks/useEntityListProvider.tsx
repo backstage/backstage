@@ -40,7 +40,11 @@ import {
   UserListFilter,
 } from '../filters';
 import { EntityFilter } from '../types';
-import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
+import {
+  reduceCatalogFilters,
+  reduceEntityFilters,
+  uniqueEntityFields,
+} from '../utils';
 import { useApi } from '@backstage/core-plugin-api';
 
 /** @public */
@@ -85,6 +89,14 @@ export type EntityListContextProps<
   ) => void;
 
   /**
+   * Add fields to the backend catalog query. By default, the triplet of fields used in entity
+   * references are included (kind, metadata.name, metadata.namespace). Components that use other
+   * entity fields should call this method with dot-delimited field names to be included in the
+   * getEntities query.
+   */
+  addEntityFields: (fields: string[]) => void;
+
+  /**
    * Filter values from query parameters.
    */
   queryParameters: Partial<Record<keyof EntityFilters, string | string[]>>;
@@ -103,6 +115,7 @@ export const EntityListContext = createContext<
 
 type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
+  fields: string[];
   entities: Entity[];
   backendEntities: Entity[];
 };
@@ -116,6 +129,14 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 }: PropsWithChildren<{}>) => {
   const isMounted = useMountedState();
   const catalogApi = useApi(catalogApiRef);
+
+  // Entity triplet fields are always included; others should be added by components that need them
+  // using updateFields.
+  const [requestedFields, setRequestedFields] = useState<string[]>([
+    'kind',
+    'metadata.namespace',
+    'metadata.name',
+  ]);
   const [requestedFilters, setRequestedFilters] = useState<EntityFilters>(
     {} as EntityFilters,
   );
@@ -137,6 +158,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     () => {
       return {
         appliedFilters: {} as EntityFilters,
+        fields: [],
         entities: [],
         backendEntities: [],
       };
@@ -148,13 +170,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   // based on the requested filters changing.
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
-      const compacted = compact(Object.values(requestedFilters));
-      const entityFilter = reduceEntityFilters(compacted);
-      const backendFilter = reduceCatalogFilters(compacted);
-      const previousBackendFilter = reduceCatalogFilters(
-        compact(Object.values(outputState.appliedFilters)),
-      );
-
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
           const filter: EntityFilter | undefined =
@@ -167,23 +182,34 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         {} as Record<string, string | string[]>,
       );
 
-      // TODO(mtlewis): currently entities will never be requested unless
-      // there's at least one filter, we should allow an initial request
-      // to happen with no filters.
-      if (!isEqual(previousBackendFilter, backendFilter)) {
-        // TODO(timbonicus): should limit fields here, but would need filter
-        // fields + table columns
+      const compacted = compact(Object.values(requestedFilters));
+      const entityFilter = reduceEntityFilters(compacted);
+      const backendFilter = reduceCatalogFilters(compacted);
+      const backendFields = uniqueEntityFields(requestedFields);
+
+      const previousBackendFilter = reduceCatalogFilters(
+        compact(Object.values(outputState.appliedFilters)),
+      );
+      const previousFields = uniqueEntityFields(outputState.fields);
+      const hasUpdatedBackendValues =
+        !isEqual(previousBackendFilter, backendFilter) ||
+        !isEqual(previousFields, backendFields);
+
+      if (hasUpdatedBackendValues) {
         const response = await catalogApi.getEntities({
           filter: backendFilter,
+          fields: backendFields,
         });
         setOutputState({
           appliedFilters: requestedFilters,
+          fields: requestedFields,
           backendEntities: response.items,
           entities: response.items.filter(entityFilter),
         });
       } else {
         setOutputState({
           appliedFilters: requestedFilters,
+          fields: requestedFields,
           backendEntities: outputState.backendEntities,
           entities: outputState.backendEntities.filter(entityFilter),
         });
@@ -206,13 +232,19 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
         window.history?.replaceState(null, document.title, newUrl);
       }
     },
-    [catalogApi, queryParameters, requestedFilters, outputState],
+    [
+      catalogApi,
+      queryParameters,
+      requestedFilters,
+      requestedFields,
+      outputState,
+    ],
     { loading: true },
   );
 
   // Slight debounce on the refresh, since (especially on page load) several
   // filters will be calling this in rapid succession.
-  useDebounce(refresh, 10, [requestedFilters]);
+  useDebounce(refresh, 10, [requestedFilters, requestedFields]);
 
   const updateFilters = useCallback(
     (
@@ -229,17 +261,29 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     [],
   );
 
+  const addEntityFields = useCallback((fields: string[]) => {
+    setRequestedFields(prevFields => prevFields.concat(fields));
+  }, []);
+
   const value = useMemo(
     () => ({
       filters: outputState.appliedFilters,
       entities: outputState.entities,
       backendEntities: outputState.backendEntities,
       updateFilters,
+      addEntityFields,
       queryParameters,
       loading,
       error,
     }),
-    [outputState, updateFilters, queryParameters, loading, error],
+    [
+      outputState,
+      updateFilters,
+      addEntityFields,
+      queryParameters,
+      loading,
+      error,
+    ],
   );
 
   return (
