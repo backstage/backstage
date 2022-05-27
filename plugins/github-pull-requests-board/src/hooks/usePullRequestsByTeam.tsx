@@ -30,14 +30,9 @@ export function usePullRequestsByTeam(repositories: string[]) {
       const pullRequestsNumbers = await getPullRequests(repository);
 
       const pullRequestsWithDetails = await Promise.all(
-        pullRequestsNumbers.map(async ({ node }) => {
-          const pullRequest = await getPullRequestDetails(
-            repository,
-            node.number,
-          );
-
-          return pullRequest;
-        }),
+        pullRequestsNumbers.map(({ node }) =>
+          getPullRequestDetails(repository, node.number),
+        ),
       );
 
       return pullRequestsWithDetails;
