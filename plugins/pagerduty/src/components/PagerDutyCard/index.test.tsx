@@ -19,7 +19,12 @@ import { PagerDutyCard, isPluginApplicableToEntity } from '../PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
+import {
+  pagerDutyApiRef,
+  UnauthorizedError,
+  NotFoundError,
+  PagerDutyClient,
+} from '../../api';
 import { Service, User } from '../types';
 
 import { alertApiRef } from '@backstage/core-plugin-api';
@@ -166,6 +171,24 @@ describe('PageDutyCard', () => {
     expect(getByText('Missing or invalid PagerDuty Token')).toBeInTheDocument();
   });
 
+  it('Handles custom NotFoundError', async () => {
+    mockPagerDutyApi.getServiceByIntegrationKey = jest
+      .fn()
+      .mockRejectedValueOnce(new NotFoundError());
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(getByText('PagerDuty Service Not Found')).toBeInTheDocument();
+  });
+
   it('handles general error', async () => {
     mockPagerDutyApi.getServiceByIntegrationKey = jest
       .fn()
@@ -187,6 +210,25 @@ describe('PageDutyCard', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it('handles empty response from getServiceByIntegrationKey', async () => {
+    mockPagerDutyApi.getServiceByIntegrationKey = jest
+      .fn()
+      .mockImplementationOnce(async () => []);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <PagerDutyCard />
+          </EntityProvider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(getByText('PagerDuty Service Not Found')).toBeInTheDocument();
+  });
+
   it('opens the dialog when trigger button is clicked', async () => {
     mockPagerDutyApi.getServiceByIntegrationKey = jest
       .fn()

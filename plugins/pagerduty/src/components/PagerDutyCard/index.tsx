@@ -20,15 +20,16 @@ import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
 import useAsync from 'react-use/lib/useAsync';
 import { Alert } from '@material-ui/lab';
-import { pagerDutyApiRef, UnauthorizedError } from '../../api';
+import { pagerDutyApiRef, UnauthorizedError, NotFoundError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
-import { MissingTokenError } from '../Errors/MissingTokenError';
+import { MissingTokenError, ServiceNotFoundError } from '../Errors';
 import WebIcon from '@material-ui/icons/Web';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import { usePagerdutyEntity } from '../../hooks';
 import { PAGERDUTY_INTEGRATION_KEY, PAGERDUTY_SERVICE_ID } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 import { ChangeEvents } from '../ChangeEvents';
+import { Service } from '../types';
 
 import { useApi } from '@backstage/core-plugin-api';
 import {
@@ -75,29 +76,42 @@ export const PagerDutyCard = () => {
     loading,
     error,
   } = useAsync(async () => {
+    let service: Service;
     const services = await api.getServiceByIntegrationKey(
       integrationKey as string,
     );
 
+    service = services[0];
+    if (!service) throw new NotFoundError();
+
     return {
-      id: services[0].id,
-      name: services[0].name,
-      url: services[0].html_url,
-      policyId: services[0].escalation_policy.id,
-      policyLink: services[0].escalation_policy.html_url,
+      id: service.id,
+      name: service.name,
+      url: service.html_url,
+      policyId: service.escalation_policy.id,
+      policyLink: service.escalation_policy.html_url,
     };
   });
 
-  if (error instanceof UnauthorizedError) {
-    return <MissingTokenError />;
-  }
-
   if (error) {
-    return (
-      <Alert severity="error">
-        Error encountered while fetching information. {error.message}
-      </Alert>
-    );
+    let errorNode: ReactNode;
+
+    switch (error.constructor) {
+      case UnauthorizedError:
+        errorNode = <MissingTokenError />;
+        break;
+      case NotFoundError:
+        errorNode = <ServiceNotFoundError />;
+        break;
+      default:
+        errorNode = (
+          <Alert severity="error">
+            Error encountered while fetching information. {error.message}
+          </Alert>
+        );
+    }
+
+    return <BasicCard>{errorNode}</BasicCard>;
   }
 
   if (loading) {
