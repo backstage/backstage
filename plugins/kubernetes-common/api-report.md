@@ -144,7 +144,7 @@ export type CustomResourceMatcher = Omit<CustomResource, 'objectType'>;
 export interface CustomResourcesKubernetesRequestBody
   extends KubernetesRequestBody {
   // (undocumented)
-  customResources: Omit<CustomResource, 'objectType'>[];
+  customResources: CustomResourceMatcher[];
 }
 
 // Warning: (ae-missing-release-tag) "DeploymentFetchResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -237,7 +237,8 @@ export type KubernetesObjectTypes =
   | 'jobs'
   | 'cronjobs'
   | 'ingresses'
-  | 'customresources';
+  | 'customresources'
+  | 'statefulsets';
 
 // Warning: (ae-missing-release-tag) "KubernetesRequestBody" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

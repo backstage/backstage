@@ -50,7 +50,8 @@ export type KubernetesObjectTypes =
   | 'jobs'
   | 'cronjobs'
   | 'ingresses'
-  | 'customresources';
+  | 'customresources'
+  | 'statefulsets';
 
 export type CustomResourceMatcher = Omit<CustomResource, 'objectType'>;
 
