@@ -46,7 +46,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.17.1",
+    "@backstage/cli": "^0.17.2-next.0",
     "@backstage/test-utils": "^1.1.0",
     "@graphql-codegen/cli": "^2.3.1",
     "@graphql-codegen/graphql-modules-preset": "^2.3.2",

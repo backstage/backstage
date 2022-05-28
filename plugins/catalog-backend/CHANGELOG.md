@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend
 
+## 1.2.0-next.0
+
+### Minor Changes
+
+- b594679ae3: Allow array as non-spread arguments at the `CatalogBuilder`.
+
+  ```typescript
+  builder.addEntityProvider(...getArrayOfProviders());
+  ```
+
+  can be simplified to
+
+  ```typescript
+  builder.addEntityProvider(getArrayOfProviders());
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/plugin-permission-node@0.6.2-next.0
+
 ## 1.1.2
 
 ### Patch Changes
@@ -495,7 +518,7 @@
 - 022507c860: A `DefaultCatalogCollatorFactory`, which works with the new stream-based
   search indexing subsystem, is now available. The `DefaultCatalogCollator` will
   continue to be available for those unable to upgrade to the stream-based
-  `@backstage/search-backend-node` (and related packages), however it is now
+  `@backstage/plugin-search-backend-node` (and related packages), however it is now
   marked as deprecated and will be removed in a future version.
 
   To upgrade this plugin and the search indexing subsystem in one go, check

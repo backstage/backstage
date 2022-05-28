@@ -50,3 +50,5 @@ of your backend.
 +    GitLabDiscoveryProcessor.fromConfig(env.config, { logger: env.logger })
 +  );
 ```
+
+If you don't want create location object if file with component definition do not exists in project, you can set the `skipReposWithoutExactFileMatch` option. That can reduce count of request to gitlab with 404 status code.

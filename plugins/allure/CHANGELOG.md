@@ -1,5 +1,14 @@
 # @backstage/plugin-allure
 
+## 0.1.22-next.0
+
+### Patch Changes
+
+- 6387b7a98a: Add export for `isAllureReportAvailable` and `ALLURE_PROJECT_ID_ANNOTATION` so it can be used outside of plugin
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.1.1-next.0
+  - @backstage/core-components@0.9.5-next.0
+
 ## 0.1.21
 
 ### Patch Changes

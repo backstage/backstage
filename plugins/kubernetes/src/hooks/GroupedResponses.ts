@@ -27,4 +27,5 @@ export const GroupedResponsesContext = React.createContext<GroupedResponses>({
   jobs: [],
   cronJobs: [],
   customResources: [],
+  statefulsets: [],
 });

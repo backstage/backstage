@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.2.1-next.0
+
+### Patch Changes
+
+- 72dfcbc8bf: Gerrit Integration: Handle absolute paths in `resolveUrl` properly.
+
 ## 1.2.0
 
 ### Minor Changes

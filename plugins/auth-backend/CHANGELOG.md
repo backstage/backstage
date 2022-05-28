@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.14.1-next.0
+
+### Patch Changes
+
+- f6aae90e4e: Added configurable algorithm field for TokenFactory
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-auth-node@0.2.2-next.0
+
 ## 0.14.0
 
 ### Minor Changes

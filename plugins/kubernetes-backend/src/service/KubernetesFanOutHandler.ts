@@ -100,6 +100,12 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
     plural: 'ingresses',
     objectType: 'ingresses',
   },
+  {
+    group: 'apps',
+    apiVersion: 'v1',
+    plural: 'statefulsets',
+    objectType: 'statefulsets',
+  },
 ];
 
 export interface KubernetesFanOutHandlerOptions
@@ -159,6 +165,7 @@ export class KubernetesFanOutHandler {
   private readonly serviceLocator: KubernetesServiceLocator;
   private readonly customResources: CustomResource[];
   private readonly objectTypesToFetch: Set<ObjectToFetch>;
+  private readonly authTranslators: Record<string, KubernetesAuthTranslator>;
 
   constructor({
     logger,
@@ -172,6 +179,7 @@ export class KubernetesFanOutHandler {
     this.serviceLocator = serviceLocator;
     this.customResources = customResources;
     this.objectTypesToFetch = new Set(objectTypesToFetch);
+    this.authTranslators = {};
   }
 
   async getCustomResourcesByEntity(
@@ -319,5 +327,20 @@ export class KubernetesFanOutHandler {
     );
 
     return Promise.all([result, Promise.all(podMetrics)]);
+  }
+
+  private getAuthTranslator(provider: string): KubernetesAuthTranslator {
+    if (this.authTranslators[provider]) {
+      return this.authTranslators[provider];
+    }
+
+    this.authTranslators[provider] =
+      KubernetesAuthTranslatorGenerator.getKubernetesAuthTranslatorInstance(
+        provider,
+        {
+          logger: this.logger,
+        },
+      );
+    return this.authTranslators[provider];
   }
 }

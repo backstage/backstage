@@ -77,6 +77,7 @@ const SidebarLogo = () => {
         to="/"
         underline="none"
         className={classes.link}
+        aria-label="Home"
       >
         {isOpen ? <LogoFull /> : <LogoIcon />}
       </Link>

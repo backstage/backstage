@@ -99,7 +99,7 @@ describe('TechDocs', () => {
   });
 
   describe('Rendering TechDocs Addons', () => {
-    it('should render a content addon', () => {
+    it('should render a content addon in homepage', () => {
       cy.visit('/docs/default/Component/techdocs-e2e-fixture');
 
       cy.contains('e2e Fixture Documentation');
@@ -128,6 +128,43 @@ describe('TechDocs', () => {
           'have.attr',
           'href',
           'https://github.com/backstage/backstage/issues/new?title=Documentation%20feedback%3A%20This%20is%20a%20basic%20documentation%20used%20for%20end-to-end%20tests.&body=%23%23%20Documentation%20Feedback%20%F0%9F%93%9D%0A%0A%20%23%23%23%23%20The%20highlighted%20text%3A%20%0A%0A%20%3E%20This%20is%20a%20basic%20documentation%20used%20for%20end-to-end%20tests.%0A%0A%20%23%23%23%23%20The%20comment%20on%20the%20text%3A%20%0A%20_%3Ereplace%20this%20line%20with%20your%20comment%3C_%0A%0A%20___%0ABackstage%20URL%3A%20%3Chttp%3A%2F%2Flocalhost%3A7007%2Fdocs%2Fdefault%2FComponent%2Ftechdocs-e2e-fixture%3E%20%0AMarkdown%20URL%3A%20%3Chttps%3A%2F%2Fgithub.com%2Fbackstage%2Fbackstage%2Fblob%2Fmaster%2Fcypress%2Ffixtures%2Fdocs%2Findex.md%3E',
+        );
+    });
+
+    it('should render a content addon in sub-pages', () => {
+      cy.visit('/docs/default/Component/techdocs-e2e-fixture');
+
+      cy.contains('e2e Fixture Documentation');
+
+      // open sub-page
+      cy.getTechDocsShadowRoot().within(() => {
+        cy.getTechDocsNavigation().find('a').contains('Sub-page 1').click();
+      });
+
+      // highlight a snippet of text
+      cy.getTechDocsShadowRoot()
+        .find('#section-11')
+        .then($el => {
+          const el = $el[0];
+          const document = el.ownerDocument;
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          document?.getSelection()?.removeAllRanges();
+          document?.getSelection()?.addRange(range);
+        });
+
+      cy.document().trigger('selectionchange');
+
+      // wait for new issue default debounce time
+      cy.wait(600);
+
+      // assert that the new issue button has a right url
+      cy.getTechDocsShadowRoot()
+        .contains('Open new Github issue')
+        .should(
+          'have.attr',
+          'href',
+          'https://github.com/backstage/backstage/issues/new?title=Documentation%20feedback%3A%20Section%201.1%C2%B6&body=%23%23%20Documentation%20Feedback%20%F0%9F%93%9D%0A%0A%20%23%23%23%23%20The%20highlighted%20text%3A%20%0A%0A%20%3E%20Section%201.1%C2%B6%0A%0A%20%23%23%23%23%20The%20comment%20on%20the%20text%3A%20%0A%20_%3Ereplace%20this%20line%20with%20your%20comment%3C_%0A%0A%20___%0ABackstage%20URL%3A%20%3Chttp%3A%2F%2Flocalhost%3A7007%2Fdocs%2Fdefault%2FComponent%2Ftechdocs-e2e-fixture%2Fsub-page-one%2F%3E%20%0AMarkdown%20URL%3A%20%3Chttps%3A%2F%2Fgithub.com%2Fbackstage%2Fbackstage%2Fblob%2Fmaster%2Fcypress%2Ffixtures%2Fdocs%2Fsub-page-one.md%3E',
         );
     });
   });

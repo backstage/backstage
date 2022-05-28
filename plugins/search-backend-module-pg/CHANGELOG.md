@@ -1,5 +1,13 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.13.6-next.0
+  - @backstage/plugin-search-backend-node@0.6.2-next.0
+
 ## 0.3.3
 
 ### Patch Changes
@@ -83,10 +91,10 @@
 - 022507c860: **BREAKING**
 
   The `PgSearchEngine` implements the new stream-based indexing process expected
-  by the latest `@backstage/search-backend-node`.
+  by the latest `@backstage/plugin-search-backend-node`.
 
   When updating to this version, you must also update to the latest version of
-  `@backstage/search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  `@backstage/plugin-search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
   for further details.
 
 ### Patch Changes

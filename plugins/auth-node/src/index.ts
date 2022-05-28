@@ -22,6 +22,7 @@
 
 export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
 export { IdentityClient } from './IdentityClient';
+export type { IdentityClientOptions } from './IdentityClient';
 export type {
   BackstageIdentityResponse,
   BackstageSignInResult,
