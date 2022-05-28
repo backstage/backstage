@@ -233,7 +233,7 @@ export interface KubernetesObjectsProviderOptions {
 // @public (undocumented)
 export interface KubernetesServiceLocator {
   // (undocumented)
-  getClustersByServiceId(entity: Entity): Promise<ClusterDetails[]>;
+  getClustersByEntity(entity: Entity): Promise<ClusterDetails[]>;
 }
 
 // Warning: (ae-missing-release-tag) "ObjectFetchParams" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)

@@ -73,7 +73,7 @@ export interface KubernetesClustersSupplier {
 
 // Used to locate which cluster(s) a service is running on
 export interface KubernetesServiceLocator {
-  getClustersByServiceId(entity: Entity): Promise<ClusterDetails[]>;
+  getClustersByEntity(entity: Entity): Promise<ClusterDetails[]>;
 }
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http

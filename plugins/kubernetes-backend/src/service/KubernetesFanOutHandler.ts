@@ -244,7 +244,7 @@ export class KubernetesFanOutHandler {
     auth: AuthConfig,
   ) {
     const clusterDetails: ClusterDetails[] =
-      await this.serviceLocator.getClustersByServiceId(entity);
+      await this.serviceLocator.getClustersByEntity(entity);
 
     // Execute all of these async actions simultaneously/without blocking sequentially as no common object is modified by them
     return await Promise.all(

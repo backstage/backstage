@@ -55,7 +55,7 @@ export type CustomResourceMatcher = Omit<CustomResource, 'objectType'>;
 
 export interface CustomResourcesKubernetesRequestBody
   extends KubernetesRequestBody {
-  customResources: Omit<CustomResource, 'objectType'>[];
+  customResources: CustomResourceMatcher[];
 }
 
 export interface AuthConfig {

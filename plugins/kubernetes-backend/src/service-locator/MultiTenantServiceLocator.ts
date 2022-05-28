@@ -31,8 +31,7 @@ export class MultiTenantServiceLocator implements KubernetesServiceLocator {
   }
 
   // As this implementation always returns all clusters serviceId is ignored here
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getClustersByServiceId(_entity: Entity): Promise<ClusterDetails[]> {
+  async getClustersByEntity(_entity: Entity): Promise<ClusterDetails[]> {
     return this.clusterSupplier.getClusters();
   }
 }

@@ -24,7 +24,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       getClusters: async () => [],
     });
 
-    const result = await sut.getClustersByServiceId({} as Entity);
+    const result = await sut.getClustersByEntity({} as Entity);
 
     expect(result).toStrictEqual([]);
   });
@@ -43,7 +43,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       },
     });
 
-    const result = await sut.getClustersByServiceId({} as Entity);
+    const result = await sut.getClustersByEntity({} as Entity);
 
     expect(result).toStrictEqual([
       {
@@ -74,7 +74,7 @@ describe('MultiTenantConfigClusterLocator', () => {
       },
     });
 
-    const result = await sut.getClustersByServiceId({} as Entity);
+    const result = await sut.getClustersByEntity({} as Entity);
 
     expect(result).toStrictEqual([
       {

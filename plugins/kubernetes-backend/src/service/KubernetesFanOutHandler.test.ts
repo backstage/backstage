@@ -22,7 +22,7 @@ import { PodStatus } from '@kubernetes/client-node/dist/top';
 const fetchObjectsForService = jest.fn();
 const fetchPodMetricsByNamespace = jest.fn();
 
-const getClustersByServiceId = jest.fn();
+const getClustersByEntity = jest.fn();
 
 const POD_METRICS_FIXTURE = {
   containers: [],
@@ -188,7 +188,7 @@ describe('KubernetesFanOutHandler', () => {
 
   describe('getCustomResourcesByEntity', () => {
     it('retrieve objects for one cluster', async () => {
-      getClustersByServiceId.mockImplementation(() =>
+      getClustersByEntity.mockImplementation(() =>
         Promise.resolve([
           {
             name: 'test-cluster',
@@ -207,7 +207,7 @@ describe('KubernetesFanOutHandler', () => {
           fetchPodMetricsByNamespace,
         },
         serviceLocator: {
-          getClustersByServiceId,
+          getClustersByEntity,
         },
         customResources: [],
       });
@@ -239,7 +239,7 @@ describe('KubernetesFanOutHandler', () => {
         ],
       );
 
-      expect(getClustersByServiceId.mock.calls.length).toBe(1);
+      expect(getClustersByEntity.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(1);
       expect(
         fetchObjectsForService.mock.calls[0][0].customResources,
@@ -281,7 +281,7 @@ describe('KubernetesFanOutHandler', () => {
 
   describe('getKubernetesObjectsByEntity', () => {
     it('retrieve objects for one cluster', async () => {
-      getClustersByServiceId.mockImplementation(() =>
+      getClustersByEntity.mockImplementation(() =>
         Promise.resolve([
           {
             name: 'test-cluster',
@@ -300,7 +300,7 @@ describe('KubernetesFanOutHandler', () => {
           fetchPodMetricsByNamespace,
         },
         serviceLocator: {
-          getClustersByServiceId,
+          getClustersByEntity,
         },
         customResources: [],
       });
@@ -325,7 +325,7 @@ describe('KubernetesFanOutHandler', () => {
         {},
       );
 
-      expect(getClustersByServiceId.mock.calls.length).toBe(1);
+      expect(getClustersByEntity.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(1);
       expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(1);
       expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe(
@@ -381,7 +381,7 @@ describe('KubernetesFanOutHandler', () => {
     });
 
     it('dont call top for the same namespace twice', async () => {
-      getClustersByServiceId.mockImplementation(() =>
+      getClustersByEntity.mockImplementation(() =>
         Promise.resolve([
           {
             name: 'test-cluster',
@@ -430,7 +430,7 @@ describe('KubernetesFanOutHandler', () => {
           fetchPodMetricsByNamespace,
         },
         serviceLocator: {
-          getClustersByServiceId,
+          getClustersByEntity,
         },
         customResources: [],
       });
@@ -455,7 +455,7 @@ describe('KubernetesFanOutHandler', () => {
         {},
       );
 
-      expect(getClustersByServiceId.mock.calls.length).toBe(1);
+      expect(getClustersByEntity.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(1);
       expect(fetchPodMetricsByNamespace.mock.calls.length).toBe(2);
       expect(fetchPodMetricsByNamespace.mock.calls[0][1]).toBe('ns-a');
@@ -500,7 +500,7 @@ describe('KubernetesFanOutHandler', () => {
     });
 
     it('retrieve objects for two clusters', async () => {
-      getClustersByServiceId.mockImplementation(() =>
+      getClustersByEntity.mockImplementation(() =>
         Promise.resolve([
           {
             name: 'test-cluster',
@@ -524,7 +524,7 @@ describe('KubernetesFanOutHandler', () => {
           fetchPodMetricsByNamespace,
         },
         serviceLocator: {
-          getClustersByServiceId,
+          getClustersByEntity,
         },
         customResources: [],
       });
@@ -549,7 +549,7 @@ describe('KubernetesFanOutHandler', () => {
         { google: 'google_token_123' },
       );
 
-      expect(getClustersByServiceId.mock.calls.length).toBe(1);
+      expect(getClustersByEntity.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(2);
       expect(result).toStrictEqual({
         items: [
@@ -642,7 +642,7 @@ describe('KubernetesFanOutHandler', () => {
       });
     });
     it('retrieve objects for three clusters, only two have resources and show in ui', async () => {
-      getClustersByServiceId.mockImplementation(() =>
+      getClustersByEntity.mockImplementation(() =>
         Promise.resolve([
           {
             name: 'test-cluster',
@@ -669,7 +669,7 @@ describe('KubernetesFanOutHandler', () => {
           fetchPodMetricsByNamespace,
         },
         serviceLocator: {
-          getClustersByServiceId,
+          getClustersByEntity,
         },
         customResources: [],
       });
@@ -696,7 +696,7 @@ describe('KubernetesFanOutHandler', () => {
         },
       );
 
-      expect(getClustersByServiceId.mock.calls.length).toBe(1);
+      expect(getClustersByEntity.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(3);
       expect(result).toStrictEqual({
         items: [
@@ -788,7 +788,7 @@ describe('KubernetesFanOutHandler', () => {
       });
     });
     it('retrieve objects for four clusters, two have resources and one error cluster', async () => {
-      getClustersByServiceId.mockImplementation(() =>
+      getClustersByEntity.mockImplementation(() =>
         Promise.resolve([
           {
             name: 'test-cluster',
@@ -819,7 +819,7 @@ describe('KubernetesFanOutHandler', () => {
           fetchPodMetricsByNamespace,
         },
         serviceLocator: {
-          getClustersByServiceId,
+          getClustersByEntity,
         },
         customResources: [],
       });
@@ -846,7 +846,7 @@ describe('KubernetesFanOutHandler', () => {
         },
       );
 
-      expect(getClustersByServiceId.mock.calls.length).toBe(1);
+      expect(getClustersByEntity.mock.calls.length).toBe(1);
       expect(fetchObjectsForService.mock.calls.length).toBe(4);
       expect(result).toStrictEqual({
         items: [
