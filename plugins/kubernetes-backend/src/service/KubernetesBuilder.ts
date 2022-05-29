@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  CompoundEntityRef,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
-import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
-import express, { Request } from 'express';
+import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Duration } from 'luxon';
@@ -46,6 +40,7 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { addResourceRoutersToRouter } from '../routes/resourcesRoutes';
 
 export interface KubernetesEnvironment {
   logger: Logger;
@@ -239,35 +234,6 @@ export class KubernetesBuilder {
     const router = Router();
     router.use(express.json());
 
-    // TODO fix any
-    const getEntityByReq = async (req: Request<any>) => {
-      const rawEntityRef = req.query.entity;
-      if (rawEntityRef && typeof rawEntityRef !== 'string') {
-        throw new InputError(`entity query must be a string`);
-      } else if (!rawEntityRef) {
-        throw new InputError('entity is a required field');
-      }
-      let entityRef: CompoundEntityRef | undefined = undefined;
-
-      try {
-        entityRef = parseEntityRef(rawEntityRef);
-      } catch (error) {
-        throw new InputError(`Invalid entity ref, ${error}`);
-      }
-
-      function getBearerToken(header?: string): string | undefined {
-        return header?.match(/Bearer\s+(\S+)/i)?.[1];
-      }
-      const entity = await catalogClient.getEntityByRef(entityRef, {
-        token: getBearerToken(req.headers.authorization),
-      });
-
-      if (!entity) {
-        throw new InputError(`Entity ref missing, ${entityRef}`);
-      }
-      return entity;
-    };
-
     // Deprecated, will be removed soon
     // see https://github.com/backstage/backstage/issues/11309
     router.post('/services/:serviceId', async (req, res) => {
@@ -288,45 +254,6 @@ export class KubernetesBuilder {
       }
     });
 
-    router.post('/resources/workloads', async (req, res) => {
-      const entity = await getEntityByReq(req);
-
-      try {
-        const response = await objectsProvider.getKubernetesObjectsByEntity(
-          entity,
-          req.body.auth,
-        );
-        res.json(response);
-      } catch (e) {
-        logger.error(
-          `action=/resources/workloads entityRef=${stringifyEntityRef(
-            entity,
-          )}, error=${e}`,
-        );
-        res.status(500).json({ error: e.message });
-      }
-    });
-
-    router.post('/resources/custom', async (req, res) => {
-      const entity = await getEntityByReq(req);
-
-      try {
-        const response = await objectsProvider.getCustomResourcesByEntity(
-          entity,
-          req.body.customResources,
-          req.body.auth,
-        );
-        res.json(response);
-      } catch (e) {
-        logger.error(
-          `action=/resources/workloads entityRef=${stringifyEntityRef(
-            entity,
-          )}, error=${e}`,
-        );
-        res.status(500).json({ error: e.message });
-      }
-    });
-
     router.get('/clusters', async (_, res) => {
       const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
       res.json({
@@ -338,6 +265,9 @@ export class KubernetesBuilder {
         })),
       });
     });
+
+    addResourceRoutersToRouter(router, catalogClient, objectsProvider, logger);
+
     return router;
   }
 
