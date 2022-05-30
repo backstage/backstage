@@ -31,7 +31,7 @@ import {
   StackOverflowQuestion,
   StackOverflowQuestionsContentProps,
 } from '../../types';
-
+import './link-styles.css';
 /**
  * A component to display a list of stack overflow questions on the homepage.
  *
@@ -69,7 +69,7 @@ export const Content = (props: StackOverflowQuestionsContentProps) => {
     <List>
       {value.map(question => (
         <ListItem key={question.link}>
-          <Link to={question.link}>
+          <Link to={question.link} className="link">
             <ListItemText
               primary={question.title}
               secondary={getSecondaryText(question.answer_count)}
