@@ -29,6 +29,7 @@ import {
   defaultCheckResultRenderers,
 } from '../components/CheckResultRenderer';
 
+/** @public */
 export class TechInsightsClient implements TechInsightsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
