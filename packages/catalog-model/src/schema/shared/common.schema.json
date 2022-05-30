@@ -43,6 +43,11 @@
         },
         "target": {
           "$ref": "#reference"
+        },
+        "targetRef": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The entity ref of the target of this relation."
         }
       }
     },
