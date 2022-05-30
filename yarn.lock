@@ -1815,15 +1815,16 @@
     "@lezer/common" "^0.16.0"
 
 "@codemirror/language@^0.20.0":
-  version "0.20.1"
-  resolved "https://registry.npmjs.org/@codemirror/language/-/language-0.20.1.tgz#27b41f9a5234455af083cbc90db531ef296899e7"
-  integrity sha512-AqaFeI3hbsuxU0IpVrR8dhHkrEAAEuVcwEO66JwAbJaE7IPOov+Y38KWqcQNgE1/osQGKHx9Zag0hng9V6OLsw==
+  version "0.20.2"
+  resolved "https://registry.npmjs.org/@codemirror/language/-/language-0.20.2.tgz#31c3712eac2251810986272dcd6a50510e0c1529"
+  integrity sha512-WB3Bnuusw0xhVvhBocieYKwJm04SOk5bPoOEYksVHKHcGHFOaYaw+eZVxR4gIqMMcGzOIUil0FsCmFk8yrhHpw==
   dependencies:
     "@codemirror/state" "^0.20.0"
     "@codemirror/view" "^0.20.0"
     "@lezer/common" "^0.16.0"
     "@lezer/highlight" "^0.16.0"
     "@lezer/lr" "^0.16.0"
+    style-mod "^4.0.0"
 
 "@codemirror/legacy-modes@^0.20.0":
   version "0.20.0"
@@ -1866,9 +1867,9 @@
     "@lezer/highlight" "^0.16.0"
 
 "@codemirror/view@^0.20.0", "@codemirror/view@^0.20.2":
-  version "0.20.5"
-  resolved "https://registry.npmjs.org/@codemirror/view/-/view-0.20.5.tgz#ba0b46c3f6c9a2282accb196cdd5fd9bb11f3470"
-  integrity sha512-oUKoSLIKo7ps3dRc2pE6U80TOOPPA/s+fWBxoiy6BL1lUXegmqnFp2iVKKSJGoI8k08BHwW5knEsN6ebuZjc9w==
+  version "0.20.7"
+  resolved "https://registry.npmjs.org/@codemirror/view/-/view-0.20.7.tgz#1d0acc740f71f92abef4b437c030d4e6c39ab6dc"
+  integrity sha512-pqEPCb9QFTOtHgAH5XU/oVy9UR/Anj6r+tG5CRmkNVcqSKEPmBU05WtN/jxJCFZBXf6HumzWC9ydE4qstO3TxQ==
   dependencies:
     "@codemirror/state" "^0.20.0"
     style-mod "^4.0.0"
