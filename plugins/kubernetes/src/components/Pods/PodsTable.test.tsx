@@ -108,10 +108,10 @@ describe('PodsTable', () => {
     expect(getByText('1/1')).toBeInTheDocument();
     expect(getByText('0')).toBeInTheDocument();
     expect(getByText('OK')).toBeInTheDocument();
-    expect(getByText('requests: 99%')).toBeInTheDocument();
-    expect(getByText('limits: 99%')).toBeInTheDocument();
-    expect(getByText('requests: 1%')).toBeInTheDocument();
-    expect(getByText('limits: 0%')).toBeInTheDocument();
+    expect(getByText('requests: 99% of 50m')).toBeInTheDocument();
+    expect(getByText('limits: 99% of 50m')).toBeInTheDocument();
+    expect(getByText('requests: 1% of 64MiB')).toBeInTheDocument();
+    expect(getByText('limits: 0% of 128MiB')).toBeInTheDocument();
   });
   it('should render placehoplder when empty metrics context', async () => {
     const podNameToClientPodStatus = new Map<string, ClientPodStatus>();
