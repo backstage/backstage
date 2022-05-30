@@ -145,6 +145,7 @@ export class TaskWorker {
       await this.fn(taskAbortController.signal);
       taskAbortController.abort(); // releases resources
     } catch (e) {
+      this.logger.error(e);
       await this.tryReleaseTask(ticket, taskSettings);
       return { result: 'failed' };
     } finally {
