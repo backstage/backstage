@@ -77,24 +77,24 @@ export const PagerDutyCard = () => {
     loading,
     error,
   } = useAsync(async () => {
-    let service: Service;
+    let foundService: Service;
 
     if (integrationKey) {
       const services = await api.getServiceByIntegrationKey(
         integrationKey as string,
       );
-      service = services[0];
-      if (!service) throw new NotFoundError();
+      foundService = services[0];
+      if (!foundService) throw new NotFoundError();
     } else {
-      service = await api.getServiceByServiceId(serviceId);
+      foundService = await api.getServiceByServiceId(serviceId);
     }
 
     return {
-      id: service.id,
-      name: service.name,
-      url: service.html_url,
-      policyId: service.escalation_policy.id,
-      policyLink: service.escalation_policy.html_url,
+      id: foundService.id,
+      name: foundService.name,
+      url: foundService.html_url,
+      policyId: foundService.escalation_policy.id,
+      policyLink: foundService.escalation_policy.html_url,
     };
   });
 
