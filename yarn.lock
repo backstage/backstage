@@ -2153,10 +2153,23 @@
     teeny-request "^7.1.3"
     xdg-basedir "^4.0.0"
 
-"@graphiql/toolkit@^0.4.5":
-  version "0.4.5"
-  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.4.5.tgz#9fb5020444712562eae9581724695c235f610836"
-  integrity sha512-QXuuMSSK/0GfBS7tltrGZdyhIvm6oe9TK4VW9pfa8dALYttpzyJ64Q4Sx9I1Ng++yOMJWziM/ksa043zkNHsjQ==
+"@graphiql/react@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@graphiql/react/-/react-0.2.1.tgz#e7309e6acea07cfdaa1333cdb7688b06046dcc09"
+  integrity sha512-Ceuv4p++WWHx++wnBgu1eIoRmQbuESfOR76HgRSHlMsR8Vj4mgixbHANOmU2F3H1dc3uKObUVF+Cjcs+f7V08g==
+  dependencies:
+    "@graphiql/toolkit" "^0.6.0"
+    codemirror "^5.65.3"
+    codemirror-graphql "^1.3.0"
+    copy-to-clipboard "^3.2.0"
+    escape-html "^1.0.3"
+    graphql-language-service "^5.0.4"
+    markdown-it "^12.2.0"
+
+"@graphiql/toolkit@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.6.0.tgz#e508e58f305a976222f6adb84ab0ec748c26ab60"
+  integrity sha512-mbAwbt4lw2bFp9QW3NLVmh/r/ymczlcqvXk1HfvuC7Ma4h0yzrJiQauJyh1/gF5kjqevcRSquvP/YQJSvh1u6w==
   dependencies:
     "@n1ru4l/push-pull-async-iterable-iterator" "^3.1.0"
     meros "^1.1.4"
@@ -13474,17 +13487,14 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.npmjs.org/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-graphiql@^1.5.12, graphiql@^1.8.8:
-  version "1.8.10"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.8.10.tgz#a45e80a896b802f9591a89aa9af90fdafe44d5d8"
-  integrity sha512-ZYGsBzJz3OWh30eRr5D07ETHLqUEgfOddKdMLHgivLRmWVG6paRNOPzgwFyXy49JwL6gTzVmZoHabml7yySCnA==
+graphiql@^1.9.4:
+  version "1.9.4"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.9.4.tgz#ad020c33f1941954fa2c83b458119a6520c4591f"
+  integrity sha512-fDzmuSIJHYJAY/SyThEi4qXz8KIgy9/2s/7jOarhWDiPI5l/jYGDQSgxtM3KKhhKwuRaQrG4MjcguBhUvfu+lw==
   dependencies:
-    "@graphiql/toolkit" "^0.4.5"
-    codemirror "^5.65.3"
-    codemirror-graphql "^1.3.0"
-    copy-to-clipboard "^3.2.0"
+    "@graphiql/react" "^0.2.1"
+    "@graphiql/toolkit" "^0.6.0"
     entities "^2.0.0"
-    escape-html "^1.0.3"
     graphql-language-service "^5.0.4"
     markdown-it "^12.2.0"
     set-value "^4.1.0"
