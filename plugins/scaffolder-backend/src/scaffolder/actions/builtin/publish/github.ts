@@ -181,6 +181,7 @@ export function createPublishGithubAction(options: {
                   },
                 },
                 {
+                  additionalProperties: false,
                   properties: {
                     access: {
                       type: 'string',
