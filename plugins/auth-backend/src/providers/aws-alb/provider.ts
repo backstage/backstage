@@ -44,6 +44,11 @@ type Options = {
   resolverContext: AuthResolverContext;
 };
 
+export const getJWTHeaders = (input: string): AwsAlbHeaders => {
+  const encoded = input.split('.')[0];
+  return JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'));
+};
+
 export type AwsAlbHeaders = {
   alg: string;
   kid: string;
@@ -139,7 +144,9 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     }
 
     try {
-      const verifyResult = await jwtVerify(jwt, this.getKey);
+      const headers = getJWTHeaders(jwt);
+      const key = await this.getKey(headers.kid);
+      const verifyResult = await jwtVerify(jwt, key);
       const claims = verifyResult.payload as AwsAlbClaims;
 
       if (this.issuer && claims.iss !== this.issuer) {
@@ -189,24 +196,18 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
     };
   }
 
-  async getKey(header: JWTHeaderParameters): Promise<KeyObject> {
-    if (!header.kid) {
-      throw new AuthenticationError('No key id was specified in header');
-    }
-    const optionalCacheKey = this.keyCache.get<KeyObject>(header.kid);
+  async getKey(keyId: string): Promise<KeyObject> {
+    const optionalCacheKey = this.keyCache.get<KeyObject>(keyId);
     if (optionalCacheKey) {
       return crypto.createPublicKey(optionalCacheKey);
     }
-    const keyText: string = await fetch(
+    const keyText = await fetch(
       `https://public-keys.auth.elb.${encodeURIComponent(
         this.region,
-      )}.amazonaws.com/${encodeURIComponent(header.kid)}`,
+      )}.amazonaws.com/${encodeURIComponent(keyId)}`,
     ).then(response => response.text());
     const keyValue = crypto.createPublicKey(keyText);
-    this.keyCache.set(
-      header.kid,
-      keyValue.export({ format: 'pem', type: 'spki' }),
-    );
+    this.keyCache.set(keyId, keyValue.export({ format: 'pem', type: 'spki' }));
     return keyValue;
   }
 }
