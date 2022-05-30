@@ -178,7 +178,7 @@ export interface ScaffolderApi {
 
   getTask(taskId: string): Promise<ScaffolderTask>;
 
-  listTasks(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]>;
+  listTasks?(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]>;
 
   getIntegrationsList(
     options: ScaffolderGetIntegrationsListOptions,

@@ -23,7 +23,6 @@ import MapIcon from '@material-ui/icons/MyLocation';
 import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import List from '@material-ui/icons/List';
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
@@ -108,7 +107,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-        <SidebarItem icon={List} text="Template tasks" to="create/tasks" />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
