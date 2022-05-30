@@ -18,11 +18,11 @@ import { render, waitFor, fireEvent, act } from '@testing-library/react';
 import { PagerDutyCard, isPluginApplicableToEntity } from '../PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { NotFoundError } from '@backstage/errors';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
 import {
   pagerDutyApiRef,
   UnauthorizedError,
-  NotFoundError,
   PagerDutyClient,
 } from '../../api';
 import { Service, User } from '../types';

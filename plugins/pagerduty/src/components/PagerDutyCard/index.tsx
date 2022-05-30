@@ -20,7 +20,7 @@ import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
 import useAsync from 'react-use/lib/useAsync';
 import { Alert } from '@material-ui/lab';
-import { pagerDutyApiRef, UnauthorizedError, NotFoundError } from '../../api';
+import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError, ServiceNotFoundError } from '../Errors';
 import WebIcon from '@material-ui/icons/Web';
@@ -32,6 +32,7 @@ import { ChangeEvents } from '../ChangeEvents';
 import { Service } from '../types';
 
 import { useApi } from '@backstage/core-plugin-api';
+import { NotFoundError } from '@backstage/errors';
 import {
   Progress,
   HeaderIconLinkRow,
