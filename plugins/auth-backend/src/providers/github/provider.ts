@@ -42,6 +42,7 @@ import {
   OAuthRefreshRequest,
 } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const ACCESS_TOKEN_PREFIX = 'access-token.';
 
@@ -377,6 +378,31 @@ export const github = createAuthProviderIntegration({
         }
 
         return ctx.signInWithCatalogUser({ entityRef: { name: userId } });
+      };
+    },
+    /**
+     * Immediately uses the GitHub username as the user entity reference, without a catalog lookup.
+     */
+    usernameAsUserEntityName: (): SignInResolver<GithubOAuthResult> => {
+      return async (info, ctx) => {
+        const { fullProfile } = info.result;
+
+        const userId = fullProfile.username;
+        if (!userId) {
+          throw new Error(`GitHub user profile does not contain a username`);
+        }
+
+        const userEntityRef = stringifyEntityRef({
+          kind: 'User',
+          name: userId,
+        });
+
+        return ctx.issueToken({
+          claims: {
+            sub: userEntityRef,
+            ent: [userEntityRef],
+          },
+        });
       };
     },
   },
