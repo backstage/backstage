@@ -282,10 +282,16 @@ export function createPublishGithubAction(options: {
   requiredStatusCheckContexts?: string[] | undefined;
   repoVisibility?: 'internal' | 'private' | 'public' | undefined;
   collaborators?:
-    | {
-        username: string;
-        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-      }[]
+    | (
+        | {
+            username: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            team: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+      )[]
     | undefined;
   token?: string | undefined;
   topics?: string[] | undefined;

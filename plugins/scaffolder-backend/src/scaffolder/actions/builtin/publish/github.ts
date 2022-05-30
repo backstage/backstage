@@ -57,11 +57,16 @@ export function createPublishGithubAction(options: {
     requireCodeOwnerReviews?: boolean;
     requiredStatusCheckContexts?: string[];
     repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<{
-      username?: string;
-      team?: string;
-      access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-    }>;
+    collaborators?: Array<
+      | {
+          username: string;
+          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+        }
+      | {
+          team: string;
+          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+        }
+    >;
     token?: string;
     topics?: string[];
   }>({
@@ -155,28 +160,41 @@ export function createPublishGithubAction(options: {
           },
           collaborators: {
             title: 'Collaborators',
-            description: 'Provide additional users with permissions',
+            description: 'Provide additional users or teams with permissions',
             type: 'array',
             items: {
               type: 'object',
               required: ['access'],
-              properties: {
-                access: {
-                  type: 'string',
-                  description: 'The type of access for the user',
-                  enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
+              oneOf: [
+                {
+                  properties: {
+                    access: {
+                      type: 'string',
+                      description: 'The type of access for the user',
+                      enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
+                    },
+                    username: {
+                      type: 'string',
+                      description:
+                        'The name of the user that will be added as a collaborator',
+                    },
+                  },
                 },
-                username: {
-                  type: 'string',
-                  description:
-                    'The name of the user that will be added as a collaborator',
+                {
+                  properties: {
+                    access: {
+                      type: 'string',
+                      description: 'The type of access for the team',
+                      enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
+                    },
+                    team: {
+                      type: 'string',
+                      description:
+                        'The name of the team that will be added as a collaborator',
+                    },
+                  },
                 },
-                team: {
-                  type: 'string',
-                  description:
-                    'The name of the team that will be added as a collaborator',
-                },
-              },
+              ],
             },
           },
           token: {
@@ -308,14 +326,14 @@ export function createPublishGithubAction(options: {
       if (collaborators) {
         for (const collaborator of collaborators) {
           try {
-            if (collaborator.username) {
+            if ('username' in collaborator) {
               await client.rest.repos.addCollaborator({
                 owner,
                 repo,
                 username: collaborator.username,
                 permission: collaborator.access,
               });
-            } else if (collaborator.team) {
+            } else if ('team' in collaborator) {
               await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
                 org: owner,
                 team_slug: collaborator.team,
@@ -326,10 +344,12 @@ export function createPublishGithubAction(options: {
             }
           } catch (e) {
             assertError(e);
+            const name =
+              'username' in collaborator
+                ? collaborator.username
+                : collaborator.team;
             ctx.logger.warn(
-              `Skipping ${collaborator.access} access for ${
-                collaborator.username ?? collaborator.team
-              }, ${e.message}`,
+              `Skipping ${collaborator.access} access for ${name}, ${e.message}`,
             );
           }
         }
