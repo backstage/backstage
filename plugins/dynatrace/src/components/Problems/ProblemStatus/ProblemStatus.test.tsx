@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { dynatracePlugin, DynatraceTab } from '../src/plugin';
+import { ProblemStatus } from './ProblemStatus';
+import { renderInTestApp } from '@backstage/test-utils';
 
-createDevApp()
-  .registerPlugin(dynatracePlugin)
-  .addPage({
-    element: <DynatraceTab />,
-    title: 'Root Page',
-    path: '/dynatrace',
-  })
-  .render();
+describe('ProblemStatus', () => {
+  it('renders StatusOK for a closed issue', async () => {
+    const rendered = await renderInTestApp(<ProblemStatus status="closed" />);
+    expect(await rendered.findByText('Closed')).toBeInTheDocument();
+  });
+  it('renders StatusError for an open issue', async () => {
+    const rendered = await renderInTestApp(<ProblemStatus status="open" />);
+    expect(await rendered.findByText('Open')).toBeInTheDocument();
+  });
+});

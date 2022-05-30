@@ -55,8 +55,24 @@ export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
         </Box>
       ),
     },
-    { title: 'Start Time', field: 'startTime' },
-    { title: 'End Time', field: 'endTime' },
+    {
+      title: 'Start Time',
+      field: 'startTime',
+      render: (row: Partial<Problem | undefined>) => (
+        <>{new Date(row?.startTime).toISOString()}</>
+      ),
+    },
+    {
+      title: 'End Time',
+      field: 'endTime',
+      render: (row: Partial<Problem | undefined>) => (
+        <>
+          {row?.endTime === -1
+            ? 'ongoing'
+            : new Date(row?.endTime).toISOString()}
+        </>
+      ),
+    },
   ];
 
   return (
