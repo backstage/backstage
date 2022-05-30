@@ -4304,9 +4304,9 @@
     set-cookie-parser "^2.4.6"
 
 "@mswjs/interceptors@^0.15.1":
-  version "0.15.1"
-  resolved "https://registry.npmjs.org/@mswjs/interceptors/-/interceptors-0.15.1.tgz#4a0009f56e51bc2cd3176f1507065c7d2f6c0d5e"
-  integrity sha512-D5B+ZJNlfvBm6ZctAfRBdNJdCHYAe2Ix4My5qfbHV5WH+3lkt3mmsjiWJzEh5ZwGDauzY487TldI275If7DJVw==
+  version "0.15.3"
+  resolved "https://registry.npmjs.org/@mswjs/interceptors/-/interceptors-0.15.3.tgz#bcd17b5d7558d4f598007a4bb383b42dc9264f8d"
+  integrity sha512-GJ1qzBq82EQ3bwhsvw5nScbrLzOSI5H/TyB2CGd1K7dDqX58DJDLJHexiN+S5Ucvl6/84FjRdIysz0RxE/L8MA==
   dependencies:
     "@open-draft/until" "^1.0.3"
     "@xmldom/xmldom" "^0.7.5"
@@ -18322,9 +18322,9 @@ msw@^0.39.2:
     yargs "^17.3.1"
 
 msw@^0.41.0:
-  version "0.41.0"
-  resolved "https://registry.npmjs.org/msw/-/msw-0.41.0.tgz#1508c15bd284da106b9f618030991996825a0924"
-  integrity sha512-l6AmpuYq96/iiG1KZ4ZPLd8nlDfj7aD0eIbW+4IjfXgqY7lZgYfYJPCULo5hD0eOn0oMg8lZFXHCwrIuLA+PoA==
+  version "0.41.1"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.41.1.tgz#215f835d5c2b1f4a8aca2e92fa7608b0086b6891"
+  integrity sha512-BNz8u1ORjyAXGaFEJ8mDhJr3nVaACSP4WR7V5XU8I2BnkTuAx93+gR13ovtH1gT66TO8rntOSSfRKZkWpSVufg==
   dependencies:
     "@mswjs/cookies" "^0.2.0"
     "@mswjs/interceptors" "^0.15.1"
