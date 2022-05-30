@@ -56,6 +56,26 @@ describe('SidebarOpenStateContext', () => {
   });
 
   describe('useSidebarOpenState', () => {
+    it('can be invoked within legacy context', () => {
+      const wrapper = ({ children }: { children: ReactNode }) => (
+        <SidebarOpenStateProvider
+          value={{
+            isOpen: true,
+            setOpen: () => {},
+          }}
+        >
+          {children}
+        </SidebarOpenStateProvider>
+      );
+
+      const { result } = renderHook(() => useSidebarOpenState(), {
+        wrapper,
+      });
+
+      expect(result.current.isOpen).toBe(true);
+      expect(typeof result.current.setOpen).toBe('function');
+    });
+
     it('does not need to be invoked within provider', () => {
       const { result } = renderHook(() => useSidebarOpenState());
       expect(result.current.isOpen).toBe(false);

@@ -103,17 +103,19 @@ export const SidebarPinStateProvider = ({
  * @public
  */
 export const useSidebarPinState = (): SidebarPinState => {
-  const versionedSidebarContext = useContext(VersionedSidebarPinStateContext);
+  const versionedPinStateContext = useContext(VersionedSidebarPinStateContext);
+  const legacyPinStateContext = useContext(LegacySidebarPinStateContext);
 
-  // Invoked from outside a SidebarPinStateProvider: default value.
-  if (versionedSidebarContext === undefined) {
-    return defaultSidebarPinStateContext;
+  // Invoked from outside a SidebarPinStateProvider: check for the legacy
+  // context's value, but otherwise return the default.
+  if (versionedPinStateContext === undefined) {
+    return legacyPinStateContext || defaultSidebarPinStateContext;
   }
 
-  const sidebarContext = versionedSidebarContext.atVersion(1);
-  if (sidebarContext === undefined) {
+  const pinStateContext = versionedPinStateContext.atVersion(1);
+  if (pinStateContext === undefined) {
     throw new Error('No context found for version 1.');
   }
 
-  return sidebarContext;
+  return pinStateContext;
 };

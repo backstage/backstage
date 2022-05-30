@@ -63,6 +63,28 @@ describe('SidebarPinStateContext', () => {
   });
 
   describe('useSidebarPinState', () => {
+    it('can be invoked within legacy context', () => {
+      const wrapper = ({ children }: { children: ReactNode }) => (
+        <LegacySidebarPinStateContext.Provider
+          value={{
+            isPinned: true,
+            isMobile: true,
+            toggleSidebarPinState: () => {},
+          }}
+        >
+          {children}
+        </LegacySidebarPinStateContext.Provider>
+      );
+
+      const { result } = renderHook(() => useSidebarPinState(), {
+        wrapper,
+      });
+
+      expect(result.current.isPinned).toBe(true);
+      expect(result.current.isMobile).toBe(true);
+      expect(typeof result.current.toggleSidebarPinState).toBe('function');
+    });
+
     it('does not need to be invoked within provider', () => {
       const { result } = renderHook(() => useSidebarPinState());
       expect(result.current.isPinned).toBe(true);
