@@ -50,7 +50,7 @@ export type SidebarOpenState = {
   setOpen: (open: boolean) => void;
 };
 
-const defaultSidebarContext = {
+const defaultSidebarOpenStateContext = {
   isOpen: false,
   setOpen: () => {},
 };
@@ -62,7 +62,7 @@ const defaultSidebarContext = {
  * Use `<SidebarContextProvider>` + `useSidebar()` instead.
  */
 export const LegacySidebarContext = createContext<SidebarContextType>(
-  defaultSidebarContext,
+  defaultSidebarOpenStateContext,
 );
 
 const VersionedSidebarContext = createVersionedContext<{
@@ -97,17 +97,19 @@ export const SidebarOpenStateProvider = ({
  * @public
  */
 export const useSidebarOpenState = (): SidebarOpenState => {
-  const versionedSidebarContext = useContext(VersionedSidebarContext);
+  const versionedOpenStateContext = useContext(VersionedSidebarContext);
+  const legacyOpenStateContext = useContext(LegacySidebarContext);
 
-  // Invoked from outside a SidebarOpenStateProvider, return a default value.
-  if (versionedSidebarContext === undefined) {
-    return defaultSidebarContext;
+  // Invoked from outside a SidebarOpenStateProvider: check for the legacy
+  // context's value, but otherwise return the default.
+  if (versionedOpenStateContext === undefined) {
+    return legacyOpenStateContext || defaultSidebarOpenStateContext;
   }
 
-  const sidebarContext = versionedSidebarContext.atVersion(1);
-  if (sidebarContext === undefined) {
+  const openStateContext = versionedOpenStateContext.atVersion(1);
+  if (openStateContext === undefined) {
     throw new Error('No context found for version 1.');
   }
 
-  return sidebarContext;
+  return openStateContext;
 };
