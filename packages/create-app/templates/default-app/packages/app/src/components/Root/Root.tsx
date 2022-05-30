@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
@@ -32,13 +32,13 @@ import { SidebarSearchModal } from '@backstage/plugin-search';
 import {
   Sidebar,
   sidebarConfig,
-  SidebarContext,
   SidebarDivider,
   SidebarGroup,
   SidebarItem,
   SidebarPage,
   SidebarScrollWrapper,
   SidebarSpace,
+  useSidebarOpenState,
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
@@ -60,7 +60,7 @@ const useSidebarLogoStyles = makeStyles({
 
 const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
-  const { isOpen } = useContext(SidebarContext);
+  const { isOpen } = useSidebarOpenState();
 
   return (
     <div className={classes.root}>

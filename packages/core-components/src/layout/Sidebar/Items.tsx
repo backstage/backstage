@@ -48,7 +48,6 @@ import {
   useResolvedPath,
 } from 'react-router-dom';
 import {
-  SidebarContext,
   SidebarConfigContext,
   SidebarItemWithSubmenuContext,
   SidebarConfig,
@@ -62,6 +61,7 @@ import DoubleArrowLeft from './icons/DoubleArrowLeft';
 import DoubleArrowRight from './icons/DoubleArrowRight';
 import { isLocationMatch } from './utils';
 import { Location } from 'history';
+import { useSidebarOpenState } from './SidebarOpenStateContext';
 
 /** @public */
 export type SidebarItemClassKey =
@@ -369,7 +369,7 @@ const SidebarItemBase = forwardRef<any, SidebarItemProps>((props, ref) => {
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
   // depend on the current location, and at least have it being optionally forced to selected.
   // Still waiting on a Q answered to fine tune the implementation
-  const { isOpen } = useContext(SidebarContext);
+  const { isOpen } = useSidebarOpenState();
 
   const divStyle =
     !isOpen && hasSubmenu ? { display: 'flex', marginLeft: '24px' } : {};
@@ -671,7 +671,7 @@ export const SidebarScrollWrapper = styled('div')(({ theme }) => {
 export const SidebarExpandButton = () => {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
-  const { isOpen, setOpen } = useContext(SidebarContext);
+  const { isOpen, setOpen } = useSidebarOpenState();
   const isSmallScreen = useMediaQuery<BackstageTheme>(
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
