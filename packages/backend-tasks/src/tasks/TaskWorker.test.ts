@@ -344,6 +344,7 @@ describe('TaskWorker', () => {
 
       const before = fn1.mock.calls.length;
       await promise2;
+      await new Promise(resolve => setTimeout(resolve, 350));
       expect(fn1.mock.calls.length).toBeGreaterThan(before);
     },
     60_000,
