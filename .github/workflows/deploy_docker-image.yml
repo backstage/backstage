@@ -60,8 +60,7 @@ jobs:
       # End of yarn setup
 
       - name: create-app
-        run: yarn backstage-create-app
-        working-directory: ./packages/create-app
+        run: npx @backstage/create-app
         env:
           BACKSTAGE_APP_NAME: example-app
 
@@ -85,5 +84,3 @@ jobs:
           file: ./packages/create-app/example-app/packages/backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/backstage:${{ github.event.client_payload.version }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/backstage:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/backstage:buildcache,mode=max
