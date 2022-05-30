@@ -239,7 +239,11 @@ export interface ScaffolderApi {
   ): Promise<TemplateParameterSchema>;
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]>;
+  listTasks?({
+    createdBy,
+  }: {
+    createdBy: TasksOwnerFilterKind;
+  }): Promise<ScaffolderTask[]>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
@@ -272,7 +276,9 @@ export class ScaffolderClient implements ScaffolderApi {
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]>;
+  listTasks(options: {
+    createdBy: TasksOwnerFilterKind;
+  }): Promise<ScaffolderTask[]>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
