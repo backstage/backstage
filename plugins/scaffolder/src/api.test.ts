@@ -347,7 +347,7 @@ describe('api', () => {
         }),
       );
 
-      const result = await apiClient.listTasks('all');
+      const result = await apiClient.listTasks({ createdBy: 'all' });
       expect(result).toHaveLength(2);
     });
     it('should list task using the current user as owner', async () => {
@@ -382,7 +382,7 @@ describe('api', () => {
         userEntityRef: 'user:default/foo',
       });
 
-      const result = await apiClient.listTasks('owned');
+      const result = await apiClient.listTasks({ createdBy: 'owned' });
       expect(identityApi.getBackstageIdentity).toBeCalled();
       expect(result).toHaveLength(1);
     });

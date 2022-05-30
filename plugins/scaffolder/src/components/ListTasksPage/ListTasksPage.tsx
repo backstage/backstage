@@ -50,10 +50,17 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
   const rootLink = useRouteRef(rootRouteRef);
 
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
-  const { value, loading, error } = useAsync(
-    () => scaffolderApi.listTasks(ownerFilter),
-    [scaffolderApi, ownerFilter],
-  );
+  const { value, loading, error } = useAsync(() => {
+    if (scaffolderApi.listTasks) {
+      return scaffolderApi.listTasks?.({ createdBy: ownerFilter });
+    }
+
+    // eslint-disable-next-line no-console
+    console.warn(
+      'listTasks is not implemented in the scaffolderApi, please make sure to implement this method.',
+    );
+    return Promise.resolve([]);
+  }, [scaffolderApi, ownerFilter]);
 
   if (loading) {
     return <Progress />;

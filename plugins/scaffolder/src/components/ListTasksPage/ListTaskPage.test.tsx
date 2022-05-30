@@ -41,7 +41,7 @@ describe('<ListTasksPage />', () => {
     signOut: jest.fn(),
   };
 
-  const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
+  const scaffolderApiMock: jest.Mocked<Required<ScaffolderApi>> = {
     scaffold: jest.fn(),
     getTemplateParameterSchema: jest.fn(),
     listTasks: jest.fn(),
@@ -139,7 +139,7 @@ describe('<ListTasksPage />', () => {
       },
     );
 
-    expect(scaffolderApiMock.listTasks).toBeCalledWith('owned');
+    expect(scaffolderApiMock.listTasks).toBeCalledWith({ createdBy: 'owned' });
     expect(getByText('List template tasks')).toBeInTheDocument();
     expect(getByText('All tasks that have been started')).toBeInTheDocument();
     expect(getByText('Tasks')).toBeInTheDocument();
@@ -171,6 +171,7 @@ describe('<ListTasksPage />', () => {
           },
         },
       });
+
     scaffolderApiMock.listTasks
       .mockResolvedValue([
         {
@@ -231,7 +232,7 @@ describe('<ListTasksPage />', () => {
       fireEvent.click(allButton);
     });
 
-    expect(scaffolderApiMock.listTasks).toBeCalledWith('all');
+    expect(scaffolderApiMock.listTasks).toBeCalledWith({ createdBy: 'all' });
     expect(await findByText('One Template')).toBeInTheDocument();
     expect(await findByText('OtherUser')).toBeInTheDocument();
   });

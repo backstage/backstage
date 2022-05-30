@@ -76,12 +76,14 @@ export class ScaffolderClient implements ScaffolderApi {
     this.identityApi = options.identityApi;
   }
 
-  async listTasks(createdBy: TasksOwnerFilterKind): Promise<ScaffolderTask[]> {
+  async listTasks(options: {
+    createdBy: TasksOwnerFilterKind;
+  }): Promise<ScaffolderTask[]> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const { userEntityRef } = await this.identityApi.getBackstageIdentity();
 
     const query = queryString.stringify(
-      createdBy === 'owned' ? { createdBy: userEntityRef } : {},
+      options.createdBy === 'owned' ? { createdBy: userEntityRef } : {},
     );
 
     const url = `${baseUrl}/v2/tasks?${query}`;
