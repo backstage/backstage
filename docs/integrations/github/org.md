@@ -39,6 +39,7 @@ schedule it:
 ```diff
  // packages/backend/src/plugins/catalog.ts
 +import { GitHubOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
++import {Duration} from 'luxon';
 
  export default async function createPlugin(
    env: PluginEnvironment,
@@ -53,8 +54,8 @@ schedule it:
 +      orgUrl: 'https://github.com/backstage',
 +      logger: env.logger,
 +      schedule: env.scheduler.createScheduledTaskRunner({
-+        frequency: { minutes: 60 },
-+        timeout: { minutes: 15 },
++        frequency: Duration.fromObject({minutes: 60}),
++        timeout: Duration.fromObject({minutes: 15})
 +      }),
 +    }),
 +  );
