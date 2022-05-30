@@ -121,9 +121,12 @@ export function AboutCard(props: AboutCardProps) {
     href:
       viewTechdocLink &&
       viewTechdocLink({
-        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+        namespace: toLowerMaybe(
+          entity.metadata.namespace || DEFAULT_NAMESPACE,
+          config,
+        ),
         kind: toLowerMaybe(entity.kind, config),
-        name: entity.metadata.name,
+        name: toLowerMaybe(entity.metadata.name, config),
       }),
   };
 
