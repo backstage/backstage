@@ -80,8 +80,6 @@ export interface TechInsightsApi {
 // @public
 export const techInsightsApiRef: ApiRef<TechInsightsApi>;
 
-// Warning: (ae-missing-release-tag) "TechInsightsClient" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class TechInsightsClient implements TechInsightsApi {
   constructor(options: {
