@@ -187,7 +187,7 @@ components: {
  },
 ```
 
-> Since [v1.1.0](https://github.com/backstage/backstage/releases/tag/v1.1.0-next.3), you must provide an [explicit sign-in resolver](../auth/identity-resolver).
+> Since [v1.1.0](https://github.com/backstage/backstage/releases/tag/v1.1.0-next.3), you must provide an [explicit sign-in resolver](../auth/identity-resolver.md).
 
 That should be it. You can stop your Backstage App. When you start it again and
 go to your Backstage portal in your browser, you should have your login prompt!
