@@ -97,6 +97,9 @@ nav:
       - Bitbucket:
           - Locations: 'integrations/bitbucket/locations.md'
           - Discovery: 'integrations/bitbucket/discovery.md'
+      - Bitbucket Cloud:
+          - Locations: 'integrations/bitbucketCloud/locations.md'
+          - Discovery: 'integrations/bitbucketCloud/discovery.md'
       - Datadog:
           - Installation: 'integrations/datadog-rum/installation.md'
       - Gerrit:
