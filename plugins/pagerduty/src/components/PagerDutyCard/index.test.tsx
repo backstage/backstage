@@ -20,27 +20,11 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import {
-  pagerDutyApiRef,
-  UnauthorizedError,
-  PagerDutyClient,
-} from '../../api';
+import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
 import { Service, User } from '../types';
 
 import { alertApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
-
-const mockPagerDutyApi: Partial<PagerDutyClient> = {
-  getServiceByIntegrationKey: async () => [],
-  getServiceByServiceId: async () => service,
-  getOnCallByPolicyId: async () => [],
-  getIncidentsByServiceId: async () => [],
-};
-
-const apis = TestApiRegistry.from(
-  [pagerDutyApiRef, mockPagerDutyApi],
-  [alertApiRef, {}],
-);
 
 const entity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -104,6 +88,18 @@ const service: Service = {
   },
   integrationKey: 'abc123',
 };
+
+const mockPagerDutyApi: Partial<PagerDutyClient> = {
+  getServiceByIntegrationKey: async () => [],
+  getServiceByServiceId: async () => service,
+  getOnCallByPolicyId: async () => [],
+  getIncidentsByServiceId: async () => [],
+};
+
+const apis = TestApiRegistry.from(
+  [pagerDutyApiRef, mockPagerDutyApi],
+  [alertApiRef, {}],
+);
 
 describe('isPluginApplicableToEntity', () => {
   describe('when entity has no annotations', () => {
