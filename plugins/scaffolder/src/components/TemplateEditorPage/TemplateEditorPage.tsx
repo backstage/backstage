@@ -64,8 +64,7 @@ export function TemplateEditorPage(props: TemplateEditorPageProps) {
         <TemplateEditorIntro
           onSelect={option => {
             if (option === 'local') {
-              WebFileSystemAccess.get()
-                .requestDirectoryAccess()
+              WebFileSystemAccess.requestDirectoryAccess()
                 .then(directory => setSelection({ type: 'local', directory }))
                 .catch(() => {});
             } else if (option === 'form') {
