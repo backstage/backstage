@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- 281cec1b61: Use more precise matching for query filters
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.2-next.1
+  - @backstage/plugin-search-common@0.3.5-next.0
+
 ## 0.1.5-next.0
 
 ### Patch Changes
