@@ -39,12 +39,19 @@ export type ActionContext<Input extends JsonObject> = {
   createTemporaryDirectory(): Promise<string>;
 
   templateInfo?: TemplateInfo;
+
+  /**
+   * Whether this action invocation is a dry-run or not.
+   * This will only ever be true if the actions as marked as supporting dry-runs.
+   */
+  isDryRun?: boolean;
 };
 
 /** @public */
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;
+  supportsDryRun?: boolean;
   schema?: {
     input?: Schema;
     output?: Schema;

@@ -51,6 +51,7 @@ export function createDebugLogAction() {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       ctx.logger.info(JSON.stringify(ctx.input, null, 2));
 

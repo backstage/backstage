@@ -42,6 +42,7 @@ export const createFilesystemDeleteAction = () => {
         },
       },
     },
+    supportsDryRun: true,
     async handler(ctx) {
       if (!Array.isArray(ctx.input?.files)) {
         throw new InputError('files must be an Array');

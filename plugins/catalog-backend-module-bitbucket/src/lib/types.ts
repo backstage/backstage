@@ -29,33 +29,3 @@ export type BitbucketRepository = BitbucketRepositoryBase & {
     }[]
   >;
 };
-
-export type BitbucketRepository20 = BitbucketRepositoryBase & {
-  links: Record<
-    | 'self'
-    | 'source'
-    | 'html'
-    | 'avatar'
-    | 'pullrequests'
-    | 'commits'
-    | 'forks'
-    | 'watchers'
-    | 'downloads'
-    | 'hooks',
-    {
-      href: string;
-      name?: string;
-    }
-  > &
-    Record<
-      'clone',
-      {
-        href: string;
-        name?: string;
-      }[]
-    >;
-  mainbranch?: {
-    type: string;
-    name: string;
-  };
-};

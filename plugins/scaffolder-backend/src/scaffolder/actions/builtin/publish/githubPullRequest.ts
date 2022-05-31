@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { parseRepoUrl, isExecutable } from './util';
-
+import path from 'path';
+import { parseRepoUrl } from './util';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { zipObject } from 'lodash';
 import { createTemplateAction } from '../../createTemplateAction';
 import { Octokit } from 'octokit';
 import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import globby from 'globby';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { getOctokitOptions } from '../github/helpers';
+import { serializeDirectoryContents } from '../../../../lib/files';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -219,56 +217,39 @@ export const createPublishGithubPullRequestAction = ({
         ? resolveSafeChildPath(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
 
-      const localFilePaths = await globby(['./**', './**/.*', '!.git'], {
-        cwd: fileRoot,
+      const directoryContents = await serializeDirectoryContents(fileRoot, {
         gitignore: true,
-        dot: true,
       });
-
-      const fileContents = await Promise.all(
-        localFilePaths.map(filePath => {
-          const absPath = resolveSafeChildPath(fileRoot, filePath);
-          const base64EncodedContent = fs
-            .readFileSync(absPath)
-            .toString('base64');
-          const fileStat = fs.statSync(absPath);
-          // See the properties of tree items
-          // in https://docs.github.com/en/rest/reference/git#trees
-          const githubTreeItemMode = isExecutable(fileStat.mode)
-            ? '100755'
-            : '100644';
-          // Always use base64 encoding to avoid doubling a binary file in size
-          // due to interpreting a binary file as utf-8 and sending github
-          // the utf-8 encoded content.
-          //
-          // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
-          // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
-          const encoding: Encoding = 'base64';
-          return {
-            encoding: encoding,
-            content: base64EncodedContent,
-            mode: githubTreeItemMode,
-          };
-        }),
+      const files = Object.fromEntries(
+        directoryContents.map(file => [
+          targetPath ? path.posix.join(targetPath, file.path) : file.path,
+          {
+            // See the properties of tree items
+            // in https://docs.github.com/en/rest/reference/git#trees
+            mode: file.executable ? '100755' : '100644',
+            // Always use base64 encoding to avoid doubling a binary file in size
+            // due to interpreting a binary file as utf-8 and sending github
+            // the utf-8 encoded content.
+            //
+            // For example, the original gradle-wrapper.jar is 57.8k in https://github.com/kennethzfeng/pull-request-test/pull/5/files.
+            // Its size could be doubled to 98.3K (See https://github.com/kennethzfeng/pull-request-test/pull/4/files)
+            encoding: 'base64' as const,
+            content: file.content.toString('base64'),
+          },
+        ]),
       );
-
-      const repoFilePaths = localFilePaths.map(repoFilePath => {
-        return targetPath ? `${targetPath}/${repoFilePath}` : repoFilePath;
-      });
-
-      const changes = [
-        {
-          files: zipObject(repoFilePaths, fileContents),
-          commit: title,
-        },
-      ];
 
       try {
         const response = await client.createPullRequest({
           owner,
           repo,
           title,
-          changes,
+          changes: [
+            {
+              files,
+              commit: title,
+            },
+          ],
           body: description,
           head: branchName,
           draft,

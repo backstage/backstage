@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import {
   ListItem,
   ListItemSecondaryAction,
@@ -22,12 +22,10 @@ import {
   Switch,
   Tooltip,
 } from '@material-ui/core';
-import { SidebarPinStateContext } from '@backstage/core-components';
+import { useSidebarPinState } from '@backstage/core-components';
 
 export const UserSettingsPinToggle = () => {
-  const { isPinned, toggleSidebarPinState } = useContext(
-    SidebarPinStateContext,
-  );
+  const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 
   return (
     <ListItem>

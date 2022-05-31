@@ -22,6 +22,7 @@
 
 export { IndexBuilder } from './IndexBuilder';
 export { Scheduler } from './Scheduler';
+export * from './collators';
 export { LunrSearchEngine } from './engines';
 export type {
   ConcreteLunrQuery,
