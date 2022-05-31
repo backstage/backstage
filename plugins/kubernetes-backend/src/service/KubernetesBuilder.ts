@@ -266,7 +266,7 @@ export class KubernetesBuilder {
       });
     });
 
-    addResourceRoutesToRouterq(router, catalogClient, objectsProvider, logger);
+    addResourceRoutesToRouter(router, catalogClient, objectsProvider, logger);
 
     return router;
   }
