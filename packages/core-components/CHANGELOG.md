@@ -1,5 +1,18 @@
 # @backstage/core-components
 
+## 0.9.5-next.1
+
+### Patch Changes
+
+- feb4e8de07: Fix EntityPage tab scrolling overflow bug on Firefox
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- bff65e6958: The `SidebarPinStateContext` and `SidebarContext` have been deprecated and will be removed in a future release. Instead, use `<SidebarPinStateProvider>` + `useSidebarPinState()` and/or `<SidebarOpenStateProvider>` + `useSidebarOpenState()`.
+
+  This was done to ensure that sidebar state can be shared successfully across components exported by different packages, regardless of what version of this package is resolved and installed for each individual package.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.0.3-next.0
+
 ## 0.9.5-next.0
 
 ### Patch Changes

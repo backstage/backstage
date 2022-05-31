@@ -1517,6 +1517,28 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@backstage/catalog-client@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-1.0.2.tgz#8450bb09e6e65114053538d1ab855bc8bee09531"
+  integrity sha512-3983OrSPZQyTHRi78Ot2708h8iKd3bcvG0PSPmtbmQDkgxUUAXJ1w276THNoGA/Vt84NsNBO0Srfm0b4PmegAQ==
+  dependencies:
+    "@backstage/catalog-model" "^1.0.2"
+    "@backstage/errors" "^1.0.0"
+    cross-fetch "^3.1.5"
+
+"@backstage/catalog-model@^1.0.0", "@backstage/catalog-model@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-1.0.2.tgz#50328068632b452fabed67e53fb7f83ead08f9df"
+  integrity sha512-0GCTW0XqFoHRiZKRXiru5wVMm0hoPiFAEyBiudWlYAFXtVEoVnrzJ+pa9F96zqtFgcGHmgSybgzjmVqiGUMSlw==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/types" "^1.0.0"
+    ajv "^8.10.0"
+    json-schema "^0.4.0"
+    lodash "^4.17.21"
+    uuid "^8.0.0"
+
 "@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.4":
   version "0.9.4"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.4.tgz#47e9a305f768a951e0cb0ffa9c1e3c141d06b223"
@@ -1561,6 +1583,19 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
+"@backstage/core-plugin-api@^1.0.0", "@backstage/core-plugin-api@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-1.0.2.tgz#6ebf52c20df33ee3c128c98937d0d349a805d3eb"
+  integrity sha512-82bFp3lTW4o4Bske+zLXSzHueLP/mdUPWx6J/6YUfn88Aq93gb4VrdUJ04fXXDNWPqaBzfpynaIbme9QRZqfHQ==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/types" "^1.0.0"
+    "@backstage/version-bridge" "^1.0.1"
+    history "^5.0.0"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    zen-observable "^0.8.15"
+
 "@backstage/integration-react@^1.0.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@backstage/integration-react/-/integration-react-1.1.0.tgz#9d58838e85647540d2de69e40099533260ba2622"
@@ -1589,6 +1624,14 @@
     git-url-parse "^11.6.0"
     lodash "^4.17.21"
     luxon "^2.0.2"
+
+"@backstage/plugin-catalog-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-common/-/plugin-catalog-common-1.0.2.tgz#04f45745c0f30a1193d25c2dcf3eef01a97ab6be"
+  integrity sha512-5YCSZ9b2pMKJxHTJMPMo5qC3KeO4aCJCSV9uez7dHMIxkpEV+YThx3JAjrdj6KMMF0EGK4817fd6tipGUdfwDA==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.6.1"
+    "@backstage/search-common" "^0.3.4"
 
 "@backstage/plugin-catalog-react@^1.0.0", "@backstage/plugin-catalog-react@^1.1.0":
   version "1.1.0"
@@ -1638,6 +1681,38 @@
     react-router "6.0.0-beta.0"
     react-use "^17.2.4"
 
+"@backstage/plugin-permission-common@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-common/-/plugin-permission-common-0.6.1.tgz#fd63ba10b90896e6f8627c569a5f28127821523f"
+  integrity sha512-abAZEuzhjSuybQ+EjAl6bonDCBRVcNlcAhp/uia+znDyUzLRaOE1rh9y9lyKQco5UCnxXCeR0FzRv592lBmYVw==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/errors" "^1.0.0"
+    cross-fetch "^3.1.5"
+    uuid "^8.0.0"
+    zod "^3.11.6"
+
+"@backstage/plugin-permission-react@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-react/-/plugin-permission-react-0.4.1.tgz#18740913a8df06629a32b9c8679caa451c3989ac"
+  integrity sha512-yCuKGXP1TNJrphdkvBBLf+Jf7KYtW4Z9uV4M7vtBsK9qR2U3YU9T24iRDJ3hhBIr7dj66h4JCMhyrsDqYjMCTQ==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/core-plugin-api" "^1.0.2"
+    "@backstage/plugin-permission-common" "^0.6.1"
+    cross-fetch "^3.1.5"
+    react-router "6.0.0-beta.0"
+    react-use "^17.2.4"
+    swr "^1.1.2"
+
+"@backstage/plugin-search-common@0.3.4", "@backstage/plugin-search-common@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.npmjs.org/@backstage/plugin-search-common/-/plugin-search-common-0.3.4.tgz#04e59618b1bef4c52045b3103c87a570e260cdb3"
+  integrity sha512-ft3+H8zQevm1QduQBLmP7awO8XHzh4Jlq0V6BdFrZftgyw0MbMz/YVtRwtHL++6qp91xDtQnwntZ5/3B95Hbug==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.6.1"
+    "@backstage/types" "^1.0.0"
+
 "@backstage/plugin-stack-overflow@^0.1.1":
   version "0.1.1"
   resolved "https://registry.npmjs.org/@backstage/plugin-stack-overflow/-/plugin-stack-overflow-0.1.1.tgz#238ae82cb5f5732eb343b4f87aa6fc973bb613d2"
@@ -1656,6 +1731,13 @@
     lodash "^4.17.21"
     qs "^6.9.4"
     react-use "^17.2.4"
+
+"@backstage/search-common@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.npmjs.org/@backstage/search-common/-/search-common-0.3.4.tgz#94235e6bd930c738b41ccc3f5b78ddfad3a105cc"
+  integrity sha512-lANcEeA++EaZ6lAPuuN7I9DrP4Ij1d/Mb9wyrY01DKnw0wUVKj8wdGwB2KR/LWdxg7dY8BIHU49bUqSTMKl2+w==
+  dependencies:
+    "@backstage/plugin-search-common" "0.3.4"
 
 "@balena/dockerignore@^1.0.2":
   version "1.0.2"
@@ -4295,6 +4377,14 @@
   resolved "https://registry.npmjs.org/@microsoft/tsdoc/-/tsdoc-0.14.1.tgz#155ef21065427901994e765da8a0ba0eaae8b8bd"
   integrity sha512-6Wci+Tp3CgPt/B9B0a3J4s3yMgLNSku6w5TV6mN+61C71UqsRBv2FUibBf3tPGlNxebgPHMEUzKpb1ggE8KCKw==
 
+"@mswjs/cookies@^0.1.6":
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/@mswjs/cookies/-/cookies-0.1.7.tgz#d334081b2c51057a61c1dd7b76ca3cac02251651"
+  integrity sha512-bDg1ReMBx+PYDB4Pk7y1Q07Zz1iKIEUWQpkEXiA2lEWg9gvOZ8UBmGXilCEUvyYoRFlmr/9iXTRR69TrgSwX/Q==
+  dependencies:
+    "@types/set-cookie-parser" "^2.4.0"
+    set-cookie-parser "^2.4.6"
+
 "@mswjs/cookies@^0.2.0":
   version "0.2.0"
   resolved "https://registry.npmjs.org/@mswjs/cookies/-/cookies-0.2.0.tgz#7ef2b5d7e444498bb27cf57720e61f76a4ce9f23"
@@ -4302,6 +4392,18 @@
   dependencies:
     "@types/set-cookie-parser" "^2.4.0"
     set-cookie-parser "^2.4.6"
+
+"@mswjs/interceptors@^0.12.6":
+  version "0.12.7"
+  resolved "https://registry.npmjs.org/@mswjs/interceptors/-/interceptors-0.12.7.tgz#0d1cd4cd31a0f663e0455993951201faa09d0909"
+  integrity sha512-eGjZ3JRAt0Fzi5FgXiV/P3bJGj0NqsN7vBS0J0FO2AQRQ0jCKQS4lEFm4wvlSgKQNfeuc/Vz6d81VtU3Gkx/zg==
+  dependencies:
+    "@open-draft/until" "^1.0.3"
+    "@xmldom/xmldom" "^0.7.2"
+    debug "^4.3.2"
+    headers-utils "^3.0.2"
+    outvariant "^1.2.0"
+    strict-event-emitter "^0.2.0"
 
 "@mswjs/interceptors@^0.15.1":
   version "0.15.3"
@@ -6093,6 +6195,14 @@
   resolved "https://registry.npmjs.org/@types/humanize-duration/-/humanize-duration-3.27.1.tgz#f14740d1f585a0a8e3f46359b62fda8b0eaa31e7"
   integrity sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==
 
+"@types/inquirer@^7.3.3":
+  version "7.3.3"
+  resolved "https://registry.npmjs.org/@types/inquirer/-/inquirer-7.3.3.tgz#92e6676efb67fa6925c69a2ee638f67a822952ac"
+  integrity sha512-HhxyLejTHMfohAuhRun4csWigAMjXTmRyiJTU1Y/I1xmggikFMkOUoMQRlFm+zQcPEGHSs3io/0FAmNZf8EymQ==
+  dependencies:
+    "@types/through" "*"
+    rxjs "^6.4.0"
+
 "@types/inquirer@^8.1.3":
   version "8.2.1"
   resolved "https://registry.npmjs.org/@types/inquirer/-/inquirer-8.2.1.tgz#28a139be3105a1175e205537e8ac10830e38dbf4"
@@ -6169,7 +6279,7 @@
   resolved "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-2.2.6.tgz#f1a1cb35aff47bc5cfb05cb0c441ca91e914c26f"
   integrity sha512-+oY0FDTO2GYKEV0YPvSshGq9t7YozVkgvXLty7zogQNuCxBhT9/3INX9Q7H1aRZ4SUDRXAKlJuA4EA5nTt7SNw==
 
-"@types/js-levenshtein@^1.1.1":
+"@types/js-levenshtein@^1.1.0", "@types/js-levenshtein@^1.1.1":
   version "1.1.1"
   resolved "https://registry.npmjs.org/@types/js-levenshtein/-/js-levenshtein-1.1.1.tgz#ba05426a43f9e4e30b631941e0aa17bf0c890ed5"
   integrity sha512-qC4bCqYGy1y/NP7dDVr7KJarn+PbX1nSpwA7JXdu0HxT3QYjO8MJ+cntENtHFVy2dRAyBV23OZ6MxsW1AM1L8g==
@@ -7294,7 +7404,7 @@
     "@webassemblyjs/ast" "1.11.1"
     "@xtuc/long" "4.2.2"
 
-"@xmldom/xmldom@^0.7.0", "@xmldom/xmldom@^0.7.5":
+"@xmldom/xmldom@^0.7.0", "@xmldom/xmldom@^0.7.2", "@xmldom/xmldom@^0.7.5":
   version "0.7.5"
   resolved "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.7.5.tgz#09fa51e356d07d0be200642b0e4f91d8e6dd408d"
   integrity sha512-V3BIhmY36fXZ1OtVcI9W+FxQqxVLsPKcNjWigIaa81dLC9IolJl5Mt4Cvhmr0flUnjSpTdrbMTSbXqYqV5dT6A==
@@ -9974,7 +10084,7 @@ cookie@0.4.1:
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.4.1.tgz#afd713fe26ebd21ba95ceb61f9a8116e50a537d1"
   integrity sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==
 
-cookie@0.4.2, cookie@^0.4.2, cookie@~0.4.1:
+cookie@0.4.2, cookie@^0.4.1, cookie@^0.4.2, cookie@~0.4.1:
   version "0.4.2"
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.4.2.tgz#0e41f24de5ecf317947c82fc789e06a884824432"
   integrity sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==
@@ -12201,61 +12311,61 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     safe-buffer "^5.1.1"
 
 "example-app@link:packages/app":
-  version "0.2.72-next.0"
+  version "0.2.72-next.1"
   dependencies:
-    "@backstage/app-defaults" "^1.0.3-next.0"
-    "@backstage/catalog-model" "^1.0.2"
-    "@backstage/cli" "^0.17.2-next.0"
+    "@backstage/app-defaults" "^1.0.3-next.1"
+    "@backstage/catalog-model" "^1.0.3-next.0"
+    "@backstage/cli" "^0.17.2-next.1"
     "@backstage/config" "^1.0.1"
-    "@backstage/core-app-api" "^1.0.2"
-    "@backstage/core-components" "^0.9.5-next.0"
-    "@backstage/core-plugin-api" "^1.0.2"
-    "@backstage/integration-react" "^1.1.1-next.0"
-    "@backstage/plugin-airbrake" "^0.3.6-next.0"
-    "@backstage/plugin-apache-airflow" "^0.1.14-next.0"
-    "@backstage/plugin-api-docs" "^0.8.6-next.0"
-    "@backstage/plugin-azure-devops" "^0.1.22-next.0"
-    "@backstage/plugin-badges" "^0.2.30-next.0"
-    "@backstage/plugin-catalog" "^1.2.1-next.0"
-    "@backstage/plugin-catalog-common" "^1.0.2"
-    "@backstage/plugin-catalog-graph" "^0.2.18-next.0"
-    "@backstage/plugin-catalog-import" "^0.8.9-next.0"
-    "@backstage/plugin-catalog-react" "^1.1.1-next.0"
-    "@backstage/plugin-circleci" "^0.3.6-next.0"
-    "@backstage/plugin-cloudbuild" "^0.3.6-next.0"
-    "@backstage/plugin-code-coverage" "^0.1.33-next.0"
-    "@backstage/plugin-cost-insights" "^0.11.28-next.0"
-    "@backstage/plugin-explore" "^0.3.37-next.0"
-    "@backstage/plugin-gcalendar" "^0.3.2-next.0"
-    "@backstage/plugin-gcp-projects" "^0.3.25-next.0"
-    "@backstage/plugin-github-actions" "^0.5.6-next.0"
-    "@backstage/plugin-gocd" "^0.1.12-next.0"
-    "@backstage/plugin-graphiql" "^0.2.38-next.0"
-    "@backstage/plugin-home" "^0.4.22-next.0"
-    "@backstage/plugin-jenkins" "^0.7.5-next.0"
-    "@backstage/plugin-kafka" "^0.3.6-next.0"
-    "@backstage/plugin-kubernetes" "^0.6.6-next.0"
-    "@backstage/plugin-lighthouse" "^0.3.6-next.0"
-    "@backstage/plugin-newrelic" "^0.3.24-next.0"
-    "@backstage/plugin-newrelic-dashboard" "^0.1.14-next.0"
-    "@backstage/plugin-org" "^0.5.6-next.0"
-    "@backstage/plugin-pagerduty" "0.3.33-next.0"
-    "@backstage/plugin-permission-react" "^0.4.1"
-    "@backstage/plugin-rollbar" "^0.4.6-next.0"
-    "@backstage/plugin-scaffolder" "^1.3.0-next.0"
-    "@backstage/plugin-search" "^0.8.2-next.0"
-    "@backstage/plugin-search-common" "^0.3.4"
-    "@backstage/plugin-search-react" "^0.2.0"
-    "@backstage/plugin-sentry" "^0.3.44-next.0"
-    "@backstage/plugin-shortcuts" "^0.2.7-next.0"
-    "@backstage/plugin-stack-overflow" "^0.1.2-next.0"
-    "@backstage/plugin-tech-insights" "^0.2.2-next.0"
-    "@backstage/plugin-tech-radar" "^0.5.13-next.0"
-    "@backstage/plugin-techdocs" "^1.1.2-next.0"
-    "@backstage/plugin-techdocs-module-addons-contrib" "^1.0.1-next.0"
-    "@backstage/plugin-techdocs-react" "^1.0.1-next.0"
-    "@backstage/plugin-todo" "^0.2.8-next.0"
-    "@backstage/plugin-user-settings" "^0.4.5-next.0"
+    "@backstage/core-app-api" "^1.0.3-next.0"
+    "@backstage/core-components" "^0.9.5-next.1"
+    "@backstage/core-plugin-api" "^1.0.3-next.0"
+    "@backstage/integration-react" "^1.1.1-next.1"
+    "@backstage/plugin-airbrake" "^0.3.6-next.1"
+    "@backstage/plugin-apache-airflow" "^0.1.14-next.1"
+    "@backstage/plugin-api-docs" "^0.8.6-next.1"
+    "@backstage/plugin-azure-devops" "^0.1.22-next.1"
+    "@backstage/plugin-badges" "^0.2.30-next.1"
+    "@backstage/plugin-catalog" "^1.2.1-next.1"
+    "@backstage/plugin-catalog-common" "^1.0.3-next.0"
+    "@backstage/plugin-catalog-graph" "^0.2.18-next.1"
+    "@backstage/plugin-catalog-import" "^0.8.9-next.1"
+    "@backstage/plugin-catalog-react" "^1.1.1-next.1"
+    "@backstage/plugin-circleci" "^0.3.6-next.1"
+    "@backstage/plugin-cloudbuild" "^0.3.6-next.1"
+    "@backstage/plugin-code-coverage" "^0.1.33-next.1"
+    "@backstage/plugin-cost-insights" "^0.11.28-next.1"
+    "@backstage/plugin-explore" "^0.3.37-next.1"
+    "@backstage/plugin-gcalendar" "^0.3.2-next.1"
+    "@backstage/plugin-gcp-projects" "^0.3.25-next.1"
+    "@backstage/plugin-github-actions" "^0.5.6-next.1"
+    "@backstage/plugin-gocd" "^0.1.12-next.1"
+    "@backstage/plugin-graphiql" "^0.2.38-next.1"
+    "@backstage/plugin-home" "^0.4.22-next.1"
+    "@backstage/plugin-jenkins" "^0.7.5-next.1"
+    "@backstage/plugin-kafka" "^0.3.6-next.1"
+    "@backstage/plugin-kubernetes" "^0.6.6-next.1"
+    "@backstage/plugin-lighthouse" "^0.3.6-next.1"
+    "@backstage/plugin-newrelic" "^0.3.24-next.1"
+    "@backstage/plugin-newrelic-dashboard" "^0.1.14-next.1"
+    "@backstage/plugin-org" "^0.5.6-next.1"
+    "@backstage/plugin-pagerduty" "0.3.33-next.1"
+    "@backstage/plugin-permission-react" "^0.4.2-next.0"
+    "@backstage/plugin-rollbar" "^0.4.6-next.1"
+    "@backstage/plugin-scaffolder" "^1.3.0-next.1"
+    "@backstage/plugin-search" "^0.8.2-next.1"
+    "@backstage/plugin-search-common" "^0.3.5-next.0"
+    "@backstage/plugin-search-react" "^0.2.1-next.0"
+    "@backstage/plugin-sentry" "^0.3.44-next.1"
+    "@backstage/plugin-shortcuts" "^0.2.7-next.1"
+    "@backstage/plugin-stack-overflow" "^0.1.2-next.1"
+    "@backstage/plugin-tech-insights" "^0.2.2-next.1"
+    "@backstage/plugin-tech-radar" "^0.5.13-next.1"
+    "@backstage/plugin-techdocs" "^1.1.2-next.1"
+    "@backstage/plugin-techdocs-module-addons-contrib" "^1.0.1-next.1"
+    "@backstage/plugin-techdocs-react" "^1.0.1-next.1"
+    "@backstage/plugin-todo" "^0.2.8-next.1"
+    "@backstage/plugin-user-settings" "^0.4.5-next.1"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
@@ -13708,6 +13818,11 @@ graphql-ws@^5.4.1:
   resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.5.5.tgz#f375486d3f196e2a2527b503644693ae3a8670a9"
   integrity sha512-hvyIS71vs4Tu/yUYHPvGXsTgo0t3arU820+lT5VjZS2go0ewp2LqyCgxEN56CzOG7Iys52eRhHBiD1gGRdiQtw==
 
+graphql@^15.5.1:
+  version "15.8.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-15.8.0.tgz#33410e96b012fa3bdb1091cc99a94769db212b38"
+  integrity sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==
+
 graphql@^16.0.0, graphql@^16.3.0:
   version "16.5.0"
   resolved "https://registry.npmjs.org/graphql/-/graphql-16.5.0.tgz#41b5c1182eaac7f3d47164fb247f61e4dfb69c85"
@@ -13933,6 +14048,11 @@ headers-polyfill@^3.0.4:
   version "3.0.7"
   resolved "https://registry.npmjs.org/headers-polyfill/-/headers-polyfill-3.0.7.tgz#725c4f591e6748f46b036197eae102c92b959ff4"
   integrity sha512-JoLCAdCEab58+2/yEmSnOlficyHFpIl0XJqwu3l+Unkm1gXpFUYsThz6Yha3D6tNhocWkCPfyW0YVIGWFqTi7w==
+
+headers-utils@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/headers-utils/-/headers-utils-3.0.2.tgz#dfc65feae4b0e34357308aefbcafa99c895e59ef"
+  integrity sha512-xAxZkM1dRyGV2Ou5bzMxBPNLoRCjcX+ya7KSWybQD2KwLphxsapUVK6x/02o7f4VU6GPSXch9vNY2+gkU8tYWQ==
 
 helmet@^5.0.2:
   version "5.0.2"
@@ -14513,7 +14633,7 @@ inquirer@^7.3.3:
     strip-ansi "^6.0.0"
     through "^2.3.6"
 
-inquirer@^8.0.0, inquirer@^8.2.0:
+inquirer@^8.0.0, inquirer@^8.1.1, inquirer@^8.2.0:
   version "8.2.4"
   resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.4.tgz#ddbfe86ca2f67649a67daa6f1051c128f684f0b4"
   integrity sha512-nn4F01dxU8VeKfq192IjLsxu0/OmMZ4Lg3xKAns148rCaXP6ntAoEkVYZThWjwON8AlzdZZi6oqnhNbxUG9hVg==
@@ -18308,6 +18428,32 @@ ms@2.1.3, ms@^2.0.0, ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
+msw@^0.35.0:
+  version "0.35.0"
+  resolved "https://registry.npmjs.org/msw/-/msw-0.35.0.tgz#18a4ceb6c822ef226a30421d434413bc45030d38"
+  integrity sha512-V7A6PqaS31F1k//fPS0OnO7vllfaqBUFsMEu3IpYixyWpiUInfyglodnbXhhtDyytkQikpkPZv8TZi/CvZzv/w==
+  dependencies:
+    "@mswjs/cookies" "^0.1.6"
+    "@mswjs/interceptors" "^0.12.6"
+    "@open-draft/until" "^1.0.3"
+    "@types/cookie" "^0.4.1"
+    "@types/inquirer" "^7.3.3"
+    "@types/js-levenshtein" "^1.1.0"
+    chalk "^4.1.1"
+    chokidar "^3.4.2"
+    cookie "^0.4.1"
+    graphql "^15.5.1"
+    headers-utils "^3.0.2"
+    inquirer "^8.1.1"
+    is-node-process "^1.0.1"
+    js-levenshtein "^1.1.6"
+    node-fetch "^2.6.1"
+    node-match-path "^0.6.3"
+    statuses "^2.0.0"
+    strict-event-emitter "^0.2.0"
+    type-fest "^1.2.2"
+    yargs "^17.0.1"
+
 msw@^0.39.2:
   version "0.39.2"
   resolved "https://registry.npmjs.org/msw/-/msw-0.39.2.tgz#832e9274db62c43cb79854d5a69dce031c700de8"
@@ -18651,6 +18797,11 @@ node-libs-browser@^2.2.1:
     url "^0.11.0"
     util "^0.11.0"
     vm-browserify "^1.0.1"
+
+node-match-path@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.npmjs.org/node-match-path/-/node-match-path-0.6.3.tgz#55dd8443d547f066937a0752dce462ea7dc27551"
+  integrity sha512-fB1reOHKLRZCJMAka28hIxCwQLxGmd7WewOCBDYKpyA1KXi68A7vaGgdZAPhY2E6SXoYt3KqYCCvXLJ+O0Fu/Q==
 
 node-modules-regexp@^1.0.0:
   version "1.0.0"
@@ -19266,7 +19417,7 @@ outdent@^0.5.0:
   resolved "https://registry.npmjs.org/outdent/-/outdent-0.5.0.tgz#9e10982fdc41492bb473ad13840d22f9655be2ff"
   integrity sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==
 
-outvariant@^1.2.1, outvariant@^1.3.0:
+outvariant@^1.2.0, outvariant@^1.2.1, outvariant@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/outvariant/-/outvariant-1.3.0.tgz#c39723b1d2cba729c930b74bf962317a81b9b1c9"
   integrity sha512-yeWM9k6UPfG/nzxdaPlJkB2p08hCg4xP6Lx99F+vP8YF7xyZVfTmJjrrNalkmzudD4WFvNLVudQikqUmF8zhVQ==
@@ -22300,7 +22451,7 @@ rxjs@7.5.5, rxjs@^7.1.0, rxjs@^7.2.0, rxjs@^7.5.1, rxjs@^7.5.5:
   dependencies:
     tslib "^2.1.0"
 
-rxjs@^6.3.3, rxjs@^6.6.0, rxjs@^6.6.3:
+rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.6.0, rxjs@^6.6.3:
   version "6.6.7"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==
@@ -23896,20 +24047,20 @@ tdigest@^0.1.1:
     bintrees "1.0.1"
 
 "techdocs-cli-embedded-app@link:packages/techdocs-cli-embedded-app":
-  version "0.2.71-next.0"
+  version "0.2.71-next.1"
   dependencies:
-    "@backstage/app-defaults" "^1.0.3-next.0"
-    "@backstage/catalog-model" "^1.0.2"
-    "@backstage/cli" "^0.17.2-next.0"
+    "@backstage/app-defaults" "^1.0.3-next.1"
+    "@backstage/catalog-model" "^1.0.3-next.0"
+    "@backstage/cli" "^0.17.2-next.1"
     "@backstage/config" "^1.0.1"
-    "@backstage/core-app-api" "^1.0.2"
-    "@backstage/core-components" "^0.9.5-next.0"
-    "@backstage/core-plugin-api" "^1.0.2"
-    "@backstage/integration-react" "^1.1.1-next.0"
-    "@backstage/plugin-catalog" "^1.2.1-next.0"
-    "@backstage/plugin-techdocs" "^1.1.2-next.0"
-    "@backstage/plugin-techdocs-react" "^1.0.1-next.0"
-    "@backstage/test-utils" "^1.1.0"
+    "@backstage/core-app-api" "^1.0.3-next.0"
+    "@backstage/core-components" "^0.9.5-next.1"
+    "@backstage/core-plugin-api" "^1.0.3-next.0"
+    "@backstage/integration-react" "^1.1.1-next.1"
+    "@backstage/plugin-catalog" "^1.2.1-next.1"
+    "@backstage/plugin-techdocs" "^1.1.2-next.1"
+    "@backstage/plugin-techdocs-react" "^1.0.1-next.1"
+    "@backstage/test-utils" "^1.1.1-next.0"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -25935,7 +26086,7 @@ yargs@^17.0.0, yargs@^17.1.1, yargs@^17.2.1:
     y18n "^5.0.5"
     yargs-parser "^21.0.0"
 
-yargs@^17.3.1:
+yargs@^17.0.1, yargs@^17.3.1:
   version "17.5.1"
   resolved "https://registry.npmjs.org/yargs/-/yargs-17.5.1.tgz#e109900cab6fcb7fd44b1d8249166feb0b36e58e"
   integrity sha512-t6YAJcxDkNX7NFYiVtKvWUz8l+PaKTLiL63mJYWR2GnHq2gjEWISzsLp9wg3aY36dY1j+gfIEL3pIF+XlJJfbA==

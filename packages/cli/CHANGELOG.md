@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.17.2-next.1
+
+### Patch Changes
+
+- bd58365d09: Updated dependency `run-script-webpack-plugin` to `^0.0.14`.
+- 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
+- Updated dependencies
+  - @backstage/config-loader@1.1.2-next.0
+  - @backstage/release-manifests@0.0.4-next.0
+
 ## 0.17.2-next.0
 
 ### Patch Changes
