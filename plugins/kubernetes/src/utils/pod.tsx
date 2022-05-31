@@ -130,6 +130,10 @@ export const currentToDeclaredResourceToPerc = (
   return `${(numerator * BigInt(100)) / denominator}%`;
 };
 
+const formatMilicores = (value: string | number): string => {
+  return `${parseFloat(value.toString()) * 1000}m`;
+};
+
 export const podStatusToCpuUtil = (podStatus: ClientPodStatus): ReactNode => {
   const cpuUtil = podStatus.cpu;
 
@@ -146,13 +150,17 @@ export const podStatusToCpuUtil = (podStatus: ClientPodStatus): ReactNode => {
       value={`requests: ${currentToDeclaredResourceToPerc(
         currentUsage,
         cpuUtil.requestTotal,
-      )}`}
+      )} of ${formatMilicores(cpuUtil.requestTotal)}`}
       subvalue={`limits: ${currentToDeclaredResourceToPerc(
         currentUsage,
         cpuUtil.limitTotal,
-      )}`}
+      )} of ${formatMilicores(cpuUtil.limitTotal)}`}
     />
   );
+};
+
+const bytesToMiB = (value: string | number): string => {
+  return `${parseFloat(value.toString()) / 1024 / 1024}MiB`;
 };
 
 export const podStatusToMemoryUtil = (
@@ -165,11 +173,11 @@ export const podStatusToMemoryUtil = (
       value={`requests: ${currentToDeclaredResourceToPerc(
         memUtil.currentUsage,
         memUtil.requestTotal,
-      )}`}
+      )} of ${bytesToMiB(memUtil.requestTotal)}`}
       subvalue={`limits: ${currentToDeclaredResourceToPerc(
         memUtil.currentUsage,
         memUtil.limitTotal,
-      )}`}
+      )} of ${bytesToMiB(memUtil.limitTotal)}`}
     />
   );
 };
