@@ -1,5 +1,20 @@
 # @backstage/plugin-search-backend-node
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 3bb25a9acc: Introducing a `NewlineDelimitedJsonCollatorFactory`, which can be used to create search indices from newline delimited JSON files stored in external storage readable via a configured `UrlReader` instance.
+
+  This is useful if you have an independent process periodically generating `*.ndjson` files consisting of `IndexableDocument` objects and want to be able to generate a fresh index based on the latest version of such a file.
+
+- 3bb25a9acc: Fixed a bug that prevented `TestPipeline.withSubject` from identifying valid `Readable` subjects that were technically transform streams.
+- Updated dependencies
+  - @backstage/backend-tasks@0.3.2-next.1
+  - @backstage/backend-common@0.13.6-next.1
+  - @backstage/plugin-permission-common@0.6.2-next.0
+  - @backstage/plugin-search-common@0.3.5-next.0
+
 ## 0.6.2-next.0
 
 ### Patch Changes
