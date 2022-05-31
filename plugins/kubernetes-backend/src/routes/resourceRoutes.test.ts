@@ -63,11 +63,11 @@ describe('resourcesRoutes', () => {
     app.use(errorHandler());
   });
 
-  describe('POST /resources/workloads', () => {
+  describe('POST /resources/workloads/query', () => {
     it('200 happy path', async () => {
       await request(app)
         .post(
-          `/resources/workloads?${querystring.stringify({
+          `/resources/workloads/query?${querystring.stringify({
             entity: 'component:someComponent',
           })}`,
         )
@@ -94,47 +94,6 @@ describe('resourcesRoutes', () => {
           ],
         });
     });
-    it('400 when bad entityref', async () => {
-      await request(app)
-        .post(
-          `/resources/workloads?${querystring.stringify({
-            entity: 'someComponent',
-          })}`,
-        )
-        .send({
-          auth: {
-            google: 'something',
-          },
-        })
-        .set('Content-Type', 'application/json')
-        .expect(400, '');
-    });
-    it('400 when missing entityref', async () => {
-      await request(app)
-        .post('/resources/workloads')
-        .send({
-          auth: {
-            google: 'something',
-          },
-        })
-        .set('Content-Type', 'application/json')
-        .expect(400, '');
-    });
-    it('401 when no token', async () => {
-      await request(app)
-        .post(
-          `/resources/workloads?${querystring.stringify({
-            entity: 'component:someComponent',
-          })}`,
-        )
-        .send({
-          auth: {
-            google: 'something',
-          },
-        })
-        .set('Content-Type', 'application/json')
-        .expect(401, '');
-    });
   });
-  describe('POST /resources/custom', () => {});
+  describe('POST /resources/custom/query', () => {});
 });

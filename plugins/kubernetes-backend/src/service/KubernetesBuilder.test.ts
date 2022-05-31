@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/catalog-client';
 import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -22,14 +21,12 @@ import request from 'supertest';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { KubernetesBuilder } from './KubernetesBuilder';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { Entity } from '@backstage/catalog-model';
 
 describe('KubernetesBuilder', () => {
   let app: express.Express;
   let kubernetesFanOutHandler: jest.Mocked<KubernetesFanOutHandler>;
   let config: Config;
-  const mockCatalog: jest.Mocked<CatalogApi> = {
-    getEntityByRef: jest.fn(),
-  } as any as jest.Mocked<CatalogApi>;
 
   beforeAll(async () => {
     const logger = getVoidLogger();
@@ -39,7 +36,15 @@ describe('KubernetesBuilder', () => {
         clusterLocatorMethods: [{ type: 'config', clusters: [] }],
       },
     });
-
+    const catalogMock = {
+      getEntityByRef: jest.fn().mockResolvedValue({
+        kind: 'Component',
+        metadata: {
+          name: 'someComponent',
+          namespace: 'someNamespace',
+        },
+      } as Entity),
+    } as any;
     const clusters: ClusterDetails[] = [
       {
         name: 'some-cluster',
@@ -66,7 +71,7 @@ describe('KubernetesBuilder', () => {
     const { router } = await KubernetesBuilder.createBuilder({
       config,
       logger,
-      catalogApi: mockCatalog,
+      catalogApi: catalogMock,
     })
       .setObjectsProvider(kubernetesFanOutHandler)
       .setClusterSupplier(clusterSupplier)

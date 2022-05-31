@@ -64,7 +64,7 @@ export const addResourceRoutesToRouter = (
     return entity;
   };
 
-  router.post('/resources/workloads', async (req, res) => {
+  router.post('/resources/workloads/query', async (req, res) => {
     const entity = await getEntityByReq(req);
 
     try {
@@ -74,16 +74,15 @@ export const addResourceRoutesToRouter = (
       );
       res.json(response);
     } catch (e) {
-      logger.error(
-        `action=/resources/workloads entityRef=${stringifyEntityRef(
-          entity,
-        )}, error=${e}`,
-      );
+      logger.error(String(e), {
+        action: '/resources/workloads',
+        entityRef: stringifyEntityRef(entity),
+      });
       res.status(500).json({ error: e.message });
     }
   });
 
-  router.post('/resources/custom', async (req, res) => {
+  router.post('/resources/custom/query', async (req, res) => {
     const entity = await getEntityByReq(req);
 
     try {
@@ -94,11 +93,10 @@ export const addResourceRoutesToRouter = (
       );
       res.json(response);
     } catch (e) {
-      logger.error(
-        `action=/resources/custom entityRef=${stringifyEntityRef(
-          entity,
-        )}, error=${e}`,
-      );
+      logger.error(String(e), {
+        action: '/resources/custom',
+        entityRef: stringifyEntityRef(entity),
+      });
       res.status(500).json({ error: e.message });
     }
   });

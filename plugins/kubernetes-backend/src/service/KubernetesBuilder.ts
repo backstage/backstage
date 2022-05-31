@@ -40,7 +40,7 @@ import {
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { addResourceRoutersToRouter } from '../routes/resourcesRoutes';
+import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
 
 export interface KubernetesEnvironment {
   logger: Logger;
@@ -266,7 +266,7 @@ export class KubernetesBuilder {
       });
     });
 
-    addResourceRoutersToRouter(router, catalogClient, objectsProvider, logger);
+    addResourceRoutesToRouterq(router, catalogClient, objectsProvider, logger);
 
     return router;
   }
