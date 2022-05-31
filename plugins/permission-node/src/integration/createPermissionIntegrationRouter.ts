@@ -189,22 +189,16 @@ export const createPermissionIntegrationRouter = <
   const router = Router();
   router.use(express.json());
 
-  router.get('/.well-known/backstage/permissions/permission-list', (_, res) =>
-    res.status(200).json({ permissions }),
-  );
+  router.get('/.well-known/backstage/permissions/metadata', (_, res) => {
+    const serializableRules = rules.map(rule => ({
+      name: rule.name,
+      description: rule.description,
+      resourceType: rule.resourceType,
+      paramLength: rule.toQuery.length,
+    }));
 
-  router.get(
-    '/.well-known/backstage/permissions/permission-rule-list',
-    (_, res) => {
-      const serializableRules = rules.map(rule => ({
-        name: rule.name,
-        description: rule.description,
-        resourceType: rule.resourceType,
-        paramLength: rule.toQuery.length,
-      }));
-      return res.status(200).json({ rules: serializableRules });
-    },
-  );
+    return res.json({ permissions, rules: serializableRules });
+  });
 
   const getRule = createGetRule(rules);
 
@@ -245,7 +239,7 @@ export const createPermissionIntegrationRouter = <
         return acc;
       }, {} as Record<string, TResource | undefined>);
 
-      return res.status(200).json({
+      return res.json({
         items: body.items.map(request => ({
           id: request.id,
           result: applyConditions(

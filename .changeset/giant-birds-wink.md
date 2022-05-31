@@ -2,8 +2,6 @@
 '@backstage/plugin-permission-node': patch
 ---
 
-Add endpoints for permission aggregation
+Added a new endpoint for aggregating permission metadata from a plugin backend: `/.well-known/backstage/permissions/metadata`
 
-`createPermissionIntegrationRouter` now has an additional optional `permission` parameter, which takes a list of `Permission`s. If provided, these permissions will be available for aggregation by anyone who calls the `/.well-known/backstage/permissions/permission-list` endpoint.
-
-Similarly, a serializable version of the permission rules are available for aggregation at the `/.well-known/backstage/permissions/permission-rule-list` endpoint.
+By default, the metadata endpoint will return information about the permission rules supported by the plugin. Plugin authors can also provide an optional `permissions` parameter to `createPermissionIntegrationRouter`. If provided, these `Permission` objects will be included in the metadata returned by this endpoint. The `permissions` parameter will eventually be required in a future breaking change.

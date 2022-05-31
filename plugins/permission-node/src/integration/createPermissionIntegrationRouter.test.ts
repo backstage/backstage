@@ -510,27 +510,15 @@ describe('createPermissionIntegrationRouter', () => {
     });
   });
 
-  describe('GET /.well-known/backstage/permissions/permission-list', () => {
-    it('returns a list of permissions used by a given backend', async () => {
+  describe('GET /.well-known/backstage/permissions/metadata', () => {
+    it('returns a list of permissions and rules used by a given backend', async () => {
       const response = await request(app).get(
-        '/.well-known/backstage/permissions/permission-list',
+        '/.well-known/backstage/permissions/metadata',
       );
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         permissions: [testPermission],
-      });
-    });
-  });
-
-  describe('GET /.well-known/backstage/permissions/permission-rule-list', () => {
-    it('returns a list of permission rules used by a given backend', async () => {
-      const response = await request(app).get(
-        '/.well-known/backstage/permissions/permission-rule-list',
-      );
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
         rules: [
           {
             name: testRule1.name,
