@@ -206,6 +206,7 @@
       "plugins/plugin-development",
       "plugins/structure-of-a-plugin",
       "plugins/integrating-plugin-into-software-catalog",
+      "plugins/integrating-search-into-plugins",
       "plugins/composability",
       "plugins/analytics",
       {
