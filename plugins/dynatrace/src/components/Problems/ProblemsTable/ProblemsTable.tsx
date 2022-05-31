@@ -15,11 +15,15 @@
  */
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
-import { Problem, ProblemsTableProps } from '../types';
+import { Problem } from '../../../api/DynatraceApi';
 import { ProblemStatus } from '../ProblemStatus';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { useApi } from '@backstage/core-plugin-api';
 import { Link } from '@material-ui/core';
+
+type ProblemsTableProps = {
+  problems: Problem[];
+};
 
 export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
   const configApi = useApi(configApiRef);

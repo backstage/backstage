@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Problem } from '../types';
+import { Problem } from '../../../api/DynatraceApi';
 import { StatusError, StatusOK } from '@backstage/core-components';
 
 export const ProblemStatus = ({ status }: Partial<Problem>) => {
