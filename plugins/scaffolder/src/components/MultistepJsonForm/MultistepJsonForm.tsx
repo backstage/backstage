@@ -98,7 +98,7 @@ export function getReviewData(formData: Record<string, any>, steps: Step[]) {
         reviewData[key] = review.mask;
         continue;
       }
-      
+
       if (!review.show) {
         continue;
       }
