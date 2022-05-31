@@ -28,6 +28,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import {
   TemplateEntityV1beta3,
   TaskSpec,
+  templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -336,6 +337,10 @@ export async function createRouter(
     })
     .post('/v2/dry-run', async (req, res) => {
       const template = req.body.template as TemplateEntityV1beta3;
+      if (!(await templateEntityV1beta3Validator.check(template))) {
+        throw new InputError('Input template is not a template');
+      }
+
       const values = req.body.values;
       const token = getBearerToken(req.headers.authorization);
       const content = req.body.content as {
