@@ -355,7 +355,7 @@ export function createPublishGithubAction(options: {
               });
             } else if ('username' in collaborator) {
               ctx.logger.warn(
-                'The field `username` is deprecated in favor of `team`',
+                'The field `username` is deprecated in favor of `team` and will be removed in the future.',
               );
               await client.rest.teams.addOrUpdateRepoPermissionsInOrg({
                 org: owner,
@@ -447,20 +447,7 @@ export function createPublishGithubAction(options: {
 }
 
 function extractCollaboratorName(
-  collaborator:
-    | {
-        user: string;
-        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-      }
-    | {
-        team: string;
-        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-      }
-    | {
-        /** @deprecated This field is deprecated in favor of team */
-        username: string;
-        access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-      },
+  collaborator: { user: string } | { team: string } | { username: string },
 ) {
   if ('username' in collaborator) return collaborator.username;
   if ('user' in collaborator) return collaborator.user;
