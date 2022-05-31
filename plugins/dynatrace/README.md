@@ -29,6 +29,13 @@ proxy:
       Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 ```
 
+It also requires a baseUrl for rendering links to problems in the table like so:
+
+```yaml
+dynatrace:
+  baseUrl: 'https://example.dynatrace.com'
+```
+
 #### Catalog Configuration
 
 To show information from dynatrace for a catalog entity, add the following annotation to `catalog-info.yaml`:
