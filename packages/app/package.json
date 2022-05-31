@@ -29,6 +29,7 @@
     "@backstage/plugin-cloudbuild": "^0.3.6-next.1",
     "@backstage/plugin-code-coverage": "^0.1.33-next.1",
     "@backstage/plugin-cost-insights": "^0.11.28-next.1",
+    "@backstage/plugin-dynatrace": "^0.1.0",
     "@backstage/plugin-explore": "^0.3.37-next.1",
     "@backstage/plugin-gcalendar": "^0.3.2-next.1",
     "@backstage/plugin-gcp-projects": "^0.3.25-next.1",
