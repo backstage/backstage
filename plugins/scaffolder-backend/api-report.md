@@ -270,6 +270,7 @@ export function createPublishGithubAction(options: {
   description?: string | undefined;
   access?: string | undefined;
   defaultBranch?: string | undefined;
+  protectDefaultBranch?: boolean | undefined;
   deleteBranchOnMerge?: boolean | undefined;
   gitCommitMessage?: string | undefined;
   gitAuthorName?: string | undefined;
