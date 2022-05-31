@@ -123,7 +123,7 @@ export class LocalTaskWorker {
     let dt: number;
 
     if (isCron) {
-      const nextRun = +new CronTime(settings.cadence).sendAt().toDate();
+      const nextRun = +new CronTime(settings.cadence).sendAt().toJSDate();
       dt = nextRun - Date.now();
     } else {
       dt =

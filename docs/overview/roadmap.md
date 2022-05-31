@@ -12,12 +12,12 @@ and the broader Backstage community.
 
 The Backstage roadmap lays out both [“what's next”](#whats-next) and ["future
 work"](#future-work). With "next" we mean features planned for release within
-the ongoing quarter from January through March 2022. With "future" we mean
+the ongoing quarter from April through June 2022. With "future" we mean
 features on the radar, but not yet scheduled.
 
-| [What's next](#whats-next)                                                                                                                                                                                                                                                                                            | [Future work](#future-work)                                                                                       |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| [Ease of onboarding](#ease-of-onboarding) <br/> [Search 1.0](#search-1.0) <br/> [TechDocs Addon framework](#techdocs-addon-framework) <br/> [Backend Services (initial)](#backend-services-initial) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [SIGs for contributors](#sigs-for-contributors) | Security Plan (and Strategy) <br/> Composable Homepage 1.0 <br/> GraphQL <br/> Telemetry <br/> Improved UX design |
+| [What's next](#whats-next)                                                                                                                                                                                                                                                                                                      | [Future work](#future-work)                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [Ease of onboarding](#ease-of-onboarding) <br/> [Backstage Search 1.0](#search-1.0) <br/> [TechDocs Addon Framework](#techdocs-addon-framework) <br/> [Backend Services (initial)](#backend-services-initial) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [SIGs for contributors](#sigs-for-contributors) | Security Plan (and Strategy) <br/> Composable Homepage 1.0 <br/> GraphQL <br/> Telemetry <br/> Improved UX design |
 
 The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
 Third-party contributions are also not currently included in the roadmap. Let us
@@ -46,18 +46,17 @@ More iterations will be required in the following quarters, but this will be a
 good improvement in the onboarding experience, especially for the benefit of new
 adopters.
 
-### Search 1.0
+### Backstage Search 1.0
 
-Fix the few remaining issues to get Backstage Search platform up to 1.0
-([here](https://github.com/backstage/backstage/milestone/27) and
-[here](https://github.com/backstage/backstage/milestone/28)).
+Fix the few remaining issues to get Backstage Search platform up to 1.0. For more information, see the [Backstage Search documentation and roadmap page](https://backstage.io/docs/features/search/search-overview).
 
-### TechDocs Addon framework
+### TechDocs Addon Framework
 
-Addons are TechDocs features that are added on top of the base docs-like-code
-experience. An example would be a feature that showed comments on the page. We
-plan to add an Addon framework and open source a selection of the Addons that we
-use internally at Spotify. Further Addons can then be added by the Community.
+Addons are TechDocs features that are added on top of the base docs-like-code experience. An example would be a feature that showed comments on the page. We plan to add an Addon framework and open source a selection of the Addons that we use internally at Spotify. We encourage the Backstage community to add further Addons.
+
+For more information about the TechDocs Addon Framework, see the documentation page [here](https://backstage.io/docs/features/techdocs/addons)
+
+For general information about TechDocs including roadmap, see [here](https://backstage.io/docs/features/techdocs/techdocs-overview).
 
 ### Backend Services (initial)
 

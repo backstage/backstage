@@ -21,20 +21,21 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import {
+  BitbucketCloudClient,
+  Models,
+} from '@backstage/plugin-bitbucket-cloud-common';
+import {
   CatalogProcessor,
   CatalogProcessorEmit,
   LocationSpec,
 } from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import {
-  BitbucketCloudClient,
   BitbucketRepository,
-  BitbucketRepository20,
   BitbucketRepositoryParser,
   BitbucketServerClient,
   defaultRepositoryParser,
   paginated,
-  paginated20,
 } from './lib';
 
 const DEFAULT_BRANCH = 'master';
@@ -119,9 +120,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     options: ProcessOptions,
   ): Promise<ResultSummary> {
     const { location, integration, emit } = options;
-    const client = new BitbucketCloudClient({
-      config: integration.config,
-    });
+    const client = BitbucketCloudClient.fromConfig(integration.config);
 
     const { searchEnabled } = parseBitbucketCloudUrl(location.target);
 
@@ -226,28 +225,40 @@ export async function searchBitbucketCloudLocations(
     catalogPath.lastIndexOf('/') + 1,
   );
 
-  const searchResults = paginated20(options =>
-    client.searchCode(
-      workspacePath,
-      `"${catalogFilename}" path:${catalogPath}`,
-      options,
-    ),
-  );
+  // load all fields relevant for creating refs later, but not more
+  const fields = [
+    // exclude code/content match details
+    '-values.content_matches',
+    // include/add relevant repository details
+    '+values.file.commit.repository.mainbranch.name',
+    '+values.file.commit.repository.project.key',
+    '+values.file.commit.repository.slug',
+    // remove irrelevant links
+    '-values.*.links',
+    '-values.*.*.links',
+    '-values.*.*.*.links',
+    // ...except the one we need
+    '+values.file.commit.repository.links.html.href',
+  ].join(',');
+  const query = `"${catalogFilename}" path:${catalogPath}`;
+  const searchResults = client
+    .searchCode(workspacePath, query, { fields })
+    .iterateResults();
 
   for await (const searchResult of searchResults) {
     // not a file match, but a code match
-    if (searchResult.path_matches.length === 0) {
+    if (searchResult.path_matches!.length === 0) {
       continue;
     }
 
-    const repository = searchResult.file.commit.repository;
+    const repository = searchResult.file!.commit!.repository!;
     if (!matchesPostFilters(repository, projectSearchPath, repoSearchPath)) {
       continue;
     }
 
-    const repoUrl = repository.links.html.href;
+    const repoUrl = repository.links!.html!.href;
     const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
-    const filePath = searchResult.file.path;
+    const filePath = searchResult.file!.path;
     const location = `${repoUrl}/src/${branch}/${filePath}`;
 
     result.matches.push(location);
@@ -268,7 +279,7 @@ export async function readBitbucketCloudLocations(
   return readBitbucketCloud(client, target).then(result => {
     const matches = result.matches.map(repository => {
       const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
-      return `${repository.links.html.href}/src/${branch}${catalogPath}`;
+      return `${repository.links!.html!.href}/src/${branch}${catalogPath}`;
     });
 
     return {
@@ -281,7 +292,7 @@ export async function readBitbucketCloudLocations(
 export async function readBitbucketCloud(
   client: BitbucketCloudClient,
   target: string,
-): Promise<Result<BitbucketRepository20>> {
+): Promise<Result<Models.Repository>> {
   const {
     workspacePath,
     queryParam: q,
@@ -289,13 +300,10 @@ export async function readBitbucketCloud(
     repoSearchPath,
   } = parseBitbucketCloudUrl(target);
 
-  const repositories = paginated20(
-    options => client.listRepositoriesByWorkspace(workspacePath, options),
-    {
-      q,
-    },
-  );
-  const result: Result<BitbucketRepository20> = {
+  const repositories = client
+    .listRepositoriesByWorkspace(workspacePath, { q })
+    .iterateResults();
+  const result: Result<Models.Repository> = {
     scanned: 0,
     matches: [],
   };
@@ -310,13 +318,13 @@ export async function readBitbucketCloud(
 }
 
 function matchesPostFilters(
-  repository: BitbucketRepository20,
+  repository: Models.Repository,
   projectSearchPath: RegExp | undefined,
   repoSearchPath: RegExp | undefined,
 ): boolean {
   return (
-    (!projectSearchPath || projectSearchPath.test(repository.project.key)) &&
-    (!repoSearchPath || repoSearchPath.test(repository.slug))
+    (!projectSearchPath || projectSearchPath.test(repository.project!.key!)) &&
+    (!repoSearchPath || repoSearchPath.test(repository.slug!))
   );
 }
 

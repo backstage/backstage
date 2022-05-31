@@ -25,14 +25,15 @@ import {
   makeSidebarConfig,
   makeSidebarSubmenuConfig,
   SidebarConfig,
-  SidebarContext,
   SidebarConfigContext,
   SubmenuConfig,
   SidebarOptions,
   SubmenuOptions,
 } from './config';
 import { BackstageTheme } from '@backstage/theme';
-import { SidebarPinStateContext, useContent } from './Page';
+import { useContent } from './Page';
+import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
+import { useSidebarPinState } from './SidebarPinStateContext';
 import { MobileSidebar } from './MobileSidebar';
 
 /** @public */
@@ -133,9 +134,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   );
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();
-  const { isPinned, toggleSidebarPinState } = useContext(
-    SidebarPinStateContext,
-  );
+  const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 
   const handleOpen = () => {
     if (isPinned || disableExpandOnHover) {
@@ -191,7 +190,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
   return (
     <nav style={{}} aria-label="sidebar nav">
       <A11ySkipSidebar />
-      <SidebarContext.Provider value={{ isOpen, setOpen }}>
+      <SidebarOpenStateProvider value={{ isOpen, setOpen }}>
         <div
           className={classes.root}
           data-testid="sidebar-root"
@@ -208,7 +207,7 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
             {children}
           </div>
         </div>
-      </SidebarContext.Provider>
+      </SidebarOpenStateProvider>
     </nav>
   );
 };
@@ -226,7 +225,7 @@ export const Sidebar = (props: SidebarProps) => {
     props.submenuOptions ?? {},
   );
   const { children, disableExpandOnHover, openDelayMs, closeDelayMs } = props;
-  const { isMobile } = useContext(SidebarPinStateContext);
+  const { isMobile } = useSidebarPinState();
 
   return isMobile ? (
     <MobileSidebar>{children}</MobileSidebar>

@@ -168,7 +168,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       .filter(([_, value]) => Boolean(value))
       .map(([key, value]: [key: string, value: any]) => {
         if (['string', 'number', 'boolean'].includes(typeof value)) {
-          return esb.matchQuery(key, value.toString());
+          // Use exact matching for string datatype fields
+          const keyword = typeof value === 'string' ? `${key}.keyword` : key;
+          return esb.matchQuery(keyword, value.toString());
         }
         if (Array.isArray(value)) {
           return esb

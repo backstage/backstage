@@ -35,6 +35,7 @@ const useStyles = makeStyles(
       gridArea: 'pageSubheader',
       backgroundColor: theme.palette.background.paper,
       paddingLeft: theme.spacing(3),
+      minWidth: 0,
     },
     defaultTab: {
       padding: theme.spacing(3, 3),
