@@ -292,42 +292,52 @@ describe('createRouter', () => {
 
   describe('GET /v2/tasks', () => {
     it('return all tasks', async () => {
-      (taskBroker.list as jest.Mocked<TaskBroker>['list']).mockResolvedValue([
-        {
-          id: 'a-random-id',
-          spec: {} as any,
-          status: 'completed',
-          createdAt: '',
-          createdBy: '',
-        },
-      ]);
+      (
+        taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+      ).mockResolvedValue({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: '',
+          },
+        ],
+      });
 
       const response = await request(app).get(`/v2/tasks`);
       expect(taskBroker.list).toBeCalledWith({
         createdBy: undefined,
       });
       expect(response.status).toEqual(200);
-      expect(response.body).toStrictEqual([
-        {
-          id: 'a-random-id',
-          spec: {} as any,
-          status: 'completed',
-          createdAt: '',
-          createdBy: '',
-        },
-      ]);
+      expect(response.body).toStrictEqual({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: '',
+          },
+        ],
+      });
     });
 
     it('return filtered tasks', async () => {
-      (taskBroker.list as jest.Mocked<TaskBroker>['list']).mockResolvedValue([
-        {
-          id: 'a-random-id',
-          spec: {} as any,
-          status: 'completed',
-          createdAt: '',
-          createdBy: 'user:default/foo',
-        },
-      ]);
+      (
+        taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+      ).mockResolvedValue({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: 'user:default/foo',
+          },
+        ],
+      });
 
       const response = await request(app).get(
         `/v2/tasks?createdBy=user:default/foo`,
@@ -337,15 +347,17 @@ describe('createRouter', () => {
       });
 
       expect(response.status).toEqual(200);
-      expect(response.body).toStrictEqual([
-        {
-          id: 'a-random-id',
-          spec: {} as any,
-          status: 'completed',
-          createdAt: '',
-          createdBy: 'user:default/foo',
-        },
-      ]);
+      expect(response.body).toStrictEqual({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            createdBy: 'user:default/foo',
+          },
+        ],
+      });
     });
   });
 

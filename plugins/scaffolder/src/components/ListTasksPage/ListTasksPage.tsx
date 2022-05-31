@@ -31,7 +31,6 @@ import React, { useState } from 'react';
 import { scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { OwnerListPicker } from './OwnerListPicker';
-import { TasksOwnerFilterKind } from '../../types';
 import {
   CreatedAtColumn,
   OwnerEntityColumn,
@@ -40,7 +39,7 @@ import {
 } from './columns';
 
 export interface MyTaskPageProps {
-  initiallySelectedFilter?: TasksOwnerFilterKind;
+  initiallySelectedFilter?: 'owned' | 'all';
 }
 
 const ListTaskPageContent = (props: MyTaskPageProps) => {
@@ -52,14 +51,15 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
   const { value, loading, error } = useAsync(() => {
     if (scaffolderApi.listTasks) {
-      return scaffolderApi.listTasks?.({ createdBy: ownerFilter });
+      return scaffolderApi.listTasks?.({ filterByOwnership: ownerFilter });
     }
 
     // eslint-disable-next-line no-console
     console.warn(
       'listTasks is not implemented in the scaffolderApi, please make sure to implement this method.',
     );
-    return Promise.resolve([]);
+
+    return Promise.resolve({ tasks: [] });
   }, [scaffolderApi, ownerFilter]);
 
   if (loading) {
@@ -89,7 +89,7 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
       </CatalogFilterLayout.Filters>
       <CatalogFilterLayout.Content>
         <MaterialTable
-          data={value!}
+          data={value?.tasks ?? []}
           title="Tasks"
           columns={[
             {

@@ -37,7 +37,6 @@ import {
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
-  TasksOwnerFilterKind,
   ScaffolderDryRunOptions,
   ScaffolderDryRunResponse,
 } from './types';
@@ -61,13 +60,13 @@ export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly fetchApi: FetchApi;
-  private readonly identityApi: IdentityApi;
+  private readonly identityApi?: IdentityApi;
   private readonly useLongPollingLogs: boolean;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
-    identityApi: IdentityApi;
+    identityApi?: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   }) {
@@ -79,18 +78,21 @@ export class ScaffolderClient implements ScaffolderApi {
   }
 
   async listTasks(options: {
-    createdBy: TasksOwnerFilterKind;
-  }): Promise<ScaffolderTask[]> {
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{ tasks: ScaffolderTask[] }> {
+    if (!this.identityApi) {
+      throw new Error(
+        'IdentityApi is not available in the ScaffolderClient, please pass through the IdentityApi to the ScaffolderClient constructor in order to use the listTasks method',
+      );
+    }
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const { userEntityRef } = await this.identityApi.getBackstageIdentity();
 
     const query = queryString.stringify(
-      options.createdBy === 'owned' ? { createdBy: userEntityRef } : {},
+      options.filterByOwnership === 'owned' ? { createdBy: userEntityRef } : {},
     );
 
-    const url = `${baseUrl}/v2/tasks?${query}`;
-
-    const response = await this.fetchApi.fetch(url);
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/tasks?${query}`);
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }

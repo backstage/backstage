@@ -37,7 +37,6 @@ export type {
   ScaffolderTaskOutput,
   ScaffolderTaskStatus,
   TemplateParameterSchema,
-  TasksOwnerFilterKind,
 } from './types';
 export {
   createScaffolderFieldExtension,

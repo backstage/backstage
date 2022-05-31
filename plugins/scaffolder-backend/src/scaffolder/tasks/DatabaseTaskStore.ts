@@ -93,7 +93,9 @@ export class DatabaseTaskStore implements TaskStore {
     this.db = options.database;
   }
 
-  async list(options: { createdBy?: string }): Promise<SerializedTask[]> {
+  async list(options: {
+    createdBy?: string;
+  }): Promise<{ tasks: SerializedTask[] }> {
     const queryBuilder = this.db<RawDbTaskRow>('tasks');
 
     if (options.createdBy) {
@@ -104,7 +106,7 @@ export class DatabaseTaskStore implements TaskStore {
 
     const results = await queryBuilder.orderBy('created_at', 'desc').select();
 
-    return results.map(result => ({
+    const tasks = results.map(result => ({
       id: result.id,
       spec: JSON.parse(result.spec),
       status: result.status,
@@ -112,6 +114,8 @@ export class DatabaseTaskStore implements TaskStore {
       lastHeartbeatAt: parseSqlDateToIsoString(result.last_heartbeat_at),
       createdAt: parseSqlDateToIsoString(result.created_at),
     }));
+
+    return { tasks };
   }
 
   async getTask(taskId: string): Promise<SerializedTask> {

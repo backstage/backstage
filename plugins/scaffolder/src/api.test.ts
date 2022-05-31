@@ -347,7 +347,7 @@ describe('api', () => {
         }),
       );
 
-      const result = await apiClient.listTasks({ createdBy: 'all' });
+      const result = await apiClient.listTasks({ filterByOwnership: 'all' });
       expect(result).toHaveLength(2);
     });
     it('should list task using the current user as owner', async () => {
@@ -357,23 +357,27 @@ describe('api', () => {
 
           if (createdBy) {
             return res(
-              ctx.json([
-                {
-                  createdBy,
-                },
-              ]),
+              ctx.json({
+                tasks: [
+                  {
+                    createdBy,
+                  },
+                ],
+              }),
             );
           }
 
           return res(
-            ctx.json([
-              {
-                createdBy: null,
-              },
-              {
-                createdBy: null,
-              },
-            ]),
+            ctx.json({
+              tasks: [
+                {
+                  createdBy: null,
+                },
+                {
+                  createdBy: null,
+                },
+              ],
+            }),
           );
         }),
       );
@@ -382,9 +386,9 @@ describe('api', () => {
         userEntityRef: 'user:default/foo',
       });
 
-      const result = await apiClient.listTasks({ createdBy: 'owned' });
+      const result = await apiClient.listTasks({ filterByOwnership: 'owned' });
       expect(identityApi.getBackstageIdentity).toBeCalled();
-      expect(result).toHaveLength(1);
+      expect(result.tasks).toHaveLength(1);
     });
   });
 });

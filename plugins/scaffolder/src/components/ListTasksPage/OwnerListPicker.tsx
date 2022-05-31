@@ -29,8 +29,6 @@ import React, { Fragment } from 'react';
 
 import AllIcon from '@material-ui/icons/FontDownload';
 
-import { TasksOwnerFilterKind } from '../../types';
-
 const useStyles = makeStyles<Theme>(
   theme => ({
     root: {
@@ -91,7 +89,7 @@ function getFilterGroups(): ButtonGroup[] {
 
 export const OwnerListPicker = (props: {
   filter: string;
-  onSelectOwner: (id: TasksOwnerFilterKind) => void;
+  onSelectOwner: (id: 'owned' | 'all') => void;
 }) => {
   const { filter, onSelectOwner } = props;
   const classes = useStyles();
@@ -111,7 +109,7 @@ export const OwnerListPicker = (props: {
                   key={item.id}
                   button
                   divider
-                  onClick={() => onSelectOwner(item.id as TasksOwnerFilterKind)}
+                  onClick={() => onSelectOwner(item.id as 'owned' | 'all')}
                   selected={item.id === filter}
                   className={classes.menuItem}
                   data-testid={`owner-picker-${item.id}`}

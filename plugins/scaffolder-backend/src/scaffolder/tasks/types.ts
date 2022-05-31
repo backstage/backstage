@@ -133,7 +133,7 @@ export interface TaskBroker {
     after: number | undefined;
   }): Observable<{ events: SerializedTaskEvent[] }>;
   get(taskId: string): Promise<SerializedTask>;
-  list(options?: { createdBy?: string }): Promise<SerializedTask[]>;
+  list?(options?: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
 }
 
 /**
@@ -194,7 +194,7 @@ export interface TaskStore {
   listStaleTasks(options: { timeoutS: number }): Promise<{
     tasks: { taskId: string }[];
   }>;
-  list(options: { createdBy?: string }): Promise<SerializedTask[]>;
+  list?(options: { createdBy?: string }): Promise<{ tasks: SerializedTask[] }>;
 
   emitLogEvent({ taskId, body }: TaskStoreEmitOptions): Promise<void>;
   listEvents({

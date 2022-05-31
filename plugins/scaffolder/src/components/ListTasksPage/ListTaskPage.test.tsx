@@ -62,7 +62,7 @@ describe('<ListTasksPage />', () => {
     };
     catalogApi.getEntityByRef.mockResolvedValue(entity);
 
-    scaffolderApiMock.listTasks.mockResolvedValue([]);
+    scaffolderApiMock.listTasks.mockResolvedValue({ tasks: [] });
 
     const { getByText } = await renderInTestApp(
       <TestApiProvider
@@ -101,20 +101,22 @@ describe('<ListTasksPage />', () => {
       },
     };
     catalogApi.getEntityByRef.mockResolvedValue(entity);
-    scaffolderApiMock.listTasks.mockResolvedValue([
-      {
-        id: 'a-random-id',
-        spec: {
-          user: { ref: 'user:default/foo' },
-          templateInfo: {
-            entityRef: 'template:default/test',
-          },
-        } as any,
-        status: 'completed',
-        createdAt: '',
-        lastHeartbeatAt: '',
-      },
-    ]);
+    scaffolderApiMock.listTasks.mockResolvedValue({
+      tasks: [
+        {
+          id: 'a-random-id',
+          spec: {
+            user: { ref: 'user:default/foo' },
+            templateInfo: {
+              entityRef: 'template:default/test',
+            },
+          } as any,
+          status: 'completed',
+          createdAt: '',
+          lastHeartbeatAt: '',
+        },
+      ],
+    });
 
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
       title: 'One Template',
@@ -139,7 +141,9 @@ describe('<ListTasksPage />', () => {
       },
     );
 
-    expect(scaffolderApiMock.listTasks).toBeCalledWith({ createdBy: 'owned' });
+    expect(scaffolderApiMock.listTasks).toBeCalledWith({
+      filterByOwnership: 'owned',
+    });
     expect(getByText('List template tasks')).toBeInTheDocument();
     expect(getByText('All tasks that have been started')).toBeInTheDocument();
     expect(getByText('Tasks')).toBeInTheDocument();
@@ -173,36 +177,40 @@ describe('<ListTasksPage />', () => {
       });
 
     scaffolderApiMock.listTasks
-      .mockResolvedValue([
-        {
-          id: 'a-random-id',
-          spec: {
-            user: { ref: 'user:default/foo' },
-            templateInfo: {
-              entityRef: 'template:default/mock',
-            },
-          } as any,
-          status: 'completed',
-          createdAt: '',
-          lastHeartbeatAt: '',
-        },
-      ])
-      .mockResolvedValue([
-        {
-          id: 'b-random-id',
-          spec: {
-            templateInfo: {
-              entityRef: 'template:default/mock',
-            },
-            user: {
-              ref: 'user:default/boo',
-            },
-          } as any,
-          status: 'completed',
-          createdAt: '',
-          lastHeartbeatAt: '',
-        },
-      ]);
+      .mockResolvedValue({
+        tasks: [
+          {
+            id: 'a-random-id',
+            spec: {
+              user: { ref: 'user:default/foo' },
+              templateInfo: {
+                entityRef: 'template:default/mock',
+              },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            lastHeartbeatAt: '',
+          },
+        ],
+      })
+      .mockResolvedValue({
+        tasks: [
+          {
+            id: 'b-random-id',
+            spec: {
+              templateInfo: {
+                entityRef: 'template:default/mock',
+              },
+              user: {
+                ref: 'user:default/boo',
+              },
+            } as any,
+            status: 'completed',
+            createdAt: '',
+            lastHeartbeatAt: '',
+          },
+        ],
+      });
 
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
       title: 'One Template',
@@ -232,7 +240,9 @@ describe('<ListTasksPage />', () => {
       fireEvent.click(allButton);
     });
 
-    expect(scaffolderApiMock.listTasks).toBeCalledWith({ createdBy: 'all' });
+    expect(scaffolderApiMock.listTasks).toBeCalledWith({
+      filterByOwnership: 'all',
+    });
     expect(await findByText('One Template')).toBeInTheDocument();
     expect(await findByText('OtherUser')).toBeInTheDocument();
   });
