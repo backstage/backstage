@@ -340,7 +340,7 @@ export async function createRouter(
       const bodySchema = z.object({
         template: z.unknown(),
         values: z.record(z.unknown()),
-        secrets: z.record(z.string()),
+        secrets: z.record(z.string()).optional(),
         directoryContents: z.array(
           z.object({ path: z.string(), base64Content: z.string() }),
         ),
