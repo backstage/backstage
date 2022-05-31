@@ -243,10 +243,12 @@ export interface ScaffolderApi {
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
   listTasks?({
-    createdBy,
+    filterByOwnership,
   }: {
-    createdBy: TasksOwnerFilterKind;
-  }): Promise<ScaffolderTask[]>;
+    filterByOwnership: 'owned' | 'all';
+  }): Promise<{
+    tasks: ScaffolderTask[];
+  }>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
@@ -262,7 +264,7 @@ export class ScaffolderClient implements ScaffolderApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
-    identityApi: IdentityApi;
+    identityApi?: IdentityApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   });
@@ -281,9 +283,9 @@ export class ScaffolderClient implements ScaffolderApi {
   // (undocumented)
   listActions(): Promise<ListActionsResponse>;
   // (undocumented)
-  listTasks(options: {
-    createdBy: TasksOwnerFilterKind;
-  }): Promise<ScaffolderTask[]>;
+  listTasks(options: { filterByOwnership: 'owned' | 'all' }): Promise<{
+    tasks: ScaffolderTask[];
+  }>;
   scaffold(
     options: ScaffolderScaffoldOptions,
   ): Promise<ScaffolderScaffoldResponse>;
@@ -423,9 +425,6 @@ export const TaskPage: ({ loadingText }: TaskPageProps) => JSX.Element;
 export type TaskPageProps = {
   loadingText?: string;
 };
-
-// @public
-export type TasksOwnerFilterKind = 'owned' | 'all';
 
 // @alpha (undocumented)
 export type TemplateGroupFilter = {
