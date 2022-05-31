@@ -38,6 +38,8 @@ import {
   ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
   TasksOwnerFilterKind,
+  ScaffolderDryRunOptions,
+  ScaffolderDryRunResponse,
 } from './types';
 import queryString from 'qs';
 
@@ -196,6 +198,30 @@ export class ScaffolderClient implements ScaffolderApi {
     }
 
     return this.streamLogsEventStream(options);
+  }
+
+  async dryRun(
+    options: ScaffolderDryRunOptions,
+  ): Promise<ScaffolderDryRunResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/dry-run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        template: options.template,
+        values: options.values,
+        secrets: options.secrets,
+        directoryContents: options.directoryContents,
+      }),
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return response.json();
   }
 
   private streamLogsEventStream({

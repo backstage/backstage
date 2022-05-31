@@ -25,6 +25,8 @@ export type {
   ListActionsResponse,
   LogEvent,
   ScaffolderApi,
+  ScaffolderDryRunOptions,
+  ScaffolderDryRunResponse,
   ScaffolderGetIntegrationsListOptions,
   ScaffolderGetIntegrationsListResponse,
   ScaffolderOutputLink,

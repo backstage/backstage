@@ -40,6 +40,7 @@ export type ActionContext<Input extends JsonObject> = {
   output(name: string, value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
   templateInfo?: TemplateInfo;
+  isDryRun?: boolean;
 };
 
 // @public
@@ -554,6 +555,8 @@ export interface TaskContext {
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
+  isDryRun?: boolean;
+  // (undocumented)
   secrets?: TaskSecrets;
   // (undocumented)
   spec: TaskSpec;
@@ -671,6 +674,7 @@ export class TaskWorker {
 export type TemplateAction<Input extends JsonObject> = {
   id: string;
   description?: string;
+  supportsDryRun?: boolean;
   schema?: {
     input?: Schema;
     output?: Schema;
