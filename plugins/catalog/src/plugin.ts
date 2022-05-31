@@ -72,9 +72,6 @@ export const catalogPlugin = createPlugin({
     createComponent: createComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
   },
-  options: {
-    createButtonTitle: 'Create',
-  },
 });
 
 /** @public */

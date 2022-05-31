@@ -57,7 +57,7 @@ export interface DefaultCatalogPageProps {
   tableOptions?: TableProps<CatalogTableRow>['options'];
 }
 
-export type CatalogPageMetadataProps = {
+export type CatalogPageOptionsProps = {
   createButtonTitle: string;
 };
 
@@ -73,7 +73,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
-  const { createButtonTitle } = usePluginOptions<CatalogPageMetadataProps>();
+  const { createButtonTitle } = usePluginOptions<CatalogPageOptionsProps>();
 
   return (
     <PageWithHeader title={`${orgName} Catalog`} themeId="home">

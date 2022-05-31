@@ -16,33 +16,23 @@ When you are creating your plugin, you have a possibility to use a metadata fiel
 customizable elements. For example
 
 ```typescript jsx
-export type MyPluginMetadataProps = {
-  createButtonTitle: string;
-};
-
-export const myPluginMetadataRef = createMetadataRef<MyPluginMetadataProps>({
-  id: 'MyPluginMetadataProvider',
-});
-
-export const myPluginMetadata = {
-  MyPluginMetadataProvider: {
-    // or [myPluginMetadataRef.id]
-    createButtonTitle: 'Create Component',
-  },
-};
-
 const plugin = createPlugin({
-  id: 'myPlugin',
-  metadata: [myPluginMetadata],
+  id: 'my-plugin',
+  options: {
+    createButtonTitle: 'Create',
+  },
 });
 ```
 
 And the rendering part of the exposed component can retrieve that metadata as:
 
 ```typescript jsx
-export function DefaultMyPluginWelcomePage(props: DefaultMyPluginWelcomeProps) {
-  const { createButtonTitle } =
-    useMetadata<DefaultMyPluginWelcomeProps>(myPluginMetadataRef);
+export type CatalogPageOptionsProps = {
+  createButtonTitle: string;
+};
+
+export function DefaultMyPluginWelcomePage() {
+  const { createButtonTitle } = usePluginOptions<CatalogPageOptionsProps>();
 
   return (
     <div>
@@ -60,10 +50,8 @@ plugin. Example:
 ```typescript jsx
 import { myPlugin } from '@backstage/my-plugin';
 
-myPlugin.reconfigure({
-  MyPluginMetadataProvider: {
-    // or [myPluginMetadataRef.id]
-    createButtonTitle: 'Make Component',
-  },
-});
+myPlugin.reconfigure((options: CatalogPageOptionsProps) => ({
+  ...options,
+  createButtonTitle: 'Maybe Create',
+}));
 ```

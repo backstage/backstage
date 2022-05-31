@@ -37,7 +37,7 @@ export interface PluginOptionsProviderProps {
 export const PluginOptionsProvider = ({
   children,
   pluginOptions,
-}: PluginOptionsProviderProps) => {
+}: PluginOptionsProviderProps): JSX.Element => {
   const value = { pluginOptions };
   const { Provider } = createVersionedContext<{ 1: AnyPluginOptions }>(
     contextKey,
