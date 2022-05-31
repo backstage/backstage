@@ -66,12 +66,12 @@ export class TestPipeline {
       return new TestPipeline({ decorator: subject });
     }
 
-    if (subject instanceof Readable) {
-      return new TestPipeline({ collator: subject });
-    }
-
     if (subject instanceof Writable) {
       return new TestPipeline({ indexer: subject });
+    }
+
+    if (subject.readable || subject instanceof Readable) {
+      return new TestPipeline({ collator: subject });
     }
 
     throw new Error(
