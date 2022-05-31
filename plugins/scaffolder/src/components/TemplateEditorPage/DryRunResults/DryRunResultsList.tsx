@@ -52,7 +52,7 @@ export function DryRunResultsList() {
   return (
     <List className={classes.root} dense>
       {dryRun.results.map(result => {
-        const failed = result.log.some(l => l.status === 'failed');
+        const failed = result.log.some(l => l.body.status === 'failed');
         return (
           <ListItem
             button

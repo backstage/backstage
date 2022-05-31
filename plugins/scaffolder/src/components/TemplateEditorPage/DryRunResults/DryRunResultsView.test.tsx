@@ -62,7 +62,7 @@ describe('DryRunResultsView', () => {
                     executable: false,
                   },
                 ],
-                log: [{ message: 'Foo Message', stepId: 'foo' }],
+                log: [{ body: { message: 'Foo Message', stepId: 'foo' } }],
                 output: {
                   links: [{ title: 'Foo Link', url: 'http://example.com' }],
                 },
