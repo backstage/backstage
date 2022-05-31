@@ -64,6 +64,7 @@ describe('resourcesRoutes', () => {
   });
 
   describe('POST /resources/workloads/query', () => {
+    // eslint-disable-next-line jest/expect-expect
     it('200 happy path', async () => {
       await request(app)
         .post(
