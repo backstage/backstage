@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  techInsightsPlugin,
-  EntityTechInsightsScorecardContent,
-  EntityTechInsightsScorecardCard,
-} from './plugin';
 
-export { techInsightsApiRef, TechInsightsClient } from './api';
-export type { TechInsightsApi, Check } from './api';
-export type { CheckResultRenderer } from './components/CheckResultRenderer';
+export type { NewlineDelimitedJsonCollatorFactoryOptions } from './NewlineDelimitedJsonCollatorFactory';
+
+export { NewlineDelimitedJsonCollatorFactory } from './NewlineDelimitedJsonCollatorFactory';

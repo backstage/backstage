@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTheme } from '@material-ui/core';
 
-import { SidebarPinStateContext } from '@backstage/core-components';
+import { useSidebarPinState } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 
 import { Transformer } from '../transformer';
@@ -27,7 +27,7 @@ import { rules } from './rules';
 /**
  * Sidebar pinned state to be used in computing style injections.
  */
-const useSidebar = () => useContext(SidebarPinStateContext);
+const useSidebar = () => useSidebarPinState();
 
 /**
  * Process all rules and concatenate their definitions into a single style.

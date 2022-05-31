@@ -29,6 +29,7 @@ import { SidebarConfigContext, SidebarConfig } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { LocalStorage } from './localStorage';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { SidebarPinStateProvider } from './SidebarPinStateContext';
 
 export type SidebarPageClassKey = 'root';
 
@@ -63,17 +64,6 @@ const useStyles = makeStyles<
 );
 
 /**
- * Type of `SidebarPinStateContext`
- *
- * @public
- */
-export type SidebarPinStateContextType = {
-  isPinned: boolean;
-  toggleSidebarPinState: () => any;
-  isMobile?: boolean;
-};
-
-/**
  * Props for SidebarPage
  *
  * @public
@@ -81,19 +71,6 @@ export type SidebarPinStateContextType = {
 export type SidebarPageProps = {
   children?: React.ReactNode;
 };
-
-/**
- * Contains the state on how the `Sidebar` is rendered
- *
- * @public
- */
-export const SidebarPinStateContext = createContext<SidebarPinStateContextType>(
-  {
-    isPinned: true,
-    toggleSidebarPinState: () => {},
-    isMobile: false,
-  },
-);
 
 type PageContextType = {
   content: {
@@ -137,7 +114,7 @@ export function SidebarPage(props: SidebarPageProps) {
   const classes = useStyles({ isPinned, sidebarConfig });
 
   return (
-    <SidebarPinStateContext.Provider
+    <SidebarPinStateProvider
       value={{
         isPinned,
         toggleSidebarPinState,
@@ -147,7 +124,7 @@ export function SidebarPage(props: SidebarPageProps) {
       <PageContext.Provider value={pageContext}>
         <div className={classes.root}>{props.children}</div>
       </PageContext.Provider>
-    </SidebarPinStateContext.Provider>
+    </SidebarPinStateProvider>
   );
 }
 
