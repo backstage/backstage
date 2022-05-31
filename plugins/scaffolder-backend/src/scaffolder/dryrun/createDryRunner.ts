@@ -40,7 +40,7 @@ interface DryRunInput {
 }
 
 interface DryRunResult {
-  log: JsonObject[];
+  log: Array<{ body: JsonObject }>;
   directoryContents: SerializedFile[];
   output: JsonObject;
 }
@@ -81,7 +81,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
     });
 
     const dryRunId = uuid();
-    const log = new Array<JsonObject>();
+    const log = new Array<{ body: JsonObject }>();
     const contentsPath = resolveSafeChildPath(
       options.workingDirectory,
       `dry-run-content-${dryRunId}`,
@@ -118,8 +118,10 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             return;
           }
           log.push({
-            ...logMetadata,
-            message,
+            body: {
+              ...logMetadata,
+              message,
+            },
           });
         },
         async complete() {

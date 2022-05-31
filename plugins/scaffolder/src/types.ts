@@ -165,7 +165,7 @@ export interface ScaffolderDryRunResponse {
     base64Content: string;
     executable: boolean;
   }>;
-  log: Array<LogEvent['body']>;
+  log: Array<Pick<LogEvent, 'body'>>;
   steps: TaskStep[];
   output: ScaffolderTaskOutput;
 }

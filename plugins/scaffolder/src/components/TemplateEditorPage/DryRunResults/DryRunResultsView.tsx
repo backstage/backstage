@@ -110,12 +110,14 @@ function LogContent() {
     }
     return (
       selectedResult.steps.map(step => {
-        const stepLog = selectedResult.log.filter(l => l.stepId === step.id);
+        const stepLog = selectedResult.log.filter(
+          l => l.body.stepId === step.id,
+        );
         return {
           id: step.id,
           name: step.name,
-          logString: stepLog.map(l => l.message).join('\n'),
-          status: stepLog[stepLog.length - 1]?.status ?? 'completed',
+          logString: stepLog.map(l => l.body.message).join('\n'),
+          status: stepLog[stepLog.length - 1]?.body.status ?? 'completed',
         };
       }) ?? []
     );
