@@ -258,9 +258,7 @@ export class KubernetesFanOutHandler {
     return await Promise.all(
       clusterDetails.map(cd => {
         const kubernetesAuthTranslator: KubernetesAuthTranslator =
-        this.getAuthTranslator(
-            cd.authProvider,
-          );
+          this.getAuthTranslator(cd.authProvider);
         return kubernetesAuthTranslator.decorateClusterDetailsWithAuth(
           cd,
           auth,
