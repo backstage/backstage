@@ -23,9 +23,10 @@ import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import {
   CatalogProcessingEngine,
+  CatalogProcessingErrorListener,
   CatalogProcessingOrchestrator,
   EntityProcessingResult,
-} from '../processing/types';
+} from './types';
 import { Stitcher } from '../stitching/Stitcher';
 import { startTaskPipeline } from './TaskPipeline';
 
@@ -33,6 +34,7 @@ const CACHE_TTL = 5;
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private readonly tracker = progressTracker();
+  private readonly errorListeners: CatalogProcessingErrorListener[] = [];
   private stopFunc?: () => void;
 
   constructor(
@@ -122,6 +124,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           );
 
           let hashBuilder = this.createHash().update(errorsString);
+
           if (result.ok) {
             const { entityRefs: parents } =
               await this.processingDatabase.transaction(tx =>
@@ -154,6 +157,11 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
           // just store the errors and trigger a stich so that they become visible to
           // the outside.
           if (!result.ok) {
+            // notify the error listeners if the entity can not be processed.
+            this.errorListeners.forEach(listener =>
+              listener.onError(unprocessedEntity, result, resultHash),
+            );
+
             await this.processingDatabase.transaction(async tx => {
               await this.processingDatabase.updateProcessedEntityErrors(tx, {
                 id,
@@ -222,6 +230,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       this.stopFunc();
       this.stopFunc = undefined;
     }
+  }
+
+  addErrorListener(errorListener: CatalogProcessingErrorListener) {
+    this.errorListeners.push(errorListener);
   }
 }
 
