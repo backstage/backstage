@@ -67,11 +67,13 @@
     "nunjucks": "^3.2.3",
     "octokit": "^1.7.1",
     "octokit-plugin-create-pull-request": "^3.10.0",
+    "p-limit": "^3.1.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
     "yaml": "^1.10.0",
     "vm2": "^3.9.6",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.8.15",
+    "zod": "^3.11.6"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "^0.1.25-next.0",
