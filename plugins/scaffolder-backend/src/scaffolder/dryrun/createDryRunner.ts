@@ -109,6 +109,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           },
         },
         secrets: input.secrets,
+        // No need to update this at the end of the run, so just hard-code it
         done: false,
         isDryRun: true,
         getWorkspaceName: async () => `dry-run-${dryRunId}`,
