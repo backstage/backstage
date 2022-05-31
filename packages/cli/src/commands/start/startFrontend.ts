@@ -44,7 +44,7 @@ export async function startFrontend(options: StartAppOptions) {
     if (problemPackages.length > 1) {
       console.log(
         chalk.yellow(
-          `⚠️ Some of the following packages may be outdated or have duplicate installations:
+          `⚠️   Some of the following packages may be outdated or have duplicate installations:
 
           ${uniq(problemPackages).join(', ')}
         `,
@@ -52,7 +52,7 @@ export async function startFrontend(options: StartAppOptions) {
       );
       console.log(
         chalk.yellow(
-          `⚠️ This can be resolved using the following command:
+          `⚠️   This can be resolved using the following command:
 
           yarn backstage-cli versions:check --fix
       `,
@@ -62,14 +62,34 @@ export async function startFrontend(options: StartAppOptions) {
   }
 
   const { name } = await fs.readJson(paths.resolveTarget('package.json'));
+  const config = await loadCliConfig({
+    args: options.configPaths,
+    fromPackage: name,
+    withFilteredKeys: true,
+  });
+
+  const appBaseUrl = config.frontendConfig.getString('app.baseUrl');
+  const backendBaseUrl = config.frontendConfig.getString('backend.baseUrl');
+  if (appBaseUrl === backendBaseUrl) {
+    console.log(
+      chalk.yellow(
+        `⚠️   Conflict between app baseUrl and backend baseUrl:
+
+    app.baseUrl:     ${appBaseUrl}
+    backend.baseUrl: ${appBaseUrl}
+
+    Must have unique hostname and/or ports.
+
+    This can be resolved by changing app.baseUrl and backend.baseUrl to point to their respective local development ports.
+`,
+      ),
+    );
+  }
+
   const waitForExit = await serveBundle({
     entry: options.entry,
     checksEnabled: options.checksEnabled,
-    ...(await loadCliConfig({
-      args: options.configPaths,
-      fromPackage: name,
-      withFilteredKeys: true,
-    })),
+    ...config,
   });
 
   await waitForExit();

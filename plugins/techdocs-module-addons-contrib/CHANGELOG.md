@@ -1,5 +1,16 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- 6968b65ba1: Updated dependency `@react-hookz/web` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+  - @backstage/integration@1.2.1-next.0
+  - @backstage/plugin-techdocs-react@1.0.1-next.0
+  - @backstage/integration-react@1.1.1-next.0
+
 ## 1.0.0
 
 ### Major Changes

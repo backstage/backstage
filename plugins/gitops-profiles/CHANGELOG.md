@@ -1,5 +1,12 @@
 # @backstage/plugin-gitops-profiles
 
+## 0.3.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.9.5-next.0
+
 ## 0.3.23
 
 ### Patch Changes

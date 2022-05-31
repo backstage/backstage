@@ -51,6 +51,14 @@ export interface Config {
       };
 
       /**
+       * TLS settings
+       */
+      tls?: {
+        // Node TLS rejectUnauthorized
+        rejectUnauthorized?: boolean;
+      };
+
+      /**
        * The settings that govern the reading and interpretation of users.
        */
       users: {
@@ -271,6 +279,14 @@ export interface Config {
              * @visibility secret
              */
             secret: string;
+          };
+
+          /**
+           * TLS settings
+           */
+          tls?: {
+            // Node TLS rejectUnauthorized
+            rejectUnauthorized?: boolean;
           };
 
           /**

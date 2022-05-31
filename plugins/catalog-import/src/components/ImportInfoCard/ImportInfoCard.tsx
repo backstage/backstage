@@ -54,6 +54,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
   return (
     <InfoCard
       title="Register an existing component"
+      titleTypographyProps={{ component: 'h3' }}
       deepLink={{
         title: 'Learn more about the Software Catalog',
         link: 'https://backstage.io/docs/features/software-catalog/software-catalog-overview',
@@ -62,7 +63,9 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
       <Typography variant="body2" paragraph>
         Enter the URL to your source code repository to add it to {appTitle}.
       </Typography>
-      <Typography variant="h6">Link to an existing entity file</Typography>
+      <Typography component="h4" variant="h6">
+        Link to an existing entity file
+      </Typography>
       <Typography variant="subtitle2" color="textSecondary" paragraph>
         Example: <code>{exampleLocationUrl}</code>
       </Typography>
@@ -72,7 +75,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
       </Typography>
       {hasGithubIntegration && (
         <>
-          <Typography variant="h6">
+          <Typography component="h4" variant="h6">
             Link to a repository{' '}
             <Chip label="GitHub only" variant="outlined" size="small" />
           </Typography>

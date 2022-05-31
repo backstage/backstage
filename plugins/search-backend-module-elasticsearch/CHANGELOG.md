@@ -1,5 +1,12 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@0.6.2-next.0
+
 ## 0.1.4
 
 ### Patch Changes
@@ -91,10 +98,10 @@
 - 022507c860: **BREAKING**
 
   The `ElasticSearchSearchEngine` implements the new stream-based indexing
-  process expected by the latest `@backstage/search-backend-node`.
+  process expected by the latest `@backstage/plugin-search-backend-node`.
 
   When updating to this version, you must also update to the latest version of
-  `@backstage/search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
+  `@backstage/plugin-search-backend-node`. Check [this upgrade guide](https://backstage.io/docs/features/search/how-to-guides#how-to-migrate-from-search-alpha-to-beta)
   for further details.
 
 ### Patch Changes

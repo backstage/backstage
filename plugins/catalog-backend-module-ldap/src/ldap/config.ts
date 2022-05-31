@@ -30,6 +30,8 @@ export type LdapProviderConfig = {
   // The prefix of the target that this matches on, e.g.
   // "ldaps://ds.example.net", with no trailing slash.
   target: string;
+  // TLS settings
+  tls?: TLSConfig;
   // The settings to use for the bind command. If none are specified, the bind
   // command is not issued.
   bind?: BindConfig;
@@ -37,6 +39,16 @@ export type LdapProviderConfig = {
   users: UserConfig;
   // The settings that govern the reading and interpretation of groups
   groups: GroupConfig;
+};
+
+/**
+ * TLS settings
+ *
+ * @public
+ */
+export type TLSConfig = {
+  // Node TLS rejectUnauthorized
+  rejectUnauthorized?: boolean;
 };
 
 /**
@@ -185,6 +197,17 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     });
   }
 
+  function readTlsConfig(
+    c: Config | undefined,
+  ): LdapProviderConfig['tls'] | undefined {
+    if (!c) {
+      return undefined;
+    }
+    return {
+      rejectUnauthorized: c.getOptionalBoolean('rejectUnauthorized'),
+    };
+  }
+
   function readBindConfig(
     c: Config | undefined,
   ): LdapProviderConfig['bind'] | undefined {
@@ -312,6 +335,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
   return providerConfigs.map(c => {
     const newConfig = {
       target: trimEnd(c.getString('target'), '/'),
+      tls: readTlsConfig(c.getOptionalConfig('tls')),
       bind: readBindConfig(c.getOptionalConfig('bind')),
       users: readUserConfig(c.getConfig('users')),
       groups: readGroupConfig(c.getConfig('groups')),

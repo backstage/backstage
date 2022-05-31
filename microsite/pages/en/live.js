@@ -34,7 +34,7 @@ const Background = props => {
         <Block.Container style={{ justifyContent: 'flex-start' }}>
           <Block.MediaFrame>
             <iframe
-              src="https://www.youtube.com/embed/dEd1fl3wRvo"
+              src="https://www.youtube.com/embed/aKZnjnE5Wy8"
               title="YouTube video player"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -45,7 +45,7 @@ const Background = props => {
             <iframe
               width="300"
               height="500"
-              src="https://www.youtube.com/live_chat?v=dEd1fl3wRvo&embed_domain=backstage.io&dark_theme=1"
+              src="https://www.youtube.com/live_chat?v=aKZnjnE5Wy8&embed_domain=backstage.io&dark_theme=1"
             ></iframe>
           </Block.MediaFrame>
         </Block.Container>

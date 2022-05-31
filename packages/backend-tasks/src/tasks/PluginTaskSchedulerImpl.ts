@@ -57,7 +57,12 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
 
     if (scope === 'global') {
       const knex = await this.databaseFactory();
-      const worker = new TaskWorker(task.id, task.fn, knex, this.logger);
+      const worker = new TaskWorker(
+        task.id,
+        task.fn,
+        knex,
+        this.logger.child({ task: task.id }),
+      );
 
       await worker.start(
         {

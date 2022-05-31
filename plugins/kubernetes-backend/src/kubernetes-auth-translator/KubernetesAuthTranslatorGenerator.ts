@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { KubernetesAuthTranslator } from './types';
 import { GoogleKubernetesAuthTranslator } from './GoogleKubernetesAuthTranslator';
 import { ServiceAccountKubernetesAuthTranslator } from './ServiceAccountKubernetesAuthTranslator';
@@ -25,6 +26,9 @@ import { OidcKubernetesAuthTranslator } from './OidcKubernetesAuthTranslator';
 export class KubernetesAuthTranslatorGenerator {
   static getKubernetesAuthTranslatorInstance(
     authProvider: string,
+    options: {
+      logger: Logger;
+    },
   ): KubernetesAuthTranslator {
     switch (authProvider) {
       case 'google': {
@@ -34,7 +38,7 @@ export class KubernetesAuthTranslatorGenerator {
         return new AwsIamKubernetesAuthTranslator();
       }
       case 'azure': {
-        return new AzureIdentityKubernetesAuthTranslator();
+        return new AzureIdentityKubernetesAuthTranslator(options.logger);
       }
       case 'serviceAccount': {
         return new ServiceAccountKubernetesAuthTranslator();

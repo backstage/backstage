@@ -23,6 +23,7 @@ import { GithubRepoPicker } from './GithubRepoPicker';
 import { GitlabRepoPicker } from './GitlabRepoPicker';
 import { AzureRepoPicker } from './AzureRepoPicker';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
+import { GerritRepoPicker } from './GerritRepoPicker';
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { RepoUrlPickerHost } from './RepoUrlPickerHost';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
@@ -42,6 +43,7 @@ export interface RepoUrlPickerUiOptions {
   requestUserCredentials?: {
     secretsKey: string;
     additionalScopes?: {
+      gerrit?: string[];
       github?: string[];
       gitlab?: string[];
       bitbucket?: string[];
@@ -165,6 +167,13 @@ export const RepoUrlPicker = (
       )}
       {hostType === 'azure' && (
         <AzureRepoPicker
+          rawErrors={rawErrors}
+          state={state}
+          onChange={updateLocalState}
+        />
+      )}
+      {hostType === 'gerrit' && (
+        <GerritRepoPicker
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
