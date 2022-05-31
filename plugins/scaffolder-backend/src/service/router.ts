@@ -354,7 +354,7 @@ export async function createRouter(
         throw new InputError('Input template is not a template');
       }
 
-      const token = getBearerToken(req.headers.authorization);
+      const { token } = parseBearerToken(req.headers.authorization);
 
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
