@@ -15,18 +15,30 @@
  */
 import React from 'react';
 import { ProblemsTable } from './ProblemsTable';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { problems } from '../../../mocks/problems.json';
+import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { configApiRef } from '@backstage/core-plugin-api';
 
 describe('ProblemsTable', () => {
+  const apis = TestApiRegistry.from([
+    configApiRef,
+    new ConfigReader({ dynatrace: { baseUrl: '__dynatrace__' } }),
+  ]);
   it('renders the table with some problem data', async () => {
     const rendered = await renderInTestApp(
-      <ProblemsTable problems={problems} />,
+      <ApiProvider apis={apis}>
+        <ProblemsTable problems={problems} />,
+      </ApiProvider>,
     );
-    expect(await rendered.findByText('example-service-3')).toBeInTheDocument();
+    expect(await rendered.findByText('example-service')).toBeInTheDocument();
   });
   it('renders an empty table when no data is provided', async () => {
-    const rendered = await renderInTestApp(<ProblemsTable problems={[]} />);
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ProblemsTable problems={[]} />
+      </ApiProvider>,
+    );
     expect(await rendered.findByText('Problems')).toBeInTheDocument();
   });
 });

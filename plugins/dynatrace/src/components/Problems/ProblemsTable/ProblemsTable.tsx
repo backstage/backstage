@@ -15,63 +15,54 @@
  */
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
-import { EntityLink } from '../EntityLink';
 import { Problem, ProblemsTableProps } from '../types';
 import { ProblemStatus } from '../ProblemStatus';
-import { Box } from '@material-ui/core';
+import { configApiRef } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
+import { Link } from '@material-ui/core';
 
 export const ProblemsTable = ({ problems }: ProblemsTableProps) => {
+  const configApi = useApi(configApiRef);
+  const dynatraceBaseUrl = configApi.getString('dynatrace.baseUrl');
   const columns: TableColumn[] = [
-    { title: 'Title', field: 'title' },
+    {
+      title: 'Title',
+      field: 'title',
+      render: (row: Partial<Problem>) => (
+        <Link
+          href={`${dynatraceBaseUrl}/#problems/problemdetails;pid=${row.problemId}`}
+        >
+          {row.title}
+        </Link>
+      ),
+    },
     {
       title: 'Status',
       field: 'status',
-      render: (row: Partial<Problem | undefined>) => (
-        <Box display="flex" alignItems="center">
-          <ProblemStatus status={row?.status} />
-        </Box>
-      ),
+      render: (row: Partial<Problem>) => <ProblemStatus status={row.status} />,
     },
     { title: 'Severity', field: 'severityLevel' },
     {
       title: 'Root Cause',
       field: 'rootCauseEntity',
-      render: (row: Partial<Problem | undefined>) => (
-        <Box display="flex" alignItems="center">
-          <EntityLink name={row?.rootCauseEntity?.name} />
-        </Box>
-      ),
+      render: (row: Partial<Problem>) => row.rootCauseEntity?.name,
     },
     {
       title: 'Affected',
       field: 'affectedEntities',
-      render: (row: Partial<Problem | undefined>) => (
-        <Box display="flex" alignItems="center">
-          <>
-            {row?.affectedEntities?.map(e => {
-              return <EntityLink key={e.name} name={e.name} />;
-            })}
-          </>
-        </Box>
-      ),
+      render: (row: Partial<Problem>) => row.affectedEntities?.map(e => e.name),
     },
     {
       title: 'Start Time',
       field: 'startTime',
-      render: (row: Partial<Problem | undefined>) => (
-        <>{new Date(row?.startTime).toISOString()}</>
-      ),
+      render: (row: Partial<Problem>) =>
+        new Date(row.startTime || 0).toString(),
     },
     {
       title: 'End Time',
       field: 'endTime',
-      render: (row: Partial<Problem | undefined>) => (
-        <>
-          {row?.endTime === -1
-            ? 'ongoing'
-            : new Date(row?.endTime).toISOString()}
-        </>
-      ),
+      render: (row: Partial<Problem>) =>
+        row.endTime === -1 ? 'ongoing' : new Date(row.endTime || 0).toString(),
     },
   ];
 

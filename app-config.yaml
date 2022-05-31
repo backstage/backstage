@@ -135,6 +135,9 @@ techdocs:
   publisher:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
+dynatrace:
+  baseUrl: https://your-dynatrace-instance-here.dynatrace.com
+
 sentry:
   organization: my-company
 
