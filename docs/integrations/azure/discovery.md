@@ -26,7 +26,7 @@ If the Code Search extension is not listed then you can install it from the [Vis
 
 ### Azure Integration
 
-Setup [Azure integration](locations.md) with `host` and `token`. Host must be `dev.azure.com` for Cloud users, othersite set this to your on-premise hostname.
+Setup [Azure integration](locations.md) with `host` and `token`. Host must be `dev.azure.com` for Cloud users, otherwise set this to your on-premise hostname.
 
 ## Installation
 
