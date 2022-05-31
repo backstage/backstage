@@ -154,7 +154,7 @@ export interface ScaffolderStreamLogsOptions {
 export interface ScaffolderDryRunOptions {
   template: JsonValue;
   values: JsonObject;
-  secrets: JsonObject;
+  secrets?: Record<string, string>;
   directoryContents: { path: string; base64Content: string }[];
 }
 
