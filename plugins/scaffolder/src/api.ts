@@ -178,7 +178,7 @@ export class ScaffolderClient implements ScaffolderApi {
     options: ScaffolderDryRunOptions,
   ): Promise<ScaffolderDryRunResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const response = await this.fetchApi.fetch(`${baseUrl}/v2/dryrun`, {
+    const response = await this.fetchApi.fetch(`${baseUrl}/v2/dry-run`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
