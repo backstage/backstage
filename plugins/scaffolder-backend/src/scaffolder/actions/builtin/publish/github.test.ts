@@ -727,4 +727,26 @@ describe('publish:github', () => {
       requiredStatusCheckContexts: [],
     });
   });
+
+  it('should not call enableBranchProtectionOnDefaultRepoBranch with protectDefaultBranch disabled', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        name: 'repository',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        protectDefaultBranch: false,
+      },
+    });
+
+    expect(enableBranchProtectionOnDefaultRepoBranch).not.toHaveBeenCalled();
+  });
 });
