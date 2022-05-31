@@ -22,7 +22,7 @@ describe('serializeDirectoryContents', () => {
     mockFs.restore();
   });
 
-  it('should life files in this directory', async () => {
+  it('should list files in this directory', async () => {
     await expect(serializeDirectoryContents(__dirname)).resolves.toEqual(
       expect.arrayContaining([
         {
