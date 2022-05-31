@@ -67,6 +67,7 @@ export function createPublishGithubAction(options: {
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
       | {
+          /** @deprecated This field is deprecated in favor of team */
           username: string;
           access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
         }
@@ -191,6 +192,7 @@ export function createPublishGithubAction(options: {
                       description: 'The type of access for the user',
                       enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
                     },
+                    /** @deprecated This field is deprecated in favor of team */
                     username: {
                       type: 'string',
                       description: 'Not a valid field anymore',
@@ -455,6 +457,7 @@ function extractCollaboratorName(
         access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
       }
     | {
+        /** @deprecated This field is deprecated in favor of team */
         username: string;
         access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
       },

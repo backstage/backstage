@@ -284,11 +284,15 @@ export function createPublishGithubAction(options: {
   collaborators?:
     | (
         | {
-            username: string;
+            user: string;
             access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
           }
         | {
             team: string;
+            access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+          }
+        | {
+            username: string;
             access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
           }
       )[]
