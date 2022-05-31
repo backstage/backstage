@@ -29,6 +29,7 @@ import {
   createApiRef,
   DiscoveryApi,
   ConfigApi,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 
 export class UnauthorizedError extends Error {}
@@ -38,13 +39,18 @@ export const pagerDutyApiRef = createApiRef<PagerDutyApi>({
 });
 
 export class PagerDutyClient implements PagerDutyApi {
-  static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
+  static fromConfig(
+    configApi: ConfigApi,
+    discoveryApi: DiscoveryApi,
+    identityApi: IdentityApi,
+  ) {
     const eventsBaseUrl: string =
       configApi.getOptionalString('pagerDuty.eventsBaseUrl') ??
       'https://events.pagerduty.com/v2';
     return new PagerDutyClient({
       eventsBaseUrl,
       discoveryApi,
+      identityApi,
     });
   }
   constructor(private readonly config: ClientApiConfig) {}
@@ -124,11 +130,13 @@ export class PagerDutyClient implements PagerDutyApi {
   }
 
   private async getByUrl<T>(url: string): Promise<T> {
+    const { token: idToken } = await this.config.identityApi.getCredentials();
     const options = {
       method: 'GET',
       headers: {
         Accept: 'application/vnd.pagerduty+json;version=2',
         'Content-Type': 'application/json',
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     };
     const response = await this.request(url, options);
