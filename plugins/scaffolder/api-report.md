@@ -282,12 +282,12 @@ export class ScaffolderClient implements ScaffolderApi {
 // @public (undocumented)
 export interface ScaffolderDryRunOptions {
   // (undocumented)
-  content: {
+  directoryContents: {
     path: string;
     base64Content: string;
   }[];
   // (undocumented)
-  secrets: JsonObject;
+  secrets?: Record<string, string>;
   // (undocumented)
   template: JsonValue;
   // (undocumented)
@@ -297,13 +297,13 @@ export interface ScaffolderDryRunOptions {
 // @public (undocumented)
 export interface ScaffolderDryRunResponse {
   // (undocumented)
-  content: Array<{
+  directoryContents: Array<{
     path: string;
     base64Content: string;
     executable: boolean;
   }>;
   // (undocumented)
-  log: Array<LogEvent['body']>;
+  log: Array<Pick<LogEvent, 'body'>>;
   // (undocumented)
   output: ScaffolderTaskOutput;
   // (undocumented)
