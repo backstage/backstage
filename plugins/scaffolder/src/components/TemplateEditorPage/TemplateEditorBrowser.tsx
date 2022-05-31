@@ -67,6 +67,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
         <Tooltip title="Save all files">
           <IconButton
             className={classes.button}
+            disabled={directoryEditor.files.every(file => !file.dirty)}
             onClick={() => directoryEditor.save()}
           >
             <SaveIcon />
