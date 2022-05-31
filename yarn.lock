@@ -1428,6 +1428,28 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
+"@backstage/catalog-client@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/catalog-client/-/catalog-client-1.0.2.tgz#8450bb09e6e65114053538d1ab855bc8bee09531"
+  integrity sha512-3983OrSPZQyTHRi78Ot2708h8iKd3bcvG0PSPmtbmQDkgxUUAXJ1w276THNoGA/Vt84NsNBO0Srfm0b4PmegAQ==
+  dependencies:
+    "@backstage/catalog-model" "^1.0.2"
+    "@backstage/errors" "^1.0.0"
+    cross-fetch "^3.1.5"
+
+"@backstage/catalog-model@^1.0.0", "@backstage/catalog-model@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/catalog-model/-/catalog-model-1.0.2.tgz#50328068632b452fabed67e53fb7f83ead08f9df"
+  integrity sha512-0GCTW0XqFoHRiZKRXiru5wVMm0hoPiFAEyBiudWlYAFXtVEoVnrzJ+pa9F96zqtFgcGHmgSybgzjmVqiGUMSlw==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/errors" "^1.0.0"
+    "@backstage/types" "^1.0.0"
+    ajv "^8.10.0"
+    json-schema "^0.4.0"
+    lodash "^4.17.21"
+    uuid "^8.0.0"
+
 "@backstage/core-components@^0.9.0", "@backstage/core-components@^0.9.4":
   version "0.9.4"
   resolved "https://registry.npmjs.org/@backstage/core-components/-/core-components-0.9.4.tgz#47e9a305f768a951e0cb0ffa9c1e3c141d06b223"
@@ -1472,6 +1494,19 @@
     zen-observable "^0.8.15"
     zod "^3.11.6"
 
+"@backstage/core-plugin-api@^1.0.0", "@backstage/core-plugin-api@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/core-plugin-api/-/core-plugin-api-1.0.2.tgz#6ebf52c20df33ee3c128c98937d0d349a805d3eb"
+  integrity sha512-82bFp3lTW4o4Bske+zLXSzHueLP/mdUPWx6J/6YUfn88Aq93gb4VrdUJ04fXXDNWPqaBzfpynaIbme9QRZqfHQ==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/types" "^1.0.0"
+    "@backstage/version-bridge" "^1.0.1"
+    history "^5.0.0"
+    prop-types "^15.7.2"
+    react-router-dom "6.0.0-beta.0"
+    zen-observable "^0.8.15"
+
 "@backstage/integration-react@^1.0.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@backstage/integration-react/-/integration-react-1.1.0.tgz#9d58838e85647540d2de69e40099533260ba2622"
@@ -1500,6 +1535,14 @@
     git-url-parse "^11.6.0"
     lodash "^4.17.21"
     luxon "^2.0.2"
+
+"@backstage/plugin-catalog-common@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-common/-/plugin-catalog-common-1.0.2.tgz#04f45745c0f30a1193d25c2dcf3eef01a97ab6be"
+  integrity sha512-5YCSZ9b2pMKJxHTJMPMo5qC3KeO4aCJCSV9uez7dHMIxkpEV+YThx3JAjrdj6KMMF0EGK4817fd6tipGUdfwDA==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.6.1"
+    "@backstage/search-common" "^0.3.4"
 
 "@backstage/plugin-catalog-react@^1.0.0", "@backstage/plugin-catalog-react@^1.1.0":
   version "1.1.0"
@@ -1549,6 +1592,38 @@
     react-router "6.0.0-beta.0"
     react-use "^17.2.4"
 
+"@backstage/plugin-permission-common@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-common/-/plugin-permission-common-0.6.1.tgz#fd63ba10b90896e6f8627c569a5f28127821523f"
+  integrity sha512-abAZEuzhjSuybQ+EjAl6bonDCBRVcNlcAhp/uia+znDyUzLRaOE1rh9y9lyKQco5UCnxXCeR0FzRv592lBmYVw==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/errors" "^1.0.0"
+    cross-fetch "^3.1.5"
+    uuid "^8.0.0"
+    zod "^3.11.6"
+
+"@backstage/plugin-permission-react@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-permission-react/-/plugin-permission-react-0.4.1.tgz#18740913a8df06629a32b9c8679caa451c3989ac"
+  integrity sha512-yCuKGXP1TNJrphdkvBBLf+Jf7KYtW4Z9uV4M7vtBsK9qR2U3YU9T24iRDJ3hhBIr7dj66h4JCMhyrsDqYjMCTQ==
+  dependencies:
+    "@backstage/config" "^1.0.1"
+    "@backstage/core-plugin-api" "^1.0.2"
+    "@backstage/plugin-permission-common" "^0.6.1"
+    cross-fetch "^3.1.5"
+    react-router "6.0.0-beta.0"
+    react-use "^17.2.4"
+    swr "^1.1.2"
+
+"@backstage/plugin-search-common@0.3.4", "@backstage/plugin-search-common@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.npmjs.org/@backstage/plugin-search-common/-/plugin-search-common-0.3.4.tgz#04e59618b1bef4c52045b3103c87a570e260cdb3"
+  integrity sha512-ft3+H8zQevm1QduQBLmP7awO8XHzh4Jlq0V6BdFrZftgyw0MbMz/YVtRwtHL++6qp91xDtQnwntZ5/3B95Hbug==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.6.1"
+    "@backstage/types" "^1.0.0"
+
 "@backstage/plugin-stack-overflow@^0.1.1":
   version "0.1.1"
   resolved "https://registry.npmjs.org/@backstage/plugin-stack-overflow/-/plugin-stack-overflow-0.1.1.tgz#238ae82cb5f5732eb343b4f87aa6fc973bb613d2"
@@ -1567,6 +1642,13 @@
     lodash "^4.17.21"
     qs "^6.9.4"
     react-use "^17.2.4"
+
+"@backstage/search-common@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.npmjs.org/@backstage/search-common/-/search-common-0.3.4.tgz#94235e6bd930c738b41ccc3f5b78ddfad3a105cc"
+  integrity sha512-lANcEeA++EaZ6lAPuuN7I9DrP4Ij1d/Mb9wyrY01DKnw0wUVKj8wdGwB2KR/LWdxg7dY8BIHU49bUqSTMKl2+w==
+  dependencies:
+    "@backstage/plugin-search-common" "0.3.4"
 
 "@balena/dockerignore@^1.0.2":
   version "1.0.2"
@@ -12077,61 +12159,61 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     safe-buffer "^5.1.1"
 
 "example-app@link:packages/app":
-  version "0.2.72-next.0"
+  version "0.2.72-next.1"
   dependencies:
-    "@backstage/app-defaults" "^1.0.3-next.0"
-    "@backstage/catalog-model" "^1.0.2"
-    "@backstage/cli" "^0.17.2-next.0"
+    "@backstage/app-defaults" "^1.0.3-next.1"
+    "@backstage/catalog-model" "^1.0.3-next.0"
+    "@backstage/cli" "^0.17.2-next.1"
     "@backstage/config" "^1.0.1"
-    "@backstage/core-app-api" "^1.0.2"
-    "@backstage/core-components" "^0.9.5-next.0"
-    "@backstage/core-plugin-api" "^1.0.2"
-    "@backstage/integration-react" "^1.1.1-next.0"
-    "@backstage/plugin-airbrake" "^0.3.6-next.0"
-    "@backstage/plugin-apache-airflow" "^0.1.14-next.0"
-    "@backstage/plugin-api-docs" "^0.8.6-next.0"
-    "@backstage/plugin-azure-devops" "^0.1.22-next.0"
-    "@backstage/plugin-badges" "^0.2.30-next.0"
-    "@backstage/plugin-catalog" "^1.2.1-next.0"
-    "@backstage/plugin-catalog-common" "^1.0.2"
-    "@backstage/plugin-catalog-graph" "^0.2.18-next.0"
-    "@backstage/plugin-catalog-import" "^0.8.9-next.0"
-    "@backstage/plugin-catalog-react" "^1.1.1-next.0"
-    "@backstage/plugin-circleci" "^0.3.6-next.0"
-    "@backstage/plugin-cloudbuild" "^0.3.6-next.0"
-    "@backstage/plugin-code-coverage" "^0.1.33-next.0"
-    "@backstage/plugin-cost-insights" "^0.11.28-next.0"
-    "@backstage/plugin-explore" "^0.3.37-next.0"
-    "@backstage/plugin-gcalendar" "^0.3.2-next.0"
-    "@backstage/plugin-gcp-projects" "^0.3.25-next.0"
-    "@backstage/plugin-github-actions" "^0.5.6-next.0"
-    "@backstage/plugin-gocd" "^0.1.12-next.0"
-    "@backstage/plugin-graphiql" "^0.2.38-next.0"
-    "@backstage/plugin-home" "^0.4.22-next.0"
-    "@backstage/plugin-jenkins" "^0.7.5-next.0"
-    "@backstage/plugin-kafka" "^0.3.6-next.0"
-    "@backstage/plugin-kubernetes" "^0.6.6-next.0"
-    "@backstage/plugin-lighthouse" "^0.3.6-next.0"
-    "@backstage/plugin-newrelic" "^0.3.24-next.0"
-    "@backstage/plugin-newrelic-dashboard" "^0.1.14-next.0"
-    "@backstage/plugin-org" "^0.5.6-next.0"
-    "@backstage/plugin-pagerduty" "0.3.33-next.0"
-    "@backstage/plugin-permission-react" "^0.4.1"
-    "@backstage/plugin-rollbar" "^0.4.6-next.0"
-    "@backstage/plugin-scaffolder" "^1.3.0-next.0"
-    "@backstage/plugin-search" "^0.8.2-next.0"
-    "@backstage/plugin-search-common" "^0.3.4"
-    "@backstage/plugin-search-react" "^0.2.0"
-    "@backstage/plugin-sentry" "^0.3.44-next.0"
-    "@backstage/plugin-shortcuts" "^0.2.7-next.0"
-    "@backstage/plugin-stack-overflow" "^0.1.2-next.0"
-    "@backstage/plugin-tech-insights" "^0.2.2-next.0"
-    "@backstage/plugin-tech-radar" "^0.5.13-next.0"
-    "@backstage/plugin-techdocs" "^1.1.2-next.0"
-    "@backstage/plugin-techdocs-module-addons-contrib" "^1.0.1-next.0"
-    "@backstage/plugin-techdocs-react" "^1.0.1-next.0"
-    "@backstage/plugin-todo" "^0.2.8-next.0"
-    "@backstage/plugin-user-settings" "^0.4.5-next.0"
+    "@backstage/core-app-api" "^1.0.3-next.0"
+    "@backstage/core-components" "^0.9.5-next.1"
+    "@backstage/core-plugin-api" "^1.0.3-next.0"
+    "@backstage/integration-react" "^1.1.1-next.1"
+    "@backstage/plugin-airbrake" "^0.3.6-next.1"
+    "@backstage/plugin-apache-airflow" "^0.1.14-next.1"
+    "@backstage/plugin-api-docs" "^0.8.6-next.1"
+    "@backstage/plugin-azure-devops" "^0.1.22-next.1"
+    "@backstage/plugin-badges" "^0.2.30-next.1"
+    "@backstage/plugin-catalog" "^1.2.1-next.1"
+    "@backstage/plugin-catalog-common" "^1.0.3-next.0"
+    "@backstage/plugin-catalog-graph" "^0.2.18-next.1"
+    "@backstage/plugin-catalog-import" "^0.8.9-next.1"
+    "@backstage/plugin-catalog-react" "^1.1.1-next.1"
+    "@backstage/plugin-circleci" "^0.3.6-next.1"
+    "@backstage/plugin-cloudbuild" "^0.3.6-next.1"
+    "@backstage/plugin-code-coverage" "^0.1.33-next.1"
+    "@backstage/plugin-cost-insights" "^0.11.28-next.1"
+    "@backstage/plugin-explore" "^0.3.37-next.1"
+    "@backstage/plugin-gcalendar" "^0.3.2-next.1"
+    "@backstage/plugin-gcp-projects" "^0.3.25-next.1"
+    "@backstage/plugin-github-actions" "^0.5.6-next.1"
+    "@backstage/plugin-gocd" "^0.1.12-next.1"
+    "@backstage/plugin-graphiql" "^0.2.38-next.1"
+    "@backstage/plugin-home" "^0.4.22-next.1"
+    "@backstage/plugin-jenkins" "^0.7.5-next.1"
+    "@backstage/plugin-kafka" "^0.3.6-next.1"
+    "@backstage/plugin-kubernetes" "^0.6.6-next.1"
+    "@backstage/plugin-lighthouse" "^0.3.6-next.1"
+    "@backstage/plugin-newrelic" "^0.3.24-next.1"
+    "@backstage/plugin-newrelic-dashboard" "^0.1.14-next.1"
+    "@backstage/plugin-org" "^0.5.6-next.1"
+    "@backstage/plugin-pagerduty" "0.3.33-next.1"
+    "@backstage/plugin-permission-react" "^0.4.2-next.0"
+    "@backstage/plugin-rollbar" "^0.4.6-next.1"
+    "@backstage/plugin-scaffolder" "^1.3.0-next.1"
+    "@backstage/plugin-search" "^0.8.2-next.1"
+    "@backstage/plugin-search-common" "^0.3.5-next.0"
+    "@backstage/plugin-search-react" "^0.2.1-next.0"
+    "@backstage/plugin-sentry" "^0.3.44-next.1"
+    "@backstage/plugin-shortcuts" "^0.2.7-next.1"
+    "@backstage/plugin-stack-overflow" "^0.1.2-next.1"
+    "@backstage/plugin-tech-insights" "^0.2.2-next.1"
+    "@backstage/plugin-tech-radar" "^0.5.13-next.1"
+    "@backstage/plugin-techdocs" "^1.1.2-next.1"
+    "@backstage/plugin-techdocs-module-addons-contrib" "^1.0.1-next.1"
+    "@backstage/plugin-techdocs-react" "^1.0.1-next.1"
+    "@backstage/plugin-todo" "^0.2.8-next.1"
+    "@backstage/plugin-user-settings" "^0.4.5-next.1"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
@@ -23798,20 +23880,20 @@ tdigest@^0.1.1:
     bintrees "1.0.1"
 
 "techdocs-cli-embedded-app@link:packages/techdocs-cli-embedded-app":
-  version "0.2.71-next.0"
+  version "0.2.71-next.1"
   dependencies:
-    "@backstage/app-defaults" "^1.0.3-next.0"
-    "@backstage/catalog-model" "^1.0.2"
-    "@backstage/cli" "^0.17.2-next.0"
+    "@backstage/app-defaults" "^1.0.3-next.1"
+    "@backstage/catalog-model" "^1.0.3-next.0"
+    "@backstage/cli" "^0.17.2-next.1"
     "@backstage/config" "^1.0.1"
-    "@backstage/core-app-api" "^1.0.2"
-    "@backstage/core-components" "^0.9.5-next.0"
-    "@backstage/core-plugin-api" "^1.0.2"
-    "@backstage/integration-react" "^1.1.1-next.0"
-    "@backstage/plugin-catalog" "^1.2.1-next.0"
-    "@backstage/plugin-techdocs" "^1.1.2-next.0"
-    "@backstage/plugin-techdocs-react" "^1.0.1-next.0"
-    "@backstage/test-utils" "^1.1.0"
+    "@backstage/core-app-api" "^1.0.3-next.0"
+    "@backstage/core-components" "^0.9.5-next.1"
+    "@backstage/core-plugin-api" "^1.0.3-next.0"
+    "@backstage/integration-react" "^1.1.1-next.1"
+    "@backstage/plugin-catalog" "^1.2.1-next.1"
+    "@backstage/plugin-techdocs" "^1.1.2-next.1"
+    "@backstage/plugin-techdocs-react" "^1.0.1-next.1"
+    "@backstage/test-utils" "^1.1.1-next.0"
     "@backstage/theme" "^0.2.15"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
