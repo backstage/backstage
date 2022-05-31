@@ -47,15 +47,7 @@ export async function startStandaloneServer(
     const manager = DatabaseManager.fromConfig(
       new ConfigReader({
         backend: {
-          database: {
-            client: 'mysql2',
-            connection: {
-              host: 'localhost',
-              port: 3306,
-              user: 'engx',
-              password: 'SocksShoes$',
-            },
-          },
+          database: { client: 'better-sqlite3', connection: ':memory:' },
         },
       }),
     );
