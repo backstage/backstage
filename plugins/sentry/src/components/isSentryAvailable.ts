@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-export * from './SentryIssuesWidget';
-export { isSentryAvailable } from './isSentryAvailable';
+import { Entity } from '@backstage/catalog-model';
+import { SENTRY_PROJECT_SLUG_ANNOTATION } from './useProjectSlug';
+
+/**
+ * @public
+ * Checks to see if sentry is available
+ */
+export const isSentryAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[SENTRY_PROJECT_SLUG_ANNOTATION]);
