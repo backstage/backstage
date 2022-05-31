@@ -169,51 +169,34 @@ export function createPublishGithubAction(options: {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               required: ['access'],
+              properties: {
+                access: {
+                  type: 'string',
+                  description: 'The type of access for the user',
+                  enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
+                },
+                user: {
+                  type: 'string',
+                  description:
+                    'The name of the user that will be added as a collaborator',
+                },
+                username: {
+                  type: 'string',
+                  description:
+                    'Deprecated. Use the `team` or `user` field instead.',
+                },
+                team: {
+                  type: 'string',
+                  description:
+                    'The name of the team that will be added as a collaborator',
+                },
+              },
               oneOf: [
-                {
-                  properties: {
-                    access: {
-                      type: 'string',
-                      description: 'The type of access for the user',
-                      enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
-                    },
-                    user: {
-                      type: 'string',
-                      description:
-                        'The name of the user that will be added as a collaborator',
-                    },
-                  },
-                },
-                {
-                  properties: {
-                    access: {
-                      type: 'string',
-                      description: 'The type of access for the user',
-                      enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
-                    },
-                    /** @deprecated This field is deprecated in favor of team */
-                    username: {
-                      type: 'string',
-                      description: 'Not a valid field anymore',
-                    },
-                  },
-                },
-                {
-                  additionalProperties: false,
-                  properties: {
-                    access: {
-                      type: 'string',
-                      description: 'The type of access for the team',
-                      enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
-                    },
-                    team: {
-                      type: 'string',
-                      description:
-                        'The name of the team that will be added as a collaborator',
-                    },
-                  },
-                },
+                { required: ['user'] },
+                { required: ['username'] },
+                { required: ['team'] },
               ],
             },
           },
