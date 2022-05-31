@@ -51,7 +51,12 @@ function DryRunRemote({
 }
 
 const mockScaffolderApi = {
-  dryRun: async () => ({ content: [], log: [], output: {}, steps: [] }),
+  dryRun: async () => ({
+    directoryContents: [],
+    log: [],
+    output: {},
+    steps: [],
+  }),
 };
 
 describe('DryRunResults', () => {

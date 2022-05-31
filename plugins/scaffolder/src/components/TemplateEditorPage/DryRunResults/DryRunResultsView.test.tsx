@@ -55,7 +55,7 @@ describe('DryRunResultsView', () => {
             scaffolderApiRef,
             {
               dryRun: async () => ({
-                content: [
+                directoryContents: [
                   {
                     path: 'foo.txt',
                     base64Content: btoa('Foo Content'),
