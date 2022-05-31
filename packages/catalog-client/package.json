@@ -40,7 +40,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.17.2-next.0",
     "@types/jest": "^26.0.7",
-    "msw": "^0.41.0"
+    "msw": "^0.42.0"
   },
   "files": [
     "dist"
