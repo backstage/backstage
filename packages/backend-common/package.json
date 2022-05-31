@@ -112,7 +112,7 @@
     "better-sqlite3": "^7.5.0",
     "http-errors": "^2.0.0",
     "mock-fs": "^5.1.0",
-    "msw": "^0.41.0",
+    "msw": "^0.42.0",
     "mysql2": "^2.2.5",
     "recursive-readdir": "^2.2.2",
     "supertest": "^6.1.3"

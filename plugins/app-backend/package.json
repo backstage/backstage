@@ -55,7 +55,7 @@
     "@backstage/types": "^1.0.0",
     "@types/supertest": "^2.0.8",
     "mock-fs": "^5.1.0",
-    "msw": "^0.41.0",
+    "msw": "^0.42.0",
     "supertest": "^6.1.3"
   },
   "files": [

@@ -31,7 +31,7 @@
     "@backstage/dev-utils": "^1.0.3-next.0",
     "@backstage/test-utils": "^1.1.0",
     "@types/node": "^16.11.26",
-    "msw": "^0.41.0",
+    "msw": "^0.42.0",
     "cross-fetch": "^3.1.5"
   },
   "files": [

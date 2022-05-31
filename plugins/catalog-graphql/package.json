@@ -53,7 +53,7 @@
     "@graphql-codegen/typescript": "^2.4.2",
     "@graphql-codegen/typescript-resolvers": "^2.4.3",
     "@graphql-tools/schema": "^8.3.1",
-    "msw": "^0.41.0"
+    "msw": "^0.42.0"
   },
   "files": [
     "dist"
