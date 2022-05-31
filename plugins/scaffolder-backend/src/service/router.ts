@@ -341,7 +341,7 @@ export async function createRouter(
         template: z.unknown(),
         values: z.record(z.unknown()),
         secrets: z.record(z.string()),
-        content: z.array(
+        directoryContents: z.array(
           z.object({ path: z.string(), base64Content: z.string() }),
         ),
       });
@@ -377,7 +377,7 @@ export async function createRouter(
           output: template.spec.output ?? {},
           parameters: body.values as JsonObject,
         },
-        content: (body.content ?? []).map(file => ({
+        directoryContents: (body.directoryContents ?? []).map(file => ({
           path: file.path,
           content: Buffer.from(file.base64Content, 'base64'),
         })),
@@ -390,7 +390,7 @@ export async function createRouter(
       res.status(200).json({
         ...result,
         steps,
-        content: result.content.map(file => ({
+        directoryContents: result.directoryContents.map(file => ({
           path: file.path,
           executable: file.executable,
           base64Content: file.content.toString('base64'),

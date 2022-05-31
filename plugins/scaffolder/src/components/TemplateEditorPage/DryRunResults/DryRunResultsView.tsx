@@ -61,13 +61,13 @@ function FilesContent() {
   const classes = useStyles();
   const { selectedResult } = useDryRun();
   const [selectedPath, setSelectedPath] = useState<string>('');
-  const selectedFile = selectedResult?.content.find(
+  const selectedFile = selectedResult?.directoryContents.find(
     f => f.path === selectedPath,
   );
 
   useEffect(() => {
     if (selectedResult) {
-      const [firstFile] = selectedResult.content;
+      const [firstFile] = selectedResult.directoryContents;
       if (firstFile) {
         setSelectedPath(firstFile.path);
       } else {
@@ -85,7 +85,7 @@ function FilesContent() {
       <FileBrowser
         selected={selectedPath}
         onSelect={setSelectedPath}
-        filePaths={selectedResult.content.map(file => file.path)}
+        filePaths={selectedResult.directoryContents.map(file => file.path)}
       />
       <CodeMirror
         className={classes.codeMirror}

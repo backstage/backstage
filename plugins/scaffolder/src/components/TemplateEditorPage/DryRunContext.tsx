@@ -108,7 +108,7 @@ export function DryRunProvider(props: DryRunProviderProps) {
         template: parsed,
         values: options.values,
         secrets: {},
-        content: options.files.map(file => ({
+        directoryContents: options.files.map(file => ({
           path: file.path,
           base64Content: btoa(file.content),
         })),

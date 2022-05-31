@@ -36,12 +36,12 @@ import { resolveSafeChildPath } from '@backstage/backend-common';
 interface DryRunInput {
   spec: TaskSpec;
   secrets?: TaskSecrets;
-  content: SerializedFile[];
+  directoryContents: SerializedFile[];
 }
 
 interface DryRunResult {
   log: JsonObject[];
-  content: SerializedFile[];
+  directoryContents: SerializedFile[];
   output: JsonObject;
 }
 
@@ -88,7 +88,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
     );
 
     try {
-      await deserializeDirectoryContents(contentsPath, input.content);
+      await deserializeDirectoryContents(contentsPath, input.directoryContents);
 
       const result = await workflowRunner.execute({
         spec: {
@@ -130,11 +130,11 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
       if (!contentPromise) {
         throw new Error('Content extraction step was skipped');
       }
-      const content = await contentPromise;
+      const directoryContents = await contentPromise;
 
       return {
         log,
-        content,
+        directoryContents,
         output: result.output,
       };
     } finally {

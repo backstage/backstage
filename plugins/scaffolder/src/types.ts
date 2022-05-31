@@ -155,12 +155,12 @@ export interface ScaffolderDryRunOptions {
   template: JsonValue;
   values: JsonObject;
   secrets: JsonObject;
-  content: { path: string; base64Content: string }[];
+  directoryContents: { path: string; base64Content: string }[];
 }
 
 /** @public */
 export interface ScaffolderDryRunResponse {
-  content: Array<{
+  directoryContents: Array<{
     path: string;
     base64Content: string;
     executable: boolean;

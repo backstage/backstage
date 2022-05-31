@@ -187,7 +187,7 @@ export class ScaffolderClient implements ScaffolderApi {
         template: options.template,
         values: options.values,
         secrets: options.secrets,
-        content: options.content,
+        directoryContents: options.directoryContents,
       }),
     });
 
