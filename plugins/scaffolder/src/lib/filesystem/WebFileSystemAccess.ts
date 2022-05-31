@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  TemplateFileSystemAccess,
-  TemplateDirectoryAccess,
-  TemplateFileAccess,
-} from './types';
+import { TemplateDirectoryAccess, TemplateFileAccess } from './types';
 
 type WritableFileHandle = FileSystemFileHandle & {
   createWritable(): Promise<{
@@ -82,24 +78,18 @@ class WebDirectoryAccess implements TemplateDirectoryAccess {
 }
 
 /** @internal */
-export class WebFileSystemAccess implements TemplateFileSystemAccess {
-  private static instance = new WebFileSystemAccess();
-
-  static get(): TemplateFileSystemAccess {
-    return this.instance;
-  }
-
+export class WebFileSystemAccess {
   static isSupported(): boolean {
     return Boolean(showDirectoryPicker);
   }
 
-  private constructor() {}
-
-  async requestDirectoryAccess(): Promise<TemplateDirectoryAccess> {
+  static async requestDirectoryAccess(): Promise<TemplateDirectoryAccess> {
     if (!showDirectoryPicker) {
       throw new Error('File system access is not supported');
     }
     const handle = await showDirectoryPicker();
     return new WebDirectoryAccess(handle);
   }
+
+  private constructor() {}
 }

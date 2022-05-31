@@ -23,7 +23,3 @@ export interface TemplateFileAccess {
 export interface TemplateDirectoryAccess {
   listFiles(): Promise<Array<TemplateFileAccess>>;
 }
-
-export interface TemplateFileSystemAccess {
-  requestDirectoryAccess(): Promise<TemplateDirectoryAccess>;
-}
