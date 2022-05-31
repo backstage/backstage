@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 import { createTemplateAction } from '../../createTemplateAction';
-import { readFile } from 'fs-extra';
 import { Gitlab } from '@gitbeaker/node';
-import globby from 'globby';
 import { Types } from '@gitbeaker/core';
-
+import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { parseRepoUrl } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { serializeDirectoryContents } from '../../../../lib/files';
 
 /**
  * Create a new action that creates a gitlab merge request.
@@ -106,8 +105,6 @@ export const createPublishGitlabMergeRequestAction = (options: {
       const { host } = parseRepoUrl(repoUrl, integrations);
       const integrationConfig = integrations.gitlab.byHost(host);
 
-      const actions: Types.CommitAction[] = [];
-
       const destinationBranch = ctx.input.branchName;
 
       if (!integrationConfig) {
@@ -128,28 +125,21 @@ export const createPublishGitlabMergeRequestAction = (options: {
         [tokenType]: token,
       });
 
-      const fileRoot = ctx.workspacePath;
-      const localFilePaths = await globby([`${ctx.input.targetPath}/**`], {
-        cwd: fileRoot,
-        gitignore: true,
-        dot: true,
-      });
-
-      const fileContents = await Promise.all(
-        localFilePaths.map(p => readFile(resolveSafeChildPath(fileRoot, p))),
+      const targetPath = resolveSafeChildPath(
+        ctx.workspacePath,
+        ctx.input.targetPath,
       );
-
-      const repoFilePaths = localFilePaths.map(repoFilePath => {
-        return repoFilePath;
+      const fileContents = await serializeDirectoryContents(targetPath, {
+        gitignore: true,
       });
 
-      for (let i = 0; i < repoFilePaths.length; i++) {
-        actions.push({
-          action: 'create',
-          filePath: repoFilePaths[i],
-          content: fileContents[i].toString(),
-        });
-      }
+      const actions: Types.CommitAction[] = fileContents.map(file => ({
+        action: 'create',
+        filePath: path.posix.join(ctx.input.targetPath, file.path),
+        encoding: 'base64',
+        content: file.content.toString('base64'),
+        execute_filemode: file.executable,
+      }));
 
       const projects = await api.Projects.show(ctx.input.projectid);
 

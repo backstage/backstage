@@ -154,6 +154,7 @@ export function createFetchTemplateAction(options: {
         dot: true,
         onlyFiles: false,
         markDirectories: true,
+        followSymbolicLinks: false,
       });
 
       const nonTemplatedEntries = new Set(
@@ -165,6 +166,7 @@ export function createFetchTemplateAction(options: {
                 dot: true,
                 onlyFiles: false,
                 markDirectories: true,
+                followSymbolicLinks: false,
               }),
             ),
           )
